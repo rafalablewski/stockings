@@ -247,9 +247,7 @@ const CompanyFeedCard: React.FC<{
     <article
       aria-label={`${label} news feed`}
       style={{
-        border: isPrimary
-          ? '1px solid color-mix(in srgb, var(--accent) 25%, transparent)'
-          : '1px solid rgba(255,255,255,0.06)',
+        border: '1px solid rgba(255,255,255,0.06)',
         borderRadius: 12,
         overflow: 'hidden',
         transition: 'border-color 0.2s',
