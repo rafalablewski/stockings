@@ -133,7 +133,8 @@ import {
   TIMELINE,
   type TimelineEntry,
 } from '@/data/crcl';
-import { CRCL_COMPETITOR_NEWS, CRCL_COMPETITOR_PROFILES, type CRCLCompetitorNewsEntry, type CRCLCompetitorId, type CRCLCompetitorNewsCategory, type CRCLImplication, type CRCLCompetitorProfile } from '@/data/crcl/competitor-news';
+import { CRCL_COMPETITOR_NEWS, CRCL_COMPETITOR_PROFILES, type CRCLCompetitorProfile } from '@/data/crcl/competitor-news';
+import type { CompetitorNewsEntry } from '@/data/shared/competitor-schema';
 import { CRCL_ANALYST_COVERAGE } from '@/data/crcl/analyst-coverage';
 import { CRCL_RESEARCH_SOURCES } from '@/data/crcl/research-sources';
 
@@ -208,7 +209,7 @@ interface PanelProps {
 // COMPETITOR INTELLIGENCE TYPES (CRCL-specific)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-// Types imported from '@/data/crcl/competitor-news': CRCLCompetitorId, CRCLCompetitorNewsCategory, CRCLImplication, CRCLCompetitorNewsEntry, CRCLCompetitorProfile
+// Types: CompetitorNewsEntry from '@/data/shared/competitor-schema', CRCLCompetitorProfile from '@/data/crcl/competitor-news'
 
 interface GuideProps {
   title: string;
@@ -6494,7 +6495,7 @@ const CompsTab = () => {
   const currentPeers = PEER_GROUPS[selectedPeerGroup as keyof typeof PEER_GROUPS];
 
   // Competitor intelligence state
-  const [competitorFilter, setCompetitorFilter] = useState<CRCLCompetitorId | 'all'>('all');
+  const [competitorFilter, setCompetitorFilter] = useState<string>('all');
   const [expandedNews, setExpandedNews] = useState<Set<number>>(new Set());
   const [newsCategoryFilter, setNewsCategoryFilter] = useState<string>('All');
 
@@ -6579,14 +6580,14 @@ const CompsTab = () => {
   const filteredCompNews = filteredNews.filter(n => newsCategoryFilter === 'All' || n.category === newsCategoryFilter);
 
   // Get competitor display name
-  const getCompetitorName = (id: CRCLCompetitorId): string => {
+  const getCompetitorName = (id: string): string => {
     if (id === 'other') return 'Miscellaneous';
     const profile = COMPETITOR_PROFILES.find(p => p.id === id);
     return profile?.name || id;
   };
 
   // Implication styling - using design tokens
-  const getImplicationStyle = (impl: CRCLImplication) => {
+  const getImplicationStyle = (impl: CompetitorNewsEntry['implication']) => {
     switch (impl) {
       case 'positive': return { bg: 'var(--mint-dim)', color: 'var(--mint)', label: '✓ Good for CRCL' };
       case 'negative': return { bg: 'var(--coral-dim)', color: 'var(--coral)', label: '⚠ Threat to CRCL' };
@@ -6595,8 +6596,8 @@ const CompsTab = () => {
   };
 
   // Category styling - using design tokens
-  const getCategoryStyle = (cat: CRCLCompetitorNewsCategory) => {
-    const styles: Record<CRCLCompetitorNewsCategory, { bg: string; color: string }> = {
+  const getCategoryStyle = (cat: string) => {
+    const styles: Record<string, { bg: string; color: string }> = {
       'Partnership': { bg: 'var(--sky-dim)', color: 'var(--sky)' },
       'Product': { bg: 'var(--violet-dim)', color: 'var(--violet)' },
       'Regulatory': { bg: 'var(--gold-dim)', color: 'var(--gold)' },
@@ -7133,10 +7134,10 @@ const CompsTab = () => {
                     <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                       {news.details.map((d, j) => <div key={j} style={{ display: 'flex', gap: 8 }}><span style={{ color: 'var(--accent)', flexShrink: 0 }}>•</span>{d}</div>)}
                     </div>
-                    {news.crclComparison && (
+                    {news.thesisComparison && (
                       <div style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--mint) 5%, var(--surface))', borderRadius: 12, borderLeft: '3px solid var(--mint)', marginTop: 12 }}>
                         <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 4 }}>CRCL Comparison</div>
-                        <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{news.crclComparison}</div>
+                        <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{news.thesisComparison}</div>
                       </div>
                     )}
                     {news.source && <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: 'Space Mono, monospace', marginTop: 8 }}>Source: {news.sourceUrl ? <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>{news.source} ↗</a> : news.source}</div>}

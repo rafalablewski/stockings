@@ -6,33 +6,14 @@
  * Newest first.
  */
 
-/** Competitor identifiers for CRCL competitive landscape */
-export type CRCLCompetitorId = 'kraken' | 'tether' | 'coinbase' | 'paypal' | 'fdusd' | 'other';
+import { CompetitorNewsEntry } from '../shared/competitor-schema';
 
-/** News category types for stablecoin/payments competitors */
-export type CRCLCompetitorNewsCategory = 'Partnership' | 'Product' | 'Regulatory' | 'Technology' | 'Financial' | 'Strategy' | 'Distribution';
-
-/** Implication for CRCL competitive position */
-export type CRCLImplication = 'positive' | 'neutral' | 'negative';
-
-/** Individual competitor news entry */
-export interface CRCLCompetitorNewsEntry {
-  date: string;
-  competitor: CRCLCompetitorId;
-  category: CRCLCompetitorNewsCategory;
-  headline: string;
-  details: string[];
-  implication: CRCLImplication;
-  crclComparison?: string;
-  source?: string;
-  sourceUrl?: string;
-  storyId?: string;
-  storyTitle?: string;
-}
+// Competitor IDs used for CRCL: 'kraken' | 'tether' | 'coinbase' | 'paypal' | 'fdusd' | 'other'
+// Categories: 'Partnership' | 'Product' | 'Regulatory' | 'Technology' | 'Financial' | 'Strategy' | 'Distribution'
 
 /** Competitor profile */
 export interface CRCLCompetitorProfile {
-  id: CRCLCompetitorId;
+  id: string;
   name: string;
   description: string;
   currentStatus: string;
@@ -65,7 +46,7 @@ export const CRCL_COMPETITOR_PROFILES: CRCLCompetitorProfile[] = [
   },
 ];
 
-export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
+export const CRCL_COMPETITOR_NEWS: CompetitorNewsEntry[] = [
   // ═══════════════════════════════════════════════════════════════════════════
   // ADD NEW COMPETITOR NEWS ENTRIES HERE (newest first)
   // Format:
@@ -76,7 +57,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
   //   headline: 'Brief headline',
   //   details: ['Bullet point 1', 'Bullet point 2'],
   //   implication: 'positive' | 'neutral' | 'negative',  // for CRCL
-  //   crclComparison: 'How this compares to CRCL position',
+  //   thesisComparison: 'How this compares to CRCL position',
   //   source: 'Source name',
   //   storyId: 'groups related entries',
   //   storyTitle: 'Display title for story group'
@@ -99,7 +80,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'All strategies undergo structured internal review and remain subject to ongoing oversight',
     ],
     implication: 'neutral',
-    crclComparison: 'Kraken building institutional investment products could eventually incorporate USDC-denominated strategies, expanding institutional demand for Circle\'s stablecoin infrastructure. Institutional yield strategies require stablecoin settlement rails.',
+    thesisComparison: 'Kraken building institutional investment products could eventually incorporate USDC-denominated strategies, expanding institutional demand for Circle\'s stablecoin infrastructure. Institutional yield strategies require stablecoin settlement rails.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional Services',
@@ -121,7 +102,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Accounts for total client liabilities, not just assets — includes margin, futures, and staked positions',
     ],
     implication: 'neutral',
-    crclComparison: 'Kraken\'s PoR covering both USDC and USDT demonstrates both stablecoins have significant exchange custody demand. Circle\'s own reserve transparency (monthly attestations, BlackRock-managed reserves) sets the industry standard that exchanges complement.',
+    thesisComparison: 'Kraken\'s PoR covering both USDC and USDT demonstrates both stablecoins have significant exchange custody demand. Circle\'s own reserve transparency (monthly attestations, BlackRock-managed reserves) sets the industry standard that exchanges complement.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional Services',
@@ -143,7 +124,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Part of Williams\' portfolio of major brand renewals (Duracell, Gulf Oil, VAST Data, Keeper Security)',
     ],
     implication: 'neutral',
-    crclComparison: 'Kraken\'s F1 sponsorship increases crypto brand awareness and mainstream adoption broadly, which benefits USDC as the leading regulated stablecoin. Larger Kraken user base = larger addressable market for USDC distribution.',
+    thesisComparison: 'Kraken\'s F1 sponsorship increases crypto brand awareness and mainstream adoption broadly, which benefits USDC as the leading regulated stablecoin. Larger Kraken user base = larger addressable market for USDC distribution.',
     source: 'Kraken Blog',
     storyId: 'kraken-expansion',
     storyTitle: 'Kraken Global Expansion & Marketing',
@@ -165,7 +146,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Withdrawals typically instant with minimal lock-up periods',
     ],
     implication: 'positive',
-    crclComparison: 'Directly expands USDC demand and circulation. Kraken converts user cash deposits into USDC for DeFi deployment, creating net new USDC minting pressure. Validates Circle\'s ecosystem and USDC\'s role as DeFi settlement currency.',
+    thesisComparison: 'Directly expands USDC demand and circulation. Kraken converts user cash deposits into USDC for DeFi deployment, creating net new USDC minting pressure. Validates Circle\'s ecosystem and USDC\'s role as DeFi settlement currency.',
     source: 'Kraken Blog',
     storyId: 'kraken-usdc',
     storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
@@ -186,7 +167,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Adds another low-cost, fast settlement option for USDC transfers',
     ],
     implication: 'positive',
-    crclComparison: 'Every new chain support on major exchanges expands USDC multi-chain reach. Kraken adding Algorand USDC support increases Circle\'s distribution footprint and makes USDC accessible via an additional low-fee, high-speed network.',
+    thesisComparison: 'Every new chain support on major exchanges expands USDC multi-chain reach. Kraken adding Algorand USDC support increases Circle\'s distribution footprint and makes USDC accessible via an additional low-fee, high-speed network.',
     source: 'Kraken Blog',
     storyId: 'kraken-usdc',
     storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
@@ -207,7 +188,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Kraken is existing Atletico de Madrid partner — extends sports marketing reach',
     ],
     implication: 'neutral',
-    crclComparison: 'Kraken\'s sports marketing partnerships drive platform trading activity and user acquisition. Growing exchange volume supports USDC\'s role as a primary funding and trading pair settlement currency.',
+    thesisComparison: 'Kraken\'s sports marketing partnerships drive platform trading activity and user acquisition. Growing exchange volume supports USDC\'s role as a primary funding and trading pair settlement currency.',
     source: 'Kraken Blog',
     storyId: 'kraken-expansion',
     storyTitle: 'Kraken Global Expansion & Marketing',
@@ -230,7 +211,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'DeFi tokenomics evolving: Uniswap-style fee sharing could reprice governance tokens toward durable valuation frameworks',
     ],
     implication: 'positive',
-    crclComparison: 'Kraken\'s research highlighting stablecoin liquidity at ATH and regulatory clarity as key 2026 themes directly validates Circle\'s growth thesis. GENIUS Act stablecoin legislation benefits USDC as the compliance-first market leader. RWA tokenization growth ($5.6B→$19B) expands use cases for USDC settlement.',
+    thesisComparison: 'Kraken\'s research highlighting stablecoin liquidity at ATH and regulatory clarity as key 2026 themes directly validates Circle\'s growth thesis. GENIUS Act stablecoin legislation benefits USDC as the compliance-first market leader. RWA tokenization growth ($5.6B→$19B) expands use cases for USDC settlement.',
     source: 'Kraken Blog',
   },
 
@@ -250,7 +231,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'USDe is a synthetic dollar using delta-neutral derivatives strategy — different model than USDC\'s reserve-backed approach',
     ],
     implication: 'negative',
-    crclComparison: 'Kraken providing institutional custody for USDe (Ethena) signals exchange willingness to support stablecoin alternatives to USDC. USDe\'s synthetic dollar model competes for the same dollar-denominated DeFi demand that drives USDC circulation growth.',
+    thesisComparison: 'Kraken providing institutional custody for USDe (Ethena) signals exchange willingness to support stablecoin alternatives to USDC. USDe\'s synthetic dollar model competes for the same dollar-denominated DeFi demand that drives USDC circulation growth.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional Services',
@@ -272,7 +253,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Positions Kraken as regulated local crypto partner across the EU',
     ],
     implication: 'positive',
-    crclComparison: 'Kraken\'s EU expansion under MiCA directly supports EURC distribution. As Kraken grows its European user base with full regulatory compliance, it creates a larger addressable market for Circle\'s EURC stablecoin and supports the euro-denominated stablecoin ecosystem.',
+    thesisComparison: 'Kraken\'s EU expansion under MiCA directly supports EURC distribution. As Kraken grows its European user base with full regulatory compliance, it creates a larger addressable market for Circle\'s EURC stablecoin and supports the euro-denominated stablecoin ecosystem.',
     source: 'Kraken Blog',
     storyId: 'kraken-expansion',
     storyTitle: 'Kraken Global Expansion & Marketing',
@@ -294,7 +275,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Kraken Co-CEO Arjun Sethi: “financial assets move onto open networks as neutral, composable building blocks”',
     ],
     implication: 'neutral',
-    crclComparison: 'Kraken\'s xStocks tokenized equities compete in the broader RWA tokenization space alongside Circle\'s vision. However, equity tokenization and stablecoin infrastructure serve different functions — USDC could benefit as the settlement currency of choice for tokenized asset markets.',
+    thesisComparison: 'Kraken\'s xStocks tokenized equities compete in the broader RWA tokenization space alongside Circle\'s vision. However, equity tokenization and stablecoin infrastructure serve different functions — USDC could benefit as the settlement currency of choice for tokenized asset markets.',
     source: 'Kraken Blog',
     storyId: 'kraken-xstocks',
     storyTitle: 'Kraken Tokenized Equities (xStocks)',
@@ -316,7 +297,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Kraken recently announced acquisition of Backed Finance to unify xStocks issuance, trading, and settlement',
     ],
     implication: 'neutral',
-    crclComparison: 'xStocks\' $10B+ volume demonstrates growing demand for tokenized financial assets onchain. As RWA tokenization scales, USDC could benefit as the primary settlement and liquidity currency for tokenized asset markets. Circle and Kraken could be complementary infrastructure providers.',
+    thesisComparison: 'xStocks\' $10B+ volume demonstrates growing demand for tokenized financial assets onchain. As RWA tokenization scales, USDC could benefit as the primary settlement and liquidity currency for tokenized asset markets. Circle and Kraken could be complementary infrastructure providers.',
     source: 'Kraken Blog',
     storyId: 'kraken-xstocks',
     storyTitle: 'Kraken Tokenized Equities (xStocks)',
@@ -337,7 +318,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Indicates growing platform maturity and organic trading activity',
     ],
     implication: 'neutral',
-    crclComparison: 'Kraken\'s liquidity maturation across 425+ trading pairs creates deep markets that benefit USDC-denominated trading. Healthy exchange liquidity supports USDC\'s role as a primary trading settlement and funding currency.',
+    thesisComparison: 'Kraken\'s liquidity maturation across 425+ trading pairs creates deep markets that benefit USDC-denominated trading. Healthy exchange liquidity supports USDC\'s role as a primary trading settlement and funding currency.',
     source: 'Kraken Blog',
   },
 
@@ -357,7 +338,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'React Native New Architecture adoption for baseline performance improvement',
     ],
     implication: 'neutral',
-    crclComparison: 'Kraken investing in mobile app performance engineering improves the user experience for USDC trading and transactions. Better app reliability lowers friction for retail users to on/off-ramp into USDC.',
+    thesisComparison: 'Kraken investing in mobile app performance engineering improves the user experience for USDC trading and transactions. Better app reliability lowers friction for retail users to on/off-ramp into USDC.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional Services',
@@ -378,7 +359,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Both unstaked and Kraken Rewards assets eligible as margin collateral',
     ],
     implication: 'negative',
-    crclComparison: 'Kraken adding USDG as collateral alongside USDC increases stablecoin competition for exchange use cases. Each new stablecoin collateral option dilutes USDC\'s share of margin funding. However, USDC\'s regulatory moat and Circle partnership likely maintain preferential positioning.',
+    thesisComparison: 'Kraken adding USDG as collateral alongside USDC increases stablecoin competition for exchange use cases. Each new stablecoin collateral option dilutes USDC\'s share of margin funding. However, USDC\'s regulatory moat and Circle partnership likely maintain preferential positioning.',
     source: 'Kraken Blog',
     storyId: 'kraken-usdc',
     storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
@@ -399,7 +380,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Serves as core settlement layer for instant digital dollar payments',
     ],
     implication: 'negative',
-    crclComparison: 'Kraken supporting USDT0 on a stablecoin-optimized chain strengthens Tether\'s cross-chain distribution advantage. USDT0\'s unified liquidity model competes with Circle\'s CCTP for cross-chain USDC interoperability. Plasma as a stablecoin-first chain could favor USDT settlement.',
+    thesisComparison: 'Kraken supporting USDT0 on a stablecoin-optimized chain strengthens Tether\'s cross-chain distribution advantage. USDT0\'s unified liquidity model competes with Circle\'s CCTP for cross-chain USDC interoperability. Plasma as a stablecoin-first chain could favor USDT settlement.',
     source: 'Kraken Blog',
     storyId: 'kraken-usdc',
     storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
@@ -421,7 +402,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       '99.9% uptime with dedicated 24/7 support',
     ],
     implication: 'neutral',
-    crclComparison: 'Kraken\'s institutional-grade connectivity infrastructure attracts high-frequency and institutional traders who require stablecoin settlement rails. Faster execution and deeper liquidity on Kraken supports USDC trading pair volume.',
+    thesisComparison: 'Kraken\'s institutional-grade connectivity infrastructure attracts high-frequency and institutional traders who require stablecoin settlement rails. Faster execution and deeper liquidity on Kraken supports USDC trading pair volume.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional Services',
@@ -443,7 +424,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Part of broader Latin America strategy including Argentina, Mexico, and Colombia',
     ],
     implication: 'positive',
-    crclComparison: 'Kraken\'s Latin America expansion brings new users who need USD-denominated stablecoins for cross-border transactions and savings. Colombia\'s growing remittance and stablecoin demand is a natural fit for USDC adoption through Kraken\'s platform.',
+    thesisComparison: 'Kraken\'s Latin America expansion brings new users who need USD-denominated stablecoins for cross-border transactions and savings. Colombia\'s growing remittance and stablecoin demand is a natural fit for USDC adoption through Kraken\'s platform.',
     source: 'Kraken Blog',
     storyId: 'kraken-expansion',
     storyTitle: 'Kraken Global Expansion & Marketing',
@@ -466,7 +447,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Two-way gateway connecting U.S. and European institutional markets',
     ],
     implication: 'positive',
-    crclComparison: 'Deutsche Börse partnership massively expands Kraken\'s institutional reach across European TradFi. 360T FX integration improves fiat on-ramp efficiency — potential to streamline USDC minting/redemption for institutions. Eurex derivatives and Clearstream custody create new institutional demand for stablecoin settlement.',
+    thesisComparison: 'Deutsche Börse partnership massively expands Kraken\'s institutional reach across European TradFi. 360T FX integration improves fiat on-ramp efficiency — potential to streamline USDC minting/redemption for institutions. Eurex derivatives and Clearstream custody create new institutional demand for stablecoin settlement.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional Services',
@@ -487,7 +468,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Phase one of broader rollout to additional tokenized stocks and ETFs',
     ],
     implication: 'neutral',
-    crclComparison: 'CRCLx is among the top 10 xStocks with 24/7 trading — directly increases liquidity and accessibility for tokenized Circle equity exposure. 24/7 tokenized equity markets likely require stablecoin settlement rails, benefiting USDC infrastructure.',
+    thesisComparison: 'CRCLx is among the top 10 xStocks with 24/7 trading — directly increases liquidity and accessibility for tokenized Circle equity exposure. 24/7 tokenized equity markets likely require stablecoin settlement rails, benefiting USDC infrastructure.',
     source: 'Kraken Blog',
     storyId: 'kraken-xstocks',
     storyTitle: 'Kraken Tokenized Equities (xStocks)',
@@ -510,7 +491,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Over 60 tokenized equities and ETFs backed 1:1 by underlying asset',
     ],
     implication: 'neutral',
-    crclComparison: 'Kraken vertically integrating tokenized equity infrastructure accelerates RWA tokenization. xStocks on Ethereum and multichain expansion could drive demand for USDC as the primary settlement currency for tokenized asset markets. Circle\'s CCTP could be the cross-chain USDC bridge for xStocks liquidity.',
+    thesisComparison: 'Kraken vertically integrating tokenized equity infrastructure accelerates RWA tokenization. xStocks on Ethereum and multichain expansion could drive demand for USDC as the primary settlement currency for tokenized asset markets. Circle\'s CCTP could be the cross-chain USDC bridge for xStocks liquidity.',
     source: 'Kraken Blog',
     storyId: 'kraken-xstocks',
     storyTitle: 'Kraken Tokenized Equities (xStocks)',
@@ -531,7 +512,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Designed to attract and retain most active trading participants and improve market liquidity',
     ],
     implication: 'neutral',
-    crclComparison: 'Kraken incentivizing high-volume market makers with equity warrants should deepen liquidity across trading pairs including USDC pairs. Better market-making improves USDC price stability and reduces spreads for users, supporting USDC\'s utility as a trading settlement currency.',
+    thesisComparison: 'Kraken incentivizing high-volume market makers with equity warrants should deepen liquidity across trading pairs including USDC pairs. Better market-making improves USDC price stability and reduces spreads for users, supporting USDC\'s utility as a trading settlement currency.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional Services',
@@ -552,7 +533,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Supports hedging, short selling, and leveraged strategies using EURC collateral',
     ],
     implication: 'positive',
-    crclComparison: 'Directly bullish for Circle. Kraken adding EURC as margin collateral validates Circle\'s euro stablecoin as institutional-grade collateral alongside USDC. Expands EURC utility beyond simple payments into derivatives and leveraged trading — a significant use case expansion for Circle\'s euro product.',
+    thesisComparison: 'Directly bullish for Circle. Kraken adding EURC as margin collateral validates Circle\'s euro stablecoin as institutional-grade collateral alongside USDC. Expands EURC utility beyond simple payments into derivatives and leveraged trading — a significant use case expansion for Circle\'s euro product.',
     source: 'Kraken Blog',
     storyId: 'kraken-usdc',
     storyTitle: 'Kraken USDC & Stablecoin Ecosystem',
@@ -574,7 +555,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Kraken manages compliance, licensing, fraud prevention, and payment operations',
     ],
     implication: 'positive',
-    crclComparison: 'Kraken Ramp as B2B infrastructure for fiat-to-crypto creates a massive new distribution channel for USDC. Every fintech, wallet, or protocol integrating Ramp could offer USDC on/off-ramp to their users. Complementary to Circle Mint — Ramp handles consumer fiat while Circle Mint handles institutional minting.',
+    thesisComparison: 'Kraken Ramp as B2B infrastructure for fiat-to-crypto creates a massive new distribution channel for USDC. Every fintech, wallet, or protocol integrating Ramp could offer USDC on/off-ramp to their users. Complementary to Circle Mint — Ramp handles consumer fiat while Circle Mint handles institutional minting.',
     source: 'Kraken Blog',
     storyId: 'kraken-expansion',
     storyTitle: 'Kraken Global Expansion & Marketing',
@@ -596,7 +577,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Serves institutional clients: fiduciaries, funds, and corporate treasuries across EEA',
     ],
     implication: 'positive',
-    crclComparison: 'MiCA-regulated custody in the EEA creates institutional-grade infrastructure for holding USDC and EURC. As European institutions gain regulated custody access, demand for Circle\'s MiCA-compliant stablecoins (USDC and EURC issued under French EMI license) should grow.',
+    thesisComparison: 'MiCA-regulated custody in the EEA creates institutional-grade infrastructure for holding USDC and EURC. As European institutions gain regulated custody access, demand for Circle\'s MiCA-compliant stablecoins (USDC and EURC issued under French EMI license) should grow.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional Services',
@@ -618,7 +599,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Each xStock fully backed 1:1 by underlying equity in bankruptcy-remote structure',
     ],
     implication: 'neutral',
-    crclComparison: 'xStocks\' rapid adoption ($10B in 135 days) validates demand for tokenized real-world assets. As the RWA tokenization ecosystem scales, USDC is positioned to be the primary settlement currency. Circle\'s own RWA partnerships (BlackRock BUIDL, Hashnote USYC) are complementary infrastructure.',
+    thesisComparison: 'xStocks\' rapid adoption ($10B in 135 days) validates demand for tokenized real-world assets. As the RWA tokenization ecosystem scales, USDC is positioned to be the primary settlement currency. Circle\'s own RWA partnerships (BlackRock BUIDL, Hashnote USYC) are complementary infrastructure.',
     source: 'Kraken Blog',
     storyId: 'kraken-xstocks',
     storyTitle: 'Kraken Tokenized Equities (xStocks)',
@@ -640,7 +621,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Targets market makers, quant funds, and HFT firms for cross-venue strategies',
     ],
     implication: 'neutral',
-    crclComparison: 'Kraken attracting HFT and institutional traders with sub-140ms connectivity improves exchange liquidity. High-frequency trading strategies often use stablecoins for rapid settlement — USDC\'s deep liquidity on Kraken benefits from faster connectivity infrastructure.',
+    thesisComparison: 'Kraken attracting HFT and institutional traders with sub-140ms connectivity improves exchange liquidity. High-frequency trading strategies often use stablecoins for rapid settlement — USDC\'s deep liquidity on Kraken benefits from faster connectivity infrastructure.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional Services',
@@ -662,7 +643,7 @@ export const CRCL_COMPETITOR_NEWS: CRCLCompetitorNewsEntry[] = [
       'Pioneered PoR in 2014 — longest-running transparency program among major exchanges',
     ],
     implication: 'neutral',
-    crclComparison: 'Kraken\'s quarterly PoR covering USDC demonstrates exchange commitment to stablecoin reserve transparency. Complements Circle\'s own monthly attestation standard. Exchange-level transparency for USDC holdings reinforces institutional confidence in USDC as a trustworthy reserve asset.',
+    thesisComparison: 'Kraken\'s quarterly PoR covering USDC demonstrates exchange commitment to stablecoin reserve transparency. Complements Circle\'s own monthly attestation standard. Exchange-level transparency for USDC holdings reinforces institutional confidence in USDC as a trustworthy reserve asset.',
     source: 'Kraken Blog',
     storyId: 'kraken-institutional',
     storyTitle: 'Kraken Institutional Services',

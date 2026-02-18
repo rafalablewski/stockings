@@ -161,30 +161,8 @@ export interface PartnerNewsEntry {
   url?: string;
 }
 
-/**
- * Competitor news entry for tracking ASTS competitor activities
- * AI AGENT: Add from competitor press releases, product announcements, and industry news
- */
-export interface CompetitorNewsEntry {
-  /** ISO date string (YYYY-MM-DD) */
-  date: string;
-  /** Competitor company name */
-  competitor: string;
-  /** News category (e.g., "Launch", "Technology", "Partnership", "Financial", "Regulatory", "Product") */
-  category: string;
-  /** Headline/title of the news */
-  headline: string;
-  /** Detailed summary of the news */
-  summary: string;
-  /** Competitive implications for ASTS */
-  astsImplication: string;
-  /** Impact assessment for ASTS: "Bullish" (good for ASTS), "Bearish" (bad for ASTS), "Neutral" */
-  impact: 'Bullish' | 'Bearish' | 'Neutral';
-  /** Source publication name */
-  source: string;
-  /** URL to the original source article (optional) */
-  url?: string;
-}
+// CompetitorNewsEntry has been moved to ../shared/competitor-schema.ts (Zod schema)
+// The old interface here was only used by the now-deleted asts/competitors.ts
 
 /**
  * Ethereum adoption timeline entry for BMNR

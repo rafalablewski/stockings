@@ -12,26 +12,12 @@
  * - NEVER delete old entries — this is an audit trail
  */
 
-// Types matching the inline ASTS.tsx definitions
-export type CompetitorId = 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-leo' | 'echostar' | 'oq-technology' | 'other';
-export type CompetitorNewsCategory = 'Launch' | 'Partnership' | 'Technology' | 'Regulatory' | 'Financial' | 'Coverage' | 'Product';
-export type ASTSImplication = 'positive' | 'neutral' | 'negative';
+import { CompetitorNewsEntry } from '../shared/competitor-schema';
 
-export interface CompsTimelineEntry {
-  date: string;
-  competitor: CompetitorId;
-  category: CompetitorNewsCategory;
-  headline: string;
-  details: string[];
-  implication: ASTSImplication;
-  astsComparison?: string;
-  source?: string;
-  sourceUrl?: string;
-  storyId?: string;
-  storyTitle?: string;
-}
+// Competitor IDs used for ASTS: 'starlink-tmobile' | 'lynk' | 'apple-globalstar' | 'skylo' | 'iridium' | 'amazon-leo' | 'echostar' | 'oq-technology' | 'other'
+// Categories: 'Launch' | 'Partnership' | 'Technology' | 'Regulatory' | 'Financial' | 'Coverage' | 'Product'
 
-export const COMPS_TIMELINE: CompsTimelineEntry[] = [
+export const COMPS_TIMELINE: CompetitorNewsEntry[] = [
     // ═══════════════════════════════════════════════════════════════════════════
     // ADD NEW ENTRIES TO THE MATCHING COMPETITOR SECTION BELOW (date descending within each section)
     // Format:
@@ -42,7 +28,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
     //   headline: 'Brief headline',
     //   details: ['Bullet point 1', 'Bullet point 2'],
     //   implication: 'positive' | 'neutral' | 'negative',  // for ASTS
-    //   astsComparison: 'How this compares to ASTS',
+    //   thesisComparison: 'How this compares to ASTS',
     //   source: 'Source name',
     //   sourceUrl: 'https://...'
     // },
@@ -68,7 +54,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Available to both individual and enterprise customers',
       ],
       implication: 'negative',
-      astsComparison: 'Japan\'s largest MNO entering D2D — significant regardless of partner identity. If Starlink (likely given KDDI precedent), further consolidates Starlink Asian footprint. If Amazon Kuiper or another provider, signals D2D competition intensifying beyond Starlink. NTT Docomo\'s 87M+ subs and branded space initiative indicate strategic commitment. ASTS has no disclosed Japanese MNO partnership — Japan market increasingly captured by Starlink D2C ecosystem.',
+      thesisComparison: 'Japan\'s largest MNO entering D2D — significant regardless of partner identity. If Starlink (likely given KDDI precedent), further consolidates Starlink Asian footprint. If Amazon Kuiper or another provider, signals D2D competition intensifying beyond Starlink. NTT Docomo\'s 87M+ subs and branded space initiative indicate strategic commitment. ASTS has no disclosed Japanese MNO partnership — Japan market increasingly captured by Starlink D2C ecosystem.',
       source: 'NTT Docomo',
       storyId: 'japan-d2d-market',
       storyTitle: 'Japan D2D Market Competition',
@@ -93,7 +79,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Broader multimedia/entertainment expansion planned aboard trains leveraging new connectivity',
       ],
       implication: 'neutral',
-      astsComparison: 'Enterprise terminal-based broadband on rail — different market segment from ASTS D2D cellular. Does not compete with ASTS direct-to-device proposition. Demonstrates SpaceX/Starlink commercial momentum in transportation vertical and growing enterprise revenue base.',
+      thesisComparison: 'Enterprise terminal-based broadband on rail — different market segment from ASTS D2D cellular. Does not compete with ASTS direct-to-device proposition. Demonstrates SpaceX/Starlink commercial momentum in transportation vertical and growing enterprise revenue base.',
       source: 'Italo',
       storyId: 'starlink-enterprise-transportation',
       storyTitle: 'Starlink Enterprise Transportation Deployments',
@@ -116,7 +102,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Practical first step toward D2D satellite connectivity in Canada'
       ],
       implication: 'neutral',
-      astsComparison: 'Terrestar focused on narrowband IoT (asset tracking, equipment monitoring) using single GEO satellite — not broadband D2D to smartphones. ASTS targets broadband voice/data to unmodified smartphones via LEO constellation. Validates 3GPP NTN standards approach but fundamentally different scale and capability.',
+      thesisComparison: 'Terrestar focused on narrowband IoT (asset tracking, equipment monitoring) using single GEO satellite — not broadband D2D to smartphones. ASTS targets broadband voice/data to unmodified smartphones via LEO constellation. Validates 3GPP NTN standards approach but fundamentally different scale and capability.',
       source: 'Terrestar Solutions',
       sourceUrl: 'https://terrestarsolutions.ca',
       storyId: 'terrestar-hybrid-iot',
@@ -141,7 +127,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'New wholesale frameworks needed for satellite-enabled roaming and hybrid settlement'
       ],
       implication: 'positive',
-      astsComparison: 'Strongly validates ASTS thesis: massive consumer demand for D2D with willingness to pay and even switch operators. The 47% switching intent is a powerful negotiating lever for ASTS in MNO partnership discussions. Most Starlink D2D services are SMS-only; ASTS targets broadband voice/data.',
+      thesisComparison: 'Strongly validates ASTS thesis: massive consumer demand for D2D with willingness to pay and even switch operators. The 47% switching intent is a powerful negotiating lever for ASTS in MNO partnership discussions. Most Starlink D2D services are SMS-only; ASTS targets broadband voice/data.',
       source: 'MEF',
       storyId: 'mef-d2d-market-analysis',
       storyTitle: 'D2D Market Analysis'
@@ -162,7 +148,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'MNOs face "marketing gap" — balancing excitement without over-promising'
       ],
       implication: 'positive',
-      astsComparison: 'Highly bullish for ASTS. The 47% switching intent and 60%+ willingness-to-pay validate that D2D is must-have for MNOs. Directly supports ASTS MNO partnership value proposition. High enthusiasm in emerging markets aligns with ASTS global strategy. "Marketing gap" concern about data-rich services favors ASTS over SMS-only competitors.',
+      thesisComparison: 'Highly bullish for ASTS. The 47% switching intent and 60%+ willingness-to-pay validate that D2D is must-have for MNOs. Directly supports ASTS MNO partnership value proposition. High enthusiasm in emerging markets aligns with ASTS global strategy. "Marketing gap" concern about data-rich services favors ASTS over SMS-only competitors.',
       source: 'Viasat / GSMA Intelligence',
       storyId: 'mef-d2d-market-analysis',
       storyTitle: 'D2D Market Analysis'
@@ -183,7 +169,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'OEM subsidies for satellite connectivity could drive smartphone traction'
       ],
       implication: 'neutral',
-      astsComparison: '$6/month global ARPU ceiling for smartphone D2D is concerning for ASTS revenue model. However, 30M IoT connections by 2030 validates growing demand. ASTS differentiates with large satellite arrays (BlueBird) that compensate for smartphone antenna limitations. LEO congestion warnings (60K+ sats) could favor ASTS approach of fewer, larger satellites.',
+      thesisComparison: '$6/month global ARPU ceiling for smartphone D2D is concerning for ASTS revenue model. However, 30M IoT connections by 2030 validates growing demand. ASTS differentiates with large satellite arrays (BlueBird) that compensate for smartphone antenna limitations. LEO congestion warnings (60K+ sats) could favor ASTS approach of fewer, larger satellites.',
       source: 'Kaleido Intelligence',
       storyId: 'mef-d2d-market-analysis',
       storyTitle: 'D2D Market Analysis'
@@ -211,7 +197,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Targets maritime, logistics, energy, mining, agriculture, environmental monitoring'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ continuing to build IoT partnership ecosystem. Eseye integration is similar to Monogoto partnership (announced same month) — extending OQ reach through connectivity platforms. Still NB-IoT focused, not broadband D2D. Growing IoT footprint could support OQ\'s transition to D2D services.',
+      thesisComparison: 'OQ continuing to build IoT partnership ecosystem. Eseye integration is similar to Monogoto partnership (announced same month) — extending OQ reach through connectivity platforms. Still NB-IoT focused, not broadband D2D. Growing IoT footprint could support OQ\'s transition to D2D services.',
       source: 'New Electronics / Via Satellite',
       storyId: 'oq-partnerships',
       storyTitle: 'OQ Technology MNO & Distribution'
@@ -230,7 +216,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Targets energy, logistics, maritime, agriculture, utilities'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ expanding IoT connectivity ecosystem via partnerships. Still NB-IoT focused but growing D2D ambitions following Nov 2025 emergency broadcast demo. Not direct competition to ASTS broadband smartphone D2D yet.',
+      thesisComparison: 'OQ expanding IoT connectivity ecosystem via partnerships. Still NB-IoT focused but growing D2D ambitions following Nov 2025 emergency broadcast demo. Not direct competition to ASTS broadband smartphone D2D yet.',
       source: 'OQ Technology / Monogoto',
       storyId: 'oq-partnerships',
       storyTitle: 'OQ Technology MNO & Distribution'
@@ -252,7 +238,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         '75%+ of world landmass and maritime waters lack cellular coverage — OQ addresses this gap'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ validating NB-IoT standards-based connectivity from mass-market modules to LEO satellites. Nordic is also Iridium\'s NTN Direct chipset partner — OQ and Iridium competing for same NB-IoT ecosystem. OQ\'s vertical integration (own RAN + core) gives more control vs ASTS which works with MNO infrastructure. Different markets: OQ IoT sensors, ASTS smartphones.',
+      thesisComparison: 'OQ validating NB-IoT standards-based connectivity from mass-market modules to LEO satellites. Nordic is also Iridium\'s NTN Direct chipset partner — OQ and Iridium competing for same NB-IoT ecosystem. OQ\'s vertical integration (own RAN + core) gives more control vs ASTS which works with MNO infrastructure. Different markets: OQ IoT sensors, ASTS smartphones.',
       source: 'Nordic Semiconductor / Via Satellite',
       storyId: 'oq-technology-rd',
       storyTitle: 'OQ Technology R&D & Certification'
@@ -275,7 +261,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Has contributed to multiple 3GPP working groups shaping NTN standards'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ Technology is evolving from IoT-only to a serious European D2D contender. 30 new sats by 2026 + D2D messaging/voice plans increase competitive overlap with ASTS. Key differences: OQ targets narrowband D2D (messaging/voice) while ASTS targets broadband (video/data). OQ\'s 20+ MNO partners and EU sovereign positioning compete with ASTS/Vodafone SatCo JV for European market. OQ eyeing EU 2GHz MSS spectrum renewal creates potential spectrum conflict. Scale mismatch: OQ targeting 100 sats vs ASTS constellation of much larger, higher-throughput BlueBirds.',
+      thesisComparison: 'OQ Technology is evolving from IoT-only to a serious European D2D contender. 30 new sats by 2026 + D2D messaging/voice plans increase competitive overlap with ASTS. Key differences: OQ targets narrowband D2D (messaging/voice) while ASTS targets broadband (video/data). OQ\'s 20+ MNO partners and EU sovereign positioning compete with ASTS/Vodafone SatCo JV for European market. OQ eyeing EU 2GHz MSS spectrum renewal creates potential spectrum conflict. Scale mismatch: OQ targeting 100 sats vs ASTS constellation of much larger, higher-throughput BlueBirds.',
       source: 'GlobeNewswire / Light Reading / Via Satellite',
       storyId: 'oq-technology-rd',
       storyTitle: 'OQ Technology R&D & Certification'
@@ -295,7 +281,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Linked to 5NETSAT mission backed by €2.5M EIC grant'
       ],
       implication: 'neutral',
-      astsComparison: 'Luxembourg concession gives OQ official regulatory authority for European D2D — a competitive advantage in European market vs ASTS/SatCo which operates through MNO spectrum partnerships. OQ building sovereign EU regulatory position while ASTS relies on MNO agreements. Different regulatory paths to same market.',
+      thesisComparison: 'Luxembourg concession gives OQ official regulatory authority for European D2D — a competitive advantage in European market vs ASTS/SatCo which operates through MNO spectrum partnerships. OQ building sovereign EU regulatory position while ASTS relies on MNO agreements. Different regulatory paths to same market.',
       source: 'Advanced Television / SpaceWatch Global',
       storyId: 'oq-funding',
       storyTitle: 'OQ Technology Funding & Regulation'
@@ -313,7 +299,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'OQ described as "industry leader and provider in 5G non-terrestrial network connectivity"'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ joining MSSA alongside other satellite players strengthens industry coalition for D2D spectrum. MSSA focuses on L- and S-band, different from ASTS which uses MNO spectrum via partnerships. OQ accumulating industry group memberships and regulatory positions in European D2D market.',
+      thesisComparison: 'OQ joining MSSA alongside other satellite players strengthens industry coalition for D2D spectrum. MSSA focuses on L- and S-band, different from ASTS which uses MNO spectrum via partnerships. OQ accumulating industry group memberships and regulatory positions in European D2D market.',
       source: 'SatellitePro ME',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
@@ -333,7 +319,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Claims 80% cost reduction vs providers requiring proprietary hardware'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ expanding geographically — Australia is a key market for satellite connectivity due to vast rural areas. ASTS also targets Australia via MNO partnerships (Telstra MOU). OQ focused on NB-IoT enterprise market while ASTS targets consumer smartphone broadband. Different use cases but competing for "satellite connectivity" narrative in same geography.',
+      thesisComparison: 'OQ expanding geographically — Australia is a key market for satellite connectivity due to vast rural areas. ASTS also targets Australia via MNO partnerships (Telstra MOU). OQ focused on NB-IoT enterprise market while ASTS targets consumer smartphone broadband. Different use cases but competing for "satellite connectivity" narrative in same geography.',
       source: 'SpaceNews',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
@@ -352,7 +338,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Targets maritime, logistics, energy, agriculture customers'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ building MNO roaming partnerships similar to ASTS MNO partnership model. KPN is not an ASTS partner. OQ focused on IoT connectivity extension while ASTS targets smartphone broadband. OQ\'s LEO advantage in polar regions is relevant for maritime/logistics verticals.',
+      thesisComparison: 'OQ building MNO roaming partnerships similar to ASTS MNO partnership model. KPN is not an ASTS partner. OQ focused on IoT connectivity extension while ASTS targets smartphone broadband. OQ\'s LEO advantage in polar regions is relevant for maritime/logistics verticals.',
       source: 'Via Satellite / SpaceNews',
       storyId: 'oq-partnerships',
       storyTitle: 'OQ Technology MNO & Distribution'
@@ -371,7 +357,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'OQ expanding from commercial IoT into defense vertical'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ expanding into defense sector — a vertical ASTS has also targeted (US government contracts). Defense D2D requires secure, resilient comms in contested environments. Different scale: OQ small LEO sats for drone command/data, ASTS large arrays for broadband. Both pursuing government revenue diversification.',
+      thesisComparison: 'OQ expanding into defense sector — a vertical ASTS has also targeted (US government contracts). Defense D2D requires secure, resilient comms in contested environments. Different scale: OQ small LEO sats for drone command/data, ASTS large arrays for broadband. Both pursuing government revenue diversification.',
       source: 'OQ Technology / UDS',
       storyId: 'oq-partnerships',
       storyTitle: 'OQ Technology MNO & Distribution'
@@ -390,7 +376,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Only 4 out of 71 EIC-selected companies this year were space-related'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ achieving key EU milestones — 5NETSAT is Europe\'s first 5G NTN LEO service demo. EU institutional backing (EIC) positions OQ as Europe\'s preferred sovereign D2D operator. ASTS competing for European market through Vodafone SatCo JV and MNO partnerships; OQ building direct EU institutional support. Scale remains very different: OQ 6U cubesats vs ASTS 64m² BlueBird arrays.',
+      thesisComparison: 'OQ achieving key EU milestones — 5NETSAT is Europe\'s first 5G NTN LEO service demo. EU institutional backing (EIC) positions OQ as Europe\'s preferred sovereign D2D operator. ASTS competing for European market through Vodafone SatCo JV and MNO partnerships; OQ building direct EU institutional support. Scale remains very different: OQ 6U cubesats vs ASTS 64m² BlueBird arrays.',
       source: 'SatNews / telecoms.com',
       storyId: 'oq-constellation',
       storyTitle: 'OQ Technology Constellation & Launches'
@@ -408,7 +394,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'OQ integrated into Deutsche Telekom\'s network infrastructure'
       ],
       implication: 'neutral',
-      astsComparison: 'Deutsche Telekom is a Tier-1 European MNO — OQ securing DT as commercial roaming partner strengthens European IoT position. Different service tiers: OQ provides NB-IoT for enterprise sensors, ASTS targets smartphone broadband via large-array satellites. Both competing for MNO mindshare in the NTN space.',
+      thesisComparison: 'Deutsche Telekom is a Tier-1 European MNO — OQ securing DT as commercial roaming partner strengthens European IoT position. Different service tiers: OQ provides NB-IoT for enterprise sensors, ASTS targets smartphone broadband via large-array satellites. Both competing for MNO mindshare in the NTN space.',
       source: 'OQ Technology',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
@@ -426,7 +412,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'OQ already has local Saudi presence in Al Khobar'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ deepening Saudi enterprise foothold via Aramco relationship. Aramco is one of world\'s largest companies — distribution agreement validates OQ\'s IoT service for energy sector. ASTS pursuing Middle East through MNO partnerships; OQ has direct enterprise channel via Aramco. Different markets: OQ for industrial IoT, ASTS for consumer broadband.',
+      thesisComparison: 'OQ deepening Saudi enterprise foothold via Aramco relationship. Aramco is one of world\'s largest companies — distribution agreement validates OQ\'s IoT service for energy sector. ASTS pursuing Middle East through MNO partnerships; OQ has direct enterprise channel via Aramco. Different markets: OQ for industrial IoT, ASTS for consumer broadband.',
       source: 'OQ Technology / SatellitePro ME',
       storyId: 'oq-partnerships',
       storyTitle: 'OQ Technology MNO & Distribution'
@@ -446,7 +432,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'First Luxembourg space company to receive EIC Accelerator funding'
       ],
       implication: 'neutral',
-      astsComparison: 'EU funding validates OQ\'s D2D smartphone ambitions but €17.5M is modest compared to ASTS\'s capital raises (hundreds of millions raised publicly). OQ needs significant payload upgrades to go from IoT cubesats to smartphone connectivity — ASTS designed BlueBird arrays specifically for smartphone broadband from the start. OQ\'s EU institutional backing is a competitive advantage in European market.',
+      thesisComparison: 'EU funding validates OQ\'s D2D smartphone ambitions but €17.5M is modest compared to ASTS\'s capital raises (hundreds of millions raised publicly). OQ needs significant payload upgrades to go from IoT cubesats to smartphone connectivity — ASTS designed BlueBird arrays specifically for smartphone broadband from the start. OQ\'s EU institutional backing is a competitive advantage in European market.',
       source: 'SpaceNews',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
@@ -467,7 +453,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'CEO: "backed by both the world\'s largest satellite operator and the VC arm of the oil and gas giant"'
       ],
       implication: 'neutral',
-      astsComparison: 'SES investment in OQ is notable — world\'s largest GEO operator backing OQ\'s LEO NTN IoT. OQ funding scale (€13M Series A + convertible) remains modest compared to ASTS which has raised hundreds of millions. However, institutional backing (SES, Aramco, Luxembourg Gov\'t) gives OQ significant credibility in European market.',
+      thesisComparison: 'SES investment in OQ is notable — world\'s largest GEO operator backing OQ\'s LEO NTN IoT. OQ funding scale (€13M Series A + convertible) remains modest compared to ASTS which has raised hundreds of millions. However, institutional backing (SES, Aramco, Luxembourg Gov\'t) gives OQ significant credibility in European market.',
       source: 'SpaceNews / SatNews',
       storyId: 'oq-funding',
       storyTitle: 'OQ Technology Funding & Regulation'
@@ -485,7 +471,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Targets low-latency, large capacity IoT communication'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ continuing to build MNO/MVNO roaming partnerships. Transatel is a global IoT MVNO — different from ASTS\'s MNO partnerships with AT&T, Vodafone. OQ consistently adding connectivity platform integrations for IoT. Still IoT-only at this stage, not smartphone D2D.',
+      thesisComparison: 'OQ continuing to build MNO/MVNO roaming partnerships. Transatel is a global IoT MVNO — different from ASTS\'s MNO partnerships with AT&T, Vodafone. OQ consistently adding connectivity platform integrations for IoT. Still IoT-only at this stage, not smartphone D2D.',
       source: 'SatNews / Transatel',
       storyId: 'oq-partnerships',
       storyTitle: 'OQ Technology MNO & Distribution'
@@ -504,7 +490,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Now preparing for batch-2 satellites with enhanced capabilities'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ reaching 10-satellite milestone with 6U cubesats. Very different scale: ASTS building large phased-array satellites (planned BlueBird production sats) for broadband D2D. OQ cubesats designed for narrowband IoT; ASTS arrays designed for broadband voice/data. OQ rapid launch cadence (4 sats in ~4 months) enabled by small form factor and rideshare missions.',
+      thesisComparison: 'OQ reaching 10-satellite milestone with 6U cubesats. Very different scale: ASTS building large phased-array satellites (planned BlueBird production sats) for broadband D2D. OQ cubesats designed for narrowband IoT; ASTS arrays designed for broadband voice/data. OQ rapid launch cadence (4 sats in ~4 months) enabled by small form factor and rideshare missions.',
       source: 'SatellitePro ME',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
@@ -522,7 +508,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Significant milestone: DT is one of Europe\'s largest telcos'
       ],
       implication: 'neutral',
-      astsComparison: 'Deutsche Telekom is a Tier-1 European MNO — MoU with OQ validates satellite-IoT roaming model. ASTS also pursues large MNO partnerships but for smartphone broadband. OQ steadily building MNO ecosystem for narrowband IoT. Different value propositions: OQ extends IoT to remote areas, ASTS delivers broadband where there are coverage gaps.',
+      thesisComparison: 'Deutsche Telekom is a Tier-1 European MNO — MoU with OQ validates satellite-IoT roaming model. ASTS also pursues large MNO partnerships but for smartphone broadband. OQ steadily building MNO ecosystem for narrowband IoT. Different value propositions: OQ extends IoT to remote areas, ASTS delivers broadband where there are coverage gaps.',
       source: 'GSMA / IoT Insider',
       storyId: 'oq-partnerships',
       storyTitle: 'OQ Technology MNO & Distribution'
@@ -540,7 +526,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Marks OQ\'s formal pivot from IoT-only to smartphone D2D ambitions'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ beginning to study D2D smartphone capability — still at feasibility stage. ASTS has been designing specifically for smartphone D2D from inception, with BW3 test satellite already in orbit (since Sep 2023). OQ would need significantly more powerful satellites to reach smartphones from its 6U cubesat platform. Years behind ASTS in D2D smartphone development.',
+      thesisComparison: 'OQ beginning to study D2D smartphone capability — still at feasibility stage. ASTS has been designing specifically for smartphone D2D from inception, with BW3 test satellite already in orbit (since Sep 2023). OQ would need significantly more powerful satellites to reach smartphones from its 6U cubesat platform. Years behind ASTS in D2D smartphone development.',
       source: 'SpaceNews',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
@@ -559,7 +545,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'CEO: "on track completing batch 1 of 10 satellites to serve critical clients globally"'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ adding IoT satellites steadily via rideshare missions. ASTS BW3 test satellite launched same period (Sep 2023) with fundamentally different approach — single large 64m² array vs many small cubesats. OQ for narrowband IoT sensors, ASTS for broadband smartphone D2D.',
+      thesisComparison: 'OQ adding IoT satellites steadily via rideshare missions. ASTS BW3 test satellite launched same period (Sep 2023) with fundamentally different approach — single large 64m² array vs many small cubesats. OQ for narrowband IoT sensors, ASTS for broadband smartphone D2D.',
       source: 'SatNews',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
@@ -577,7 +563,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Telefónica is one of Europe\'s largest telcos with global IoT reach'
       ],
       implication: 'neutral',
-      astsComparison: 'Telefónica/O2 is a major European MNO. OQ winning Telefónica for IoT roaming shows OQ building competitive European MNO footprint. OQ provides narrowband IoT while ASTS pursues broadband smartphone D2D via its own MNO partnerships (AT&T, Vodafone). Both competing for MNO attention in overlapping markets.',
+      thesisComparison: 'Telefónica/O2 is a major European MNO. OQ winning Telefónica for IoT roaming shows OQ building competitive European MNO footprint. OQ provides narrowband IoT while ASTS pursues broadband smartphone D2D via its own MNO partnerships (AT&T, Vodafone). Both competing for MNO attention in overlapping markets.',
       source: 'Telefónica Germany',
       storyId: 'oq-partnerships',
       storyTitle: 'OQ Technology MNO & Distribution'
@@ -594,7 +580,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Aramco is world\'s largest oil company — validates satellite IoT for energy sector'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ deepening relationship with world\'s largest oil company for industrial IoT. ASTS focused on consumer/MNO broadband, not industrial IoT. OQ carving out niche in energy/enterprise satellite IoT that doesn\'t directly compete with ASTS consumer D2D plans.',
+      thesisComparison: 'OQ deepening relationship with world\'s largest oil company for industrial IoT. ASTS focused on consumer/MNO broadband, not industrial IoT. OQ carving out niche in energy/enterprise satellite IoT that doesn\'t directly compete with ASTS consumer D2D plans.',
       source: 'SatNews',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
@@ -614,7 +600,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'iot squared positioned as regional IoT hub for MENA'
       ],
       implication: 'neutral',
-      astsComparison: 'Notable: iot squared is a stc Group / PIF joint venture. stc is one of the largest telcos in the Middle East and a potential ASTS partner market. OQ targeting IoT sensors/smart city in Saudi Arabia while ASTS targets smartphone broadband D2D. Aramco Wa\'ed Ventures backing gives OQ Saudi enterprise foothold. Different service tiers: OQ for machine connectivity (narrowband IoT), ASTS for human connectivity (broadband).',
+      thesisComparison: 'Notable: iot squared is a stc Group / PIF joint venture. stc is one of the largest telcos in the Middle East and a potential ASTS partner market. OQ targeting IoT sensors/smart city in Saudi Arabia while ASTS targets smartphone broadband D2D. Aramco Wa\'ed Ventures backing gives OQ Saudi enterprise foothold. Different service tiers: OQ for machine connectivity (narrowband IoT), ASTS for human connectivity (broadband).',
       source: 'OQ Technology / iot squared',
       storyId: 'oq-partnerships',
       storyTitle: 'OQ Technology MNO & Distribution'
@@ -632,7 +618,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'CEO: "well ahead in the 5G IoT NTN market, continuing expansion of global coverage"'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ expanding with small 6U cubesats for IoT — very different constellation strategy from ASTS which is building large phased-array satellites for broadband D2D. OQ cubesat approach is faster/cheaper to deploy but fundamentally limited in capability. Different target markets: OQ for IoT sensors, ASTS for smartphones.',
+      thesisComparison: 'OQ expanding with small 6U cubesats for IoT — very different constellation strategy from ASTS which is building large phased-array satellites for broadband D2D. OQ cubesat approach is faster/cheaper to deploy but fundamentally limited in capability. Different target markets: OQ for IoT sensors, ASTS for smartphones.',
       source: 'SatellitePro ME',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
@@ -652,7 +638,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Establishes OQ\'s strategic link to Saudi energy ecosystem'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ\'s €13M Series A is modest — ASTS is publicly traded with much larger fundraising capabilities. Aramco VC backing gives OQ strategic access to energy sector IoT market. Different scale of ambition: OQ building narrowband IoT service, ASTS building broadband D2D infrastructure.',
+      thesisComparison: 'OQ\'s €13M Series A is modest — ASTS is publicly traded with much larger fundraising capabilities. Aramco VC backing gives OQ strategic access to energy sector IoT market. Different scale of ambition: OQ building narrowband IoT service, ASTS building broadband D2D infrastructure.',
       source: 'SpaceNews',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
@@ -669,7 +655,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Targets cost-effective IoT in remote areas without cellular coverage'
       ],
       implication: 'neutral',
-      astsComparison: 'OQ building chipset partnerships for IoT ecosystem. ASTS focused on smartphone broadband via existing phone chipsets. Different technology strategies: OQ needs IoT-specific chipset partners for NB-IoT modules, ASTS leverages existing smartphone chipset ecosystem (Qualcomm, MediaTek).',
+      thesisComparison: 'OQ building chipset partnerships for IoT ecosystem. ASTS focused on smartphone broadband via existing phone chipsets. Different technology strategies: OQ needs IoT-specific chipset partners for NB-IoT modules, ASTS leverages existing smartphone chipset ecosystem (Qualcomm, MediaTek).',
       source: 'OQ Technology',
       storyId: 'oq-technology-d2d',
       storyTitle: 'OQ Technology D2D & IoT'
@@ -692,7 +678,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Follows Viasat\'s May 2023 acquisition of Inmarsat'
       ],
       implication: 'neutral',
-      astsComparison: 'Maritime connectivity is not D2D to smartphones. Viasat\'s scale could fund their Equatys D2D venture with Space42. Maritime fleet connectivity is fundamentally different from ASTS consumer smartphone D2D.',
+      thesisComparison: 'Maritime connectivity is not D2D to smartphones. Viasat\'s scale could fund their Equatys D2D venture with Space42. Maritime fleet connectivity is fundamentally different from ASTS consumer smartphone D2D.',
       source: 'Viasat / Inmarsat Maritime',
       storyId: 'viasat-multi-orbit',
       storyTitle: 'Viasat Multi-Orbit Platform'
@@ -710,7 +696,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Mention of "upcoming LEO partner satellites" signals Viasat building multi-orbit capability'
       ],
       implication: 'neutral',
-      astsComparison: 'In-flight connectivity is different from D2D. Viasat\'s multi-orbit infrastructure could extend to D2D through Equatys venture. Not a direct threat to ASTS smartphone D2D market.',
+      thesisComparison: 'In-flight connectivity is different from D2D. Viasat\'s multi-orbit infrastructure could extend to D2D through Equatys venture. Not a direct threat to ASTS smartphone D2D market.',
       source: 'Viasat',
       storyId: 'viasat-multi-orbit',
       storyTitle: 'Viasat Multi-Orbit Platform'
@@ -730,7 +716,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Currently deployed on 5,000+ business jets worldwide'
       ],
       implication: 'neutral',
-      astsComparison: 'Multi-orbit orchestration (GEO+LEO+HEO) could be transferable to D2D services via Equatys. Business aviation is niche market (5K jets). ASTS targets billions of smartphone users — fundamentally larger addressable market.',
+      thesisComparison: 'Multi-orbit orchestration (GEO+LEO+HEO) could be transferable to D2D services via Equatys. Business aviation is niche market (5K jets). ASTS targets billions of smartphone users — fundamentally larger addressable market.',
       source: 'Viasat',
       storyId: 'viasat-multi-orbit',
       storyTitle: 'Viasat Multi-Orbit Platform'
@@ -749,7 +735,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Second Blue Origin demo planned early 2026, additional HaloNet missions planned'
       ],
       implication: 'neutral',
-      astsComparison: 'Launch telemetry has no direct relevance to D2D smartphones. Demonstrates Viasat L-band infrastructure and government relationships that could support Equatys D2D venture. Indirect competitive signal: Viasat investing across multiple satellite verticals.',
+      thesisComparison: 'Launch telemetry has no direct relevance to D2D smartphones. Demonstrates Viasat L-band infrastructure and government relationships that could support Equatys D2D venture. Indirect competitive signal: Viasat investing across multiple satellite verticals.',
       source: 'Viasat',
       storyId: 'viasat-multi-orbit',
       storyTitle: 'Viasat Multi-Orbit Platform'
@@ -772,7 +758,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Could catalyze similar frameworks across Saudi Arabia, UAE, Qatar, other Gulf states'
       ],
       implication: 'positive',
-      astsComparison: 'Directly bullish — Bahrain regulatory framework explicitly names AST SpaceMobile as potential D2D partner. Concrete regulatory pathway for ASTS in Gulf market. GCC countries = high-ARPU markets with maritime/desert coverage gaps ideal for satellite D2D. First GCC D2D authorization could catalyze region-wide adoption.',
+      thesisComparison: 'Directly bullish — Bahrain regulatory framework explicitly names AST SpaceMobile as potential D2D partner. Concrete regulatory pathway for ASTS in Gulf market. GCC countries = high-ARPU markets with maritime/desert coverage gaps ideal for satellite D2D. First GCC D2D authorization could catalyze region-wide adoption.',
       source: 'Gulf Daily News / Bahrain TRA',
       storyId: 'bahrain-d2d-regulatory',
       storyTitle: 'Bahrain D2D Authorization'
@@ -795,7 +781,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Signals private funding path via SES rather than public markets via SPAC'
       ],
       implication: 'neutral',
-      astsComparison: 'Lynk\'s failed SPAC deal shows difficulty of D2D companies reaching public markets — validates ASTS\'s unique position as only publicly traded pure-play D2D company. Lynk pivoting to private path via SES backing. Settlement removes legal overhang but also means Lynk remains private with less transparency. ASTS has public market access for capital raises; Lynk dependent on SES/private funding.',
+      thesisComparison: 'Lynk\'s failed SPAC deal shows difficulty of D2D companies reaching public markets — validates ASTS\'s unique position as only publicly traded pure-play D2D company. Lynk pivoting to private path via SES backing. Settlement removes legal overhang but also means Lynk remains private with less transparency. ASTS has public market access for capital raises; Lynk dependent on SES/private funding.',
       source: 'Lynk Global',
       storyId: 'lynk-omnispace-merger',
       storyTitle: 'Lynk-Omnispace Merger'
@@ -815,7 +801,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Lynk claims 50 MNO partners with commercial contracts in ~60 countries'
       ],
       implication: 'negative',
-      astsComparison: 'Lynk demonstrating voice calls (not just SMS) with major MNO in Türkiye. Voice capability narrows gap with ASTS on service breadth. However, Lynk voice is narrowband circuit-switched, not broadband data/video like ASTS. Turkcell partnership in Türkiye adds to Lynk\'s MNO count. ASTS differentiator: broadband 4G/5G data speeds enabling video calls, streaming — not just basic voice/text.',
+      thesisComparison: 'Lynk demonstrating voice calls (not just SMS) with major MNO in Türkiye. Voice capability narrows gap with ASTS on service breadth. However, Lynk voice is narrowband circuit-switched, not broadband data/video like ASTS. Turkcell partnership in Türkiye adds to Lynk\'s MNO count. ASTS differentiator: broadband 4G/5G data speeds enabling video calls, streaming — not just basic voice/text.',
       source: 'Lynk Global / Turkcell',
       storyId: 'lynk-turkcell-turkiye',
       storyTitle: 'Lynk Turkcell Türkiye Demo'
@@ -834,7 +820,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Could signal deeper SES involvement in D2D market long-term'
       ],
       implication: 'negative',
-      astsComparison: 'SES investment in Lynk validates D2D market but strengthens a direct competitor. Lynk gains SES MEO relay (reducing ground station needs) and channel partnerships. Lynk remains focused on messaging/voice with smaller satellites; ASTS targets broadband D2D. SES "multi-orbit" approach is innovative but unproven at scale.',
+      thesisComparison: 'SES investment in Lynk validates D2D market but strengthens a direct competitor. Lynk gains SES MEO relay (reducing ground station needs) and channel partnerships. Lynk remains focused on messaging/voice with smaller satellites; ASTS targets broadband D2D. SES "multi-orbit" approach is innovative but unproven at scale.',
       source: 'SES / Lynk Global',
       sourceUrl: 'https://www.ses.com',
       storyId: 'lynk-omnispace-merger',
@@ -863,7 +849,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Subject to regulatory approvals'
       ],
       implication: 'negative',
-      astsComparison: 'MAJOR competitive event. SpaceX acquiring dedicated D2D spectrum ($17B) transforms Starlink DTC from shared-spectrum SMS service to potentially full broadband D2D competitor with exclusive spectrum. Currently Starlink DTC uses T-Mobile/MNO shared spectrum (limited bandwidth). Dedicated AWS-4/H-block spectrum (up to 40+10 MHz) enables purpose-built next-gen DTC constellation with higher throughput. Key mitigant: next-gen constellation requires years to design/build/deploy. ASTS has operational satellites and AT&T/Vodafone partnerships NOW. But long-term threat from SpaceX with dedicated spectrum is significant.',
+      thesisComparison: 'MAJOR competitive event. SpaceX acquiring dedicated D2D spectrum ($17B) transforms Starlink DTC from shared-spectrum SMS service to potentially full broadband D2D competitor with exclusive spectrum. Currently Starlink DTC uses T-Mobile/MNO shared spectrum (limited bandwidth). Dedicated AWS-4/H-block spectrum (up to 40+10 MHz) enables purpose-built next-gen DTC constellation with higher throughput. Key mitigant: next-gen constellation requires years to design/build/deploy. ASTS has operational satellites and AT&T/Vodafone partnerships NOW. But long-term threat from SpaceX with dedicated spectrum is significant.',
       source: 'EchoStar / SpaceX',
       storyId: 'echostar-spacex-spectrum',
       storyTitle: 'EchoStar SpaceX Spectrum Sale'
@@ -887,7 +873,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'North America texting via existing GEO planned H1 2026'
       ],
       implication: 'negative',
-      astsComparison: 'EchoStar is a serious D2D competitor with $5B LEO investment, $18B total NTN spend, and highest-priority 2GHz spectrum globally. Key difference: 2029 commercial service vs ASTS 2025-2026 launches. ASTS has 3-4 year head start. However, EchoStar\'s MDA AURORA is purpose-built D2D broadband (voice+text+data+video) like ASTS, not just SMS. EchoStar\'s Open RAN 5G and existing US 5G network provide terrestrial integration. Long-term threat.',
+      thesisComparison: 'EchoStar is a serious D2D competitor with $5B LEO investment, $18B total NTN spend, and highest-priority 2GHz spectrum globally. Key difference: 2029 commercial service vs ASTS 2025-2026 launches. ASTS has 3-4 year head start. However, EchoStar\'s MDA AURORA is purpose-built D2D broadband (voice+text+data+video) like ASTS, not just SMS. EchoStar\'s Open RAN 5G and existing US 5G network provide terrestrial integration. Long-term threat.',
       source: 'EchoStar PR',
       sourceUrl: 'https://www.prnewswire.com/news-releases/echostar-selects-mda-space-for-worlds-first-open-ran-broadband-ntn-leo-constellation-302519409.html',
       storyId: 'echostar-mda-leo',
@@ -913,7 +899,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'ELCOME offers global engineering, 24/7 support, and 55+ years maritime satellite communications experience',
       ],
       implication: 'neutral',
-      astsComparison: 'Terminal-based maritime broadband — different market from ASTS D2D to smartphones. Amazon Leo building vertical distribution (maritime via ELCOME, aviation via JetBlue, residential via Vrio). ASTS does not compete for maritime terminal broadband. Shows Amazon Leo commercial rollout accelerating across enterprise verticals with authorized reseller model.',
+      thesisComparison: 'Terminal-based maritime broadband — different market from ASTS D2D to smartphones. Amazon Leo building vertical distribution (maritime via ELCOME, aviation via JetBlue, residential via Vrio). ASTS does not compete for maritime terminal broadband. Shows Amazon Leo commercial rollout accelerating across enterprise verticals with authorized reseller model.',
       source: 'Business Wire / ELCOME',
       storyId: 'amazon-leo-constellation',
       storyTitle: 'Amazon Leo Constellation',
@@ -934,7 +920,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'AT&T covers 99%+ of US population terrestrially'
       ],
       implication: 'neutral',
-      astsComparison: 'AT&T using Amazon Leo for FIXED broadband (terminal-based) to business customers. This is DIFFERENT from ASTS D2D to smartphones. AT&T has ASTS partnership for direct-to-device cellular (unmodified phones). AT&T hedging: Amazon Leo for fixed enterprise backhaul, ASTS for mobile D2D. Complementary not competing.',
+      thesisComparison: 'AT&T using Amazon Leo for FIXED broadband (terminal-based) to business customers. This is DIFFERENT from ASTS D2D to smartphones. AT&T has ASTS partnership for direct-to-device cellular (unmodified phones). AT&T hedging: Amazon Leo for fixed enterprise backhaul, ASTS for mobile D2D. Complementary not competing.',
       source: 'AT&T/Amazon',
       sourceUrl: 'https://www.businesswire.com/news/home/20260204att-aws-amazon-leo',
       storyId: 'amazon-leo-att',
@@ -958,7 +944,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Industry rumors of potential spinoff of Amazon Leo to Blue Origin'
       ],
       implication: 'positive',
-      astsComparison: 'Amazon Leo\'s execution struggles highlight how difficult constellation deployment is at scale. ASTS faces similar launch dependency risks but has fundamentally different approach: fewer, larger satellites (each BlueBird covers more area). Amazon still terminal-based broadband, not D2D — but their regulatory struggles and delayed timeline reduce competitive pressure on the broader satellite connectivity market. FCC extension request shows even $10B cannot overcome launch bottleneck.',
+      thesisComparison: 'Amazon Leo\'s execution struggles highlight how difficult constellation deployment is at scale. ASTS faces similar launch dependency risks but has fundamentally different approach: fewer, larger satellites (each BlueBird covers more area). Amazon still terminal-based broadband, not D2D — but their regulatory struggles and delayed timeline reduce competitive pressure on the broader satellite connectivity market. FCC extension request shows even $10B cannot overcome launch bottleneck.',
       source: 'FCC Filing / Industry Analysis',
       storyId: 'amazon-leo-constellation',
       storyTitle: 'Amazon Leo Constellation'
@@ -977,7 +963,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Launch providers: Arianespace, Blue Origin, SpaceX, ULA'
       ],
       implication: 'neutral',
-      astsComparison: 'Amazon Leo is TERMINAL-BASED broadband (dishes/antennas), NOT direct-to-device. Their Leo Ultra terminal requires installation. ASTS addresses different market: unmodified smartphones.',
+      thesisComparison: 'Amazon Leo is TERMINAL-BASED broadband (dishes/antennas), NOT direct-to-device. Their Leo Ultra terminal requires installation. ASTS addresses different market: unmodified smartphones.',
       source: 'Amazon',
       sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
       storyId: 'amazon-leo-constellation',
@@ -997,7 +983,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Enterprise preview testing before broader 2026 rollout'
       ],
       implication: 'neutral',
-      astsComparison: 'Amazon targeting enterprise/government with premium terminals - different segment than ASTS consumer mobile. Leo Ultra requires professional installation. ASTS delivers to EXISTING smartphones.',
+      thesisComparison: 'Amazon targeting enterprise/government with premium terminals - different segment than ASTS consumer mobile. Leo Ultra requires professional installation. ASTS delivers to EXISTING smartphones.',
       source: 'Amazon',
       sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
       storyId: 'amazon-leo-constellation',
@@ -1016,7 +1002,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Customers signed: JetBlue, L3Harris, DIRECTV Latin America, Sky Brasil, NBN Co. Australia'
       ],
       implication: 'neutral',
-      astsComparison: 'Rebranding signals Amazon\'s long-term commitment. Still terminal-based system - not direct competition to ASTS\'s D2D approach. Both building toward "connectivity everywhere" via different paths.',
+      thesisComparison: 'Rebranding signals Amazon\'s long-term commitment. Still terminal-based system - not direct competition to ASTS\'s D2D approach. Both building toward "connectivity everywhere" via different paths.',
       source: 'Amazon',
       sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
       storyId: 'amazon-leo-constellation',
@@ -1035,7 +1021,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Over 100 satellites in orbit at time of announcement'
       ],
       implication: 'neutral',
-      astsComparison: 'Amazon targeting aviation with dedicated terminals. ASTS has different angle: enabling passengers\' existing phones to work via satellite over coverage gaps. Amazon requires aircraft modification.',
+      thesisComparison: 'Amazon targeting aviation with dedicated terminals. ASTS has different angle: enabling passengers\' existing phones to work via satellite over coverage gaps. Amazon requires aircraft modification.',
       source: 'Amazon',
       sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
       storyId: 'amazon-leo-constellation',
@@ -1055,7 +1041,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         '"Largest commercial procurement of launch vehicles in history"'
       ],
       implication: 'neutral',
-      astsComparison: 'Amazon beginning serious constellation deployment. ASTS has technology lead with 5G broadband calls on BlueBird. Amazon\'s scale impressive but solving different problem than ASTS D2D.',
+      thesisComparison: 'Amazon beginning serious constellation deployment. ASTS has technology lead with 5G broadband calls on BlueBird. Amazon\'s scale impressive but solving different problem than ASTS D2D.',
       source: 'Amazon',
       sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
       storyId: 'amazon-leo-constellation',
@@ -1077,7 +1063,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'At time of announcement: Kuiper had completed Protoflight mission, planned constellation deployment and service demos later in 2024',
       ],
       implication: 'neutral',
-      astsComparison: 'Terminal-based residential broadband in South America — different market from ASTS D2D to unmodified smartphones. Amazon Kuiper building distribution network through regional media/telecom partners (Vrio/DIRECTV). ASTS does not compete for fixed broadband; its proposition is cellular D2D. However, Kuiper gaining distribution footprint in LatAm could position Amazon to later compete if Kuiper develops D2D capability.',
+      thesisComparison: 'Terminal-based residential broadband in South America — different market from ASTS D2D to unmodified smartphones. Amazon Kuiper building distribution network through regional media/telecom partners (Vrio/DIRECTV). ASTS does not compete for fixed broadband; its proposition is cellular D2D. However, Kuiper gaining distribution footprint in LatAm could position Amazon to later compete if Kuiper develops D2D capability.',
       source: 'Business Wire / Vrio Corp',
       storyId: 'amazon-leo-constellation',
       storyTitle: 'Amazon Leo Constellation',
@@ -1097,7 +1083,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Beta testing planned with partners in second half of 2024'
       ],
       implication: 'neutral',
-      astsComparison: 'Amazon Kuiper targeting Japan for terminal-based broadband distribution via NTT. Not D2D — requires dedicated terminals/dishes. ASTS targets same coverage gaps but via unmodified smartphones. NTT DOCOMO\'s interest in satellite backhaul validates rural connectivity demand in Japan. Different approach: Kuiper = fixed broadband, ASTS = mobile cellular.',
+      thesisComparison: 'Amazon Kuiper targeting Japan for terminal-based broadband distribution via NTT. Not D2D — requires dedicated terminals/dishes. ASTS targets same coverage gaps but via unmodified smartphones. NTT DOCOMO\'s interest in satellite backhaul validates rural connectivity demand in Japan. Different approach: Kuiper = fixed broadband, ASTS = mobile cellular.',
       source: 'Amazon / NTT / SKY Perfect JSAT',
       storyId: 'amazon-leo-constellation',
       storyTitle: 'Amazon Leo Constellation'
@@ -1118,7 +1104,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'ULA investing in second launch lane for high-cadence operations'
       ],
       implication: 'neutral',
-      astsComparison: 'Amazon\'s massive launch procurement demonstrates scale commitment to LEO broadband. However, Project Kuiper is terminal-based (not D2D to phones). Amazon\'s $10B+ investment in LEO broadband validated the space-based connectivity market years before ASTS commercial launch. Different markets: Amazon = fixed broadband terminals, ASTS = unmodified smartphone D2D.',
+      thesisComparison: 'Amazon\'s massive launch procurement demonstrates scale commitment to LEO broadband. However, Project Kuiper is terminal-based (not D2D to phones). Amazon\'s $10B+ investment in LEO broadband validated the space-based connectivity market years before ASTS commercial launch. Different markets: Amazon = fixed broadband terminals, ASTS = unmodified smartphone D2D.',
       source: 'Amazon',
       storyId: 'amazon-leo-constellation',
       storyTitle: 'Amazon Leo Constellation'
@@ -1136,7 +1122,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Active deorbit plans for responsible space stewardship'
       ],
       implication: 'neutral',
-      astsComparison: 'Amazon Kuiper is terminal-based LEO broadband (like Starlink), NOT direct-to-device. Targets home/business internet vs ASTS mobile subscribers in coverage gaps.',
+      thesisComparison: 'Amazon Kuiper is terminal-based LEO broadband (like Starlink), NOT direct-to-device. Targets home/business internet vs ASTS mobile subscribers in coverage gaps.',
       source: 'Amazon',
       sourceUrl: 'https://www.aboutamazon.com/news/amazon-leo',
       storyId: 'amazon-leo-constellation',
@@ -1162,7 +1148,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Service acts like standard roaming partner for Globe network'
       ],
       implication: 'negative',
-      astsComparison: 'Starlink DTC expanding into Southeast Asia — a high-growth mobile market ASTS could target. Globe Telecom (Philippines) joins growing list of Starlink DTC MNO partners. Presidential-level endorsement signals government backing. Philippines\' 7,600+ islands are an ideal D2D market. ASTS needs to secure APAC MNO partnerships to compete. Key ASTS differentiator: broadband voice/video/data vs Starlink\'s current SMS/basic services.',
+      thesisComparison: 'Starlink DTC expanding into Southeast Asia — a high-growth mobile market ASTS could target. Globe Telecom (Philippines) joins growing list of Starlink DTC MNO partners. Presidential-level endorsement signals government backing. Philippines\' 7,600+ islands are an ideal D2D market. ASTS needs to secure APAC MNO partnerships to compete. Key ASTS differentiator: broadband voice/video/data vs Starlink\'s current SMS/basic services.',
       source: 'Globe Telecom',
       storyId: 'starlink-d2c-global-expansion',
       storyTitle: 'Starlink DTC Global MNO Expansion'
@@ -1183,7 +1169,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Starlink DTC described as "cell towers in space" with laser inter-satellite links for seamless handoff',
       ],
       implication: 'negative',
-      astsComparison: 'Starlink DTC expanding into Spain — another major European market. Orange Group\'s multi-provider satellite strategy (Skylo France, Starlink Spain) demonstrates MNOs hedging across D2D providers rather than committing exclusively to one. Spanish SCS regulatory approval sets EU precedent. ASTS competing for European MNOs via Vodafone SatCo JV — Orange choosing Starlink for Spain is a competitive loss. ASTS broadband differentiator persists but MasOrange trial includes data+messaging (WhatsApp, Maps), not just SMS.',
+      thesisComparison: 'Starlink DTC expanding into Spain — another major European market. Orange Group\'s multi-provider satellite strategy (Skylo France, Starlink Spain) demonstrates MNOs hedging across D2D providers rather than committing exclusively to one. Spanish SCS regulatory approval sets EU precedent. ASTS competing for European MNOs via Vodafone SatCo JV — Orange choosing Starlink for Spain is a competitive loss. ASTS broadband differentiator persists but MasOrange trial includes data+messaging (WhatsApp, Maps), not just SMS.',
       source: 'MasOrange / Via Satellite',
       storyId: 'starlink-d2c-global-expansion',
       storyTitle: 'Starlink DTC Global MNO Expansion',
@@ -1205,7 +1191,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Starlink VP Stephanie Bednarek: "next-generation technology to offer high-speed broadband connectivity"',
       ],
       implication: 'negative',
-      astsComparison: 'HIGH MATERIALITY: 14 African markets and 173.8M subscribers represent one of the largest D2C deals to date. Africa is key ASTS growth target given low terrestrial coverage. Starlink explicitly messaging "broadband Direct-to-Cell" and "20x improved data speed" with next-gen satellites — directly challenges ASTS\'s core broadband differentiator. If next-gen Starlink D2C delivers broadband as claimed, ASTS\'s technology moat narrows significantly. ASTS has African MNO discussions but Airtel Africa\'s scale and Starlink first-mover D2C presence on the continent is a major competitive setback.',
+      thesisComparison: 'HIGH MATERIALITY: 14 African markets and 173.8M subscribers represent one of the largest D2C deals to date. Africa is key ASTS growth target given low terrestrial coverage. Starlink explicitly messaging "broadband Direct-to-Cell" and "20x improved data speed" with next-gen satellites — directly challenges ASTS\'s core broadband differentiator. If next-gen Starlink D2C delivers broadband as claimed, ASTS\'s technology moat narrows significantly. ASTS has African MNO discussions but Airtel Africa\'s scale and Starlink first-mover D2C presence on the continent is a major competitive setback.',
       source: 'Airtel Africa',
       storyId: 'starlink-d2c-global-expansion',
       storyTitle: 'Starlink DTC Global MNO Expansion',
@@ -1226,7 +1212,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'BICS: 20+ years of IPX connectivity leadership'
       ],
       implication: 'negative',
-      astsComparison: 'Starlink building European DTC distribution infrastructure via BICS/Proximus IPX. This is the plumbing layer — makes it easy for European MNOs to connect to Starlink DTC like a standard roaming partner. Reduces integration friction for European operators considering Starlink. Mention of "next-generation constellation" with "harmonized spectrum" hints at post-EchoStar spectrum roadmap. ASTS competing for same European MNOs via Vodafone/SatCo JV but with broadband vs SMS differentiation.',
+      thesisComparison: 'Starlink building European DTC distribution infrastructure via BICS/Proximus IPX. This is the plumbing layer — makes it easy for European MNOs to connect to Starlink DTC like a standard roaming partner. Reduces integration friction for European operators considering Starlink. Mention of "next-generation constellation" with "harmonized spectrum" hints at post-EchoStar spectrum roadmap. ASTS competing for same European MNOs via Vodafone/SatCo JV but with broadband vs SMS differentiation.',
       source: 'BICS / Proximus Global',
       storyId: 'starlink-d2c-global-expansion',
       storyTitle: 'Starlink DTC Global MNO Expansion'
@@ -1247,7 +1233,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Starlink Kit meets EN 50155 and rail-specific standards',
       ],
       implication: 'neutral',
-      astsComparison: 'Enterprise terminal-based rail broadband pilot — does not compete with ASTS D2D cellular. Notable economics: free terminal and ~1/3 mobile operator data costs suggests competitive pricing for transportation vertical. Demonstrates Starlink expanding European enterprise footprint.',
+      thesisComparison: 'Enterprise terminal-based rail broadband pilot — does not compete with ASTS D2D cellular. Notable economics: free terminal and ~1/3 mobile operator data costs suggests competitive pricing for transportation vertical. Demonstrates Starlink expanding European enterprise footprint.',
       source: 'České dráhy',
       storyId: 'starlink-enterprise-transportation',
       storyTitle: 'Starlink Enterprise Transportation Deployments',
@@ -1268,8 +1254,29 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Subject to standard regulatory approvals'
       ],
       implication: 'negative',
-      astsComparison: 'VEON\'s multi-country Starlink framework is a competitive precedent — one agreement covering 150M+ subs across 5 countries. Streamlines Starlink DTC adoption vs per-market negotiation. ASTS pursuing similar multi-market MNO deals but through individual partnerships. Kazakhstan\'s vast geography (9th largest country) ideal for D2D. ASTS must counter with broadband superiority and its own multi-market MNO relationships.',
+      thesisComparison: 'VEON\'s multi-country Starlink framework is a competitive precedent — one agreement covering 150M+ subs across 5 countries. Streamlines Starlink DTC adoption vs per-market negotiation. ASTS pursuing similar multi-market MNO deals but through individual partnerships. Kazakhstan\'s vast geography (9th largest country) ideal for D2D. ASTS must counter with broadband superiority and its own multi-market MNO relationships.',
       source: 'VEON / Beeline Kazakhstan',
+      storyId: 'starlink-d2c-global-expansion',
+      storyTitle: 'Starlink DTC Global MNO Expansion'
+    },
+    {
+      date: '2025-10-29',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Liberty Latin America / FLOW Jamaica partners with Starlink D2C for emergency connectivity during Hurricane Melissa',
+      details: [
+        'First Starlink Direct-to-Cell partnership in the Caribbean — traditional telecom operator + satellite D2C for disaster response',
+        'Liberty Latin America (NASDAQ: LILA/LILAK) operates as FLOW Jamaica — 20+ countries across Latin America and Caribbean',
+        'Customers received data, SMS, and text via Starlink satellite when local mobile infrastructure was unavailable',
+        'Spectrum approved by Jamaica\'s Spectrum Management Authority and Ministry of Energy, Transport, and Telecommunications',
+        'Liberty Caribbean CEO: "Having the ability to communicate in the aftermath of the Hurricane is a matter of life and death"',
+        'Starlink D2C stats: 650+ LEO satellites, 7M+ customers across 5 continents, "world\'s largest 4G coverage provider"',
+        'Liberty Latin America also operates subsea and terrestrial fiber optic cable network connecting 30+ Caribbean markets',
+        'Emergency deployment demonstrates real-world disaster resilience use case for satellite D2C',
+      ],
+      implication: 'negative',
+      thesisComparison: 'Starlink D2C securing first Caribbean MNO emergency deployment — powerful real-world disaster use case. Caribbean island geography (coverage gaps, hurricane vulnerability) is ideal D2D market. Liberty Latin America (20+ countries, LILA/LILAK) is significant regional operator. Government-approved spectrum sets Caribbean D2C regulatory precedent. ASTS broadband would offer superior disaster connectivity (voice/video/data vs SMS/text) but Starlink\'s first-mover operational track record in active hurricane response is compelling. Caribbean is an untapped D2D market Starlink is now capturing.',
+      source: 'Liberty Latin America / Business Wire',
       storyId: 'starlink-d2c-global-expansion',
       storyTitle: 'Starlink DTC Global MNO Expansion'
     },
@@ -1290,7 +1297,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Also available to povo and UQ mobile users (KDDI sub-brands) and other carriers\' customers',
       ],
       implication: 'negative',
-      astsComparison: 'CRITICAL COMPETITIVE DEVELOPMENT: Directly undermines ASTS core thesis that "Starlink = SMS only, ASTS = broadband." KDDI delivers real data apps (Maps, weather, news, social media, navigation) to standard phones via D2C. Key nuances: (1) ~20 curated apps suggests optimized low-bandwidth experience, NOT open broadband internet — throughput likely far below ASTS capability, (2) HD video streaming and VoLTE not demonstrated, (3) $11/month pricing sets D2C data ARPU expectations, (4) Requires 2025-era flagships (Pixel 10, Z Fold7) suggesting newer modem chips needed. ASTS must now compete on throughput quality (video, voice) rather than binary "data vs no-data" narrative. Starlink "20x improved data speed" messaging in later announcements suggests gap narrowing further.',
+      thesisComparison: 'CRITICAL COMPETITIVE DEVELOPMENT: Directly undermines ASTS core thesis that "Starlink = SMS only, ASTS = broadband." KDDI delivers real data apps (Maps, weather, news, social media, navigation) to standard phones via D2C. Key nuances: (1) ~20 curated apps suggests optimized low-bandwidth experience, NOT open broadband internet — throughput likely far below ASTS capability, (2) HD video streaming and VoLTE not demonstrated, (3) $11/month pricing sets D2C data ARPU expectations, (4) Requires 2025-era flagships (Pixel 10, Z Fold7) suggesting newer modem chips needed. ASTS must now compete on throughput quality (video, voice) rather than binary "data vs no-data" narrative. Starlink "20x improved data speed" messaging in later announcements suggests gap narrowing further.',
       source: 'KDDI',
       storyId: 'starlink-d2c-data-milestone',
       storyTitle: 'Starlink DTC Data Service Milestone',
@@ -1311,7 +1318,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'SpaceX claims unique position with vertical integration (launch + satellite production)'
       ],
       implication: 'negative',
-      astsComparison: 'Direct competitor milestone. Starlink\'s 6.2m² antenna vs ASTS planned 64m² arrays. Starlink starting with text-only, limited bandwidth. ASTS demonstrated 5G broadband voice/video with BW3 in 2023. Different approach: Starlink betting on massive constellation (hundreds of D2C sats), ASTS betting on fewer large high-throughput satellites.',
+      thesisComparison: 'Direct competitor milestone. Starlink\'s 6.2m² antenna vs ASTS planned 64m² arrays. Starlink starting with text-only, limited bandwidth. ASTS demonstrated 5G broadband voice/video with BW3 in 2023. Different approach: Starlink betting on massive constellation (hundreds of D2C sats), ASTS betting on fewer large high-throughput satellites.',
       source: 'SpaceX',
       sourceUrl: 'https://direct.starlink.com/',
       storyId: 'starlink-d2c-launch',
@@ -1334,7 +1341,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Starlink D2C described as "world\'s largest 4G coverage provider"'
       ],
       implication: 'negative',
-      astsComparison: 'Starlink D2C commercial expansion into Europe - ASTS target market. However, still SMS-only (no voice/data yet). Ukraine unique wartime use case - damaged terrestrial infrastructure makes satellite critical. ASTS targeting European commercial launch via Vodafone/SatCo JV with broadband capability (voice/video demonstrated). Different value propositions: Starlink = emergency texts, ASTS = full cellular experience.',
+      thesisComparison: 'Starlink D2C commercial expansion into Europe - ASTS target market. However, still SMS-only (no voice/data yet). Ukraine unique wartime use case - damaged terrestrial infrastructure makes satellite critical. ASTS targeting European commercial launch via Vodafone/SatCo JV with broadband capability (voice/video demonstrated). Different value propositions: Starlink = emergency texts, ASTS = full cellular experience.',
       source: 'Kyivstar/SpaceX',
       sourceUrl: 'https://investors.kyivstar.ua/news/',
       storyId: 'starlink-d2c-europe',
@@ -1360,7 +1367,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Designed for 100% global coverage leveraging existing 66-satellite constellation'
       ],
       implication: 'neutral',
-      astsComparison: 'Iridium NTN Direct progressing toward commercial launch. Key differentiator: Iridium = NB-IoT narrowband (low-power IoT sensors, messaging), ASTS = broadband cellular (voice/video/data). Iridium has truly global coverage advantage but narrowband only. ASTS regional but broadband. Different use cases, minimal direct overlap.',
+      thesisComparison: 'Iridium NTN Direct progressing toward commercial launch. Key differentiator: Iridium = NB-IoT narrowband (low-power IoT sensors, messaging), ASTS = broadband cellular (voice/video/data). Iridium has truly global coverage advantage but narrowband only. ASTS regional but broadband. Different use cases, minimal direct overlap.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/press-release/iridium-ntn-direct-on-air-trials/',
       storyId: 'iridium-ntn-testing',
@@ -1381,7 +1388,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Major equipment OEM validates Iridium for mission-critical industrial IoT'
       ],
       implication: 'neutral',
-      astsComparison: 'Traditional Iridium IoT business (SBD for equipment telemetry) — not NTN Direct and not D2D to smartphones. Iridium\'s IoT strength is in asset tracking and machine monitoring, fundamentally different from ASTS\'s consumer smartphone market. Shows Iridium\'s continued revenue diversification in industrial IoT verticals. No direct ASTS overlap.',
+      thesisComparison: 'Traditional Iridium IoT business (SBD for equipment telemetry) — not NTN Direct and not D2D to smartphones. Iridium\'s IoT strength is in asset tracking and machine monitoring, fundamentally different from ASTS\'s consumer smartphone market. Shows Iridium\'s continued revenue diversification in industrial IoT verticals. No direct ASTS overlap.',
       source: 'Iridium',
       storyId: 'iridium-iot-verticals',
       storyTitle: 'Iridium IoT Verticals'
@@ -1402,7 +1409,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Standards-based 3GPP NB-IoT integration'
       ],
       implication: 'neutral',
-      astsComparison: 'Notable: Vodafone IoT choosing Iridium for IoT while Vodafone Group partners with ASTS for D2D smartphone service. Different divisions, different use cases. IoT = narrowband sensors/tracking (Iridium strength). Smartphones = broadband voice/data (ASTS strength). Validates segmented market approach.',
+      thesisComparison: 'Notable: Vodafone IoT choosing Iridium for IoT while Vodafone Group partners with ASTS for D2D smartphone service. Different divisions, different use cases. IoT = narrowband sensors/tracking (Iridium strength). Smartphones = broadband voice/data (ASTS strength). Validates segmented market approach.',
       source: 'Iridium/Vodafone IoT',
       sourceUrl: 'https://www.iridium.com/blog/vodafone-iot-partnership/',
       storyId: 'iridium-ntn-partnerships',
@@ -1424,7 +1431,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'SWaP-C optimized: size, weight, power, and cost constraints for tactical use'
       ],
       implication: 'neutral',
-      astsComparison: 'Iridium deepening defense/government moat via Qualcomm chipset integration. Military tactical radio is a niche Iridium excels in — narrowband but truly global, secure, and hardened. ASTS targets commercial MNO subscribers, not military tactical comms. Different markets entirely. However, Qualcomm partnership shows Iridium embedding into next-gen defense platforms for long-term relevance.',
+      thesisComparison: 'Iridium deepening defense/government moat via Qualcomm chipset integration. Military tactical radio is a niche Iridium excels in — narrowband but truly global, secure, and hardened. ASTS targets commercial MNO subscribers, not military tactical comms. Different markets entirely. However, Qualcomm partnership shows Iridium embedding into next-gen defense platforms for long-term relevance.',
       source: 'Iridium / Qualcomm',
       storyId: 'iridium-government-defense',
       storyTitle: 'Iridium Government & Defense'
@@ -1445,7 +1452,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Deutsche Telekom at forefront of standards-based IoT innovation'
       ],
       implication: 'neutral',
-      astsComparison: 'Deutsche Telekom choosing Iridium for IoT coverage extension. ASTS has Deutsche Telekom as a shareholder but different focus: ASTS = smartphone broadband, Iridium = narrowband IoT. Both can coexist - different service tiers for different use cases.',
+      thesisComparison: 'Deutsche Telekom choosing Iridium for IoT coverage extension. ASTS has Deutsche Telekom as a shareholder but different focus: ASTS = smartphone broadband, Iridium = narrowband IoT. Both can coexist - different service tiers for different use cases.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/blog/deutsche-telekom-partnership/',
       storyId: 'iridium-ntn-partnerships',
@@ -1466,7 +1473,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Target: consumer devices, automobiles, industrial IoT (agriculture, transport, energy)'
       ],
       implication: 'neutral',
-      astsComparison: 'Iridium pursuing NB-IoT/messaging niche vs ASTS broadband. Iridium has truly global coverage (66 sats) but narrowband only. ASTS offers broadband throughput but regional coverage initially. Different markets: Iridium for SOS/messaging, ASTS for full cellular experience.',
+      thesisComparison: 'Iridium pursuing NB-IoT/messaging niche vs ASTS broadband. Iridium has truly global coverage (66 sats) but narrowband only. ASTS offers broadband throughput but regional coverage initially. Different markets: Iridium for SOS/messaging, ASTS for full cellular experience.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/blog/iridium-and-syniverse-partner/',
       storyId: 'iridium-ntn-partnerships',
@@ -1488,7 +1495,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Gatehouse CEO: "Growth of satellite industry will be driven by 3GPP standards"'
       ],
       implication: 'neutral',
-      astsComparison: 'Iridium NTN Direct advancing toward deployment by building out RAN infrastructure. Software upgrade to existing 66-sat constellation is capital-efficient approach. However, NB-IoT only — narrowband messaging/SOS/IoT, not broadband voice/video/data. ASTS and Iridium target fundamentally different service tiers. Iridium global coverage advantage for IoT; ASTS broadband advantage for smartphones.',
+      thesisComparison: 'Iridium NTN Direct advancing toward deployment by building out RAN infrastructure. Software upgrade to existing 66-sat constellation is capital-efficient approach. However, NB-IoT only — narrowband messaging/SOS/IoT, not broadband voice/video/data. ASTS and Iridium target fundamentally different service tiers. Iridium global coverage advantage for IoT; ASTS broadband advantage for smartphones.',
       source: 'Gatehouse Satcom / Iridium',
       storyId: 'iridium-ntn-testing',
       storyTitle: 'Iridium NTN Direct Testing & Technology'
@@ -1508,7 +1515,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         '3GPP Release 19 expected completed end of 2025'
       ],
       implication: 'neutral',
-      astsComparison: 'Iridium building ecosystem for NB-IoT standards devices. ASTS works with existing LTE/5G phones - no special chipset needed. Iridium targeting IoT mass market; ASTS targeting smartphone users.',
+      thesisComparison: 'Iridium building ecosystem for NB-IoT standards devices. ASTS works with existing LTE/5G phones - no special chipset needed. Iridium targeting IoT mass market; ASTS targeting smartphone users.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/blog/iridium-nordic-semiconductor-collaboration/',
       storyId: 'iridium-ntn-partnerships',
@@ -1530,7 +1537,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Aligns with U.S. Space Force Commercial Space Strategy'
       ],
       implication: 'neutral',
-      astsComparison: 'Iridium\'s government revenue base ($94M renewal + $738M DISA airtime) provides stable funding for NTN Direct development. Narrowband military voice/PTT is entirely different from ASTS\'s commercial broadband D2D. Government contracts validate Iridium\'s network reliability but do not compete with ASTS\'s consumer smartphone market. Shows Iridium\'s diversified revenue supporting long-term NTN Direct investment.',
+      thesisComparison: 'Iridium\'s government revenue base ($94M renewal + $738M DISA airtime) provides stable funding for NTN Direct development. Narrowband military voice/PTT is entirely different from ASTS\'s commercial broadband D2D. Government contracts validate Iridium\'s network reliability but do not compete with ASTS\'s consumer smartphone market. Shows Iridium\'s diversified revenue supporting long-term NTN Direct investment.',
       source: 'Iridium',
       storyId: 'iridium-government-defense',
       storyTitle: 'Iridium Government & Defense'
@@ -1551,7 +1558,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Only network providing true global coverage including poles'
       ],
       implication: 'neutral',
-      astsComparison: 'Iridium leveraging existing constellation for NB-IoT - capital efficient but narrowband. ASTS requires new satellite builds but offers broadband. Iridium\'s L-band spectrum vs ASTS using MNO spectrum. Iridium = global messaging/SOS, ASTS = regional broadband cellular.',
+      thesisComparison: 'Iridium leveraging existing constellation for NB-IoT - capital efficient but narrowband. ASTS requires new satellite builds but offers broadband. Iridium\'s L-band spectrum vs ASTS using MNO spectrum. Iridium = global messaging/SOS, ASTS = regional broadband cellular.',
       source: 'Iridium',
       sourceUrl: 'https://www.iridium.com/project-stardust/',
       storyId: 'iridium-ntn-testing',
@@ -1577,7 +1584,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Commercial service planned after trial phase'
       ],
       implication: 'neutral',
-      astsComparison: 'Notable: Vodafone IoT now partnering with BOTH Iridium (Nov 2025) AND Skylo (Jan 2026) for NB-IoT. Shows Vodafone hedging with multiple narrowband providers. ASTS relationship is with Vodafone Group (smartphones/broadband), not IoT division. Market segmentation: Skylo/Iridium = narrowband IoT sensors, ASTS = broadband cellular to smartphones.',
+      thesisComparison: 'Notable: Vodafone IoT now partnering with BOTH Iridium (Nov 2025) AND Skylo (Jan 2026) for NB-IoT. Shows Vodafone hedging with multiple narrowband providers. ASTS relationship is with Vodafone Group (smartphones/broadband), not IoT division. Market segmentation: Skylo/Iridium = narrowband IoT sensors, ASTS = broadband cellular to smartphones.',
       source: 'Skylo/Vodafone IoT',
       sourceUrl: 'https://iot.vodafone.com/news-and-insights/vodafone-iot-partners-with-skylo',
       storyId: 'skylo-vodafone-iot',
@@ -1600,7 +1607,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Shipping September 8, 2025 — active subscription required'
       ],
       implication: 'neutral',
-      astsComparison: 'Skylo expanding wearables footprint beyond Google Pixel Watch. Garmin fenix 8 Pro adopts open standards-based NTN (vs Garmin\'s traditional proprietary satellite devices). Shows Skylo building broad device ecosystem: smartphones + watches + automotive. All NB-NTN narrowband (SOS/messaging only). ASTS broadband D2D remains differentiated for voice/video/data. Wearables market shows D2D demand extending beyond phones.',
+      thesisComparison: 'Skylo expanding wearables footprint beyond Google Pixel Watch. Garmin fenix 8 Pro adopts open standards-based NTN (vs Garmin\'s traditional proprietary satellite devices). Shows Skylo building broad device ecosystem: smartphones + watches + automotive. All NB-NTN narrowband (SOS/messaging only). ASTS broadband D2D remains differentiated for voice/video/data. Wearables market shows D2D demand extending beyond phones.',
       source: 'Skylo / Garmin',
       storyId: 'skylo-device-ecosystem',
       storyTitle: 'Skylo Device Ecosystem'
@@ -1624,7 +1631,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Extends Skylo from SOS/SMS to voice calling — new MNO monetization opportunity'
       ],
       implication: 'negative',
-      astsComparison: 'Significant Skylo milestone — voice calls over NB-NTN narrows the capability gap with ASTS. Previously Skylo was SMS/SOS only; now adding voice. However, NB-NTN voice is heavily compressed (AI codecs for efficiency), not broadband quality. ASTS offers standard broadband cellular voice (VoLTE quality) plus video and data. Skylo 8M+ devices shows rapid adoption. Key risk: if "good enough" narrowband voice satisfies most D2D demand, it could reduce urgency for ASTS broadband. Key ASTS advantage: data/video/streaming capabilities that NB-NTN cannot deliver.',
+      thesisComparison: 'Significant Skylo milestone — voice calls over NB-NTN narrows the capability gap with ASTS. Previously Skylo was SMS/SOS only; now adding voice. However, NB-NTN voice is heavily compressed (AI codecs for efficiency), not broadband quality. ASTS offers standard broadband cellular voice (VoLTE quality) plus video and data. Skylo 8M+ devices shows rapid adoption. Key risk: if "good enough" narrowband voice satisfies most D2D demand, it could reduce urgency for ASTS broadband. Key ASTS advantage: data/video/streaming capabilities that NB-NTN cannot deliver.',
       source: 'Skylo',
       storyId: 'skylo-voice-technology',
       storyTitle: 'Skylo Voice Technology'
@@ -1648,7 +1655,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Features: emergency SOS, location sharing via satellite, SMS (carrier-dependent)'
       ],
       implication: 'neutral',
-      astsComparison: 'Skylo expanding consumer reach via Google partnership - validates D2D market. However, Skylo = NB-NTN narrowband (emergency SOS/SMS only). ASTS = broadband voice/video/data. Different service tiers: Skylo for "when all else fails" emergencies, ASTS for "full cellular experience anywhere." Pixel Watch shows wearables market opportunity ASTS could address with MNO partners.',
+      thesisComparison: 'Skylo expanding consumer reach via Google partnership - validates D2D market. However, Skylo = NB-NTN narrowband (emergency SOS/SMS only). ASTS = broadband voice/video/data. Different service tiers: Skylo for "when all else fails" emergencies, ASTS for "full cellular experience anywhere." Pixel Watch shows wearables market opportunity ASTS could address with MNO partners.',
       source: 'Skylo',
       sourceUrl: 'https://www.skylo.tech/blog/google-and-skylo-expand-satellite-connectivity-pixel-10-pixel-watch-4',
       storyId: 'skylo-google-partnership',
@@ -1672,7 +1679,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Use cases: real-time messaging, hazard warnings, emergency services, navigation'
       ],
       implication: 'neutral',
-      astsComparison: 'Skylo expanding into automotive vertical — a market ASTS hasn\'t directly targeted. Notable: Deutsche Telekom (ASTS shareholder) partnering with Skylo for automotive NTN. Shows DT hedging across multiple satellite approaches for different verticals. Skylo automotive is NB-NTN (narrowband messaging, hazard alerts) — not broadband streaming. ASTS could address automotive via MNO partners for broadband in-vehicle connectivity. Skylo\'s multi-vertical strategy (phones + watches + cars) builds broader ecosystem than single-focus competitors.',
+      thesisComparison: 'Skylo expanding into automotive vertical — a market ASTS hasn\'t directly targeted. Notable: Deutsche Telekom (ASTS shareholder) partnering with Skylo for automotive NTN. Shows DT hedging across multiple satellite approaches for different verticals. Skylo automotive is NB-NTN (narrowband messaging, hazard alerts) — not broadband streaming. ASTS could address automotive via MNO partners for broadband in-vehicle connectivity. Skylo\'s multi-vertical strategy (phones + watches + cars) builds broader ecosystem than single-focus competitors.',
       source: 'Skylo',
       storyId: 'skylo-automotive',
       storyTitle: 'Skylo Automotive'
@@ -1692,7 +1699,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Extends Skylo emergency messaging launched 2024 to full SMS capability'
       ],
       implication: 'neutral',
-      astsComparison: 'Syniverse enabling Skylo-Verizon integration - same Syniverse partnering with Iridium for NTN Direct. Shows Syniverse as key NTN integration enabler. Skylo using own MSS spectrum vs ASTS using MNO spectrum. Skylo narrowband SMS vs ASTS broadband - complementary not competing for Verizon.',
+      thesisComparison: 'Syniverse enabling Skylo-Verizon integration - same Syniverse partnering with Iridium for NTN Direct. Shows Syniverse as key NTN integration enabler. Skylo using own MSS spectrum vs ASTS using MNO spectrum. Skylo narrowband SMS vs ASTS broadband - complementary not competing for Verizon.',
       source: 'Syniverse/Skylo',
       sourceUrl: 'https://www.businesswire.com/news/home/20250428skylo',
       storyId: 'skylo-verizon-partnership',
@@ -1713,7 +1720,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Using satellite for emergency portable assets, temporary backhaul, IoT'
       ],
       implication: 'neutral',
-      astsComparison: 'Verizon expanding Skylo from emergency-only to general SMS. Still narrowband text only (no voice/video). ASTS partnership with AT&T targets broadband voice/data. Verizon hedging with multiple satellite approaches: Skylo (narrowband), own testing (data/video). Market validating need for satellite connectivity.',
+      thesisComparison: 'Verizon expanding Skylo from emergency-only to general SMS. Still narrowband text only (no voice/video). ASTS partnership with AT&T targets broadband voice/data. Verizon hedging with multiple satellite approaches: Skylo (narrowband), own testing (data/video). Market validating need for satellite connectivity.',
       source: 'Verizon',
       sourceUrl: 'https://www.verizon.com/about/news/verizon-customers-satellite-texting-select-android-smartphones',
       storyId: 'skylo-verizon-partnership',
@@ -1735,7 +1742,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Demonstrating SOS, SMS, and AI chat over satellite at MWC Barcelona 2025'
       ],
       implication: 'neutral',
-      astsComparison: 'Skylo raising $30M is modest compared to ASTS ($1B+ raised). Shows Skylo operating lean but also capital-constrained vs ASTS. Skylo expanding geographic coverage via Viasat partnership — uses existing GEO sats, not own constellation. ASTS building proprietary LEO constellation for broadband. Skylo\'s emergency use case validation during natural disasters supports overall D2D market thesis that benefits ASTS too.',
+      thesisComparison: 'Skylo raising $30M is modest compared to ASTS ($1B+ raised). Shows Skylo operating lean but also capital-constrained vs ASTS. Skylo expanding geographic coverage via Viasat partnership — uses existing GEO sats, not own constellation. ASTS building proprietary LEO constellation for broadband. Skylo\'s emergency use case validation during natural disasters supports overall D2D market thesis that benefits ASTS too.',
       source: 'BusinessWire / Skylo',
       storyId: 'skylo-growth-ecosystem',
       storyTitle: 'Skylo Growth & Ecosystem'
@@ -1757,7 +1764,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Uses MSS spectrum — existing worldwide regulatory framework, no carrier spectrum needed'
       ],
       implication: 'neutral',
-      astsComparison: 'Skylo\'s consumer survey validates massive demand for satellite connectivity — 76% frustrated by coverage gaps. This is the exact problem ASTS solves, but at broadband level vs Skylo narrowband SMS. Skylo\'s "1B+ devices" potential is aspirational — still NB-NTN only. Key Skylo advantage: MSS spectrum with global regulatory framework already in place. ASTS using MNO terrestrial spectrum requires per-market regulatory coordination.',
+      thesisComparison: 'Skylo\'s consumer survey validates massive demand for satellite connectivity — 76% frustrated by coverage gaps. This is the exact problem ASTS solves, but at broadband level vs Skylo narrowband SMS. Skylo\'s "1B+ devices" potential is aspirational — still NB-NTN only. Key Skylo advantage: MSS spectrum with global regulatory framework already in place. ASTS using MNO terrestrial spectrum requires per-market regulatory coordination.',
       source: 'Skylo',
       storyId: 'skylo-growth-ecosystem',
       storyTitle: 'Skylo Growth & Ecosystem'
@@ -1777,7 +1784,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Verizon-enabled IoT device can roam to satellite when out of terrestrial range'
       ],
       implication: 'neutral',
-      astsComparison: 'Verizon launching narrowband satellite messaging with Skylo. Different market from ASTS broadband approach. Skylo = emergency/IoT messaging via GEO. ASTS = full cellular experience via LEO. Verizon not exclusive to Skylo - could still partner with ASTS for broadband service tier.',
+      thesisComparison: 'Verizon launching narrowband satellite messaging with Skylo. Different market from ASTS broadband approach. Skylo = emergency/IoT messaging via GEO. ASTS = full cellular experience via LEO. Verizon not exclusive to Skylo - could still partner with ASTS for broadband service tier.',
       source: 'Verizon/Skylo',
       sourceUrl: 'https://www.verizon.com/about/news/verizon-skylo-direct-to-device',
       storyId: 'skylo-verizon-partnership',
@@ -1798,7 +1805,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'DT SVP Antje Williams: "Direct-to-handset will be an add-on to our mobile networks"'
       ],
       implication: 'neutral',
-      astsComparison: 'Deutsche Telekom is an ASTS shareholder but testing Skylo for narrowband SMS. Different tier: Skylo = NB-NTN text-only via GEO, ASTS = broadband voice/video/data via LEO. DT hedging bets across multiple D2D solutions. Pan-European MSS spectrum advantage for Skylo avoids regulatory hurdles ASTS faces with MNO terrestrial spectrum. Validates European MNO demand for satellite connectivity.',
+      thesisComparison: 'Deutsche Telekom is an ASTS shareholder but testing Skylo for narrowband SMS. Different tier: Skylo = NB-NTN text-only via GEO, ASTS = broadband voice/video/data via LEO. DT hedging bets across multiple D2D solutions. Pan-European MSS spectrum advantage for Skylo avoids regulatory hurdles ASTS faces with MNO terrestrial spectrum. Validates European MNO demand for satellite connectivity.',
       source: 'Deutsche Telekom / Skylo / Qualcomm',
       storyId: 'skylo-qualcomm-ntn',
       storyTitle: 'Skylo Qualcomm NB-NTN Ecosystem'
@@ -1817,7 +1824,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Qualcomm VP Francesco Grilli: "First we brought seamless NTN to IoT and together, we\'re making significant strides in smartphone connectivity"'
       ],
       implication: 'neutral',
-      astsComparison: 'Skylo + Qualcomm chipset integration is significant ecosystem milestone for NB-NTN. However, still narrowband (SMS/SOS only) — not broadband voice/video/data like ASTS. Snapdragon X80 NB-NTN support means more devices can connect to Skylo, but the service tier is fundamentally limited vs ASTS broadband capability.',
+      thesisComparison: 'Skylo + Qualcomm chipset integration is significant ecosystem milestone for NB-NTN. However, still narrowband (SMS/SOS only) — not broadband voice/video/data like ASTS. Snapdragon X80 NB-NTN support means more devices can connect to Skylo, but the service tier is fundamentally limited vs ASTS broadband capability.',
       source: 'Skylo / Qualcomm',
       storyId: 'skylo-qualcomm-ntn',
       storyTitle: 'Skylo Qualcomm NB-NTN Ecosystem'
@@ -1837,7 +1844,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Signals Skylo scaling from technology to commercial execution phase'
       ],
       implication: 'neutral',
-      astsComparison: 'Skylo attracting tier-1 tech talent from Google, Samsung, Intel shows industry credibility for NB-NTN D2D. However, Skylo remains focused on narrowband services. ASTS has its own commercial team and MNO partnerships. Skylo\'s GTM investment reflects growing competitive intensity in D2D market. The "90+ patents beyond standards" claim could create IP barriers but NB-NTN is fundamentally different tier from ASTS broadband.',
+      thesisComparison: 'Skylo attracting tier-1 tech talent from Google, Samsung, Intel shows industry credibility for NB-NTN D2D. However, Skylo remains focused on narrowband services. ASTS has its own commercial team and MNO partnerships. Skylo\'s GTM investment reflects growing competitive intensity in D2D market. The "90+ patents beyond standards" claim could create IP barriers but NB-NTN is fundamentally different tier from ASTS broadband.',
       source: 'Skylo',
       storyId: 'skylo-growth-ecosystem',
       storyTitle: 'Skylo Growth & Ecosystem'
@@ -1858,7 +1865,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Note: Bullitt Group subsequently entered administration in 2024'
       ],
       implication: 'neutral',
-      astsComparison: 'Historical milestone: first 3GPP standards-based D2D satellite smartphone, validating the standards-based approach both Skylo and ASTS pursue. Bullitt was a niche rugged phone maker that later collapsed (administration 2024), so commercial impact was limited. Skylo has since moved far beyond this to major OEMs (Google Pixel, Samsung, Garmin). Early proof-of-concept for NB-NTN, but narrowband messaging only vs ASTS broadband.',
+      thesisComparison: 'Historical milestone: first 3GPP standards-based D2D satellite smartphone, validating the standards-based approach both Skylo and ASTS pursue. Bullitt was a niche rugged phone maker that later collapsed (administration 2024), so commercial impact was limited. Skylo has since moved far beyond this to major OEMs (Google Pixel, Samsung, Garmin). Early proof-of-concept for NB-NTN, but narrowband messaging only vs ASTS broadband.',
       source: 'Skylo / Bullitt Group',
       storyId: 'skylo-early-milestones',
       storyTitle: 'Skylo Early Milestones'
@@ -1882,7 +1889,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Keysight NTN Network Emulator recreates multi-orbit LEO conditions'
       ],
       implication: 'neutral',
-      astsComparison: 'Industry validation of 3GPP NTN standards accelerates ecosystem. Benefits all D2D players including ASTS. Samsung chipset readiness means device support for NTN services. Standards maturity reduces technical risk for commercial deployments.',
+      thesisComparison: 'Industry validation of 3GPP NTN standards accelerates ecosystem. Benefits all D2D players including ASTS. Samsung chipset readiness means device support for NTN services. Standards maturity reduces technical risk for commercial deployments.',
       source: 'Keysight Technologies',
       sourceUrl: 'https://www.keysight.com/us/en/about/newsroom/news-releases/2026/0108-pr26-007-keysight-samsung-nr-ntn.html',
       storyId: 'ntn-industry-standards',
@@ -1905,7 +1912,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Follows March 2025 MOU between Space42 and Viasat'
       ],
       implication: 'neutral',
-      astsComparison: 'Space42/Viasat creating competing D2D infrastructure. "Space tower company" model differs from ASTS owned-and-operated approach. Equatys targeting MSS spectrum vs ASTS using MNO spectrum. 3-year timeline to commercial means 2028+ competition. ASTS has first-mover advantage with commercial service in 2025-2026. Multi-tenant model could fragment market or provide infrastructure partners.',
+      thesisComparison: 'Space42/Viasat creating competing D2D infrastructure. "Space tower company" model differs from ASTS owned-and-operated approach. Equatys targeting MSS spectrum vs ASTS using MNO spectrum. 3-year timeline to commercial means 2028+ competition. ASTS has first-mover advantage with commercial service in 2025-2026. Multi-tenant model could fragment market or provide infrastructure partners.',
       source: 'Space42/Viasat',
       sourceUrl: 'https://space42.ai/space42-viasat-equatys/',
       storyId: 'space42-viasat-equatys',
@@ -1927,7 +1934,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Follows Viasat alliance with ESA for NTN D2D systems'
       ],
       implication: 'neutral',
-      astsComparison: 'More players entering D2D validates market opportunity. Space42/Viasat pursuing different architecture (multi-orbit, GEO+LEO hybrid). ASTS focused on LEO with massive arrays. Market large enough for multiple approaches - $50B projection supports ASTS TAM thesis.',
+      thesisComparison: 'More players entering D2D validates market opportunity. Space42/Viasat pursuing different architecture (multi-orbit, GEO+LEO hybrid). ASTS focused on LEO with massive arrays. Market large enough for multiple approaches - $50B projection supports ASTS TAM thesis.',
       source: 'Space42/Viasat',
       sourceUrl: 'https://space42.ai/space42-and-viasat-announce-partnership/',
       storyId: 'ntn-industry-partnerships',
@@ -1949,7 +1956,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Orange already reference customer for Eutelsat KONNECT VHTS in France',
       ],
       implication: 'neutral',
-      astsComparison: 'Terminal-based GEO broadband in Africa — different market from ASTS D2D to unmodified smartphones. Does not directly compete. Shows Orange diversifying across multiple satellite providers (Skylo, Starlink, Eutelsat) rather than exclusive D2D commitment. Low materiality for ASTS D2D thesis but illustrative of MNO multi-vendor satellite procurement approach.',
+      thesisComparison: 'Terminal-based GEO broadband in Africa — different market from ASTS D2D to unmodified smartphones. Does not directly compete. Shows Orange diversifying across multiple satellite providers (Skylo, Starlink, Eutelsat) rather than exclusive D2D commitment. Low materiality for ASTS D2D thesis but illustrative of MNO multi-vendor satellite procurement approach.',
       source: 'Orange / Eutelsat Group',
       storyId: 'orange-satellite-strategy',
       storyTitle: 'Orange Satellite Strategy',
@@ -1969,7 +1976,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Builds on Snapdragon X80 NB-NTN foundation, extending to new device categories'
       ],
       implication: 'neutral',
-      astsComparison: 'NB-NTN expanding from smartphones to wearables validates growing satellite connectivity ecosystem. However, wearable NB-NTN is emergency SOS/messaging only — extreme narrowband. ASTS broadband D2D targets smartphones with full voice/video/data capability. Wearable NB-NTN and ASTS broadband address completely different use cases.',
+      thesisComparison: 'NB-NTN expanding from smartphones to wearables validates growing satellite connectivity ecosystem. However, wearable NB-NTN is emergency SOS/messaging only — extreme narrowband. ASTS broadband D2D targets smartphones with full voice/video/data capability. Wearable NB-NTN and ASTS broadband address completely different use cases.',
       source: 'Qualcomm',
       storyId: 'qualcomm-ntn-chipsets',
       storyTitle: 'Qualcomm NTN Chipset Ecosystem'
@@ -1990,7 +1997,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Commercial devices launched second half of 2024'
       ],
       implication: 'neutral',
-      astsComparison: 'Qualcomm integrating NB-NTN into flagship modem is a major ecosystem enabler — means every premium smartphone chipset will support satellite connectivity natively. This benefits Skylo (NB-NTN) but also validates the broader satellite D2D market ASTS operates in. Key distinction: X80 supports NB-NTN (narrowband SMS/SOS), while ASTS requires standard LTE/5G NR capability already in phones — no special NTN modem needed for ASTS broadband service.',
+      thesisComparison: 'Qualcomm integrating NB-NTN into flagship modem is a major ecosystem enabler — means every premium smartphone chipset will support satellite connectivity natively. This benefits Skylo (NB-NTN) but also validates the broader satellite D2D market ASTS operates in. Key distinction: X80 supports NB-NTN (narrowband SMS/SOS), while ASTS requires standard LTE/5G NR capability already in phones — no special NTN modem needed for ASTS broadband service.',
       source: 'Qualcomm',
       storyId: 'qualcomm-ntn-chipsets',
       storyTitle: 'Qualcomm NTN Chipset Ecosystem'
@@ -2015,7 +2022,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Joins Emirates in Dubai carriers adopting Starlink'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. Middle East LCC market - different from ASTS D2D cellular to unmodified phones.',
+      thesisComparison: 'Aviation in-flight WiFi. Middle East LCC market - different from ASTS D2D cellular to unmodified phones.',
       source: 'flydubai',
       sourceUrl: 'https://news.flydubai.com/flydubai-announces-starlink-inflight-connectivity-partner',
       storyId: 'flydubai-starlink-aviation',
@@ -2041,7 +2048,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'One of world\'s largest airline groups'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. Major European airline group - different market from ASTS D2D cellular.',
+      thesisComparison: 'Aviation in-flight WiFi. Major European airline group - different market from ASTS D2D cellular.',
       source: 'IAG',
       sourceUrl: 'https://www.iairgroup.com/newsroom/iag-starlink-announcement/',
       storyId: 'iag-starlink-aviation',
@@ -2067,7 +2074,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Young fleet with average age under 7 years'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. UK market - different from ASTS D2D cellular to unmodified phones.',
+      thesisComparison: 'Aviation in-flight WiFi. UK market - different from ASTS D2D cellular to unmodified phones.',
       source: 'Virgin Atlantic',
       sourceUrl: 'https://corporate.virginatlantic.com/gb/en/media/press-releases/virgin-atlantic-starlink.html',
       storyId: 'virgin-atlantic-starlink-aviation',
@@ -2093,7 +2100,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Ends frustrating interruptions from conventional satellite services'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. Nordic/European carrier - different market from ASTS D2D cellular.',
+      thesisComparison: 'Aviation in-flight WiFi. Nordic/European carrier - different market from ASTS D2D cellular.',
       source: 'SAS',
       sourceUrl: 'https://www.sasgroup.net/newsroom/press-releases/2025/sas-introduces-free-starlink-wifi/',
       storyId: 'sas-starlink-aviation',
@@ -2119,7 +2126,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Targets guest experience, smart ship operations, crew connectivity'
       ],
       implication: 'neutral',
-      astsComparison: 'Maritime satellite service ecosystem. B2B offering for cruise operators - different from ASTS D2D cellular.',
+      thesisComparison: 'Maritime satellite service ecosystem. B2B offering for cruise operators - different from ASTS D2D cellular.',
       source: 'SES',
       sourceUrl: 'https://www.ses.com/press-release/ses-introduces-cruise-industrys-first-integrated-meo-leo-service-starlink',
       storyId: 'ses-starlink-maritime',
@@ -2143,7 +2150,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'World\'s leading culinary- and destination-focused cruise line'
       ],
       implication: 'neutral',
-      astsComparison: 'Maritime connectivity market. Different from ASTS D2D cellular - cruise ships use dedicated Starlink terminals.',
+      thesisComparison: 'Maritime connectivity market. Different from ASTS D2D cellular - cruise ships use dedicated Starlink terminals.',
       source: 'PR Newswire',
       sourceUrl: 'https://www.prnewswire.com/news-releases/oceania-cruises-completes-installation-of-starlink-internet-across-entire-fleet-302322123.html',
       storyId: 'nclh-starlink-maritime',
@@ -2169,7 +2176,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Also covers Sunwing (WestJet subsidiary)'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. Different market from ASTS D2D cellular to unmodified phones.',
+      thesisComparison: 'Aviation in-flight WiFi. Different market from ASTS D2D cellular to unmodified phones.',
       source: 'WestJet',
       sourceUrl: 'https://www.westjet.com/en-ca/news/2025/westjet-wifi-100th-aircraft',
       storyId: 'westjet-starlink-aviation',
@@ -2195,7 +2202,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Sustainability: lightest equipment, saves 800,000+ gallons fuel/year'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular.',
+      thesisComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular.',
       source: 'Alaska Airlines',
       sourceUrl: 'https://newsroom.alaskaair.com/alaska-airlines-selects-starlink',
       storyId: 'alaska-starlink-aviation',
@@ -2220,7 +2227,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Pilot may expand to other cruise destinations'
       ],
       implication: 'neutral',
-      astsComparison: 'Maritime/community connectivity. Different from ASTS D2D cellular service.',
+      thesisComparison: 'Maritime/community connectivity. Different from ASTS D2D cellular service.',
       source: 'Royal Caribbean Group',
       sourceUrl: 'https://www.royalcaribbeangroup.com/news/royal-caribbean-group-debuts-free-starlink-juneau/',
       storyId: 'royal-caribbean-starlink-maritime',
@@ -2241,7 +2248,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         '68 ships across portfolio'
       ],
       implication: 'neutral',
-      astsComparison: 'Maritime connectivity market - cruise industry pioneer. Different from ASTS D2D cellular.',
+      thesisComparison: 'Maritime connectivity market - cruise industry pioneer. Different from ASTS D2D cellular.',
       source: 'Royal Caribbean Group',
       sourceUrl: 'https://www.royalcaribbeangroup.com/news/royal-caribbean-group-spacex-starlink/',
       storyId: 'royal-caribbean-starlink-maritime',
@@ -2265,7 +2272,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Benefits guests, crew connectivity, and operational systems'
       ],
       implication: 'neutral',
-      astsComparison: 'Maritime connectivity market. Different from ASTS D2D cellular to unmodified phones.',
+      thesisComparison: 'Maritime connectivity market. Different from ASTS D2D cellular to unmodified phones.',
       source: 'PR Newswire',
       sourceUrl: 'https://www.prnewswire.com/news-releases/carnival-corporation-rolls-out-spacexs-innovative-starlink-across-entire-global-fleet-302144123.html',
       storyId: 'carnival-starlink-maritime',
@@ -2289,7 +2296,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Benefits guests, crew, and ship-to-shore operations'
       ],
       implication: 'neutral',
-      astsComparison: 'Maritime connectivity market. Different from ASTS D2D cellular service.',
+      thesisComparison: 'Maritime connectivity market. Different from ASTS D2D cellular service.',
       source: 'Norwegian Cruise Line Holdings',
       sourceUrl: 'https://www.nclhltd.com/news-releases/norwegian-cruise-line-holdings-starlink',
       storyId: 'nclh-starlink-maritime',
@@ -2313,7 +2320,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Seamless high-speed, low-latency connectivity for all passengers'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. Asian pioneer - different market from ASTS D2D cellular.',
+      thesisComparison: 'Aviation in-flight WiFi. Asian pioneer - different market from ASTS D2D cellular.',
       source: 'ZIPAIR Tokyo',
       sourceUrl: 'https://www.zip-air.net/en/news/2023/starlink.html',
       storyId: 'zipair-starlink-aviation',
@@ -2338,7 +2345,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Part of broader industry shift toward LEO satellite connectivity'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi market. Different from ASTS D2D cellular to unmodified phones on ground.',
+      thesisComparison: 'Aviation in-flight WiFi market. Different from ASTS D2D cellular to unmodified phones on ground.',
       source: 'Paxex.Aero',
       sourceUrl: 'https://paxex.aero/2025/12/korean-air-hanjin-group-starlink/',
       storyId: 'korean-air-starlink-aviation',
@@ -2363,7 +2370,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Fleet-wide product consistency strategy across all routes'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi integrated with cabin modernization. Different market from ASTS D2D phone service.',
+      thesisComparison: 'Aviation in-flight WiFi integrated with cabin modernization. Different market from ASTS D2D phone service.',
       source: 'Emirates Media Centre',
       sourceUrl: 'https://www.emirates.com/media-centre/emirates-to-roll-out-next-phase-of-fleet-retrofit-programme/',
       storyId: 'emirates-starlink-aviation',
@@ -2385,7 +2392,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Live TV over Starlink from late December 2025'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular to unmodified phones.',
+      thesisComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular to unmodified phones.',
       source: 'Emirates Media Centre',
       sourceUrl: 'https://www.emirates.com/media-centre/emirates-starlink-announcement/',
       storyId: 'emirates-starlink-aviation',
@@ -2409,7 +2416,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Joins United, Qatar, Air France, Emirates, Virgin Atlantic, IAG on Starlink aviation'
       ],
       implication: 'neutral',
-      astsComparison: 'Different market: Starlink aviation = in-flight WiFi with dedicated equipment. ASTS = direct-to-phone cellular on ground. No overlap.',
+      thesisComparison: 'Different market: Starlink aviation = in-flight WiFi with dedicated equipment. ASTS = direct-to-phone cellular on ground. No overlap.',
       source: 'Lufthansa Group Newsroom',
       sourceUrl: 'https://newsroom.lufthansagroup.com/en/new-lufthansa-group-collaboration-with-starlink-high-speed-internet-on-all-fleets-across-all-airlines/',
       storyId: 'lufthansa-starlink-aviation',
@@ -2434,7 +2441,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Operational benefits: real-time crew updates, IFE monitoring, faster turnarounds'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular to unmodified phones on ground.',
+      thesisComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular to unmodified phones on ground.',
       source: 'Aviation A2Z',
       sourceUrl: 'https://aviationa2z.com/index.php/2026/01/08/qatar-airways-first-starlink-equipped-boeing-787/',
       storyId: 'qatar-starlink-aviation',
@@ -2455,7 +2462,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Speeds faster than many home Wi-Fi services'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi market expansion. No overlap with ASTS D2D phone service.',
+      thesisComparison: 'Aviation in-flight WiFi market expansion. No overlap with ASTS D2D phone service.',
       source: 'Qatar News Agency',
       sourceUrl: 'https://qna.org.qa/en/news/news-details?id=qatar-airways-sets-new-benchmark-with-over-100-starlink-enabled-widebody-aircraft&date=16/11/2025',
       storyId: 'qatar-starlink-aviation',
@@ -2473,7 +2480,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Global launch customer for Starlink aviation on widebodies'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation WiFi launch - different market from ASTS ground-based D2D cellular.',
+      thesisComparison: 'Aviation WiFi launch - different market from ASTS ground-based D2D cellular.',
       source: 'Future Travel Experience',
       sourceUrl: 'https://www.futuretravelexperience.com/2026/01/qatar-airways-launches-worlds-first-starlink-equipped-boeing-787-and-completes-airbus-a350-starlink-rollout/',
       storyId: 'qatar-starlink-aviation',
@@ -2498,7 +2505,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Passengers can stream, work on live documents, browse social media'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi trial on regional/domestic aircraft. Different market from ASTS D2D phone service.',
+      thesisComparison: 'Aviation in-flight WiFi trial on regional/domestic aircraft. Different market from ASTS D2D phone service.',
       source: 'Air New Zealand',
       sourceUrl: 'https://www.airnewzealand.co.nz/press-release-2025-onboard-starlink-wifi-trial',
       storyId: 'airnz-starlink-aviation',
@@ -2519,7 +2526,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Focus on New Zealand domestic market ("Aotearoa")'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi targeting regional/domestic aircraft. Different market from ASTS ground-based D2D.',
+      thesisComparison: 'Aviation in-flight WiFi targeting regional/domestic aircraft. Different market from ASTS ground-based D2D.',
       source: 'Air New Zealand',
       sourceUrl: 'https://www.airnewzealand.co.nz/press-release-2023-starlink-connectivity',
       storyId: 'airnz-starlink-aviation',
@@ -2545,7 +2552,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Gate-to-gate connectivity enables streaming, gaming, video calls'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi - different market from ASTS D2D cellular. United passengers can stream/game at 30,000 feet but ASTS addresses phones on ground in coverage gaps. Starlink aviation success validates satellite connectivity demand but not directly competitive.',
+      thesisComparison: 'Aviation in-flight WiFi - different market from ASTS D2D cellular. United passengers can stream/game at 30,000 feet but ASTS addresses phones on ground in coverage gaps. Starlink aviation success validates satellite connectivity demand but not directly competitive.',
       source: 'United Airlines',
       sourceUrl: 'https://www.prnewswire.com/news-releases/united-spotlights-starlink-wi-fi-302393847.html',
       storyId: 'united-starlink-aviation',
@@ -2567,7 +2574,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Enables streaming, gaming, video calls, and real-time productivity'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular to unmodified phones on ground.',
+      thesisComparison: 'Aviation in-flight WiFi with dedicated equipment. Different market from ASTS D2D cellular to unmodified phones on ground.',
       source: 'United Airlines PR',
       sourceUrl: 'https://www.prnewswire.com/news-releases/the-inflight-wi-fi-revolution-now-arriving-united-signs-starlink-deal-302247925.html',
       storyId: 'united-starlink-aviation',
@@ -2593,7 +2600,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Internet speeds suitable for working, streaming, and gaming'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. Different market from ASTS D2D phone service - Pacific routes benefit from Starlink ocean coverage.',
+      thesisComparison: 'Aviation in-flight WiFi. Different market from ASTS D2D phone service - Pacific routes benefit from Starlink ocean coverage.',
       source: 'Hawaiian Airlines',
       sourceUrl: 'https://newsroom.hawaiianairlines.com/releases/hawaiian-airlines-now-offering-fast-and-free-starlink-wi-fi',
       storyId: 'hawaiian-starlink-aviation',
@@ -2619,7 +2626,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Setting new standard for European in-flight connectivity'
       ],
       implication: 'neutral',
-      astsComparison: 'Aviation in-flight WiFi. Early European Starlink aviation adopter - different market from ASTS D2D cellular.',
+      thesisComparison: 'Aviation in-flight WiFi. Early European Starlink aviation adopter - different market from ASTS D2D cellular.',
       source: 'airBaltic',
       sourceUrl: 'https://www.airbaltic.com/en/airbaltic-starlink-announcement',
       storyId: 'airbaltic-starlink-aviation',
@@ -2646,7 +2653,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Target close: late 2025 or early 2026'
       ],
       implication: 'negative',
-      astsComparison: 'Significant consolidation in D2D space. Lynk+Omnispace+SES creates formidable competitor with spectrum, technology, and MNO relationships. However, still small satellite approach vs ASTS broadband arrays. Key question: can merged entity match ASTS throughput for voice/video? S-band spectrum valuable but Lynk tech historically limited to messaging.',
+      thesisComparison: 'Significant consolidation in D2D space. Lynk+Omnispace+SES creates formidable competitor with spectrum, technology, and MNO relationships. However, still small satellite approach vs ASTS broadband arrays. Key question: can merged entity match ASTS throughput for voice/video? S-band spectrum valuable but Lynk tech historically limited to messaging.',
       source: 'Lynk Global/Omnispace',
       sourceUrl: 'https://www.businesswire.com/news/home/20251022791234/en/',
       storyId: 'lynk-omnispace-merger',
@@ -2666,7 +2673,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Lynk: "taking great strides on our mission to connect everyone, everywhere"'
       ],
       implication: 'neutral',
-      astsComparison: 'Lynk gaining US regulatory approval - validates D2D regulatory path. ASTS has FCC experimental licenses and MNO partnerships for US coverage. Lynk starting in US territories (small market); ASTS targeting continental US with major carriers.',
+      thesisComparison: 'Lynk gaining US regulatory approval - validates D2D regulatory path. ASTS has FCC experimental licenses and MNO partnerships for US coverage. Lynk starting in US territories (small market); ASTS targeting continental US with major carriers.',
       source: 'Lynk Global',
       sourceUrl: 'https://www.businesswire.com/news/home/20250430287453/en/',
       storyId: 'lynk-regulatory-progress',
@@ -2687,7 +2694,7 @@ export const COMPS_TIMELINE: CompsTimelineEntry[] = [
         'Focusing on areas with zero cellular coverage initially'
       ],
       implication: 'neutral',
-      astsComparison: 'ASTS demonstrated voice calls with BlueWalker 3 in April 2023 - before Lynk\'s July announcement. Key difference: ASTS uses massive 64m² phased arrays for broadband-grade throughput; Lynk uses small form-factor satellites for basic connectivity. ASTS targets MNO-integrated coverage expansion; Lynk targets emergency/gap coverage.',
+      thesisComparison: 'ASTS demonstrated voice calls with BlueWalker 3 in April 2023 - before Lynk\'s July announcement. Key difference: ASTS uses massive 64m² phased arrays for broadband-grade throughput; Lynk uses small form-factor satellites for basic connectivity. ASTS targets MNO-integrated coverage expansion; Lynk targets emergency/gap coverage.',
       source: 'Lynk Global',
       sourceUrl: 'https://lynk.world/news/lynk-demonstrates-first-ever-two-way-standard-phone-voice-calls-by-satellite',
       storyId: 'lynk-voice-capability',

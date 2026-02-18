@@ -1656,6 +1656,27 @@ COMPARISON TABLE (if applicable):
 |--------|------------|------|-------|-----------|
 | [metric] | [value] | [value] | [delta] | [who] |
 
+COMPS DATABASE ENTRY FORMAT:
+When proposing new Comps entries, use the shared CompetitorNewsEntry schema (defined in src/data/shared/competitor-schema.ts).
+Valid competitor IDs and categories are listed in the header comment of src/data/asts/comps-timeline.ts — read it before writing entries.
+{
+  date: 'YYYY-MM-DD',
+  competitor: '<see data file header for valid IDs>',
+  category: '<see data file header for valid categories>',
+  headline: 'Brief headline (8-12 words)',
+  details: ['Bullet point 1', 'Bullet point 2'],   // Array of strings, NOT a single summary
+  implication: 'positive' | 'neutral' | 'negative', // for ASTS
+  thesisComparison: 'How this impacts ASTS investment thesis',  // unified field — replaces old astsComparison
+  source: 'Source name',
+  sourceUrl: 'https://...',
+  storyId: 'optional-story-group-id',               // groups related entries across time
+  storyTitle: 'Optional Story Group Title',
+}
+NEW COMPETITOR: If the news involves a competitor NOT in the data file header list:
+1. Create a lowercase-slug ID (e.g., 'telesat') and use it in the entry
+2. Add the new ID to the header comment's competitor ID list in the data file
+3. Note in your output: "NEW COMPETITOR ID: '[slug]' — add a COMPETITOR_PROFILES entry for proper UI display"
+
 ════════════════════════════════════════
 PHASE 3: CROSS-REFERENCE GENERATION
 ════════════════════════════════════════
@@ -1777,6 +1798,27 @@ COMPARISON TABLE (if applicable):
 | Metric | Competitor | BMNR | Delta | Advantage |
 |--------|------------|------|-------|-----------|
 | [metric] | [value] | [value] | [delta] | [who] |
+
+COMPS DATABASE ENTRY FORMAT:
+When proposing new Comps entries, use the shared CompetitorNewsEntry schema (defined in src/data/shared/competitor-schema.ts).
+Valid competitor IDs and categories are listed in the header comment of src/data/bmnr/competitor-news.ts — read it before writing entries.
+{
+  date: 'YYYY-MM-DD',
+  competitor: '<see data file header for valid IDs>',
+  category: '<see data file header for valid categories>',
+  headline: 'Brief headline (8-12 words)',
+  details: ['Bullet point 1', 'Bullet point 2'],   // Array of strings, NOT a single summary
+  implication: 'positive' | 'neutral' | 'negative', // for BMNR
+  thesisComparison: 'How this impacts BMNR investment thesis',  // unified field — replaces old bmnrComparison
+  source: 'Source name',
+  sourceUrl: 'https://...',
+  storyId: 'optional-story-group-id',               // groups related entries across time
+  storyTitle: 'Optional Story Group Title',
+}
+NEW COMPETITOR: If the news involves a competitor NOT in the data file header list:
+1. Create a lowercase-slug ID (e.g., 'bitdeer') and use it in the entry
+2. Add the new ID to the header comment's competitor ID list in the data file
+3. Note in your output: "NEW COMPETITOR ID: '[slug]' — add a COMPETITOR_PROFILES entry for proper UI display"
 
 ════════════════════════════════════════
 PHASE 3: CROSS-REFERENCE GENERATION
