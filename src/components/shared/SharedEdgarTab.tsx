@@ -329,25 +329,59 @@ const ActionBtn: React.FC<{
 
 // ── Analysis panel ──────────────────────────────────────────────────────────
 const AnalysisPanel: React.FC<{ text: string; onClose: () => void }> = ({ text, onClose }) => (
-  <div style={{
-    margin: '6px 0 2px 19px', padding: '10px 14px',
-    background: 'color-mix(in srgb, var(--accent) 5%, var(--surface))',
-    border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)',
-    borderRadius: 10, fontSize: 12, color: 'var(--text2)', lineHeight: 1.65,
-    position: 'relative',
-  }}>
-    <button
-      onClick={onClose}
-      title="Close analysis"
+  <div style={{ margin: '6px 0 2px 19px', paddingTop: 16, marginTop: 8, borderTop: '1px solid var(--border)' }}>
+    <div
       style={{
-        position: 'absolute', top: 6, right: 8,
-        background: 'transparent', border: 'none', cursor: 'pointer',
-        color: 'var(--text3)', fontSize: 14, lineHeight: 1, padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 12,
       }}
     >
-      x
-    </button>
-    <div style={{ whiteSpace: 'pre-wrap', paddingRight: 20 }}>{text}</div>
+      <span
+        style={{
+          fontSize: 11,
+          fontWeight: 600,
+          textTransform: 'uppercase',
+          letterSpacing: '2.5px',
+          color: 'var(--text3)',
+        }}
+      >
+        Analysis Result
+      </span>
+      <button
+        onClick={onClose}
+        title="Close analysis"
+        aria-label="Close analysis"
+        style={{
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          color: 'var(--text3)',
+          fontSize: 14,
+          lineHeight: 1,
+          padding: '2px 6px',
+          borderRadius: 4,
+          transition: 'color 0.15s',
+        }}
+      >
+        ×
+      </button>
+    </div>
+    <div style={{ maxHeight: 600, overflowY: 'auto' }}>
+      <pre
+        style={{
+          fontSize: 12,
+          fontFamily: 'var(--font-mono, monospace)',
+          color: 'var(--text2)',
+          lineHeight: 1.8,
+          whiteSpace: 'pre-wrap',
+          margin: 0,
+        }}
+      >
+        {text}
+      </pre>
+    </div>
   </div>
 );
 
