@@ -176,8 +176,8 @@
  * ║     │                      │                             │ growthDrivers,     ║
  * ║     │                      │                             │ catalysts, etc.    ║
  * ║                                                                               ║
- * ║  7  │ secMeta.lastPR       │ [PR_CHECKLIST_SECMETA]      │ date, title        ║
- * ║     │ ⚠️ OFTEN FORGOTTEN   │                             │                    ║
+ * ║  7  │ secMeta.lastPR       │ [PR_CHECKLIST_SECMETA]      │ date, title,       ║
+ * ║     │ 🔴 MANDATORY         │ in sec-filings.ts           │ totalFilingsTracked║
  * ║                                                                               ║
  * ║  8  │ Archive              │ "const archive = ["         │ Add NEW entry      ║
  * ║     │                      │                             │ at TOP of array    ║
@@ -187,7 +187,7 @@
  * ║                                                                               ║
  * ║  10 │ Recent Press         │ [PR_CHECKLIST_RECENT_       │ Add NEW entry      ║
  * ║     │ Releases             │  PRESS_RELEASES]            │ at TOP of list     ║
- * ║     │ ⚠️ OFTEN FORGOTTEN   │                             │                    ║
+ * ║     │ 🔴 MANDATORY         │ pressReleases[] in this file│                    ║
  * ║                                                                               ║
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
  * ║  ⚠️ COMMON MISTAKES TO AVOID:                                                 ║
@@ -5590,6 +5590,8 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
 // SEC FILING TRACKER - Matches ASTS style exactly
 const SECFilingTracker = () => {
   // SEC Filing metadata - update as new filings are processed
+  // [PR_CHECKLIST_FILING_DATA] - MANDATORY: Update lastPressRelease, lastPressReleaseTitle,
+  // latestEvent, latestEventDate, and filings['8-K'] with every BMNR PR!
   const filingData = {
     // Company identifiers (verified from SEC EDGAR)
     cik: '0001829311',
@@ -5605,18 +5607,18 @@ const SECFilingTracker = () => {
     // Key dates
     firstFiling: 'October 27, 2020',
     firstFilingNote: 'As Sandy Springs Holdings (renamed Jul 2021)',
-    latestEvent: '4.326M ETH Holdings — $10.0B Total',
-    latestEventDate: 'Feb 9, 2026',
+    latestEvent: '4.371M ETH Holdings — $9.6B Total, Staking 3.04M',
+    latestEventDate: 'Feb 17, 2026',
 
     // Last press release processed (for tracking)
-    lastPressRelease: 'February 9, 2026',
-    lastPressReleaseTitle: '4,325,738 ETH Holdings Update — $10.0B Total',
+    lastPressRelease: 'February 17, 2026',
+    lastPressReleaseTitle: '4,371,497 ETH Holdings Update — $9.6B Total, Staking 3.04M (69.5%)',
 
     // Latest filings by type
     filings: {
       '10-K': { date: 'Nov 21, 2025', description: 'FY 2025', color: 'blue' },
       '10-Q': { date: 'Jan 13, 2026', description: 'Q1 FY2026', color: 'purple' },
-      '8-K': { date: 'Feb 9, 2026', description: '4.326M ETH Holdings', color: 'yellow' },
+      '8-K': { date: 'Feb 17, 2026', description: '4.371M ETH Holdings', color: 'yellow' },
       'S-3ASR': { date: 'Jul 9, 2025', description: '$2B ATM Shelf', color: 'green' },
       '424B5': { date: 'Sep 22, 2025', description: '$365M @ $70 + Warrants', color: 'orange' },
       'DEF 14A': { date: '—', description: 'Proxy (Annual)', color: 'cyan' },
@@ -7965,6 +7967,7 @@ const TimelineTab = () => {
   const [showAllPR, setShowAllPR] = useState(false);
 
   const pressReleases = [
+    { date: 'Feb 17, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,371,497 — 3.62% of Supply, $9.6B, Staking 3.04M (69.5%)' },
     { date: 'Feb 11, 2026', category: 'Conference', color: 'var(--violet)', title: 'Tom Lee Presents at CoinDesk Consensus 2026 (Hong Kong)' },
     { date: 'Feb 10, 2026', category: 'Strategic', color: 'var(--sky)', title: 'Beast Industries Acquires Step Banking App (7M+ Users, ~$500M Raised)' },
     { date: 'Feb 9, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,325,738 — 3.58% of Supply, $10.0B, ETH -62% V-Recovery' },

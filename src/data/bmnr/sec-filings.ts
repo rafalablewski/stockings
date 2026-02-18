@@ -4,7 +4,32 @@
  * Update when new filings are processed.
  *
  * COVERAGE: Oct 2020 (Form 10-12G shell registration) through Feb 2026
- * TOTAL FILINGS TRACKED: 108
+ * TOTAL FILINGS TRACKED: 111
+ *
+ * ═══════════════════════════════════════════════════════════════════════
+ * AI AGENT — MANDATORY PR INGESTION CHECKLIST (DO NOT SKIP):
+ * ═══════════════════════════════════════════════════════════════════════
+ * See src/data/shared/types.ts for the FULL universal checklist that
+ * applies to ALL stocks. Below is the BMNR-specific summary:
+ *
+ * DATA FILES (this directory):
+ *  1. BMNR_SEC_FILINGS[] (this file)       — Add new filing entry at top
+ *  2. BMNR_SEC_META.lastPR (this file)     — Update date + title
+ *  3. BMNR_SEC_META.totalFilingsTracked    — Increment by 1
+ *  4. BMNR_FILING_CROSS_REFS (this file)   — Add cross-ref entry
+ *  5. company.ts                           — Update ETH holdings, prices, cash, staking
+ *  6. timeline-events.ts                   — Add new timeline entry at top
+ *  7. catalysts.ts                         — Move completed catalysts, update metadata
+ *
+ * UI COMPONENT (src/components/stocks/BMNR.tsx):
+ *  8. filingData.lastPressRelease + lastPressReleaseTitle
+ *  9. filingData.latestEvent + latestEventDate
+ * 10. filingData.filings['8-K']            — Update date + description
+ * 11. pressReleases[] array                — Add new entry at TOP
+ *
+ * Search markers: [PR_CHECKLIST_SECMETA], [PR_CHECKLIST_FILING_DATA],
+ *   [PR_CHECKLIST_RECENT_PRESS_RELEASES], [PR_CHECKLIST_EVENT_TIMELINE]
+ * ═══════════════════════════════════════════════════════════════════════
  */
 
 export const BMNR_SEC_FILINGS = [
@@ -136,7 +161,7 @@ export const BMNR_SEC_FILINGS = [
   { date: 'Oct 27, 2020', type: '10-12G', description: 'SEC Registration Statement (Sandy Springs Holdings; Shell Status; 2.8M Shares; $50K Note)', period: '—', color: 'blue' },
 ];
 
-// [PR_CHECKLIST_SECMETA] - Update lastPR with every PR!
+// [PR_CHECKLIST_SECMETA] - MANDATORY: Update lastPR + totalFilingsTracked with every PR!
 export const BMNR_SEC_META = {
   cik: '0001829311',
   secFileNumber: '001-41927',
@@ -144,8 +169,8 @@ export const BMNR_SEC_META = {
   ticker: 'BMNR',
   exchange: 'NYSE American',
   emergingGrowthCompany: false,
-  lastPR: { date: 'February 11, 2026', title: 'CoinDesk Consensus 2026 Presentation (Tom Lee, Chairman)' },
-  totalFilingsTracked: 108
+  lastPR: { date: 'February 17, 2026', title: '4,371,497 ETH Holdings Update — $9.6B Total, Staking 3.04M (69.5%)' },
+  totalFilingsTracked: 111
 };
 
 // Color palette constants (reduce duplication per Gemini review)
