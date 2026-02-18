@@ -84,6 +84,12 @@ function formatTimeAgo(ts: number): string {
 // ── Date helpers ────────────────────────────────────────────────────────────
 function normalizeDate(dateStr: string): string {
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  // Handle date ranges like "Sep 3-15, 2025" or "Mar 17-18, 2025" — use start date
+  const rangeMatch = dateStr.match(/^(\w+ \d+)-\d+, (\d{4})$/);
+  if (rangeMatch) {
+    const d = new Date(`${rangeMatch[1]}, ${rangeMatch[2]}`);
+    if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+  }
   const d = new Date(dateStr);
   if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
   return dateStr;
@@ -188,7 +194,8 @@ function matchFilings(
       const d1 = new Date(edgarDate);
       const d2 = new Date(localDate);
       const dayDiff = Math.abs(d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24);
-      if (dayDiff > tolerance) return false;
+      // Guard: NaN (unparseable dates) must not bypass tolerance check
+      if (isNaN(dayDiff) || dayDiff > tolerance) return false;
       return normalizeForm(edgarForm) === normalizeForm(localForm);
     });
 
