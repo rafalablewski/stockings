@@ -452,6 +452,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const [compAiChecking, setCompAiChecking] = useState<Record<string, boolean>>({});
   const [loadingAll, setLoadingAll] = useState(false);
   const [lastFetchedAt, setLastFetchedAt] = useState<number | null>(null);
+  const [methodologyOpen, setMethodologyOpen] = useState(false);
+  const [matchMethod, setMatchMethod] = useState<'ai' | 'local' | null>(null);
 
   const checkAnalyzed = useCallback(async (articles: ArticleItem[]): Promise<ArticleItem[]> => {
     if (articles.length === 0) return articles;
@@ -464,6 +466,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       if (!res.ok) throw new Error(`AI check failed: ${res.status}`);
       const data = await res.json();
       if (!data.results) throw new Error(data.error || 'No results returned');
+      if (data.method) setMatchMethod(data.method);
       return articles.map((article, i) => ({ ...article, analyzed: data.results?.[i]?.analyzed ?? null }));
     } catch (err) {
       console.error('[SharedSourcesTab] AI check error:', err);
@@ -766,6 +769,175 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             </nav>
           </div>
         ))}
+      </div>
+
+      {/* ── Methodology ────────────────────────────────────────────────────── */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#sources-methodology</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div
+          onClick={() => setMethodologyOpen(prev => !prev)}
+          style={{
+            padding: '24px 24px',
+            borderBottom: methodologyOpen ? '1px solid var(--border)' : 'none',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer',
+          }}
+          role="button"
+          tabIndex={0}
+          aria-expanded={methodologyOpen}
+          aria-label="Toggle Sources Methodology"
+          onKeyDown={(e) => e.key === 'Enter' && setMethodologyOpen(prev => !prev)}
+        >
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Methodology</span>
+          <span style={{ color: 'var(--text3)', fontSize: 18 }}>{methodologyOpen ? '\u2212' : '+'}</span>
+        </div>
+        {methodologyOpen && (
+          <div style={{ padding: '24px 24px', fontSize: 13, color: 'var(--text2)' }}>
+            {/* ── ROUTING FLOW ─────────────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Routing</div>
+            <div style={{ display: 'flex', gap: 24 }}>
+              {/* Left column: vertical flow */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180 }}>
+                {/* Node: Article */}
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Article arrives</div>
+                <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+                {/* Node: API Key? */}
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>API key?</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>Yes</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                {/* Node: AI Disabled? */}
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>AI disabled?</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                {/* Node: Token limit? */}
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Prompt &gt; limit?</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                {/* Node: Claude AI */}
+                <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>Claude AI</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>OK</div>
+                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                {/* Result */}
+                <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>AI Result</div>
+              </div>
+              {/* Right column: fallback labels */}
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 4, paddingTop: 28 }}>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
+                  <span style={{ color: 'var(--coral)', fontSize: 11 }}>&larr;</span> No
+                </div>
+                <div style={{ height: 22 }} />
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
+                  <span style={{ color: 'var(--coral)', fontSize: 11 }}>&larr;</span> Yes
+                </div>
+                <div style={{ height: 22 }} />
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
+                  <span style={{ color: 'var(--coral)', fontSize: 11 }}>&larr;</span> Yes
+                </div>
+                <div style={{ height: 22 }} />
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
+                  <span style={{ color: 'var(--coral)', fontSize: 11 }}>&larr;</span> Fail
+                </div>
+                <div style={{ marginTop: 4, padding: '6px 14px', background: 'var(--gold-dim)', border: '1px solid var(--gold)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--gold)', textAlign: 'center', fontWeight: 600 }}>Local Matching</div>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── DATA EXTRACTION ─────────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Data Extraction</div>
+            <div style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', lineHeight: 2 }}>
+              <div>Reads all <code style={{ padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>.ts</code> files per ticker from disk (bypasses bundler cache).</div>
+              <div style={{ marginTop: 4 }}>
+                <span style={{ color: 'var(--text3)' }}>Date fields:</span> date, timeline
+              </div>
+              <div>
+                <span style={{ color: 'var(--text3)' }}>Headline fields:</span> headline, title, event, description
+              </div>
+              <div>
+                <span style={{ color: 'var(--text3)' }}>Detail fields:</span> summary, notes, details, significance, thesisComparison, astsRelevance, astsImplication, astsComparison, bmnrImplication, bmnrComparison, crclComparison
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── LOCAL MATCHING FLOW ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Local Matching</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              {/* Node: Extract */}
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Extract keywords (stop words removed, &gt;2 chars)</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              {/* Tier 1 row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
+                  <div>Tier 1: Headline only</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&le;5 days: &ge;50%, &ge;3 kw</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>&gt;5 days: &ge;75%, &ge;3 kw</div>
+                </div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
+                </div>
+              </div>
+              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No match</div>
+              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              {/* Tier 2 row */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
+                  <div>Tier 2: Headline + detail</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&le;5 days: &ge;65%, &ge;4 kw</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>&gt;5 days: &ge;85%, &ge;4 kw</div>
+                </div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
+                </div>
+              </div>
+              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No match</div>
+              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              {/* Result: NEW */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} />
+                <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>NEW</span>
+              </div>
+              {/* Date proximity note */}
+              <div style={{ marginTop: 8, padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', fontStyle: 'italic', textAlign: 'center' }}>Date proximity guard: recurring weekly reports<br />require higher overlap when dates are &gt;5 days apart</div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── Legend & config ──────────────────────────── */}
+            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 11, lineHeight: 2 }}>
+              <div>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Status</span>
+                <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> Tracked</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} /> New</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', display: 'inline-block' }} /> Pending</span>
+                </div>
+              </div>
+              <div>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Kill Switch</span>
+                <div style={{ marginTop: 4 }}>
+                  <code style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>DISABLE_AI_MATCHING=true</code>
+                  <span style={{ margin: '0 8px', color: 'var(--text3)' }}>|</span>
+                  <code style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>MAX_PROMPT_TOKENS=40000</code>
+                </div>
+              </div>
+            </div>
+            {matchMethod && (
+              <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Active</span>
+                <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, padding: '2px 8px', borderRadius: 5, background: matchMethod === 'ai' ? 'var(--sky-dim)' : 'var(--gold-dim)', color: matchMethod === 'ai' ? 'var(--sky)' : 'var(--gold)' }}>{matchMethod === 'ai' ? 'AI semantic matching' : 'local keyword matching'}</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

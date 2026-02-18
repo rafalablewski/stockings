@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { renderSchemaContext, renderFilingTemplateContext } from '@/data/schemas';
 
 /**
  * POST /api/workflow/apply
@@ -379,34 +380,82 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Missing analysis for preview' }, { status: 400 });
       }
 
-      // Discover actual files for this ticker so the AI targets real paths
-      const tickerDir = path.resolve(DATA_DIR, ticker.toLowerCase());
+      // ── Adaptive file context: target files get more context ──
+      const tickerLower = ticker.toLowerCase();
+      const tickerDir = path.resolve(DATA_DIR, tickerLower);
+      const analysisLower = analysis.toLowerCase();
+
+      // Keywords to detect likely target files from the analysis text
+      const TARGET_KEYWORDS: Record<string, string[]> = {
+        'timeline-events.ts': ['timeline', 'event', 'holdings update', 'changes[', 'details['],
+        'sec-filings.ts': ['sec filing', 'sec-filing', '8-k', '10-q', '10-k', '424b', 'form 4', 'sc 13', 'cross-ref', 'cross_ref'],
+        'capital.ts': ['capital', 'shares', 'offering', 'equity', 'shareholder', 'dilut'],
+        'financials.ts': ['financial', 'quarterly', 'revenue', 'cash', 'debt', 'opex', 'balance sheet'],
+        'quarterly-metrics.ts': ['quarterly', 'metrics', 'eth holdings', 'staking'],
+        'catalysts.ts': ['catalyst', 'milestone', 'upcoming'],
+        'company.ts': ['company', 'defaults', 'current price', 'stock price', 'eth price'],
+        'ethereum-adoption.ts': ['ethereum adoption', 'eth ecosystem', 'rwa', 'tokeniz'],
+      };
+
+      const HEAD_TARGET = 3000;  // chars for likely target files
+      const HEAD_OTHER = 800;    // chars for non-target files
+
       let fileManifest = '';
+      let availableFiles: string[] = [];
       try {
         const entries = await fs.readdir(tickerDir);
         const tsFiles = entries.filter(f => f.endsWith('.ts')).sort();
+        availableFiles = tsFiles.map(f => `${tickerLower}/${f}`);
         const manifests: string[] = [];
         for (const f of tsFiles) {
-          const rel = `${ticker.toLowerCase()}/${f}`;
+          const rel = `${tickerLower}/${f}`;
           const fullPath = path.resolve(tickerDir, f);
           const content = await fs.readFile(fullPath, 'utf-8');
-          // Show first 400 chars so the AI knows structure + can pick anchors
-          const head = content.slice(0, 400).replace(/\n/g, '\\n');
-          manifests.push(`- ${rel}\n  HEAD: ${head}`);
+
+          // Check if this file is a likely target based on analysis keywords
+          const keywords = TARGET_KEYWORDS[f] || [];
+          const isTarget = keywords.some(kw => analysisLower.includes(kw));
+          const headLen = isTarget ? HEAD_TARGET : HEAD_OTHER;
+          const head = content.slice(0, headLen).replace(/\n/g, '\\n');
+          manifests.push(`- ${rel}${isTarget ? ' [TARGET]' : ''}\n  HEAD: ${head}`);
         }
         fileManifest = manifests.join('\n');
       } catch {
-        fileManifest = `(could not list files for ${ticker.toLowerCase()}/)`;
+        fileManifest = `(could not list files for ${tickerLower}/)`;
       }
 
-      const extractionPrompt = `You are a database patch generator for the ABISON investment research platform. Given an agent analysis output, extract ONLY the concrete database changes proposed.
+      // ── Schema + filing template context ──
+      const schemaContext = renderSchemaContext(tickerLower, availableFiles);
+      const detectedFilingType = analysisLower.match(
+        /\b(8-K|10-[QK]|424B[457]|SC\s*13[GD]|Form\s*4|S-[38]|S-3ASR|DEF\s*14A|DEFA14A|DEFR14A|FWP)\b/i
+      )?.[1] || null;
+      const templateContext = renderFilingTemplateContext(tickerLower, detectedFilingType);
+
+      // ── Build extraction prompt with schema injection ──
+      let extractionPrompt = `You are a database patch generator for the ABISON investment research platform. Given an agent analysis output, extract ONLY the concrete database changes proposed.
 
 TICKER: ${ticker.toUpperCase()}
 AGENT: ${agentId}
 
 AVAILABLE FILES (use ONLY these exact paths):
 ${fileManifest}
+`;
 
+      if (schemaContext) {
+        extractionPrompt += `
+DATA SCHEMAS — your patches MUST match these field structures exactly:
+${schemaContext}
+`;
+      }
+
+      if (templateContext) {
+        extractionPrompt += `
+FILING TYPE TEMPLATE — example entries for this filing type:
+${templateContext}
+`;
+      }
+
+      extractionPrompt += `
 Output ONLY valid JSON — an array of patch operations. No markdown, no explanation.
 
 Each patch object:
@@ -420,6 +469,7 @@ Each patch object:
 
 Rules:
 - CRITICAL: the "file" field must EXACTLY match one of the AVAILABLE FILES above. Do NOT guess or abbreviate file names.
+- CRITICAL: your "content" field MUST use the exact field names, types, and formatting shown in DATA SCHEMAS above. Do NOT invent fields or change casing.
 - action=insert: Insert BEFORE anchor (for adding new entries at top of reverse-chronological lists)
 - action=append: Insert AFTER anchor (for adding bullets/fields to existing entries)
 - action=update: Replace oldValue with content (oldValue must be UNIQUE in the file — use enough surrounding context)
@@ -431,6 +481,43 @@ Rules:
 
 ANALYSIS TO EXTRACT FROM:
 ${analysis}`;
+
+      // ── Token budget guard: progressive truncation if prompt too large ──
+      const MAX_PROMPT_CHARS = 120000; // ~30K tokens
+      if (extractionPrompt.length > MAX_PROMPT_CHARS) {
+        // Step 1: Rebuild manifest with non-target files at 400 chars
+        try {
+          const entries = await fs.readdir(tickerDir);
+          const tsFiles = entries.filter(f => f.endsWith('.ts')).sort();
+          const manifests: string[] = [];
+          for (const f of tsFiles) {
+            const rel = `${tickerLower}/${f}`;
+            const fullPath = path.resolve(tickerDir, f);
+            const content = await fs.readFile(fullPath, 'utf-8');
+            const keywords = TARGET_KEYWORDS[f] || [];
+            const isTarget = keywords.some(kw => analysisLower.includes(kw));
+            const headLen = isTarget ? HEAD_TARGET : 400;
+            const head = content.slice(0, headLen).replace(/\n/g, '\\n');
+            manifests.push(`- ${rel}${isTarget ? ' [TARGET]' : ''}\n  HEAD: ${head}`);
+          }
+          fileManifest = manifests.join('\n');
+          // Rebuild prompt with trimmed manifest
+          extractionPrompt = extractionPrompt.replace(
+            /AVAILABLE FILES \(use ONLY these exact paths\):\n[\s\S]*?\n\n/,
+            `AVAILABLE FILES (use ONLY these exact paths):\n${fileManifest}\n\n`
+          );
+        } catch { /* keep existing prompt */ }
+      }
+
+      // Step 2: If still too large, truncate analysis from the tail
+      if (extractionPrompt.length > MAX_PROMPT_CHARS) {
+        const overflow = extractionPrompt.length - MAX_PROMPT_CHARS + 200;
+        const truncatedAnalysis = analysis.slice(0, analysis.length - overflow) + '\n\n[... analysis truncated for token budget ...]';
+        extractionPrompt = extractionPrompt.replace(
+          /ANALYSIS TO EXTRACT FROM:\n[\s\S]*$/,
+          `ANALYSIS TO EXTRACT FROM:\n${truncatedAnalysis}`
+        );
+      }
 
       const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
