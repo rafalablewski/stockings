@@ -9,6 +9,7 @@
 
 export const BMNR_SEC_FILINGS = [
   // === 2026 ===
+  { date: 'Feb 17, 2026', type: '8-K', description: '4.371M ETH Holdings Update ($9.6B Total, Staking 3.04M)', period: '—', color: 'yellow' },
   { date: 'Feb 11, 2026', type: '8-K', description: 'CoinDesk Consensus 2026 Presentation (Tom Lee, Chairman)', period: '—', color: 'yellow' },
   { date: 'Feb 9, 2026', type: 'S-8', description: '2025 Omnibus Incentive Plan Registration', period: '—', color: 'cyan' },
   { date: 'Feb 9, 2026', type: '8-K', description: '4.326M ETH Holdings Update ($10.0B Total)', period: '—', color: 'yellow' },
@@ -195,6 +196,11 @@ export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: stri
   'S-8|2026-02-09': [
     { source: 'timeline', data: "S-8 filed for 2025 Omnibus Incentive Plan; signed by full board" },
     { source: 'capital', data: "2025 Omnibus Incentive Plan registered" },
+  ],
+  '8-K|2026-02-17': [
+    { source: 'company', data: "ethHoldings: 4,371,497 ETH; ethPrice: $1,998; stakedETH: 3,040,483; CESR: 2.84%; cash: $670M" },
+    { source: 'timeline', data: "ETH Holdings 4.371M ($9.6B total); staking 3.04M (69.5%); MAVAN Q1 2026 on track" },
+    { source: 'catalysts', data: "Staking ratio crossed 67% → now 69.5%; moved to completed milestones" },
   ],
   '8-K|2026-02-09': [
     { source: 'timeline', data: "ETH Holdings 4.326M ($10.0B total), ETH -62% from 2025 highs. CESR 3.11%." },

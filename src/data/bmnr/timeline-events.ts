@@ -7,6 +7,30 @@
 
 export const BMNR_TIMELINE_EVENTS = [
   // [PR_CHECKLIST_EVENT_TIMELINE] - Add new PR entry here at top!
+  // === FEBRUARY 17, 2026 - ETH HOLDINGS + STAKING CROSSES 69% ===
+  {
+    date: '2026-02-17',
+    source: 'PRNewswire',
+    category: 'Holdings',
+    title: '📊 ETH Holdings Reach 4.371M — $9.6B Total, Staking Crosses 3M ETH (69.5%)',
+    changes: [
+      { metric: 'ETH Holdings', previous: '4,325,738', new: '4,371,497', change: '+45,759 (+1.1%)' },
+      { metric: 'ETH Price', previous: '$2,125', new: '$1,998', change: '-6.0% (Coinbase)' },
+      { metric: 'ETH Supply %', previous: '3.58%', new: '3.62%', change: '+0.04pp (72% to 5%)' },
+      { metric: 'Staked ETH', previous: '2,897,459', new: '3,040,483', change: '+143,024 (+4.9%)' },
+      { metric: 'Staking Ratio', previous: '67.0%', new: '69.5%', change: '+2.5pp — crosses 67% catalyst' },
+      { metric: 'CESR Rate', previous: '3.11%', new: '2.84%', change: '-27bp (Quatrefoil)' },
+      { metric: 'BMNR 7-day Yield', previous: '3.3234%', new: '2.89%', change: '-43bp annualized' },
+      { metric: 'Annualized Staking Rev', previous: '$202M/yr', new: '$176M/yr', change: '-13% (lower rate + price)' },
+      { metric: 'Full MAVAN Staking Rev', previous: 'N/A', new: '$252M/yr', change: 'Projected at full deployment' },
+      { metric: 'Total Cash', previous: '$595M', new: '$670M', change: '+$75M' },
+      { metric: 'Eightco (ORBS)', previous: '$19M', new: '$17M', change: '-$2M' },
+      { metric: 'Trading Rank', previous: '#107 ($1.3B/day)', new: '#158 ($0.9B/day)', change: '-51 ranks' },
+      { metric: 'Total Holdings', previous: '$10.0B', new: '$9.6B', change: '-$0.4B (ETH price decline)' },
+    ],
+    notes: 'Tom Lee post-Consensus HK: 3 secular drivers for ETH — (i) Wall Street tokenization/privacy on Ethereum, (ii) AI agents using ETH for payments + verification, (iii) creators/proof-of-human on L2s (Worldchain). Sentiment "rock bottom" comparable to Nov 2022 / 2018 lows, but no FTX/3AC-scale failures — "mini-winter" framing from Oct 10 deleveraging. Bought 45,759 ETH in past week despite pullback. Staked ETH crossed 3M milestone (3,040,483), largest staker globally. MAVAN on track for Q1 2026 launch (3 staking providers). $252M projected annual staking revenue at full MAVAN scale. GENIUS Act + SEC Project Crypto compared to 1971 Bretton Woods ending. Beast Industries $200M stake. 193 BTC held. Institutional supporters: ARK/Cathie Wood, MOZAYYX, Founders Fund, Bill Miller III, Pantera, Kraken, DCG, Galaxy Digital, Tom Lee.',
+    impact: 'neutral'
+  },
   // === FEBRUARY 11, 2026 - COINDESK CONSENSUS 2026 PRESENTATION ===
   {
     date: '2026-02-11',
