@@ -30,12 +30,17 @@
  * 10. filingData.latestEvent + latestEventDate     — Update description + date
  * 11. filingData.filings['8-K'] (or relevant type) — Update date + description
  * 12. pressReleases[] array                        — Add new entry at TOP (newest first)
+ * 13. archive[] array (Analysis Archive)            — Add NEW full analysis at TOP (newest first)
+ *     ⚠️ OFTEN FORGOTTEN — this is the #investment-archive section
+ *     BMNR: Update on EVERY press release (weekly holdings PRs)
+ *     ASTS: Update on EVERY 10-Q and 10-K filing
  *
  * SEARCH MARKERS (grep for these):
  *   [PR_CHECKLIST_SECMETA]                — sec-filings.ts, SEC_META block
  *   [PR_CHECKLIST_FILING_DATA]            — <TICKER>.tsx, filingData block
  *   [PR_CHECKLIST_RECENT_PRESS_RELEASES]  — <TICKER>.tsx, pressReleases array
  *   [PR_CHECKLIST_EVENT_TIMELINE]         — timeline-events.ts, timeline array
+ *   [PR_CHECKLIST_ARCHIVE]               — <TICKER>.tsx, const archive = [
  *
  * This checklist applies to BMNR, ASTS, CRCL, and any future tickers.
  * ═══════════════════════════════════════════════════════════════════════════

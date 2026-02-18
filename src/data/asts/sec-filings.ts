@@ -12,6 +12,8 @@
  *  5. ASTS.tsx: filingData (lastPressRelease, lastPressReleaseTitle, latestEvent, latestEventDate, filings['8-K'])
  *  6. ASTS.tsx: pressReleases[] array — Add new entry at TOP
  *  7. Timeline / catalysts files as applicable
+ *  8. ASTS.tsx: archive[] (Analysis Archive) — Add NEW full analysis at TOP
+ *     ⚠️ MANDATORY for 10-Q and 10-K filings! Search: [PR_CHECKLIST_ARCHIVE]
  */
 
 export const ASTS_SEC_FILINGS = [
