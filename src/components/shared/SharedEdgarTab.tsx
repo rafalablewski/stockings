@@ -1,5 +1,5 @@
 /**
- * SharedEdgarTab — SEC EDGAR Filing Monitor
+ * SharedEdgarTab — SEC EDGAR Filing Monitor (v2)
  *
  * Fetches the latest filings from SEC EDGAR and compares them
  * against the local database to highlight which filings have been
@@ -75,6 +75,22 @@ function getCachedEdgar(ticker: string): CachedEdgar | null {
 
 function setCachedEdgar(ticker: string, filings: EdgarFiling[]) {
   try { sessionStorage.setItem(`edgar_${ticker}`, JSON.stringify({ filings, fetchedAt: Date.now() })); } catch { /* quota */ }
+}
+
+// ── Per-filing analysis cache (survives tab switches) ─────────────────────
+function getAnalysisCache(ticker: string, accession: string): string | null {
+  try {
+    const raw = sessionStorage.getItem(`edgar_analysis_${ticker}_${accession}`);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function setAnalysisCache(ticker: string, accession: string, text: string) {
+  try { sessionStorage.setItem(`edgar_analysis_${ticker}_${accession}`, JSON.stringify(text)); } catch { /* quota */ }
+}
+
+function removeAnalysisCache(ticker: string, accession: string) {
+  try { sessionStorage.removeItem(`edgar_analysis_${ticker}_${accession}`); } catch { /* ignore */ }
 }
 
 function formatTimeAgo(ts: number): string {
@@ -225,11 +241,36 @@ function matchFilings(
 }
 
 // ── Status helpers ──────────────────────────────────────────────────────────
-const STATUS_CONFIG: Record<FilingStatus, { color: string; label: string; title: string }> = {
-  tracked:   { color: 'var(--mint)',  label: 'IN DB',     title: 'Tracked in database' },
-  data_only: { color: 'var(--gold)',  label: 'DATA ONLY', title: 'Data captured but filing not indexed in sec-filings.ts' },
-  new:       { color: 'var(--coral)', label: 'NEW',       title: 'Not in database' },
+const STATUS_CONFIG: Record<FilingStatus, { color: string; label: string; title: string; desc: string }> = {
+  tracked:   { color: 'var(--mint)',  label: 'IN DB',     title: 'Tracked in database', desc: 'Indexed in sec-filings.ts — matched by accession number or form+date' },
+  data_only: { color: 'var(--gold)',  label: 'DATA ONLY', title: 'Data captured but filing not indexed in sec-filings.ts', desc: 'Data captured in other files (capital, timeline, etc.) but not indexed in sec-filings.ts' },
+  new:       { color: 'var(--coral)', label: 'NEW',       title: 'Not in database', desc: 'Not tracked — no index entry, no cross-reference data' },
 };
+
+// ── Verdict helpers ─────────────────────────────────────────────────────────
+type VerdictLevel = 'Critical' | 'Important' | 'Low' | 'Already Incorporated';
+
+const VERDICT_COLORS: Record<VerdictLevel, { color: string; bg: string }> = {
+  'Critical':             { color: 'var(--coral)', bg: 'var(--coral-dim)' },
+  'Important':            { color: 'var(--gold)',  bg: 'var(--gold-dim)' },
+  'Low':                  { color: 'var(--text3)', bg: 'rgba(255,255,255,0.04)' },
+  'Already Incorporated': { color: 'var(--mint)',  bg: 'var(--mint-dim)' },
+};
+
+function parseVerdict(text: string): { level: VerdictLevel; explanation: string } | null {
+  const match = text.match(/\[VERDICT:\s*(Critical|Important|Low|Already Incorporated)\]\s*[—\-–]\s*(.+)/i);
+  if (!match) return null;
+  // Normalize level to title case
+  const raw = match[1].trim();
+  const level = (raw.charAt(0).toUpperCase() + raw.slice(1)) as VerdictLevel;
+  if (!(level in VERDICT_COLORS)) return null;
+  return { level, explanation: match[2].trim() };
+}
+
+/** Strip the [VERDICT: ...] line from analysis text to avoid duplication */
+function stripVerdict(text: string): string {
+  return text.replace(/\n?\[VERDICT:.*$/im, '').trim();
+}
 
 // ── Cross-ref display ───────────────────────────────────────────────────────
 const CrossRefLines: React.FC<{ refs: { source: string; data: string }[] }> = ({ refs }) => (
@@ -255,6 +296,23 @@ const CrossRefLines: React.FC<{ refs: { source: string; data: string }[] }> = ({
     ))}
   </div>
 );
+
+// ── Shared action button base style (matches SharedAIAgentsTab) ──────────────
+const actionBtnBase: React.CSSProperties = {
+  fontSize: 9,
+  fontWeight: 500,
+  textTransform: "uppercase",
+  letterSpacing: "0.08em",
+  padding: "4px 10px",
+  borderRadius: 4,
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid var(--border)",
+  cursor: "pointer",
+  transition: "all 0.15s",
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 5,
+};
 
 // ── Tiny action button (Ive×Tesla style) ────────────────────────────────────
 const ActionBtn: React.FC<{
@@ -286,26 +344,42 @@ const ActionBtn: React.FC<{
 };
 
 // ── Analysis panel ──────────────────────────────────────────────────────────
-const AnalysisPanel: React.FC<{ text: string; onClose: () => void }> = ({ text, onClose }) => (
-  <div style={{
-    margin: '6px 0 2px 19px', padding: '10px 14px',
-    background: 'color-mix(in srgb, var(--accent) 5%, var(--surface))',
-    border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)',
-    borderRadius: 10, fontSize: 12, color: 'var(--text2)', lineHeight: 1.65,
-    position: 'relative',
-  }}>
-    <button
-      onClick={onClose}
-      title="Close analysis"
+const AnalysisPanel: React.FC<{ text: string }> = ({ text }) => (
+  <div style={{ margin: '6px 0 2px 19px', paddingTop: 16, marginTop: 8, borderTop: '1px solid var(--border)' }}>
+    <div
       style={{
-        position: 'absolute', top: 6, right: 8,
-        background: 'transparent', border: 'none', cursor: 'pointer',
-        color: 'var(--text3)', fontSize: 14, lineHeight: 1, padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 12,
       }}
     >
-      x
-    </button>
-    <div style={{ whiteSpace: 'pre-wrap', paddingRight: 20 }}>{text}</div>
+      <span
+        style={{
+          fontSize: 11,
+          fontWeight: 600,
+          textTransform: 'uppercase',
+          letterSpacing: '2.5px',
+          color: 'var(--text3)',
+        }}
+      >
+        Analysis Result
+      </span>
+    </div>
+    <div style={{ maxHeight: 600, overflowY: 'auto' }}>
+      <pre
+        style={{
+          fontSize: 12,
+          fontFamily: 'var(--font-mono, monospace)',
+          color: 'var(--text2)',
+          lineHeight: 1.8,
+          whiteSpace: 'pre-wrap',
+          margin: 0,
+        }}
+      >
+        {text}
+      </pre>
+    </div>
   </div>
 );
 
@@ -325,17 +399,38 @@ const FilingRow: React.FC<{
   r: MatchResult;
   typeColors: Record<string, { bg: string; text: string }>;
   ticker: string;
-}> = ({ r, typeColors, ticker }) => {
+  onRecheckDB?: () => Promise<void>;
+  recheckLoading?: boolean;
+}> = ({ r, typeColors, ticker, onRecheckDB, recheckLoading }) => {
+  const accession = r.filing.accessionNumber;
   const [analyzing, setAnalyzing] = useState(false);
-  const [analysis, setAnalysis] = useState<string | null>(null);
+  const [analysis, setAnalysis] = useState<string | null>(() => getAnalysisCache(ticker, accession));
+  const [copied, setCopied] = useState(false);
+  const [applyStep, setApplyStep] = useState<"idle" | "previewing" | "previewed" | "applying" | "applied" | "error">("idle");
+  const [applyError, setApplyError] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [patchPreview, setPatchPreview] = useState<any>(null);
+  const [commitStatus, setCommitStatus] = useState<"idle" | "committing" | "done" | "error">("idle");
+  const [commitMessage, setCommitMessage] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
   const formDisplay = displayFormName(r.filing.form);
   const colors = typeColors[r.filing.form] || typeColors[formDisplay] || { bg: 'var(--surface2)', text: 'var(--text3)' };
   const statusCfg = STATUS_CONFIG[r.status];
 
+  const resetWorkflowState = () => {
+    setCopied(false);
+    setApplyStep("idle");
+    setApplyError("");
+    setPatchPreview(null);
+    setCommitStatus("idle");
+    setCommitMessage("");
+  };
+
   const handleAnalyze = async () => {
-    if (analysis) { setAnalysis(null); return; } // toggle off
+    if (analysis) { setAnalysis(null); removeAnalysisCache(ticker, accession); resetWorkflowState(); setExpanded(false); return; } // toggle off
     setAnalyzing(true);
+    setExpanded(true);
     try {
       const res = await fetch('/api/edgar/analyze', {
         method: 'POST',
@@ -349,26 +444,170 @@ const FilingRow: React.FC<{
         }),
       });
       const data = await res.json();
-      setAnalysis(data.analysis || data.error || 'No analysis returned.');
+      const text = data.analysis || data.error || 'No analysis returned.';
+      setAnalysis(text);
+      setAnalysisCache(ticker, accession, text);
     } catch (err) {
-      setAnalysis(`Error: ${(err as Error).message}`);
+      const errText = `Error: ${(err as Error).message}`;
+      setAnalysis(errText);
+      setAnalysisCache(ticker, accession, errText);
     } finally {
       setAnalyzing(false);
     }
   };
 
+  const handleCopy = async () => {
+    if (!analysis) return;
+    await navigator.clipboard.writeText(analysis);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleExportPDF = () => {
+    if (!analysis) return;
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+    const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const safeForm = esc(displayFormName(r.filing.form));
+    const safeDesc = esc(r.filing.primaryDocDescription || r.filing.form);
+    const safeTicker = esc(ticker.toUpperCase());
+    const safeResult = esc(analysis);
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>${safeForm} — ${safeTicker}</title>
+<style>
+  body { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; line-height: 1.8; color: #1a1a1a; padding: 40px; max-width: 800px; margin: 0 auto; }
+  h1 { font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid #ccc; padding-bottom: 8px; margin-bottom: 24px; }
+  pre { white-space: pre-wrap; word-wrap: break-word; margin: 0; }
+  .meta { font-size: 9px; color: #888; margin-bottom: 16px; }
+  @media print { body { padding: 20px; } }
+</style></head><body>
+<h1>${safeForm}: ${safeDesc}</h1>
+<div class="meta">${safeTicker} — ${esc(r.filing.filingDate)} — ABISON Research</div>
+<pre>${safeResult}</pre>
+</body></html>`);
+    printWindow.document.close();
+    setTimeout(() => { printWindow.print(); }, 250);
+  };
+
+  const handlePreview = async () => {
+    if (!analysis) return;
+    setApplyStep("previewing");
+    setApplyError("");
+    setPatchPreview(null);
+    try {
+      const res = await fetch("/api/workflow/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker, agentId: "edgar-filing-analyzer", analysis, dryRun: true }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setApplyStep("error");
+        setApplyError(data.error || "Preview failed");
+        return;
+      }
+      setPatchPreview(data);
+      setApplyStep(data.patchCount === 0 ? "idle" : "previewed");
+      if (data.patchCount === 0) setApplyError(data.summary || "No changes to apply");
+    } catch (err) {
+      setApplyStep("error");
+      setApplyError((err as Error).message);
+    }
+  };
+
+  const handleConfirmApply = async () => {
+    if (!patchPreview?.patches?.length) return;
+    setApplyStep("applying");
+    setApplyError("");
+    try {
+      const res = await fetch("/api/workflow/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker, agentId: "edgar-filing-analyzer", dryRun: false, patches: patchPreview.patches }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setApplyStep("error");
+        setApplyError(data.error || "Apply failed");
+        return;
+      }
+      setApplyStep("applied");
+      setPatchPreview((prev: typeof patchPreview) => ({ ...prev, applySummary: data.summary }));
+    } catch (err) {
+      setApplyStep("error");
+      setApplyError((err as Error).message);
+    }
+  };
+
+  const handleCancelPreview = () => {
+    setApplyStep("idle");
+    setPatchPreview(null);
+    setApplyError("");
+  };
+
+  const handleCommit = async () => {
+    if (!analysis) return;
+    setCommitStatus("committing");
+    setCommitMessage("");
+    try {
+      const res = await fetch("/api/workflow/commit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker, agentId: "edgar-filing-analyzer", analysis }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCommitStatus("error");
+        setCommitMessage(data.error || "Commit failed");
+        return;
+      }
+      setCommitStatus("done");
+      setCommitMessage(data.message || "Committed");
+    } catch (err) {
+      setCommitStatus("error");
+      setCommitMessage((err as Error).message);
+    }
+  };
+
   return (
     <div>
+      {/* Header — clickable expand/collapse when analysis exists */}
       <div
+        role={analysis ? 'button' : undefined}
+        tabIndex={analysis ? 0 : undefined}
+        aria-expanded={analysis ? expanded : undefined}
+        onClick={analysis ? () => setExpanded(!expanded) : undefined}
+        onKeyDown={analysis ? (e) => { if (e.key === 'Enter') setExpanded(!expanded); } : undefined}
         style={{
           display: 'flex', alignItems: 'center', gap: 10,
           padding: '8px 12px', borderRadius: 10,
           transition: 'background 0.15s',
+          cursor: analysis ? 'pointer' : undefined,
         }}
         onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
-        {/* Status dot */}
+        {/* Chevron (visible when analysis exists) */}
+        {analysis && (
+          <svg
+            width={12}
+            height={12}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="rgba(255,255,255,0.3)"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            style={{
+              transition: 'transform 0.2s',
+              transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+              flexShrink: 0,
+            }}
+          >
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+        )}
+        {/* Status dot — always visible */}
         <span
           title={statusCfg.title}
           style={{
@@ -390,6 +629,22 @@ const FilingRow: React.FC<{
         <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {r.filing.primaryDocDescription || r.filing.form}
         </span>
+        {/* Verdict badge inline (compact, shown in header when collapsed) */}
+        {analysis && !expanded && (() => {
+          const verdict = parseVerdict(analysis);
+          if (!verdict) return null;
+          const vc = VERDICT_COLORS[verdict.level];
+          return (
+            <span style={{
+              fontSize: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em',
+              padding: '2px 6px', borderRadius: 3, flexShrink: 0,
+              color: vc.color, background: vc.bg,
+              border: `1px solid color-mix(in srgb, ${vc.color} 20%, transparent)`,
+            }}>
+              {verdict.level}
+            </span>
+          );
+        })()}
         {/* Date */}
         <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px' }}>
           {formatEdgarDate(r.filing.filingDate)}
@@ -401,22 +656,346 @@ const FilingRow: React.FC<{
         }}>
           {statusCfg.label}
         </span>
-        {/* Action buttons */}
-        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+        {/* Action buttons — stop propagation so clicks don't toggle expand */}
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
           <ActionBtn label="Open" title="Open filing on SEC EDGAR" href={r.filing.fileUrl} />
           <ActionBtn
-            label={analysis ? 'AI' : 'AI'}
+            label="AI"
             title={analysis ? 'Close AI analysis' : 'Analyze with AI'}
             onClick={handleAnalyze}
             loading={analyzing}
             active={!!analysis}
             variant="accent"
           />
+          {r.status !== 'tracked' && onRecheckDB && (
+            <ActionBtn
+              label="Re-check"
+              title="Re-check this filing against current database on disk"
+              onClick={onRecheckDB}
+              loading={recheckLoading}
+            />
+          )}
         </div>
       </div>
-      {/* Cross-reference data (comment-like) */}
-      {r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
-      {analysis && <AnalysisPanel text={analysis} onClose={() => setAnalysis(null)} />}
+
+      {/* Expanded body — analysis content */}
+      {analysis && expanded && (
+        <div style={{ padding: '0 12px 12px' }}>
+          {/* Cross-reference data (comment-like) */}
+          {r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
+          {/* Verdict badge */}
+          {(() => {
+            const verdict = parseVerdict(analysis);
+            if (!verdict) return null;
+            const vc = VERDICT_COLORS[verdict.level];
+            return (
+              <div style={{
+                margin: '12px 0 0 7px', display: 'inline-flex', alignItems: 'center', gap: 6,
+                fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em',
+                padding: '3px 8px', borderRadius: 4,
+                color: vc.color, background: vc.bg,
+                border: `1px solid color-mix(in srgb, ${vc.color} 20%, transparent)`,
+              }}>
+                {verdict.level}
+                <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, opacity: 0.7, fontSize: 10 }}>
+                  {verdict.explanation}
+                </span>
+              </div>
+            );
+          })()}
+          <AnalysisPanel text={stripVerdict(analysis)} />
+          {/* ── Database Action Toolbar ── */}
+          {!analyzing && (
+          <div style={{ margin: '8px 0 2px 7px' }}>
+            <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+                {/* 1. Export PDF */}
+                <button type="button" onClick={handleExportPDF} style={{ ...actionBtnBase, color: 'var(--text3)' }}>
+                  <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                  Export PDF
+                </button>
+
+                {/* 2. Copy Markdown */}
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  style={{
+                    ...actionBtnBase,
+                    color: copied ? 'var(--mint)' : 'var(--text3)',
+                    borderColor: copied ? 'rgba(130,200,130,0.15)' : undefined,
+                  }}
+                >
+                  <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <rect x={9} y={9} width={13} height={13} rx={2} ry={2} />
+                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                  </svg>
+                  {copied ? 'Copied' : 'Copy Markdown'}
+                </button>
+
+                {/* 3. Preview Changes / Applied indicator */}
+                {applyStep === 'applied' ? (
+                  <span style={{ ...actionBtnBase, color: 'var(--mint)', borderColor: 'rgba(130,200,130,0.15)', cursor: 'default' }}>
+                    <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Applied
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handlePreview}
+                    disabled={applyStep === 'previewing' || applyStep === 'previewed' || applyStep === 'applying'}
+                    style={{
+                      ...actionBtnBase,
+                      color: applyStep === 'previewing'
+                        ? 'var(--text3)'
+                        : applyStep === 'error'
+                          ? 'var(--coral)'
+                          : 'rgba(130,200,130,0.5)',
+                      borderColor: applyStep === 'error'
+                        ? 'color-mix(in srgb, var(--coral) 25%, transparent)'
+                        : 'rgba(130,200,130,0.15)',
+                      opacity: applyStep === 'previewing' ? 0.6 : 1,
+                      cursor: applyStep === 'previewing' || applyStep === 'previewed' || applyStep === 'applying' ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                      <circle cx={12} cy={12} r={3} />
+                    </svg>
+                    {applyStep === 'previewing'
+                      ? 'Extracting patches...'
+                      : applyStep === 'error'
+                        ? 'Retry Preview'
+                        : 'Preview Changes'}
+                  </button>
+                )}
+
+                {/* 4. Create Commit */}
+                <button
+                  type="button"
+                  onClick={handleCommit}
+                  disabled={commitStatus === 'committing' || commitStatus === 'done' || applyStep !== 'applied'}
+                  style={{
+                    ...actionBtnBase,
+                    color: commitStatus === 'done'
+                      ? 'var(--mint)'
+                      : commitStatus === 'error'
+                        ? 'var(--coral)'
+                        : applyStep !== 'applied'
+                          ? 'var(--text3)'
+                          : 'rgba(168,130,230,0.5)',
+                    borderColor: commitStatus === 'done'
+                      ? 'rgba(130,200,130,0.15)'
+                      : applyStep !== 'applied'
+                        ? undefined
+                        : 'rgba(168,130,230,0.15)',
+                    opacity: applyStep !== 'applied' ? 0.3 : commitStatus === 'committing' ? 0.6 : 1,
+                    cursor: commitStatus === 'committing' || commitStatus === 'done' || applyStep !== 'applied' ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx={12} cy={12} r={4} />
+                    <line x1={1.05} y1={12} x2={7} y2={12} />
+                    <line x1={17.01} y1={12} x2={22.96} y2={12} />
+                  </svg>
+                  {commitStatus === 'committing'
+                    ? 'Committing...'
+                    : commitStatus === 'done'
+                      ? 'Committed'
+                      : 'Create Commit'}
+                </button>
+
+                {/* Status messages */}
+                {applyError && (
+                  <span style={{ fontSize: 10, color: applyStep === 'error' ? 'var(--coral)' : 'var(--text3)', marginLeft: 4 }}>
+                    {applyError}
+                  </span>
+                )}
+                {patchPreview?.applySummary && applyStep === 'applied' && (
+                  <span style={{ fontSize: 10, color: 'var(--text3)', marginLeft: 4 }}>
+                    {patchPreview.applySummary}
+                  </span>
+                )}
+                {commitMessage && (
+                  <span style={{ fontSize: 10, color: commitStatus === 'error' ? 'var(--coral)' : 'var(--text3)', marginLeft: 4 }}>
+                    {commitMessage}
+                  </span>
+                )}
+              </div>
+
+              {/* ── Diff Preview Panel ── */}
+              {applyStep === 'previewed' && patchPreview && (
+                <div
+                  style={{
+                    marginTop: 16,
+                    borderRadius: 8,
+                    border: '1px solid rgba(234,179,8,0.2)',
+                    background: 'rgba(234,179,8,0.03)',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {/* Header */}
+                  <div
+                    style={{
+                      padding: '12px 16px',
+                      borderBottom: '1px solid rgba(234,179,8,0.1)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <div>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(234,179,8,0.7)', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                        Patch Preview
+                      </span>
+                      <span style={{ fontSize: 10, color: 'var(--text3)', marginLeft: 12 }}>
+                        {patchPreview.summary}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Per-file diffs */}
+                  <div style={{ maxHeight: 400, overflowY: 'auto' }}>
+                    {patchPreview.previews?.map((p: { file: string; action: string; valid: boolean; detail: string; diff: string; linesAdded: number }, i: number) => (
+                      <div key={i} style={{ borderTop: i > 0 ? '1px solid rgba(255,255,255,0.04)' : undefined, padding: '10px 16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                          <span
+                            style={{
+                              fontSize: 10,
+                              fontFamily: 'var(--font-mono, monospace)',
+                              color: p.valid ? 'var(--text2)' : 'var(--coral)',
+                              fontWeight: 500,
+                            }}
+                          >
+                            {p.file}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: 8,
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.05em',
+                              padding: '1px 5px',
+                              borderRadius: 3,
+                              background: p.valid ? 'rgba(130,200,130,0.1)' : 'rgba(255,100,100,0.1)',
+                              color: p.valid ? 'rgba(130,200,130,0.6)' : 'var(--coral)',
+                              border: `1px solid ${p.valid ? 'rgba(130,200,130,0.15)' : 'rgba(255,100,100,0.15)'}`,
+                            }}
+                          >
+                            {p.action} {p.valid ? `+${p.linesAdded}` : 'rejected'}
+                          </span>
+                        </div>
+                        {p.valid && p.diff ? (
+                          <pre
+                            style={{
+                              fontSize: 10,
+                              fontFamily: 'var(--font-mono, monospace)',
+                              lineHeight: 1.6,
+                              whiteSpace: 'pre-wrap',
+                              margin: 0,
+                              color: 'var(--text3)',
+                              maxHeight: 200,
+                              overflowY: 'auto',
+                            }}
+                          >
+                            {p.diff.split('\n').map((line: string, li: number) => (
+                              <span
+                                key={li}
+                                style={{
+                                  display: 'block',
+                                  color: line.startsWith('+') && !line.startsWith('+++')
+                                    ? 'rgba(130,200,130,0.7)'
+                                    : line.startsWith('-') && !line.startsWith('---')
+                                      ? 'rgba(255,100,100,0.5)'
+                                      : line.startsWith('@@')
+                                        ? 'rgba(130,170,255,0.5)'
+                                        : undefined,
+                                  background: line.startsWith('+') && !line.startsWith('+++')
+                                    ? 'rgba(130,200,130,0.04)'
+                                    : line.startsWith('-') && !line.startsWith('---')
+                                      ? 'rgba(255,100,100,0.04)'
+                                      : undefined,
+                                }}
+                              >
+                                {line}
+                              </span>
+                            ))}
+                          </pre>
+                        ) : !p.valid ? (
+                          <span style={{ fontSize: 10, color: 'var(--coral)', opacity: 0.7 }}>{p.detail}</span>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Warning + action buttons */}
+                  <div
+                    style={{
+                      padding: '12px 16px',
+                      borderTop: '1px solid rgba(234,179,8,0.1)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <span style={{ fontSize: 9, color: 'rgba(234,179,8,0.5)', fontWeight: 500, letterSpacing: '0.05em' }}>
+                      Review carefully — these changes will be written to the database
+                    </span>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button
+                        type="button"
+                        onClick={handleCancelPreview}
+                        style={{
+                          ...actionBtnBase,
+                          color: 'var(--text3)',
+                        }}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleConfirmApply}
+                        disabled={!patchPreview.validCount}
+                        style={{
+                          ...actionBtnBase,
+                          color: patchPreview.validCount ? 'rgba(234,179,8,0.8)' : 'var(--text3)',
+                          borderColor: patchPreview.validCount ? 'rgba(234,179,8,0.3)' : undefined,
+                          fontWeight: 600,
+                          cursor: patchPreview.validCount ? 'pointer' : 'not-allowed',
+                          opacity: patchPreview.validCount ? 1 : 0.4,
+                        }}
+                      >
+                        <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 5v14M5 12h14" />
+                        </svg>
+                        Confirm &amp; Apply
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Applying spinner */}
+              {applyStep === 'applying' && (
+                <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(234,179,8,0.5)', animation: 'pulse 2s infinite' }} />
+                  <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text3)' }}>
+                    Writing patches to database...
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+          )}
+        </div>
+      )}
+
+      {/* Cross-reference data when no analysis */}
+      {!analysis && r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
     </div>
   );
 };
@@ -450,7 +1029,9 @@ const YearSection: React.FC<{
   typeColors: Record<string, { bg: string; text: string }>;
   ticker: string;
   defaultOpen: boolean;
-}> = ({ year, results, typeColors, ticker, defaultOpen }) => {
+  onRecheckDB?: () => Promise<void>;
+  recheckLoading?: boolean;
+}> = ({ year, results, typeColors, ticker, defaultOpen, onRecheckDB, recheckLoading }) => {
   const [open, setOpen] = useState(defaultOpen);
   const trackedInYear = results.filter(r => r.status === 'tracked').length;
 
@@ -484,7 +1065,7 @@ const YearSection: React.FC<{
       {open && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
           {results.map((r, i) => (
-            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} />
+            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} onRecheckDB={onRecheckDB} recheckLoading={recheckLoading} />
           ))}
         </div>
       )}
@@ -508,7 +1089,9 @@ const FilingList: React.FC<{
   typeColors: Record<string, { bg: string; text: string }>;
   filter: string;
   ticker: string;
-}> = ({ results, typeColors, filter, ticker }) => {
+  onRecheckDB?: () => Promise<void>;
+  recheckLoading?: boolean;
+}> = ({ results, typeColors, filter, ticker, onRecheckDB, recheckLoading }) => {
   const filtered = applyFilter(results, filter);
 
   if (filtered.length === 0) {
@@ -538,6 +1121,8 @@ const FilingList: React.FC<{
           typeColors={typeColors}
           ticker={ticker}
           defaultOpen={i === 0}
+          onRecheckDB={onRecheckDB}
+          recheckLoading={recheckLoading}
         />
       ))}
     </div>
@@ -577,9 +1162,17 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
   const [filter, setFilter] = useState('All');
 
+  // Refreshed local data (read from disk, bypassing bundler cache)
+  const [refreshedLocalFilings, setRefreshedLocalFilings] = useState<LocalFiling[] | null>(null);
+  const [refreshedCrossRefs, setRefreshedCrossRefs] = useState<Record<string, { source: string; data: string }[]> | null>(null);
+  const [recheckLoading, setRecheckLoading] = useState(false);
+
+  const effectiveLocalFilings = refreshedLocalFilings ?? localFilings;
+  const effectiveCrossRefs = refreshedCrossRefs ?? crossRefIndex;
+
   const results = useMemo(
-    () => matchFilings(edgarFilings, localFilings, crossRefIndex),
-    [edgarFilings, localFilings, crossRefIndex],
+    () => matchFilings(edgarFilings, effectiveLocalFilings, effectiveCrossRefs),
+    [edgarFilings, effectiveLocalFilings, effectiveCrossRefs],
   );
   const trackedCount = results.filter(r => r.status === 'tracked').length;
   const dataOnlyCount = results.filter(r => r.status === 'data_only').length;
@@ -616,6 +1209,31 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       setError((err as Error).message);
     } finally {
       setLoading(false);
+    }
+  }, [ticker]);
+
+  /** Re-read sec-filings.ts from disk to pick up AI Agent patches */
+  const handleRecheckDB = useCallback(async () => {
+    setRecheckLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/edgar/refresh-local', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: 'Re-check request failed' }));
+        throw new Error(errorData.error || `Re-check failed with status ${res.status}`);
+      }
+      const data = await res.json();
+      setRefreshedLocalFilings(data.localFilings);
+      setRefreshedCrossRefs(data.crossRefIndex);
+    } catch (err) {
+      console.error('Local re-check failed:', err);
+      setError((err as Error).message);
+    } finally {
+      setRecheckLoading(false);
     }
   }, [ticker]);
 
@@ -735,31 +1353,63 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             </svg>
             {loading ? 'Fetching...' : loaded ? 'Refresh' : 'Fetch'}
           </button>
+          {loaded && (
+            <button
+              onClick={handleRecheckDB}
+              disabled={recheckLoading}
+              aria-label="Re-check database status from disk"
+              title="Re-read sec-filings.ts from disk to pick up AI Agent patches"
+              style={{
+                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+                padding: '5px 14px', borderRadius: 4,
+                color: recheckLoading ? 'var(--text3)' : 'var(--gold)',
+                background: 'rgba(255,255,255,0.04)',
+                border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(210,153,34,0.2)'}`,
+                cursor: recheckLoading ? 'wait' : 'pointer',
+                display: 'flex', alignItems: 'center', gap: 6,
+                transition: 'all 0.15s', outline: 'none',
+                opacity: recheckLoading ? 0.5 : 1,
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 1s linear infinite' : 'none' }}>
+                <path d="M2 2v5h5M14 14v-5H9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M13.5 6A6 6 0 0 0 3.3 3.3L2 7M2.5 10a6 6 0 0 0 10.2 2.7L14 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              {recheckLoading ? 'Checking...' : 'Re-check DB'}
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Legend — 3 tiers */}
+      {/* Legend — 3 tiers with descriptions */}
       {loaded && (
         <div
           role="note"
           aria-label="Filing status legend"
           style={{
-            display: 'flex', alignItems: 'center', gap: 24, padding: '16px 4px 12px',
-            fontSize: 10, color: 'var(--text3)', letterSpacing: '0.3px',
+            display: 'flex', alignItems: 'flex-start', gap: 24, padding: '16px 4px 12px',
+            fontSize: 10, color: 'var(--text3)', letterSpacing: '0.3px', flexWrap: 'wrap',
           }}
         >
-          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--mint)', opacity: 0.9 }} />
-            In Database
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--gold)', opacity: 0.9 }} />
-            Data Only
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--coral)', opacity: 0.9 }} />
-            New
-          </span>
+          {(['tracked', 'data_only', 'new'] as FilingStatus[]).map(status => (
+            <span key={status} title={STATUS_CONFIG[status].desc} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, maxWidth: 260 }}>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: STATUS_CONFIG[status].color, opacity: 0.9, marginTop: 3, flexShrink: 0 }} />
+              <span style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <span style={{ fontWeight: 500 }}>{status === 'tracked' ? 'In Database' : status === 'data_only' ? 'Data Only' : 'New'}</span>
+                <span style={{ fontSize: 9, opacity: 0.5, lineHeight: 1.4 }}>{STATUS_CONFIG[status].desc}</span>
+              </span>
+            </span>
+          ))}
+        </div>
+      )}
+      {/* Cross-ref criteria */}
+      {loaded && (
+        <div style={{
+          fontSize: 9, color: 'var(--text3)', opacity: 0.4, padding: '0 4px 8px',
+          fontFamily: 'Space Mono, monospace', lineHeight: 1.6,
+        }}>
+          Cross-refs checked: capital, timeline, financials, catalysts, company, quarterly-metrics
+          {' \u00B7 '}matched by accession # or FORM|DATE key (\u00B11 day)
         </div>
       )}
 
@@ -803,14 +1453,8 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             })}
           </div>
 
-          {/* Filing list card */}
-          <div style={{
-            borderRadius: 12,
-            border: '1px solid rgba(255,255,255,0.06)',
-            padding: '4px 8px',
-          }}>
-            <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} />
-          </div>
+          {/* Filing list */}
+          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} onRecheckDB={handleRecheckDB} recheckLoading={recheckLoading} />
         </>
       )}
     </div>

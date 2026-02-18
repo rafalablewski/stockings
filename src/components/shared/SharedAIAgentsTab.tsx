@@ -42,6 +42,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
   const [running, setRunning] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [applyStep, setApplyStep] = useState<"idle" | "previewing" | "previewed" | "applying" | "applied" | "error">("idle");
   const [applyError, setApplyError] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -356,6 +357,29 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
               }}
             >
               {showPrompt ? "Hide prompt" : "View prompt"}
+            </button>
+            <button
+              type="button"
+              onClick={async () => {
+                await navigator.clipboard.writeText(workflow.prompt);
+                setCopiedPrompt(true);
+                setTimeout(() => setCopiedPrompt(false), 2000);
+              }}
+              style={{
+                fontSize: 9,
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                padding: "2px 6px",
+                borderRadius: 4,
+                background: "rgba(255,255,255,0.04)",
+                color: copiedPrompt ? "var(--mint)" : "var(--text3)",
+                border: `1px solid ${copiedPrompt ? "rgba(130,200,130,0.15)" : "var(--border)"}`,
+                cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+            >
+              {copiedPrompt ? "Copied!" : "Copy prompt"}
             </button>
           </div>
 

@@ -72,7 +72,16 @@ Provide a concise analysis (3-6 bullet points) covering:
 - Material changes or events disclosed
 - Impact on investors / what matters
 
-Be direct and specific. Use numbers when available. No fluff. Format as markdown bullet points.`;
+Be direct and specific. Use numbers when available. No fluff. Format as markdown bullet points.
+
+After the bullet points, on a NEW line, provide a DATABASE RELEVANCE assessment in this exact format:
+[VERDICT: <level>] — <one-line explanation>
+
+Where <level> is one of:
+- Critical: Contains material new data (financial results, capital events, material agreements) that should be captured in a research database
+- Important: Contains useful data worth capturing at next review (insider transactions, routine filings with notable details)
+- Low: Routine filing with no material database changes needed (legal opinions, duplicate/amended filings, no new data)
+- Already Incorporated: Filing's key data points are likely already captured (e.g. periodic reports that were already tracked)`;
 
     const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
