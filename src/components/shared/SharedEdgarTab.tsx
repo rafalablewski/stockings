@@ -1215,18 +1215,23 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   /** Re-read sec-filings.ts from disk to pick up AI Agent patches */
   const handleRecheckDB = useCallback(async () => {
     setRecheckLoading(true);
+    setError(null);
     try {
       const res = await fetch('/api/edgar/refresh-local', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ticker }),
       });
-      if (!res.ok) throw new Error('Re-check failed');
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: 'Re-check request failed' }));
+        throw new Error(errorData.error || `Re-check failed with status ${res.status}`);
+      }
       const data = await res.json();
       setRefreshedLocalFilings(data.localFilings);
       setRefreshedCrossRefs(data.crossRefIndex);
     } catch (err) {
       console.error('Local re-check failed:', err);
+      setError((err as Error).message);
     } finally {
       setRecheckLoading(false);
     }
