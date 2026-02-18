@@ -30,7 +30,7 @@ import type { Catalyst, CompletedMilestone, DataMetadata } from '../shared/types
 // ============================================================================
 
 export const CATALYSTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-12',
+  lastUpdated: '2026-02-17',
   source: 'Press releases, 8-K filings, Kraken blog, CoinDesk',
   nextExpectedUpdate: 'After next 8-K or earnings release',
   notes: 'Includes ETH ecosystem catalysts relevant to BMNR treasury thesis',
@@ -68,7 +68,7 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
     category: 'Treasury',
   },
   {
-    event: 'Staking Ratio Increase Above 67%',
+    event: 'Staking Ratio Increase Above 70%',
     timeline: '2026',
     impact: 'Medium',
     category: 'Treasury',
@@ -149,6 +149,7 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
  */
 export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   // === 2026 ===
+  { event: 'Staking ratio crosses 67% threshold — now 69.5% (3,040,483 of 4,371,497 ETH staked); largest staker globally', date: 'Feb 17, 2026', category: 'Treasury' },
   { event: 'Tom Lee presented at CoinDesk Consensus 2026 in Hong Kong; 8-K filed with presentation as Exhibit 99.1', date: 'Feb 11, 2026', category: 'Corporate' },
   { event: 'Polygon Labs, Ethena ($10B TVL USDe), and Nethermind join Enterprise Ethereum Alliance as institutional coordination body', date: 'Feb 11, 2026', category: 'Ecosystem' },
   { event: 'Beast Industries (MrBeast) acquires Step banking app (7M+ users, ~$500M raised); BMNR $200M investment now includes fintech platform', date: 'Feb 10, 2026', category: 'Corporate' },
