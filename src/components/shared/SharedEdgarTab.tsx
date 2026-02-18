@@ -328,100 +328,44 @@ const ActionBtn: React.FC<{
 };
 
 // ── Analysis panel ──────────────────────────────────────────────────────────
-const AnalysisPanel: React.FC<{ text: string; onClose: () => void }> = ({ text, onClose }) => {
-  const [expanded, setExpanded] = useState(true);
-  return (
-    <div style={{ margin: '6px 0 2px 19px', paddingTop: 16, marginTop: 8, borderTop: '1px solid var(--border)' }}>
-      <div
+const AnalysisPanel: React.FC<{ text: string }> = ({ text }) => (
+  <div style={{ margin: '6px 0 2px 19px', paddingTop: 16, marginTop: 8, borderTop: '1px solid var(--border)' }}>
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 12,
+      }}
+    >
+      <span
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: expanded ? 12 : 0,
+          fontSize: 11,
+          fontWeight: 600,
+          textTransform: 'uppercase',
+          letterSpacing: '2.5px',
+          color: 'var(--text3)',
         }}
       >
-        <button
-          type="button"
-          onClick={() => setExpanded(!expanded)}
-          aria-expanded={expanded}
-          aria-label={expanded ? 'Collapse analysis result' : 'Expand analysis result'}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            background: 'none',
-            border: 'none',
-            padding: 0,
-            cursor: 'pointer',
-          }}
-        >
-          <svg
-            width={12}
-            height={12}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="rgba(255,255,255,0.3)"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            style={{
-              transition: 'transform 0.2s',
-              transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
-              flexShrink: 0,
-            }}
-          >
-            <path d="M9 5l7 7-7 7" />
-          </svg>
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '2.5px',
-              color: 'var(--text3)',
-            }}
-          >
-            Analysis Result
-          </span>
-        </button>
-        <button
-          onClick={onClose}
-          title="Close analysis"
-          aria-label="Close analysis"
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            color: 'var(--text3)',
-            fontSize: 14,
-            lineHeight: 1,
-            padding: '2px 6px',
-            borderRadius: 4,
-            transition: 'color 0.15s',
-          }}
-        >
-          ×
-        </button>
-      </div>
-      {expanded && (
-        <div style={{ maxHeight: 600, overflowY: 'auto' }}>
-          <pre
-            style={{
-              fontSize: 12,
-              fontFamily: 'var(--font-mono, monospace)',
-              color: 'var(--text2)',
-              lineHeight: 1.8,
-              whiteSpace: 'pre-wrap',
-              margin: 0,
-            }}
-          >
-            {text}
-          </pre>
-        </div>
-      )}
+        Analysis Result
+      </span>
     </div>
-  );
-};
+    <div style={{ maxHeight: 600, overflowY: 'auto' }}>
+      <pre
+        style={{
+          fontSize: 12,
+          fontFamily: 'var(--font-mono, monospace)',
+          color: 'var(--text2)',
+          lineHeight: 1.8,
+          whiteSpace: 'pre-wrap',
+          margin: 0,
+        }}
+      >
+        {text}
+      </pre>
+    </div>
+  </div>
+);
 
 // ── Display name normalization ───────────────────────────────────────────────
 /** Map EDGAR's raw form names to consistent short display names */
@@ -451,6 +395,7 @@ const FilingRow: React.FC<{
   const [patchPreview, setPatchPreview] = useState<any>(null);
   const [commitStatus, setCommitStatus] = useState<"idle" | "committing" | "done" | "error">("idle");
   const [commitMessage, setCommitMessage] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
   const formDisplay = displayFormName(r.filing.form);
   const colors = typeColors[r.filing.form] || typeColors[formDisplay] || { bg: 'var(--surface2)', text: 'var(--text3)' };
@@ -466,8 +411,9 @@ const FilingRow: React.FC<{
   };
 
   const handleAnalyze = async () => {
-    if (analysis) { setAnalysis(null); resetWorkflowState(); return; } // toggle off
+    if (analysis) { setAnalysis(null); resetWorkflowState(); setExpanded(false); return; } // toggle off
     setAnalyzing(true);
+    setExpanded(true);
     try {
       const res = await fetch('/api/edgar/analyze', {
         method: 'POST',
@@ -602,25 +548,61 @@ const FilingRow: React.FC<{
   };
 
   return (
-    <div>
+    <div
+      style={{
+        borderRadius: 12,
+        border: analysis ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
+        overflow: 'hidden',
+        transition: 'border-color 0.2s',
+      }}
+    >
+      {/* Header — clickable expand/collapse when analysis exists */}
       <div
+        role={analysis ? 'button' : undefined}
+        tabIndex={analysis ? 0 : undefined}
+        aria-expanded={analysis ? expanded : undefined}
+        onClick={analysis ? () => setExpanded(!expanded) : undefined}
+        onKeyDown={analysis ? (e) => { if (e.key === 'Enter') setExpanded(!expanded); } : undefined}
         style={{
           display: 'flex', alignItems: 'center', gap: 10,
-          padding: '8px 12px', borderRadius: 10,
+          padding: '8px 12px', borderRadius: analysis ? 0 : 10,
           transition: 'background 0.15s',
+          cursor: analysis ? 'pointer' : undefined,
         }}
         onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
-        {/* Status dot */}
-        <span
-          title={statusCfg.title}
-          style={{
-            width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-            background: statusCfg.color,
-            opacity: 0.9, transition: 'opacity 0.2s, background 0.2s',
-          }}
-        />
+        {/* Chevron (visible when analysis exists) */}
+        {analysis ? (
+          <svg
+            width={12}
+            height={12}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="rgba(255,255,255,0.3)"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            style={{
+              transition: 'transform 0.2s',
+              transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+              flexShrink: 0,
+            }}
+          >
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+        ) : (
+          /* Status dot (when no analysis) */
+          <span
+            title={statusCfg.title}
+            style={{
+              width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
+              background: statusCfg.color,
+              opacity: 0.9, transition: 'opacity 0.2s, background 0.2s',
+            }}
+          />
+        )}
         {/* Form badge */}
         <span style={{
           fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
@@ -634,6 +616,22 @@ const FilingRow: React.FC<{
         <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {r.filing.primaryDocDescription || r.filing.form}
         </span>
+        {/* Verdict badge inline (compact, shown in header when collapsed) */}
+        {analysis && !expanded && (() => {
+          const verdict = parseVerdict(analysis);
+          if (!verdict) return null;
+          const vc = VERDICT_COLORS[verdict.level];
+          return (
+            <span style={{
+              fontSize: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em',
+              padding: '2px 6px', borderRadius: 3, flexShrink: 0,
+              color: vc.color, background: vc.bg,
+              border: `1px solid color-mix(in srgb, ${vc.color} 20%, transparent)`,
+            }}>
+              {verdict.level}
+            </span>
+          );
+        })()}
         {/* Date */}
         <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px' }}>
           {formatEdgarDate(r.filing.filingDate)}
@@ -645,11 +643,12 @@ const FilingRow: React.FC<{
         }}>
           {statusCfg.label}
         </span>
-        {/* Action buttons */}
-        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
+        {/* Action buttons — stop propagation so clicks don't toggle expand */}
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
           <ActionBtn label="Open" title="Open filing on SEC EDGAR" href={r.filing.fileUrl} />
           <ActionBtn
-            label={analysis ? 'AI' : 'AI'}
+            label="AI"
             title={analysis ? 'Close AI analysis' : 'Analyze with AI'}
             onClick={handleAnalyze}
             loading={analyzing}
@@ -666,32 +665,36 @@ const FilingRow: React.FC<{
           )}
         </div>
       </div>
-      {/* Cross-reference data (comment-like) */}
-      {r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
-      {/* Verdict badge (shown when analysis is open) */}
-      {analysis && (() => {
-        const verdict = parseVerdict(analysis);
-        if (!verdict) return null;
-        const vc = VERDICT_COLORS[verdict.level];
-        return (
-          <div style={{
-            margin: '4px 0 0 19px', display: 'inline-flex', alignItems: 'center', gap: 6,
-            fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em',
-            padding: '3px 8px', borderRadius: 4,
-            color: vc.color, background: vc.bg,
-            border: `1px solid color-mix(in srgb, ${vc.color} 20%, transparent)`,
-          }}>
-            {verdict.level}
-            <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, opacity: 0.7, fontSize: 10 }}>
-              {verdict.explanation}
-            </span>
-          </div>
-        );
-      })()}
-      {analysis && <AnalysisPanel text={stripVerdict(analysis)} onClose={() => { setAnalysis(null); resetWorkflowState(); }} />}
-      {/* ── Database Action Toolbar ── */}
-      {analysis && !analyzing && (
-          <div style={{ margin: '8px 0 2px 19px' }}>
+
+      {/* Expanded body — analysis content */}
+      {analysis && expanded && (
+        <div style={{ padding: '0 12px 12px', borderTop: '1px solid var(--border)' }}>
+          {/* Cross-reference data (comment-like) */}
+          {r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
+          {/* Verdict badge */}
+          {(() => {
+            const verdict = parseVerdict(analysis);
+            if (!verdict) return null;
+            const vc = VERDICT_COLORS[verdict.level];
+            return (
+              <div style={{
+                margin: '12px 0 0 7px', display: 'inline-flex', alignItems: 'center', gap: 6,
+                fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em',
+                padding: '3px 8px', borderRadius: 4,
+                color: vc.color, background: vc.bg,
+                border: `1px solid color-mix(in srgb, ${vc.color} 20%, transparent)`,
+              }}>
+                {verdict.level}
+                <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, opacity: 0.7, fontSize: 10 }}>
+                  {verdict.explanation}
+                </span>
+              </div>
+            );
+          })()}
+          <AnalysisPanel text={stripVerdict(analysis)} />
+          {/* ── Database Action Toolbar ── */}
+          {!analyzing && (
+          <div style={{ margin: '8px 0 2px 7px' }}>
             <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
                 {/* 1. Export PDF */}
@@ -974,7 +977,12 @@ const FilingRow: React.FC<{
               )}
             </div>
           </div>
+          )}
+        </div>
       )}
+
+      {/* Cross-reference data when no analysis */}
+      {!analysis && r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
     </div>
   );
 };
