@@ -4,7 +4,30 @@
  * Update when new filings are processed.
  *
  * COVERAGE: Oct 2020 (Form 10-12G shell registration) through Feb 2026
- * TOTAL FILINGS TRACKED: 108
+ * TOTAL FILINGS TRACKED: 109
+ *
+ * ═══════════════════════════════════════════════════════════════════════
+ * AI AGENT — MANDATORY PR INGESTION CHECKLIST (DO NOT SKIP):
+ * ═══════════════════════════════════════════════════════════════════════
+ * When processing a BMNR company press release, you MUST update ALL of
+ * the following locations. Missing any of these is a data integrity bug.
+ *
+ * 1. BMNR_SEC_FILINGS array (this file)     — Add new filing entry at top
+ * 2. BMNR_SEC_META.lastPR (this file)       — Update date + title
+ * 3. BMNR_SEC_META.totalFilingsTracked      — Increment by 1
+ * 4. BMNR_FILING_CROSS_REFS (this file)     — Add cross-ref entry
+ * 5. BMNR.tsx: filingData.lastPressRelease  — Update date
+ * 6. BMNR.tsx: filingData.lastPressReleaseTitle — Update title
+ * 7. BMNR.tsx: filingData.latestEvent       — Update description
+ * 8. BMNR.tsx: filingData.latestEventDate   — Update date
+ * 9. BMNR.tsx: filingData.filings['8-K']    — Update date + description
+ * 10. BMNR.tsx: pressReleases[] array       — Add new entry at TOP
+ *
+ * Look for these markers in the code:
+ *   [PR_CHECKLIST_SECMETA]              — this file, BMNR_SEC_META
+ *   [PR_CHECKLIST_RECENT_PRESS_RELEASES] — BMNR.tsx, pressReleases array
+ *   [PR_CHECKLIST_EVENT_TIMELINE]        — timeline-events.ts
+ * ═══════════════════════════════════════════════════════════════════════
  */
 
 export const BMNR_SEC_FILINGS = [
@@ -136,7 +159,7 @@ export const BMNR_SEC_FILINGS = [
   { date: 'Oct 27, 2020', type: '10-12G', description: 'SEC Registration Statement (Sandy Springs Holdings; Shell Status; 2.8M Shares; $50K Note)', period: '—', color: 'blue' },
 ];
 
-// [PR_CHECKLIST_SECMETA] - Update lastPR with every PR!
+// [PR_CHECKLIST_SECMETA] - MANDATORY: Update lastPR + totalFilingsTracked with every PR!
 export const BMNR_SEC_META = {
   cik: '0001829311',
   secFileNumber: '001-41927',
@@ -144,8 +167,8 @@ export const BMNR_SEC_META = {
   ticker: 'BMNR',
   exchange: 'NYSE American',
   emergingGrowthCompany: false,
-  lastPR: { date: 'February 11, 2026', title: 'CoinDesk Consensus 2026 Presentation (Tom Lee, Chairman)' },
-  totalFilingsTracked: 108
+  lastPR: { date: 'February 17, 2026', title: '4,371,497 ETH Holdings Update — $9.6B Total, Staking 3.04M (69.5%)' },
+  totalFilingsTracked: 109
 };
 
 // Color palette constants (reduce duplication per Gemini review)

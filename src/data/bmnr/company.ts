@@ -19,6 +19,20 @@
  * 2. Update ETH_HOLDINGS with latest staking data
  * 3. Update MODEL_METADATA timestamps
  * 4. Keep priceAsOf and ethPriceAsOf aligned with actual dates
+ *
+ * ═══════════════════════════════════════════════════════════════════
+ * MANDATORY — ALSO UPDATE THESE (DO NOT SKIP):
+ * ═══════════════════════════════════════════════════════════════════
+ * 5. sec-filings.ts: BMNR_SEC_FILINGS[] — Add new filing entry
+ * 6. sec-filings.ts: BMNR_SEC_META.lastPR — Update date + title
+ * 7. sec-filings.ts: BMNR_SEC_META.totalFilingsTracked — Increment
+ * 8. sec-filings.ts: BMNR_FILING_CROSS_REFS — Add cross-ref entry
+ * 9. BMNR.tsx: filingData (lastPressRelease, lastPressReleaseTitle,
+ *    latestEvent, latestEventDate, filings['8-K'])
+ * 10. BMNR.tsx: pressReleases[] array — Add new entry at TOP
+ * 11. timeline-events.ts — Add new timeline entry at top
+ * 12. catalysts.ts — Move completed catalysts, update metadata
+ * ═══════════════════════════════════════════════════════════════════
  */
 
 import type { DataMetadata, StockDefaults } from '../shared/types';
