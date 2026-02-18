@@ -1,5 +1,5 @@
 /**
- * SharedEdgarTab — SEC EDGAR Filing Monitor
+ * SharedEdgarTab — SEC EDGAR Filing Monitor (v2)
  *
  * Fetches the latest filings from SEC EDGAR and compares them
  * against the local database to highlight which filings have been
