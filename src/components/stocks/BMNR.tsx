@@ -5881,6 +5881,36 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
   // Archive - Full historical investment summaries (generous detail for each period)
   const archive = [
     {
+      date: '2026-02-17',
+      source: 'PR: 4.371M ETH Holdings + $9.6B Total + Staking 3.04M (69.5%)',
+      verdict: 'STRONG BUY',
+      verdictColor: 'green',
+      summary: '4.371M ETH ($9.6B @ $1,998). 3.04M ETH staked (69.5%) — crossed 3M milestone, largest staker globally. +45,759 ETH acquired. 3.62% of supply. $670M cash. Tom Lee post-Consensus HK: 3 secular drivers (tokenization, AI agents, creators). Sentiment at "rock bottom" = mini-winter, not structural.',
+      fullAnalysis: {
+        context: 'February 17, 2026 PR shows continued accumulation despite ETH price weakness ($2,125→$1,998). Staked ETH crossed 3M milestone (3,040,483 — +143,024 WoW, +4.9%). Tom Lee at Consensus HK outlined 3 secular drivers: (i) Wall Street tokenization/privacy on Ethereum, (ii) AI agents using ETH for payments + verification, (iii) creators/proof-of-human on L2s (Worldchain). Sentiment at "rock bottom" comparable to Nov 2022/2018 lows but no FTX/3AC-scale failures — "mini-winter" framing. MAVAN on track Q1 2026. GENIUS Act + SEC Project Crypto = transformational.',
+        keyHighlights: [
+          'ETH holdings: 4,371,497 ETH @ $1,998 = $9.6B (3.62% of 120.7M supply)',
+          'Total holdings: $9.6B (ETH + cash + BTC + moonshots + Beast Industries)',
+          'Cash position: $670M (up from $595M — +$75M)',
+          'Staked ETH: 3,040,483 ($6.1B) — 69.5% of holdings, crossed 3M milestone',
+          'Annualized staking revenue: $176M/yr (down 13% — lower rate + price)',
+          'Full MAVAN staking revenue: $252M/yr projected at full deployment',
+          'CESR rate: 2.84% (Quatrefoil), BMNR 7-day yield: 2.89% annualized',
+          'Acquired 45,759 ETH in past week',
+          'Trading rank: #158 ($0.9B/day avg) — down 51 ranks',
+          'Tom Lee post-Consensus HK: 3 secular ETH drivers (tokenization, AI agents, creators)',
+          'Sentiment "rock bottom" — mini-winter framing, no structural failures',
+          'Beast Industries $200M stake, Step Banking App acquired (7M+ users)',
+          'Institutional: ARK/Cathie Wood, Founders Fund, Bill Miller III, Pantera, Kraken, Galaxy Digital',
+          'MAVAN on track Q1 2026 (3 staking providers)',
+        ],
+        verdict: 'Staking 3M ETH milestone + $670M cash build + Tom Lee secular thesis = continued conviction. ETH price weakness creating accumulation opportunity. Rock-bottom sentiment historically precedes recovery.',
+        scorecard: 9.4,
+        risks: 'ETH price continued decline ($2,125→$1,998). Total holdings $9.6B (down from $10.0B). CESR rate declining (3.11%→2.84%). Trading rank dropped from #107 to #158. Annualized staking revenue -13%.',
+        strategy: 'STRONG BUY. Staking infrastructure scaling (69.5%, 3M+ ETH). Cash building ($670M). Tom Lee secular thesis strengthening. Sentiment at rock bottom = contrarian entry. MAVAN imminent.'
+      }
+    },
+    {
       date: '2026-02-09',
       source: 'PR: 4.326M ETH Holdings + $10.0B Total + ETH -62% from Highs',
       verdict: 'STRONG BUY',
