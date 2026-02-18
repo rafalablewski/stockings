@@ -7397,6 +7397,7 @@ const InvestmentTab = () => {
   };
   
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // [PR_CHECKLIST_ARCHIVE] - MANDATORY for 10-Q and 10-K: Add new full analysis at TOP!
   // ARCHIVE - NEVER DELETE! ADD NEW ENTRIES AT TOP AFTER EACH FILING
   // This is the permanent historical record of investment thesis evolution
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

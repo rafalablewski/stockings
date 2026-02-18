@@ -26,9 +26,12 @@
  *  9. filingData.latestEvent + latestEventDate
  * 10. filingData.filings['8-K']            — Update date + description
  * 11. pressReleases[] array                — Add new entry at TOP
+ * 12. archive[] (Analysis Archive)        — Add NEW full analysis at TOP
+ *     ⚠️ MANDATORY with EVERY press release! Search: [PR_CHECKLIST_ARCHIVE]
  *
  * Search markers: [PR_CHECKLIST_SECMETA], [PR_CHECKLIST_FILING_DATA],
- *   [PR_CHECKLIST_RECENT_PRESS_RELEASES], [PR_CHECKLIST_EVENT_TIMELINE]
+ *   [PR_CHECKLIST_RECENT_PRESS_RELEASES], [PR_CHECKLIST_EVENT_TIMELINE],
+ *   [PR_CHECKLIST_ARCHIVE]
  * ═══════════════════════════════════════════════════════════════════════
  */
 

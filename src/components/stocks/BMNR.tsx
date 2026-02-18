@@ -189,8 +189,13 @@
  * ║     │ Releases             │  PRESS_RELEASES]            │ at TOP of list     ║
  * ║     │ 🔴 MANDATORY         │ pressReleases[] in this file│                    ║
  * ║                                                                               ║
+ * ║  11 │ Analysis Archive     │ [PR_CHECKLIST_ARCHIVE]      │ Add NEW full       ║
+ * ║     │ 🔴 MANDATORY         │ "const archive = ["         │ analysis entry     ║
+ * ║     │ ⚠️ OFTEN FORGOTTEN   │ #investment-archive section │ at TOP of array    ║
+ * ║                                                                               ║
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
  * ║  ⚠️ COMMON MISTAKES TO AVOID:                                                 ║
+ * ║  - Forgetting Analysis Archive entry (#investment-archive, const archive)     ║
  * ║  - Forgetting Investment DISPLAY metrics (hardcoded, not from state!)         ║
  * ║  - Forgetting secMeta.lastPR in Timeline tab                                  ║
  * ║  - Forgetting Event Timeline entry (with changes array)                       ║
@@ -5878,6 +5883,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
     ],
   };
   
+  // [PR_CHECKLIST_ARCHIVE] - MANDATORY: Add new full analysis at TOP with every press release!
   // Archive - Full historical investment summaries (generous detail for each period)
   const archive = [
     {
