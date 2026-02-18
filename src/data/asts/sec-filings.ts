@@ -99,7 +99,7 @@ export const ASTS_SEC_META = {
   exchange: 'NASDAQ',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 11, 2026', title: '$1B Converts + Registered Directs + Preliminary FY 2025 Results' },
-  totalFilingsTracked: 85
+  totalFilingsTracked: 73
 };
 
 // Color palette constants (reduce duplication per Gemini review)

@@ -4,7 +4,7 @@
  * Update when new filings are processed.
  *
  * COVERAGE: Oct 2020 (Form 10-12G shell registration) through Feb 2026
- * TOTAL FILINGS TRACKED: 109
+ * TOTAL FILINGS TRACKED: 111
  *
  * ═══════════════════════════════════════════════════════════════════════
  * AI AGENT — MANDATORY PR INGESTION CHECKLIST (DO NOT SKIP):
@@ -170,7 +170,7 @@ export const BMNR_SEC_META = {
   exchange: 'NYSE American',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 17, 2026', title: '4,371,497 ETH Holdings Update — $9.6B Total, Staking 3.04M (69.5%)' },
-  totalFilingsTracked: 109
+  totalFilingsTracked: 111
 };
 
 // Color palette constants (reduce duplication per Gemini review)
