@@ -6,9 +6,11 @@
  * tracked and which are new. Per-filing actions: open in new tab
  * or analyze with AI.
  *
- * v3.0.0 — 3-tier matching (IN DB / DATA ONLY / NEW) + cross-ref display
+ * v3.1.0 — Accession-number matching replaces form+date tolerance.
+ *   Exact matching via SEC accession number (primary), with ±1 day form+date
+ *   fallback only for legacy entries that lack accession numbers.
  *
- * @version 3.0.0
+ * @version 3.1.0
  */
 
 'use client';
@@ -21,7 +23,7 @@ export interface EdgarTabProps {
   localFilings: LocalFiling[];
   cik: string;
   typeColors: Record<string, { bg: string; text: string }>;
-  /** Cross-reference index: maps "FORM|YYYY-MM-DD" to data captured in other files */
+  /** Cross-reference index: maps accession number OR "FORM|YYYY-MM-DD" to data captured in other files */
   crossRefIndex?: Record<string, { source: string; data: string }[]>;
 }
 
@@ -31,6 +33,8 @@ export interface LocalFiling {
   description: string;
   period: string;
   color?: string;
+  /** SEC accession number — the authoritative unique identifier for exact matching */
+  accessionNumber?: string;
 }
 
 interface EdgarFiling {
@@ -126,81 +130,85 @@ function getDateNeighbors(isoDate: string): string[] {
 const normalizeForm = (f: string) =>
   f.replace(/[/\s-]/g, '').replace(/^FORM/i, '').replace(/^SCHEDULE/i, 'SC');
 
-/**
- * Date tolerance by form type. Ownership filings (Form 4, Form 3, Form 144,
- * SC 13D, SC 13G) use the transaction date in the local DB but the filing
- * date on EDGAR. SEC requires Form 4 within 2 business days → up to 4
- * calendar days gap. SC 13D/G can lag even more.
- */
-const OWNERSHIP_FORMS = new Set(['4', '3', '5', '144', '144A', 'SC13D', 'SC13DA', 'SC13G', 'SC13GA']);
-function getDateTolerance(form: string): number {
-  return OWNERSHIP_FORMS.has(normalizeForm(form.toUpperCase())) ? 5 : 1;
-}
-
-/** Get date neighbors within ±N days for fuzzy lookup */
-function getDateRange(isoDate: string, days: number): string[] {
-  const d = new Date(isoDate + 'T00:00:00');
-  if (isNaN(d.getTime())) return [isoDate];
-  const result: string[] = [];
-  for (let offset = -days; offset <= days; offset++) {
-    const nd = new Date(d);
-    nd.setDate(nd.getDate() + offset);
-    result.push(nd.toISOString().slice(0, 10));
-  }
-  return result;
-}
+/** Normalize accession number by stripping dashes for comparison */
+const normalizeAccession = (a: string) => a.replace(/-/g, '');
 
 /**
- * Look up cross-refs for a given form + date (with form-specific tolerance).
- * Iterates over index keys and normalizes both the EDGAR form and the index
- * key's form so "4" matches "Form 4", "SCHEDULE 13D/A" matches "SC 13D/A", etc.
+ * Look up cross-refs by accession number first, then by form|date (legacy).
+ * Accession-number keys have no pipe; form|date keys contain a pipe separator.
  */
 function lookupCrossRefs(
+  accessionNumber: string,
   form: string,
   isoDate: string,
   index?: Record<string, { source: string; data: string }[]>,
 ): { source: string; data: string }[] | undefined {
   if (!index) return undefined;
-  const lookupNorm = normalizeForm(form.toUpperCase().trim());
-  const tolerance = getDateTolerance(form.toUpperCase().trim());
-  const validDates = new Set(getDateRange(isoDate, tolerance));
 
+  // Primary: exact accession number lookup
+  const accNorm = normalizeAccession(accessionNumber);
+  if (index[accessionNumber]) return index[accessionNumber];
+  if (index[accNorm]) return index[accNorm];
+
+  // Fallback: legacy form|date keys (±1 day for filing date variance)
+  const lookupNorm = normalizeForm(form.toUpperCase().trim());
+  const neighbors = getDateNeighbors(isoDate);
   for (const [key, value] of Object.entries(index)) {
     const pipeIdx = key.indexOf('|');
     if (pipeIdx === -1) continue;
     const keyForm = key.slice(0, pipeIdx);
     const keyDate = key.slice(pipeIdx + 1);
-    if (validDates.has(keyDate) && normalizeForm(keyForm.toUpperCase().trim()) === lookupNorm) {
+    if (neighbors.includes(keyDate) && normalizeForm(keyForm.toUpperCase().trim()) === lookupNorm) {
       return value;
     }
   }
   return undefined;
 }
 
+/**
+ * Match EDGAR filings against local database.
+ *
+ * Primary matching: accession number (exact, unique per filing).
+ * Legacy fallback: form type + date (±1 day) for entries without accession numbers.
+ * The fallback only matches against local entries that lack accession numbers
+ * to prevent double-matching entries that should be matched by accession number.
+ */
 function matchFilings(
   edgarFilings: EdgarFiling[],
   localFilings: LocalFiling[],
   crossRefIndex?: Record<string, { source: string; data: string }[]>,
 ): MatchResult[] {
+  // Build accession number → LocalFiling map for O(1) exact matching
+  const accessionMap = new Map<string, LocalFiling>();
+  const legacyFilings: LocalFiling[] = [];
+  for (const lf of localFilings) {
+    if (lf.accessionNumber) {
+      accessionMap.set(normalizeAccession(lf.accessionNumber), lf);
+    } else {
+      legacyFilings.push(lf);
+    }
+  }
+
   return edgarFilings.map(ef => {
+    const edgarAccNorm = normalizeAccession(ef.accessionNumber);
     const edgarDate = normalizeDate(ef.filingDate);
     const edgarForm = ef.form.toUpperCase().trim();
-    const tolerance = getDateTolerance(edgarForm);
 
-    // Tier 1: match against sec-filings.ts
-    const match = localFilings.find(lf => {
-      const localDate = normalizeDate(lf.date);
-      const localForm = lf.type.toUpperCase().trim();
-      const d1 = new Date(edgarDate);
-      const d2 = new Date(localDate);
-      const dayDiff = Math.abs(d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24);
-      // Guard: NaN (unparseable dates) must not bypass tolerance check
-      if (isNaN(dayDiff) || dayDiff > tolerance) return false;
-      return normalizeForm(edgarForm) === normalizeForm(localForm);
-    });
+    // Tier 1a: exact accession number match
+    let match = accessionMap.get(edgarAccNorm);
+
+    // Tier 1b: legacy form+date fallback (only entries without accession numbers)
+    if (!match) {
+      const neighbors = new Set(getDateNeighbors(edgarDate));
+      match = legacyFilings.find(lf => {
+        const localDate = normalizeDate(lf.date);
+        if (!neighbors.has(localDate)) return false;
+        return normalizeForm(edgarForm) === normalizeForm(lf.type.toUpperCase().trim());
+      });
+    }
 
     // Look up cross-refs regardless of match status
-    const crossRefs = lookupCrossRefs(ef.form, edgarDate, crossRefIndex);
+    const crossRefs = lookupCrossRefs(ef.accessionNumber, ef.form, edgarDate, crossRefIndex);
 
     if (match) {
       return { filing: ef, status: 'tracked' as FilingStatus, matchedLocal: match, crossRefs };
