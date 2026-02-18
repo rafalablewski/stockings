@@ -8,6 +8,37 @@
  * USAGE:
  * - Import types in data files: import { Partner, ShareClass, ... } from '../shared/types'
  * - All array data should use these interfaces for type safety
+ *
+ * ═══════════════════════════════════════════════════════════════════════════
+ * AI AGENT — MANDATORY PRESS RELEASE INGESTION CHECKLIST (ALL STOCKS)
+ * ═══════════════════════════════════════════════════════════════════════════
+ * When processing a company press release for ANY stock (BMNR, ASTS, CRCL),
+ * you MUST update ALL of the following locations. Missing any is a data bug.
+ *
+ * DATA FILES (src/data/<ticker>/):
+ *  1. sec-filings.ts: SEC_FILINGS[] array        — Add new filing entry at top
+ *  2. sec-filings.ts: SEC_META.lastPR             — Update date + title
+ *  3. sec-filings.ts: SEC_META.totalFilingsTracked — Increment by 1
+ *  4. sec-filings.ts: FILING_CROSS_REFS           — Add cross-ref entry
+ *  5. timeline-events.ts (or equivalent)          — Add new timeline entry at top
+ *  6. catalysts.ts (or equivalent)                — Move completed catalysts, update metadata
+ *  7. company.ts / financials.ts                  — Update holdings, prices, staking, cash
+ *
+ * UI COMPONENT (src/components/stocks/<TICKER>.tsx):
+ *  8. filingData.lastPressRelease                 — Update date
+ *  9. filingData.lastPressReleaseTitle             — Update title
+ * 10. filingData.latestEvent + latestEventDate     — Update description + date
+ * 11. filingData.filings['8-K'] (or relevant type) — Update date + description
+ * 12. pressReleases[] array                        — Add new entry at TOP (newest first)
+ *
+ * SEARCH MARKERS (grep for these):
+ *   [PR_CHECKLIST_SECMETA]                — sec-filings.ts, SEC_META block
+ *   [PR_CHECKLIST_FILING_DATA]            — <TICKER>.tsx, filingData block
+ *   [PR_CHECKLIST_RECENT_PRESS_RELEASES]  — <TICKER>.tsx, pressReleases array
+ *   [PR_CHECKLIST_EVENT_TIMELINE]         — timeline-events.ts, timeline array
+ *
+ * This checklist applies to BMNR, ASTS, CRCL, and any future tickers.
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 // ============================================================================

@@ -5393,7 +5393,9 @@ const SECFilingTracker = () => {
     latestEvent: 'MDA SHIELD Contract',
     latestEventDate: 'Jan 16, 2026',
 
-    // Last press release processed (for tracking)
+    // [PR_CHECKLIST_FILING_DATA] - MANDATORY: Update lastPressRelease, lastPressReleaseTitle,
+    // latestEvent, latestEventDate, and filings['8-K'] with every ASTS PR!
+    // See src/data/shared/types.ts for the full universal checklist.
     lastPressRelease: 'January 16, 2026',
     lastPressReleaseTitle: 'MDA SHIELD Prime Contract Award',
     
@@ -5947,6 +5949,7 @@ const TimelineTab = () => {
   const [showAllFilings, setShowAllFilings] = useState(false);
   const [showAllPR, setShowAllPR] = useState(false);
 
+  // [PR_CHECKLIST_RECENT_PRESS_RELEASES] - MANDATORY: Add new PR at top!
   const pressReleases = [
     { date: 'Jan 22, 2026', category: 'Launch', color: '#4ade80', title: 'BlueBird 7 Launch Timing — Late Feb on New Glenn' },
     { date: 'Jan 16, 2026', category: 'Government', color: 'var(--gold)', title: 'MDA SHIELD Prime Contract Award — Golden Dome Program' },

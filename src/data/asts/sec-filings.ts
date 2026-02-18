@@ -2,6 +2,16 @@
  * ASTS SEC Filings Data
  * Extracted from ASTS.tsx for maintainability.
  * Update when new filings are processed.
+ *
+ * AI AGENT — MANDATORY PR INGESTION CHECKLIST (see shared/types.ts for full details):
+ * When processing an ASTS press release, you MUST update ALL of:
+ *  1. ASTS_SEC_FILINGS[] — Add new filing entry at top
+ *  2. ASTS_SEC_META.lastPR — Update date + title
+ *  3. ASTS_SEC_META.totalFilingsTracked — Increment by 1
+ *  4. ASTS_FILING_CROSS_REFS — Add cross-ref entry (if cross-refs exist)
+ *  5. ASTS.tsx: filingData (lastPressRelease, lastPressReleaseTitle, latestEvent, latestEventDate, filings['8-K'])
+ *  6. ASTS.tsx: pressReleases[] array — Add new entry at TOP
+ *  7. Timeline / catalysts files as applicable
  */
 
 export const ASTS_SEC_FILINGS = [
@@ -80,6 +90,7 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Mar 28, 2024', type: '10-K', description: 'Annual Report', period: 'FY 2023', color: 'blue' },
 ];
 
+// [PR_CHECKLIST_SECMETA] - MANDATORY: Update lastPR + totalFilingsTracked with every PR!
 export const ASTS_SEC_META = {
   cik: '0001780312',
   secFileNumber: '001-39040',

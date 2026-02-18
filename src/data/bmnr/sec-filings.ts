@@ -9,24 +9,26 @@
  * ═══════════════════════════════════════════════════════════════════════
  * AI AGENT — MANDATORY PR INGESTION CHECKLIST (DO NOT SKIP):
  * ═══════════════════════════════════════════════════════════════════════
- * When processing a BMNR company press release, you MUST update ALL of
- * the following locations. Missing any of these is a data integrity bug.
+ * See src/data/shared/types.ts for the FULL universal checklist that
+ * applies to ALL stocks. Below is the BMNR-specific summary:
  *
- * 1. BMNR_SEC_FILINGS array (this file)     — Add new filing entry at top
- * 2. BMNR_SEC_META.lastPR (this file)       — Update date + title
- * 3. BMNR_SEC_META.totalFilingsTracked      — Increment by 1
- * 4. BMNR_FILING_CROSS_REFS (this file)     — Add cross-ref entry
- * 5. BMNR.tsx: filingData.lastPressRelease  — Update date
- * 6. BMNR.tsx: filingData.lastPressReleaseTitle — Update title
- * 7. BMNR.tsx: filingData.latestEvent       — Update description
- * 8. BMNR.tsx: filingData.latestEventDate   — Update date
- * 9. BMNR.tsx: filingData.filings['8-K']    — Update date + description
- * 10. BMNR.tsx: pressReleases[] array       — Add new entry at TOP
+ * DATA FILES (this directory):
+ *  1. BMNR_SEC_FILINGS[] (this file)       — Add new filing entry at top
+ *  2. BMNR_SEC_META.lastPR (this file)     — Update date + title
+ *  3. BMNR_SEC_META.totalFilingsTracked    — Increment by 1
+ *  4. BMNR_FILING_CROSS_REFS (this file)   — Add cross-ref entry
+ *  5. company.ts                           — Update ETH holdings, prices, cash, staking
+ *  6. timeline-events.ts                   — Add new timeline entry at top
+ *  7. catalysts.ts                         — Move completed catalysts, update metadata
  *
- * Look for these markers in the code:
- *   [PR_CHECKLIST_SECMETA]              — this file, BMNR_SEC_META
- *   [PR_CHECKLIST_RECENT_PRESS_RELEASES] — BMNR.tsx, pressReleases array
- *   [PR_CHECKLIST_EVENT_TIMELINE]        — timeline-events.ts
+ * UI COMPONENT (src/components/stocks/BMNR.tsx):
+ *  8. filingData.lastPressRelease + lastPressReleaseTitle
+ *  9. filingData.latestEvent + latestEventDate
+ * 10. filingData.filings['8-K']            — Update date + description
+ * 11. pressReleases[] array                — Add new entry at TOP
+ *
+ * Search markers: [PR_CHECKLIST_SECMETA], [PR_CHECKLIST_FILING_DATA],
+ *   [PR_CHECKLIST_RECENT_PRESS_RELEASES], [PR_CHECKLIST_EVENT_TIMELINE]
  * ═══════════════════════════════════════════════════════════════════════
  */
 

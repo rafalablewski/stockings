@@ -22,14 +22,16 @@
  *
  * ═══════════════════════════════════════════════════════════════════
  * MANDATORY — ALSO UPDATE THESE (DO NOT SKIP):
+ * See src/data/shared/types.ts for the FULL universal checklist
+ * that applies to ALL stocks (BMNR, ASTS, CRCL).
  * ═══════════════════════════════════════════════════════════════════
- * 5. sec-filings.ts: BMNR_SEC_FILINGS[] — Add new filing entry
- * 6. sec-filings.ts: BMNR_SEC_META.lastPR — Update date + title
- * 7. sec-filings.ts: BMNR_SEC_META.totalFilingsTracked — Increment
- * 8. sec-filings.ts: BMNR_FILING_CROSS_REFS — Add cross-ref entry
- * 9. BMNR.tsx: filingData (lastPressRelease, lastPressReleaseTitle,
+ * 5. sec-filings.ts: SEC_FILINGS[] — Add new filing entry
+ * 6. sec-filings.ts: SEC_META.lastPR — Update date + title
+ * 7. sec-filings.ts: SEC_META.totalFilingsTracked — Increment
+ * 8. sec-filings.ts: FILING_CROSS_REFS — Add cross-ref entry
+ * 9. <TICKER>.tsx: filingData (lastPressRelease, lastPressReleaseTitle,
  *    latestEvent, latestEventDate, filings['8-K'])
- * 10. BMNR.tsx: pressReleases[] array — Add new entry at TOP
+ * 10. <TICKER>.tsx: pressReleases[] array — Add new entry at TOP
  * 11. timeline-events.ts — Add new timeline entry at top
  * 12. catalysts.ts — Move completed catalysts, update metadata
  * ═══════════════════════════════════════════════════════════════════

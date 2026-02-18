@@ -2891,6 +2891,7 @@ function CRCLModel() {
   const [showAllPR, setShowAllPR] = useState(false);
   const [capitalView, setCapitalView] = useState('structure');
 
+  // [PR_CHECKLIST_RECENT_PRESS_RELEASES] - MANDATORY: Add new PR at top!
   const pressReleases = [
     { date: 'Dec 12, 2025', category: 'Regulatory', color: 'var(--gold)', title: 'OCC Grants Preliminary Approval for National Bank Charter' },
     { date: 'Nov 12, 2025', category: 'Earnings', color: 'var(--mint)', title: 'Circle Reports Q3 2025 Results: $740M Revenue, USDC at $73.7B' },

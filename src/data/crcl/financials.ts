@@ -240,6 +240,13 @@ export const SEC_FILINGS = [
 // SEC METADATA
 // ============================================================================
 
+// [PR_CHECKLIST_SECMETA] - MANDATORY: Update lastPR with every PR!
+// See shared/types.ts for full PR ingestion checklist (applies to ALL stocks).
+// When processing a CRCL press release, also update:
+//  - CRCL.tsx: filingData (lastPressRelease, lastPressReleaseTitle, latestEvent, latestEventDate)
+//  - CRCL.tsx: pressReleases[] array — Add new entry at TOP
+//  - SEC_FILINGS[] above — Add new filing entry at top
+//  - Timeline / catalysts files as applicable
 export const SEC_META = {
   cik: '0001876042',
   ticker: 'CRCL',
