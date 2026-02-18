@@ -121,7 +121,8 @@ import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import SharedEdgarTab from '../shared/SharedEdgarTab';
 import { COMPS_TIMELINE } from '@/data/asts/comps-timeline';
-import type { CompsTimelineEntry, ASTSImplication } from '@/data/asts/comps-timeline';
+import type { CompetitorNewsEntry } from '@/data/shared/competitor-schema';
+const COMPETITOR_NEWS: CompetitorNewsEntry[] = COMPS_TIMELINE;
 import { ASTS_SEC_FILINGS, ASTS_SEC_META, ASTS_SEC_TYPE_COLORS, ASTS_SEC_FILTER_TYPES, ASTS_FILING_CROSS_REFS } from '@/data/asts/sec-filings';
 import { ASTS_QUARTERLY_DATA } from '@/data/asts/quarterly-metrics';
 import { ASTS_ANALYST_COVERAGE } from '@/data/asts/analyst-coverage';
@@ -134,7 +135,6 @@ import {
   DEFAULTS,
   PARTNERS,
   PARTNER_NEWS,
-  COMPETITOR_NEWS,
   REVENUE_SOURCES,
   UPCOMING_CATALYSTS,
   COMPLETED_MILESTONES,
@@ -287,10 +287,9 @@ interface ErrorBoundaryState {
 // COMPETITOR NEWS TRACKING INTERFACES
 // ============================================================================
 
-// Competitor types re-exported from data file
-type CompetitorId = CompsTimelineEntry['competitor'];
-type CompetitorNewsCategory = CompsTimelineEntry['category'];
-type CompetitorNewsEntry = CompsTimelineEntry;
+// Competitor types derived from shared schema
+type CompetitorId = CompetitorNewsEntry['competitor'];
+type CompetitorNewsCategory = CompetitorNewsEntry['category'];
 
 /** Competitor profile with capabilities */
 interface CompetitorProfile {
@@ -2703,7 +2702,7 @@ const CompetitorsTab = () => {
       {filteredCompetitorNews.map((news, i) => {
         const isExpanded = expandedCompetitorNews.has(i);
         return (
-          <div key={i} className="news-entry" style={{ borderLeft: `3px solid ${news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--red)' : 'var(--text3)'}` }}>
+          <div key={i} className="news-entry" style={{ borderLeft: `3px solid ${news.implication === 'positive' ? 'var(--mint)' : news.implication === 'negative' ? 'var(--red)' : 'var(--text3)'}` }}>
             <div
               className="news-header"
               onClick={() => {
@@ -2724,22 +2723,24 @@ const CompetitorsTab = () => {
               </div>
               <div className="news-meta">
                 <span className="news-date">{news.date}</span>
-                <span className={`news-impact impact-${news.impact.toLowerCase()}`}>
-                  {news.impact === 'Bullish' ? '↑ Good for ASTS' : news.impact === 'Bearish' ? '↓ Risk for ASTS' : '— Neutral'}
+                <span className={`news-impact impact-${news.implication}`}>
+                  {news.implication === 'positive' ? '↑ Good for ASTS' : news.implication === 'negative' ? '↓ Risk for ASTS' : '— Neutral'}
                 </span>
                 <span style={{ color: 'var(--text3)' }}>{isExpanded ? '▼' : '▶'}</span>
               </div>
             </div>
             {isExpanded && (
               <div className="news-body">
-                <div className="news-summary">{news.summary}</div>
-                <div className="news-implication">
-                  <strong>ASTS Implication:</strong> {news.astsImplication}
-                </div>
+                <div className="news-summary">{news.details.map((d, j) => <div key={j}>{d}</div>)}</div>
+                {news.thesisComparison && (
+                  <div className="news-implication">
+                    <strong>ASTS Implication:</strong> {news.thesisComparison}
+                  </div>
+                )}
                 <div className="news-source">
                   <span>Source: {news.source}</span>
-                  {news.url && (
-                    <a href={news.url} target="_blank" rel="noopener noreferrer">View Original →</a>
+                  {news.sourceUrl && (
+                    <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer">View Original →</a>
                   )}
                 </div>
               </div>
@@ -6624,7 +6625,6 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
   // Competitor news timeline — imported from @/data/asts/comps-timeline.ts
   // Add new entries there, not here.
-  const COMPETITOR_NEWS: CompetitorNewsEntry[] = COMPS_TIMELINE;
 
   // Filter news by competitor, sort by date (newest first)
   const filteredNews = React.useMemo(() =>
@@ -6648,7 +6648,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
 
   // Implication styling - using design tokens
-  const getImplicationStyle = (impl: ASTSImplication) => {
+  const getImplicationStyle = (impl: CompetitorNewsEntry['implication']) => {
     switch (impl) {
       case 'positive': return { bg: 'var(--mint-dim)', color: 'var(--mint)', label: '✓ Good for ASTS' };
       case 'negative': return { bg: 'var(--coral-dim)', color: 'var(--coral)', label: '⚠ Threat to ASTS' };
@@ -7166,10 +7166,10 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                     <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
                       {news.details.map((d, j) => <div key={j} style={{ display: 'flex', gap: 8 }}><span style={{ color: 'var(--accent)', flexShrink: 0 }}>•</span>{d}</div>)}
                     </div>
-                    {news.astsComparison && (
+                    {news.thesisComparison && (
                       <div style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--mint) 5%, var(--surface))', borderRadius: 12, borderLeft: '3px solid var(--mint)', marginTop: 12 }}>
                         <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 4 }}>ASTS Comparison</div>
-                        <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{news.astsComparison}</div>
+                        <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{news.thesisComparison}</div>
                       </div>
                     )}
                     {news.source && <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: 'Space Mono, monospace', marginTop: 8 }}>Source: {news.sourceUrl ? <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>{news.source} ↗</a> : news.source}</div>}

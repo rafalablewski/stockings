@@ -86,7 +86,7 @@ function extractEntriesFromSource(content: string): AnalysisEntry[] {
         if (hlMatch) headline = hlMatch[1];
       }
       if (!detail) {
-        const dtMatch = lines[j].match(/(?:summary|notes|bmnrComparison|crclComparison|astsComparison|bmnrImplication)\s*:\s*['"`]([^'"`]+)['"`]/);
+        const dtMatch = lines[j].match(/(?:summary|notes|thesisComparison|bmnrComparison|crclComparison|astsComparison|bmnrImplication)\s*:\s*['"`]([^'"`]+)['"`]/);
         if (dtMatch) detail = dtMatch[1];
       }
     }
