@@ -3362,6 +3362,7 @@ function CRCLModel() {
               <div style={{
                 display: 'inline-flex',
                 alignItems: 'center',
+                flexWrap: 'wrap',
                 gap: 6,
                 background: 'color-mix(in srgb, var(--mint) 10%, transparent)',
                 border: '1px solid color-mix(in srgb, var(--mint) 30%, transparent)',
@@ -3809,7 +3810,7 @@ function CRCLModel() {
               </div>
 
               {/* Data Refresh Indicator */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16, fontSize: 11, color: 'var(--text3)' }}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap', gap: '8px 16px', fontSize: 11, color: 'var(--text3)' }}>
                 <span>Data as of: <strong style={{ color: 'var(--text2)' }}>{investmentCurrent.date}</strong></span>
                 <span>•</span>
                 <span>Source: <strong style={{ color: 'var(--text2)' }}>{investmentCurrent.source}</strong></span>
@@ -3817,10 +3818,10 @@ function CRCLModel() {
 
               {/* Rating Header */}
               <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', borderLeft: `4px solid var(--${investmentCurrent.verdictColor})` }}>
-                <div style={{ padding: '24px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+                <div style={{ padding: 'clamp(12px, 3vw, 24px)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <span style={{ background: `var(--${investmentCurrent.verdictColor})`, color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontWeight: 700, fontSize: 18 }}>{investmentCurrent.verdict}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                      <span style={{ background: `var(--${investmentCurrent.verdictColor})`, color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontWeight: 700, fontSize: 'clamp(14px, 3vw, 18px)' }}>{investmentCurrent.verdict}</span>
                       <span style={{ background: 'color-mix(in srgb, var(--mint) 15%, transparent)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 99, fontSize: 12, fontWeight: 600 }}>HIGH CONVICTION</span>
                     </div>
                     <div style={{ color: 'var(--text2)', fontSize: 14, maxWidth: 500 }}>

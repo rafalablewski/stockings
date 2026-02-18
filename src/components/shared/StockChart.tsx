@@ -733,7 +733,7 @@ const IndicatorToggle = ({
     aria-pressed={active}
     aria-label={`${label} indicator ${active ? 'enabled' : 'disabled'}`}
     style={{
-      padding: '4px 12px',
+      padding: '6px 12px',
       fontSize: 10,
       fontWeight: active ? 600 : 400,
       letterSpacing: '0.3px',
@@ -746,7 +746,7 @@ const IndicatorToggle = ({
       display: 'flex',
       alignItems: 'center',
       gap: 4,
-      minHeight: 28,
+      minHeight: 36,
       touchAction: 'manipulation',
     }}
   >
@@ -778,7 +778,7 @@ const ToggleSection = ({
         display: 'flex',
         alignItems: 'center',
         gap: 6,
-        padding: '6px 0',
+        padding: '8px 0',
         fontSize: 10,
         fontWeight: 600,
         letterSpacing: '0.8px',
@@ -790,6 +790,7 @@ const ToggleSection = ({
         width: '100%',
         textAlign: 'left',
         touchAction: 'manipulation',
+        minHeight: 36,
       }}
     >
       <span style={{
@@ -1145,10 +1146,10 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
     <>
     <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', paddingBottom: 16 }}>
       {/* Header - responsive stacking */}
-      <div style={{ marginBottom: 12, padding: '0 24px' }}>
+      <div style={{ marginBottom: 12, padding: '0 clamp(12px, 3vw, 24px)' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
-          <div style={{ minWidth: 200 }}>
-            <div style={{ padding: '24px 0', borderBottom: '1px solid var(--border)', marginBottom: 4 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>{symbol}</span></div>
+          <div style={{ minWidth: 0, flex: '1 1 180px' }}>
+            <div style={{ padding: '16px 0', borderBottom: '1px solid var(--border)', marginBottom: 4 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>{symbol}</span></div>
             {data && (
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 24, fontWeight: 600, fontFamily: 'Space Mono' }}>
@@ -1223,7 +1224,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
               aria-pressed={range === r.value}
               aria-label={`${r.label} time range`}
               style={{
-                padding: '6px 12px',
+                padding: '6px 10px',
                 fontSize: 11,
                 fontWeight: range === r.value ? 600 : 400,
                 letterSpacing: '0.3px',
@@ -1233,9 +1234,9 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                 background: range === r.value ? 'var(--accent)' : 'transparent',
                 color: range === r.value ? 'white' : 'var(--text3)',
                 transition: 'all 0.15s',
-                minHeight: 30,
+                minHeight: 36,
                 whiteSpace: 'nowrap',
-                flexShrink: 0,
+                flex: '1 0 auto',
                 touchAction: 'manipulation',
                 fontFamily: 'Space Mono, monospace',
               }}
@@ -1269,7 +1270,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       </div>
 
       {/* Indicator Controls */}
-      <div style={{ borderTop: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', paddingTop: 6, padding: '6px 28px 0' }}>
+      <div style={{ borderTop: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', paddingTop: 6, padding: '6px clamp(12px, 3vw, 28px) 0' }}>
         {/* Indicators Section */}
         <ToggleSection
           label="Indicators"

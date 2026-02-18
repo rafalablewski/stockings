@@ -894,15 +894,16 @@ const ASTSAnalysis = () => {
               <h1>ASTS SpaceMobile</h1>
               <div className="ticker">NASDAQ: ASTS · Direct-to-Device Cellular</div>
               {/* H4: Data Freshness Timestamp */}
-              <div style={{ 
-                display: 'inline-flex', 
-                alignItems: 'center', 
-                gap: 6, 
-                background: 'rgba(34,211,238,0.1)', 
-                border: '1px solid rgba(34,211,238,0.3)', 
-                borderRadius: 6, 
-                padding: '4px 12px', 
-                fontSize: 11, 
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: 6,
+                background: 'rgba(34,211,238,0.1)',
+                border: '1px solid rgba(34,211,238,0.3)',
+                borderRadius: 6,
+                padding: '4px 12px',
+                fontSize: 11,
                 color: '#22d3ee',
               }}>
                 <span>📅</span>

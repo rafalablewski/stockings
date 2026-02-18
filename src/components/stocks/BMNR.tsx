@@ -957,15 +957,16 @@ const BMNRDilutionAnalysis = () => {
               <h1>BMNR Analysis</h1>
               <div className="ticker">NYSE American: BMNR · ETH Treasury</div>
               {/* H4: Data Freshness Timestamp */}
-              <div style={{ 
-                display: 'inline-flex', 
-                alignItems: 'center', 
-                gap: 6, 
-                background: 'rgba(167,139,250,0.1)', 
-                border: '1px solid rgba(167,139,250,0.3)', 
-                borderRadius: 6, 
-                padding: '4px 12px', 
-                fontSize: 11, 
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: 6,
+                background: 'rgba(167,139,250,0.1)',
+                border: '1px solid rgba(167,139,250,0.3)',
+                borderRadius: 6,
+                padding: '4px 12px',
+                fontSize: 11,
                 color: '#a78bfa',
               }}>
                 <span>📅</span>

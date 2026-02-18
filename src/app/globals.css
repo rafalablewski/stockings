@@ -53,6 +53,12 @@ body {
   line-height: 1.5;
 }
 
+/* Prevent text overflow on narrow viewports */
+.stock-model-app {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
 /* Prevent visited link color changes */
 a, a:visited {
   color: inherit;
@@ -89,43 +95,111 @@ a, a:visited {
 
 /* ═══ MOBILE RESPONSIVE OVERRIDES ═══ */
 
+/* Ensure all stock model grids can wrap on narrow screens */
+.stock-model-app [style*="grid-template-columns"] {
+  min-width: 0;
+}
+
+/* Tables inside stock model should scroll horizontally */
+.stock-model-app [style*="min-width: 700"],
+.stock-model-app [style*="min-width: 600"] {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 @media (max-width: 768px) {
-  /* Force single-column grids on mobile */
+  /* Force multi-column grids to 2-column on tablets */
   .stock-model-app [style*="grid-template-columns: repeat(7"],
+  .stock-model-app [style*="grid-template-columns: repeat(6"],
   .stock-model-app [style*="grid-template-columns: repeat(5"],
   .stock-model-app [style*="grid-template-columns: repeat(4"],
-  .stock-model-app [style*="gridTemplateColumns"] {
+  .stock-model-app [style*="grid-template-columns: repeat(3"] {
     grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Complex fixed-width column grids → scrollable */
+  .stock-model-app [style*="grid-template-columns: 120px"],
+  .stock-model-app [style*="grid-template-columns: 150px"],
+  .stock-model-app [style*="grid-template-columns: 100px 1fr"] {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Reduce oversized padding */
   .stock-model-app [style*="padding: 40px"],
-  .stock-model-app [style*="padding: 48px"] {
+  .stock-model-app [style*="padding: 48px"],
+  .stock-model-app [style*="padding: 64px"] {
     padding: 16px !important;
   }
 
-  /* Enforce minimum font size for readability */
+  /* Reduce inline horizontal padding */
+  .stock-model-app [style*="padding: 12px 24px"],
+  .stock-model-app [style*="padding: 16px 24px"],
+  .stock-model-app [style*="padding: 24px 24px"] {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  /* Reduce vertical section padding */
+  .stock-model-app [style*="padding: 48px 0"] {
+    padding-top: 24px !important;
+  }
+
+  /* Enforce touch-friendly button sizes */
   .stock-model-app button {
     min-height: 44px;
     min-width: 44px;
     font-size: max(12px, inherit) !important;
   }
 
-  /* Allow horizontal scroll tables to shrink */
+  /* Prevent wide tables from breaking layout */
   .stock-model-app [style*="min-width: 700"],
-  .stock-model-app [style*="minWidth: 700"] {
+  .stock-model-app [style*="min-width: 600"] {
     min-width: 100% !important;
+    overflow-x: auto !important;
   }
 
   /* Tighten nav padding on mobile */
   nav .max-w-7xl { padding-left: 1rem; padding-right: 1rem; }
+
+  /* Reduce inline gap for grids */
+  .stock-model-app [style*="gap: 48px"] {
+    gap: 16px !important;
+  }
+  .stock-model-app [style*="gap: 32px"] {
+    gap: 12px !important;
+  }
+  .stock-model-app [style*="gap: 24px"] {
+    gap: 12px !important;
+  }
 }
 
 @media (max-width: 480px) {
   /* Stack all grids to single column on small phones */
-  .stock-model-app [style*="grid-template-columns"] {
+  .stock-model-app [style*="grid-template-columns: repeat("] {
     grid-template-columns: 1fr !important;
   }
 
+  /* 2-column grids also go single column */
+  .stock-model-app [style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Fixed-width grids: enable scrolling */
+  .stock-model-app [style*="grid-template-columns: 120px"],
+  .stock-model-app [style*="grid-template-columns: 150px"],
+  .stock-model-app [style*="grid-template-columns: 1fr 120px"],
+  .stock-model-app [style*="grid-template-columns: 80px"],
+  .stock-model-app [style*="grid-template-columns: 100px"] {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   nav .max-w-7xl { padding-left: 0.75rem; padding-right: 0.75rem; }
+
+  /* Further reduce gap on small screens */
+  .stock-model-app [style*="gap: 24px"],
+  .stock-model-app [style*="gap: 16px"] {
+    gap: 8px !important;
+  }
 }

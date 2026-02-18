@@ -17,17 +17,17 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="py-32 px-6">
+      <section className="py-16 sm:py-24 md:py-32 px-4 sm:px-6">
         <div className="max-w-2xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-white mb-6">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-white mb-4 sm:mb-6">
             Investment Research
           </h1>
-          <p className="text-lg text-white/50 mb-10 leading-relaxed">
+          <p className="text-base sm:text-lg text-white/50 mb-8 sm:mb-10 leading-relaxed">
             Deep-dive analysis on high-conviction opportunities.
           </p>
           <Link
             href="/stocks"
-            className="inline-block text-[13px] text-white/50 hover:text-white transition-colors"
+            className="inline-block text-[13px] text-white/50 hover:text-white transition-colors py-2 px-4"
           >
             View all research →
           </Link>
@@ -35,18 +35,18 @@ export default function HomePage() {
       </section>
 
       {/* Coverage */}
-      <section className="py-20 px-6">
+      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
+          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-6 sm:mb-10">
             Coverage
           </h2>
 
-          <div className="grid gap-4">
+          <div className="grid gap-3 sm:gap-4">
             {stockList.map((stock) => (
               <Link
                 key={stock.ticker}
                 href={`/stocks/${stock.ticker}`}
-                className="group relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300"
+                className="group relative block p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300"
               >
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -83,13 +83,13 @@ export default function HomePage() {
       </section>
 
       {/* Prompts */}
-      <section className="py-20 px-6">
+      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
+          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-6 sm:mb-10">
             Prompts
           </h2>
 
-          <div className="grid gap-4">
+          <div className="grid gap-3 sm:gap-4">
             {prompts.map((prompt) => (
               <PromptCard key={prompt.name} name={prompt.name} description={prompt.description} variants={prompt.variants} />
             ))}
@@ -98,16 +98,16 @@ export default function HomePage() {
       </section>
 
       {/* Workflows */}
-      <section className="py-20 px-6">
+      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-3">
             Workflow
           </h2>
-          <p className="text-[12px] text-white/20 mb-10">
+          <p className="text-[12px] text-white/20 mb-6 sm:mb-10">
             AI agent prompts for structured analysis. Run these from the AI Agents tab inside each stock.
           </p>
 
-          <div className="grid gap-4">
+          <div className="grid gap-3 sm:gap-4">
             {workflowPrompts.map((workflow) => (
               <PromptCard
                 key={workflow.name}
@@ -121,13 +121,13 @@ export default function HomePage() {
       </section>
 
       {/* Methodology */}
-      <section className="py-20 px-6">
+      <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
+          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-6 sm:mb-10">
             Methodology
           </h2>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
             {[
               { title: "Financial Models", desc: "Quarterly metrics, balance sheets, cash flow projections" },
               { title: "Valuation", desc: "DCF analysis, Monte Carlo simulations, comparable multiples" },

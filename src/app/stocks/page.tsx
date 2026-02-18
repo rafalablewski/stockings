@@ -19,21 +19,21 @@ export default function StocksPage() {
   }));
 
   return (
-    <div className="min-h-screen py-20 px-6">
+    <div className="min-h-screen py-12 sm:py-16 md:py-20 px-4 sm:px-6">
       <div className="max-w-3xl mx-auto">
-        <div className="mb-12">
-          <h1 className="text-2xl font-semibold text-white mb-3">Research</h1>
+        <div className="mb-8 sm:mb-12">
+          <h1 className="text-xl sm:text-2xl font-semibold text-white mb-2 sm:mb-3">Research</h1>
           <p className="text-[13px] text-white/40">
             Select a stock to access comprehensive analysis.
           </p>
         </div>
 
-        <div className="grid gap-4">
+        <div className="grid gap-3 sm:gap-4">
           {stockList.map((stock) => (
             <Link
               key={stock.ticker}
               href={`/stocks/${stock.ticker}`}
-              className="group relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300"
+              className="group relative block p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300"
             >
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -68,15 +68,15 @@ export default function StocksPage() {
         </div>
 
         {/* AI Agents */}
-        <div className="mt-20">
+        <div className="mt-12 sm:mt-16 md:mt-20">
           <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-3">
             AI Agents
           </h2>
-          <p className="text-[12px] text-white/20 mb-10">
+          <p className="text-[12px] text-white/20 mb-6 sm:mb-10">
             Streaming AI agent prompts for structured analysis. Run these from the AI Agents tab inside each stock.
           </p>
 
-          <div className="grid gap-4">
+          <div className="grid gap-3 sm:gap-4">
             {workflowPrompts.map((workflow) => (
               <PromptCard
                 key={workflow.name}

@@ -1128,6 +1128,55 @@ input[type="range"]::-webkit-slider-thumb {
   .tbl th, .tbl td { padding: 6px 8px; font-size: 10px; }
 }
 
+/* ═══ INLINE STYLE GRID OVERRIDES ═══ */
+/* Stock model components use inline style grids that need !important overrides */
+@media (max-width: 768px) {
+  /* Multi-column inline grids → 2 columns */
+  .stock-model-app div[style*="grid-template-columns: repeat(7"],
+  .stock-model-app div[style*="grid-template-columns: repeat(6"],
+  .stock-model-app div[style*="grid-template-columns: repeat(5"],
+  .stock-model-app div[style*="grid-template-columns: repeat(4"],
+  .stock-model-app div[style*="grid-template-columns: repeat(3"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Wide fixed-width grid rows → scroll wrapper behavior */
+  .stock-model-app div[style*="grid-template-columns: 120px 140px"],
+  .stock-model-app div[style*="grid-template-columns: 150px 100px"] {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  /* Flex rows that overflow → wrap on mobile */
+  .stock-model-app div[style*="display: flex"][style*="gap"] {
+    flex-wrap: wrap;
+  }
+
+  /* Ensure all card-like containers handle overflow */
+  .stock-model-app div[style*="border-radius: 16px"][style*="overflow: hidden"] {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 480px) {
+  /* All repeat grids → single column */
+  .stock-model-app div[style*="grid-template-columns: repeat("] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* 2-column grids → single column */
+  .stock-model-app div[style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Comparison grids with label columns */
+  .stock-model-app div[style*="grid-template-columns: 1fr 120px 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 /* ═══ LANDSCAPE MOBILE ADJUSTMENTS ═══ */
 @media (max-width: 900px) and (orientation: landscape) {
   .hero { padding: 16px 24px; }

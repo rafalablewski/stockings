@@ -16,17 +16,17 @@ export const viewport = {
 function Navigation() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-xl">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-12 sm:h-14">
           <Link
             href="/"
-            className="text-[14px] font-normal tracking-[0.2em] text-white/90 hover:text-white transition-colors"
+            className="text-[14px] font-normal tracking-[0.2em] text-white/90 hover:text-white transition-colors py-2 -my-2"
           >
             abison
           </Link>
           <Link
             href="/stocks"
-            className="text-[13px] text-white/60 hover:text-white transition-colors"
+            className="text-[13px] text-white/60 hover:text-white transition-colors py-2 px-3 -my-2 -mr-3"
           >
             Research
           </Link>
@@ -39,13 +39,13 @@ function Navigation() {
 
 function Footer() {
   return (
-    <footer className="py-6 px-6 lg:px-8">
+    <footer className="py-6 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-center gap-2 text-[11px] text-white/30">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-[11px] text-white/30">
           <span className="tracking-[0.15em]">abison</span>
-          <span className="text-white/10">·</span>
+          <span className="hidden sm:inline text-white/10">·</span>
           <span>Investment Research</span>
-          <span className="text-white/10">·</span>
+          <span className="hidden sm:inline text-white/10">·</span>
           <span>Not financial advice</span>
         </div>
       </div>
@@ -62,7 +62,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className="antialiased min-h-screen flex flex-col bg-black text-white">
         <Navigation />
-        <main className="flex-1 pt-14">
+        <main className="flex-1 pt-12 sm:pt-14">
           {children}
         </main>
         <Footer />

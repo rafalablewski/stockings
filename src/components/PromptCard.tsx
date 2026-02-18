@@ -26,12 +26,12 @@ export function PromptCard({ name, description, variants }: PromptCardProps) {
   return (
     <div
       onClick={() => setExpanded(!expanded)}
-      className="group relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300 cursor-pointer overflow-hidden"
+      className="group relative block p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300 cursor-pointer overflow-hidden"
     >
       {/* Glow effect on hover */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute inset-0 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      <div className="relative flex items-start justify-between gap-6">
+      <div className="relative flex items-start justify-between gap-3 sm:gap-6">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-3 mb-2">
             <span className="text-[13px] font-mono font-medium text-white tracking-wide">
@@ -39,16 +39,16 @@ export function PromptCard({ name, description, variants }: PromptCardProps) {
             </span>
           </div>
           {variants.length > 1 && (
-            <div className="flex items-center" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center flex-wrap gap-y-1" onClick={(e) => e.stopPropagation()}>
               {variants.map((variant, i) => (
                 <span key={variant.label} className="flex items-center">
                   {i > 0 && (
-                    <span className="text-[10px] text-white/10 mx-2">·</span>
+                    <span className="text-[10px] text-white/10 mx-1.5 sm:mx-2">·</span>
                   )}
                   <span
                     role="button"
                     onClick={() => setActiveVariant(i)}
-                    className={`text-[11px] uppercase tracking-wider cursor-pointer transition-colors ${
+                    className={`text-[11px] uppercase tracking-wider cursor-pointer transition-colors py-1 px-0.5 ${
                       i === activeVariant
                         ? "text-white/50"
                         : "text-white/15 hover:text-white/30"
@@ -65,10 +65,10 @@ export function PromptCard({ name, description, variants }: PromptCardProps) {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <span
             onClick={handleCopy}
-            className="text-[11px] text-white/30 hover:text-white/60 transition-colors cursor-pointer"
+            className="text-[11px] text-white/30 hover:text-white/60 transition-colors cursor-pointer py-1 px-1"
           >
             {copied ? "Copied!" : "Copy"}
           </span>
@@ -86,9 +86,9 @@ export function PromptCard({ name, description, variants }: PromptCardProps) {
       </div>
 
       {expanded && (
-        <div className="relative mt-4 pt-4 border-t border-white/[0.04]">
-          <div className="rounded-lg bg-white/[0.02] border-l-2 border-white/[0.06] p-4 overflow-x-auto">
-            <pre className="text-[11px] font-mono text-white/40 leading-[1.7] whitespace-pre-wrap">
+        <div className="relative mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-white/[0.04]">
+          <div className="rounded-lg bg-white/[0.02] border-l-2 border-white/[0.06] p-3 sm:p-4 overflow-x-auto">
+            <pre className="text-[10px] sm:text-[11px] font-mono text-white/40 leading-[1.7] whitespace-pre-wrap break-words">
               {content}
             </pre>
           </div>
