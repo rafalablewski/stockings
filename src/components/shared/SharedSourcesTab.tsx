@@ -156,6 +156,12 @@ const SourceArticleRow: React.FC<{
   const [recheckLoading, setRecheckLoading] = useState(false);
   const [localAnalyzed, setLocalAnalyzed] = useState<boolean | null>(article.analyzed ?? null);
 
+  // Once-tracked ref: survives re-renders and cannot be reset by state updates.
+  // DB is append-only, so an article confirmed tracked should never become untracked.
+  // MUST be declared before the useEffect that references it.
+  const everTrackedRef = useRef(article.analyzed === true || getTrackedOverride(article) === true);
+  if (localAnalyzed === true && !everTrackedRef.current) everTrackedRef.current = true;
+
   // Sync with parent prop when it changes (e.g. from header-level re-check).
   // Once tracked (via ref), never allow demotion regardless of parent value.
   useEffect(() => {
@@ -163,11 +169,6 @@ const SourceArticleRow: React.FC<{
     if (parentVal === true) everTrackedRef.current = true;
     setLocalAnalyzed(everTrackedRef.current ? true : parentVal);
   }, [article.analyzed]);
-
-  // Once-tracked ref: survives re-renders and cannot be reset by state updates.
-  // DB is append-only, so an article confirmed tracked should never become untracked.
-  const everTrackedRef = useRef(localAnalyzed === true || getTrackedOverride(article) === true);
-  if (localAnalyzed === true && !everTrackedRef.current) everTrackedRef.current = true;
 
   const handleRecheck = async () => {
     // Already confirmed tracked — DB is append-only, no need to re-check
