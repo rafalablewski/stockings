@@ -66,11 +66,13 @@ function localMatch(articleHeadline: string, articleDate: string, analysisData: 
     }
     const headlinePct = headlineMatches / articleWords.size;
     if (headlineMatches >= 3) {
-      // Close dates: normal threshold. Far dates: require much higher overlap
-      // to prevent recurring weekly reports from matching old entries.
-      if (gap <= 5 && headlinePct >= 0.5) return true;
-      if (gap > 5 && headlinePct >= 0.75) return true;
+      // Close dates (≤30 days): normal threshold.
+      // Far dates (>30 days): require higher overlap to prevent false positives.
+      if (gap <= 30 && headlinePct >= 0.4) return true;
+      if (gap > 30 && headlinePct >= 0.6) return true;
     }
+    // 2-keyword match is OK if overlap is very high (short headlines)
+    if (headlineMatches >= 2 && headlinePct >= 0.6 && gap <= 30) return true;
 
     // Tier 2: headline+detail match (stricter — detail fields can be long with passing mentions)
     if (entry.detail) {
@@ -80,9 +82,9 @@ function localMatch(articleHeadline: string, articleDate: string, analysisData: 
         if (fullWords.has(w)) fullMatches++;
       }
       const fullPct = fullMatches / articleWords.size;
-      if (fullMatches >= 4) {
-        if (gap <= 5 && fullPct >= 0.65) return true;
-        if (gap > 5 && fullPct >= 0.85) return true;
+      if (fullMatches >= 3) {
+        if (gap <= 30 && fullPct >= 0.5) return true;
+        if (gap > 30 && fullPct >= 0.7) return true;
       }
     }
   }
