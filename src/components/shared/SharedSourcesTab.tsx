@@ -14,6 +14,7 @@
 'use client';
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { VERDICT_COLORS, parseVerdict, stripVerdict } from './verdictUtils';
 
 export interface SourceGroup {
   category: string;
@@ -116,29 +117,7 @@ function articleCacheKey(article: ArticleItem): string {
   return (article.url || article.headline || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 60);
 }
 
-// ── Verdict helpers (shared with EDGAR) ──────────────────────────────────────
-type SourceVerdictLevel = 'Critical' | 'Important' | 'Low' | 'Already Incorporated';
-
-const SOURCE_VERDICT_COLORS: Record<SourceVerdictLevel, { color: string; bg: string }> = {
-  'Critical':             { color: 'var(--coral)', bg: 'var(--coral-dim)' },
-  'Important':            { color: 'var(--gold)',  bg: 'var(--gold-dim)' },
-  'Low':                  { color: 'var(--text3)', bg: 'rgba(255,255,255,0.04)' },
-  'Already Incorporated': { color: 'var(--mint)',  bg: 'var(--mint-dim)' },
-};
-
-function parseSourceVerdict(text: string): { level: SourceVerdictLevel; explanation: string } | null {
-  const match = text.match(/\[VERDICT:\s*(Critical|Important|Low|Already Incorporated)\]\s*[—\-–]\s*(.+)/i);
-  if (!match) return null;
-  // Normalize level: title-case each word to match key format
-  const raw = match[1].trim();
-  const level = raw.replace(/\b\w/g, c => c.toUpperCase()) as SourceVerdictLevel;
-  if (!(level in SOURCE_VERDICT_COLORS)) return null;
-  return { level, explanation: match[2].trim() };
-}
-
-function stripSourceVerdict(text: string): string {
-  return text.replace(/\n?\[VERDICT:.*$/im, '').trim();
-}
+// Verdict types and utilities imported from './verdictUtils'
 
 // ── Article row (EDGAR filing-row style) ────────────────────────────────────
 const SourceArticleRow: React.FC<{
@@ -288,9 +267,9 @@ const SourceArticleRow: React.FC<{
         </span>
         {/* Verdict badge inline (compact, shown in header when collapsed) */}
         {aiAnalysis && !expanded && (() => {
-          const verdict = parseSourceVerdict(aiAnalysis);
+          const verdict = parseVerdict(aiAnalysis);
           if (!verdict) return null;
-          const vc = SOURCE_VERDICT_COLORS[verdict.level];
+          const vc = VERDICT_COLORS[verdict.level];
           return (
             <span style={{
               fontSize: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em',
@@ -405,9 +384,9 @@ const SourceArticleRow: React.FC<{
         <div style={{ padding: '0 12px 12px' }}>
           {/* Verdict badge */}
           {(() => {
-            const verdict = parseSourceVerdict(aiAnalysis);
+            const verdict = parseVerdict(aiAnalysis);
             if (!verdict) return null;
-            const vc = SOURCE_VERDICT_COLORS[verdict.level];
+            const vc = VERDICT_COLORS[verdict.level];
             return (
               <div style={{
                 margin: '12px 0 0 7px', display: 'inline-flex', alignItems: 'center', gap: 6,
@@ -436,7 +415,7 @@ const SourceArticleRow: React.FC<{
                 color: 'var(--text2)', lineHeight: 1.8,
                 whiteSpace: 'pre-wrap', margin: 0,
               }}>
-                {stripSourceVerdict(aiAnalysis)}
+                {stripVerdict(aiAnalysis)}
               </pre>
             </div>
           </div>
