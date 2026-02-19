@@ -776,7 +776,22 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     const now = Date.now();
     setLastFetchedAt(now);
     setCachedFeed(ticker, prs, news);
-  }, [ticker]);
+
+    // Re-check analyzed status for the fresh articles (mirrors loadCompetitor behavior)
+    const allArticles = [...prs, ...news];
+    if (allArticles.length > 0) {
+      setAiChecking(true);
+      try {
+        const checked = await checkAnalyzed(allArticles);
+        setMainCard(prev => ({
+          ...prev,
+          pressReleases: checked.slice(0, prev.pressReleases.length),
+          news: checked.slice(prev.pressReleases.length),
+        }));
+      } catch { /* handled */ }
+      finally { setAiChecking(false); }
+    }
+  }, [ticker, checkAnalyzed]);
 
   // Re-check whether current articles have been added to the database
   const recheckMainCard = useCallback(async () => {
