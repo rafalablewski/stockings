@@ -61,13 +61,16 @@ interface CachedFeed {
   fetchedAt: number; // Date.now()
 }
 
+// Cache key version — increment to bust stale session caches
+const CACHE_VERSION = 2;
+
 function getCachedFeed(ticker: string): CachedFeed | null {
   try {
-    const raw = sessionStorage.getItem(`sources_${ticker}`);
+    const raw = sessionStorage.getItem(`sources_v${CACHE_VERSION}_${ticker}`);
     if (!raw) return null;
     const parsed: CachedFeed = JSON.parse(raw);
     if (Date.now() - parsed.fetchedAt > CACHE_TTL_MS) {
-      sessionStorage.removeItem(`sources_${ticker}`);
+      sessionStorage.removeItem(`sources_v${CACHE_VERSION}_${ticker}`);
       return null;
     }
     return parsed;
@@ -77,7 +80,7 @@ function getCachedFeed(ticker: string): CachedFeed | null {
 function setCachedFeed(ticker: string, prs: ArticleItem[], news: ArticleItem[]) {
   try {
     const entry: CachedFeed = { pressReleases: prs, news, fetchedAt: Date.now() };
-    sessionStorage.setItem(`sources_${ticker}`, JSON.stringify(entry));
+    sessionStorage.setItem(`sources_v${CACHE_VERSION}_${ticker}`, JSON.stringify(entry));
   } catch { /* quota exceeded — ignore */ }
 }
 
@@ -795,6 +798,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       const data = await res.json();
       if (!data.results) throw new Error(data.error || 'No results returned');
       if (data.method) setMatchMethod(data.method);
+      const trackedCount = data.results.filter((r: { analyzed: boolean }) => r.analyzed === true).length;
+      console.log(`[SharedSourcesTab] check-analyzed: ${trackedCount}/${data.results.length} tracked (method: ${data.method})`);
       return articles.map((article, i) => ({ ...article, analyzed: data.results?.[i]?.analyzed ?? null }));
     } catch (err) {
       console.error('[SharedSourcesTab] AI check error:', err);
