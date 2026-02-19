@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { db } from '@/lib/db';
+import { analysisCache } from '@/lib/schema';
+import { eq, and } from 'drizzle-orm';
 
 /**
  * GET /api/analysis-cache?ticker=ASTS
@@ -15,42 +16,7 @@ import path from 'path';
  *   - text: analysis text to store, or null to delete
  */
 
-interface AnalysisEntry { text: string; ts: number; }
-interface AnalysisCacheFile {
-  edgar: Record<string, AnalysisEntry>;
-  sources: Record<string, AnalysisEntry>;
-}
-
 const VALID_TICKERS = new Set(['asts', 'bmnr', 'crcl']);
-
-function resolveCachePath(ticker: string): { valid: boolean; fullPath: string; detail?: string } {
-  const t = ticker.toLowerCase();
-  if (!VALID_TICKERS.has(t)) {
-    return { valid: false, fullPath: '', detail: `Unknown ticker: ${ticker}` };
-  }
-  const dataDir = path.resolve(process.cwd(), 'src', 'data', t);
-  const fullPath = path.join(dataDir, 'analysis-cache.json');
-  // Path traversal guard
-  if (!fullPath.startsWith(path.resolve(process.cwd(), 'src', 'data'))) {
-    return { valid: false, fullPath: '', detail: 'Path traversal blocked' };
-  }
-  return { valid: true, fullPath };
-}
-
-async function readCache(fullPath: string): Promise<AnalysisCacheFile> {
-  try {
-    const raw = await fs.readFile(fullPath, 'utf-8');
-    return JSON.parse(raw);
-  } catch {
-    return { edgar: {}, sources: {} };
-  }
-}
-
-async function writeCache(fullPath: string, data: AnalysisCacheFile): Promise<void> {
-  const tmpPath = fullPath + '.tmp.' + Date.now();
-  await fs.writeFile(tmpPath, JSON.stringify(data, null, 2), 'utf-8');
-  await fs.rename(tmpPath, fullPath);
-}
 
 export async function GET(request: NextRequest) {
   const ticker = request.nextUrl.searchParams.get('ticker');
@@ -58,13 +24,33 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Missing ticker' }, { status: 400 });
   }
 
-  const resolved = resolveCachePath(ticker);
-  if (!resolved.valid) {
-    return NextResponse.json({ error: resolved.detail }, { status: 400 });
+  const t = ticker.toLowerCase();
+  if (!VALID_TICKERS.has(t)) {
+    return NextResponse.json({ error: `Unknown ticker: ${ticker}` }, { status: 400 });
   }
 
-  const cache = await readCache(resolved.fullPath);
-  return NextResponse.json(cache);
+  const rows = await db
+    .select()
+    .from(analysisCache)
+    .where(eq(analysisCache.ticker, t));
+
+  // Transform flat rows into nested object format for backward compatibility
+  const result: {
+    edgar: Record<string, { text: string; ts: number }>;
+    sources: Record<string, { text: string; ts: number }>;
+  } = { edgar: {}, sources: {} };
+
+  for (const row of rows) {
+    const bucket = row.cacheType as 'edgar' | 'sources';
+    if (bucket === 'edgar' || bucket === 'sources') {
+      result[bucket][row.cacheKey] = {
+        text: row.analysisText,
+        ts: row.updatedAt.getTime(),
+      };
+    }
+  }
+
+  return NextResponse.json(result);
 }
 
 export async function POST(request: NextRequest) {
@@ -78,22 +64,42 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'type must be "edgar" or "sources"' }, { status: 400 });
     }
 
-    const resolved = resolveCachePath(ticker);
-    if (!resolved.valid) {
-      return NextResponse.json({ error: resolved.detail }, { status: 400 });
+    const t = ticker.toLowerCase();
+    if (!VALID_TICKERS.has(t)) {
+      return NextResponse.json({ error: `Unknown ticker: ${ticker}` }, { status: 400 });
     }
-
-    const cache = await readCache(resolved.fullPath);
 
     if (text === null || text === undefined) {
       // Delete entry
-      delete cache[type][key];
+      await db
+        .delete(analysisCache)
+        .where(
+          and(
+            eq(analysisCache.ticker, t),
+            eq(analysisCache.cacheType, type),
+            eq(analysisCache.cacheKey, key),
+          ),
+        );
     } else {
-      // Store entry
-      cache[type][key] = { text, ts: Date.now() };
+      // Upsert entry
+      await db
+        .insert(analysisCache)
+        .values({
+          ticker: t,
+          cacheType: type,
+          cacheKey: key,
+          analysisText: text,
+          updatedAt: new Date(),
+        })
+        .onConflictDoUpdate({
+          target: [analysisCache.ticker, analysisCache.cacheType, analysisCache.cacheKey],
+          set: {
+            analysisText: text,
+            updatedAt: new Date(),
+          },
+        });
     }
 
-    await writeCache(resolved.fullPath, cache);
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error('Analysis cache write error:', error);

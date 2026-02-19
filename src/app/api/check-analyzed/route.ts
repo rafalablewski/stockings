@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { db } from '@/lib/db';
+import { timelineEvents, secFilings, catalysts, partnerNews } from '@/lib/schema';
+import { eq } from 'drizzle-orm';
 
 interface Article {
   headline: string;
@@ -26,9 +27,9 @@ function extractKeywords(text: string): Set<string> {
 
 // Days between two date strings (YYYY-MM-DD). Returns Infinity on parse failure.
 function daysBetween(a: string, b: string): number {
-  const da = new Date(a), db = new Date(b);
-  if (isNaN(da.getTime()) || isNaN(db.getTime())) return Infinity;
-  return Math.abs(da.getTime() - db.getTime()) / (1000 * 60 * 60 * 24);
+  const da = new Date(a), db2 = new Date(b);
+  if (isNaN(da.getTime()) || isNaN(db2.getTime())) return Infinity;
+  return Math.abs(da.getTime() - db2.getTime()) / (1000 * 60 * 60 * 24);
 }
 
 // Check if an article matches any existing entry using two-tier keyword overlap + date proximity
@@ -70,82 +71,60 @@ function localMatch(articleHeadline: string, articleDate: string, analysisData: 
   return false;
 }
 
-const DATA_DIR = path.resolve(process.cwd(), 'src', 'data');
-
 /**
- * Extract AnalysisEntry[] from a raw TypeScript file by reading from disk.
- *
- * This MUST read from disk (not import()) because import() returns
- * build-time bundled data that is never refreshed — even after
- * "Apply to Database" writes new entries to the source files.
- *
- * Scans each line for date/headline/title/event fields and groups
- * nearby fields into entries. Also captures summary/detail/comparison
- * fields for richer matching context.
+ * Query the database to get all analysis entries for a ticker.
+ * Replaces the old approach of reading .ts files from disk and parsing via regex.
  */
-function extractEntriesFromSource(content: string): AnalysisEntry[] {
+async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
+  const upperTicker = ticker.toUpperCase();
+
+  // Query all 4 tables in parallel
+  const [timelineRows, filingRows, catalystRows, newsRows] = await Promise.all([
+    db.select({
+      date: timelineEvents.date,
+      headline: timelineEvents.event,
+      detail: timelineEvents.details,
+    }).from(timelineEvents).where(eq(timelineEvents.ticker, upperTicker)),
+
+    db.select({
+      date: secFilings.date,
+      headline: secFilings.description,
+      detail: secFilings.period,
+    }).from(secFilings).where(eq(secFilings.ticker, upperTicker)),
+
+    db.select({
+      date: catalysts.completionDate,
+      timeline: catalysts.timeline,
+      headline: catalysts.event,
+      detail: catalysts.category,
+    }).from(catalysts).where(eq(catalysts.ticker, upperTicker)),
+
+    db.select({
+      date: partnerNews.date,
+      headline: partnerNews.headline,
+      detail: partnerNews.summary,
+    }).from(partnerNews).where(eq(partnerNews.ticker, upperTicker)),
+  ]);
+
   const entries: AnalysisEntry[] = [];
-  const lines = content.split('\n');
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+  for (const r of timelineRows) {
+    entries.push({ date: r.date, headline: r.headline, detail: r.detail || undefined });
+  }
 
-    // Look for date or timeline field
-    // Lazy (.*?) + escaped-char handling (\\.) stops at the first unescaped closing quote
-    const dateMatch = line.match(/(?:date|timeline)\s*:\s*(['"`])((?:\\.|.)*?)\1/);
-    if (!dateMatch) continue;
+  for (const r of filingRows) {
+    entries.push({ date: r.date, headline: r.headline, detail: r.detail || undefined });
+  }
 
-    const date = dateMatch[2];
-
-    // Search nearby lines (up to ±6) for headline/title/event/description
-    let headline = '';
-    let detail = '';
-    const searchStart = Math.max(0, i - 4);
-    const searchEnd = Math.min(lines.length, i + 7);
-
-    for (let j = searchStart; j < searchEnd; j++) {
-      if (!headline) {
-        const hlMatch = lines[j].match(/(?:headline|title|event|description)\s*:\s*(['"`])((?:\\.|.)*?)\1/);
-        if (hlMatch) headline = hlMatch[2].replace(/\\'/g, "'").replace(/\\"/g, '"');
-      }
-      if (!detail) {
-        const dtMatch = lines[j].match(/(?:summary|notes|details|significance|astsRelevance|astsImplication|bmnrImplication|bmnrComparison|crclComparison|astsComparison|thesisComparison)\s*:\s*(['"`])((?:\\.|.)*?)\1/);
-        if (dtMatch) detail = dtMatch[2].replace(/\\'/g, "'").replace(/\\"/g, '"');
-      }
-    }
-
-    if (headline) {
-      entries.push({ date, headline, ...(detail ? { detail } : {}) });
+  for (const r of catalystRows) {
+    const date = r.date || r.timeline || '';
+    if (date && r.headline) {
+      entries.push({ date, headline: r.headline, detail: r.detail || undefined });
     }
   }
 
-  return entries;
-}
-
-/**
- * Read ALL .ts data files for a ticker from disk and extract entries.
- * Always reflects the current file contents — no bundler caching.
- */
-async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
-  const entries: AnalysisEntry[] = [];
-  const tickerDir = path.resolve(DATA_DIR, ticker.toLowerCase());
-
-  try {
-    const files = await fs.readdir(tickerDir);
-    const tsFiles = files.filter(f => f.endsWith('.ts') && !f.endsWith('.d.ts'));
-
-    const reads = tsFiles.map(f =>
-      fs.readFile(path.join(tickerDir, f), 'utf-8')
-        .then(content => extractEntriesFromSource(content))
-        .catch(() => [] as AnalysisEntry[])
-    );
-
-    const results = await Promise.all(reads);
-    for (const batch of results) {
-      entries.push(...batch);
-    }
-  } catch (error) {
-    console.error(`Failed to read data directory for ${ticker}:`, error);
+  for (const r of newsRows) {
+    entries.push({ date: r.date, headline: r.headline, detail: r.detail || undefined });
   }
 
   // Deduplicate by headline (normalized)
@@ -173,8 +152,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing ticker or articles' }, { status: 400 });
     }
 
-    // Gather all existing analysis data for this ticker
-    const analysisData = await getAnalysisData(ticker.toUpperCase());
+    // Gather all existing analysis data for this ticker from the database
+    const analysisData = await getAnalysisData(ticker);
     console.log(`[check-analyzed] ${ticker}: ${analysisData.length} entries loaded from database`);
 
     // Helper: run local keyword matching for all articles
