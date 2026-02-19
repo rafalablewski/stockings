@@ -157,13 +157,22 @@ const SourceArticleRow: React.FC<{
   const [localAnalyzed, setLocalAnalyzed] = useState<boolean | null>(article.analyzed ?? null);
 
   // Sync with parent prop when it changes (e.g. from header-level re-check).
-  // Promote-only: never overwrite a confirmed true with false/null.
+  // Once tracked (via ref), never allow demotion regardless of parent value.
   useEffect(() => {
     const parentVal = article.analyzed ?? null;
-    setLocalAnalyzed(prev => (prev === true && parentVal !== true) ? true : parentVal);
+    if (parentVal === true) everTrackedRef.current = true;
+    setLocalAnalyzed(everTrackedRef.current ? true : parentVal);
   }, [article.analyzed]);
 
+  // Once-tracked ref: survives re-renders and cannot be reset by state updates.
+  // DB is append-only, so an article confirmed tracked should never become untracked.
+  const everTrackedRef = useRef(localAnalyzed === true || getTrackedOverride(article) === true);
+  if (localAnalyzed === true && !everTrackedRef.current) everTrackedRef.current = true;
+
   const handleRecheck = async () => {
+    // Already confirmed tracked — DB is append-only, no need to re-check
+    if (everTrackedRef.current) return;
+
     setRecheckLoading(true);
     try {
       const res = await fetch('/api/check-analyzed', {
@@ -174,11 +183,11 @@ const SourceArticleRow: React.FC<{
       if (res.ok) {
         const data = await res.json();
         const result = data.results?.[0]?.analyzed ?? null;
-        // Promote-only: once tracked, never demote back to untracked.
-        // The API can be non-deterministic, so trust a previous true.
-        setLocalAnalyzed(prev => (prev === true && result !== true) ? true : result);
-        // Store override so refresh carry-over can preserve this result
-        if (result === true) setTrackedOverride(article, true);
+        if (result === true) {
+          everTrackedRef.current = true;
+          setTrackedOverride(article, true);
+        }
+        setLocalAnalyzed(result);
       }
     } catch { /* best-effort */ }
     finally { setRecheckLoading(false); }
