@@ -843,18 +843,30 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
   }, [ticker, checkAnalyzed]);
 
-  // Re-check whether current articles have been added to the database
+  // Re-check whether current articles have been added to the database.
+  // Only promotes articles (untracked→tracked), never demotes (tracked→untracked).
+  // The DB is append-only, so a previously-tracked article should stay tracked.
+  // This prevents AI non-determinism from flipping green dots to red on re-check.
   const recheckMainCard = useCallback(async () => {
     setAiChecking(true);
     try {
       const all = [...mainCard.pressReleases, ...mainCard.news];
       if (all.length === 0) return;
       const checked = await checkAnalyzed(all);
-      setMainCard(prev => ({
-        ...prev,
-        pressReleases: checked.slice(0, prev.pressReleases.length),
-        news: checked.slice(prev.pressReleases.length),
-      }));
+      setMainCard(prev => {
+        const prLen = prev.pressReleases.length;
+        return {
+          ...prev,
+          pressReleases: checked.slice(0, prLen).map((article, i) => ({
+            ...article,
+            analyzed: (article.analyzed === true || prev.pressReleases[i]?.analyzed === true) ? true : article.analyzed,
+          })),
+          news: checked.slice(prLen).map((article, i) => ({
+            ...article,
+            analyzed: (article.analyzed === true || prev.news[i]?.analyzed === true) ? true : article.analyzed,
+          })),
+        };
+      });
     } catch { /* handled */ }
     finally { setAiChecking(false); }
   }, [mainCard.pressReleases, mainCard.news, checkAnalyzed]);
@@ -866,7 +878,21 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     try {
       const all = [...card.pressReleases, ...card.news];
       const checked = await checkAnalyzed(all);
-      setCompCards(prev => ({ ...prev, [name]: { ...prev[name], pressReleases: checked.slice(0, card.pressReleases.length), news: checked.slice(card.pressReleases.length) } }));
+      setCompCards(prev => {
+        const prevCard = prev[name];
+        const prLen = prevCard.pressReleases.length;
+        return { ...prev, [name]: {
+          ...prevCard,
+          pressReleases: checked.slice(0, prLen).map((article, i) => ({
+            ...article,
+            analyzed: (article.analyzed === true || prevCard.pressReleases[i]?.analyzed === true) ? true : article.analyzed,
+          })),
+          news: checked.slice(prLen).map((article, i) => ({
+            ...article,
+            analyzed: (article.analyzed === true || prevCard.news[i]?.analyzed === true) ? true : article.analyzed,
+          })),
+        }};
+      });
     } catch { /* handled */ }
     finally { setCompAiChecking(prev => ({ ...prev, [name]: false })); }
   }, [compCards, checkAnalyzed]);
