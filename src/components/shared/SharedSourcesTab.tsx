@@ -129,8 +129,9 @@ const SOURCE_VERDICT_COLORS: Record<SourceVerdictLevel, { color: string; bg: str
 function parseSourceVerdict(text: string): { level: SourceVerdictLevel; explanation: string } | null {
   const match = text.match(/\[VERDICT:\s*(Critical|Important|Low|Already Incorporated)\]\s*[—\-–]\s*(.+)/i);
   if (!match) return null;
+  // Normalize level: title-case each word to match key format
   const raw = match[1].trim();
-  const level = (raw.charAt(0).toUpperCase() + raw.slice(1)) as SourceVerdictLevel;
+  const level = raw.replace(/\b\w/g, c => c.toUpperCase()) as SourceVerdictLevel;
   if (!(level in SOURCE_VERDICT_COLORS)) return null;
   return { level, explanation: match[2].trim() };
 }
@@ -283,8 +284,8 @@ const SourceArticleRow: React.FC<{
             {statusLabel}
           </span>
         )}
-        {/* NEW badge — shown until article is AI-analyzed */}
-        {!aiAnalysis && (
+        {/* NEW badge — only for truly new items: not tracked in DB, not AI-analyzed */}
+        {!aiAnalysis && article.analyzed !== true && (
           <span style={{
             fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
             padding: '1px 5px', borderRadius: 3, flexShrink: 0,

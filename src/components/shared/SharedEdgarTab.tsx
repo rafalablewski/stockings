@@ -260,9 +260,9 @@ const VERDICT_COLORS: Record<VerdictLevel, { color: string; bg: string }> = {
 function parseVerdict(text: string): { level: VerdictLevel; explanation: string } | null {
   const match = text.match(/\[VERDICT:\s*(Critical|Important|Low|Already Incorporated)\]\s*[—\-–]\s*(.+)/i);
   if (!match) return null;
-  // Normalize level to title case
+  // Normalize level: title-case each word to match VERDICT_COLORS keys
   const raw = match[1].trim();
-  const level = (raw.charAt(0).toUpperCase() + raw.slice(1)) as VerdictLevel;
+  const level = raw.replace(/\b\w/g, c => c.toUpperCase()) as VerdictLevel;
   if (!(level in VERDICT_COLORS)) return null;
   return { level, explanation: match[2].trim() };
 }
@@ -399,9 +399,7 @@ const FilingRow: React.FC<{
   r: MatchResult;
   typeColors: Record<string, { bg: string; text: string }>;
   ticker: string;
-  onRecheckDB?: () => Promise<void>;
-  recheckLoading?: boolean;
-}> = ({ r, typeColors, ticker, onRecheckDB, recheckLoading }) => {
+}> = ({ r, typeColors, ticker }) => {
   const accession = r.filing.accessionNumber;
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<string | null>(() => getAnalysisCache(ticker, accession));
@@ -656,8 +654,8 @@ const FilingRow: React.FC<{
         }}>
           {statusCfg.label}
         </span>
-        {/* NEW badge — shown until filing is AI-analyzed */}
-        {!analysis && (
+        {/* NEW badge — only for truly new items: untracked, no analysis, no cross-refs */}
+        {r.status === 'new' && !analysis && !(r.crossRefs && r.crossRefs.length > 0) && (
           <span style={{
             fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
             padding: '1px 5px', borderRadius: 3, flexShrink: 0,
@@ -696,29 +694,6 @@ const FilingRow: React.FC<{
             active={!!analysis}
             variant="accent"
           />
-          {r.status !== 'tracked' && onRecheckDB && (
-            <button
-              onClick={onRecheckDB}
-              disabled={recheckLoading}
-              title="Re-read sec-filings.ts from disk to pick up AI Agent patches"
-              style={{
-                fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
-                padding: '2px 5px', borderRadius: 4,
-                color: recheckLoading ? 'var(--text3)' : 'var(--gold)',
-                background: 'rgba(255,255,255,0.04)',
-                border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(210,153,34,0.2)'}`,
-                cursor: recheckLoading ? 'wait' : 'pointer',
-                transition: 'all 0.15s', outline: 'none',
-                display: 'inline-flex', alignItems: 'center',
-                opacity: recheckLoading ? 0.5 : 1,
-              }}
-            >
-              <svg width={11} height={11} viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 1s linear infinite' : 'none' }}>
-                <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-          )}
         </div>
       </div>
 
@@ -1071,9 +1046,7 @@ const YearSection: React.FC<{
   typeColors: Record<string, { bg: string; text: string }>;
   ticker: string;
   defaultOpen: boolean;
-  onRecheckDB?: () => Promise<void>;
-  recheckLoading?: boolean;
-}> = ({ year, results, typeColors, ticker, defaultOpen, onRecheckDB, recheckLoading }) => {
+}> = ({ year, results, typeColors, ticker, defaultOpen }) => {
   const [open, setOpen] = useState(defaultOpen);
   const trackedInYear = results.filter(r => r.status === 'tracked').length;
 
@@ -1107,7 +1080,7 @@ const YearSection: React.FC<{
       {open && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
           {results.map((r, i) => (
-            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} onRecheckDB={onRecheckDB} recheckLoading={recheckLoading} />
+            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} />
           ))}
         </div>
       )}
@@ -1131,9 +1104,7 @@ const FilingList: React.FC<{
   typeColors: Record<string, { bg: string; text: string }>;
   filter: string;
   ticker: string;
-  onRecheckDB?: () => Promise<void>;
-  recheckLoading?: boolean;
-}> = ({ results, typeColors, filter, ticker, onRecheckDB, recheckLoading }) => {
+}> = ({ results, typeColors, filter, ticker }) => {
   const filtered = applyFilter(results, filter);
 
   if (filtered.length === 0) {
@@ -1163,8 +1134,6 @@ const FilingList: React.FC<{
           typeColors={typeColors}
           ticker={ticker}
           defaultOpen={i === 0}
-          onRecheckDB={onRecheckDB}
-          recheckLoading={recheckLoading}
         />
       ))}
     </div>
@@ -1207,7 +1176,6 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   // Refreshed local data (read from disk, bypassing bundler cache)
   const [refreshedLocalFilings, setRefreshedLocalFilings] = useState<LocalFiling[] | null>(null);
   const [refreshedCrossRefs, setRefreshedCrossRefs] = useState<Record<string, { source: string; data: string }[]> | null>(null);
-  const [recheckLoading, setRecheckLoading] = useState(false);
 
   const effectiveLocalFilings = refreshedLocalFilings ?? localFilings;
   const effectiveCrossRefs = refreshedCrossRefs ?? crossRefIndex;
@@ -1235,6 +1203,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
     setLoading(true);
     setError(null);
     try {
+      // 1. Fetch live filings from SEC EDGAR
       const res = await fetch(`/api/edgar/${ticker}`);
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -1247,35 +1216,24 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       const now = Date.now();
       setFetchedAt(now);
       setCachedEdgar(ticker, filings);
+
+      // 2. Also refresh local DB from disk (picks up AI Agent patches)
+      try {
+        const localRes = await fetch('/api/edgar/refresh-local', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ticker }),
+        });
+        if (localRes.ok) {
+          const localData = await localRes.json();
+          setRefreshedLocalFilings(localData.localFilings);
+          setRefreshedCrossRefs(localData.crossRefIndex);
+        }
+      } catch { /* local refresh is best-effort */ }
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setLoading(false);
-    }
-  }, [ticker]);
-
-  /** Re-read sec-filings.ts from disk to pick up AI Agent patches */
-  const handleRecheckDB = useCallback(async () => {
-    setRecheckLoading(true);
-    setError(null);
-    try {
-      const res = await fetch('/api/edgar/refresh-local', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker }),
-      });
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({ error: 'Re-check request failed' }));
-        throw new Error(errorData.error || `Re-check failed with status ${res.status}`);
-      }
-      const data = await res.json();
-      setRefreshedLocalFilings(data.localFilings);
-      setRefreshedCrossRefs(data.crossRefIndex);
-    } catch (err) {
-      console.error('Local re-check failed:', err);
-      setError((err as Error).message);
-    } finally {
-      setRecheckLoading(false);
     }
   }, [ticker]);
 
@@ -1344,7 +1302,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                 ? `CIK ${cik}`
                 : newCount > 0 || dataOnlyCount > 0
                   ? [
-                      newCount > 0 ? `${newCount} new` : '',
+                      newCount > 0 ? `${newCount} untracked` : '',
                       dataOnlyCount > 0 ? `${dataOnlyCount} data only` : '',
                     ].filter(Boolean).join(', ')
                   : 'All filings tracked'
@@ -1395,31 +1353,6 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             </svg>
             {loading ? 'Fetching...' : loaded ? 'Refresh' : 'Fetch'}
           </button>
-          {loaded && (
-            <button
-              onClick={handleRecheckDB}
-              disabled={recheckLoading}
-              aria-label="Refresh database status from disk"
-              title="Re-read sec-filings.ts from disk to pick up AI Agent patches"
-              style={{
-                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-                padding: '5px 14px', borderRadius: 4,
-                color: recheckLoading ? 'var(--text3)' : 'var(--gold)',
-                background: 'rgba(255,255,255,0.04)',
-                border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(210,153,34,0.2)'}`,
-                cursor: recheckLoading ? 'wait' : 'pointer',
-                display: 'flex', alignItems: 'center', gap: 6,
-                transition: 'all 0.15s', outline: 'none',
-                opacity: recheckLoading ? 0.5 : 1,
-              }}
-            >
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 1s linear infinite' : 'none' }}>
-                <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              {recheckLoading ? 'Refreshing...' : 'Refresh DB'}
-            </button>
-          )}
         </div>
       </div>
 
@@ -1496,7 +1429,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           </div>
 
           {/* Filing list */}
-          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} onRecheckDB={handleRecheckDB} recheckLoading={recheckLoading} />
+          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} />
         </>
       )}
     </div>
