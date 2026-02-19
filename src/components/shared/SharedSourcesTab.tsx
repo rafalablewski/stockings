@@ -454,11 +454,27 @@ const SourceArticleList: React.FC<{
   const displayed = showAll ? combined : combined.slice(0, ARTICLE_INITIAL_COUNT);
   const hiddenCount = combined.length - ARTICLE_INITIAL_COUNT;
 
+  // Split into genuinely-new articles (top) vs everything else (bottom)
+  const newEntries = displayed.filter(a => newArticleKeys.has(articleCacheKey(a)) && a.analyzed !== true);
+  const oldEntries = displayed.filter(a => !(newArticleKeys.has(articleCacheKey(a)) && a.analyzed !== true));
+  const hasNewAndOld = newEntries.length > 0 && oldEntries.length > 0;
+
+  const renderRow = (a: typeof combined[number], i: number) => (
+    <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(articleCacheKey(a))} persistedAnalysis={persistedSourceAnalyses[articleCacheKey(a)] || null} />
+  );
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-      {displayed.map((a, i) => (
-        <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(articleCacheKey(a))} persistedAnalysis={persistedSourceAnalyses[articleCacheKey(a)] || null} />
-      ))}
+      {newEntries.map(renderRow)}
+      {hasNewAndOld && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '6px 12px', margin: '2px 0',
+        }}>
+          <span style={{ flex: 1, height: 1, background: 'color-mix(in srgb, var(--border) 40%, transparent)' }} />
+        </div>
+      )}
+      {oldEntries.map(renderRow)}
       {hiddenCount > 0 && (
         <div style={{ textAlign: 'center', paddingTop: 12, paddingBottom: 8 }}>
           <button
@@ -495,8 +511,9 @@ const CompanyFeedCard: React.FC<{
   persistedSourceAnalyses: Record<string, string>;
   onLoad: () => void;
   onRecheck?: () => void;
+  onSimulateNew?: () => void;
   onTabChange?: (tab: 'pr' | 'news') => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, persistedSourceAnalyses, onLoad, onRecheck }) => {
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, persistedSourceAnalyses, onLoad, onRecheck, onSimulateNew }) => {
   const prCount = data.pressReleases.length;
   const newsCount = data.news.length;
   const isActive = data.loading || (aiChecking ?? false);
@@ -612,6 +629,28 @@ const CompanyFeedCard: React.FC<{
             </svg>
             {data.loading ? 'Fetching' : data.loaded ? 'Refresh' : 'Load'}
           </button>
+          {/* Simulate New — dev-only: pretend some untracked articles just appeared */}
+          {data.loaded && onSimulateNew && (
+            <button
+              onClick={onSimulateNew}
+              title="DEV: Simulate new articles appearing (picks up to 3 untracked articles)"
+              style={{
+                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+                padding: '5px 14px', borderRadius: 4,
+                color: 'rgba(200,170,100,0.5)',
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(200,170,100,0.15)',
+                cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 6,
+                transition: 'all 0.15s', outline: 'none',
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              Simulate New
+            </button>
+          )}
           {/* Re-check — check if articles have been added to database */}
           {data.loaded && onRecheck && (
             <button
@@ -657,7 +696,7 @@ const CompanyFeedCard: React.FC<{
           </div>
         )}
 
-        {!data.loaded && !data.loading && !data.error && (
+        {isPrimary && !data.loaded && !data.loading && !data.error && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
             padding: '24px 0', color: 'var(--text3)',
@@ -776,7 +815,22 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     const now = Date.now();
     setLastFetchedAt(now);
     setCachedFeed(ticker, prs, news);
-  }, [ticker]);
+
+    // Re-check analyzed status for the fresh articles (mirrors loadCompetitor behavior)
+    const allArticles = [...prs, ...news];
+    if (allArticles.length > 0) {
+      setAiChecking(true);
+      try {
+        const checked = await checkAnalyzed(allArticles);
+        setMainCard(prev => ({
+          ...prev,
+          pressReleases: checked.slice(0, prs.length),
+          news: checked.slice(prs.length),
+        }));
+      } catch { /* handled */ }
+      finally { setAiChecking(false); }
+    }
+  }, [ticker, checkAnalyzed]);
 
   // Re-check whether current articles have been added to the database
   const recheckMainCard = useCallback(async () => {
@@ -793,6 +847,18 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     } catch { /* handled */ }
     finally { setAiChecking(false); }
   }, [mainCard.pressReleases, mainCard.news, checkAnalyzed]);
+
+  const recheckCompetitor = useCallback(async (name: string) => {
+    const card = compCards[name];
+    if (!card || (!card.pressReleases.length && !card.news.length)) return;
+    setCompAiChecking(prev => ({ ...prev, [name]: true }));
+    try {
+      const all = [...card.pressReleases, ...card.news];
+      const checked = await checkAnalyzed(all);
+      setCompCards(prev => ({ ...prev, [name]: { ...prev[name], pressReleases: checked.slice(0, card.pressReleases.length), news: checked.slice(card.pressReleases.length) } }));
+    } catch { /* handled */ }
+    finally { setCompAiChecking(prev => ({ ...prev, [name]: false })); }
+  }, [compCards, checkAnalyzed]);
 
   const loadCompetitor = useCallback(async (name: string) => {
     setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: true, loaded: false, error: null } }));
@@ -974,6 +1040,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           persistedSourceAnalyses={persistedSourceAnalyses}
           onLoad={loadMainCard}
           onRecheck={recheckMainCard}
+          onSimulateNew={() => {
+            const all = [...mainCard.pressReleases, ...mainCard.news];
+            const untracked = all.filter(a => a.analyzed !== true).slice(0, 3);
+            if (untracked.length === 0) return;
+            setNewArticleKeys(new Set(untracked.map(a => articleCacheKey(a))));
+          }}
           onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
         />
       </div>
@@ -1016,6 +1088,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   newArticleKeys={newArticleKeys}
                   persistedSourceAnalyses={persistedSourceAnalyses}
                   onLoad={() => loadCompetitor(comp.name)}
+                  onRecheck={() => recheckCompetitor(comp.name)}
                   onTabChange={(tab) => setCompTab(comp.name, tab)}
                 />
               );

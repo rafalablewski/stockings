@@ -1101,6 +1101,15 @@ const YearSection: React.FC<{
   const [open, setOpen] = useState(defaultOpen);
   const trackedInYear = results.filter(r => r.status === 'tracked').length;
 
+  // Split into genuinely-new filings (top) vs everything else (bottom)
+  const newEntries = results.filter(r => newAccessions.has(r.filing.accessionNumber) && r.status === 'new');
+  const oldEntries = results.filter(r => !(newAccessions.has(r.filing.accessionNumber) && r.status === 'new'));
+  const hasNewAndOld = newEntries.length > 0 && oldEntries.length > 0;
+
+  const renderRow = (r: MatchResult, i: number) => (
+    <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} onRecheck={onRecheck} recheckLoading={recheckLoading} />
+  );
+
   return (
     <div>
       <button
@@ -1130,9 +1139,16 @@ const YearSection: React.FC<{
       </button>
       {open && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-          {results.map((r, i) => (
-            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} onRecheck={onRecheck} recheckLoading={recheckLoading} />
-          ))}
+          {newEntries.map(renderRow)}
+          {hasNewAndOld && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '6px 12px', margin: '2px 0',
+            }}>
+              <span style={{ flex: 1, height: 1, background: 'color-mix(in srgb, var(--border) 40%, transparent)' }} />
+            </div>
+          )}
+          {oldEntries.map(renderRow)}
         </div>
       )}
     </div>
@@ -1463,6 +1479,32 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             {loading ? 'Fetching...' : loaded ? 'Refresh' : 'Fetch'}
           </button>
           {/* Re-check — re-read local database from disk */}
+          {/* Simulate New — dev-only: pretend some untracked filings just appeared */}
+          {loaded && (
+            <button
+              onClick={() => {
+                const untracked = results.filter(r => r.status === 'new').slice(0, 3);
+                if (untracked.length === 0) return;
+                setNewAccessions(new Set(untracked.map(r => r.filing.accessionNumber)));
+              }}
+              title="DEV: Simulate new filings appearing (picks up to 3 untracked filings)"
+              style={{
+                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+                padding: '5px 14px', borderRadius: 4,
+                color: 'rgba(200,170,100,0.5)',
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(200,170,100,0.15)',
+                cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 6,
+                transition: 'all 0.15s', outline: 'none',
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              Simulate New
+            </button>
+          )}
           {loaded && (
             <button
               onClick={recheckDB}
