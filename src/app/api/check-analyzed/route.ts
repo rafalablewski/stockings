@@ -14,7 +14,28 @@ interface AnalysisEntry {
   detail?: string; // summary, notes, or other context
 }
 
-// Normalize a headline into a set of significant keywords for local matching
+// Lightweight stemmer: strips common English suffixes so "reports" ≈ "report",
+// "announces" ≈ "announcement", "partnership" ≈ "partner", etc.
+function stem(word: string): string {
+  return word
+    .replace(/ies$/, 'y')      // companies → company
+    .replace(/ves$/, 'f')      // halves → half
+    .replace(/(ss)$/, '$1')    // keep "ss" endings (e.g. "press")
+    .replace(/ness$/, '')      // darkness → dark
+    .replace(/ment$/, '')      // announcement → announce (then further stripped)
+    .replace(/tion$/, '')      // completion → comple (close enough for matching)
+    .replace(/sion$/, '')      // expansion → expan
+    .replace(/ings$/, '')      // holdings → hold
+    .replace(/ing$/, '')       // trading → trad
+    .replace(/ated$/, 'ate')   // consolidated → consolidate
+    .replace(/ed$/, '')        // announced → announc
+    .replace(/ly$/, '')        // recently → recent
+    .replace(/er$/, '')        // partner → partn
+    .replace(/ors?$/, '')      // investors, investor → invest
+    .replace(/s$/, '');        // reports → report
+}
+
+// Normalize a headline into a set of significant stemmed keywords for local matching
 function extractKeywords(text: string): Set<string> {
   const stopWords = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','is','are','was','were','has','have','had','be','been','being','will','would','could','should','may','might','can','do','does','did','not','no','its','it','this','that','these','those','their','our','your','my','we','he','she','they','i','me','us','him','her','them','up','out','over','into','about','after','before','between','through','during','than','more','most','very','also','just','so','if','then','when','where','how','what','which','who','whom','why','all','each','every','any','few','some','new','said','says','according']);
   return new Set(
@@ -22,6 +43,8 @@ function extractKeywords(text: string): Set<string> {
       .replace(/[^a-z0-9\s]/g, ' ')
       .split(/\s+/)
       .filter(w => w.length > 2 && !stopWords.has(w))
+      .map(stem)
+      .filter(w => w.length > 2)
   );
 }
 
@@ -50,6 +73,24 @@ function daysBetween(a: string, b: string): number {
   return Math.abs(da.getTime() - db2.getTime()) / (1000 * 60 * 60 * 24);
 }
 
+// Count how many words from set A appear in set B
+function overlapCount(a: Set<string>, b: Set<string>): number {
+  let n = 0;
+  for (const w of a) { if (b.has(w)) n++; }
+  return n;
+}
+
+// Best overlap percentage in both directions: max(matches/|A|, matches/|B|)
+// This handles asymmetric lengths — a short DB entry matching a long article, or vice versa.
+function bestOverlap(a: Set<string>, b: Set<string>): { matches: number; pct: number } {
+  const matches = overlapCount(a, b);
+  const pct = Math.max(
+    a.size > 0 ? matches / a.size : 0,
+    b.size > 0 ? matches / b.size : 0,
+  );
+  return { matches, pct };
+}
+
 // Check if an article matches any existing entry using two-tier keyword overlap + date proximity
 function localMatch(articleHeadline: string, articleDate: string, analysisData: AnalysisEntry[]): boolean {
   const articleWords = extractKeywords(articleHeadline);
@@ -60,31 +101,20 @@ function localMatch(articleHeadline: string, articleDate: string, analysisData: 
 
     // Tier 1: headline-only match (high confidence — headlines are short and focused)
     const headlineWords = extractKeywords(entry.headline);
-    let headlineMatches = 0;
-    for (const w of articleWords) {
-      if (headlineWords.has(w)) headlineMatches++;
+    const h = bestOverlap(articleWords, headlineWords);
+    if (h.matches >= 3) {
+      if (gap <= 30 && h.pct >= 0.4) return true;
+      if (gap > 30 && h.pct >= 0.6) return true;
     }
-    const headlinePct = headlineMatches / articleWords.size;
-    if (headlineMatches >= 3) {
-      // Close dates (≤30 days): normal threshold.
-      // Far dates (>30 days): require higher overlap to prevent false positives.
-      if (gap <= 30 && headlinePct >= 0.4) return true;
-      if (gap > 30 && headlinePct >= 0.6) return true;
-    }
-    // 2-keyword match is OK if overlap is very high (short headlines)
-    if (headlineMatches >= 2 && headlinePct >= 0.6 && gap <= 30) return true;
+    if (h.matches >= 2 && h.pct >= 0.6 && gap <= 30) return true;
 
     // Tier 2: headline+detail match (stricter — detail fields can be long with passing mentions)
     if (entry.detail) {
       const fullWords = extractKeywords(`${entry.headline} ${entry.detail}`);
-      let fullMatches = 0;
-      for (const w of articleWords) {
-        if (fullWords.has(w)) fullMatches++;
-      }
-      const fullPct = fullMatches / articleWords.size;
-      if (fullMatches >= 3) {
-        if (gap <= 30 && fullPct >= 0.5) return true;
-        if (gap > 30 && fullPct >= 0.7) return true;
+      const f = bestOverlap(articleWords, fullWords);
+      if (f.matches >= 3) {
+        if (gap <= 30 && f.pct >= 0.5) return true;
+        if (gap > 30 && f.pct >= 0.7) return true;
       }
     }
   }
