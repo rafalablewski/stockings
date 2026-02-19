@@ -61,13 +61,16 @@ interface CachedFeed {
   fetchedAt: number; // Date.now()
 }
 
+// Cache key version — increment to bust stale session caches
+const CACHE_VERSION = 2;
+
 function getCachedFeed(ticker: string): CachedFeed | null {
   try {
-    const raw = sessionStorage.getItem(`sources_${ticker}`);
+    const raw = sessionStorage.getItem(`sources_v${CACHE_VERSION}_${ticker}`);
     if (!raw) return null;
     const parsed: CachedFeed = JSON.parse(raw);
     if (Date.now() - parsed.fetchedAt > CACHE_TTL_MS) {
-      sessionStorage.removeItem(`sources_${ticker}`);
+      sessionStorage.removeItem(`sources_v${CACHE_VERSION}_${ticker}`);
       return null;
     }
     return parsed;
@@ -77,7 +80,7 @@ function getCachedFeed(ticker: string): CachedFeed | null {
 function setCachedFeed(ticker: string, prs: ArticleItem[], news: ArticleItem[]) {
   try {
     const entry: CachedFeed = { pressReleases: prs, news, fetchedAt: Date.now() };
-    sessionStorage.setItem(`sources_${ticker}`, JSON.stringify(entry));
+    sessionStorage.setItem(`sources_v${CACHE_VERSION}_${ticker}`, JSON.stringify(entry));
   } catch { /* quota exceeded — ignore */ }
 }
 
@@ -156,22 +159,16 @@ const SourceArticleRow: React.FC<{
   const [recheckLoading, setRecheckLoading] = useState(false);
   const [localAnalyzed, setLocalAnalyzed] = useState<boolean | null>(article.analyzed ?? null);
 
-  // Sync with parent prop when it changes (e.g. from header-level re-check).
-  // Once tracked (via ref), never allow demotion regardless of parent value.
+  // Sync with parent prop. Promote-only: once tracked, never demote.
+  // DB is append-only so a tracked article should stay tracked.
   useEffect(() => {
     const parentVal = article.analyzed ?? null;
-    if (parentVal === true) everTrackedRef.current = true;
-    setLocalAnalyzed(everTrackedRef.current ? true : parentVal);
+    setLocalAnalyzed(prev => (prev === true && parentVal !== true) ? true : parentVal);
   }, [article.analyzed]);
 
-  // Once-tracked ref: survives re-renders and cannot be reset by state updates.
-  // DB is append-only, so an article confirmed tracked should never become untracked.
-  const everTrackedRef = useRef(localAnalyzed === true || getTrackedOverride(article) === true);
-  if (localAnalyzed === true && !everTrackedRef.current) everTrackedRef.current = true;
-
   const handleRecheck = async () => {
-    // Already confirmed tracked — DB is append-only, no need to re-check
-    if (everTrackedRef.current) return;
+    // Already tracked — DB is append-only, skip the API call entirely
+    if (localAnalyzed === true) return;
 
     setRecheckLoading(true);
     try {
@@ -183,11 +180,8 @@ const SourceArticleRow: React.FC<{
       if (res.ok) {
         const data = await res.json();
         const result = data.results?.[0]?.analyzed ?? null;
-        if (result === true) {
-          everTrackedRef.current = true;
-          setTrackedOverride(article, true);
-        }
         setLocalAnalyzed(result);
+        if (result === true) setTrackedOverride(article, true);
       }
     } catch { /* best-effort */ }
     finally { setRecheckLoading(false); }
@@ -781,6 +775,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const [lastFetchedAt, setLastFetchedAt] = useState<number | null>(null);
   const [methodologyOpen, setMethodologyOpen] = useState(false);
   const [matchMethod, setMatchMethod] = useState<'ai' | 'local' | 'hybrid' | null>(null);
+  const [forceLocal, setForceLocal] = useState(false);
 
   // Track genuinely new articles: only those appearing after a refresh that weren't in the previous load
   const knownArticleKeysRef = useRef<Set<string>>(new Set());
@@ -798,18 +793,20 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       const res = await fetch('/api/check-analyzed', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker, articles: articles.map(a => ({ headline: a.headline, date: a.date })) }),
+        body: JSON.stringify({ ticker, articles: articles.map(a => ({ headline: a.headline, date: a.date })), forceLocal }),
       });
       if (!res.ok) throw new Error(`AI check failed: ${res.status}`);
       const data = await res.json();
       if (!data.results) throw new Error(data.error || 'No results returned');
       if (data.method) setMatchMethod(data.method);
+      const trackedCount = data.results.filter((r: { analyzed: boolean }) => r.analyzed === true).length;
+      console.log(`[SharedSourcesTab] check-analyzed: ${trackedCount}/${data.results.length} tracked (method: ${data.method}, dbEntries: ${data.dbEntries ?? '?'}${data.reason ? ', reason: ' + data.reason : ''})`);
       return articles.map((article, i) => ({ ...article, analyzed: data.results?.[i]?.analyzed ?? null }));
     } catch (err) {
       console.error('[SharedSourcesTab] AI check error:', err);
       return articles.map(a => ({ ...a, analyzed: null }));
     }
-  }, [ticker]);
+  }, [ticker, forceLocal]);
 
   // Fetch new articles from news/PR APIs
   const loadMainCard = useCallback(async () => {
@@ -1137,6 +1134,47 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         </div>
       )}
 
+      {/* AI / Local toggle */}
+      {(mainCard.loaded || loadedCount > 0) && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 4px 12px' }}>
+          <button
+            onClick={() => setForceLocal(prev => !prev)}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              padding: '4px 10px', borderRadius: 6,
+              border: '1px solid var(--border)', background: 'var(--surface2)',
+              cursor: 'pointer', fontSize: 10, fontFamily: 'Space Mono, monospace',
+              color: forceLocal ? 'var(--gold)' : 'var(--sky)',
+            }}
+          >
+            <span style={{
+              width: 24, height: 12, borderRadius: 6, position: 'relative',
+              background: forceLocal ? 'var(--gold-dim)' : 'var(--sky-dim)',
+              border: `1px solid ${forceLocal ? 'var(--gold)' : 'var(--sky)'}`,
+              transition: 'background 0.2s',
+            }}>
+              <span style={{
+                position: 'absolute', top: 1, width: 8, height: 8, borderRadius: '50%',
+                background: forceLocal ? 'var(--gold)' : 'var(--sky)',
+                left: forceLocal ? 13 : 1,
+                transition: 'left 0.2s',
+              }} />
+            </span>
+            {forceLocal ? 'Local only' : 'AI + Local'}
+          </button>
+          {matchMethod && (
+            <span style={{
+              fontSize: 10, fontFamily: 'Space Mono, monospace',
+              padding: '2px 8px', borderRadius: 5,
+              background: matchMethod === 'local' ? 'var(--gold-dim)' : 'var(--sky-dim)',
+              color: matchMethod === 'local' ? 'var(--gold)' : 'var(--sky)',
+            }}>
+              {matchMethod === 'ai' ? 'AI' : matchMethod === 'hybrid' ? 'hybrid' : 'local'}
+            </span>
+          )}
+        </div>
+      )}
+
       <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#main-feed</div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <CompanyFeedCard
@@ -1336,15 +1374,18 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             {/* ── DATA EXTRACTION ─────────────────────────── */}
             <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Data Extraction</div>
             <div style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', lineHeight: 2 }}>
-              <div>Reads all <code style={{ padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>.ts</code> files per ticker from disk (bypasses bundler cache).</div>
+              <div>Queries Neon PostgreSQL via Drizzle ORM — 4 tables in parallel.</div>
               <div style={{ marginTop: 4 }}>
-                <span style={{ color: 'var(--text3)' }}>Date fields:</span> date, timeline
+                <span style={{ color: 'var(--text3)' }}>Tables:</span> timeline_events, sec_filings, catalysts, partner_news
               </div>
               <div>
-                <span style={{ color: 'var(--text3)' }}>Headline fields:</span> headline, title, event, description
+                <span style={{ color: 'var(--text3)' }}>Headline fields:</span> event, description, headline
               </div>
               <div>
-                <span style={{ color: 'var(--text3)' }}>Detail fields:</span> summary, notes, details, significance, thesisComparison, astsRelevance, astsImplication, astsComparison, bmnrImplication, bmnrComparison, crclComparison
+                <span style={{ color: 'var(--text3)' }}>Detail fields:</span> details, period, category, summary
+              </div>
+              <div>
+                <span style={{ color: 'var(--text3)' }}>Dedup:</span> normalized headline (first 80 chars)
               </div>
             </div>
 
@@ -1355,14 +1396,19 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Local Matching</div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               {/* Node: Extract */}
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Extract keywords (stop words removed, &gt;2 chars)</div>
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Extract keywords (stop words removed, stemmed, &gt;2 chars)</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              {/* Stemming note */}
+              <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Stemmer: -s, -ed, -ing, -tion, -ment, -ies, -ly, -er, -or</div>
+              <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Overlap: max(article→DB, DB→article) — bidirectional</div>
               <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
               {/* Tier 1 row */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
                   <div>Tier 1: Headline only</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&le;5 days: &ge;50%, &ge;3 kw</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>&gt;5 days: &ge;75%, &ge;3 kw</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&le;30 days: &ge;40%, &ge;3 kw</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>&gt;30 days: &ge;60%, &ge;3 kw</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>short: &ge;60%, &ge;2 kw, &le;30d</div>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
                   Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
@@ -1375,8 +1421,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
                   <div>Tier 2: Headline + detail</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&le;5 days: &ge;65%, &ge;4 kw</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>&gt;5 days: &ge;85%, &ge;4 kw</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&le;30 days: &ge;50%, &ge;3 kw</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>&gt;30 days: &ge;70%, &ge;3 kw</div>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
                   Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
@@ -1391,7 +1437,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>UNTRACKED</span>
               </div>
               {/* Date proximity note */}
-              <div style={{ marginTop: 8, padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', fontStyle: 'italic', textAlign: 'center' }}>Date proximity guard: recurring weekly reports<br />require higher overlap when dates are &gt;5 days apart</div>
+              <div style={{ marginTop: 8, padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', fontStyle: 'italic', textAlign: 'center' }}>Date proximity guard: recurring reports<br />require higher overlap when dates are &gt;30 days apart</div>
             </div>
 
             {/* Divider */}
@@ -1408,8 +1454,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 </div>
               </div>
               <div>
-                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Kill Switch</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Controls</span>
                 <div style={{ marginTop: 4 }}>
+                  <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace' }}>UI toggle</span>
+                  <span style={{ margin: '0 8px', color: 'var(--text3)' }}>|</span>
                   <code style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>DISABLE_AI_MATCHING=true</code>
                   <span style={{ margin: '0 8px', color: 'var(--text3)' }}>|</span>
                   <code style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>MAX_PROMPT_TOKENS=40000</code>
