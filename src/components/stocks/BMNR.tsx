@@ -8030,7 +8030,7 @@ const TimelineTab = () => {
     if (secFilter === 'All') return true;
     if (secFilter === 'S-1/S-3') return f.type === 'S-1' || f.type === 'S-3' || f.type === 'S-3ASR' || f.type === 'S-8';
     if (secFilter === '424B') return f.type === '424B4' || f.type === '424B5';
-    if (secFilter === 'Form 4') return f.type === '3' || f.type === '4' || f.type === '5';
+    if (secFilter === 'Form 4') return f.type === 'Form 3' || f.type === 'Form 4' || f.type === 'Form 4/A' || f.type === 'Form 5';
     if (secFilter === 'Proxy') return f.type === 'DEF 14A' || f.type === 'DEFA14A' || f.type === 'DEFR14A' || f.type === 'PRE 14A' || f.type === 'DEF 14C' || f.type === 'PRE 14C';
     if (secFilter === 'SC 13D/G') return f.type === 'SC 13D' || f.type === 'SC 13G/A';
     return f.type === secFilter;

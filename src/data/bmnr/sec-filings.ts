@@ -4,7 +4,7 @@
  * Update when new filings are processed.
  *
  * COVERAGE: Oct 2020 (Form 10-12G shell registration) through Feb 2026
- * TOTAL FILINGS TRACKED: 111
+ * TOTAL FILINGS TRACKED: 112
  *
  * ═══════════════════════════════════════════════════════════════════════
  * AI AGENT — MANDATORY PR INGESTION CHECKLIST (DO NOT SKIP):
@@ -42,6 +42,7 @@ export const BMNR_SEC_FILINGS = [
   { date: 'Feb 9, 2026', type: 'S-8', description: '2025 Omnibus Incentive Plan Registration', period: '—', color: 'cyan' },
   { date: 'Feb 9, 2026', type: '8-K', description: '4.326M ETH Holdings Update ($10.0B Total)', period: '—', color: 'yellow' },
   { date: 'Jan 28, 2026', type: '8-K', description: 'Nelson Separation Agreement (President Terminated Without Cause)', period: '—', color: 'yellow' },
+  { date: 'Jan 27, 2026', type: 'Form 4/A', description: 'Tom Lee: 1.5M RSU Grant, 500K Vested, ~232K Tax-Withheld ($6.7M @ $28.84)', period: '—', color: 'green' },
   { date: 'Jan 15, 2026', type: '8-K', description: '2026 Annual Stockholder Meeting + Investor Presentation', period: '—', color: 'yellow' },
   { date: 'Jan 13, 2026', type: '10-Q', description: 'Quarterly Report (Q1 FY2026) - First Staking Revenue', period: 'Q1 2026', color: 'purple' },
   { date: 'Jan 2, 2026', type: 'DEFA14A', description: 'Proxy Solicitation - Chairman\'s Message', period: '—', color: 'cyan' },
@@ -173,7 +174,7 @@ export const BMNR_SEC_META = {
   exchange: 'NYSE American',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 17, 2026', title: '4,371,497 ETH Holdings Update — $9.6B Total, Staking 3.04M (69.5%)' },
-  totalFilingsTracked: 111
+  totalFilingsTracked: 112
 };
 
 // Color palette constants (reduce duplication per Gemini review)
@@ -196,7 +197,7 @@ export const BMNR_SEC_TYPE_COLORS: Record<string, { bg: string; text: string }> 
   '424B4': C_ORANGE, '424B5': C_ORANGE,
   'DEFA14A': C_CYAN, 'DEF 14A': C_CYAN, 'DEFR14A': C_CYAN,
   'DEF 14C': C_CYAN, 'PRE 14A': C_CYAN, 'PRE 14C': C_CYAN,
-  'Form 3': C_GREEN, 'Form 4': C_GREEN, 'Form 5': C_GREEN,
+  'Form 3': C_GREEN, 'Form 4': C_GREEN, 'Form 4/A': C_GREEN, 'Form 5': C_GREEN,
   'Form D': C_GREEN, 'Form D/A': C_GREEN,
   'SC 13D': C_GREEN, 'SC 13G': C_GREEN, 'SC 13G/A': C_GREEN, 'SC 13D/A': C_GREEN,
   'CORRESP': C_CYAN_DIM, 'RW': C_CYAN_DIM,
@@ -237,6 +238,10 @@ export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: stri
   '8-K|2026-01-28': [
     { source: 'timeline', data: "Erik Nelson terminated as President without cause; $605K total severance" },
     { source: 'catalysts', data: "Nelson terminated; $605K severance; non-compete waived" },
+  ],
+  'Form 4/A|2026-01-27': [
+    { source: 'capital', data: "Tom Lee: 1.5M RSUs granted (500K immediate, 500K 1-yr, 500K 2-yr); 231,700 shares tax-withheld @ $28.84 (~$6.7M)" },
+    { source: 'timeline', data: "Tom Lee Form 4/A: 1.5M RSU grant, 500K vested, 231,700 tax-withheld; ownership 726,722 direct + 222,222 indirect + 1M unvested RSUs" },
   ],
   '8-K|2026-01-15': [
     { source: 'catalysts', data: "Annual meeting: 81% YES on 50B auth shares; all proposals approved; 500K+ stockholders" },

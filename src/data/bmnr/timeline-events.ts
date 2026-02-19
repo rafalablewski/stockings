@@ -75,6 +75,23 @@ export const BMNR_TIMELINE_EVENTS = [
     notes: 'Bitmine registered shares under the 2025 Omnibus Incentive Plan via Form S-8. Filed by Chi Tsang (CEO) with Winston & Strawn LLP as legal counsel. Signed by full board: Chi Tsang (CEO/Director), Young Kim (CFO/COO/Director), Thomas Lee (Executive Chairman), Michael Maloney, Lori Love, David Sharbutt, Jason Edgeworth, Olivia Howe, Robert Sechan. Incorporates by reference recent 10-K, 10-Q, and 8-K filings. Standard equity compensation registration for employee/director incentive plan.',
     impact: 'neutral'
   },
+  // === JANUARY 27, 2026 - TOM LEE FORM 4/A (RSU GRANT + TAX WITHHOLDING) ===
+  {
+    date: '2026-01-27',
+    source: 'SEC Filing (Form 4/A)',
+    category: 'SEC Filing',
+    title: '📋 Tom Lee Form 4/A: 1.5M RSU Grant, 500K Vested, 232K Tax-Withheld (~$6.7M)',
+    changes: [
+      { metric: 'RSU Grant', previous: '—', new: '1,500,000 RSUs', change: '500K immediate + 500K 1-yr + 500K 2-yr' },
+      { metric: 'Vested to Common', previous: '—', new: '500,000 shares', change: 'M code, $0 conversion price' },
+      { metric: 'Tax Withholding', previous: '—', new: '231,700 shares', change: '@ $28.84/share (~$6.7M)' },
+      { metric: 'Direct Ownership', previous: 'Unknown', new: '726,722 shares', change: 'Post-transaction' },
+      { metric: 'Indirect Ownership', previous: 'Unknown', new: '222,222 shares', change: 'Thomas J Lee 2012 Trust' },
+      { metric: 'Unvested RSUs', previous: '—', new: '1,000,000', change: '500K @ 1-yr + 500K @ 2-yr' },
+    ],
+    notes: 'Amended Form 4 for Lee Thomas Jong (Tom Lee), Executive Chairman. Original filed Jan 27; amendment corrects omission of 231,700 tax-withheld shares. RSU grant of 1.5M units under 2025 Omnibus Incentive Plan. Post-transaction: 726,722 direct + 222,222 indirect (Thomas J Lee 2012 Trust) + 1M unvested RSUs.',
+    impact: 'neutral'
+  },
   // === JANUARY 28, 2026 - NELSON SEPARATION AGREEMENT ===
   {
     date: '2026-01-28',
