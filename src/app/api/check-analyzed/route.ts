@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { ticker, articles } = body as { ticker: string; articles: Article[] };
+    const { ticker, articles, forceLocal } = body as { ticker: string; articles: Article[]; forceLocal?: boolean };
 
     if (!ticker || !articles?.length) {
       return NextResponse.json({ error: 'Missing ticker or articles' }, { status: 400 });
@@ -220,8 +220,8 @@ export async function POST(request: NextRequest) {
       console.log(`[check-analyzed] ${ticker}: NO ANTHROPIC_API_KEY set — local only. ${localMatchCount}/${articles.length} matched, ${analysisData.length} DB entries`);
       return NextResponse.json({ ticker, results: localResults, method: 'local', dbEntries: analysisData.length, reason: 'no_api_key' });
     }
-    if (DISABLE_AI_MATCHING === 'true') {
-      console.log(`[check-analyzed] ${ticker}: AI matching disabled via DISABLE_AI_MATCHING`);
+    if (DISABLE_AI_MATCHING === 'true' || forceLocal) {
+      console.log(`[check-analyzed] ${ticker}: AI matching disabled (${forceLocal ? 'client toggle' : 'env var'}). ${localMatchCount}/${articles.length} matched, ${analysisData.length} DB entries`);
       return NextResponse.json({ ticker, results: localResults, method: 'local', dbEntries: analysisData.length });
     }
 
