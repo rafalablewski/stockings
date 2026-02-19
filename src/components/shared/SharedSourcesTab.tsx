@@ -156,23 +156,16 @@ const SourceArticleRow: React.FC<{
   const [recheckLoading, setRecheckLoading] = useState(false);
   const [localAnalyzed, setLocalAnalyzed] = useState<boolean | null>(article.analyzed ?? null);
 
-  // Once-tracked ref: survives re-renders and cannot be reset by state updates.
-  // DB is append-only, so an article confirmed tracked should never become untracked.
-  // MUST be declared before the useEffect that references it.
-  const everTrackedRef = useRef(article.analyzed === true || getTrackedOverride(article) === true);
-  if (localAnalyzed === true && !everTrackedRef.current) everTrackedRef.current = true;
-
-  // Sync with parent prop when it changes (e.g. from header-level re-check).
-  // Once tracked (via ref), never allow demotion regardless of parent value.
+  // Sync with parent prop. Promote-only: once tracked, never demote.
+  // DB is append-only so a tracked article should stay tracked.
   useEffect(() => {
     const parentVal = article.analyzed ?? null;
-    if (parentVal === true) everTrackedRef.current = true;
-    setLocalAnalyzed(everTrackedRef.current ? true : parentVal);
+    setLocalAnalyzed(prev => (prev === true && parentVal !== true) ? true : parentVal);
   }, [article.analyzed]);
 
   const handleRecheck = async () => {
-    // Already confirmed tracked — DB is append-only, no need to re-check
-    if (everTrackedRef.current) return;
+    // Already tracked — DB is append-only, skip the API call entirely
+    if (localAnalyzed === true) return;
 
     setRecheckLoading(true);
     try {
@@ -184,11 +177,8 @@ const SourceArticleRow: React.FC<{
       if (res.ok) {
         const data = await res.json();
         const result = data.results?.[0]?.analyzed ?? null;
-        if (result === true) {
-          everTrackedRef.current = true;
-          setTrackedOverride(article, true);
-        }
         setLocalAnalyzed(result);
+        if (result === true) setTrackedOverride(article, true);
       }
     } catch { /* best-effort */ }
     finally { setRecheckLoading(false); }
