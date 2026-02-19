@@ -37,12 +37,12 @@
 
 export const BMNR_SEC_FILINGS = [
   // === 2026 ===
+  { date: 'Feb 17, 2026', type: 'Form 4/A', description: 'Tom Lee: 1.5M RSU Grant, 500K Vested, ~232K Tax-Withheld ($6.7M @ $28.84)', period: '—', color: 'green' },
   { date: 'Feb 17, 2026', type: '8-K', description: '4.371M ETH Holdings Update ($9.6B Total, Staking 3.04M)', period: '—', color: 'yellow' },
   { date: 'Feb 11, 2026', type: '8-K', description: 'CoinDesk Consensus 2026 Presentation (Tom Lee, Chairman)', period: '—', color: 'yellow' },
   { date: 'Feb 9, 2026', type: 'S-8', description: '2025 Omnibus Incentive Plan Registration', period: '—', color: 'cyan' },
   { date: 'Feb 9, 2026', type: '8-K', description: '4.326M ETH Holdings Update ($10.0B Total)', period: '—', color: 'yellow' },
   { date: 'Jan 28, 2026', type: '8-K', description: 'Nelson Separation Agreement (President Terminated Without Cause)', period: '—', color: 'yellow' },
-  { date: 'Jan 27, 2026', type: 'Form 4/A', description: 'Tom Lee: 1.5M RSU Grant, 500K Vested, ~232K Tax-Withheld ($6.7M @ $28.84)', period: '—', color: 'green' },
   { date: 'Jan 15, 2026', type: '8-K', description: '2026 Annual Stockholder Meeting + Investor Presentation', period: '—', color: 'yellow' },
   { date: 'Jan 13, 2026', type: '10-Q', description: 'Quarterly Report (Q1 FY2026) - First Staking Revenue', period: 'Q1 2026', color: 'purple' },
   { date: 'Jan 2, 2026', type: 'DEFA14A', description: 'Proxy Solicitation - Chairman\'s Message', period: '—', color: 'cyan' },
@@ -226,6 +226,10 @@ export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: stri
     { source: 'timeline', data: "S-8 filed for 2025 Omnibus Incentive Plan; signed by full board" },
     { source: 'capital', data: "2025 Omnibus Incentive Plan registered" },
   ],
+  'Form 4/A|2026-02-17': [
+    { source: 'capital', data: "Tom Lee: 1.5M RSUs granted (500K immediate, 500K 1-yr, 500K 2-yr); 231,700 shares tax-withheld @ $28.84 (~$6.7M)" },
+    { source: 'timeline', data: "Tom Lee Form 4/A: 1.5M RSU grant, 500K vested, 231,700 tax-withheld; ownership 726,722 direct + 222,222 indirect + 1M unvested RSUs" },
+  ],
   '8-K|2026-02-17': [
     { source: 'company', data: "ethHoldings: 4,371,497 ETH; ethPrice: $1,998; stakedETH: 3,040,483; CESR: 2.84%; cash: $670M" },
     { source: 'timeline', data: "ETH Holdings 4.371M ($9.6B total); staking 3.04M (69.5%); MAVAN Q1 2026 on track" },
@@ -238,10 +242,6 @@ export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: stri
   '8-K|2026-01-28': [
     { source: 'timeline', data: "Erik Nelson terminated as President without cause; $605K total severance" },
     { source: 'catalysts', data: "Nelson terminated; $605K severance; non-compete waived" },
-  ],
-  'Form 4/A|2026-01-27': [
-    { source: 'capital', data: "Tom Lee: 1.5M RSUs granted (500K immediate, 500K 1-yr, 500K 2-yr); 231,700 shares tax-withheld @ $28.84 (~$6.7M)" },
-    { source: 'timeline', data: "Tom Lee Form 4/A: 1.5M RSU grant, 500K vested, 231,700 tax-withheld; ownership 726,722 direct + 222,222 indirect + 1M unvested RSUs" },
   ],
   '8-K|2026-01-15': [
     { source: 'catalysts', data: "Annual meeting: 81% YES on 50B auth shares; all proposals approved; 500K+ stockholders" },
