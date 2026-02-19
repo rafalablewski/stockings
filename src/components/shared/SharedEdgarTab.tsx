@@ -442,13 +442,20 @@ const FilingRow: React.FC<{
     setCommitMessage("");
   };
 
+  const isErrorAnalysis = (text: string | null) => !!text && (text.startsWith('Error:') || text === 'No analysis returned.' || text === 'AI analysis failed');
+
   const handleAnalyze = async () => {
-    if (analysis) {
+    const isError = isErrorAnalysis(analysis);
+    if (analysis && !isError) {
       setAnalysis(null); removeAnalysisCache(ticker, accession); resetWorkflowState(); setExpanded(false);
       // Also remove from persistent storage (fire-and-forget)
       fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'edgar', key: accession, text: null }) }).catch(() => {});
       return;
     } // toggle off
+    // If previous result was an error, clear it before retrying
+    if (isError) {
+      setAnalysis(null); removeAnalysisCache(ticker, accession); resetWorkflowState();
+    }
     setAnalyzing(true);
     setExpanded(true);
     try {
@@ -465,14 +472,18 @@ const FilingRow: React.FC<{
       });
       const data = await res.json();
       const text = data.analysis || data.error || 'No analysis returned.';
+      const failed = isErrorAnalysis(text);
       setAnalysis(text);
       setAnalysisCache(ticker, accession, text);
-      // Persist to disk (fire-and-forget)
-      fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'edgar', key: accession, text }) }).catch(() => {});
+      // Only persist successful analyses to Postgres (don't save error strings)
+      if (!failed) {
+        fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'edgar', key: accession, text }) }).catch(() => {});
+      }
     } catch (err) {
       const errText = `Error: ${(err as Error).message}`;
       setAnalysis(errText);
       setAnalysisCache(ticker, accession, errText);
+      // Don't persist errors to Postgres
     } finally {
       setAnalyzing(false);
     }

@@ -171,12 +171,19 @@ const SourceArticleRow: React.FC<{
     ? 'Not checked' : localAnalyzed ? 'In analysis' : 'Not in analysis';
   const tc = SOURCE_TYPE_COLORS[type];
 
+  const isErrorAnalysis = (text: string | null) => !!text && (text.startsWith('Error:') || text === 'No analysis returned.' || text === 'AI analysis failed');
+
   const handleAnalyze = async () => {
-    if (aiAnalysis) {
+    const isError = isErrorAnalysis(aiAnalysis);
+    if (aiAnalysis && !isError) {
       setAiAnalysis(null); removeSourceAnalysisCache(ticker, cacheKey); setExpanded(false);
       // Also remove from persistent storage (fire-and-forget)
       fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'sources', key: cacheKey, text: null }) }).catch(() => {});
       return;
+    }
+    // If previous result was an error, clear it before retrying
+    if (isError) {
+      setAiAnalysis(null); removeSourceAnalysisCache(ticker, cacheKey);
     }
     setAnalyzing(true);
     setExpanded(true);
@@ -194,14 +201,18 @@ const SourceArticleRow: React.FC<{
       });
       const data = await res.json();
       const text = data.analysis || data.error || 'No analysis returned.';
+      const failed = isErrorAnalysis(text);
       setAiAnalysis(text);
       setSourceAnalysisCache(ticker, cacheKey, text);
-      // Persist to disk (fire-and-forget)
-      fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'sources', key: cacheKey, text }) }).catch(() => {});
+      // Only persist successful analyses to Postgres (don't save error strings)
+      if (!failed) {
+        fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'sources', key: cacheKey, text }) }).catch(() => {});
+      }
     } catch (err) {
       const errText = `Error: ${(err as Error).message}`;
       setAiAnalysis(errText);
       setSourceAnalysisCache(ticker, cacheKey, errText);
+      // Don't persist errors to Postgres
     } finally {
       setAnalyzing(false);
     }
@@ -832,18 +843,30 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
   }, [ticker, checkAnalyzed]);
 
-  // Re-check whether current articles have been added to the database
+  // Re-check whether current articles have been added to the database.
+  // Only promotes articles (untracked→tracked), never demotes (tracked→untracked).
+  // The DB is append-only, so a previously-tracked article should stay tracked.
+  // This prevents AI non-determinism from flipping green dots to red on re-check.
   const recheckMainCard = useCallback(async () => {
     setAiChecking(true);
     try {
       const all = [...mainCard.pressReleases, ...mainCard.news];
       if (all.length === 0) return;
       const checked = await checkAnalyzed(all);
-      setMainCard(prev => ({
-        ...prev,
-        pressReleases: checked.slice(0, prev.pressReleases.length),
-        news: checked.slice(prev.pressReleases.length),
-      }));
+      setMainCard(prev => {
+        const prLen = prev.pressReleases.length;
+        return {
+          ...prev,
+          pressReleases: checked.slice(0, prLen).map((article, i) => ({
+            ...article,
+            analyzed: (article.analyzed === true || prev.pressReleases[i]?.analyzed === true) ? true : article.analyzed,
+          })),
+          news: checked.slice(prLen).map((article, i) => ({
+            ...article,
+            analyzed: (article.analyzed === true || prev.news[i]?.analyzed === true) ? true : article.analyzed,
+          })),
+        };
+      });
     } catch { /* handled */ }
     finally { setAiChecking(false); }
   }, [mainCard.pressReleases, mainCard.news, checkAnalyzed]);
@@ -855,7 +878,21 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     try {
       const all = [...card.pressReleases, ...card.news];
       const checked = await checkAnalyzed(all);
-      setCompCards(prev => ({ ...prev, [name]: { ...prev[name], pressReleases: checked.slice(0, card.pressReleases.length), news: checked.slice(card.pressReleases.length) } }));
+      setCompCards(prev => {
+        const prevCard = prev[name];
+        const prLen = prevCard.pressReleases.length;
+        return { ...prev, [name]: {
+          ...prevCard,
+          pressReleases: checked.slice(0, prLen).map((article, i) => ({
+            ...article,
+            analyzed: (article.analyzed === true || prevCard.pressReleases[i]?.analyzed === true) ? true : article.analyzed,
+          })),
+          news: checked.slice(prLen).map((article, i) => ({
+            ...article,
+            analyzed: (article.analyzed === true || prevCard.news[i]?.analyzed === true) ? true : article.analyzed,
+          })),
+        }};
+      });
     } catch { /* handled */ }
     finally { setCompAiChecking(prev => ({ ...prev, [name]: false })); }
   }, [compCards, checkAnalyzed]);

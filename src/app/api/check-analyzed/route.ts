@@ -25,10 +25,28 @@ function extractKeywords(text: string): Set<string> {
   );
 }
 
-// Days between two date strings (YYYY-MM-DD). Returns Infinity on parse failure.
+// Parse a date string that may be in non-standard formats from the DB.
+// Handles: "2026-02-17", "Feb 17, 2026", "Sep 3-15, 2025" (range → first date),
+// "Q1 2026" → Jan 2026, "Q2 2025" → Apr 2025, "2026" → Jan 1 2026, etc.
+function parseFlexibleDate(s: string): Date | null {
+  if (!s) return null;
+  // Strip range suffixes: "Sep 3-15, 2025" → "Sep 3, 2025"
+  const cleaned = s.replace(/(\d+)-\d+/, '$1');
+  const d = new Date(cleaned);
+  if (!isNaN(d.getTime())) return d;
+  // Quarter format: "Q1 2026" → month 0, "Q2 2026" → month 3, etc.
+  const qMatch = s.match(/Q([1-4])\s+(\d{4})/);
+  if (qMatch) return new Date(+qMatch[2], (+qMatch[1] - 1) * 3, 1);
+  // Plain year: "2026" → Jan 1
+  const yMatch = s.match(/^(\d{4})$/);
+  if (yMatch) return new Date(+yMatch[1], 0, 1);
+  return null;
+}
+
+// Days between two date strings. Returns Infinity on parse failure.
 function daysBetween(a: string, b: string): number {
-  const da = new Date(a), db2 = new Date(b);
-  if (isNaN(da.getTime()) || isNaN(db2.getTime())) return Infinity;
+  const da = parseFlexibleDate(a), db2 = parseFlexibleDate(b);
+  if (!da || !db2) return Infinity;
   return Math.abs(da.getTime() - db2.getTime()) / (1000 * 60 * 60 * 24);
 }
 
