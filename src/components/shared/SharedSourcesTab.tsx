@@ -785,8 +785,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         const checked = await checkAnalyzed(allArticles);
         setMainCard(prev => ({
           ...prev,
-          pressReleases: checked.slice(0, prev.pressReleases.length),
-          news: checked.slice(prev.pressReleases.length),
+          pressReleases: checked.slice(0, prs.length),
+          news: checked.slice(prs.length),
         }));
       } catch { /* handled */ }
       finally { setAiChecking(false); }
