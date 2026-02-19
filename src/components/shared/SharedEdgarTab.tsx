@@ -1101,6 +1101,15 @@ const YearSection: React.FC<{
   const [open, setOpen] = useState(defaultOpen);
   const trackedInYear = results.filter(r => r.status === 'tracked').length;
 
+  // Split into genuinely-new filings (top) vs everything else (bottom)
+  const newEntries = results.filter(r => newAccessions.has(r.filing.accessionNumber) && r.status === 'new');
+  const oldEntries = results.filter(r => !(newAccessions.has(r.filing.accessionNumber) && r.status === 'new'));
+  const hasNewAndOld = newEntries.length > 0 && oldEntries.length > 0;
+
+  const renderRow = (r: MatchResult, i: number) => (
+    <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} onRecheck={onRecheck} recheckLoading={recheckLoading} />
+  );
+
   return (
     <div>
       <button
@@ -1130,9 +1139,16 @@ const YearSection: React.FC<{
       </button>
       {open && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-          {results.map((r, i) => (
-            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} onRecheck={onRecheck} recheckLoading={recheckLoading} />
-          ))}
+          {newEntries.map(renderRow)}
+          {hasNewAndOld && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '6px 12px', margin: '2px 0',
+            }}>
+              <span style={{ flex: 1, height: 1, background: 'color-mix(in srgb, var(--border) 40%, transparent)' }} />
+            </div>
+          )}
+          {oldEntries.map(renderRow)}
         </div>
       )}
     </div>
