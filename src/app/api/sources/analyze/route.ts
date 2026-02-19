@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
  * Body: { url: string, headline: string, source?: string, date?: string, ticker: string }
  */
 export async function POST(request: NextRequest) {
-  const ANTHROPIC_API_KEY = (process.env as Record<string, string | undefined>)['ANTHROPIC_API_KEY'] || '';
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || '';
 
   try {
     const { url, headline, source, date, ticker } = await request.json();
