@@ -26,10 +26,10 @@ import type { DataMetadata, CashRunwayScenario } from '../shared/types';
 // ============================================================================
 
 export const CAPITAL_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-09',
-  source: 'Feb 9, 2026 S-8 (2025 Omnibus Incentive Plan)',
+  lastUpdated: '2026-02-19',
+  source: 'Jan 27, 2026 Form 4/A (Tom Lee RSU Grant + Tax Withholding)',
   nextExpectedUpdate: 'Q2 FY26 10-Q or DEF 14A proxy',
-  notes: 'Simple single-class structure supports rapid ATM execution. S-8 filed Feb 9 for 2025 Omnibus Incentive Plan.',
+  notes: 'Simple single-class structure supports rapid ATM execution. S-8 filed Feb 9 for 2025 Omnibus Incentive Plan. Tom Lee Form 4/A: 1.5M RSU grant, 231,700 tax-withheld shares.',
 };
 
 // ============================================================================
@@ -216,11 +216,11 @@ export const MAJOR_SHAREHOLDERS = [
   },
   {
     name: 'Tom Lee',
-    shares: null,
+    shares: 726722,
     percent: null,
     type: 'Individual',
-    source: 'Jan 15, 2026 8-K',
-    notes: 'Chairman of the Board',
+    source: 'Jan 27, 2026 Form 4/A',
+    notes: 'Executive Chairman, Director, 10% Owner. 726,722 direct + 222,222 indirect (Thomas J Lee 2012 Trust) + 1,000,000 unvested RSUs. Received 1.5M RSU grant (500K immediate, 500K 1-yr, 500K 2-yr); 231,700 shares tax-withheld @ $28.84 (~$6.7M).',
   },
 ];
 
@@ -373,6 +373,33 @@ export const INSIDER_SALES_SUMMARY = {
 };
 
 // ============================================================================
+// INSIDER GRANTS (FORM 4 FILINGS — RSU/OPTION GRANTS)
+// ============================================================================
+
+/**
+ * Insider equity grants from Form 4 filings.
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - Update when new Form 4 filings show RSU/option grants
+ * - Track vesting schedules
+ */
+export const INSIDER_GRANTS = [
+  {
+    name: 'Tom Lee (Executive Chairman)',
+    rsusGranted: 1500000,
+    vestingSchedule: '500K immediate, 500K at 1-yr, 500K at 2-yr',
+    sharesVested: 500000,
+    sharesWithheldForTax: 231700,
+    taxWithholdPrice: 28.84,
+    unvestedRSUs: 1000000,
+    transactionDate: '2026-01-23',
+    filingDate: '2026-01-27',
+    filingType: 'Form 4/A',
+    notes: 'Amendment corrects prior omission of 231,700 tax-withheld shares. Under 2025 Omnibus Incentive Plan.',
+  },
+];
+
+// ============================================================================
 // EARLY SHAREHOLDERS (2021 SC 13D FILINGS — PRE-IPO SHELL ERA)
 // ============================================================================
 
@@ -482,7 +509,7 @@ export const getFDShares = (currentShares: number) => ({
   prefunded: WARRANTS[0].shares,
   advisor: WARRANTS[1].shares,
   options: 0,
-  rsus: 0,
+  rsus: 1000000,
 });
 
 /**

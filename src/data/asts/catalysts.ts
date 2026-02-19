@@ -239,6 +239,8 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
  */
 export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   // === 2026 ===
+  { event: '$1B 2.25% Convertible Notes Indenture Settled (U.S. Bank Trust trustee; ~$983.7M net)', date: 'Feb 17, 2026', category: 'Financing' },
+  { event: 'Vodafone SC 13D/A: Dropped below 5% threshold (dilution, no sales; 14.5M shares)', date: 'Feb 17, 2026', category: 'Corporate' },
   { event: '$1B 2.25% Convertible Notes + $614M Registered Directs + $296.5M Notes Repurchased', date: 'Feb 11, 2026', category: 'Financing' },
   { event: 'BB6 Phased Array Unfolded (~2,400 sq ft, largest commercial LEO array)', date: 'Feb 10, 2026', category: 'Constellation' },
   { event: 'FY 2025 Revenue $63-71M (8-K preliminary)', date: 'Feb 11, 2026', category: 'Service' },

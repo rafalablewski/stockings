@@ -236,6 +236,7 @@ import {
   STAKING_APY,
   INSIDER_SALES,
   INSIDER_SALES_SUMMARY,
+  INSIDER_GRANTS,
   EARLY_SHAREHOLDERS_2021,
 } from '@/data/bmnr';
 import { BMNR_SEC_FILINGS, BMNR_SEC_META, BMNR_SEC_TYPE_COLORS, BMNR_SEC_FILTER_TYPES, BMNR_FILING_CROSS_REFS } from '@/data/bmnr/sec-filings';
@@ -3417,7 +3418,7 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
           { id: 'plans', value: `${warrants.length}`, label: 'Warrant Types', sub: 'Pre-funded + advisor' },
           { id: 'dilution', value: `${dilutionPct.toFixed(0)}%`, label: 'Total Dilution', sub: `${(totalFD / 1e6).toFixed(1)}M FD shares` },
           { id: 'liquidity', value: `$${BMNR_LIQUIDITY.cashAndEquiv}M`, label: 'Liquidity', sub: 'Cash + ETH treasury' },
-          { id: 'insiders', value: `${INSIDER_SALES.length}`, label: 'Insider Activity', sub: 'Form 4 filings' },
+          { id: 'insiders', value: `${INSIDER_SALES.length + INSIDER_GRANTS.length}`, label: 'Insider Activity', sub: 'Form 4 filings' },
         ].map(nav => (
           <div
             key={nav.id}
@@ -3876,6 +3877,35 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
           </div>
         </div>
       </div>
+
+      {/* Insider Grants Table */}
+      {INSIDER_GRANTS.length > 0 && (
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 16 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>RSU Grants (Form 4)</span>
+        </div>
+        <div style={{ padding: '24px 24px' }}>
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 100px 100px 100px 100px 1.5fr', borderBottom: '1px solid var(--border)' }}>
+              {['Insider', 'RSUs Granted', 'Vested', 'Tax Withheld', 'Unvested', 'Vesting Schedule'].map((h, idx) => (
+                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: [1, 2, 3, 4].includes(idx) ? 'right' : 'left' }}>{h}</span>
+              ))}
+            </div>
+            {INSIDER_GRANTS.map((g, i) => (
+              <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1.5fr 100px 100px 100px 100px 1.5fr', borderBottom: i < INSIDER_GRANTS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+                <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 500 }}>{g.name}</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--violet)' }}>{(g.rsusGranted / 1e6).toFixed(1)}M</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--mint)' }}>{(g.sharesVested / 1e3).toFixed(0)}K</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--coral)' }}>{(g.sharesWithheldForTax / 1e3).toFixed(1)}K</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--gold)' }}>{(g.unvestedRSUs / 1e6).toFixed(1)}M</span>
+                <span style={{ padding: '12px 16px', fontSize: 12, color: 'var(--text3)' }}>{g.vestingSchedule}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 12 }}>{INSIDER_GRANTS[0]?.notes}</div>
+        </div>
+      </div>
+      )}
 
       {/* Early Shareholders (2021 SC 13D) */}
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 16 }}>
@@ -8030,7 +8060,7 @@ const TimelineTab = () => {
     if (secFilter === 'All') return true;
     if (secFilter === 'S-1/S-3') return f.type === 'S-1' || f.type === 'S-3' || f.type === 'S-3ASR' || f.type === 'S-8';
     if (secFilter === '424B') return f.type === '424B4' || f.type === '424B5';
-    if (secFilter === 'Form 4') return f.type === '3' || f.type === '4' || f.type === '5';
+    if (secFilter === 'Form 4') return f.type === 'Form 3' || f.type === 'Form 4' || f.type === 'Form 4/A' || f.type === 'Form 5';
     if (secFilter === 'Proxy') return f.type === 'DEF 14A' || f.type === 'DEFA14A' || f.type === 'DEFR14A' || f.type === 'PRE 14A' || f.type === 'DEF 14C' || f.type === 'PRE 14C';
     if (secFilter === 'SC 13D/G') return f.type === 'SC 13D' || f.type === 'SC 13G/A';
     return f.type === secFilter;

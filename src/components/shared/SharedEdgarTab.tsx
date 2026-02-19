@@ -15,7 +15,7 @@
 
 'use client';
 
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 
 export interface EdgarTabProps {
   ticker: string;
@@ -244,7 +244,7 @@ function matchFilings(
 const STATUS_CONFIG: Record<FilingStatus, { color: string; label: string; title: string; desc: string }> = {
   tracked:   { color: 'var(--mint)',  label: 'IN DB',     title: 'Tracked in database', desc: 'Indexed in sec-filings.ts — matched by accession number or form+date' },
   data_only: { color: 'var(--gold)',  label: 'DATA ONLY', title: 'Data captured but filing not indexed in sec-filings.ts', desc: 'Data captured in other files (capital, timeline, etc.) but not indexed in sec-filings.ts' },
-  new:       { color: 'var(--coral)', label: 'NEW',       title: 'Not in database', desc: 'Not tracked — no index entry, no cross-reference data' },
+  new:       { color: 'var(--coral)', label: 'UNTRACKED', title: 'Not in database', desc: 'Not tracked — no index entry, no cross-reference data' },
 };
 
 // ── Verdict helpers ─────────────────────────────────────────────────────────
@@ -260,9 +260,9 @@ const VERDICT_COLORS: Record<VerdictLevel, { color: string; bg: string }> = {
 function parseVerdict(text: string): { level: VerdictLevel; explanation: string } | null {
   const match = text.match(/\[VERDICT:\s*(Critical|Important|Low|Already Incorporated)\]\s*[—\-–]\s*(.+)/i);
   if (!match) return null;
-  // Normalize level to title case
+  // Normalize level: title-case each word to match VERDICT_COLORS keys
   const raw = match[1].trim();
-  const level = (raw.charAt(0).toUpperCase() + raw.slice(1)) as VerdictLevel;
+  const level = raw.replace(/\b\w/g, c => c.toUpperCase()) as VerdictLevel;
   if (!(level in VERDICT_COLORS)) return null;
   return { level, explanation: match[2].trim() };
 }
@@ -344,7 +344,15 @@ const ActionBtn: React.FC<{
 };
 
 // ── Analysis panel ──────────────────────────────────────────────────────────
-const AnalysisPanel: React.FC<{ text: string }> = ({ text }) => (
+const AnalysisPanel: React.FC<{ text: string }> = ({ text }) => {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
+  return (
   <div style={{ margin: '6px 0 2px 19px', paddingTop: 16, marginTop: 8, borderTop: '1px solid var(--border)' }}>
     <div
       style={{
@@ -365,6 +373,23 @@ const AnalysisPanel: React.FC<{ text: string }> = ({ text }) => (
       >
         Analysis Result
       </span>
+      <button
+        onClick={handleCopy}
+        title="Copy analysis text"
+        style={{
+          background: copied ? 'color-mix(in srgb, var(--mint) 15%, transparent)' : 'var(--surface2)',
+          border: '1px solid var(--border)',
+          borderRadius: 6,
+          padding: '3px 10px',
+          fontSize: 11,
+          color: copied ? 'var(--mint)' : 'var(--text3)',
+          cursor: 'pointer',
+          transition: 'all 0.15s',
+          fontFamily: 'inherit',
+        }}
+      >
+        {copied ? 'Copied' : 'Copy'}
+      </button>
     </div>
     <div style={{ maxHeight: 600, overflowY: 'auto' }}>
       <pre
@@ -381,7 +406,8 @@ const AnalysisPanel: React.FC<{ text: string }> = ({ text }) => (
       </pre>
     </div>
   </div>
-);
+  );
+};
 
 // ── Display name normalization ───────────────────────────────────────────────
 /** Map EDGAR's raw form names to consistent short display names */
@@ -399,12 +425,22 @@ const FilingRow: React.FC<{
   r: MatchResult;
   typeColors: Record<string, { bg: string; text: string }>;
   ticker: string;
-  onRecheckDB?: () => Promise<void>;
+  isGenuinelyNew?: boolean;
+  persistedAnalysis?: string | null;
+  onRecheck?: () => void;
   recheckLoading?: boolean;
-}> = ({ r, typeColors, ticker, onRecheckDB, recheckLoading }) => {
+}> = ({ r, typeColors, ticker, isGenuinelyNew, persistedAnalysis, onRecheck, recheckLoading }) => {
   const accession = r.filing.accessionNumber;
   const [analyzing, setAnalyzing] = useState(false);
-  const [analysis, setAnalysis] = useState<string | null>(() => getAnalysisCache(ticker, accession));
+  const [analysis, setAnalysis] = useState<string | null>(() => getAnalysisCache(ticker, accession) || persistedAnalysis || null);
+
+  // Hydrate from persistent storage when it becomes available after async fetch
+  useEffect(() => {
+    if (!analysis && persistedAnalysis) {
+      setAnalysis(persistedAnalysis);
+      setAnalysisCache(ticker, accession, persistedAnalysis);
+    }
+  }, [persistedAnalysis]); // eslint-disable-line react-hooks/exhaustive-deps
   const [copied, setCopied] = useState(false);
   const [applyStep, setApplyStep] = useState<"idle" | "previewing" | "previewed" | "applying" | "applied" | "error">("idle");
   const [applyError, setApplyError] = useState("");
@@ -428,7 +464,12 @@ const FilingRow: React.FC<{
   };
 
   const handleAnalyze = async () => {
-    if (analysis) { setAnalysis(null); removeAnalysisCache(ticker, accession); resetWorkflowState(); setExpanded(false); return; } // toggle off
+    if (analysis) {
+      setAnalysis(null); removeAnalysisCache(ticker, accession); resetWorkflowState(); setExpanded(false);
+      // Also remove from persistent storage (fire-and-forget)
+      fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'edgar', key: accession, text: null }) }).catch(() => {});
+      return;
+    } // toggle off
     setAnalyzing(true);
     setExpanded(true);
     try {
@@ -447,6 +488,8 @@ const FilingRow: React.FC<{
       const text = data.analysis || data.error || 'No analysis returned.';
       setAnalysis(text);
       setAnalysisCache(ticker, accession, text);
+      // Persist to disk (fire-and-forget)
+      fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'edgar', key: accession, text }) }).catch(() => {});
     } catch (err) {
       const errText = `Error: ${(err as Error).message}`;
       setAnalysis(errText);
@@ -656,10 +699,38 @@ const FilingRow: React.FC<{
         }}>
           {statusCfg.label}
         </span>
+        {/* NEW badge — only for genuinely new filings that appeared after a refresh */}
+        {isGenuinelyNew && !analysis && !(r.crossRefs && r.crossRefs.length > 0) && r.status === 'new' && (
+          <span style={{
+            fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+            color: 'var(--sky)', background: 'var(--sky-dim)',
+            border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
+          }}>
+            NEW
+          </span>
+        )}
         {/* Action buttons — stop propagation so clicks don't toggle expand */}
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
         <div style={{ display: 'flex', gap: 4, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
-          <ActionBtn label="Open" title="Open filing on SEC EDGAR" href={r.filing.fileUrl} />
+          <a
+            href={r.filing.fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open filing on SEC EDGAR"
+            style={{
+              fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
+              padding: '2px 5px', borderRadius: 4,
+              color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
+              border: '1px solid var(--border)',
+              cursor: 'pointer', transition: 'all 0.15s', outline: 'none', textDecoration: 'none',
+              display: 'inline-flex', alignItems: 'center',
+            }}
+          >
+            <svg width={11} height={11} viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" />
+            </svg>
+          </a>
           <ActionBtn
             label="AI"
             title={analysis ? 'Close AI analysis' : 'Analyze with AI'}
@@ -668,22 +739,38 @@ const FilingRow: React.FC<{
             active={!!analysis}
             variant="accent"
           />
-          {r.status !== 'tracked' && onRecheckDB && (
-            <ActionBtn
-              label="Re-check"
-              title="Re-check this filing against current database on disk"
-              onClick={onRecheckDB}
-              loading={recheckLoading}
-            />
+          {onRecheck && (
+            <button
+              onClick={onRecheck}
+              disabled={recheckLoading}
+              title="Re-check if this filing is in the local database"
+              style={{
+                fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
+                padding: '2px 5px', borderRadius: 4,
+                color: recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
+                background: 'rgba(255,255,255,0.04)',
+                border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
+                cursor: recheckLoading ? 'wait' : 'pointer',
+                transition: 'all 0.15s', outline: 'none',
+                display: 'inline-flex', alignItems: 'center',
+                opacity: recheckLoading ? 0.5 : 1,
+              }}
+            >
+              <svg width={11} height={11} viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 0.8s linear infinite' : 'none' }}>
+                <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           )}
         </div>
       </div>
 
+      {/* Cross-reference data (comment-like) — always visible regardless of expand/collapse */}
+      {r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
+
       {/* Expanded body — analysis content */}
       {analysis && expanded && (
         <div style={{ padding: '0 12px 12px' }}>
-          {/* Cross-reference data (comment-like) */}
-          {r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
           {/* Verdict badge */}
           {(() => {
             const verdict = parseVerdict(analysis);
@@ -994,8 +1081,6 @@ const FilingRow: React.FC<{
         </div>
       )}
 
-      {/* Cross-reference data when no analysis */}
-      {!analysis && r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
     </div>
   );
 };
@@ -1005,7 +1090,7 @@ const FORM_CATEGORIES: { label: string; match: (form: string) => boolean }[] = [
   { label: '10-K',       match: f => /^10K/i.test(normalizeForm(f)) },
   { label: '10-Q',       match: f => /^10Q/i.test(normalizeForm(f)) },
   { label: '8-K',        match: f => /^8K/i.test(normalizeForm(f)) },
-  { label: 'Ownership',  match: f => { const n = normalizeForm(f.toUpperCase()); return ['4','3','5'].includes(n) || n.startsWith('SC13') || n === '144'; } },
+  { label: 'Ownership',  match: f => { const n = normalizeForm(f.toUpperCase()); return /^[345](A?)$/.test(n) || n.startsWith('SC13') || n === '144' || n === '144A'; } },
   { label: 'Prospectus', match: f => { const n = normalizeForm(f.toUpperCase()); return /^424/.test(n) || /^S[138]/.test(n) || n === 'FWP'; } },
   { label: 'Proxy',      match: f => { const n = normalizeForm(f.toUpperCase()); return n.includes('14A') || n.includes('14C'); } },
 ];
@@ -1029,9 +1114,11 @@ const YearSection: React.FC<{
   typeColors: Record<string, { bg: string; text: string }>;
   ticker: string;
   defaultOpen: boolean;
-  onRecheckDB?: () => Promise<void>;
+  newAccessions: Set<string>;
+  persistedAnalyses: Record<string, string>;
+  onRecheck?: () => void;
   recheckLoading?: boolean;
-}> = ({ year, results, typeColors, ticker, defaultOpen, onRecheckDB, recheckLoading }) => {
+}> = ({ year, results, typeColors, ticker, defaultOpen, newAccessions, persistedAnalyses, onRecheck, recheckLoading }) => {
   const [open, setOpen] = useState(defaultOpen);
   const trackedInYear = results.filter(r => r.status === 'tracked').length;
 
@@ -1065,7 +1152,7 @@ const YearSection: React.FC<{
       {open && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
           {results.map((r, i) => (
-            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} onRecheckDB={onRecheckDB} recheckLoading={recheckLoading} />
+            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} onRecheck={onRecheck} recheckLoading={recheckLoading} />
           ))}
         </div>
       )}
@@ -1089,9 +1176,11 @@ const FilingList: React.FC<{
   typeColors: Record<string, { bg: string; text: string }>;
   filter: string;
   ticker: string;
-  onRecheckDB?: () => Promise<void>;
+  newAccessions: Set<string>;
+  persistedAnalyses: Record<string, string>;
+  onRecheck?: () => void;
   recheckLoading?: boolean;
-}> = ({ results, typeColors, filter, ticker, onRecheckDB, recheckLoading }) => {
+}> = ({ results, typeColors, filter, ticker, newAccessions, persistedAnalyses, onRecheck, recheckLoading }) => {
   const filtered = applyFilter(results, filter);
 
   if (filtered.length === 0) {
@@ -1121,7 +1210,9 @@ const FilingList: React.FC<{
           typeColors={typeColors}
           ticker={ticker}
           defaultOpen={i === 0}
-          onRecheckDB={onRecheckDB}
+          newAccessions={newAccessions}
+          persistedAnalyses={persistedAnalyses}
+          onRecheck={onRecheck}
           recheckLoading={recheckLoading}
         />
       ))}
@@ -1157,6 +1248,7 @@ const FilterPill: React.FC<{
 const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFilings, cik, typeColors, crossRefIndex }) => {
   const [edgarFilings, setEdgarFilings] = useState<EdgarFiling[]>([]);
   const [loading, setLoading] = useState(false);
+  const [recheckLoading, setRecheckLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
@@ -1165,7 +1257,13 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   // Refreshed local data (read from disk, bypassing bundler cache)
   const [refreshedLocalFilings, setRefreshedLocalFilings] = useState<LocalFiling[] | null>(null);
   const [refreshedCrossRefs, setRefreshedCrossRefs] = useState<Record<string, { source: string; data: string }[]> | null>(null);
-  const [recheckLoading, setRecheckLoading] = useState(false);
+
+  // Track genuinely new filings: only those appearing after a refresh that weren't in the previous load
+  const knownAccessionsRef = useRef<Set<string>>(new Set());
+  const [newAccessions, setNewAccessions] = useState<Set<string>>(new Set());
+
+  // Persistent analysis cache (survives page reloads — loaded from disk)
+  const [persistedAnalyses, setPersistedAnalyses] = useState<Record<string, string>>({});
 
   const effectiveLocalFilings = refreshedLocalFilings ?? localFilings;
   const effectiveCrossRefs = refreshedCrossRefs ?? crossRefIndex;
@@ -1189,6 +1287,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
     return opts;
   }, [results, dataOnlyCount]);
 
+  // Fetch live filings from SEC EDGAR (checks for new filings)
   const fetchFilings = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -1200,6 +1299,23 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       }
       const data = await res.json();
       const filings: EdgarFiling[] = data.filings || [];
+
+      // Track genuinely new filings (only those not in previous load)
+      const currentAccessions = new Set(filings.map(f => f.accessionNumber));
+      if (knownAccessionsRef.current.size === 0) {
+        // First load — everything is already known, nothing is "new"
+        knownAccessionsRef.current = currentAccessions;
+        setNewAccessions(new Set());
+      } else {
+        // Refresh — only filings not previously seen are genuinely new
+        const fresh = new Set<string>();
+        for (const acc of currentAccessions) {
+          if (!knownAccessionsRef.current.has(acc)) fresh.add(acc);
+        }
+        knownAccessionsRef.current = currentAccessions;
+        setNewAccessions(fresh);
+      }
+
       setEdgarFilings(filings);
       setLoaded(true);
       const now = Date.now();
@@ -1212,41 +1328,53 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
     }
   }, [ticker]);
 
-  /** Re-read sec-filings.ts from disk to pick up AI Agent patches */
-  const handleRecheckDB = useCallback(async () => {
+  // Re-check local database from disk (picks up AI Agent patches / new cross-refs)
+  const recheckDB = useCallback(async () => {
     setRecheckLoading(true);
-    setError(null);
     try {
-      const res = await fetch('/api/edgar/refresh-local', {
+      const localRes = await fetch('/api/edgar/refresh-local', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ticker }),
       });
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({ error: 'Re-check request failed' }));
-        throw new Error(errorData.error || `Re-check failed with status ${res.status}`);
+      if (localRes.ok) {
+        const localData = await localRes.json();
+        setRefreshedLocalFilings(localData.localFilings);
+        setRefreshedCrossRefs(localData.crossRefIndex);
       }
-      const data = await res.json();
-      setRefreshedLocalFilings(data.localFilings);
-      setRefreshedCrossRefs(data.crossRefIndex);
-    } catch (err) {
-      console.error('Local re-check failed:', err);
-      setError((err as Error).message);
-    } finally {
-      setRecheckLoading(false);
-    }
+    } catch { /* best-effort */ }
+    finally { setRecheckLoading(false); }
   }, [ticker]);
 
   useEffect(() => {
     const cached = getCachedEdgar(ticker);
     if (cached) {
+      // Cache restore — all cached filings are already known, none are "new"
+      knownAccessionsRef.current = new Set(cached.filings.map(f => f.accessionNumber));
+      setNewAccessions(new Set());
       setEdgarFilings(cached.filings);
       setLoaded(true);
       setFetchedAt(cached.fetchedAt);
     } else {
       fetchFilings();
     }
-  }, [ticker, fetchFilings]);
+    // Always re-check local DB on mount (picks up patches applied while away)
+    recheckDB();
+  }, [ticker, fetchFilings, recheckDB]);
+
+  // Hydrate persisted analyses from disk on mount
+  useEffect(() => {
+    fetch(`/api/analysis-cache?ticker=${ticker}`)
+      .then(res => res.ok ? res.json() : { edgar: {} })
+      .then(data => {
+        const edgarCache: Record<string, string> = {};
+        for (const [key, entry] of Object.entries(data.edgar || {})) {
+          edgarCache[key] = (entry as { text: string }).text;
+        }
+        setPersistedAnalyses(edgarCache);
+      })
+      .catch(() => {}); // best-effort
+  }, [ticker]);
 
   const edgarBrowseUrl = `https://www.sec.gov/edgar/browse/?CIK=${cik}&owner=exclude`;
 
@@ -1302,7 +1430,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                 ? `CIK ${cik}`
                 : newCount > 0 || dataOnlyCount > 0
                   ? [
-                      newCount > 0 ? `${newCount} new` : '',
+                      newCount > 0 ? `${newCount} untracked` : '',
                       dataOnlyCount > 0 ? `${dataOnlyCount} data only` : '',
                     ].filter(Boolean).join(', ')
                   : 'All filings tracked'
@@ -1331,10 +1459,12 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             </svg>
             SEC EDGAR
           </a>
+          {/* Refresh — fetch new filings from SEC */}
           <button
             onClick={fetchFilings}
             disabled={loading}
             aria-label={loaded ? 'Refresh EDGAR filings' : 'Fetch EDGAR filings'}
+            title="Fetch new filings from SEC EDGAR"
             style={{
               fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
               padding: '5px 14px', borderRadius: 4,
@@ -1353,18 +1483,19 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             </svg>
             {loading ? 'Fetching...' : loaded ? 'Refresh' : 'Fetch'}
           </button>
+          {/* Re-check — re-read local database from disk */}
           {loaded && (
             <button
-              onClick={handleRecheckDB}
+              onClick={recheckDB}
               disabled={recheckLoading}
-              aria-label="Re-check database status from disk"
-              title="Re-read sec-filings.ts from disk to pick up AI Agent patches"
+              aria-label="Re-check local database"
+              title="Re-check if filings have been added to local database"
               style={{
                 fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
                 padding: '5px 14px', borderRadius: 4,
-                color: recheckLoading ? 'var(--text3)' : 'var(--gold)',
+                color: recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
                 background: 'rgba(255,255,255,0.04)',
-                border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(210,153,34,0.2)'}`,
+                border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
                 cursor: recheckLoading ? 'wait' : 'pointer',
                 display: 'flex', alignItems: 'center', gap: 6,
                 transition: 'all 0.15s', outline: 'none',
@@ -1372,8 +1503,8 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               }}
             >
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 1s linear infinite' : 'none' }}>
-                <path d="M2 2v5h5M14 14v-5H9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M13.5 6A6 6 0 0 0 3.3 3.3L2 7M2.5 10a6 6 0 0 0 10.2 2.7L14 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               {recheckLoading ? 'Checking...' : 'Re-check DB'}
             </button>
@@ -1395,7 +1526,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             <span key={status} title={STATUS_CONFIG[status].desc} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, maxWidth: 260 }}>
               <span style={{ width: 5, height: 5, borderRadius: '50%', background: STATUS_CONFIG[status].color, opacity: 0.9, marginTop: 3, flexShrink: 0 }} />
               <span style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <span style={{ fontWeight: 500 }}>{status === 'tracked' ? 'In Database' : status === 'data_only' ? 'Data Only' : 'New'}</span>
+                <span style={{ fontWeight: 500 }}>{status === 'tracked' ? 'In Database' : status === 'data_only' ? 'Data Only' : 'Untracked'}</span>
                 <span style={{ fontSize: 9, opacity: 0.5, lineHeight: 1.4 }}>{STATUS_CONFIG[status].desc}</span>
               </span>
             </span>
@@ -1454,7 +1585,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           </div>
 
           {/* Filing list */}
-          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} onRecheckDB={handleRecheckDB} recheckLoading={recheckLoading} />
+          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} newAccessions={newAccessions} persistedAnalyses={persistedAnalyses} onRecheck={recheckDB} recheckLoading={recheckLoading} />
         </>
       )}
     </div>

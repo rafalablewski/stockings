@@ -95,81 +95,354 @@ const SOURCE_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
   news: { bg: 'var(--mint-dim)', text: 'var(--mint)' },
 };
 
+// ── Per-article analysis cache (survives tab switches) ─────────────────────
+function getSourceAnalysisCache(ticker: string, articleKey: string): string | null {
+  try {
+    const raw = sessionStorage.getItem(`source_analysis_${ticker}_${articleKey}`);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function setSourceAnalysisCache(ticker: string, articleKey: string, text: string) {
+  try { sessionStorage.setItem(`source_analysis_${ticker}_${articleKey}`, JSON.stringify(text)); } catch { /* quota */ }
+}
+
+function removeSourceAnalysisCache(ticker: string, articleKey: string) {
+  try { sessionStorage.removeItem(`source_analysis_${ticker}_${articleKey}`); } catch { /* ignore */ }
+}
+
+/** Generate a stable cache key for an article */
+function articleCacheKey(article: ArticleItem): string {
+  return (article.url || article.headline || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 60);
+}
+
+// ── Verdict helpers (shared with EDGAR) ──────────────────────────────────────
+type SourceVerdictLevel = 'Critical' | 'Important' | 'Low' | 'Already Incorporated';
+
+const SOURCE_VERDICT_COLORS: Record<SourceVerdictLevel, { color: string; bg: string }> = {
+  'Critical':             { color: 'var(--coral)', bg: 'var(--coral-dim)' },
+  'Important':            { color: 'var(--gold)',  bg: 'var(--gold-dim)' },
+  'Low':                  { color: 'var(--text3)', bg: 'rgba(255,255,255,0.04)' },
+  'Already Incorporated': { color: 'var(--mint)',  bg: 'var(--mint-dim)' },
+};
+
+function parseSourceVerdict(text: string): { level: SourceVerdictLevel; explanation: string } | null {
+  const match = text.match(/\[VERDICT:\s*(Critical|Important|Low|Already Incorporated)\]\s*[—\-–]\s*(.+)/i);
+  if (!match) return null;
+  // Normalize level: title-case each word to match key format
+  const raw = match[1].trim();
+  const level = raw.replace(/\b\w/g, c => c.toUpperCase()) as SourceVerdictLevel;
+  if (!(level in SOURCE_VERDICT_COLORS)) return null;
+  return { level, explanation: match[2].trim() };
+}
+
+function stripSourceVerdict(text: string): string {
+  return text.replace(/\n?\[VERDICT:.*$/im, '').trim();
+}
+
 // ── Article row (EDGAR filing-row style) ────────────────────────────────────
 const SourceArticleRow: React.FC<{
   article: ArticleItem;
   type: 'pr' | 'news';
   showAnalysis?: boolean;
-}> = ({ article, type, showAnalysis }) => {
-  const statusColor = article.analyzed === null || article.analyzed === undefined
-    ? 'var(--text3)' : article.analyzed ? 'var(--mint)' : 'var(--coral)';
-  const statusLabel = article.analyzed === null || article.analyzed === undefined
-    ? '' : article.analyzed ? 'TRACKED' : 'NEW';
-  const statusTitle = article.analyzed === null || article.analyzed === undefined
-    ? 'Not checked' : article.analyzed ? 'In analysis' : 'Not in analysis';
+  ticker: string;
+  isGenuinelyNew?: boolean;
+  persistedAnalysis?: string | null;
+}> = ({ article, type, showAnalysis, ticker, isGenuinelyNew, persistedAnalysis }) => {
+  const cacheKey = articleCacheKey(article);
+  const [aiAnalysis, setAiAnalysis] = useState<string | null>(() => getSourceAnalysisCache(ticker, cacheKey) || persistedAnalysis || null);
+
+  // Hydrate from persistent storage when it becomes available after async fetch
+  useEffect(() => {
+    if (!aiAnalysis && persistedAnalysis) {
+      setAiAnalysis(persistedAnalysis);
+      setSourceAnalysisCache(ticker, cacheKey, persistedAnalysis);
+    }
+  }, [persistedAnalysis]); // eslint-disable-line react-hooks/exhaustive-deps
+  const [analyzing, setAnalyzing] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [recheckLoading, setRecheckLoading] = useState(false);
+  const [localAnalyzed, setLocalAnalyzed] = useState<boolean | null>(article.analyzed ?? null);
+
+  // Sync with parent prop when it changes (e.g. from header-level re-check)
+  useEffect(() => { setLocalAnalyzed(article.analyzed ?? null); }, [article.analyzed]);
+
+  const handleRecheck = async () => {
+    setRecheckLoading(true);
+    try {
+      const res = await fetch('/api/check-analyzed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker, articles: [{ headline: article.headline, date: article.date }] }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const result = data.results?.[0]?.analyzed ?? null;
+        setLocalAnalyzed(result);
+      }
+    } catch { /* best-effort */ }
+    finally { setRecheckLoading(false); }
+  };
+
+  const statusColor = localAnalyzed === null || localAnalyzed === undefined
+    ? 'var(--text3)' : localAnalyzed ? 'var(--mint)' : 'var(--coral)';
+  const statusLabel = localAnalyzed === null || localAnalyzed === undefined
+    ? '' : localAnalyzed ? 'TRACKED' : 'UNTRACKED';
+  const statusTitle = localAnalyzed === null || localAnalyzed === undefined
+    ? 'Not checked' : localAnalyzed ? 'In analysis' : 'Not in analysis';
   const tc = SOURCE_TYPE_COLORS[type];
 
+  const handleAnalyze = async () => {
+    if (aiAnalysis) {
+      setAiAnalysis(null); removeSourceAnalysisCache(ticker, cacheKey); setExpanded(false);
+      // Also remove from persistent storage (fire-and-forget)
+      fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'sources', key: cacheKey, text: null }) }).catch(() => {});
+      return;
+    }
+    setAnalyzing(true);
+    setExpanded(true);
+    try {
+      const res = await fetch('/api/sources/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: article.url,
+          headline: article.headline,
+          source: article.source,
+          date: article.date,
+          ticker,
+        }),
+      });
+      const data = await res.json();
+      const text = data.analysis || data.error || 'No analysis returned.';
+      setAiAnalysis(text);
+      setSourceAnalysisCache(ticker, cacheKey, text);
+      // Persist to disk (fire-and-forget)
+      fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'sources', key: cacheKey, text }) }).catch(() => {});
+    } catch (err) {
+      const errText = `Error: ${(err as Error).message}`;
+      setAiAnalysis(errText);
+      setSourceAnalysisCache(ticker, cacheKey, errText);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
   return (
-    <a
-      href={article.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        display: 'flex', alignItems: 'center', gap: 10,
-        padding: '8px 12px', borderRadius: 10,
-        transition: 'background 0.15s',
-        textDecoration: 'none', color: 'inherit',
-      }}
-      onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-    >
-      {/* Status dot */}
-      {showAnalysis && (
-        <span
-          title={statusTitle}
-          style={{
-            width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-            background: statusColor,
-            opacity: article.analyzed === null || article.analyzed === undefined ? 0.4 : 0.9,
-            transition: 'opacity 0.2s, background 0.2s',
-          }}
-        />
-      )}
-      {/* Source type badge */}
-      <span style={{
-        fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
-        padding: '2px 8px', borderRadius: 5, flexShrink: 0,
-        minWidth: 48, textAlign: 'center',
-        background: tc.bg, color: tc.text, whiteSpace: 'nowrap',
-      }}>
-        {type === 'pr' ? 'PR' : 'NEWS'}
-      </span>
-      {/* Headline */}
-      <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {article.headline}
-      </span>
-      {/* Source name */}
-      {article.source && (
-        <span style={{ fontSize: 11, color: 'var(--text3)', flexShrink: 0, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {article.source}
-        </span>
-      )}
-      {/* Date */}
-      {article.date && (
-        <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px' }}>
-          {article.date}
-        </span>
-      )}
-      {/* Status label */}
-      {showAnalysis && statusLabel && (
+    <div>
+      {/* Header row — clickable expand/collapse when analysis exists */}
+      <div
+        role={aiAnalysis ? 'button' : undefined}
+        tabIndex={aiAnalysis ? 0 : undefined}
+        aria-expanded={aiAnalysis ? expanded : undefined}
+        onClick={aiAnalysis ? () => setExpanded(!expanded) : undefined}
+        onKeyDown={aiAnalysis ? (e) => { if (e.key === 'Enter') setExpanded(!expanded); } : undefined}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '8px 12px', borderRadius: 10,
+          transition: 'background 0.15s',
+          cursor: aiAnalysis ? 'pointer' : undefined,
+        }}
+        onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+      >
+        {/* Chevron (visible when analysis exists) */}
+        {aiAnalysis && (
+          <svg
+            width={12} height={12} viewBox="0 0 24 24" fill="none"
+            stroke="rgba(255,255,255,0.3)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
+            aria-hidden="true"
+            style={{
+              transition: 'transform 0.2s',
+              transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+              flexShrink: 0,
+            }}
+          >
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+        )}
+        {/* Status dot */}
+        {showAnalysis && (
+          <span
+            title={statusTitle}
+            style={{
+              width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
+              background: statusColor,
+              opacity: localAnalyzed === null || localAnalyzed === undefined ? 0.4 : 0.9,
+              transition: 'opacity 0.2s, background 0.2s',
+            }}
+          />
+        )}
+        {/* Source type badge */}
         <span style={{
-          fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
-          color: statusColor, flexShrink: 0, whiteSpace: 'nowrap',
+          fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
+          padding: '2px 8px', borderRadius: 5, flexShrink: 0,
+          minWidth: 48, textAlign: 'center',
+          background: tc.bg, color: tc.text, whiteSpace: 'nowrap',
         }}>
-          {statusLabel}
+          {type === 'pr' ? 'PR' : 'NEWS'}
         </span>
+        {/* Headline */}
+        <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {article.headline}
+        </span>
+        {/* Verdict badge inline (compact, shown in header when collapsed) */}
+        {aiAnalysis && !expanded && (() => {
+          const verdict = parseSourceVerdict(aiAnalysis);
+          if (!verdict) return null;
+          const vc = SOURCE_VERDICT_COLORS[verdict.level];
+          return (
+            <span style={{
+              fontSize: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em',
+              padding: '2px 6px', borderRadius: 3, flexShrink: 0,
+              color: vc.color, background: vc.bg,
+              border: `1px solid color-mix(in srgb, ${vc.color} 20%, transparent)`,
+            }}>
+              {verdict.level}
+            </span>
+          );
+        })()}
+        {/* Source name */}
+        {article.source && (
+          <span style={{ fontSize: 11, color: 'var(--text3)', flexShrink: 0, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {article.source}
+          </span>
+        )}
+        {/* Date */}
+        {article.date && (
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px' }}>
+            {article.date}
+          </span>
+        )}
+        {/* Status label */}
+        {showAnalysis && statusLabel && (
+          <span style={{
+            fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
+            color: statusColor, flexShrink: 0, whiteSpace: 'nowrap',
+          }}>
+            {statusLabel}
+          </span>
+        )}
+        {/* NEW badge — only for genuinely new articles that appeared after a refresh */}
+        {isGenuinelyNew && !aiAnalysis && localAnalyzed !== true && (
+          <span style={{
+            fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+            color: 'var(--sky)', background: 'var(--sky-dim)',
+            border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
+          }}>
+            NEW
+          </span>
+        )}
+        {/* Action buttons — stop propagation so clicks don't toggle expand */}
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+          <a
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open article"
+            style={{
+              fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
+              padding: '2px 5px', borderRadius: 4,
+              color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
+              border: '1px solid var(--border)',
+              cursor: 'pointer', transition: 'all 0.15s', outline: 'none', textDecoration: 'none',
+              display: 'inline-flex', alignItems: 'center',
+            }}
+          >
+            <svg width={11} height={11} viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" />
+            </svg>
+          </a>
+          <button
+            onClick={handleAnalyze}
+            disabled={analyzing}
+            title={aiAnalysis ? 'Close AI analysis' : 'Analyze with AI'}
+            style={{
+              fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
+              textTransform: 'uppercase', letterSpacing: '0.08em',
+              padding: '2px 6px', borderRadius: 4,
+              color: aiAnalysis ? 'var(--accent)' : 'rgba(130,200,130,0.5)',
+              background: 'rgba(255,255,255,0.04)',
+              border: `1px solid ${aiAnalysis ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(130,200,130,0.15)'}`,
+              cursor: analyzing ? 'wait' : 'pointer',
+              transition: 'all 0.15s', outline: 'none',
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              opacity: analyzing ? 0.5 : 1,
+            }}
+          >
+            {analyzing ? '...' : 'AI'}
+          </button>
+          {showAnalysis && (
+            <button
+              onClick={handleRecheck}
+              disabled={recheckLoading}
+              title="Re-check if this article is in the database"
+              style={{
+                fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
+                padding: '2px 5px', borderRadius: 4,
+                color: recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
+                background: 'rgba(255,255,255,0.04)',
+                border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
+                cursor: recheckLoading ? 'wait' : 'pointer',
+                transition: 'all 0.15s', outline: 'none',
+                display: 'inline-flex', alignItems: 'center',
+                opacity: recheckLoading ? 0.5 : 1,
+              }}
+            >
+              <svg width={11} height={11} viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 0.8s linear infinite' : 'none' }}>
+                <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Expanded body — analysis content */}
+      {aiAnalysis && expanded && (
+        <div style={{ padding: '0 12px 12px' }}>
+          {/* Verdict badge */}
+          {(() => {
+            const verdict = parseSourceVerdict(aiAnalysis);
+            if (!verdict) return null;
+            const vc = SOURCE_VERDICT_COLORS[verdict.level];
+            return (
+              <div style={{
+                margin: '12px 0 0 7px', display: 'inline-flex', alignItems: 'center', gap: 6,
+                fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em',
+                padding: '3px 8px', borderRadius: 4,
+                color: vc.color, background: vc.bg,
+                border: `1px solid color-mix(in srgb, ${vc.color} 20%, transparent)`,
+              }}>
+                {verdict.level}
+                <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, opacity: 0.7, fontSize: 10 }}>
+                  {verdict.explanation}
+                </span>
+              </div>
+            );
+          })()}
+          {/* Analysis panel */}
+          <div style={{ margin: '6px 0 2px 19px', paddingTop: 16, marginTop: 8, borderTop: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '2.5px', color: 'var(--text3)' }}>
+                Analysis Result
+              </span>
+            </div>
+            <div style={{ maxHeight: 600, overflowY: 'auto' }}>
+              <pre style={{
+                fontSize: 12, fontFamily: 'var(--font-mono, monospace)',
+                color: 'var(--text2)', lineHeight: 1.8,
+                whiteSpace: 'pre-wrap', margin: 0,
+              }}>
+                {stripSourceVerdict(aiAnalysis)}
+              </pre>
+            </div>
+          </div>
+        </div>
       )}
-    </a>
+    </div>
   );
 };
 
@@ -180,7 +453,10 @@ const SourceArticleList: React.FC<{
   pressReleases: ArticleItem[];
   news: ArticleItem[];
   showAnalysis?: boolean;
-}> = ({ pressReleases, news, showAnalysis }) => {
+  ticker: string;
+  newArticleKeys: Set<string>;
+  persistedSourceAnalyses: Record<string, string>;
+}> = ({ pressReleases, news, showAnalysis, ticker, newArticleKeys, persistedSourceAnalyses }) => {
   const [showAll, setShowAll] = useState(false);
 
   const combined = [
@@ -202,7 +478,7 @@ const SourceArticleList: React.FC<{
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       {displayed.map((a, i) => (
-        <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} />
+        <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(articleCacheKey(a))} persistedAnalysis={persistedSourceAnalyses[articleCacheKey(a)] || null} />
       ))}
       {hiddenCount > 0 && (
         <div style={{ textAlign: 'center', paddingTop: 12, paddingBottom: 8 }}>
@@ -235,9 +511,13 @@ const CompanyFeedCard: React.FC<{
   aiChecking?: boolean;
   isPrimary?: boolean;
   fetchedAt?: number | null;
+  ticker: string;
+  newArticleKeys: Set<string>;
+  persistedSourceAnalyses: Record<string, string>;
   onLoad: () => void;
+  onRecheck?: () => void;
   onTabChange?: (tab: 'pr' | 'news') => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, onLoad }) => {
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, persistedSourceAnalyses, onLoad, onRecheck }) => {
   const prCount = data.pressReleases.length;
   const newsCount = data.news.length;
   const isActive = data.loading || (aiChecking ?? false);
@@ -324,32 +604,65 @@ const CompanyFeedCard: React.FC<{
             </span>
           )}
         </div>
-        <button
-          ref={buttonRef}
-          onClick={onLoad}
-          disabled={isActive}
-          aria-label={data.loaded ? `Refresh ${label} feeds` : `Load ${label} feeds`}
-          style={{
-            fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-            padding: '5px 14px', borderRadius: 4,
-            color: isActive ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
-            background: 'rgba(255,255,255,0.04)',
-            border: `1px solid ${isActive ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
-            cursor: isActive ? 'wait' : 'pointer',
-            display: 'flex', alignItems: 'center', gap: 6,
-            opacity: isActive ? 0.5 : 1,
-            transition: 'all 0.15s', outline: 'none',
-          }}
-        >
-          <svg
-            width="10" height="10" viewBox="0 0 16 16" fill="none"
-            style={{ animation: isActive ? 'spin 1s linear infinite' : 'none', transition: 'transform 0.2s' }}
+        <div style={{ display: 'flex', gap: 6 }}>
+          {/* Refresh — fetch new articles */}
+          <button
+            ref={buttonRef}
+            onClick={onLoad}
+            disabled={data.loading}
+            aria-label={data.loaded ? `Refresh ${label} feeds` : `Load ${label} feeds`}
+            title="Fetch new articles"
+            style={{
+              fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+              padding: '5px 14px', borderRadius: 4,
+              color: data.loading ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
+              background: 'rgba(255,255,255,0.04)',
+              border: `1px solid ${data.loading ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
+              cursor: data.loading ? 'wait' : 'pointer',
+              display: 'flex', alignItems: 'center', gap: 6,
+              opacity: data.loading ? 0.5 : 1,
+              transition: 'all 0.15s', outline: 'none',
+            }}
           >
-            <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          {data.loading ? 'Fetching' : aiChecking ? 'Analyzing' : data.loaded ? 'Refresh' : 'Load'}
-        </button>
+            <svg
+              width="10" height="10" viewBox="0 0 16 16" fill="none"
+              style={{ animation: data.loading ? 'spin 1s linear infinite' : 'none', transition: 'transform 0.2s' }}
+            >
+              <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {data.loading ? 'Fetching' : data.loaded ? 'Refresh' : 'Load'}
+          </button>
+          {/* Re-check — check if articles have been added to database */}
+          {data.loaded && onRecheck && (
+            <button
+              onClick={onRecheck}
+              disabled={aiChecking ?? false}
+              aria-label={`Re-check ${label} against database`}
+              title="Re-check if articles have been added to database"
+              style={{
+                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+                padding: '5px 14px', borderRadius: 4,
+                color: aiChecking ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
+                background: 'rgba(255,255,255,0.04)',
+                border: `1px solid ${aiChecking ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
+                cursor: aiChecking ? 'wait' : 'pointer',
+                display: 'flex', alignItems: 'center', gap: 6,
+                opacity: aiChecking ? 0.5 : 1,
+                transition: 'all 0.15s', outline: 'none',
+              }}
+            >
+              <svg
+                width="10" height="10" viewBox="0 0 16 16" fill="none"
+                style={{ animation: aiChecking ? 'spin 1s linear infinite' : 'none' }}
+              >
+                <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              {aiChecking ? 'Checking...' : 'Re-check DB'}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Body */}
@@ -390,7 +703,7 @@ const CompanyFeedCard: React.FC<{
         )}
 
         {data.loaded && (
-          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} />
+          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} persistedSourceAnalyses={persistedSourceAnalyses} />
         )}
       </div>
     </article>
@@ -409,6 +722,13 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const [lastFetchedAt, setLastFetchedAt] = useState<number | null>(null);
   const [methodologyOpen, setMethodologyOpen] = useState(false);
   const [matchMethod, setMatchMethod] = useState<'ai' | 'local' | null>(null);
+
+  // Track genuinely new articles: only those appearing after a refresh that weren't in the previous load
+  const knownArticleKeysRef = useRef<Set<string>>(new Set());
+  const [newArticleKeys, setNewArticleKeys] = useState<Set<string>>(new Set());
+
+  // Persistent analysis cache (survives page reloads — loaded from disk)
+  const [persistedSourceAnalyses, setPersistedSourceAnalyses] = useState<Record<string, string>>({});
 
   const checkAnalyzed = useCallback(async (articles: ArticleItem[]): Promise<ArticleItem[]> => {
     if (articles.length === 0) return articles;
@@ -429,6 +749,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
   }, [ticker]);
 
+  // Fetch new articles from news/PR APIs
   const loadMainCard = useCallback(async () => {
     setMainCard(prev => ({ ...prev, loading: true, error: null }));
     let prs: ArticleItem[] = [];
@@ -455,20 +776,44 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     if (newsResult.status === 'fulfilled') news = newsResult.value;
     const error = (prResult.status === 'rejected' && newsResult.status === 'rejected') ? 'Could not fetch feeds' : null;
 
+    // Track genuinely new articles (only those not in previous load)
+    const all = [...prs, ...news];
+    const currentKeys = new Set(all.map(a => articleCacheKey(a)));
+    if (knownArticleKeysRef.current.size === 0) {
+      // First load — everything is already known, nothing is "new"
+      knownArticleKeysRef.current = currentKeys;
+      setNewArticleKeys(new Set());
+    } else {
+      // Refresh — only articles not previously seen are genuinely new
+      const fresh = new Set<string>();
+      for (const key of currentKeys) {
+        if (!knownArticleKeysRef.current.has(key)) fresh.add(key);
+      }
+      knownArticleKeysRef.current = currentKeys;
+      setNewArticleKeys(fresh);
+    }
+
     setMainCard(prev => ({ ...prev, loading: false, loaded: true, error, pressReleases: prs, news }));
     const now = Date.now();
     setLastFetchedAt(now);
     setCachedFeed(ticker, prs, news);
+  }, [ticker]);
 
-    const all = [...prs, ...news];
-    if (all.length > 0) {
-      setAiChecking(true);
-      try {
-        const checked = await checkAnalyzed(all);
-        setMainCard(prev => ({ ...prev, pressReleases: checked.slice(0, prs.length), news: checked.slice(prs.length) }));
-      } catch { /* handled */ } finally { setAiChecking(false); }
-    }
-  }, [ticker, checkAnalyzed]);
+  // Re-check whether current articles have been added to the database
+  const recheckMainCard = useCallback(async () => {
+    setAiChecking(true);
+    try {
+      const all = [...mainCard.pressReleases, ...mainCard.news];
+      if (all.length === 0) return;
+      const checked = await checkAnalyzed(all);
+      setMainCard(prev => ({
+        ...prev,
+        pressReleases: checked.slice(0, prev.pressReleases.length),
+        news: checked.slice(prev.pressReleases.length),
+      }));
+    } catch { /* handled */ }
+    finally { setAiChecking(false); }
+  }, [mainCard.pressReleases, mainCard.news, checkAnalyzed]);
 
   const loadCompetitor = useCallback(async (name: string) => {
     setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: true, loaded: false, error: null } }));
@@ -505,27 +850,42 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   useEffect(() => {
     const cached = getCachedFeed(ticker);
     if (cached) {
+      // Cache restore — all cached articles are already known, none are "new"
+      const allCached = [...cached.pressReleases, ...cached.news];
+      knownArticleKeysRef.current = new Set(allCached.map(a => articleCacheKey(a)));
+      setNewArticleKeys(new Set());
       setMainCard(prev => ({
         ...prev, loaded: true, loading: false,
         pressReleases: cached.pressReleases, news: cached.news,
       }));
       setLastFetchedAt(cached.fetchedAt);
-      // Run AI analysis on cached articles (cache stores pre-analysis data)
-      const all = [...cached.pressReleases, ...cached.news];
-      if (all.length > 0) {
-        setAiChecking(true);
-        checkAnalyzed(all).then(checked => {
-          setMainCard(prev => ({
-            ...prev,
-            pressReleases: checked.slice(0, cached.pressReleases.length),
-            news: checked.slice(cached.pressReleases.length),
-          }));
-        }).catch(() => { /* handled */ }).finally(() => setAiChecking(false));
-      }
     } else {
       loadMainCard();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticker]);
+
+  // Auto re-check database status after articles are loaded (initial load only)
+  const initialRecheckDone = useRef(false);
+  useEffect(() => {
+    if (mainCard.loaded && !initialRecheckDone.current && (mainCard.pressReleases.length > 0 || mainCard.news.length > 0)) {
+      initialRecheckDone.current = true;
+      recheckMainCard();
+    }
+  }, [mainCard.loaded, mainCard.pressReleases.length, mainCard.news.length, recheckMainCard]);
+
+  // Hydrate persisted source analyses from disk on mount
+  useEffect(() => {
+    fetch(`/api/analysis-cache?ticker=${ticker}`)
+      .then(res => res.ok ? res.json() : { sources: {} })
+      .then(data => {
+        const sourcesCache: Record<string, string> = {};
+        for (const [key, entry] of Object.entries(data.sources || {})) {
+          sourcesCache[key] = (entry as { text: string }).text;
+        }
+        setPersistedSourceAnalyses(sourcesCache);
+      })
+      .catch(() => {}); // best-effort
   }, [ticker]);
 
   const setCompTab = (name: string, tab: 'pr' | 'news') => {
@@ -607,7 +967,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         >
           {([
             { label: 'Tracked', color: 'var(--mint)', opacity: 0.9, desc: 'Article matched in database — found in research notes or tracked data files' },
-            { label: 'New', color: 'var(--coral)', opacity: 0.9, desc: 'Article not found in database — potentially new information to review' },
+            { label: 'Untracked', color: 'var(--coral)', opacity: 0.9, desc: 'Article not found in database — potentially new information to review' },
             { label: 'Pending', color: 'var(--text3)', opacity: 0.4, desc: 'Status not yet checked — load feeds and run analysis to classify' },
           ] as const).map(s => (
             <span key={s.label} title={s.desc} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, maxWidth: 260 }}>
@@ -630,7 +990,11 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           aiChecking={aiChecking}
           isPrimary
           fetchedAt={lastFetchedAt}
+          ticker={ticker}
+          newArticleKeys={newArticleKeys}
+          persistedSourceAnalyses={persistedSourceAnalyses}
           onLoad={loadMainCard}
+          onRecheck={recheckMainCard}
           onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
         />
       </div>
@@ -669,6 +1033,9 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   data={data}
                   showAnalysis
                   aiChecking={compAiChecking[comp.name] || false}
+                  ticker={ticker}
+                  newArticleKeys={newArticleKeys}
+                  persistedSourceAnalyses={persistedSourceAnalyses}
                   onLoad={() => loadCompetitor(comp.name)}
                   onTabChange={(tab) => setCompTab(comp.name, tab)}
                 />
@@ -855,10 +1222,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
               <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No match</div>
               <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
-              {/* Result: NEW */}
+              {/* Result: UNTRACKED */}
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} />
-                <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>NEW</span>
+                <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>UNTRACKED</span>
               </div>
               {/* Date proximity note */}
               <div style={{ marginTop: 8, padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', fontStyle: 'italic', textAlign: 'center' }}>Date proximity guard: recurring weekly reports<br />require higher overlap when dates are &gt;5 days apart</div>
@@ -873,7 +1240,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Status</span>
                 <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> Tracked</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} /> New</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} /> Untracked</span>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', display: 'inline-block' }} /> Pending</span>
                 </div>
               </div>

@@ -5115,10 +5115,11 @@ function CRCLModel() {
 
               {/* Navigation Cards */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#capital-navigation</div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
                 {[
                   { id: 'structure', value: `${SHARE_CLASSES.length}`, label: 'Share Classes', sub: 'Class A, B, C' },
                   { id: 'shareholders', value: `${MAJOR_SHAREHOLDERS.length}`, label: 'Major Holders', sub: 'Insiders + institutions' },
+                  { id: 'insiders', value: '0', label: 'Insider Activity', sub: 'Form 4 filings' },
                   { id: 'offerings', value: `${EQUITY_OFFERINGS.length + WARRANTS.length}`, label: 'Programs', sub: 'Offerings + warrants' },
                   { id: 'plans', value: `${EQUITY_PLANS.length}`, label: 'Equity Plans', sub: 'Omnibus, ESPP, Foundation' },
                   { id: 'dilution', value: '21%', label: 'Total Dilution', sub: '276.5M FD shares' },
@@ -5421,6 +5422,29 @@ function CRCLModel() {
                   <div style={{ padding: '12px 24px', fontSize: 13, color: 'var(--text3)' }}>
                     Note: Excludes 33.9M shares reserved under Omnibus/ESPP plans not yet granted. Lock-up: ~198M shares restricted until Q3 2025 earnings or 180 days post-IPO.
                   </div>
+                </div>
+              </div>
+              </>
+              )}
+
+              {/* Insider Activity View */}
+              {capitalView === 'insiders' && (
+              <>
+              <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#insider-activity</div>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>RSU Grants (Form 4)<UpdateIndicators sources={['SEC']} /></span>
+                </div>
+                <div style={{ padding: '24px 24px', color: 'var(--text3)', fontSize: 13, lineHeight: 1.7 }}>
+                  No Form 4 insider grant filings tracked yet. Equity awards summary: {EQUITY_AWARDS.rsus.classA.toLocaleString()} Class A RSUs + {EQUITY_AWARDS.rsus.classB.toLocaleString()} Class B RSUs outstanding (from S-1 filing). Individual grant details will appear here when Form 4 filings are ingested.
+                </div>
+              </div>
+              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 16 }}>
+                <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Insider Sales (Form 4)<UpdateIndicators sources={['SEC']} /></span>
+                </div>
+                <div style={{ padding: '24px 24px', color: 'var(--text3)', fontSize: 13, lineHeight: 1.7 }}>
+                  No Form 4 insider sale filings tracked yet. Individual sale details will appear here when Form 4 filings are ingested.
                 </div>
               </div>
               </>
