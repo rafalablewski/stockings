@@ -470,8 +470,9 @@ const CompanyFeedCard: React.FC<{
   newArticleKeys: Set<string>;
   persistedSourceAnalyses: Record<string, string>;
   onLoad: () => void;
+  onRecheck?: () => void;
   onTabChange?: (tab: 'pr' | 'news') => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, persistedSourceAnalyses, onLoad }) => {
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, persistedSourceAnalyses, onLoad, onRecheck }) => {
   const prCount = data.pressReleases.length;
   const newsCount = data.news.length;
   const isActive = data.loading || (aiChecking ?? false);
@@ -558,32 +559,65 @@ const CompanyFeedCard: React.FC<{
             </span>
           )}
         </div>
-        <button
-          ref={buttonRef}
-          onClick={onLoad}
-          disabled={isActive}
-          aria-label={data.loaded ? `Refresh ${label} feeds` : `Load ${label} feeds`}
-          style={{
-            fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-            padding: '5px 14px', borderRadius: 4,
-            color: isActive ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
-            background: 'rgba(255,255,255,0.04)',
-            border: `1px solid ${isActive ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
-            cursor: isActive ? 'wait' : 'pointer',
-            display: 'flex', alignItems: 'center', gap: 6,
-            opacity: isActive ? 0.5 : 1,
-            transition: 'all 0.15s', outline: 'none',
-          }}
-        >
-          <svg
-            width="10" height="10" viewBox="0 0 16 16" fill="none"
-            style={{ animation: isActive ? 'spin 1s linear infinite' : 'none', transition: 'transform 0.2s' }}
+        <div style={{ display: 'flex', gap: 6 }}>
+          {/* Refresh — fetch new articles */}
+          <button
+            ref={buttonRef}
+            onClick={onLoad}
+            disabled={data.loading}
+            aria-label={data.loaded ? `Refresh ${label} feeds` : `Load ${label} feeds`}
+            title="Fetch new articles"
+            style={{
+              fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+              padding: '5px 14px', borderRadius: 4,
+              color: data.loading ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
+              background: 'rgba(255,255,255,0.04)',
+              border: `1px solid ${data.loading ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
+              cursor: data.loading ? 'wait' : 'pointer',
+              display: 'flex', alignItems: 'center', gap: 6,
+              opacity: data.loading ? 0.5 : 1,
+              transition: 'all 0.15s', outline: 'none',
+            }}
           >
-            <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          {data.loading ? 'Fetching' : aiChecking ? 'Analyzing' : data.loaded ? 'Refresh' : 'Load'}
-        </button>
+            <svg
+              width="10" height="10" viewBox="0 0 16 16" fill="none"
+              style={{ animation: data.loading ? 'spin 1s linear infinite' : 'none', transition: 'transform 0.2s' }}
+            >
+              <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {data.loading ? 'Fetching' : data.loaded ? 'Refresh' : 'Load'}
+          </button>
+          {/* Re-check — check if articles have been added to database */}
+          {data.loaded && onRecheck && (
+            <button
+              onClick={onRecheck}
+              disabled={aiChecking ?? false}
+              aria-label={`Re-check ${label} against database`}
+              title="Re-check if articles have been added to database"
+              style={{
+                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+                padding: '5px 14px', borderRadius: 4,
+                color: aiChecking ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
+                background: 'rgba(255,255,255,0.04)',
+                border: `1px solid ${aiChecking ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
+                cursor: aiChecking ? 'wait' : 'pointer',
+                display: 'flex', alignItems: 'center', gap: 6,
+                opacity: aiChecking ? 0.5 : 1,
+                transition: 'all 0.15s', outline: 'none',
+              }}
+            >
+              <svg
+                width="10" height="10" viewBox="0 0 16 16" fill="none"
+                style={{ animation: aiChecking ? 'spin 1s linear infinite' : 'none' }}
+              >
+                <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              {aiChecking ? 'Checking...' : 'Re-check DB'}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Body */}
@@ -670,6 +704,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
   }, [ticker]);
 
+  // Fetch new articles from news/PR APIs
   const loadMainCard = useCallback(async () => {
     setMainCard(prev => ({ ...prev, loading: true, error: null }));
     let prs: ArticleItem[] = [];
@@ -717,15 +752,23 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     const now = Date.now();
     setLastFetchedAt(now);
     setCachedFeed(ticker, prs, news);
+  }, [ticker]);
 
-    if (all.length > 0) {
-      setAiChecking(true);
-      try {
-        const checked = await checkAnalyzed(all);
-        setMainCard(prev => ({ ...prev, pressReleases: checked.slice(0, prs.length), news: checked.slice(prs.length) }));
-      } catch { /* handled */ } finally { setAiChecking(false); }
-    }
-  }, [ticker, checkAnalyzed]);
+  // Re-check whether current articles have been added to the database
+  const recheckMainCard = useCallback(async () => {
+    setAiChecking(true);
+    try {
+      const all = [...mainCard.pressReleases, ...mainCard.news];
+      if (all.length === 0) return;
+      const checked = await checkAnalyzed(all);
+      setMainCard(prev => ({
+        ...prev,
+        pressReleases: checked.slice(0, prev.pressReleases.length),
+        news: checked.slice(prev.pressReleases.length),
+      }));
+    } catch { /* handled */ }
+    finally { setAiChecking(false); }
+  }, [mainCard.pressReleases, mainCard.news, checkAnalyzed]);
 
   const loadCompetitor = useCallback(async (name: string) => {
     setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: true, loaded: false, error: null } }));
@@ -771,23 +814,20 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         pressReleases: cached.pressReleases, news: cached.news,
       }));
       setLastFetchedAt(cached.fetchedAt);
-      // Run AI analysis on cached articles (cache stores pre-analysis data)
-      const all = allCached;
-      if (all.length > 0) {
-        setAiChecking(true);
-        checkAnalyzed(all).then(checked => {
-          setMainCard(prev => ({
-            ...prev,
-            pressReleases: checked.slice(0, cached.pressReleases.length),
-            news: checked.slice(cached.pressReleases.length),
-          }));
-        }).catch(() => { /* handled */ }).finally(() => setAiChecking(false));
-      }
     } else {
       loadMainCard();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticker]);
+
+  // Auto re-check database status after articles are loaded (initial load only)
+  const initialRecheckDone = useRef(false);
+  useEffect(() => {
+    if (mainCard.loaded && !initialRecheckDone.current && (mainCard.pressReleases.length > 0 || mainCard.news.length > 0)) {
+      initialRecheckDone.current = true;
+      recheckMainCard();
+    }
+  }, [mainCard.loaded, mainCard.pressReleases.length, mainCard.news.length, recheckMainCard]);
 
   // Hydrate persisted source analyses from disk on mount
   useEffect(() => {
@@ -909,6 +949,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           newArticleKeys={newArticleKeys}
           persistedSourceAnalyses={persistedSourceAnalyses}
           onLoad={loadMainCard}
+          onRecheck={recheckMainCard}
           onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
         />
       </div>

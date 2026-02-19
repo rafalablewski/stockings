@@ -1191,6 +1191,7 @@ const FilterPill: React.FC<{
 const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFilings, cik, typeColors, crossRefIndex }) => {
   const [edgarFilings, setEdgarFilings] = useState<EdgarFiling[]>([]);
   const [loading, setLoading] = useState(false);
+  const [recheckLoading, setRecheckLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
@@ -1229,11 +1230,11 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
     return opts;
   }, [results, dataOnlyCount]);
 
+  // Fetch live filings from SEC EDGAR (checks for new filings)
   const fetchFilings = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      // 1. Fetch live filings from SEC EDGAR
       const res = await fetch(`/api/edgar/${ticker}`);
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -1263,25 +1264,29 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       const now = Date.now();
       setFetchedAt(now);
       setCachedEdgar(ticker, filings);
-
-      // 2. Also refresh local DB from disk (picks up AI Agent patches)
-      try {
-        const localRes = await fetch('/api/edgar/refresh-local', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ticker }),
-        });
-        if (localRes.ok) {
-          const localData = await localRes.json();
-          setRefreshedLocalFilings(localData.localFilings);
-          setRefreshedCrossRefs(localData.crossRefIndex);
-        }
-      } catch { /* local refresh is best-effort */ }
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setLoading(false);
     }
+  }, [ticker]);
+
+  // Re-check local database from disk (picks up AI Agent patches / new cross-refs)
+  const recheckDB = useCallback(async () => {
+    setRecheckLoading(true);
+    try {
+      const localRes = await fetch('/api/edgar/refresh-local', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker }),
+      });
+      if (localRes.ok) {
+        const localData = await localRes.json();
+        setRefreshedLocalFilings(localData.localFilings);
+        setRefreshedCrossRefs(localData.crossRefIndex);
+      }
+    } catch { /* best-effort */ }
+    finally { setRecheckLoading(false); }
   }, [ticker]);
 
   useEffect(() => {
@@ -1296,7 +1301,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
     } else {
       fetchFilings();
     }
-  }, [ticker, fetchFilings]);
+    // Always re-check local DB on mount (picks up patches applied while away)
+    recheckDB();
+  }, [ticker, fetchFilings, recheckDB]);
 
   // Hydrate persisted analyses from disk on mount
   useEffect(() => {
@@ -1395,10 +1402,12 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             </svg>
             SEC EDGAR
           </a>
+          {/* Refresh — fetch new filings from SEC */}
           <button
             onClick={fetchFilings}
             disabled={loading}
             aria-label={loaded ? 'Refresh EDGAR filings' : 'Fetch EDGAR filings'}
+            title="Fetch new filings from SEC EDGAR"
             style={{
               fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
               padding: '5px 14px', borderRadius: 4,
@@ -1417,6 +1426,32 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             </svg>
             {loading ? 'Fetching...' : loaded ? 'Refresh' : 'Fetch'}
           </button>
+          {/* Re-check — re-read local database from disk */}
+          {loaded && (
+            <button
+              onClick={recheckDB}
+              disabled={recheckLoading}
+              aria-label="Re-check local database"
+              title="Re-check if filings have been added to local database"
+              style={{
+                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+                padding: '5px 14px', borderRadius: 4,
+                color: recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
+                background: 'rgba(255,255,255,0.04)',
+                border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
+                cursor: recheckLoading ? 'wait' : 'pointer',
+                display: 'flex', alignItems: 'center', gap: 6,
+                transition: 'all 0.15s', outline: 'none',
+                opacity: recheckLoading ? 0.5 : 1,
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 1s linear infinite' : 'none' }}>
+                <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              {recheckLoading ? 'Checking...' : 'Re-check DB'}
+            </button>
+          )}
         </div>
       </div>
 
