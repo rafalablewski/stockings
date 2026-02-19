@@ -454,11 +454,27 @@ const SourceArticleList: React.FC<{
   const displayed = showAll ? combined : combined.slice(0, ARTICLE_INITIAL_COUNT);
   const hiddenCount = combined.length - ARTICLE_INITIAL_COUNT;
 
+  // Split into genuinely-new articles (top) vs everything else (bottom)
+  const newEntries = displayed.filter(a => newArticleKeys.has(articleCacheKey(a)) && a.analyzed !== true);
+  const oldEntries = displayed.filter(a => !(newArticleKeys.has(articleCacheKey(a)) && a.analyzed !== true));
+  const hasNewAndOld = newEntries.length > 0 && oldEntries.length > 0;
+
+  const renderRow = (a: typeof combined[number], i: number) => (
+    <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(articleCacheKey(a))} persistedAnalysis={persistedSourceAnalyses[articleCacheKey(a)] || null} />
+  );
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-      {displayed.map((a, i) => (
-        <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(articleCacheKey(a))} persistedAnalysis={persistedSourceAnalyses[articleCacheKey(a)] || null} />
-      ))}
+      {newEntries.map(renderRow)}
+      {hasNewAndOld && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '6px 12px', margin: '2px 0',
+        }}>
+          <span style={{ flex: 1, height: 1, background: 'color-mix(in srgb, var(--border) 40%, transparent)' }} />
+        </div>
+      )}
+      {oldEntries.map(renderRow)}
       {hiddenCount > 0 && (
         <div style={{ textAlign: 'center', paddingTop: 12, paddingBottom: 8 }}>
           <button
@@ -495,8 +511,9 @@ const CompanyFeedCard: React.FC<{
   persistedSourceAnalyses: Record<string, string>;
   onLoad: () => void;
   onRecheck?: () => void;
+  onSimulateNew?: () => void;
   onTabChange?: (tab: 'pr' | 'news') => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, persistedSourceAnalyses, onLoad, onRecheck }) => {
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, persistedSourceAnalyses, onLoad, onRecheck, onSimulateNew }) => {
   const prCount = data.pressReleases.length;
   const newsCount = data.news.length;
   const isActive = data.loading || (aiChecking ?? false);
@@ -612,6 +629,28 @@ const CompanyFeedCard: React.FC<{
             </svg>
             {data.loading ? 'Fetching' : data.loaded ? 'Refresh' : 'Load'}
           </button>
+          {/* Simulate New — dev-only: pretend some untracked articles just appeared */}
+          {data.loaded && onSimulateNew && (
+            <button
+              onClick={onSimulateNew}
+              title="DEV: Simulate new articles appearing (picks up to 3 untracked articles)"
+              style={{
+                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+                padding: '5px 14px', borderRadius: 4,
+                color: 'rgba(200,170,100,0.5)',
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(200,170,100,0.15)',
+                cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 6,
+                transition: 'all 0.15s', outline: 'none',
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
+                <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              Simulate New
+            </button>
+          )}
           {/* Re-check — check if articles have been added to database */}
           {data.loaded && onRecheck && (
             <button
@@ -1001,6 +1040,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           persistedSourceAnalyses={persistedSourceAnalyses}
           onLoad={loadMainCard}
           onRecheck={recheckMainCard}
+          onSimulateNew={() => {
+            const all = [...mainCard.pressReleases, ...mainCard.news];
+            const untracked = all.filter(a => a.analyzed !== true).slice(0, 3);
+            if (untracked.length === 0) return;
+            setNewArticleKeys(new Set(untracked.map(a => articleCacheKey(a))));
+          }}
           onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
         />
       </div>
