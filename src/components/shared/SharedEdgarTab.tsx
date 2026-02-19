@@ -401,7 +401,9 @@ const FilingRow: React.FC<{
   ticker: string;
   isGenuinelyNew?: boolean;
   persistedAnalysis?: string | null;
-}> = ({ r, typeColors, ticker, isGenuinelyNew, persistedAnalysis }) => {
+  onRecheck?: () => void;
+  recheckLoading?: boolean;
+}> = ({ r, typeColors, ticker, isGenuinelyNew, persistedAnalysis, onRecheck, recheckLoading }) => {
   const accession = r.filing.accessionNumber;
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<string | null>(() => getAnalysisCache(ticker, accession) || persistedAnalysis || null);
@@ -711,6 +713,29 @@ const FilingRow: React.FC<{
             active={!!analysis}
             variant="accent"
           />
+          {onRecheck && (
+            <button
+              onClick={onRecheck}
+              disabled={recheckLoading}
+              title="Re-check if this filing is in the local database"
+              style={{
+                fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
+                padding: '2px 5px', borderRadius: 4,
+                color: recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
+                background: 'rgba(255,255,255,0.04)',
+                border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
+                cursor: recheckLoading ? 'wait' : 'pointer',
+                transition: 'all 0.15s', outline: 'none',
+                display: 'inline-flex', alignItems: 'center',
+                opacity: recheckLoading ? 0.5 : 1,
+              }}
+            >
+              <svg width={11} height={11} viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 0.8s linear infinite' : 'none' }}>
+                <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 
@@ -1065,7 +1090,9 @@ const YearSection: React.FC<{
   defaultOpen: boolean;
   newAccessions: Set<string>;
   persistedAnalyses: Record<string, string>;
-}> = ({ year, results, typeColors, ticker, defaultOpen, newAccessions, persistedAnalyses }) => {
+  onRecheck?: () => void;
+  recheckLoading?: boolean;
+}> = ({ year, results, typeColors, ticker, defaultOpen, newAccessions, persistedAnalyses, onRecheck, recheckLoading }) => {
   const [open, setOpen] = useState(defaultOpen);
   const trackedInYear = results.filter(r => r.status === 'tracked').length;
 
@@ -1099,7 +1126,7 @@ const YearSection: React.FC<{
       {open && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
           {results.map((r, i) => (
-            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} />
+            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} onRecheck={onRecheck} recheckLoading={recheckLoading} />
           ))}
         </div>
       )}
@@ -1125,7 +1152,9 @@ const FilingList: React.FC<{
   ticker: string;
   newAccessions: Set<string>;
   persistedAnalyses: Record<string, string>;
-}> = ({ results, typeColors, filter, ticker, newAccessions, persistedAnalyses }) => {
+  onRecheck?: () => void;
+  recheckLoading?: boolean;
+}> = ({ results, typeColors, filter, ticker, newAccessions, persistedAnalyses, onRecheck, recheckLoading }) => {
   const filtered = applyFilter(results, filter);
 
   if (filtered.length === 0) {
@@ -1157,6 +1186,8 @@ const FilingList: React.FC<{
           defaultOpen={i === 0}
           newAccessions={newAccessions}
           persistedAnalyses={persistedAnalyses}
+          onRecheck={onRecheck}
+          recheckLoading={recheckLoading}
         />
       ))}
     </div>
@@ -1528,7 +1559,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           </div>
 
           {/* Filing list */}
-          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} newAccessions={newAccessions} persistedAnalyses={persistedAnalyses} />
+          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} newAccessions={newAccessions} persistedAnalyses={persistedAnalyses} onRecheck={recheckDB} recheckLoading={recheckLoading} />
         </>
       )}
     </div>

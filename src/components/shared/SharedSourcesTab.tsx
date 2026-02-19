@@ -161,13 +161,35 @@ const SourceArticleRow: React.FC<{
   }, [persistedAnalysis]); // eslint-disable-line react-hooks/exhaustive-deps
   const [analyzing, setAnalyzing] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [recheckLoading, setRecheckLoading] = useState(false);
+  const [localAnalyzed, setLocalAnalyzed] = useState<boolean | null>(article.analyzed ?? null);
 
-  const statusColor = article.analyzed === null || article.analyzed === undefined
-    ? 'var(--text3)' : article.analyzed ? 'var(--mint)' : 'var(--coral)';
-  const statusLabel = article.analyzed === null || article.analyzed === undefined
-    ? '' : article.analyzed ? 'TRACKED' : 'UNTRACKED';
-  const statusTitle = article.analyzed === null || article.analyzed === undefined
-    ? 'Not checked' : article.analyzed ? 'In analysis' : 'Not in analysis';
+  // Sync with parent prop when it changes (e.g. from header-level re-check)
+  useEffect(() => { setLocalAnalyzed(article.analyzed ?? null); }, [article.analyzed]);
+
+  const handleRecheck = async () => {
+    setRecheckLoading(true);
+    try {
+      const res = await fetch('/api/check-analyzed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker, articles: [{ headline: article.headline, date: article.date }] }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const result = data.results?.[0]?.analyzed ?? null;
+        setLocalAnalyzed(result);
+      }
+    } catch { /* best-effort */ }
+    finally { setRecheckLoading(false); }
+  };
+
+  const statusColor = localAnalyzed === null || localAnalyzed === undefined
+    ? 'var(--text3)' : localAnalyzed ? 'var(--mint)' : 'var(--coral)';
+  const statusLabel = localAnalyzed === null || localAnalyzed === undefined
+    ? '' : localAnalyzed ? 'TRACKED' : 'UNTRACKED';
+  const statusTitle = localAnalyzed === null || localAnalyzed === undefined
+    ? 'Not checked' : localAnalyzed ? 'In analysis' : 'Not in analysis';
   const tc = SOURCE_TYPE_COLORS[type];
 
   const handleAnalyze = async () => {
@@ -246,7 +268,7 @@ const SourceArticleRow: React.FC<{
             style={{
               width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
               background: statusColor,
-              opacity: article.analyzed === null || article.analyzed === undefined ? 0.4 : 0.9,
+              opacity: localAnalyzed === null || localAnalyzed === undefined ? 0.4 : 0.9,
               transition: 'opacity 0.2s, background 0.2s',
             }}
           />
@@ -302,7 +324,7 @@ const SourceArticleRow: React.FC<{
           </span>
         )}
         {/* NEW badge — only for genuinely new articles that appeared after a refresh */}
-        {isGenuinelyNew && !aiAnalysis && article.analyzed !== true && (
+        {isGenuinelyNew && !aiAnalysis && localAnalyzed !== true && (
           <span style={{
             fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
             padding: '1px 5px', borderRadius: 3, flexShrink: 0,
@@ -352,6 +374,29 @@ const SourceArticleRow: React.FC<{
           >
             {analyzing ? '...' : 'AI'}
           </button>
+          {showAnalysis && (
+            <button
+              onClick={handleRecheck}
+              disabled={recheckLoading}
+              title="Re-check if this article is in the database"
+              style={{
+                fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
+                padding: '2px 5px', borderRadius: 4,
+                color: recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
+                background: 'rgba(255,255,255,0.04)',
+                border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
+                cursor: recheckLoading ? 'wait' : 'pointer',
+                transition: 'all 0.15s', outline: 'none',
+                display: 'inline-flex', alignItems: 'center',
+                opacity: recheckLoading ? 0.5 : 1,
+              }}
+            >
+              <svg width={11} height={11} viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 0.8s linear infinite' : 'none' }}>
+                <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 
