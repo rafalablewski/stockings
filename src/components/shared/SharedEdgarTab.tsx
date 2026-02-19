@@ -400,10 +400,19 @@ const FilingRow: React.FC<{
   typeColors: Record<string, { bg: string; text: string }>;
   ticker: string;
   isGenuinelyNew?: boolean;
-}> = ({ r, typeColors, ticker, isGenuinelyNew }) => {
+  persistedAnalysis?: string | null;
+}> = ({ r, typeColors, ticker, isGenuinelyNew, persistedAnalysis }) => {
   const accession = r.filing.accessionNumber;
   const [analyzing, setAnalyzing] = useState(false);
-  const [analysis, setAnalysis] = useState<string | null>(() => getAnalysisCache(ticker, accession));
+  const [analysis, setAnalysis] = useState<string | null>(() => getAnalysisCache(ticker, accession) || persistedAnalysis || null);
+
+  // Hydrate from persistent storage when it becomes available after async fetch
+  useEffect(() => {
+    if (!analysis && persistedAnalysis) {
+      setAnalysis(persistedAnalysis);
+      setAnalysisCache(ticker, accession, persistedAnalysis);
+    }
+  }, [persistedAnalysis]); // eslint-disable-line react-hooks/exhaustive-deps
   const [copied, setCopied] = useState(false);
   const [applyStep, setApplyStep] = useState<"idle" | "previewing" | "previewed" | "applying" | "applied" | "error">("idle");
   const [applyError, setApplyError] = useState("");
@@ -427,7 +436,12 @@ const FilingRow: React.FC<{
   };
 
   const handleAnalyze = async () => {
-    if (analysis) { setAnalysis(null); removeAnalysisCache(ticker, accession); resetWorkflowState(); setExpanded(false); return; } // toggle off
+    if (analysis) {
+      setAnalysis(null); removeAnalysisCache(ticker, accession); resetWorkflowState(); setExpanded(false);
+      // Also remove from persistent storage (fire-and-forget)
+      fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'edgar', key: accession, text: null }) }).catch(() => {});
+      return;
+    } // toggle off
     setAnalyzing(true);
     setExpanded(true);
     try {
@@ -446,6 +460,8 @@ const FilingRow: React.FC<{
       const text = data.analysis || data.error || 'No analysis returned.';
       setAnalysis(text);
       setAnalysisCache(ticker, accession, text);
+      // Persist to disk (fire-and-forget)
+      fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'edgar', key: accession, text }) }).catch(() => {});
     } catch (err) {
       const errText = `Error: ${(err as Error).message}`;
       setAnalysis(errText);
@@ -1048,7 +1064,8 @@ const YearSection: React.FC<{
   ticker: string;
   defaultOpen: boolean;
   newAccessions: Set<string>;
-}> = ({ year, results, typeColors, ticker, defaultOpen, newAccessions }) => {
+  persistedAnalyses: Record<string, string>;
+}> = ({ year, results, typeColors, ticker, defaultOpen, newAccessions, persistedAnalyses }) => {
   const [open, setOpen] = useState(defaultOpen);
   const trackedInYear = results.filter(r => r.status === 'tracked').length;
 
@@ -1082,7 +1099,7 @@ const YearSection: React.FC<{
       {open && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
           {results.map((r, i) => (
-            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} />
+            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} />
           ))}
         </div>
       )}
@@ -1107,7 +1124,8 @@ const FilingList: React.FC<{
   filter: string;
   ticker: string;
   newAccessions: Set<string>;
-}> = ({ results, typeColors, filter, ticker, newAccessions }) => {
+  persistedAnalyses: Record<string, string>;
+}> = ({ results, typeColors, filter, ticker, newAccessions, persistedAnalyses }) => {
   const filtered = applyFilter(results, filter);
 
   if (filtered.length === 0) {
@@ -1138,6 +1156,7 @@ const FilingList: React.FC<{
           ticker={ticker}
           defaultOpen={i === 0}
           newAccessions={newAccessions}
+          persistedAnalyses={persistedAnalyses}
         />
       ))}
     </div>
@@ -1184,6 +1203,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   // Track genuinely new filings: only those appearing after a refresh that weren't in the previous load
   const knownAccessionsRef = useRef<Set<string>>(new Set());
   const [newAccessions, setNewAccessions] = useState<Set<string>>(new Set());
+
+  // Persistent analysis cache (survives page reloads — loaded from disk)
+  const [persistedAnalyses, setPersistedAnalyses] = useState<Record<string, string>>({});
 
   const effectiveLocalFilings = refreshedLocalFilings ?? localFilings;
   const effectiveCrossRefs = refreshedCrossRefs ?? crossRefIndex;
@@ -1275,6 +1297,20 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       fetchFilings();
     }
   }, [ticker, fetchFilings]);
+
+  // Hydrate persisted analyses from disk on mount
+  useEffect(() => {
+    fetch(`/api/analysis-cache?ticker=${ticker}`)
+      .then(res => res.ok ? res.json() : { edgar: {} })
+      .then(data => {
+        const edgarCache: Record<string, string> = {};
+        for (const [key, entry] of Object.entries(data.edgar || {})) {
+          edgarCache[key] = (entry as { text: string }).text;
+        }
+        setPersistedAnalyses(edgarCache);
+      })
+      .catch(() => {}); // best-effort
+  }, [ticker]);
 
   const edgarBrowseUrl = `https://www.sec.gov/edgar/browse/?CIK=${cik}&owner=exclude`;
 
@@ -1457,7 +1493,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           </div>
 
           {/* Filing list */}
-          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} newAccessions={newAccessions} />
+          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} newAccessions={newAccessions} persistedAnalyses={persistedAnalyses} />
         </>
       )}
     </div>

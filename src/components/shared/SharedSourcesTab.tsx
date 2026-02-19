@@ -147,9 +147,18 @@ const SourceArticleRow: React.FC<{
   showAnalysis?: boolean;
   ticker: string;
   isGenuinelyNew?: boolean;
-}> = ({ article, type, showAnalysis, ticker, isGenuinelyNew }) => {
+  persistedAnalysis?: string | null;
+}> = ({ article, type, showAnalysis, ticker, isGenuinelyNew, persistedAnalysis }) => {
   const cacheKey = articleCacheKey(article);
-  const [aiAnalysis, setAiAnalysis] = useState<string | null>(() => getSourceAnalysisCache(ticker, cacheKey));
+  const [aiAnalysis, setAiAnalysis] = useState<string | null>(() => getSourceAnalysisCache(ticker, cacheKey) || persistedAnalysis || null);
+
+  // Hydrate from persistent storage when it becomes available after async fetch
+  useEffect(() => {
+    if (!aiAnalysis && persistedAnalysis) {
+      setAiAnalysis(persistedAnalysis);
+      setSourceAnalysisCache(ticker, cacheKey, persistedAnalysis);
+    }
+  }, [persistedAnalysis]); // eslint-disable-line react-hooks/exhaustive-deps
   const [analyzing, setAnalyzing] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
@@ -162,7 +171,12 @@ const SourceArticleRow: React.FC<{
   const tc = SOURCE_TYPE_COLORS[type];
 
   const handleAnalyze = async () => {
-    if (aiAnalysis) { setAiAnalysis(null); removeSourceAnalysisCache(ticker, cacheKey); setExpanded(false); return; }
+    if (aiAnalysis) {
+      setAiAnalysis(null); removeSourceAnalysisCache(ticker, cacheKey); setExpanded(false);
+      // Also remove from persistent storage (fire-and-forget)
+      fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'sources', key: cacheKey, text: null }) }).catch(() => {});
+      return;
+    }
     setAnalyzing(true);
     setExpanded(true);
     try {
@@ -181,6 +195,8 @@ const SourceArticleRow: React.FC<{
       const text = data.analysis || data.error || 'No analysis returned.';
       setAiAnalysis(text);
       setSourceAnalysisCache(ticker, cacheKey, text);
+      // Persist to disk (fire-and-forget)
+      fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'sources', key: cacheKey, text }) }).catch(() => {});
     } catch (err) {
       const errText = `Error: ${(err as Error).message}`;
       setAiAnalysis(errText);
@@ -394,7 +410,8 @@ const SourceArticleList: React.FC<{
   showAnalysis?: boolean;
   ticker: string;
   newArticleKeys: Set<string>;
-}> = ({ pressReleases, news, showAnalysis, ticker, newArticleKeys }) => {
+  persistedSourceAnalyses: Record<string, string>;
+}> = ({ pressReleases, news, showAnalysis, ticker, newArticleKeys, persistedSourceAnalyses }) => {
   const [showAll, setShowAll] = useState(false);
 
   const combined = [
@@ -416,7 +433,7 @@ const SourceArticleList: React.FC<{
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       {displayed.map((a, i) => (
-        <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(articleCacheKey(a))} />
+        <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(articleCacheKey(a))} persistedAnalysis={persistedSourceAnalyses[articleCacheKey(a)] || null} />
       ))}
       {hiddenCount > 0 && (
         <div style={{ textAlign: 'center', paddingTop: 12, paddingBottom: 8 }}>
@@ -451,9 +468,10 @@ const CompanyFeedCard: React.FC<{
   fetchedAt?: number | null;
   ticker: string;
   newArticleKeys: Set<string>;
+  persistedSourceAnalyses: Record<string, string>;
   onLoad: () => void;
   onTabChange?: (tab: 'pr' | 'news') => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, onLoad }) => {
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, persistedSourceAnalyses, onLoad }) => {
   const prCount = data.pressReleases.length;
   const newsCount = data.news.length;
   const isActive = data.loading || (aiChecking ?? false);
@@ -606,7 +624,7 @@ const CompanyFeedCard: React.FC<{
         )}
 
         {data.loaded && (
-          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} />
+          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} persistedSourceAnalyses={persistedSourceAnalyses} />
         )}
       </div>
     </article>
@@ -629,6 +647,9 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   // Track genuinely new articles: only those appearing after a refresh that weren't in the previous load
   const knownArticleKeysRef = useRef<Set<string>>(new Set());
   const [newArticleKeys, setNewArticleKeys] = useState<Set<string>>(new Set());
+
+  // Persistent analysis cache (survives page reloads — loaded from disk)
+  const [persistedSourceAnalyses, setPersistedSourceAnalyses] = useState<Record<string, string>>({});
 
   const checkAnalyzed = useCallback(async (articles: ArticleItem[]): Promise<ArticleItem[]> => {
     if (articles.length === 0) return articles;
@@ -768,6 +789,20 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticker]);
 
+  // Hydrate persisted source analyses from disk on mount
+  useEffect(() => {
+    fetch(`/api/analysis-cache?ticker=${ticker}`)
+      .then(res => res.ok ? res.json() : { sources: {} })
+      .then(data => {
+        const sourcesCache: Record<string, string> = {};
+        for (const [key, entry] of Object.entries(data.sources || {})) {
+          sourcesCache[key] = (entry as { text: string }).text;
+        }
+        setPersistedSourceAnalyses(sourcesCache);
+      })
+      .catch(() => {}); // best-effort
+  }, [ticker]);
+
   const setCompTab = (name: string, tab: 'pr' | 'news') => {
     setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { loading: false, loaded: false, error: null, pressReleases: [], news: [] }), activeTab: tab } }));
   };
@@ -872,6 +907,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           fetchedAt={lastFetchedAt}
           ticker={ticker}
           newArticleKeys={newArticleKeys}
+          persistedSourceAnalyses={persistedSourceAnalyses}
           onLoad={loadMainCard}
           onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
         />
@@ -913,6 +949,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   aiChecking={compAiChecking[comp.name] || false}
                   ticker={ticker}
                   newArticleKeys={newArticleKeys}
+                  persistedSourceAnalyses={persistedSourceAnalyses}
                   onLoad={() => loadCompetitor(comp.name)}
                   onTabChange={(tab) => setCompTab(comp.name, tab)}
                 />
