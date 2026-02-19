@@ -174,7 +174,9 @@ const SourceArticleRow: React.FC<{
       if (res.ok) {
         const data = await res.json();
         const result = data.results?.[0]?.analyzed ?? null;
-        setLocalAnalyzed(result);
+        // Promote-only: once tracked, never demote back to untracked.
+        // The API can be non-deterministic, so trust a previous true.
+        setLocalAnalyzed(prev => (prev === true && result !== true) ? true : result);
         // Store override so refresh carry-over can preserve this result
         if (result === true) setTrackedOverride(article, true);
       }
