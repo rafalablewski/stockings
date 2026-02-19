@@ -144,8 +144,7 @@ export async function POST() {
 
     // Step 1: Create tables
     log.push('Step 1: Creating tables...');
-    // neon() uses tagged template literals, so we use sql.unsafe() for raw SQL strings
-    await sql(CREATE_TABLES_SQL as unknown as TemplateStringsArray);
+    await sql.query(CREATE_TABLES_SQL);
     log.push('  Tables created successfully.');
 
     // Step 2: Clear existing data (all rows, not per-ticker)
