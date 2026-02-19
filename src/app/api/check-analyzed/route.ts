@@ -174,25 +174,36 @@ export async function POST(request: NextRequest) {
     const analysisData = await getAnalysisData(ticker);
     console.log(`[check-analyzed] ${ticker}: ${analysisData.length} entries loaded from database`);
 
-    // Helper: run local keyword matching for all articles
-    const runLocalMatch = () => articles.map(a => ({
+    // Phase 1: Run deterministic local keyword matching for all articles
+    const localResults = articles.map(a => ({
       headline: a.headline,
       date: a.date,
       analyzed: localMatch(a.headline, a.date, analysisData),
     }));
 
-    // Fallback: local keyword matching when no API key is available
+    // If no API key or AI disabled, return local results directly
     if (!ANTHROPIC_API_KEY) {
-      return NextResponse.json({ ticker, results: runLocalMatch(), method: 'local' });
+      return NextResponse.json({ ticker, results: localResults, method: 'local' });
     }
-
-    // Kill switch: force local matching via env var
     if (DISABLE_AI_MATCHING === 'true') {
       console.log(`[check-analyzed] ${ticker}: AI matching disabled via DISABLE_AI_MATCHING`);
-      return NextResponse.json({ ticker, results: runLocalMatch(), method: 'local' });
+      return NextResponse.json({ ticker, results: localResults, method: 'local' });
     }
 
-    // Build context-rich summary: include headline + truncated detail for semantic matching
+    // Phase 2: Only send locally-unmatched articles to AI for semantic matching.
+    // Local matches are deterministic and reliable — no need to re-evaluate them.
+    const unresolvedIndices = localResults
+      .map((r, i) => r.analyzed ? -1 : i)
+      .filter(i => i >= 0);
+
+    const localMatchCount = articles.length - unresolvedIndices.length;
+    console.log(`[check-analyzed] ${ticker}: ${localMatchCount}/${articles.length} matched locally, ${unresolvedIndices.length} need AI`);
+
+    if (unresolvedIndices.length === 0) {
+      return NextResponse.json({ ticker, results: localResults, method: 'local' });
+    }
+
+    // Build context-rich summary for AI
     const existingSummary = analysisData
       .map(e => {
         const detail = e.detail
@@ -202,7 +213,8 @@ export async function POST(request: NextRequest) {
       })
       .join('\n');
 
-    const articleList = articles
+    const unresolvedArticles = unresolvedIndices.map(i => articles[i]);
+    const articleList = unresolvedArticles
       .map((a, i) => `${i + 1}. [${a.date}] ${a.headline}`)
       .join('\n');
 
@@ -214,7 +226,7 @@ ${existingSummary}
 NEW ARTICLES TO CHECK:
 ${articleList}
 
-For each new article (1-${articles.length}), determine if the underlying event/topic is ALREADY COVERED somewhere in the existing database.
+For each new article (1-${unresolvedArticles.length}), determine if the underlying event/topic is ALREADY COVERED somewhere in the existing database.
 
 Mark as "analyzed: true" when:
 - A database entry is PRIMARILY ABOUT the same event — its headline directly describes the same announcement, product launch, partnership, regulatory event, or milestone
@@ -233,16 +245,16 @@ Think about WHAT HAPPENED, not how it's worded. Match on substance, not phrasing
 Respond with ONLY a JSON array, one object per article, in order:
 [{"index": 1, "analyzed": true}, {"index": 2, "analyzed": false}, ...]`;
 
-    // Token budget guard: estimate prompt tokens (chars / 4), skip AI if too large
+    // Token budget guard
     const estimatedTokens = Math.ceil(prompt.length / 4);
     if (estimatedTokens > MAX_PROMPT_TOKENS) {
       console.warn(`[check-analyzed] ${ticker}: prompt ~${estimatedTokens} tokens exceeds MAX_PROMPT_TOKENS (${MAX_PROMPT_TOKENS}), using local matching`);
-      return NextResponse.json({ ticker, results: runLocalMatch(), method: 'local' });
+      return NextResponse.json({ ticker, results: localResults, method: 'local' });
     }
 
-    // Attempt AI matching — falls back to local matching on any failure
-    let method: 'ai' | 'local' = 'ai';
-    let output: Array<{ headline: string; date: string; analyzed: boolean }>;
+    // Attempt AI matching for unresolved articles — merge with local results
+    let method: 'ai' | 'local' | 'hybrid' = 'hybrid';
+    const output = [...localResults]; // start with local results as baseline
 
     try {
       const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -255,6 +267,7 @@ Respond with ONLY a JSON array, one object per article, in order:
         body: JSON.stringify({
           model: 'claude-haiku-4-5-20251001',
           max_tokens: 1024,
+          temperature: 0,
           messages: [{ role: 'user', content: prompt }],
         }),
         signal: AbortSignal.timeout(30000),
@@ -269,30 +282,26 @@ Respond with ONLY a JSON array, one object per article, in order:
       const claudeData = await claudeRes.json();
       const responseText = claudeData.content?.[0]?.text || '[]';
 
-      // Parse Claude's JSON response
       let results: Array<{ index: number; analyzed: boolean }>;
       try {
         const jsonMatch = responseText.match(/\[[\s\S]*\]/);
         results = jsonMatch ? JSON.parse(jsonMatch[0]) : [];
       } catch {
         console.error('Failed to parse Claude response:', responseText);
-        results = articles.map((_, i) => ({ index: i + 1, analyzed: false }));
+        results = [];
       }
 
-      // Map results back to articles
-      output = articles.map((article, i) => {
-        const result = results.find(r => r.index === i + 1);
-        return {
-          headline: article.headline,
-          date: article.date,
-          analyzed: result?.analyzed ?? false,
-        };
-      });
+      // Merge AI results back into the output for unresolved articles only
+      for (let ai = 0; ai < unresolvedIndices.length; ai++) {
+        const origIdx = unresolvedIndices[ai];
+        const result = results.find(r => r.index === ai + 1);
+        if (result) {
+          output[origIdx] = { ...output[origIdx], analyzed: result.analyzed };
+        }
+      }
     } catch (claudeError) {
-      // Network error, timeout, or API error — fall back to local matching
-      console.error('Claude API call failed, using local matching:', claudeError);
+      console.error('Claude API call failed, using local matching only:', claudeError);
       method = 'local';
-      output = runLocalMatch();
     }
 
     return NextResponse.json({ ticker, results: output, method });

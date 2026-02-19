@@ -750,11 +750,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const [loadingAll, setLoadingAll] = useState(false);
   const [lastFetchedAt, setLastFetchedAt] = useState<number | null>(null);
   const [methodologyOpen, setMethodologyOpen] = useState(false);
-  const [matchMethod, setMatchMethod] = useState<'ai' | 'local' | null>(null);
+  const [matchMethod, setMatchMethod] = useState<'ai' | 'local' | 'hybrid' | null>(null);
 
   // Track genuinely new articles: only those appearing after a refresh that weren't in the previous load
   const knownArticleKeysRef = useRef<Set<string>>(new Set());
   const [newArticleKeys, setNewArticleKeys] = useState<Set<string>>(new Set());
+
+  // Track whether the initial auto-recheck has fired (prevents double-checking)
+  const initialRecheckDone = useRef(false);
 
   // Persistent analysis cache (survives page reloads — loaded from disk)
   const [persistedSourceAnalyses, setPersistedSourceAnalyses] = useState<Record<string, string>>({});
@@ -822,24 +825,54 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       setNewArticleKeys(fresh);
     }
 
-    setMainCard(prev => ({ ...prev, loading: false, loaded: true, error, pressReleases: prs, news }));
+    // Carry over analyzed status from previous state for matching articles,
+    // so dots don't flash to red while the check runs.
+    setMainCard(prev => {
+      const prevStatus = new Map<string, boolean | null>();
+      for (const a of [...prev.pressReleases, ...prev.news]) {
+        const key = `${a.headline}|${a.date}`;
+        if (a.analyzed != null) prevStatus.set(key, a.analyzed);
+      }
+      return {
+        ...prev, loading: false, loaded: true, error,
+        pressReleases: prs.map(a => ({ ...a, analyzed: prevStatus.get(`${a.headline}|${a.date}`) ?? null })),
+        news: news.map(a => ({ ...a, analyzed: prevStatus.get(`${a.headline}|${a.date}`) ?? null })),
+      };
+    });
     const now = Date.now();
     setLastFetchedAt(now);
-    setCachedFeed(ticker, prs, news);
 
-    // Re-check analyzed status for the fresh articles (mirrors loadCompetitor behavior)
+    // Re-check analyzed status for the fresh articles
     const allArticles = [...prs, ...news];
+    // Prevent auto-recheck useEffect from firing a duplicate check
+    initialRecheckDone.current = true;
     if (allArticles.length > 0) {
       setAiChecking(true);
       try {
         const checked = await checkAnalyzed(allArticles);
+        const checkedPrs = checked.slice(0, prs.length);
+        const checkedNews = checked.slice(prs.length);
+        // Merge: only promote (never demote) compared to carried-over status
         setMainCard(prev => ({
           ...prev,
-          pressReleases: checked.slice(0, prs.length),
-          news: checked.slice(prs.length),
+          pressReleases: checkedPrs.map((a, i) => ({
+            ...a,
+            analyzed: (a.analyzed === true || prev.pressReleases[i]?.analyzed === true) ? true : a.analyzed,
+          })),
+          news: checkedNews.map((a, i) => ({
+            ...a,
+            analyzed: (a.analyzed === true || prev.news[i]?.analyzed === true) ? true : a.analyzed,
+          })),
         }));
-      } catch { /* handled */ }
+        // Update session cache WITH correct analyzed status (not null)
+        setCachedFeed(ticker, checkedPrs, checkedNews);
+      } catch {
+        // On check failure, still cache articles (with carried-over status)
+        setCachedFeed(ticker, prs, news);
+      }
       finally { setAiChecking(false); }
+    } else {
+      setCachedFeed(ticker, prs, news);
     }
   }, [ticker, checkAnalyzed]);
 
@@ -947,8 +980,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticker]);
 
-  // Auto re-check database status after articles are loaded (initial load only)
-  const initialRecheckDone = useRef(false);
+  // Auto re-check database status after articles are loaded (cache-loaded articles only;
+  // loadMainCard already sets initialRecheckDone.current = true to prevent double-checking)
   useEffect(() => {
     if (mainCard.loaded && !initialRecheckDone.current && (mainCard.pressReleases.length > 0 || mainCard.news.length > 0)) {
       initialRecheckDone.current = true;
@@ -1345,7 +1378,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             {matchMethod && (
               <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Active</span>
-                <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, padding: '2px 8px', borderRadius: 5, background: matchMethod === 'ai' ? 'var(--sky-dim)' : 'var(--gold-dim)', color: matchMethod === 'ai' ? 'var(--sky)' : 'var(--gold)' }}>{matchMethod === 'ai' ? 'AI semantic matching' : 'local keyword matching'}</span>
+                <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, padding: '2px 8px', borderRadius: 5, background: matchMethod === 'local' ? 'var(--gold-dim)' : 'var(--sky-dim)', color: matchMethod === 'local' ? 'var(--gold)' : 'var(--sky)' }}>{matchMethod === 'ai' ? 'AI semantic matching' : matchMethod === 'hybrid' ? 'hybrid (local + AI)' : 'local keyword matching'}</span>
               </div>
             )}
           </div>
