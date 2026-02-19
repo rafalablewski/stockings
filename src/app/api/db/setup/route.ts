@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
-import { sql as rawSql } from 'drizzle-orm';
 import * as schema from '@/lib/schema';
 import {
   mapSecFilings, mapCrossRefs, mapCrclTimeline, mapAstsTimeline,
@@ -145,9 +144,11 @@ export async function POST() {
 
     // Step 1: Create tables
     log.push('Step 1: Creating tables...');
+    // neon() only works as a tagged template — simulate it for each DDL statement
     const statements = CREATE_TABLES_SQL.split(';').map(s => s.trim()).filter(Boolean);
     for (const stmt of statements) {
-      await db.execute(rawSql.raw(stmt));
+      const tsa = Object.assign([stmt], { raw: [stmt] }) as unknown as TemplateStringsArray;
+      await sql(tsa);
     }
     log.push('  Tables created successfully.');
 
