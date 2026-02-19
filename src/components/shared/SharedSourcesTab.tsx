@@ -117,6 +117,19 @@ function articleCacheKey(article: ArticleItem): string {
   return (article.url || article.headline || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 60);
 }
 
+// ── Per-article tracked-status overrides (survives refresh within session) ──
+// When a per-article re-check confirms an article is tracked, store the override
+// so that loadMainCard carry-over and promote logic can pick it up.
+const trackedOverrides = new Map<string, boolean>();
+
+function getTrackedOverride(article: ArticleItem): boolean | undefined {
+  return trackedOverrides.get(articleCacheKey(article));
+}
+
+function setTrackedOverride(article: ArticleItem, value: boolean) {
+  trackedOverrides.set(articleCacheKey(article), value);
+}
+
 // Verdict types and utilities imported from './verdictUtils'
 
 // ── Article row (EDGAR filing-row style) ────────────────────────────────────
@@ -143,8 +156,12 @@ const SourceArticleRow: React.FC<{
   const [recheckLoading, setRecheckLoading] = useState(false);
   const [localAnalyzed, setLocalAnalyzed] = useState<boolean | null>(article.analyzed ?? null);
 
-  // Sync with parent prop when it changes (e.g. from header-level re-check)
-  useEffect(() => { setLocalAnalyzed(article.analyzed ?? null); }, [article.analyzed]);
+  // Sync with parent prop when it changes (e.g. from header-level re-check).
+  // Promote-only: never overwrite a confirmed true with false/null.
+  useEffect(() => {
+    const parentVal = article.analyzed ?? null;
+    setLocalAnalyzed(prev => (prev === true && parentVal !== true) ? true : parentVal);
+  }, [article.analyzed]);
 
   const handleRecheck = async () => {
     setRecheckLoading(true);
@@ -158,6 +175,8 @@ const SourceArticleRow: React.FC<{
         const data = await res.json();
         const result = data.results?.[0]?.analyzed ?? null;
         setLocalAnalyzed(result);
+        // Store override so refresh carry-over can preserve this result
+        if (result === true) setTrackedOverride(article, true);
       }
     } catch { /* best-effort */ }
     finally { setRecheckLoading(false); }
@@ -821,11 +840,16 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       for (const key of currentKeys) {
         if (!knownArticleKeysRef.current.has(key)) fresh.add(key);
       }
-      knownArticleKeysRef.current = currentKeys;
+      // Accumulate known keys (never forget an article we've seen before).
+      // This prevents articles that temporarily drop off the API from being
+      // re-flagged as NEW when they reappear.
+      for (const key of currentKeys) {
+        knownArticleKeysRef.current.add(key);
+      }
       setNewArticleKeys(fresh);
     }
 
-    // Carry over analyzed status from previous state for matching articles,
+    // Carry over analyzed status from previous state + per-article recheck overrides,
     // so dots don't flash to red while the check runs.
     setMainCard(prev => {
       const prevStatus = new Map<string, boolean | null>();
@@ -833,10 +857,16 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         const key = `${a.headline}|${a.date}`;
         if (a.analyzed != null) prevStatus.set(key, a.analyzed);
       }
+      // Apply per-article recheck overrides (from small re-check button)
+      const resolveStatus = (a: ArticleItem): boolean | null => {
+        const override = getTrackedOverride(a);
+        if (override === true) return true;
+        return prevStatus.get(`${a.headline}|${a.date}`) ?? null;
+      };
       return {
         ...prev, loading: false, loaded: true, error,
-        pressReleases: prs.map(a => ({ ...a, analyzed: prevStatus.get(`${a.headline}|${a.date}`) ?? null })),
-        news: news.map(a => ({ ...a, analyzed: prevStatus.get(`${a.headline}|${a.date}`) ?? null })),
+        pressReleases: prs.map(a => ({ ...a, analyzed: resolveStatus(a) })),
+        news: news.map(a => ({ ...a, analyzed: resolveStatus(a) })),
       };
     });
     const now = Date.now();
