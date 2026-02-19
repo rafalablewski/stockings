@@ -28,10 +28,10 @@ import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata, Conver
 // ============================================================================
 
 export const CAPITAL_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-15',
-  source: 'Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7, Jun-Aug 2025 8-Ks/424B5s/FWP/Form 4s/13D-A/10-Q, Mar 2025 Form 4s/144/S-3ASR/S-8/13D-A/8-K, Jan-Feb 2025 8-Ks/13D/Form 3s/Form 4/13D-A',
+  lastUpdated: '2026-02-19',
+  source: 'Feb 17 8-K (Indenture), Feb 17 SC 13D/A (Vodafone Amend. 3), Feb 17 Form 4 (Bernal RSU vest), Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7, Jun-Aug 2025 8-Ks/424B5s/FWP/Form 4s/13D-A/10-Q, Mar 2025 Form 4s/144/S-3ASR/S-8/13D-A/8-K, Jan-Feb 2025 8-Ks/13D/Form 3s/Form 4/13D-A',
   nextExpectedUpdate: 'Q4 2025 10-K (~March 2026). GREENSHOE DEADLINE: Feb 20, 2026 ($150M convert option).',
-  notes: 'Feb 15 audit: 121 filings cross-referenced (10 Jan-Feb 2026 + 13 Dec + 15 Sept-Oct + 12 Aug-Sep + 15 Jun-Aug + 15 May-Jun + 15 Apr-May + 15 Mar + 11 Jan-Feb 2025). AT&T 13D: 2.7% (6.26M shares from $100M convert). Johnson/Larson board appointments. Avellan 25% (Amend. 12). Bernal 50K RSU grant.',
+  notes: 'Feb 19 audit: 124 filings cross-referenced. Vodafone dropped below 5% threshold (dilution, no sales). Bernal 3K RSU vest (from 50K grant). Convertible notes indenture filed (settlement Feb 17). AT&T 13D: 2.7%. Avellan 25% (Amend. 12).',
 };
 
 // ============================================================================
@@ -175,11 +175,11 @@ export const MAJOR_SHAREHOLDERS: MajorShareholder[] = [
   {
     name: 'Vodafone Group',
     role: 'Strategic Partner',
-    shares: 6.5,
-    shareClass: 'Class A',
-    pct: (6.5 / TOTAL_BASIC_SHARES * 100).toFixed(1) + '%',
-    votingPct: (6.5 / TOTAL_VOTING_SHARES * 100).toFixed(1) + '%',
-    notes: 'From 2034 convert + PIPE. SatCo JV partner.',
+    shares: 14.5,
+    shareClass: 'Class A + LLC Units',
+    pct: (14.5 / TOTAL_BASIC_SHARES * 100).toFixed(1) + '%',
+    votingPct: (14.5 / TOTAL_VOTING_SHARES * 100).toFixed(1) + '%',
+    notes: 'SC 13D/A (Amend. No. 3) Feb 17, 2026: 5,471,743 Class A + 9,044,454 LLC Units (exchangeable 1:1 for Class A). Also holds 9,044,454 Class B. Dropped below 5% threshold due to share count dilution — no sales. SatCo JV partner.',
   },
   {
     name: 'Google',
@@ -504,7 +504,7 @@ export const CONVERTIBLE_NOTES: ConvertibleNoteDetail[] = [
     conversionPrice: 116.30,
     maxSharesOnConversion: 8.6,
     status: 'outstanding',
-    notes: 'Feb 2026 issue. Rule 144A. UBS lead. $150M greenshoe option. Net ~$983.7M.',
+    notes: 'Feb 2026 issue. Rule 144A. UBS lead. $150M greenshoe option (through Feb 20). Net ~$983.7M. Indenture with U.S. Bank Trust Co. (trustee). Settled Feb 17. Max shares on conversion: 11,865,355 (at max rate 10.3177). Interest semi-annually Apr 15 & Oct 15, starting Oct 15, 2026.',
   },
 ];
 
@@ -649,6 +649,19 @@ export const DEC_2025_INSIDER_PURCHASES = [
   { name: 'Keith R. Larson', role: 'Director', shares: 675, price: 72.71, date: '2025-12-10', account: 'IRA', plan10b5_1: true, planAdopted: '2025-09-08', postPurchaseHoldings: 675 },
   { name: 'Keith R. Larson', role: 'Director', shares: 715, price: 70.02, date: '2025-12-17', account: 'IRA', plan10b5_1: true, planAdopted: '2025-09-08', postPurchaseHoldings: 1390 },
   { name: 'Keith R. Larson', role: 'Director', shares: 625, price: 80.00, date: '2025-12-24', account: 'IRA', plan10b5_1: true, planAdopted: '2025-09-08', postPurchaseHoldings: 2015 },
+];
+
+// ============================================================================
+// FEBRUARY 2026 RSU VESTINGS
+// ============================================================================
+
+/**
+ * Feb 2026 RSU vesting from Form 4 filed Feb 17, 2026.
+ * Bernal's 50K RSU grant (Feb 27, 2025) cliff vesting on Feb 15, 2026.
+ * Only 3,000 RSUs in this tranche; 833 withheld for tax at $82.51.
+ */
+export const FEB_2026_RSU_VESTINGS = [
+  { name: 'Maya Bernal', role: 'CAO', date: '2026-02-15', unitsVested: 3000, taxWithheld: 833, netAcquired: 2167, taxPrice: 82.51, taxValue: 68731, postTransactionHoldings: 121653 },
 ];
 
 // ============================================================================

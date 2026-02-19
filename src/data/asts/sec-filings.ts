@@ -17,6 +17,9 @@
  */
 
 export const ASTS_SEC_FILINGS = [
+  { date: 'Feb 17, 2026', type: '8-K', description: 'Convertible Notes Indenture Completion ($1B 2.25% due 2036; settlement + Item 1.01/2.03/3.02/8.01)', period: '—', color: 'yellow' },
+  { date: 'Feb 17, 2026', type: 'SC 13D/A', description: 'Vodafone 13D/A (Amend. No. 3): 14.5M shares (5%); dropped below 5% due to dilution, no sales', period: '—', color: 'green' },
+  { date: 'Feb 17, 2026', type: 'Form 4', description: 'Bernal (CAO) RSU vesting: 3K shares, 833 withheld for tax at $82.51 (net 2,167); post: 121,653', period: '—', color: 'green' },
   { date: 'Feb 11, 2026', type: '8-K', description: 'Preliminary FY 2025 Results + Convertible Notes Offering + Registered Directs', period: '—', color: 'yellow' },
   { date: 'Feb 13, 2026', type: '424B5', description: 'Registered Direct Offering #1 (1.86M shares @ $96.92; settles Feb 20)', period: '—', color: 'orange' },
   { date: 'Feb 13, 2026', type: '424B5', description: 'Registered Direct Offering #2 (4.48M shares @ $96.92; settles Feb 20)', period: '—', color: 'orange' },
@@ -100,8 +103,8 @@ export const ASTS_SEC_META = {
   ticker: 'ASTS',
   exchange: 'NASDAQ',
   emergingGrowthCompany: false,
-  lastPR: { date: 'February 11, 2026', title: '$1B Converts + Registered Directs + Preliminary FY 2025 Results' },
-  totalFilingsTracked: 73
+  lastPR: { date: 'February 12, 2026', title: 'Pricing of $1B Convertible Notes + Registered Direct Offerings' },
+  totalFilingsTracked: 76
 };
 
 // Color palette constants (reduce duplication per Gemini review)
@@ -137,6 +140,17 @@ export const ASTS_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '
 export const ASTS_FILING_CROSS_REFS: Record<string, { source: string; data: string }[]> = {
 
   // ── Feb 2026 ──────────────────────────────────────────────────────────────
+  '8-K|2026-02-17': [
+    { source: 'capital', data: "$1B 2.25% notes settled Feb 17. Indenture with U.S. Bank Trust. Net proceeds ~$983.7M." },
+    { source: 'capital', data: "Conversion rate: 8.5982 shares/$1K (~$116.30). Max shares on conversion: 11.87M (incl. greenshoe at max rate 10.3177)." },
+    { source: 'timeline', data: "Convertible Notes Indenture completed — $1B 2.25% due 2036. Item 1.01 Material Definitive Agreement." },
+  ],
+  'SC 13D/A|2026-02-17': [
+    { source: 'capital', data: "Vodafone: 14,516,197 shares (5,471,743 Class A + 9,044,454 LLC Units). 5% ownership. Dropped below 5% threshold due to dilution — no sales." },
+  ],
+  'Form 4|2026-02-17': [
+    { source: 'capital', data: "Bernal (CAO): 3K RSUs vested Feb 15, 833 withheld for tax at $82.51. Net 2,167 shares. Post: 121,653 Class A." },
+  ],
   '8-K|2026-02-11': [
     { source: 'capital', data: "$1B converts at 2.25% due 2036. UBS lead. $150M greenshoe." },
     { source: 'capital', data: "Registered Direct #1: 1.86M shares @ $96.92 → ~$180.5M" },

@@ -153,6 +153,7 @@ import {
   DATA_FRESHNESS,
   FEB_2026_RD_NET_DILUTION,
   FEB_2026_GREENSHOE,
+  FEB_2026_RSU_VESTINGS,
   DEC_2025_RSU_GRANTS,
   DEC_2025_INSIDER_SALES,
   DEC_2025_INSIDER_PURCHASES,
@@ -2942,7 +2943,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           { id: 'incentives', value: `${sbcHistory.length}`, label: 'SBC Quarters', sub: 'Compensation data' },
           { id: 'dilution', value: `${((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(0)}%`, label: 'Total Dilution', sub: `${fullyDiluted}M FD shares` },
           { id: 'liquidity', value: `$${(LIQUIDITY_POSITION.cashAndEquiv / 1000).toFixed(1)}B`, label: 'Liquidity', sub: `~${(LIQUIDITY_POSITION.cashAndEquiv / 300).toFixed(0)}Q runway` },
-          { id: 'insiders', value: `${DEC_2025_INSIDER_SALES.length + AUG_SEP_2025_INSIDER_SALES.length}`, label: 'Insider Activity', sub: 'Form 4 filings' },
+          { id: 'insiders', value: `${FEB_2026_RSU_VESTINGS.length + DEC_2025_INSIDER_SALES.length + AUG_SEP_2025_INSIDER_SALES.length}`, label: 'Insider Activity', sub: 'Form 4 filings' },
         ].map(nav => (
           <div
             key={nav.id}
@@ -3578,6 +3579,32 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--violet)', textAlign: 'right' }}>{(g.units / 1000).toFixed(0)}K</span>
               <span style={{ fontSize: 12, color: 'var(--text2)' }}>{g.vestingStart}</span>
               <span style={{ fontSize: 11, color: 'var(--text3)' }}>{g.holdingsNote}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Feb 2026 RSU Vestings */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#feb-2026-rsu-vestings</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>RSU Vestings &amp; Tax Withholding (Feb 2026)</span>
+          <UpdateIndicators sources="SEC" />
+        </div>
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 90px 90px 100px', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
+            {['Executive', 'Date', 'Vested', 'Tax W/H', 'Net', 'Tax Value'].map(h => (
+              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: ['Vested', 'Tax W/H', 'Net', 'Tax Value'].includes(h) ? 'right' : 'left' }}>{h}</span>
+            ))}
+          </div>
+          {FEB_2026_RSU_VESTINGS.map((v, i) => (
+            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 90px 90px 100px', padding: '12px 24px', borderBottom: i < FEB_2026_RSU_VESTINGS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+              <span style={{ fontSize: 13, color: 'var(--text)' }}>{v.name} <span style={{ fontSize: 11, color: 'var(--text3)' }}>({v.role})</span></span>
+              <span style={{ fontSize: 12, color: 'var(--text2)' }}>{v.date.slice(5)}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>{(v.unitsVested / 1000).toFixed(1)}K</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--coral)', textAlign: 'right' }}>{v.taxWithheld}</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', textAlign: 'right' }}>{(v.netAcquired / 1000).toFixed(1)}K</span>
+              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right' }}>${(v.taxValue / 1000).toFixed(1)}K</span>
             </div>
           ))}
         </div>
@@ -5403,7 +5430,7 @@ const SECFilingTracker = () => {
     filings: {
       '10-K': { date: 'March 3, 2025', description: 'FY 2024', color: 'blue' },
       '10-Q': { date: 'Nov 10, 2025', description: 'Q3 2025', color: 'purple' },
-      '8-K': { date: 'Dec 24, 2025', description: 'BB6 Launch', color: 'yellow' },
+      '8-K': { date: 'Feb 17, 2026', description: 'Convertible Notes Indenture', color: 'yellow' },
       'S-3': { date: 'Oct 2025', description: 'Shelf Registration', color: 'green' },
       '424B5': { date: 'Oct 2025', description: '$1.15B Converts', color: 'orange' },
       'DEF 14A': { date: '—', description: 'Proxy (Annual)', color: 'cyan' },
