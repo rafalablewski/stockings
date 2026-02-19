@@ -657,7 +657,7 @@ const CompanyFeedCard: React.FC<{
           </div>
         )}
 
-        {!data.loaded && !data.loading && !data.error && (
+        {isPrimary && !data.loaded && !data.loading && !data.error && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
             padding: '24px 0', color: 'var(--text3)',
