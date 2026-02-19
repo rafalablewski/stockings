@@ -809,6 +809,18 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     finally { setAiChecking(false); }
   }, [mainCard.pressReleases, mainCard.news, checkAnalyzed]);
 
+  const recheckCompetitor = useCallback(async (name: string) => {
+    const card = compCards[name];
+    if (!card || (!card.pressReleases.length && !card.news.length)) return;
+    setCompAiChecking(prev => ({ ...prev, [name]: true }));
+    try {
+      const all = [...card.pressReleases, ...card.news];
+      const checked = await checkAnalyzed(all);
+      setCompCards(prev => ({ ...prev, [name]: { ...prev[name], pressReleases: checked.slice(0, card.pressReleases.length), news: checked.slice(card.pressReleases.length) } }));
+    } catch { /* handled */ }
+    finally { setCompAiChecking(prev => ({ ...prev, [name]: false })); }
+  }, [compCards, checkAnalyzed]);
+
   const loadCompetitor = useCallback(async (name: string) => {
     setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: true, loaded: false, error: null } }));
     try {
@@ -1031,6 +1043,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   newArticleKeys={newArticleKeys}
                   persistedSourceAnalyses={persistedSourceAnalyses}
                   onLoad={() => loadCompetitor(comp.name)}
+                  onRecheck={() => recheckCompetitor(comp.name)}
                   onTabChange={(tab) => setCompTab(comp.name, tab)}
                 />
               );
