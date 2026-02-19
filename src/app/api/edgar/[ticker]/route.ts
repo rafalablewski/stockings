@@ -33,7 +33,9 @@ const SEC_HEADERS = {
 
 /** Normalize bare EDGAR form codes to display-friendly names */
 const FORM_DISPLAY: Record<string, string> = {
-  '3': 'Form 3', '4': 'Form 4', '5': 'Form 5',
+  '3': 'Form 3', '3/A': 'Form 3/A',
+  '4': 'Form 4', '4/A': 'Form 4/A',
+  '5': 'Form 5', '5/A': 'Form 5/A',
   '144': 'Form 144', '144/A': 'Form 144/A',
   'D': 'Form D', 'D/A': 'Form D/A',
 };

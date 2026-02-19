@@ -1064,7 +1064,7 @@ const FORM_CATEGORIES: { label: string; match: (form: string) => boolean }[] = [
   { label: '10-K',       match: f => /^10K/i.test(normalizeForm(f)) },
   { label: '10-Q',       match: f => /^10Q/i.test(normalizeForm(f)) },
   { label: '8-K',        match: f => /^8K/i.test(normalizeForm(f)) },
-  { label: 'Ownership',  match: f => { const n = normalizeForm(f.toUpperCase()); return ['4','3','5'].includes(n) || n.startsWith('SC13') || n === '144'; } },
+  { label: 'Ownership',  match: f => { const n = normalizeForm(f.toUpperCase()); return /^[345](A?)$/.test(n) || n.startsWith('SC13') || n === '144' || n === '144A'; } },
   { label: 'Prospectus', match: f => { const n = normalizeForm(f.toUpperCase()); return /^424/.test(n) || /^S[138]/.test(n) || n === 'FWP'; } },
   { label: 'Proxy',      match: f => { const n = normalizeForm(f.toUpperCase()); return n.includes('14A') || n.includes('14C'); } },
 ];
