@@ -171,12 +171,19 @@ const SourceArticleRow: React.FC<{
     ? 'Not checked' : localAnalyzed ? 'In analysis' : 'Not in analysis';
   const tc = SOURCE_TYPE_COLORS[type];
 
+  const isErrorAnalysis = (text: string | null) => !!text && (text.startsWith('Error:') || text === 'No analysis returned.' || text === 'AI analysis failed');
+
   const handleAnalyze = async () => {
-    if (aiAnalysis) {
+    const isError = isErrorAnalysis(aiAnalysis);
+    if (aiAnalysis && !isError) {
       setAiAnalysis(null); removeSourceAnalysisCache(ticker, cacheKey); setExpanded(false);
       // Also remove from persistent storage (fire-and-forget)
       fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'sources', key: cacheKey, text: null }) }).catch(() => {});
       return;
+    }
+    // If previous result was an error, clear it before retrying
+    if (isError) {
+      setAiAnalysis(null); removeSourceAnalysisCache(ticker, cacheKey);
     }
     setAnalyzing(true);
     setExpanded(true);
@@ -194,14 +201,18 @@ const SourceArticleRow: React.FC<{
       });
       const data = await res.json();
       const text = data.analysis || data.error || 'No analysis returned.';
+      const failed = isErrorAnalysis(text);
       setAiAnalysis(text);
       setSourceAnalysisCache(ticker, cacheKey, text);
-      // Persist to disk (fire-and-forget)
-      fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'sources', key: cacheKey, text }) }).catch(() => {});
+      // Only persist successful analyses to Postgres (don't save error strings)
+      if (!failed) {
+        fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'sources', key: cacheKey, text }) }).catch(() => {});
+      }
     } catch (err) {
       const errText = `Error: ${(err as Error).message}`;
       setAiAnalysis(errText);
       setSourceAnalysisCache(ticker, cacheKey, errText);
+      // Don't persist errors to Postgres
     } finally {
       setAnalyzing(false);
     }
