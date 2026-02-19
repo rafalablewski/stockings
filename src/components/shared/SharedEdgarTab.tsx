@@ -15,7 +15,7 @@
 
 'use client';
 
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 
 export interface EdgarTabProps {
   ticker: string;
@@ -399,7 +399,8 @@ const FilingRow: React.FC<{
   r: MatchResult;
   typeColors: Record<string, { bg: string; text: string }>;
   ticker: string;
-}> = ({ r, typeColors, ticker }) => {
+  isGenuinelyNew?: boolean;
+}> = ({ r, typeColors, ticker, isGenuinelyNew }) => {
   const accession = r.filing.accessionNumber;
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<string | null>(() => getAnalysisCache(ticker, accession));
@@ -654,8 +655,8 @@ const FilingRow: React.FC<{
         }}>
           {statusCfg.label}
         </span>
-        {/* NEW badge — only for truly new items: untracked, no analysis, no cross-refs */}
-        {r.status === 'new' && !analysis && !(r.crossRefs && r.crossRefs.length > 0) && (
+        {/* NEW badge — only for genuinely new filings that appeared after a refresh */}
+        {isGenuinelyNew && !analysis && !(r.crossRefs && r.crossRefs.length > 0) && r.status === 'new' && (
           <span style={{
             fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
             padding: '1px 5px', borderRadius: 3, flexShrink: 0,
@@ -1046,7 +1047,8 @@ const YearSection: React.FC<{
   typeColors: Record<string, { bg: string; text: string }>;
   ticker: string;
   defaultOpen: boolean;
-}> = ({ year, results, typeColors, ticker, defaultOpen }) => {
+  newAccessions: Set<string>;
+}> = ({ year, results, typeColors, ticker, defaultOpen, newAccessions }) => {
   const [open, setOpen] = useState(defaultOpen);
   const trackedInYear = results.filter(r => r.status === 'tracked').length;
 
@@ -1080,7 +1082,7 @@ const YearSection: React.FC<{
       {open && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
           {results.map((r, i) => (
-            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} />
+            <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} />
           ))}
         </div>
       )}
@@ -1104,7 +1106,8 @@ const FilingList: React.FC<{
   typeColors: Record<string, { bg: string; text: string }>;
   filter: string;
   ticker: string;
-}> = ({ results, typeColors, filter, ticker }) => {
+  newAccessions: Set<string>;
+}> = ({ results, typeColors, filter, ticker, newAccessions }) => {
   const filtered = applyFilter(results, filter);
 
   if (filtered.length === 0) {
@@ -1134,6 +1137,7 @@ const FilingList: React.FC<{
           typeColors={typeColors}
           ticker={ticker}
           defaultOpen={i === 0}
+          newAccessions={newAccessions}
         />
       ))}
     </div>
@@ -1177,6 +1181,10 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   const [refreshedLocalFilings, setRefreshedLocalFilings] = useState<LocalFiling[] | null>(null);
   const [refreshedCrossRefs, setRefreshedCrossRefs] = useState<Record<string, { source: string; data: string }[]> | null>(null);
 
+  // Track genuinely new filings: only those appearing after a refresh that weren't in the previous load
+  const knownAccessionsRef = useRef<Set<string>>(new Set());
+  const [newAccessions, setNewAccessions] = useState<Set<string>>(new Set());
+
   const effectiveLocalFilings = refreshedLocalFilings ?? localFilings;
   const effectiveCrossRefs = refreshedCrossRefs ?? crossRefIndex;
 
@@ -1211,6 +1219,23 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       }
       const data = await res.json();
       const filings: EdgarFiling[] = data.filings || [];
+
+      // Track genuinely new filings (only those not in previous load)
+      const currentAccessions = new Set(filings.map(f => f.accessionNumber));
+      if (knownAccessionsRef.current.size === 0) {
+        // First load — everything is already known, nothing is "new"
+        knownAccessionsRef.current = currentAccessions;
+        setNewAccessions(new Set());
+      } else {
+        // Refresh — only filings not previously seen are genuinely new
+        const fresh = new Set<string>();
+        for (const acc of currentAccessions) {
+          if (!knownAccessionsRef.current.has(acc)) fresh.add(acc);
+        }
+        knownAccessionsRef.current = currentAccessions;
+        setNewAccessions(fresh);
+      }
+
       setEdgarFilings(filings);
       setLoaded(true);
       const now = Date.now();
@@ -1240,6 +1265,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   useEffect(() => {
     const cached = getCachedEdgar(ticker);
     if (cached) {
+      // Cache restore — all cached filings are already known, none are "new"
+      knownAccessionsRef.current = new Set(cached.filings.map(f => f.accessionNumber));
+      setNewAccessions(new Set());
       setEdgarFilings(cached.filings);
       setLoaded(true);
       setFetchedAt(cached.fetchedAt);
@@ -1429,7 +1457,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           </div>
 
           {/* Filing list */}
-          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} />
+          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} newAccessions={newAccessions} />
         </>
       )}
     </div>

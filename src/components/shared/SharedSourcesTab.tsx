@@ -146,7 +146,8 @@ const SourceArticleRow: React.FC<{
   type: 'pr' | 'news';
   showAnalysis?: boolean;
   ticker: string;
-}> = ({ article, type, showAnalysis, ticker }) => {
+  isGenuinelyNew?: boolean;
+}> = ({ article, type, showAnalysis, ticker, isGenuinelyNew }) => {
   const cacheKey = articleCacheKey(article);
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(() => getSourceAnalysisCache(ticker, cacheKey));
   const [analyzing, setAnalyzing] = useState(false);
@@ -284,8 +285,8 @@ const SourceArticleRow: React.FC<{
             {statusLabel}
           </span>
         )}
-        {/* NEW badge — only for truly new items: not tracked in DB, not AI-analyzed */}
-        {!aiAnalysis && article.analyzed !== true && (
+        {/* NEW badge — only for genuinely new articles that appeared after a refresh */}
+        {isGenuinelyNew && !aiAnalysis && article.analyzed !== true && (
           <span style={{
             fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
             padding: '1px 5px', borderRadius: 3, flexShrink: 0,
@@ -392,7 +393,8 @@ const SourceArticleList: React.FC<{
   news: ArticleItem[];
   showAnalysis?: boolean;
   ticker: string;
-}> = ({ pressReleases, news, showAnalysis, ticker }) => {
+  newArticleKeys: Set<string>;
+}> = ({ pressReleases, news, showAnalysis, ticker, newArticleKeys }) => {
   const [showAll, setShowAll] = useState(false);
 
   const combined = [
@@ -414,7 +416,7 @@ const SourceArticleList: React.FC<{
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       {displayed.map((a, i) => (
-        <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} ticker={ticker} />
+        <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(articleCacheKey(a))} />
       ))}
       {hiddenCount > 0 && (
         <div style={{ textAlign: 'center', paddingTop: 12, paddingBottom: 8 }}>
@@ -448,9 +450,10 @@ const CompanyFeedCard: React.FC<{
   isPrimary?: boolean;
   fetchedAt?: number | null;
   ticker: string;
+  newArticleKeys: Set<string>;
   onLoad: () => void;
   onTabChange?: (tab: 'pr' | 'news') => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, onLoad }) => {
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, onLoad }) => {
   const prCount = data.pressReleases.length;
   const newsCount = data.news.length;
   const isActive = data.loading || (aiChecking ?? false);
@@ -603,7 +606,7 @@ const CompanyFeedCard: React.FC<{
         )}
 
         {data.loaded && (
-          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} ticker={ticker} />
+          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} />
         )}
       </div>
     </article>
@@ -622,6 +625,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const [lastFetchedAt, setLastFetchedAt] = useState<number | null>(null);
   const [methodologyOpen, setMethodologyOpen] = useState(false);
   const [matchMethod, setMatchMethod] = useState<'ai' | 'local' | null>(null);
+
+  // Track genuinely new articles: only those appearing after a refresh that weren't in the previous load
+  const knownArticleKeysRef = useRef<Set<string>>(new Set());
+  const [newArticleKeys, setNewArticleKeys] = useState<Set<string>>(new Set());
 
   const checkAnalyzed = useCallback(async (articles: ArticleItem[]): Promise<ArticleItem[]> => {
     if (articles.length === 0) return articles;
@@ -668,12 +675,28 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     if (newsResult.status === 'fulfilled') news = newsResult.value;
     const error = (prResult.status === 'rejected' && newsResult.status === 'rejected') ? 'Could not fetch feeds' : null;
 
+    // Track genuinely new articles (only those not in previous load)
+    const all = [...prs, ...news];
+    const currentKeys = new Set(all.map(a => articleCacheKey(a)));
+    if (knownArticleKeysRef.current.size === 0) {
+      // First load — everything is already known, nothing is "new"
+      knownArticleKeysRef.current = currentKeys;
+      setNewArticleKeys(new Set());
+    } else {
+      // Refresh — only articles not previously seen are genuinely new
+      const fresh = new Set<string>();
+      for (const key of currentKeys) {
+        if (!knownArticleKeysRef.current.has(key)) fresh.add(key);
+      }
+      knownArticleKeysRef.current = currentKeys;
+      setNewArticleKeys(fresh);
+    }
+
     setMainCard(prev => ({ ...prev, loading: false, loaded: true, error, pressReleases: prs, news }));
     const now = Date.now();
     setLastFetchedAt(now);
     setCachedFeed(ticker, prs, news);
 
-    const all = [...prs, ...news];
     if (all.length > 0) {
       setAiChecking(true);
       try {
@@ -718,13 +741,17 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   useEffect(() => {
     const cached = getCachedFeed(ticker);
     if (cached) {
+      // Cache restore — all cached articles are already known, none are "new"
+      const allCached = [...cached.pressReleases, ...cached.news];
+      knownArticleKeysRef.current = new Set(allCached.map(a => articleCacheKey(a)));
+      setNewArticleKeys(new Set());
       setMainCard(prev => ({
         ...prev, loaded: true, loading: false,
         pressReleases: cached.pressReleases, news: cached.news,
       }));
       setLastFetchedAt(cached.fetchedAt);
       // Run AI analysis on cached articles (cache stores pre-analysis data)
-      const all = [...cached.pressReleases, ...cached.news];
+      const all = allCached;
       if (all.length > 0) {
         setAiChecking(true);
         checkAnalyzed(all).then(checked => {
@@ -844,6 +871,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           isPrimary
           fetchedAt={lastFetchedAt}
           ticker={ticker}
+          newArticleKeys={newArticleKeys}
           onLoad={loadMainCard}
           onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
         />
@@ -884,6 +912,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   showAnalysis
                   aiChecking={compAiChecking[comp.name] || false}
                   ticker={ticker}
+                  newArticleKeys={newArticleKeys}
                   onLoad={() => loadCompetitor(comp.name)}
                   onTabChange={(tab) => setCompTab(comp.name, tab)}
                 />
