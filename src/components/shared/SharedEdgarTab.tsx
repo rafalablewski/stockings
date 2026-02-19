@@ -344,7 +344,15 @@ const ActionBtn: React.FC<{
 };
 
 // ── Analysis panel ──────────────────────────────────────────────────────────
-const AnalysisPanel: React.FC<{ text: string }> = ({ text }) => (
+const AnalysisPanel: React.FC<{ text: string }> = ({ text }) => {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
+  return (
   <div style={{ margin: '6px 0 2px 19px', paddingTop: 16, marginTop: 8, borderTop: '1px solid var(--border)' }}>
     <div
       style={{
@@ -365,6 +373,23 @@ const AnalysisPanel: React.FC<{ text: string }> = ({ text }) => (
       >
         Analysis Result
       </span>
+      <button
+        onClick={handleCopy}
+        title="Copy analysis text"
+        style={{
+          background: copied ? 'color-mix(in srgb, var(--mint) 15%, transparent)' : 'var(--surface2)',
+          border: '1px solid var(--border)',
+          borderRadius: 6,
+          padding: '3px 10px',
+          fontSize: 11,
+          color: copied ? 'var(--mint)' : 'var(--text3)',
+          cursor: 'pointer',
+          transition: 'all 0.15s',
+          fontFamily: 'inherit',
+        }}
+      >
+        {copied ? 'Copied' : 'Copy'}
+      </button>
     </div>
     <div style={{ maxHeight: 600, overflowY: 'auto' }}>
       <pre
@@ -381,7 +406,8 @@ const AnalysisPanel: React.FC<{ text: string }> = ({ text }) => (
       </pre>
     </div>
   </div>
-);
+  );
+};
 
 // ── Display name normalization ───────────────────────────────────────────────
 /** Map EDGAR's raw form names to consistent short display names */
