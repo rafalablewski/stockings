@@ -95,81 +95,291 @@ const SOURCE_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
   news: { bg: 'var(--mint-dim)', text: 'var(--mint)' },
 };
 
+// ── Per-article analysis cache (survives tab switches) ─────────────────────
+function getSourceAnalysisCache(ticker: string, articleKey: string): string | null {
+  try {
+    const raw = sessionStorage.getItem(`source_analysis_${ticker}_${articleKey}`);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function setSourceAnalysisCache(ticker: string, articleKey: string, text: string) {
+  try { sessionStorage.setItem(`source_analysis_${ticker}_${articleKey}`, JSON.stringify(text)); } catch { /* quota */ }
+}
+
+function removeSourceAnalysisCache(ticker: string, articleKey: string) {
+  try { sessionStorage.removeItem(`source_analysis_${ticker}_${articleKey}`); } catch { /* ignore */ }
+}
+
+/** Generate a stable cache key for an article */
+function articleCacheKey(article: ArticleItem): string {
+  return (article.url || article.headline || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 60);
+}
+
+// ── Verdict helpers (shared with EDGAR) ──────────────────────────────────────
+type SourceVerdictLevel = 'Critical' | 'Important' | 'Low' | 'Already Incorporated';
+
+const SOURCE_VERDICT_COLORS: Record<SourceVerdictLevel, { color: string; bg: string }> = {
+  'Critical':             { color: 'var(--coral)', bg: 'var(--coral-dim)' },
+  'Important':            { color: 'var(--gold)',  bg: 'var(--gold-dim)' },
+  'Low':                  { color: 'var(--text3)', bg: 'rgba(255,255,255,0.04)' },
+  'Already Incorporated': { color: 'var(--mint)',  bg: 'var(--mint-dim)' },
+};
+
+function parseSourceVerdict(text: string): { level: SourceVerdictLevel; explanation: string } | null {
+  const match = text.match(/\[VERDICT:\s*(Critical|Important|Low|Already Incorporated)\]\s*[—\-–]\s*(.+)/i);
+  if (!match) return null;
+  const raw = match[1].trim();
+  const level = (raw.charAt(0).toUpperCase() + raw.slice(1)) as SourceVerdictLevel;
+  if (!(level in SOURCE_VERDICT_COLORS)) return null;
+  return { level, explanation: match[2].trim() };
+}
+
+function stripSourceVerdict(text: string): string {
+  return text.replace(/\n?\[VERDICT:.*$/im, '').trim();
+}
+
 // ── Article row (EDGAR filing-row style) ────────────────────────────────────
 const SourceArticleRow: React.FC<{
   article: ArticleItem;
   type: 'pr' | 'news';
   showAnalysis?: boolean;
-}> = ({ article, type, showAnalysis }) => {
+  ticker: string;
+}> = ({ article, type, showAnalysis, ticker }) => {
+  const cacheKey = articleCacheKey(article);
+  const [aiAnalysis, setAiAnalysis] = useState<string | null>(() => getSourceAnalysisCache(ticker, cacheKey));
+  const [analyzing, setAnalyzing] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+
   const statusColor = article.analyzed === null || article.analyzed === undefined
     ? 'var(--text3)' : article.analyzed ? 'var(--mint)' : 'var(--coral)';
   const statusLabel = article.analyzed === null || article.analyzed === undefined
-    ? '' : article.analyzed ? 'TRACKED' : 'NEW';
+    ? '' : article.analyzed ? 'TRACKED' : 'UNTRACKED';
   const statusTitle = article.analyzed === null || article.analyzed === undefined
     ? 'Not checked' : article.analyzed ? 'In analysis' : 'Not in analysis';
   const tc = SOURCE_TYPE_COLORS[type];
 
+  const handleAnalyze = async () => {
+    if (aiAnalysis) { setAiAnalysis(null); removeSourceAnalysisCache(ticker, cacheKey); setExpanded(false); return; }
+    setAnalyzing(true);
+    setExpanded(true);
+    try {
+      const res = await fetch('/api/sources/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: article.url,
+          headline: article.headline,
+          source: article.source,
+          date: article.date,
+          ticker,
+        }),
+      });
+      const data = await res.json();
+      const text = data.analysis || data.error || 'No analysis returned.';
+      setAiAnalysis(text);
+      setSourceAnalysisCache(ticker, cacheKey, text);
+    } catch (err) {
+      const errText = `Error: ${(err as Error).message}`;
+      setAiAnalysis(errText);
+      setSourceAnalysisCache(ticker, cacheKey, errText);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
   return (
-    <a
-      href={article.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        display: 'flex', alignItems: 'center', gap: 10,
-        padding: '8px 12px', borderRadius: 10,
-        transition: 'background 0.15s',
-        textDecoration: 'none', color: 'inherit',
-      }}
-      onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-    >
-      {/* Status dot */}
-      {showAnalysis && (
-        <span
-          title={statusTitle}
-          style={{
-            width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-            background: statusColor,
-            opacity: article.analyzed === null || article.analyzed === undefined ? 0.4 : 0.9,
-            transition: 'opacity 0.2s, background 0.2s',
-          }}
-        />
-      )}
-      {/* Source type badge */}
-      <span style={{
-        fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
-        padding: '2px 8px', borderRadius: 5, flexShrink: 0,
-        minWidth: 48, textAlign: 'center',
-        background: tc.bg, color: tc.text, whiteSpace: 'nowrap',
-      }}>
-        {type === 'pr' ? 'PR' : 'NEWS'}
-      </span>
-      {/* Headline */}
-      <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {article.headline}
-      </span>
-      {/* Source name */}
-      {article.source && (
-        <span style={{ fontSize: 11, color: 'var(--text3)', flexShrink: 0, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {article.source}
-        </span>
-      )}
-      {/* Date */}
-      {article.date && (
-        <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px' }}>
-          {article.date}
-        </span>
-      )}
-      {/* Status label */}
-      {showAnalysis && statusLabel && (
+    <div>
+      {/* Header row — clickable expand/collapse when analysis exists */}
+      <div
+        role={aiAnalysis ? 'button' : undefined}
+        tabIndex={aiAnalysis ? 0 : undefined}
+        aria-expanded={aiAnalysis ? expanded : undefined}
+        onClick={aiAnalysis ? () => setExpanded(!expanded) : undefined}
+        onKeyDown={aiAnalysis ? (e) => { if (e.key === 'Enter') setExpanded(!expanded); } : undefined}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '8px 12px', borderRadius: 10,
+          transition: 'background 0.15s',
+          cursor: aiAnalysis ? 'pointer' : undefined,
+        }}
+        onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+      >
+        {/* Chevron (visible when analysis exists) */}
+        {aiAnalysis && (
+          <svg
+            width={12} height={12} viewBox="0 0 24 24" fill="none"
+            stroke="rgba(255,255,255,0.3)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
+            aria-hidden="true"
+            style={{
+              transition: 'transform 0.2s',
+              transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+              flexShrink: 0,
+            }}
+          >
+            <path d="M9 5l7 7-7 7" />
+          </svg>
+        )}
+        {/* Status dot */}
+        {showAnalysis && (
+          <span
+            title={statusTitle}
+            style={{
+              width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
+              background: statusColor,
+              opacity: article.analyzed === null || article.analyzed === undefined ? 0.4 : 0.9,
+              transition: 'opacity 0.2s, background 0.2s',
+            }}
+          />
+        )}
+        {/* Source type badge */}
         <span style={{
-          fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
-          color: statusColor, flexShrink: 0, whiteSpace: 'nowrap',
+          fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
+          padding: '2px 8px', borderRadius: 5, flexShrink: 0,
+          minWidth: 48, textAlign: 'center',
+          background: tc.bg, color: tc.text, whiteSpace: 'nowrap',
         }}>
-          {statusLabel}
+          {type === 'pr' ? 'PR' : 'NEWS'}
         </span>
+        {/* Headline */}
+        <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {article.headline}
+        </span>
+        {/* Verdict badge inline (compact, shown in header when collapsed) */}
+        {aiAnalysis && !expanded && (() => {
+          const verdict = parseSourceVerdict(aiAnalysis);
+          if (!verdict) return null;
+          const vc = SOURCE_VERDICT_COLORS[verdict.level];
+          return (
+            <span style={{
+              fontSize: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em',
+              padding: '2px 6px', borderRadius: 3, flexShrink: 0,
+              color: vc.color, background: vc.bg,
+              border: `1px solid color-mix(in srgb, ${vc.color} 20%, transparent)`,
+            }}>
+              {verdict.level}
+            </span>
+          );
+        })()}
+        {/* Source name */}
+        {article.source && (
+          <span style={{ fontSize: 11, color: 'var(--text3)', flexShrink: 0, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {article.source}
+          </span>
+        )}
+        {/* Date */}
+        {article.date && (
+          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px' }}>
+            {article.date}
+          </span>
+        )}
+        {/* Status label */}
+        {showAnalysis && statusLabel && (
+          <span style={{
+            fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
+            color: statusColor, flexShrink: 0, whiteSpace: 'nowrap',
+          }}>
+            {statusLabel}
+          </span>
+        )}
+        {/* NEW badge — shown until article is AI-analyzed */}
+        {!aiAnalysis && (
+          <span style={{
+            fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+            color: 'var(--sky)', background: 'var(--sky-dim)',
+            border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
+          }}>
+            NEW
+          </span>
+        )}
+        {/* Action buttons — stop propagation so clicks don't toggle expand */}
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+          <a
+            href={article.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open article"
+            style={{
+              fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
+              padding: '2px 5px', borderRadius: 4,
+              color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
+              border: '1px solid var(--border)',
+              cursor: 'pointer', transition: 'all 0.15s', outline: 'none', textDecoration: 'none',
+              display: 'inline-flex', alignItems: 'center',
+            }}
+          >
+            <svg width={11} height={11} viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" />
+            </svg>
+          </a>
+          <button
+            onClick={handleAnalyze}
+            disabled={analyzing}
+            title={aiAnalysis ? 'Close AI analysis' : 'Analyze with AI'}
+            style={{
+              fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
+              textTransform: 'uppercase', letterSpacing: '0.08em',
+              padding: '2px 6px', borderRadius: 4,
+              color: aiAnalysis ? 'var(--accent)' : 'rgba(130,200,130,0.5)',
+              background: 'rgba(255,255,255,0.04)',
+              border: `1px solid ${aiAnalysis ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(130,200,130,0.15)'}`,
+              cursor: analyzing ? 'wait' : 'pointer',
+              transition: 'all 0.15s', outline: 'none',
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              opacity: analyzing ? 0.5 : 1,
+            }}
+          >
+            {analyzing ? '...' : 'AI'}
+          </button>
+        </div>
+      </div>
+
+      {/* Expanded body — analysis content */}
+      {aiAnalysis && expanded && (
+        <div style={{ padding: '0 12px 12px' }}>
+          {/* Verdict badge */}
+          {(() => {
+            const verdict = parseSourceVerdict(aiAnalysis);
+            if (!verdict) return null;
+            const vc = SOURCE_VERDICT_COLORS[verdict.level];
+            return (
+              <div style={{
+                margin: '12px 0 0 7px', display: 'inline-flex', alignItems: 'center', gap: 6,
+                fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em',
+                padding: '3px 8px', borderRadius: 4,
+                color: vc.color, background: vc.bg,
+                border: `1px solid color-mix(in srgb, ${vc.color} 20%, transparent)`,
+              }}>
+                {verdict.level}
+                <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, opacity: 0.7, fontSize: 10 }}>
+                  {verdict.explanation}
+                </span>
+              </div>
+            );
+          })()}
+          {/* Analysis panel */}
+          <div style={{ margin: '6px 0 2px 19px', paddingTop: 16, marginTop: 8, borderTop: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '2.5px', color: 'var(--text3)' }}>
+                Analysis Result
+              </span>
+            </div>
+            <div style={{ maxHeight: 600, overflowY: 'auto' }}>
+              <pre style={{
+                fontSize: 12, fontFamily: 'var(--font-mono, monospace)',
+                color: 'var(--text2)', lineHeight: 1.8,
+                whiteSpace: 'pre-wrap', margin: 0,
+              }}>
+                {stripSourceVerdict(aiAnalysis)}
+              </pre>
+            </div>
+          </div>
+        </div>
       )}
-    </a>
+    </div>
   );
 };
 
@@ -180,7 +390,8 @@ const SourceArticleList: React.FC<{
   pressReleases: ArticleItem[];
   news: ArticleItem[];
   showAnalysis?: boolean;
-}> = ({ pressReleases, news, showAnalysis }) => {
+  ticker: string;
+}> = ({ pressReleases, news, showAnalysis, ticker }) => {
   const [showAll, setShowAll] = useState(false);
 
   const combined = [
@@ -202,7 +413,7 @@ const SourceArticleList: React.FC<{
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       {displayed.map((a, i) => (
-        <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} />
+        <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} ticker={ticker} />
       ))}
       {hiddenCount > 0 && (
         <div style={{ textAlign: 'center', paddingTop: 12, paddingBottom: 8 }}>
@@ -235,9 +446,10 @@ const CompanyFeedCard: React.FC<{
   aiChecking?: boolean;
   isPrimary?: boolean;
   fetchedAt?: number | null;
+  ticker: string;
   onLoad: () => void;
   onTabChange?: (tab: 'pr' | 'news') => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, onLoad }) => {
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, onLoad }) => {
   const prCount = data.pressReleases.length;
   const newsCount = data.news.length;
   const isActive = data.loading || (aiChecking ?? false);
@@ -390,7 +602,7 @@ const CompanyFeedCard: React.FC<{
         )}
 
         {data.loaded && (
-          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} />
+          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} ticker={ticker} />
         )}
       </div>
     </article>
@@ -607,7 +819,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         >
           {([
             { label: 'Tracked', color: 'var(--mint)', opacity: 0.9, desc: 'Article matched in database — found in research notes or tracked data files' },
-            { label: 'New', color: 'var(--coral)', opacity: 0.9, desc: 'Article not found in database — potentially new information to review' },
+            { label: 'Untracked', color: 'var(--coral)', opacity: 0.9, desc: 'Article not found in database — potentially new information to review' },
             { label: 'Pending', color: 'var(--text3)', opacity: 0.4, desc: 'Status not yet checked — load feeds and run analysis to classify' },
           ] as const).map(s => (
             <span key={s.label} title={s.desc} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, maxWidth: 260 }}>
@@ -630,6 +842,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           aiChecking={aiChecking}
           isPrimary
           fetchedAt={lastFetchedAt}
+          ticker={ticker}
           onLoad={loadMainCard}
           onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
         />
@@ -669,6 +882,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   data={data}
                   showAnalysis
                   aiChecking={compAiChecking[comp.name] || false}
+                  ticker={ticker}
                   onLoad={() => loadCompetitor(comp.name)}
                   onTabChange={(tab) => setCompTab(comp.name, tab)}
                 />
@@ -855,10 +1069,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
               <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No match</div>
               <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
-              {/* Result: NEW */}
+              {/* Result: UNTRACKED */}
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} />
-                <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>NEW</span>
+                <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>UNTRACKED</span>
               </div>
               {/* Date proximity note */}
               <div style={{ marginTop: 8, padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', fontStyle: 'italic', textAlign: 'center' }}>Date proximity guard: recurring weekly reports<br />require higher overlap when dates are &gt;5 days apart</div>
@@ -873,7 +1087,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Status</span>
                 <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> Tracked</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} /> New</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} /> Untracked</span>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', display: 'inline-block' }} /> Pending</span>
                 </div>
               </div>

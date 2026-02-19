@@ -244,7 +244,7 @@ function matchFilings(
 const STATUS_CONFIG: Record<FilingStatus, { color: string; label: string; title: string; desc: string }> = {
   tracked:   { color: 'var(--mint)',  label: 'IN DB',     title: 'Tracked in database', desc: 'Indexed in sec-filings.ts — matched by accession number or form+date' },
   data_only: { color: 'var(--gold)',  label: 'DATA ONLY', title: 'Data captured but filing not indexed in sec-filings.ts', desc: 'Data captured in other files (capital, timeline, etc.) but not indexed in sec-filings.ts' },
-  new:       { color: 'var(--coral)', label: 'NEW',       title: 'Not in database', desc: 'Not tracked — no index entry, no cross-reference data' },
+  new:       { color: 'var(--coral)', label: 'UNTRACKED', title: 'Not in database', desc: 'Not tracked — no index entry, no cross-reference data' },
 };
 
 // ── Verdict helpers ─────────────────────────────────────────────────────────
@@ -656,10 +656,38 @@ const FilingRow: React.FC<{
         }}>
           {statusCfg.label}
         </span>
+        {/* NEW badge — shown until filing is AI-analyzed */}
+        {!analysis && (
+          <span style={{
+            fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+            color: 'var(--sky)', background: 'var(--sky-dim)',
+            border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
+          }}>
+            NEW
+          </span>
+        )}
         {/* Action buttons — stop propagation so clicks don't toggle expand */}
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
         <div style={{ display: 'flex', gap: 4, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
-          <ActionBtn label="Open" title="Open filing on SEC EDGAR" href={r.filing.fileUrl} />
+          <a
+            href={r.filing.fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open filing on SEC EDGAR"
+            style={{
+              fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
+              padding: '2px 5px', borderRadius: 4,
+              color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
+              border: '1px solid var(--border)',
+              cursor: 'pointer', transition: 'all 0.15s', outline: 'none', textDecoration: 'none',
+              display: 'inline-flex', alignItems: 'center',
+            }}
+          >
+            <svg width={11} height={11} viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" />
+            </svg>
+          </a>
           <ActionBtn
             label="AI"
             title={analysis ? 'Close AI analysis' : 'Analyze with AI'}
@@ -669,21 +697,37 @@ const FilingRow: React.FC<{
             variant="accent"
           />
           {r.status !== 'tracked' && onRecheckDB && (
-            <ActionBtn
-              label="Re-check"
-              title="Re-check this filing against current database on disk"
+            <button
               onClick={onRecheckDB}
-              loading={recheckLoading}
-            />
+              disabled={recheckLoading}
+              title="Re-read sec-filings.ts from disk to pick up AI Agent patches"
+              style={{
+                fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
+                padding: '2px 5px', borderRadius: 4,
+                color: recheckLoading ? 'var(--text3)' : 'var(--gold)',
+                background: 'rgba(255,255,255,0.04)',
+                border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(210,153,34,0.2)'}`,
+                cursor: recheckLoading ? 'wait' : 'pointer',
+                transition: 'all 0.15s', outline: 'none',
+                display: 'inline-flex', alignItems: 'center',
+                opacity: recheckLoading ? 0.5 : 1,
+              }}
+            >
+              <svg width={11} height={11} viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 1s linear infinite' : 'none' }}>
+                <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           )}
         </div>
       </div>
 
+      {/* Cross-reference data (comment-like) — always visible regardless of expand/collapse */}
+      {r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
+
       {/* Expanded body — analysis content */}
       {analysis && expanded && (
         <div style={{ padding: '0 12px 12px' }}>
-          {/* Cross-reference data (comment-like) */}
-          {r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
           {/* Verdict badge */}
           {(() => {
             const verdict = parseVerdict(analysis);
@@ -994,8 +1038,6 @@ const FilingRow: React.FC<{
         </div>
       )}
 
-      {/* Cross-reference data when no analysis */}
-      {!analysis && r.crossRefs && r.crossRefs.length > 0 && <CrossRefLines refs={r.crossRefs} />}
     </div>
   );
 };
@@ -1357,7 +1399,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             <button
               onClick={handleRecheckDB}
               disabled={recheckLoading}
-              aria-label="Re-check database status from disk"
+              aria-label="Refresh database status from disk"
               title="Re-read sec-filings.ts from disk to pick up AI Agent patches"
               style={{
                 fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
@@ -1372,10 +1414,10 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               }}
             >
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 1s linear infinite' : 'none' }}>
-                <path d="M2 2v5h5M14 14v-5H9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M13.5 6A6 6 0 0 0 3.3 3.3L2 7M2.5 10a6 6 0 0 0 10.2 2.7L14 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              {recheckLoading ? 'Checking...' : 'Re-check DB'}
+              {recheckLoading ? 'Refreshing...' : 'Refresh DB'}
             </button>
           )}
         </div>
@@ -1395,7 +1437,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             <span key={status} title={STATUS_CONFIG[status].desc} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, maxWidth: 260 }}>
               <span style={{ width: 5, height: 5, borderRadius: '50%', background: STATUS_CONFIG[status].color, opacity: 0.9, marginTop: 3, flexShrink: 0 }} />
               <span style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <span style={{ fontWeight: 500 }}>{status === 'tracked' ? 'In Database' : status === 'data_only' ? 'Data Only' : 'New'}</span>
+                <span style={{ fontWeight: 500 }}>{status === 'tracked' ? 'In Database' : status === 'data_only' ? 'Data Only' : 'Untracked'}</span>
                 <span style={{ fontSize: 9, opacity: 0.5, lineHeight: 1.4 }}>{STATUS_CONFIG[status].desc}</span>
               </span>
             </span>
