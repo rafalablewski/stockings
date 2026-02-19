@@ -181,13 +181,16 @@ export async function POST(request: NextRequest) {
       analyzed: localMatch(a.headline, a.date, analysisData),
     }));
 
+    const localMatchCount = localResults.filter(r => r.analyzed).length;
+
     // If no API key or AI disabled, return local results directly
     if (!ANTHROPIC_API_KEY) {
-      return NextResponse.json({ ticker, results: localResults, method: 'local' });
+      console.log(`[check-analyzed] ${ticker}: NO ANTHROPIC_API_KEY set — local only. ${localMatchCount}/${articles.length} matched, ${analysisData.length} DB entries`);
+      return NextResponse.json({ ticker, results: localResults, method: 'local', dbEntries: analysisData.length, reason: 'no_api_key' });
     }
     if (DISABLE_AI_MATCHING === 'true') {
       console.log(`[check-analyzed] ${ticker}: AI matching disabled via DISABLE_AI_MATCHING`);
-      return NextResponse.json({ ticker, results: localResults, method: 'local' });
+      return NextResponse.json({ ticker, results: localResults, method: 'local', dbEntries: analysisData.length });
     }
 
     // Phase 2: Only send locally-unmatched articles to AI for semantic matching.
@@ -196,7 +199,6 @@ export async function POST(request: NextRequest) {
       .map((r, i) => r.analyzed ? -1 : i)
       .filter(i => i >= 0);
 
-    const localMatchCount = articles.length - unresolvedIndices.length;
     console.log(`[check-analyzed] ${ticker}: ${localMatchCount}/${articles.length} matched locally, ${unresolvedIndices.length} need AI`);
 
     if (unresolvedIndices.length === 0) {
@@ -304,7 +306,7 @@ Respond with ONLY a JSON array, one object per article, in order:
       method = 'local';
     }
 
-    return NextResponse.json({ ticker, results: output, method });
+    return NextResponse.json({ ticker, results: output, method, dbEntries: analysisData.length });
   } catch (error) {
     console.error('Check-analyzed error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

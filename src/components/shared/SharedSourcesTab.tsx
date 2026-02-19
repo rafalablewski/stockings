@@ -799,7 +799,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       if (!data.results) throw new Error(data.error || 'No results returned');
       if (data.method) setMatchMethod(data.method);
       const trackedCount = data.results.filter((r: { analyzed: boolean }) => r.analyzed === true).length;
-      console.log(`[SharedSourcesTab] check-analyzed: ${trackedCount}/${data.results.length} tracked (method: ${data.method})`);
+      console.log(`[SharedSourcesTab] check-analyzed: ${trackedCount}/${data.results.length} tracked (method: ${data.method}, dbEntries: ${data.dbEntries ?? '?'}${data.reason ? ', reason: ' + data.reason : ''})`);
       return articles.map((article, i) => ({ ...article, analyzed: data.results?.[i]?.analyzed ?? null }));
     } catch (err) {
       console.error('[SharedSourcesTab] AI check error:', err);
