@@ -1063,6 +1063,33 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           if (!seenArticleKeysRef.current.has(key)) fresh.add(key);
         }
         setNewArticleKeys(fresh);
+
+        // Save unseen articles to DB (same logic as loadMainCard)
+        const newToSave = allCached
+          .filter(a => !seenArticleKeysRef.current.has(articleCacheKey(a)))
+          .map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date }));
+        if (newToSave.length > 0) {
+          console.log(`[seen-articles] saving ${newToSave.length} cached articles...`);
+          try {
+            const saveRes = await fetch('/api/seen-articles', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ticker, articles: newToSave }),
+            });
+            const saveBody = await saveRes.json().catch(() => ({}));
+            if (saveRes.ok) {
+              console.log('[seen-articles] save OK:', saveBody);
+            } else {
+              console.error('[seen-articles] save failed:', saveRes.status, saveBody);
+            }
+          } catch (err) {
+            console.error('[seen-articles] save error:', err);
+          }
+          for (const a of allCached) {
+            seenArticleKeysRef.current.add(articleCacheKey(a));
+          }
+        }
+
         setMainCard(prev => ({
           ...prev, loaded: true, loading: false,
           pressReleases: cached.pressReleases, news: cached.news,
