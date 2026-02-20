@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, uniqueIndex, index } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, timestamp, uniqueIndex, index, boolean } from 'drizzle-orm/pg-core';
 
 // ============================================================================
 // ANALYSIS CACHE — replaces analysis-cache.json files
@@ -102,4 +102,22 @@ export const partnerNews = pgTable('partner_news', {
   entryType: text('entry_type').notNull(),     // 'partner_news' | 'competitor_news' | 'ethereum_adoption'
 }, (table) => [
   index('partner_news_ticker_date_idx').on(table.ticker, table.date),
+]);
+
+// ============================================================================
+// SEEN ARTICLES — tracks which fetched articles the user has already seen
+// so that genuinely new articles can be flagged with a NEW badge on refresh.
+// ============================================================================
+
+export const seenArticles = pgTable('seen_articles', {
+  id: serial('id').primaryKey(),
+  ticker: text('ticker').notNull(),
+  cacheKey: text('cache_key').notNull(),   // articleCacheKey(article)
+  headline: text('headline').notNull(),
+  date: text('date'),                      // article publication date
+  dismissed: boolean('dismissed').default(false).notNull(), // user clicked NEW to dismiss
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex('seen_articles_ticker_key_idx').on(table.ticker, table.cacheKey),
+  index('seen_articles_ticker_idx').on(table.ticker),
 ]);

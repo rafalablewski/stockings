@@ -143,7 +143,8 @@ const SourceArticleRow: React.FC<{
   ticker: string;
   isGenuinelyNew?: boolean;
   persistedAnalysis?: string | null;
-}> = ({ article, type, showAnalysis, ticker, isGenuinelyNew, persistedAnalysis }) => {
+  onDismissNew?: () => void;
+}> = ({ article, type, showAnalysis, ticker, isGenuinelyNew, persistedAnalysis, onDismissNew }) => {
   const cacheKey = articleCacheKey(article);
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(() => getSourceAnalysisCache(ticker, cacheKey) || persistedAnalysis || null);
 
@@ -337,16 +338,24 @@ const SourceArticleRow: React.FC<{
             {statusLabel}
           </span>
         )}
-        {/* NEW badge — only for genuinely new articles that appeared after a refresh */}
+        {/* NEW badge — clickable: dismisses the article as "seen" */}
         {isGenuinelyNew && !aiAnalysis && localAnalyzed !== true && (
-          <span style={{
-            fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
-            color: 'var(--sky)', background: 'var(--sky-dim)',
-            border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
-          }}>
+          <button
+            onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
+            title="Mark as seen"
+            style={{
+              fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+              padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+              color: 'var(--sky)', background: 'var(--sky-dim)',
+              border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
+              cursor: 'pointer', outline: 'none', fontFamily: 'inherit',
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'color-mix(in srgb, var(--sky) 20%, transparent)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--sky-dim)'; }}
+          >
             NEW
-          </span>
+          </button>
         )}
         {/* Action buttons — stop propagation so clicks don't toggle expand */}
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
@@ -470,7 +479,8 @@ const SourceArticleList: React.FC<{
   ticker: string;
   newArticleKeys: Set<string>;
   persistedSourceAnalyses: Record<string, string>;
-}> = ({ pressReleases, news, showAnalysis, ticker, newArticleKeys, persistedSourceAnalyses }) => {
+  onDismissNew?: (cacheKey: string) => void;
+}> = ({ pressReleases, news, showAnalysis, ticker, newArticleKeys, persistedSourceAnalyses, onDismissNew }) => {
   const [showAll, setShowAll] = useState(false);
 
   const combined = [
@@ -494,9 +504,12 @@ const SourceArticleList: React.FC<{
   const oldEntries = displayed.filter(a => !(newArticleKeys.has(articleCacheKey(a)) && a.analyzed !== true));
   const hasNewAndOld = newEntries.length > 0 && oldEntries.length > 0;
 
-  const renderRow = (a: typeof combined[number], i: number) => (
-    <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(articleCacheKey(a))} persistedAnalysis={persistedSourceAnalyses[articleCacheKey(a)] || null} />
-  );
+  const renderRow = (a: typeof combined[number], i: number) => {
+    const key = articleCacheKey(a);
+    return (
+      <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(key)} persistedAnalysis={persistedSourceAnalyses[key] || null} onDismissNew={() => onDismissNew?.(key)} />
+    );
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -548,7 +561,8 @@ const CompanyFeedCard: React.FC<{
   onRecheck?: () => void;
   onSimulateNew?: () => void;
   onTabChange?: (tab: 'pr' | 'news') => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, persistedSourceAnalyses, onLoad, onRecheck, onSimulateNew }) => {
+  onDismissNew?: (cacheKey: string) => void;
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, persistedSourceAnalyses, onLoad, onRecheck, onSimulateNew, onDismissNew }) => {
   const prCount = data.pressReleases.length;
   const newsCount = data.news.length;
   const isActive = data.loading || (aiChecking ?? false);
@@ -756,7 +770,7 @@ const CompanyFeedCard: React.FC<{
         )}
 
         {data.loaded && (
-          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} persistedSourceAnalyses={persistedSourceAnalyses} />
+          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
         )}
       </div>
     </article>
@@ -777,8 +791,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const [matchMethod, setMatchMethod] = useState<'ai' | 'local' | 'hybrid' | null>(null);
   const [forceLocal, setForceLocal] = useState(false);
 
-  // Track genuinely new articles: only those appearing after a refresh that weren't in the previous load
-  const knownArticleKeysRef = useRef<Set<string>>(new Set());
+  // Track genuinely new articles: persisted via DB so NEW badges survive page reloads.
+  // seenArticleKeysRef holds all cache keys previously stored in the seen_articles table.
+  const seenArticleKeysRef = useRef<Set<string>>(new Set());
+  const seenKeysLoadedRef = useRef(false);
   const [newArticleKeys, setNewArticleKeys] = useState<Set<string>>(new Set());
 
   // Track whether the initial auto-recheck has fired (prevents double-checking)
@@ -835,26 +851,32 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     if (newsResult.status === 'fulfilled') news = newsResult.value;
     const error = (prResult.status === 'rejected' && newsResult.status === 'rejected') ? 'Could not fetch feeds' : null;
 
-    // Track genuinely new articles (only those not in previous load)
+    // Track genuinely new articles: compare against DB-persisted seen keys
     const all = [...prs, ...news];
     const currentKeys = new Set(all.map(a => articleCacheKey(a)));
-    if (knownArticleKeysRef.current.size === 0) {
-      // First load — everything is already known, nothing is "new"
-      knownArticleKeysRef.current = currentKeys;
-      setNewArticleKeys(new Set());
-    } else {
-      // Refresh — only articles not previously seen are genuinely new
-      const fresh = new Set<string>();
-      for (const key of currentKeys) {
-        if (!knownArticleKeysRef.current.has(key)) fresh.add(key);
-      }
-      // Accumulate known keys (never forget an article we've seen before).
-      // This prevents articles that temporarily drop off the API from being
-      // re-flagged as NEW when they reappear.
-      for (const key of currentKeys) {
-        knownArticleKeysRef.current.add(key);
-      }
-      setNewArticleKeys(fresh);
+
+    // Identify articles we haven't seen before (not in the DB)
+    const fresh = new Set<string>();
+    for (const key of currentKeys) {
+      if (!seenArticleKeysRef.current.has(key)) fresh.add(key);
+    }
+    setNewArticleKeys(fresh);
+
+    // Persist all current articles as "seen" in the DB (fire-and-forget).
+    // Next refresh will compare against this updated set.
+    const newToSave = all
+      .filter(a => !seenArticleKeysRef.current.has(articleCacheKey(a)))
+      .map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date }));
+    if (newToSave.length > 0) {
+      fetch('/api/seen-articles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker, articles: newToSave }),
+      }).catch(() => {});
+    }
+    // Update local ref so within-session refreshes also work
+    for (const key of currentKeys) {
+      seenArticleKeysRef.current.add(key);
     }
 
     // Carry over analyzed status from previous state + per-article recheck overrides,
@@ -999,22 +1021,47 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     setLoadingAll(false);
   }, [mainCard.loaded, mainCard.loading, loadMainCard, competitors, loadCompetitor]);
 
-  // Auto-load on mount: use sessionStorage cache if fresh, otherwise fetch
+  // Auto-load on mount: first hydrate seen keys from DB, then load articles
   useEffect(() => {
-    const cached = getCachedFeed(ticker);
-    if (cached) {
-      // Cache restore — all cached articles are already known, none are "new"
-      const allCached = [...cached.pressReleases, ...cached.news];
-      knownArticleKeysRef.current = new Set(allCached.map(a => articleCacheKey(a)));
-      setNewArticleKeys(new Set());
-      setMainCard(prev => ({
-        ...prev, loaded: true, loading: false,
-        pressReleases: cached.pressReleases, news: cached.news,
-      }));
-      setLastFetchedAt(cached.fetchedAt);
-    } else {
-      loadMainCard();
+    let cancelled = false;
+
+    async function init() {
+      // 1. Fetch seen article keys from DB
+      try {
+        const res = await fetch(`/api/seen-articles?ticker=${ticker}`);
+        if (res.ok) {
+          const data = await res.json();
+          const keys: string[] = data.keys || [];
+          seenArticleKeysRef.current = new Set(keys);
+        }
+      } catch { /* best-effort */ }
+      seenKeysLoadedRef.current = true;
+
+      if (cancelled) return;
+
+      // 2. Load articles (from cache or fetch)
+      const cached = getCachedFeed(ticker);
+      if (cached) {
+        // Restore from session cache — compare against DB-persisted seen keys
+        const allCached = [...cached.pressReleases, ...cached.news];
+        const fresh = new Set<string>();
+        for (const a of allCached) {
+          const key = articleCacheKey(a);
+          if (!seenArticleKeysRef.current.has(key)) fresh.add(key);
+        }
+        setNewArticleKeys(fresh);
+        setMainCard(prev => ({
+          ...prev, loaded: true, loading: false,
+          pressReleases: cached.pressReleases, news: cached.news,
+        }));
+        setLastFetchedAt(cached.fetchedAt);
+      } else {
+        loadMainCard();
+      }
     }
+
+    init();
+    return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticker]);
 
@@ -1040,6 +1087,30 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       })
       .catch(() => {}); // best-effort
   }, [ticker]);
+
+  // Dismiss a single NEW article: remove from newArticleKeys + persist to DB
+  const dismissNewArticle = useCallback((cacheKey: string) => {
+    setNewArticleKeys(prev => {
+      const next = new Set(prev);
+      next.delete(cacheKey);
+      return next;
+    });
+    // Find the article to get headline/date for DB persistence
+    const allArticles = [...mainCard.pressReleases, ...mainCard.news];
+    const article = allArticles.find(a => articleCacheKey(a) === cacheKey);
+    if (article) {
+      fetch('/api/seen-articles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticker,
+          articles: [{ cacheKey, headline: article.headline, date: article.date }],
+          dismiss: true,
+        }),
+      }).catch(() => {});
+    }
+    seenArticleKeysRef.current.add(cacheKey);
+  }, [ticker, mainCard.pressReleases, mainCard.news]);
 
   const setCompTab = (name: string, tab: 'pr' | 'news') => {
     setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { loading: false, loaded: false, error: null, pressReleases: [], news: [] }), activeTab: tab } }));
@@ -1196,6 +1267,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             setNewArticleKeys(new Set(untracked.map(a => articleCacheKey(a))));
           }}
           onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
+          onDismissNew={dismissNewArticle}
         />
       </div>
 
@@ -1239,6 +1311,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   onLoad={() => loadCompetitor(comp.name)}
                   onRecheck={() => recheckCompetitor(comp.name)}
                   onTabChange={(tab) => setCompTab(comp.name, tab)}
+                  onDismissNew={dismissNewArticle}
                 />
               );
             })}
