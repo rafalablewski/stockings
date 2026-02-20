@@ -339,7 +339,7 @@ const SourceArticleRow: React.FC<{
           </span>
         )}
         {/* NEW badge — clickable: dismisses the article as "seen" */}
-        {isGenuinelyNew && !aiAnalysis && localAnalyzed !== true && (
+        {isGenuinelyNew && !aiAnalysis && (
           <button
             onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
             title="Mark as seen"
@@ -862,17 +862,22 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
     setNewArticleKeys(fresh);
 
-    // Persist all current articles as "seen" in the DB (fire-and-forget).
-    // Next refresh will compare against this updated set.
+    // Persist all current articles as "seen" in the DB.
+    // Await so the data is saved before the user can refresh.
     const newToSave = all
       .filter(a => !seenArticleKeysRef.current.has(articleCacheKey(a)))
       .map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date }));
     if (newToSave.length > 0) {
-      fetch('/api/seen-articles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker, articles: newToSave }),
-      }).catch(() => {});
+      try {
+        const saveRes = await fetch('/api/seen-articles', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ticker, articles: newToSave }),
+        });
+        if (!saveRes.ok) console.error('[seen-articles] save failed:', saveRes.status, await saveRes.text().catch(() => ''));
+      } catch (err) {
+        console.error('[seen-articles] save error:', err);
+      }
     }
     // Update local ref so within-session refreshes also work
     for (const key of currentKeys) {
@@ -1033,8 +1038,11 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           const data = await res.json();
           const keys: string[] = data.keys || [];
           seenArticleKeysRef.current = new Set(keys);
+          console.log(`[seen-articles] hydrated ${keys.length} keys from DB`);
+        } else {
+          console.error('[seen-articles] hydrate failed:', res.status);
         }
-      } catch { /* best-effort */ }
+      } catch (err) { console.error('[seen-articles] hydrate error:', err); }
       seenKeysLoadedRef.current = true;
 
       if (cancelled) return;
@@ -1095,7 +1103,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       next.delete(cacheKey);
       return next;
     });
-    // Find the article to get headline/date for DB persistence
+    seenArticleKeysRef.current.add(cacheKey);
+    // Persist dismiss to DB so it survives page refresh
     const allArticles = [...mainCard.pressReleases, ...mainCard.news];
     const article = allArticles.find(a => articleCacheKey(a) === cacheKey);
     if (article) {
@@ -1107,9 +1116,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           articles: [{ cacheKey, headline: article.headline, date: article.date }],
           dismiss: true,
         }),
-      }).catch(() => {});
+      }).then(res => {
+        if (!res.ok) console.error('[seen-articles] dismiss failed:', res.status);
+      }).catch(err => console.error('[seen-articles] dismiss error:', err));
     }
-    seenArticleKeysRef.current.add(cacheKey);
   }, [ticker, mainCard.pressReleases, mainCard.news]);
 
   const setCompTab = (name: string, tab: 'pr' | 'news') => {
