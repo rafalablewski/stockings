@@ -165,6 +165,15 @@ function articleCacheKey(article: ArticleItem): string {
   return (article.url || article.headline || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 60);
 }
 
+/** Only articles published within the last 48 hours can be labeled NEW */
+const NEW_STALENESS_MS = 48 * 60 * 60 * 1000;
+function isRecentEnoughForNew(article: ArticleItem): boolean {
+  if (!article.date) return true; // no date → assume recent
+  const parsed = new Date(article.date).getTime();
+  if (isNaN(parsed)) return true; // unparseable → assume recent
+  return (Date.now() - parsed) < NEW_STALENESS_MS;
+}
+
 // ── Per-article tracked-status overrides (survives refresh within session) ──
 // When a per-article re-check confirms an article is tracked, store the override
 // so that loadMainCard carry-over and promote logic can pick it up.
@@ -900,12 +909,23 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     const all = [...prs, ...news];
     const currentKeys = new Set(all.map(a => articleCacheKey(a)));
 
-    // Identify articles we haven't seen before (not in the DB)
+    // Identify articles we haven't seen before (not in the DB) AND recent enough
     const fresh = new Set<string>();
-    for (const key of currentKeys) {
-      if (!seenArticleKeysRef.current.has(key)) fresh.add(key);
+    for (const a of all) {
+      const key = articleCacheKey(a);
+      if (!seenArticleKeysRef.current.has(key) && isRecentEnoughForNew(a)) fresh.add(key);
     }
-    setNewArticleKeys(fresh);
+    // Merge: replace main-feed keys but preserve competitor NEW keys
+    setNewArticleKeys(prev => {
+      const next = new Set<string>();
+      // Keep competitor keys that aren't in the current main feed
+      for (const k of prev) {
+        if (!currentKeys.has(k)) next.add(k);
+      }
+      // Add main feed fresh keys
+      for (const k of fresh) next.add(k);
+      return next;
+    });
 
     // Persist all current articles as "seen" in the DB.
     // Await so the data is saved before the user can refresh.
@@ -1059,12 +1079,17 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         .filter(a => !seenArticleKeysRef.current.has(articleCacheKey(a)))
         .map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date }));
       if (newCompToSave.length > 0) {
-        // Mark new competitor articles in the shared newArticleKeys set
-        setNewArticleKeys(prev => {
-          const next = new Set(prev);
-          for (const art of newCompToSave) next.add(art.cacheKey);
-          return next;
-        });
+        // Mark new competitor articles in the shared newArticleKeys set (only recent ones)
+        const recentCompKeys = all
+          .filter(a => !seenArticleKeysRef.current.has(articleCacheKey(a)) && isRecentEnoughForNew(a))
+          .map(a => articleCacheKey(a));
+        if (recentCompKeys.length > 0) {
+          setNewArticleKeys(prev => {
+            const next = new Set(prev);
+            for (const k of recentCompKeys) next.add(k);
+            return next;
+          });
+        }
         // Save to DB
         try {
           await fetch('/api/seen-articles', {
@@ -1138,7 +1163,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         const fresh = new Set<string>();
         for (const a of allCached) {
           const key = articleCacheKey(a);
-          if (!seenArticleKeysRef.current.has(key)) fresh.add(key);
+          if (!seenArticleKeysRef.current.has(key) && isRecentEnoughForNew(a)) fresh.add(key);
         }
         setNewArticleKeys(fresh);
 
@@ -1183,12 +1208,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           if (cancelled) return;
           const compCached = getCachedCompFeed(comp.name);
           if (compCached) {
-            // Identify new competitor articles
+            // Identify new competitor articles (only recent ones get NEW badge)
             const allComp = [...compCached.pressReleases, ...compCached.news];
             const compFresh: string[] = [];
             for (const a of allComp) {
               const key = articleCacheKey(a);
-              if (!seenArticleKeysRef.current.has(key)) compFresh.push(key);
+              if (!seenArticleKeysRef.current.has(key) && isRecentEnoughForNew(a)) compFresh.push(key);
             }
             if (compFresh.length > 0) {
               setNewArticleKeys(prev => {
