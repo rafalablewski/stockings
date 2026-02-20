@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { seenArticles } from '@/lib/schema';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 /**
  * GET /api/seen-articles?ticker=ASTS
@@ -36,10 +36,14 @@ export async function GET(request: NextRequest) {
     .from(seenArticles)
     .where(eq(seenArticles.ticker, t));
 
-  return NextResponse.json({
-    keys: rows.map(r => r.cacheKey),
-    dismissed: rows.filter(r => r.dismissed).map(r => r.cacheKey),
-  });
+  const keys: string[] = [];
+  const dismissed: string[] = [];
+  for (const row of rows) {
+    keys.push(row.cacheKey);
+    if (row.dismissed) dismissed.push(row.cacheKey);
+  }
+
+  return NextResponse.json({ keys, dismissed });
 }
 
 export async function POST(request: NextRequest) {
@@ -55,37 +59,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Unknown ticker: ${ticker}` }, { status: 400 });
     }
 
-    // Batch upsert
-    for (const art of articles) {
-      if (!art.cacheKey || !art.headline) continue;
+    // Batch upsert — single INSERT per request instead of one per article
+    const values = articles
+      .filter((art: { cacheKey?: string; headline?: string }) => art.cacheKey && art.headline)
+      .map((art: { cacheKey: string; headline: string; date?: string }) => ({
+        ticker: t,
+        cacheKey: art.cacheKey,
+        headline: art.headline,
+        date: art.date || null,
+        dismissed: !!dismiss,
+      }));
 
+    if (values.length > 0) {
       if (dismiss) {
-        // Dismissing: upsert with dismissed=true
-        await db
-          .insert(seenArticles)
-          .values({
-            ticker: t,
-            cacheKey: art.cacheKey,
-            headline: art.headline,
-            date: art.date || null,
-            dismissed: true,
-          })
-          .onConflictDoUpdate({
-            target: [seenArticles.ticker, seenArticles.cacheKey],
-            set: { dismissed: true },
-          });
+        await db.insert(seenArticles).values(values).onConflictDoUpdate({
+          target: [seenArticles.ticker, seenArticles.cacheKey],
+          set: { dismissed: true },
+        });
       } else {
-        // Just marking as seen (don't overwrite dismissed=true)
-        await db
-          .insert(seenArticles)
-          .values({
-            ticker: t,
-            cacheKey: art.cacheKey,
-            headline: art.headline,
-            date: art.date || null,
-            dismissed: false,
-          })
-          .onConflictDoNothing();
+        await db.insert(seenArticles).values(values).onConflictDoNothing();
       }
     }
 

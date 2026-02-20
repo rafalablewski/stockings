@@ -794,7 +794,6 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   // Track genuinely new articles: persisted via DB so NEW badges survive page reloads.
   // seenArticleKeysRef holds all cache keys previously stored in the seen_articles table.
   const seenArticleKeysRef = useRef<Set<string>>(new Set());
-  const seenKeysLoadedRef = useRef(false);
   const [newArticleKeys, setNewArticleKeys] = useState<Set<string>>(new Set());
 
   // Track whether the initial auto-recheck has fired (prevents double-checking)
@@ -1043,7 +1042,6 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           console.error('[seen-articles] hydrate failed:', res.status);
         }
       } catch (err) { console.error('[seen-articles] hydrate error:', err); }
-      seenKeysLoadedRef.current = true;
 
       if (cancelled) return;
 
