@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { seenArticles } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { eq, count } from 'drizzle-orm';
+
+export const dynamic = 'force-dynamic';
 
 /**
  * GET /api/seen-articles?ticker=ASTS
@@ -76,6 +78,7 @@ export async function POST(request: NextRequest) {
         dismissed: !!dismiss,
       }));
 
+    let inserted = 0;
     if (values.length > 0) {
       if (dismiss) {
         await db.insert(seenArticles).values(values).onConflictDoUpdate({
@@ -85,9 +88,12 @@ export async function POST(request: NextRequest) {
       } else {
         await db.insert(seenArticles).values(values).onConflictDoNothing();
       }
+      // Verify: count rows for this ticker
+      const [row] = await db.select({ n: count() }).from(seenArticles).where(eq(seenArticles.ticker, t));
+      inserted = row?.n ?? 0;
     }
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, sent: articles.length, filtered: values.length, totalInDb: inserted });
   } catch (error) {
     console.error('Seen articles write error:', error);
     const msg = error instanceof Error ? error.message : 'Internal server error';
