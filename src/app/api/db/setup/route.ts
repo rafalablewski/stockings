@@ -122,6 +122,22 @@ CREATE TABLE IF NOT EXISTS partner_news (
 
 CREATE INDEX IF NOT EXISTS partner_news_ticker_date_idx
   ON partner_news (ticker, date);
+
+CREATE TABLE IF NOT EXISTS seen_articles (
+  id SERIAL PRIMARY KEY,
+  ticker TEXT NOT NULL,
+  cache_key TEXT NOT NULL,
+  headline TEXT NOT NULL,
+  date TEXT,
+  dismissed BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS seen_articles_ticker_key_idx
+  ON seen_articles (ticker, cache_key);
+
+CREATE INDEX IF NOT EXISTS seen_articles_ticker_idx
+  ON seen_articles (ticker);
 `;
 
 // ── Main handler ─────────────────────────────────────────────────────────────
