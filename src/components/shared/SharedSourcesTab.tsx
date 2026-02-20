@@ -1719,6 +1719,54 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             {/* Divider */}
             <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
 
+            {/* ── NEW ARTICLE DETECTION ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>New Article Detection</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              {/* Node: Article arrives */}
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Article fetched / restored from cache</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              {/* Node: Cache key */}
+              <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center' }}>Cache key = URL (alphanum, first 60 chars)</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              {/* Node: In DB? */}
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Key in seen_articles DB?</div>
+              <div style={{ display: 'flex', gap: 32, marginTop: 8 }}>
+                {/* Yes branch */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>Yes</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>No badge</div>
+                </div>
+                {/* No branch */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Published &le; 48h ago?</div>
+                  <div style={{ display: 'flex', gap: 24, marginTop: 8 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>Yes</div>
+                      <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                      <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>NEW badge</div>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No</div>
+                      <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                      <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>No badge (stale)</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+              <div><span style={{ color: 'var(--text3)' }}>Persistence:</span> seen_articles table (Neon) — survives sessions</div>
+              <div><span style={{ color: 'var(--text3)' }}>Session cache:</span> sessionStorage — 10 min TTL, avoids re-fetch on tab switch</div>
+              <div><span style={{ color: 'var(--text3)' }}>Staleness guard:</span> articles &gt;48h old never get NEW badge</div>
+              <div><span style={{ color: 'var(--text3)' }}>Dismiss:</span> click NEW badge to mark dismissed in DB</div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
             {/* ── Legend & config ──────────────────────────── */}
             <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 11, lineHeight: 2 }}>
               <div>
