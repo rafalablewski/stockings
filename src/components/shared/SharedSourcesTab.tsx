@@ -843,6 +843,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
   // Track whether the initial auto-recheck has fired (prevents double-checking)
   const initialRecheckDone = useRef(false);
+  const compRecheckDone = useRef<Set<string>>(new Set());
 
   // Persistent analysis cache (survives page reloads — loaded from disk)
   const [persistedSourceAnalyses, setPersistedSourceAnalyses] = useState<Record<string, string>>({});
@@ -1026,21 +1027,18 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     try {
       const all = [...card.pressReleases, ...card.news];
       const checked = await checkAnalyzed(all);
-      setCompCards(prev => {
-        const prevCard = prev[name];
-        const prLen = prevCard.pressReleases.length;
-        return { ...prev, [name]: {
-          ...prevCard,
-          pressReleases: checked.slice(0, prLen).map((article, i) => ({
-            ...article,
-            analyzed: (article.analyzed === true || prevCard.pressReleases[i]?.analyzed === true) ? true : article.analyzed,
-          })),
-          news: checked.slice(prLen).map((article, i) => ({
-            ...article,
-            analyzed: (article.analyzed === true || prevCard.news[i]?.analyzed === true) ? true : article.analyzed,
-          })),
-        }};
-      });
+      const prLen = card.pressReleases.length;
+      const checkedPrs = checked.slice(0, prLen).map((article, i) => ({
+        ...article,
+        analyzed: (article.analyzed === true || card.pressReleases[i]?.analyzed === true) ? true : article.analyzed,
+      }));
+      const checkedNews = checked.slice(prLen).map((article, i) => ({
+        ...article,
+        analyzed: (article.analyzed === true || card.news[i]?.analyzed === true) ? true : article.analyzed,
+      }));
+      setCompCards(prev => ({ ...prev, [name]: { ...prev[name], pressReleases: checkedPrs, news: checkedNews } }));
+      // Update session cache with fresh analyzed status
+      setCachedCompFeed(name, checkedPrs, checkedNews);
     } catch { /* handled */ }
     finally { setCompAiChecking(prev => ({ ...prev, [name]: false })); }
   }, [compCards, checkAnalyzed]);
@@ -1054,9 +1052,6 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       const prs: ArticleItem[] = (data.pressReleases || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
       const news: ArticleItem[] = (data.news || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
       setCompCards(prev => ({ ...prev, [name]: { loading: false, loaded: true, error: null, activeTab: prev[name]?.activeTab || 'pr', pressReleases: prs, news } }));
-
-      // Session-cache competitor articles
-      setCachedCompFeed(name, prs, news);
 
       // Track new articles: compare against seen keys + save to DB
       const all = [...prs, ...news];
@@ -1081,12 +1076,24 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         for (const a of all) seenArticleKeysRef.current.add(articleCacheKey(a));
       }
 
+      // Check analyzed status, then cache WITH correct analyzed state
+      // Mark as rechecked so auto-recheck useEffect doesn't duplicate
+      compRecheckDone.current.add(name);
       if (all.length > 0) {
         setCompAiChecking(prev => ({ ...prev, [name]: true }));
         try {
           const checked = await checkAnalyzed(all);
-          setCompCards(prev => ({ ...prev, [name]: { ...prev[name], pressReleases: checked.slice(0, prs.length), news: checked.slice(prs.length) } }));
-        } catch { /* handled */ } finally { setCompAiChecking(prev => ({ ...prev, [name]: false })); }
+          const checkedPrs = checked.slice(0, prs.length);
+          const checkedNews = checked.slice(prs.length);
+          setCompCards(prev => ({ ...prev, [name]: { ...prev[name], pressReleases: checkedPrs, news: checkedNews } }));
+          // Session-cache WITH analyzed status so dots survive reload
+          setCachedCompFeed(name, checkedPrs, checkedNews);
+        } catch {
+          // On check failure, still cache articles (with null status)
+          setCachedCompFeed(name, prs, news);
+        } finally { setCompAiChecking(prev => ({ ...prev, [name]: false })); }
+      } else {
+        setCachedCompFeed(name, prs, news);
       }
     } catch {
       setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: false, loaded: false, error: 'Could not fetch feeds' } }));
@@ -1228,6 +1235,20 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       recheckMainCard();
     }
   }, [mainCard.loaded, mainCard.pressReleases.length, mainCard.news.length, recheckMainCard]);
+
+  // Auto re-check competitor status after cache restore (mirrors main card logic above).
+  // loadCompetitor already marks compRecheckDone to prevent double-checking.
+  useEffect(() => {
+    if (!competitors?.length) return;
+    for (const comp of competitors) {
+      const card = compCards[comp.name];
+      if (card?.loaded && !compRecheckDone.current.has(comp.name) &&
+          (card.pressReleases.length > 0 || card.news.length > 0)) {
+        compRecheckDone.current.add(comp.name);
+        recheckCompetitor(comp.name);
+      }
+    }
+  }, [competitors, compCards, recheckCompetitor]);
 
   // Hydrate persisted source analyses from disk on mount
   useEffect(() => {
