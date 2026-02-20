@@ -84,6 +84,26 @@ function setCachedFeed(ticker: string, prs: ArticleItem[], news: ArticleItem[]) 
   } catch { /* quota exceeded — ignore */ }
 }
 
+function getCachedCompFeed(name: string): CachedFeed | null {
+  try {
+    const raw = sessionStorage.getItem(`sources_comp_v${CACHE_VERSION}_${name}`);
+    if (!raw) return null;
+    const parsed: CachedFeed = JSON.parse(raw);
+    if (Date.now() - parsed.fetchedAt > CACHE_TTL_MS) {
+      sessionStorage.removeItem(`sources_comp_v${CACHE_VERSION}_${name}`);
+      return null;
+    }
+    return parsed;
+  } catch { return null; }
+}
+
+function setCachedCompFeed(name: string, prs: ArticleItem[], news: ArticleItem[]) {
+  try {
+    const entry: CachedFeed = { pressReleases: prs, news, fetchedAt: Date.now() };
+    sessionStorage.setItem(`sources_comp_v${CACHE_VERSION}_${name}`, JSON.stringify(entry));
+  } catch { /* quota exceeded — ignore */ }
+}
+
 function formatTimeAgo(ts: number): string {
   const seconds = Math.floor((Date.now() - ts) / 1000);
   if (seconds < 60) return 'just now';
@@ -1009,7 +1029,33 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       const prs: ArticleItem[] = (data.pressReleases || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
       const news: ArticleItem[] = (data.news || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
       setCompCards(prev => ({ ...prev, [name]: { loading: false, loaded: true, error: null, activeTab: prev[name]?.activeTab || 'pr', pressReleases: prs, news } }));
+
+      // Session-cache competitor articles
+      setCachedCompFeed(name, prs, news);
+
+      // Track new articles: compare against seen keys + save to DB
       const all = [...prs, ...news];
+      const newCompToSave = all
+        .filter(a => !seenArticleKeysRef.current.has(articleCacheKey(a)))
+        .map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date }));
+      if (newCompToSave.length > 0) {
+        // Mark new competitor articles in the shared newArticleKeys set
+        setNewArticleKeys(prev => {
+          const next = new Set(prev);
+          for (const art of newCompToSave) next.add(art.cacheKey);
+          return next;
+        });
+        // Save to DB
+        try {
+          await fetch('/api/seen-articles', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ticker, articles: newCompToSave }),
+          });
+        } catch { /* best-effort */ }
+        for (const a of all) seenArticleKeysRef.current.add(articleCacheKey(a));
+      }
+
       if (all.length > 0) {
         setCompAiChecking(prev => ({ ...prev, [name]: true }));
         try {
@@ -1020,7 +1066,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     } catch {
       setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: false, loaded: false, error: 'Could not fetch feeds' } }));
     }
-  }, [checkAnalyzed]);
+  }, [ticker, checkAnalyzed]);
 
   const loadAll = useCallback(async () => {
     setLoadingAll(true);
@@ -1097,6 +1143,50 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         setLastFetchedAt(cached.fetchedAt);
       } else {
         loadMainCard();
+      }
+
+      // 3. Restore competitor feeds from session cache
+      if (competitors?.length) {
+        for (const comp of competitors) {
+          if (cancelled) return;
+          const compCached = getCachedCompFeed(comp.name);
+          if (compCached) {
+            // Identify new competitor articles
+            const allComp = [...compCached.pressReleases, ...compCached.news];
+            const compFresh: string[] = [];
+            for (const a of allComp) {
+              const key = articleCacheKey(a);
+              if (!seenArticleKeysRef.current.has(key)) compFresh.push(key);
+            }
+            if (compFresh.length > 0) {
+              setNewArticleKeys(prev => {
+                const next = new Set(prev);
+                for (const k of compFresh) next.add(k);
+                return next;
+              });
+              // Save unseen competitor articles to DB
+              const compToSave = allComp
+                .filter(a => !seenArticleKeysRef.current.has(articleCacheKey(a)))
+                .map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date }));
+              try {
+                await fetch('/api/seen-articles', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ ticker, articles: compToSave }),
+                });
+              } catch { /* best-effort */ }
+              for (const a of allComp) seenArticleKeysRef.current.add(articleCacheKey(a));
+            }
+            setCompCards(prev => ({
+              ...prev,
+              [comp.name]: {
+                loading: false, loaded: true, error: null,
+                activeTab: prev[comp.name]?.activeTab || 'pr',
+                pressReleases: compCached.pressReleases, news: compCached.news,
+              },
+            }));
+          }
+        }
       }
     }
 
