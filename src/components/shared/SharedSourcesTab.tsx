@@ -8,7 +8,32 @@
  * Accessibility: ARIA roles, keyboard nav, focus-visible rings,
  * screen reader labels, reduced-motion support.
  *
- * @version 6.0.0
+ * ── Article Freshness Tracking ──
+ *
+ * Articles are tracked via the `seen_articles` DB table (POST/GET /api/seen-articles).
+ * Each article is identified by a cache key derived from its URL.
+ *
+ * On mount:
+ *   1. Hydrate seenArticleKeysRef from DB (GET /api/seen-articles?ticker=X)
+ *   2. Restore main + competitor feeds from sessionStorage (10-min TTL)
+ *   3. Diff cached articles against seen keys → genuinely new → NEW badge
+ *   4. Save any unseen articles to DB (POST /api/seen-articles)
+ *
+ * On fresh fetch (loadMainCard / loadCompetitor):
+ *   - Compare fetched articles against seenArticleKeysRef
+ *   - New articles get added to newArticleKeys Set → NEW badge rendered
+ *   - Articles are saved to DB + sessionStorage for next reload
+ *
+ * NEW badge is auto-dismissed when:
+ *   - User clicks the dismiss (×) button → removes key from newArticleKeys
+ *   - Article is analyzed by AI → badge hidden (analyzed === true)
+ *
+ * Session cache:
+ *   - Main feed:       sessionStorage key `sources_v{VERSION}_{ticker}`
+ *   - Competitor feeds: sessionStorage key `sources_comp_v{VERSION}_{name}`
+ *   - Both use 10-minute TTL; after expiry, articles are re-fetched from API
+ *
+ * @version 7.0.0
  */
 
 'use client';
