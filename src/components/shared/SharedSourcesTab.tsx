@@ -1039,7 +1039,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           seenArticleKeysRef.current = new Set(keys);
           console.log(`[seen-articles] hydrated ${keys.length} keys from DB`);
         } else {
-          console.error('[seen-articles] hydrate failed:', res.status);
+          const body = await res.json().catch(() => ({}));
+          console.error('[seen-articles] hydrate failed:', res.status, body.error || '');
         }
       } catch (err) { console.error('[seen-articles] hydrate error:', err); }
 

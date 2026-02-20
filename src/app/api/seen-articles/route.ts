@@ -31,19 +31,25 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: `Unknown ticker: ${ticker}` }, { status: 400 });
   }
 
-  const rows = await db
-    .select({ cacheKey: seenArticles.cacheKey, dismissed: seenArticles.dismissed })
-    .from(seenArticles)
-    .where(eq(seenArticles.ticker, t));
+  try {
+    const rows = await db
+      .select({ cacheKey: seenArticles.cacheKey, dismissed: seenArticles.dismissed })
+      .from(seenArticles)
+      .where(eq(seenArticles.ticker, t));
 
-  const keys: string[] = [];
-  const dismissed: string[] = [];
-  for (const row of rows) {
-    keys.push(row.cacheKey);
-    if (row.dismissed) dismissed.push(row.cacheKey);
+    const keys: string[] = [];
+    const dismissed: string[] = [];
+    for (const row of rows) {
+      keys.push(row.cacheKey);
+      if (row.dismissed) dismissed.push(row.cacheKey);
+    }
+
+    return NextResponse.json({ keys, dismissed });
+  } catch (error) {
+    console.error('Seen articles read error:', error);
+    const msg = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
-
-  return NextResponse.json({ keys, dismissed });
 }
 
 export async function POST(request: NextRequest) {
@@ -84,6 +90,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error('Seen articles write error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    const msg = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
