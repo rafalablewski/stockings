@@ -1520,6 +1520,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           if (!f.dismissed) newKeys.add(f.accessionNumber);
         }
 
+        // Sort newest-first (by filingDate descending)
+        edgarFromDb.sort((a, b) => (b.filingDate || '').localeCompare(a.filingDate || ''));
+
         dbRecordsRef.current = records;
         setDbRecords(new Map(records));
         setNewAccessions(newKeys);
