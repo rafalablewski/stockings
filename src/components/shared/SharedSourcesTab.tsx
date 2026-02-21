@@ -1486,8 +1486,61 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         </div>
         {methodologyOpen && (
           <div style={{ padding: '24px 24px', fontSize: 13, color: 'var(--text2)' }}>
-            {/* ── ROUTING FLOW ─────────────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Routing</div>
+            {/* ── DB-FIRST ARCHITECTURE ────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>DB-First Architecture</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Page loads</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>GET /api/seen-articles?ticker=X</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>ensureTable() &mdash; auto-creates seen_articles if missing</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Load saved articles from Neon PostgreSQL</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>Render from DB &mdash; no external API calls on mount</div>
+            </div>
+            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+              <div><span style={{ color: 'var(--text)' }}>Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_articles table</div>
+              <div><span style={{ color: 'var(--text)' }}>Self-healing:</span> ensureTable() creates table + indexes on first request</div>
+              <div><span style={{ color: 'var(--text)' }}>Graceful fallback:</span> returns empty array if table cannot be created</div>
+              <div><span style={{ color: 'var(--text)' }}>Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites url, source, headline, date, articleType</div>
+            </div>
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── TWO DATA PIPELINES ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Data Pipelines: Press Releases vs News</div>
+            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+              <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>Fetch PRs</div>
+                <div style={{ width: 2, height: 10, background: 'var(--sky)' }} />
+                <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>GET /api/press-releases/[ticker]</div>
+                <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.6 }}>Google News RSS filtered to wire services<br />(PRN, BusinessWire, GlobeNewsWire) + IR pages</div>
+                <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>articleType: &quot;pr&quot;</div>
+              </div>
+              <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ padding: '6px 14px', background: 'var(--mint-dim)', border: '1px solid var(--mint)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', textAlign: 'center', fontWeight: 600 }}>Fetch News</div>
+                <div style={{ width: 2, height: 10, background: 'var(--mint)' }} />
+                <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>GET /api/news/[ticker]</div>
+                <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.6 }}>Google News RSS by company name + ticker<br />filtered for relevance (Yahoo, Reuters, etc.)</div>
+                <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>articleType: &quot;news&quot;</div>
+              </div>
+            </div>
+            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+              <div><span style={{ color: 'var(--text)' }}>Independent:</span> each button fetches, saves, and checks independently</div>
+              <div><span style={{ color: 'var(--text)' }}>Max per type:</span> 10 articles (SECTION_MAX)</div>
+              <div><span style={{ color: 'var(--text)' }}>Save path:</span> POST /api/seen-articles &rarr; upsert with articleType tag</div>
+              <div><span style={{ color: 'var(--text)' }}>AI Fetch All:</span> fires both pipelines in parallel via Promise.allSettled</div>
+            </div>
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── ANALYSIS ROUTING FLOW ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Analysis Routing</div>
             <div style={{ display: 'flex', gap: 24 }}>
               {/* Left column: vertical flow */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180 }}>
@@ -1616,16 +1669,20 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             {/* ── NEW ARTICLE DETECTION ──────────────────────── */}
             <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>New Article Detection</div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>User clicks AI Fetch</div>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center' }}>Fetch PRs</div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', alignSelf: 'center' }}>or</div>
+                <div style={{ padding: '6px 14px', background: 'var(--mint-dim)', border: '1px solid var(--mint)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', textAlign: 'center' }}>Fetch News</div>
+              </div>
               <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Fetch articles from news/PR APIs</div>
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Compare cacheKey against DB records</div>
               <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Already in DB?</div>
               <div style={{ display: 'flex', gap: 32, marginTop: 8 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>Yes</div>
                   <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
-                  <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>Skip (already displayed)</div>
+                  <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>Upsert (update metadata)</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No</div>
@@ -1637,20 +1694,30 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               </div>
             </div>
             <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
-              <div><span style={{ color: 'var(--text3)' }}>On mount:</span> loads articles from DB only &mdash; no external API calls</div>
-              <div><span style={{ color: 'var(--text3)' }}>AI Fetch:</span> searches external APIs, saves new articles to DB with NEW badge</div>
-              <div><span style={{ color: 'var(--text3)' }}>NEW badge:</span> stays until user clicks it &rarr; sets dismissed=true in DB</div>
-              <div><span style={{ color: 'var(--text3)' }}>Cross-device:</span> NEW badge persists across all devices until dismissed</div>
-              <div><span style={{ color: 'var(--text3)' }}>No staleness guard:</span> all newly fetched articles get NEW regardless of age</div>
+              <div><span style={{ color: 'var(--text)' }}>On mount:</span> loads articles from DB only &mdash; no external API calls</div>
+              <div><span style={{ color: 'var(--text)' }}>Fetch PRs / Fetch News:</span> independent buttons, each searches its own API</div>
+              <div><span style={{ color: 'var(--text)' }}>AI Fetch All:</span> fires both pipelines in parallel</div>
+              <div><span style={{ color: 'var(--text)' }}>NEW badge:</span> stays until user clicks it &rarr; sets dismissed=true in DB</div>
+              <div><span style={{ color: 'var(--text)' }}>Cross-device:</span> NEW badge persists across all devices until dismissed</div>
             </div>
 
             {/* Divider */}
             <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
 
+            {/* ── DB Status Indicators ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>DB Status Indicators</div>
+            <div style={{ display: 'flex', gap: 16, fontSize: 11, fontFamily: 'Space Mono, monospace', marginBottom: 4 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> In DB (all fields)</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} /> In DB (partial data)</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4, display: 'inline-block' }} /> Not in DB</span>
+            </div>
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
             {/* ── Legend & config ──────────────────────────── */}
             <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 11, lineHeight: 2 }}>
               <div>
-                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Status</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Analysis Status</span>
                 <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> Tracked</span>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} /> Untracked</span>
