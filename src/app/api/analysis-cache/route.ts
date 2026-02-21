@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { analysisCache } from '@/lib/schema';
 import { eq, and } from 'drizzle-orm';
+import { VALID_TICKERS } from '@/lib/stocks';
 
 /**
  * GET /api/analysis-cache?ticker=ASTS
@@ -15,8 +16,6 @@ import { eq, and } from 'drizzle-orm';
  * Body: { ticker, type: 'edgar'|'sources', key: string, text: string | null }
  *   - text: analysis text to store, or null to delete
  */
-
-const VALID_TICKERS = new Set(['asts', 'bmnr', 'crcl']);
 
 export async function GET(request: NextRequest) {
   const ticker = request.nextUrl.searchParams.get('ticker');

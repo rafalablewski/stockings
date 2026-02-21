@@ -30,3 +30,5 @@ export const stocks: Record<string, StockMeta> = {
 
 export const stockList = Object.values(stocks);
 export const tickers = Object.keys(stocks);
+/** Lowercase ticker set — single source of truth for API route validation */
+export const VALID_TICKERS = new Set(Object.keys(stocks).map(t => t.toLowerCase()));

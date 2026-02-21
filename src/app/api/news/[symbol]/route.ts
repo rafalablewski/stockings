@@ -28,6 +28,7 @@ export async function GET(
         'User-Agent': 'stockings-app/1.0 (research-tool)',
       },
       next: { revalidate: 600 },
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!response.ok) {

@@ -22,7 +22,8 @@ export async function POST(request: NextRequest) {
     let docText = '';
     try {
       const res = await fetch(url, {
-        headers: { 'User-Agent': 'Stockings Research App research@stockings.dev' },
+        headers: { 'User-Agent': 'stockings-app/1.0 (research-tool)' },
+        signal: AbortSignal.timeout(10000),
       });
       if (!res.ok) throw new Error(`Source returned ${res.status}`);
       const html = await res.text();
@@ -94,6 +95,7 @@ Where <level> is one of:
         max_tokens: 1024,
         messages: [{ role: 'user', content: prompt }],
       }),
+      signal: AbortSignal.timeout(30000),
     });
 
     if (!claudeRes.ok) {

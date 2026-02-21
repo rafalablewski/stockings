@@ -117,6 +117,9 @@ const SourceArticleRow: React.FC<{
   const dbHoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dbTooltipRef = useRef<HTMLDivElement | null>(null);
 
+  // Cleanup hover timer on unmount to prevent memory leak
+  useEffect(() => () => { if (dbHoverTimer.current) clearTimeout(dbHoverTimer.current); }, []);
+
   useEffect(() => {
     const parentVal = article.analyzed ?? null;
     setLocalAnalyzed(prev => (prev === true && parentVal !== true) ? true : parentVal);
@@ -910,7 +913,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       const res = await fetch(`/api/press-releases/${ticker}`);
       if (!res.ok) throw new Error('Failed');
       const d = await res.json();
-      const prs: ArticleItem[] = (d.releases || []).slice(0, 10).map((r: { date: string; headline: string; url: string; source?: string; items?: string }) => ({
+      const prs: ArticleItem[] = (d.releases || []).slice(0, SECTION_MAX).map((r: { date: string; headline: string; url: string; source?: string; items?: string }) => ({
         headline: r.headline, date: r.date, url: r.url, source: r.source, items: r.items, analyzed: null as boolean | null,
       }));
 
@@ -947,7 +950,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       const res = await fetch(`/api/news/${ticker}`);
       if (!res.ok) throw new Error('Failed');
       const d = await res.json();
-      const news: ArticleItem[] = (d.articles || []).slice(0, 10).map((a: { title: string; date: string; url: string; source: string }) => ({
+      const news: ArticleItem[] = (d.articles || []).slice(0, SECTION_MAX).map((a: { title: string; date: string; url: string; source: string }) => ({
         headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null,
       }));
 
@@ -987,14 +990,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       fetch(`/api/press-releases/${ticker}`).then(async res => {
         if (!res.ok) throw new Error('Failed');
         const d = await res.json();
-        return (d.releases || []).slice(0, 10).map((r: { date: string; headline: string; url: string; source?: string; items?: string }) => ({
+        return (d.releases || []).slice(0, SECTION_MAX).map((r: { date: string; headline: string; url: string; source?: string; items?: string }) => ({
           headline: r.headline, date: r.date, url: r.url, source: r.source, items: r.items, analyzed: null as boolean | null,
         }));
       }),
       fetch(`/api/news/${ticker}`).then(async res => {
         if (!res.ok) throw new Error('Failed');
         const d = await res.json();
-        return (d.articles || []).slice(0, 10).map((a: { title: string; date: string; url: string; source: string }) => ({
+        return (d.articles || []).slice(0, SECTION_MAX).map((a: { title: string; date: string; url: string; source: string }) => ({
           headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null,
         }));
       }),
@@ -1094,8 +1097,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       const res = await fetch(`/api/competitor-feed/${encodeURIComponent(name)}`);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
-      const prs: ArticleItem[] = (data.pressReleases || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
-      const news: ArticleItem[] = (data.news || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
+      const prs: ArticleItem[] = (data.pressReleases || []).slice(0, SECTION_MAX).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
+      const news: ArticleItem[] = (data.news || []).slice(0, SECTION_MAX).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
       setCompCards(prev => ({ ...prev, [name]: { loading: false, loadingPR: false, loadingNews: false, loaded: true, error: null, activeTab: prev[name]?.activeTab || 'pr', pressReleases: prs, news } }));
 
       // Save all competitor articles to DB
@@ -1262,22 +1265,23 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       next.delete(cacheKey);
       return next;
     });
-    // Update local DB record
+    // Update local DB record (immutable — create new object)
     const rec = dbRecordsRef.current.get(cacheKey);
     if (rec) {
-      rec.dismissed = true;
+      dbRecordsRef.current.set(cacheKey, { ...rec, dismissed: true });
       setDbRecords(new Map(dbRecordsRef.current));
     }
-    // Persist dismiss to DB
-    const allArticles = [...mainCard.pressReleases, ...mainCard.news];
-    const article = allArticles.find(a => articleCacheKey(a) === cacheKey);
+    // Persist dismiss to DB (include all fields so record is complete even on first save)
+    const prArticle = mainCard.pressReleases.find(a => articleCacheKey(a) === cacheKey);
+    const newsArticle = !prArticle ? mainCard.news.find(a => articleCacheKey(a) === cacheKey) : null;
+    const article = prArticle || newsArticle;
     if (article) {
       fetch('/api/seen-articles', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ticker,
-          articles: [{ cacheKey, headline: article.headline, date: article.date }],
+          articles: [{ cacheKey, headline: article.headline, date: article.date, url: article.url, source: article.source, articleType: prArticle ? 'pr' : 'news' }],
           dismiss: true,
         }),
       }).catch(err => console.error('[dismiss] error:', err));

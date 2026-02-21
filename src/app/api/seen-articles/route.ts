@@ -3,6 +3,7 @@ import { neon } from '@neondatabase/serverless';
 import { db } from '@/lib/db';
 import { seenArticles } from '@/lib/schema';
 import { eq, and, count, sql } from 'drizzle-orm';
+import { VALID_TICKERS } from '@/lib/stocks';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,8 +23,6 @@ export const dynamic = 'force-dynamic';
  *   - dismiss: true = user clicked NEW badge to dismiss these articles
  *   - dismiss: false/omitted = saving new articles from AI Fetch
  */
-
-const VALID_TICKERS = new Set(['asts', 'bmnr', 'crcl', 'mstr']);
 
 // ---------------------------------------------------------------------------
 // ensureTable — creates seen_articles if it doesn't exist.
