@@ -1,14 +1,18 @@
 /**
- * SharedSourcesTab — Live Intelligence Feed
+ * SharedSourcesTab — DB-First Intelligence Feed
  *
- * Institutional-grade sources tab with per-company feed cards.
- * Uses the app's design system: surface layers, semantic colors,
- * Outfit + Space Mono typography, 16px card radii, accent-dim patterns.
+ * ── Flow ──
  *
- * Accessibility: ARIA roles, keyboard nav, focus-visible rings,
- * screen reader labels, reduced-motion support.
+ * 1. On mount: load articles ONLY from database (GET /api/seen-articles).
+ *    If nothing saved yet → empty state.
+ * 2. "AI Fetch" button → fetches fresh articles from news/PR APIs.
+ *    New articles (not already in DB) are saved with dismissed=false → NEW badge.
+ * 3. NEW badge stays until user clicks it → sets dismissed=true in DB.
+ * 4. NEW articles are visually separated from old articles.
  *
- * @version 6.0.0
+ * No session cache. No 48h staleness window. No auto-fetch on mount.
+ *
+ * @version 8.0.0
  */
 
 'use client';
@@ -52,37 +56,7 @@ interface CardData {
   news: ArticleItem[];
 }
 
-// ── Session cache helpers (10-min TTL) ──────────────────────────────────────
-const CACHE_TTL_MS = 10 * 60 * 1000;
-
-interface CachedFeed {
-  pressReleases: ArticleItem[];
-  news: ArticleItem[];
-  fetchedAt: number; // Date.now()
-}
-
-// Cache key version — increment to bust stale session caches
-const CACHE_VERSION = 2;
-
-function getCachedFeed(ticker: string): CachedFeed | null {
-  try {
-    const raw = sessionStorage.getItem(`sources_v${CACHE_VERSION}_${ticker}`);
-    if (!raw) return null;
-    const parsed: CachedFeed = JSON.parse(raw);
-    if (Date.now() - parsed.fetchedAt > CACHE_TTL_MS) {
-      sessionStorage.removeItem(`sources_v${CACHE_VERSION}_${ticker}`);
-      return null;
-    }
-    return parsed;
-  } catch { return null; }
-}
-
-function setCachedFeed(ticker: string, prs: ArticleItem[], news: ArticleItem[]) {
-  try {
-    const entry: CachedFeed = { pressReleases: prs, news, fetchedAt: Date.now() };
-    sessionStorage.setItem(`sources_v${CACHE_VERSION}_${ticker}`, JSON.stringify(entry));
-  } catch { /* quota exceeded — ignore */ }
-}
+// (Session cache removed — articles are loaded from DB only)
 
 function formatTimeAgo(ts: number): string {
   const seconds = Math.floor((Date.now() - ts) / 1000);
@@ -119,6 +93,8 @@ function removeSourceAnalysisCache(ticker: string, articleKey: string) {
 function articleCacheKey(article: ArticleItem): string {
   return (article.url || article.headline || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 60);
 }
+
+// (48h staleness check removed — NEW badge stays until user clicks it)
 
 // ── Per-article tracked-status overrides (survives refresh within session) ──
 // When a per-article re-check confirms an article is tracked, store the override
@@ -491,7 +467,7 @@ const SourceArticleList: React.FC<{
   if (combined.length === 0) {
     return (
       <div style={{ fontSize: 13, color: 'var(--text3)', padding: '16px 12px', lineHeight: 1.6 }}>
-        No articles found. Click Load to fetch feeds.
+        No articles yet. Click AI Fetch to search for articles.
       </div>
     );
   }
@@ -559,10 +535,9 @@ const CompanyFeedCard: React.FC<{
   persistedSourceAnalyses: Record<string, string>;
   onLoad: () => void;
   onRecheck?: () => void;
-  onSimulateNew?: () => void;
   onTabChange?: (tab: 'pr' | 'news') => void;
   onDismissNew?: (cacheKey: string) => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, persistedSourceAnalyses, onLoad, onRecheck, onSimulateNew, onDismissNew }) => {
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, persistedSourceAnalyses, onLoad, onRecheck, onDismissNew }) => {
   const prCount = data.pressReleases.length;
   const newsCount = data.news.length;
   const isActive = data.loading || (aiChecking ?? false);
@@ -655,8 +630,8 @@ const CompanyFeedCard: React.FC<{
             ref={buttonRef}
             onClick={onLoad}
             disabled={data.loading}
-            aria-label={data.loaded ? `Refresh ${label} feeds` : `Load ${label} feeds`}
-            title="Fetch new articles"
+            aria-label={`AI Fetch ${label} feeds`}
+            title="Search for new articles via AI"
             style={{
               fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
               padding: '5px 14px', borderRadius: 4,
@@ -676,30 +651,8 @@ const CompanyFeedCard: React.FC<{
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            {data.loading ? 'Fetching' : data.loaded ? 'Refresh' : 'Load'}
+            {data.loading ? 'Fetching...' : 'AI Fetch'}
           </button>
-          {/* Simulate New — dev-only: pretend some untracked articles just appeared */}
-          {data.loaded && onSimulateNew && (
-            <button
-              onClick={onSimulateNew}
-              title="DEV: Simulate new articles appearing (picks up to 3 untracked articles)"
-              style={{
-                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-                padding: '5px 14px', borderRadius: 4,
-                color: 'rgba(200,170,100,0.5)',
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(200,170,100,0.15)',
-                cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 6,
-                transition: 'all 0.15s', outline: 'none',
-              }}
-            >
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
-                <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-              Simulate New
-            </button>
-          )}
           {/* Re-check — check if articles have been added to database */}
           {data.loaded && onRecheck && (
             <button
@@ -750,10 +703,10 @@ const CompanyFeedCard: React.FC<{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
             padding: '24px 0', color: 'var(--text3)',
           }}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
-            <span style={{ fontSize: 12 }}>Loading feeds...</span>
+            <span style={{ fontSize: 12 }}>Loading from database...</span>
           </div>
         )}
 
@@ -791,13 +744,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const [matchMethod, setMatchMethod] = useState<'ai' | 'local' | 'hybrid' | null>(null);
   const [forceLocal, setForceLocal] = useState(false);
 
-  // Track genuinely new articles: persisted via DB so NEW badges survive page reloads.
-  // seenArticleKeysRef holds all cache keys previously stored in the seen_articles table.
-  const seenArticleKeysRef = useRef<Set<string>>(new Set());
+  // NEW badge: articles with dismissed=false in the DB.
+  // dbArticleKeysRef tracks all cache keys in DB so AI Fetch can identify truly new articles.
+  const dbArticleKeysRef = useRef<Set<string>>(new Set());
   const [newArticleKeys, setNewArticleKeys] = useState<Set<string>>(new Set());
 
   // Track whether the initial auto-recheck has fired (prevents double-checking)
   const initialRecheckDone = useRef(false);
+  const compRecheckDone = useRef<Set<string>>(new Set());
 
   // Persistent analysis cache (survives page reloads — loaded from disk)
   const [persistedSourceAnalyses, setPersistedSourceAnalyses] = useState<Record<string, string>>({});
@@ -823,7 +777,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
   }, [ticker, forceLocal]);
 
-  // Fetch new articles from news/PR APIs
+  // AI Fetch: fetch new articles from news/PR APIs, compare with DB, save new ones
   const loadMainCard = useCallback(async () => {
     setMainCard(prev => ({ ...prev, loading: true, error: null }));
     let prs: ArticleItem[] = [];
@@ -850,93 +804,84 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     if (newsResult.status === 'fulfilled') news = newsResult.value;
     const error = (prResult.status === 'rejected' && newsResult.status === 'rejected') ? 'Could not fetch feeds' : null;
 
-    // Track genuinely new articles: compare against DB-persisted seen keys
-    const all = [...prs, ...news];
-    const currentKeys = new Set(all.map(a => articleCacheKey(a)));
+    // Identify articles NOT already in DB → these are genuinely new
+    const newPrs = prs.filter(a => !dbArticleKeysRef.current.has(articleCacheKey(a)));
+    const newNews = news.filter(a => !dbArticleKeysRef.current.has(articleCacheKey(a)));
+    const allNew = [...newPrs, ...newNews];
 
-    // Identify articles we haven't seen before (not in the DB)
-    const fresh = new Set<string>();
-    for (const key of currentKeys) {
-      if (!seenArticleKeysRef.current.has(key)) fresh.add(key);
-    }
-    setNewArticleKeys(fresh);
-
-    // Persist all current articles as "seen" in the DB.
-    // Await so the data is saved before the user can refresh.
-    const newToSave = all
-      .filter(a => !seenArticleKeysRef.current.has(articleCacheKey(a)))
-      .map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date }));
-    if (newToSave.length > 0) {
+    // Save new articles to DB with dismissed=false (they get NEW badge)
+    if (allNew.length > 0) {
+      const toSave = allNew.map(a => ({
+        cacheKey: articleCacheKey(a),
+        headline: a.headline,
+        date: a.date,
+        url: a.url,
+        source: a.source,
+        articleType: newPrs.includes(a) ? 'pr' : 'news',
+      }));
+      console.log(`[ai-fetch] saving ${toSave.length} new articles to DB...`, toSave.slice(0, 2));
       try {
         const saveRes = await fetch('/api/seen-articles', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ticker, articles: newToSave }),
+          body: JSON.stringify({ ticker, articles: toSave }),
         });
-        if (!saveRes.ok) console.error('[seen-articles] save failed:', saveRes.status, await saveRes.text().catch(() => ''));
+        const saveBody = await saveRes.json().catch(() => ({}));
+        if (saveRes.ok) {
+          console.log('[ai-fetch] save OK:', saveBody);
+        } else {
+          console.error('[ai-fetch] save FAILED:', saveRes.status, saveBody);
+        }
       } catch (err) {
-        console.error('[seen-articles] save error:', err);
+        console.error('[ai-fetch] save error:', err);
       }
-    }
-    // Update local ref so within-session refreshes also work
-    for (const key of currentKeys) {
-      seenArticleKeysRef.current.add(key);
+      // Update local DB ref + mark as NEW
+      for (const a of allNew) dbArticleKeysRef.current.add(articleCacheKey(a));
+      setNewArticleKeys(prev => {
+        const next = new Set(prev);
+        for (const a of allNew) next.add(articleCacheKey(a));
+        return next;
+      });
     }
 
-    // Carry over analyzed status from previous state + per-article recheck overrides,
-    // so dots don't flash to red while the check runs.
+    // Merge new articles into existing display (keep old + add new on top)
     setMainCard(prev => {
-      const prevStatus = new Map<string, boolean | null>();
-      for (const a of [...prev.pressReleases, ...prev.news]) {
-        const key = `${a.headline}|${a.date}`;
-        if (a.analyzed != null) prevStatus.set(key, a.analyzed);
-      }
-      // Apply per-article recheck overrides (from small re-check button)
-      const resolveStatus = (a: ArticleItem): boolean | null => {
-        const override = getTrackedOverride(a);
-        if (override === true) return true;
-        return prevStatus.get(`${a.headline}|${a.date}`) ?? null;
-      };
+      const existingKeys = new Set([
+        ...prev.pressReleases.map(a => articleCacheKey(a)),
+        ...prev.news.map(a => articleCacheKey(a)),
+      ]);
+      const addedPrs = prs.filter(a => !existingKeys.has(articleCacheKey(a)));
+      const addedNews = news.filter(a => !existingKeys.has(articleCacheKey(a)));
       return {
         ...prev, loading: false, loaded: true, error,
-        pressReleases: prs.map(a => ({ ...a, analyzed: resolveStatus(a) })),
-        news: news.map(a => ({ ...a, analyzed: resolveStatus(a) })),
+        pressReleases: [...addedPrs, ...prev.pressReleases],
+        news: [...addedNews, ...prev.news],
       };
     });
-    const now = Date.now();
-    setLastFetchedAt(now);
+    setLastFetchedAt(Date.now());
 
-    // Re-check analyzed status for the fresh articles
-    const allArticles = [...prs, ...news];
-    // Prevent auto-recheck useEffect from firing a duplicate check
-    initialRecheckDone.current = true;
-    if (allArticles.length > 0) {
+    // Run check-analyzed on all new articles
+    if (allNew.length > 0) {
+      initialRecheckDone.current = true;
       setAiChecking(true);
       try {
-        const checked = await checkAnalyzed(allArticles);
-        const checkedPrs = checked.slice(0, prs.length);
-        const checkedNews = checked.slice(prs.length);
-        // Merge: only promote (never demote) compared to carried-over status
+        const checked = await checkAnalyzed(allNew);
+        // Update only the newly added articles with their analyzed status
+        const checkedMap = new Map<string, boolean | null>();
+        for (const a of checked) checkedMap.set(articleCacheKey(a), a.analyzed ?? null);
         setMainCard(prev => ({
           ...prev,
-          pressReleases: checkedPrs.map((a, i) => ({
-            ...a,
-            analyzed: (a.analyzed === true || prev.pressReleases[i]?.analyzed === true) ? true : a.analyzed,
-          })),
-          news: checkedNews.map((a, i) => ({
-            ...a,
-            analyzed: (a.analyzed === true || prev.news[i]?.analyzed === true) ? true : a.analyzed,
-          })),
+          pressReleases: prev.pressReleases.map(a => {
+            const status = checkedMap.get(articleCacheKey(a));
+            return status !== undefined ? { ...a, analyzed: (a.analyzed === true || status === true) ? true : status } : a;
+          }),
+          news: prev.news.map(a => {
+            const status = checkedMap.get(articleCacheKey(a));
+            return status !== undefined ? { ...a, analyzed: (a.analyzed === true || status === true) ? true : status } : a;
+          }),
         }));
-        // Update session cache WITH correct analyzed status (not null)
-        setCachedFeed(ticker, checkedPrs, checkedNews);
-      } catch {
-        // On check failure, still cache articles (with carried-over status)
-        setCachedFeed(ticker, prs, news);
-      }
+      } catch { /* handled */ }
       finally { setAiChecking(false); }
-    } else {
-      setCachedFeed(ticker, prs, news);
     }
   }, [ticker, checkAnalyzed]);
 
@@ -975,21 +920,16 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     try {
       const all = [...card.pressReleases, ...card.news];
       const checked = await checkAnalyzed(all);
-      setCompCards(prev => {
-        const prevCard = prev[name];
-        const prLen = prevCard.pressReleases.length;
-        return { ...prev, [name]: {
-          ...prevCard,
-          pressReleases: checked.slice(0, prLen).map((article, i) => ({
-            ...article,
-            analyzed: (article.analyzed === true || prevCard.pressReleases[i]?.analyzed === true) ? true : article.analyzed,
-          })),
-          news: checked.slice(prLen).map((article, i) => ({
-            ...article,
-            analyzed: (article.analyzed === true || prevCard.news[i]?.analyzed === true) ? true : article.analyzed,
-          })),
-        }};
-      });
+      const prLen = card.pressReleases.length;
+      const checkedPrs = checked.slice(0, prLen).map((article, i) => ({
+        ...article,
+        analyzed: (article.analyzed === true || card.pressReleases[i]?.analyzed === true) ? true : article.analyzed,
+      }));
+      const checkedNews = checked.slice(prLen).map((article, i) => ({
+        ...article,
+        analyzed: (article.analyzed === true || card.news[i]?.analyzed === true) ? true : article.analyzed,
+      }));
+      setCompCards(prev => ({ ...prev, [name]: { ...prev[name], pressReleases: checkedPrs, news: checkedNews } }));
     } catch { /* handled */ }
     finally { setCompAiChecking(prev => ({ ...prev, [name]: false })); }
   }, [compCards, checkAnalyzed]);
@@ -1003,67 +943,123 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       const prs: ArticleItem[] = (data.pressReleases || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
       const news: ArticleItem[] = (data.news || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
       setCompCards(prev => ({ ...prev, [name]: { loading: false, loaded: true, error: null, activeTab: prev[name]?.activeTab || 'pr', pressReleases: prs, news } }));
+
+      // Identify new competitor articles not in DB
       const all = [...prs, ...news];
+      const newComp = all.filter(a => !dbArticleKeysRef.current.has(articleCacheKey(a)));
+      if (newComp.length > 0) {
+        const toSave = newComp.map(a => ({
+          cacheKey: articleCacheKey(a),
+          headline: a.headline,
+          date: a.date,
+          url: a.url,
+          source: a.source,
+          articleType: prs.includes(a) ? 'pr' : 'news',
+        }));
+        // Mark as NEW
+        setNewArticleKeys(prev => {
+          const next = new Set(prev);
+          for (const a of newComp) next.add(articleCacheKey(a));
+          return next;
+        });
+        // Save to DB
+        try {
+          await fetch('/api/seen-articles', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ticker, articles: toSave }),
+          });
+        } catch { /* best-effort */ }
+        for (const a of newComp) dbArticleKeysRef.current.add(articleCacheKey(a));
+      }
+
+      // Check analyzed status
+      compRecheckDone.current.add(name);
       if (all.length > 0) {
         setCompAiChecking(prev => ({ ...prev, [name]: true }));
         try {
           const checked = await checkAnalyzed(all);
-          setCompCards(prev => ({ ...prev, [name]: { ...prev[name], pressReleases: checked.slice(0, prs.length), news: checked.slice(prs.length) } }));
-        } catch { /* handled */ } finally { setCompAiChecking(prev => ({ ...prev, [name]: false })); }
+          const checkedPrs = checked.slice(0, prs.length);
+          const checkedNews = checked.slice(prs.length);
+          setCompCards(prev => ({ ...prev, [name]: { ...prev[name], pressReleases: checkedPrs, news: checkedNews } }));
+        } catch { /* handled */ }
+        finally { setCompAiChecking(prev => ({ ...prev, [name]: false })); }
       }
     } catch {
       setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: false, loaded: false, error: 'Could not fetch feeds' } }));
     }
-  }, [checkAnalyzed]);
+  }, [ticker, checkAnalyzed]);
 
   const loadAll = useCallback(async () => {
     setLoadingAll(true);
-    const promises: Promise<unknown>[] = [];
-    if (!mainCard.loaded && !mainCard.loading) promises.push(loadMainCard());
+    const promises: Promise<unknown>[] = [loadMainCard()];
     if (competitors?.length) { for (const c of competitors) promises.push(loadCompetitor(c.name)); }
     await Promise.allSettled(promises);
     setLoadingAll(false);
-  }, [mainCard.loaded, mainCard.loading, loadMainCard, competitors, loadCompetitor]);
+  }, [loadMainCard, competitors, loadCompetitor]);
 
-  // Auto-load on mount: first hydrate seen keys from DB, then load articles
+  // DB-first init: load articles from database on mount (no external API calls)
   useEffect(() => {
     let cancelled = false;
 
     async function init() {
-      // 1. Fetch seen article keys from DB
       try {
         const res = await fetch(`/api/seen-articles?ticker=${ticker}`);
-        if (res.ok) {
-          const data = await res.json();
-          const keys: string[] = data.keys || [];
-          seenArticleKeysRef.current = new Set(keys);
-          console.log(`[seen-articles] hydrated ${keys.length} keys from DB`);
-        } else {
-          const body = await res.json().catch(() => ({}));
-          console.error('[seen-articles] hydrate failed:', res.status, body.error || '');
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({}));
+          console.error('[db-init] GET failed:', res.status, errBody);
+          throw new Error(`HTTP ${res.status}: ${errBody.error || errBody.detail || 'unknown'}`);
         }
-      } catch (err) { console.error('[seen-articles] hydrate error:', err); }
+        const data = await res.json();
+        const articles: { cacheKey: string; headline: string; date: string | null; url: string | null; source: string | null; articleType: string | null; dismissed: boolean }[] = data.articles || [];
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      // 2. Load articles (from cache or fetch)
-      const cached = getCachedFeed(ticker);
-      if (cached) {
-        // Restore from session cache — compare against DB-persisted seen keys
-        const allCached = [...cached.pressReleases, ...cached.news];
-        const fresh = new Set<string>();
-        for (const a of allCached) {
-          const key = articleCacheKey(a);
-          if (!seenArticleKeysRef.current.has(key)) fresh.add(key);
+        const prs: ArticleItem[] = [];
+        const news: ArticleItem[] = [];
+        const newKeys = new Set<string>();
+
+        for (const art of articles) {
+          const item: ArticleItem = {
+            headline: art.headline,
+            date: art.date || '',
+            url: art.url || '',
+            source: art.source || undefined,
+            analyzed: null,
+          };
+          if (art.articleType === 'pr') prs.push(item);
+          else news.push(item);
+
+          dbArticleKeysRef.current.add(art.cacheKey);
+          if (!art.dismissed) newKeys.add(art.cacheKey);
         }
-        setNewArticleKeys(fresh);
-        setMainCard(prev => ({
-          ...prev, loaded: true, loading: false,
-          pressReleases: cached.pressReleases, news: cached.news,
-        }));
-        setLastFetchedAt(cached.fetchedAt);
-      } else {
-        loadMainCard();
+
+        setNewArticleKeys(newKeys);
+        setMainCard({ loading: false, loaded: true, error: null, activeTab: 'pr', pressReleases: prs, news });
+        console.log(`[db-init] loaded ${articles.length} articles from DB (${newKeys.size} NEW)`);
+
+        // Run check-analyzed on DB articles
+        const all = [...prs, ...news];
+        if (all.length > 0) {
+          initialRecheckDone.current = true;
+          setAiChecking(true);
+          try {
+            const checked = await checkAnalyzed(all);
+            if (!cancelled) {
+              setMainCard(prev => ({
+                ...prev,
+                pressReleases: checked.slice(0, prs.length),
+                news: checked.slice(prs.length),
+              }));
+            }
+          } catch { /* handled */ }
+          finally { if (!cancelled) setAiChecking(false); }
+        }
+      } catch (err) {
+        console.error('[db-init] error:', err);
+        if (!cancelled) {
+          setMainCard({ loading: false, loaded: true, error: null, activeTab: 'pr', pressReleases: [], news: [] });
+        }
       }
     }
 
@@ -1072,8 +1068,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticker]);
 
-  // Auto re-check database status after articles are loaded (cache-loaded articles only;
-  // loadMainCard already sets initialRecheckDone.current = true to prevent double-checking)
+  // Auto re-check database status after DB-loaded articles
   useEffect(() => {
     if (mainCard.loaded && !initialRecheckDone.current && (mainCard.pressReleases.length > 0 || mainCard.news.length > 0)) {
       initialRecheckDone.current = true;
@@ -1102,8 +1097,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       next.delete(cacheKey);
       return next;
     });
-    seenArticleKeysRef.current.add(cacheKey);
-    // Persist dismiss to DB so it survives page refresh
+    // Persist dismiss to DB
     const allArticles = [...mainCard.pressReleases, ...mainCard.news];
     const article = allArticles.find(a => articleCacheKey(a) === cacheKey);
     if (article) {
@@ -1115,9 +1109,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           articles: [{ cacheKey, headline: article.headline, date: article.date }],
           dismiss: true,
         }),
-      }).then(res => {
-        if (!res.ok) console.error('[seen-articles] dismiss failed:', res.status);
-      }).catch(err => console.error('[seen-articles] dismiss error:', err));
+      }).catch(err => console.error('[dismiss] error:', err));
     }
   }, [ticker, mainCard.pressReleases, mainCard.news]);
 
@@ -1167,7 +1159,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         <button
           onClick={loadAll}
           disabled={loadingAll}
-          aria-label={loadedCount > 0 ? 'Refresh all feeds' : 'Load all feeds'}
+          aria-label="AI Fetch all feeds"
           style={{
             fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
             padding: '5px 14px', borderRadius: 4,
@@ -1184,7 +1176,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          {loadingAll ? 'Loading...' : loadedCount > 0 ? 'Refresh All' : 'Load All'}
+          {loadingAll ? 'Fetching...' : 'AI Fetch All'}
         </button>
       </div>
 
@@ -1269,12 +1261,6 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           persistedSourceAnalyses={persistedSourceAnalyses}
           onLoad={loadMainCard}
           onRecheck={recheckMainCard}
-          onSimulateNew={() => {
-            const all = [...mainCard.pressReleases, ...mainCard.news];
-            const untracked = all.filter(a => a.analyzed !== true).slice(0, 3);
-            if (untracked.length === 0) return;
-            setNewArticleKeys(new Set(untracked.map(a => articleCacheKey(a))));
-          }}
           onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
           onDismissNew={dismissNewArticle}
         />
@@ -1520,6 +1506,40 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               </div>
               {/* Date proximity note */}
               <div style={{ marginTop: 8, padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', fontStyle: 'italic', textAlign: 'center' }}>Date proximity guard: recurring reports<br />require higher overlap when dates are &gt;30 days apart</div>
+            </div>
+
+            {/* Divider */}
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── NEW ARTICLE DETECTION ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>New Article Detection</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>User clicks AI Fetch</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Fetch articles from news/PR APIs</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Already in DB?</div>
+              <div style={{ display: 'flex', gap: 32, marginTop: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>Yes</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>Skip (already displayed)</div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Save to DB (dismissed=false)</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>NEW badge</div>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+              <div><span style={{ color: 'var(--text3)' }}>On mount:</span> loads articles from DB only &mdash; no external API calls</div>
+              <div><span style={{ color: 'var(--text3)' }}>AI Fetch:</span> searches external APIs, saves new articles to DB with NEW badge</div>
+              <div><span style={{ color: 'var(--text3)' }}>NEW badge:</span> stays until user clicks it &rarr; sets dismissed=true in DB</div>
+              <div><span style={{ color: 'var(--text3)' }}>Cross-device:</span> NEW badge persists across all devices until dismissed</div>
+              <div><span style={{ color: 'var(--text3)' }}>No staleness guard:</span> all newly fetched articles get NEW regardless of age</div>
             </div>
 
             {/* Divider */}
