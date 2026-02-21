@@ -445,8 +445,41 @@ const SourceArticleRow: React.FC<{
   );
 };
 
-// ── Combined article list (merges PR + News, sorted by date) ────────────────
-const ARTICLE_INITIAL_COUNT = 10;
+// ── Separate PR / News article lists (max 10 each) ─────────────────────────
+const SECTION_MAX = 10;
+
+const SourceArticleSection: React.FC<{
+  articles: ArticleItem[];
+  type: 'pr' | 'news';
+  label: string;
+  showAnalysis?: boolean;
+  ticker: string;
+  newArticleKeys: Set<string>;
+  persistedSourceAnalyses: Record<string, string>;
+  onDismissNew?: (cacheKey: string) => void;
+}> = ({ articles, type, label, showAnalysis, ticker, newArticleKeys, persistedSourceAnalyses, onDismissNew }) => {
+  const sorted = [...articles].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const displayed = sorted.slice(0, SECTION_MAX);
+
+  if (displayed.length === 0) return null;
+
+  return (
+    <div>
+      <div style={{
+        fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px',
+        color: 'var(--text3)', padding: '8px 12px 4px', opacity: 0.7,
+      }}>
+        {label} ({displayed.length})
+      </div>
+      {displayed.map((a, i) => {
+        const key = articleCacheKey(a);
+        return (
+          <SourceArticleRow key={`${type}-${i}`} article={a} type={type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(key)} persistedAnalysis={persistedSourceAnalyses[key] || null} onDismissNew={() => onDismissNew?.(key)} />
+        );
+      })}
+    </div>
+  );
+};
 
 const SourceArticleList: React.FC<{
   pressReleases: ArticleItem[];
@@ -457,14 +490,7 @@ const SourceArticleList: React.FC<{
   persistedSourceAnalyses: Record<string, string>;
   onDismissNew?: (cacheKey: string) => void;
 }> = ({ pressReleases, news, showAnalysis, ticker, newArticleKeys, persistedSourceAnalyses, onDismissNew }) => {
-  const [showAll, setShowAll] = useState(false);
-
-  const combined = [
-    ...pressReleases.map(a => ({ ...a, _type: 'pr' as const })),
-    ...news.map(a => ({ ...a, _type: 'news' as const })),
-  ].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-
-  if (combined.length === 0) {
+  if (pressReleases.length === 0 && news.length === 0) {
     return (
       <div style={{ fontSize: 13, color: 'var(--text3)', padding: '16px 12px', lineHeight: 1.6 }}>
         No articles yet. Click AI Fetch to search for articles.
@@ -472,51 +498,13 @@ const SourceArticleList: React.FC<{
     );
   }
 
-  const displayed = showAll ? combined : combined.slice(0, ARTICLE_INITIAL_COUNT);
-  const hiddenCount = combined.length - ARTICLE_INITIAL_COUNT;
-
-  // Split into genuinely-new articles (top) vs everything else (bottom)
-  const newEntries = displayed.filter(a => newArticleKeys.has(articleCacheKey(a)) && a.analyzed !== true);
-  const oldEntries = displayed.filter(a => !(newArticleKeys.has(articleCacheKey(a)) && a.analyzed !== true));
-  const hasNewAndOld = newEntries.length > 0 && oldEntries.length > 0;
-
-  const renderRow = (a: typeof combined[number], i: number) => {
-    const key = articleCacheKey(a);
-    return (
-      <SourceArticleRow key={`${a._type}-${i}`} article={a} type={a._type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(key)} persistedAnalysis={persistedSourceAnalyses[key] || null} onDismissNew={() => onDismissNew?.(key)} />
-    );
-  };
-
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-      {newEntries.map(renderRow)}
-      {hasNewAndOld && (
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 10,
-          padding: '6px 12px', margin: '2px 0',
-        }}>
-          <span style={{ flex: 1, height: 1, background: 'color-mix(in srgb, var(--border) 40%, transparent)' }} />
-        </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <SourceArticleSection articles={pressReleases} type="pr" label="Press Releases" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
+      {pressReleases.length > 0 && news.length > 0 && (
+        <div style={{ height: 1, background: 'color-mix(in srgb, var(--border) 40%, transparent)', margin: '4px 12px' }} />
       )}
-      {oldEntries.map(renderRow)}
-      {hiddenCount > 0 && (
-        <div style={{ textAlign: 'center', paddingTop: 12, paddingBottom: 8 }}>
-          <button
-            onClick={() => setShowAll(!showAll)}
-            style={{
-              fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-              padding: '3px 10px', borderRadius: 4,
-              border: '1px solid var(--border)', background: 'rgba(255,255,255,0.04)',
-              color: 'var(--text3)', cursor: 'pointer',
-              transition: 'all 0.15s', fontFamily: 'inherit',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text3)'; }}
-          >
-            {showAll ? 'Show Less' : `Show ${hiddenCount} More`}
-          </button>
-        </div>
-      )}
+      <SourceArticleSection articles={news} type="news" label="News" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
     </div>
   );
 };
@@ -1037,7 +1025,6 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
         const prs: ArticleItem[] = [];
         const news: ArticleItem[] = [];
-        const newKeys = new Set<string>();
 
         for (const art of articles) {
           const item: ArticleItem = {
@@ -1051,12 +1038,11 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           else news.push(item);
 
           dbArticleKeysRef.current.add(art.cacheKey);
-          if (!art.dismissed) newKeys.add(art.cacheKey);
         }
 
-        setNewArticleKeys(newKeys);
+        // Don't restore NEW status from DB — NEW is session-only (AI Fetch discovers new articles)
         setMainCard({ loading: false, loaded: true, error: null, activeTab: 'pr', pressReleases: prs, news });
-        console.log(`[db-init] loaded ${articles.length} articles from DB (${newKeys.size} NEW)`);
+        console.log(`[db-init] loaded ${articles.length} articles from DB (${prs.length} PR, ${news.length} news)`);
 
         // Run check-analyzed on DB articles
         const all = [...prs, ...news];
