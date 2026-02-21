@@ -1,16 +1,18 @@
 /**
- * SharedEdgarTab — SEC EDGAR Filing Monitor (v2)
+ * SharedEdgarTab — DB-First SEC EDGAR Filing Monitor
  *
- * Fetches the latest filings from SEC EDGAR and compares them
- * against the local database to highlight which filings have been
- * tracked and which are new. Per-filing actions: open in new tab
- * or analyze with AI.
+ * ── Flow ──
  *
- * v3.1.0 — Accession-number matching replaces form+date tolerance.
- *   Exact matching via SEC accession number (primary), with ±1 day form+date
- *   fallback only for legacy entries that lack accession numbers.
+ * 1. On mount: load filings ONLY from database (GET /api/seen-filings).
+ *    If nothing saved yet → empty state.
+ * 2. "Fetch Filings" button → fetches fresh filings from SEC EDGAR API.
+ *    New filings (not already in DB) are saved with dismissed=false → NEW badge.
+ * 3. NEW badge stays until user clicks it → sets dismissed=true in DB.
+ * 4. All filing metadata (status, cross-refs, form, date, etc.) persisted to DB.
  *
- * @version 3.1.0
+ * No session cache. No auto-fetch on mount.
+ *
+ * @version 4.0.0
  */
 
 'use client';
@@ -59,39 +61,19 @@ interface MatchResult {
 // ── Constants ────────────────────────────────────────────────────────────────
 const STATUS_RING_CIRCUMFERENCE = 2 * Math.PI * 12; // r=12 SVG circle
 
-// ── Session cache (15-min TTL) ──────────────────────────────────────────────
-const CACHE_TTL_MS = 15 * 60 * 1000;
+// (Session caches removed — filings and analyses are loaded from DB only)
 
-interface CachedEdgar { filings: EdgarFiling[]; fetchedAt: number; }
-
-function getCachedEdgar(ticker: string): CachedEdgar | null {
-  try {
-    const raw = sessionStorage.getItem(`edgar_${ticker}`);
-    if (!raw) return null;
-    const parsed: CachedEdgar = JSON.parse(raw);
-    if (Date.now() - parsed.fetchedAt > CACHE_TTL_MS) { sessionStorage.removeItem(`edgar_${ticker}`); return null; }
-    return parsed;
-  } catch { return null; }
-}
-
-function setCachedEdgar(ticker: string, filings: EdgarFiling[]) {
-  try { sessionStorage.setItem(`edgar_${ticker}`, JSON.stringify({ filings, fetchedAt: Date.now() })); } catch { /* quota */ }
-}
-
-// ── Per-filing analysis cache (survives tab switches) ─────────────────────
-function getAnalysisCache(ticker: string, accession: string): string | null {
-  try {
-    const raw = sessionStorage.getItem(`edgar_analysis_${ticker}_${accession}`);
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
-}
-
-function setAnalysisCache(ticker: string, accession: string, text: string) {
-  try { sessionStorage.setItem(`edgar_analysis_${ticker}_${accession}`, JSON.stringify(text)); } catch { /* quota */ }
-}
-
-function removeAnalysisCache(ticker: string, accession: string) {
-  try { sessionStorage.removeItem(`edgar_analysis_${ticker}_${accession}`); } catch { /* ignore */ }
+/** DB record shape for per-filing status display */
+interface DbFilingRecord {
+  accessionNumber: string;
+  form: string;
+  filingDate: string | null;
+  description: string | null;
+  reportDate: string | null;
+  fileUrl: string | null;
+  status: string | null;
+  crossRefs: { source: string; data: string }[] | null;
+  dismissed: boolean;
 }
 
 function formatTimeAgo(ts: number): string {
@@ -405,20 +387,18 @@ const FilingRow: React.FC<{
   typeColors: Record<string, { bg: string; text: string }>;
   ticker: string;
   isGenuinelyNew?: boolean;
+  dbRecord?: DbFilingRecord | null;
   persistedAnalysis?: string | null;
+  onDismissNew?: () => void;
   onRecheck?: () => void;
   recheckLoading?: boolean;
-}> = ({ r, typeColors, ticker, isGenuinelyNew, persistedAnalysis, onRecheck, recheckLoading }) => {
+}> = ({ r, typeColors, ticker, isGenuinelyNew, dbRecord, persistedAnalysis, onDismissNew, onRecheck, recheckLoading }) => {
   const accession = r.filing.accessionNumber;
   const [analyzing, setAnalyzing] = useState(false);
-  const [analysis, setAnalysis] = useState<string | null>(() => getAnalysisCache(ticker, accession) || persistedAnalysis || null);
+  const [analysis, setAnalysis] = useState<string | null>(persistedAnalysis || null);
 
-  // Hydrate from persistent storage when it becomes available after async fetch
   useEffect(() => {
-    if (!analysis && persistedAnalysis) {
-      setAnalysis(persistedAnalysis);
-      setAnalysisCache(ticker, accession, persistedAnalysis);
-    }
+    if (!analysis && persistedAnalysis) setAnalysis(persistedAnalysis);
   }, [persistedAnalysis]); // eslint-disable-line react-hooks/exhaustive-deps
   const [copied, setCopied] = useState(false);
   const [applyStep, setApplyStep] = useState<"idle" | "previewing" | "previewed" | "applying" | "applied" | "error">("idle");
@@ -447,15 +427,11 @@ const FilingRow: React.FC<{
   const handleAnalyze = async () => {
     const isError = isErrorAnalysis(analysis);
     if (analysis && !isError) {
-      setAnalysis(null); removeAnalysisCache(ticker, accession); resetWorkflowState(); setExpanded(false);
-      // Also remove from persistent storage (fire-and-forget)
+      setAnalysis(null); resetWorkflowState(); setExpanded(false);
       fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'edgar', key: accession, text: null }) }).catch(() => {});
       return;
-    } // toggle off
-    // If previous result was an error, clear it before retrying
-    if (isError) {
-      setAnalysis(null); removeAnalysisCache(ticker, accession); resetWorkflowState();
     }
+    if (isError) { setAnalysis(null); resetWorkflowState(); }
     setAnalyzing(true);
     setExpanded(true);
     try {
@@ -474,16 +450,11 @@ const FilingRow: React.FC<{
       const text = data.analysis || data.error || 'No analysis returned.';
       const failed = isErrorAnalysis(text);
       setAnalysis(text);
-      setAnalysisCache(ticker, accession, text);
-      // Only persist successful analyses to Postgres (don't save error strings)
       if (!failed) {
         fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'edgar', key: accession, text }) }).catch(() => {});
       }
     } catch (err) {
-      const errText = `Error: ${(err as Error).message}`;
-      setAnalysis(errText);
-      setAnalysisCache(ticker, accession, errText);
-      // Don't persist errors to Postgres
+      setAnalysis(`Error: ${(err as Error).message}`);
     } finally {
       setAnalyzing(false);
     }
@@ -689,16 +660,44 @@ const FilingRow: React.FC<{
         }}>
           {statusCfg.label}
         </span>
-        {/* NEW badge — only for genuinely new filings that appeared after a refresh */}
-        {isGenuinelyNew && !analysis && !(r.crossRefs && r.crossRefs.length > 0) && r.status === 'new' && (
-          <span style={{
-            fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
-            color: 'var(--sky)', background: 'var(--sky-dim)',
-            border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
-          }}>
+        {/* DB save status indicator */}
+        {(() => {
+          const dbColor = !dbRecord ? 'var(--text3)' : (dbRecord.filingDate != null && dbRecord.fileUrl != null && dbRecord.status != null) ? 'var(--mint)' : 'var(--gold)';
+          const dbOpacity = !dbRecord ? 0.25 : 0.8;
+          const dbTitle = !dbRecord
+            ? 'Not saved to DB'
+            : `DB: ${dbRecord.form} | ${dbRecord.filingDate || 'no date'} | ${dbRecord.status || '?'} | ${dbRecord.description?.slice(0, 40) || 'no desc'}${(dbRecord.description?.length || 0) > 40 ? '...' : ''}`;
+          return (
+            <span
+              title={dbTitle}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0,
+                fontSize: 8, fontFamily: 'Space Mono, monospace', color: dbColor, opacity: dbOpacity,
+                padding: '1px 4px', borderRadius: 3,
+                border: `1px solid color-mix(in srgb, ${dbColor} 20%, transparent)`,
+              }}
+            >
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: dbColor }} />
+              DB
+            </span>
+          );
+        })()}
+        {/* NEW badge — clickable: dismisses the filing as "seen" */}
+        {isGenuinelyNew && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
+            title="Mark as seen"
+            style={{
+              fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+              padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+              color: 'var(--sky)', background: 'var(--sky-dim)',
+              border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
+              cursor: 'pointer', transition: 'all 0.15s', outline: 'none',
+              fontFamily: 'inherit',
+            }}
+          >
             NEW
-          </span>
+          </button>
         )}
         {/* Action buttons — stop propagation so clicks don't toggle expand */}
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
@@ -1105,20 +1104,22 @@ const YearSection: React.FC<{
   ticker: string;
   defaultOpen: boolean;
   newAccessions: Set<string>;
+  dbRecords: Map<string, DbFilingRecord>;
   persistedAnalyses: Record<string, string>;
+  onDismissNew?: (accession: string) => void;
   onRecheck?: () => void;
   recheckLoading?: boolean;
-}> = ({ year, results, typeColors, ticker, defaultOpen, newAccessions, persistedAnalyses, onRecheck, recheckLoading }) => {
+}> = ({ year, results, typeColors, ticker, defaultOpen, newAccessions, dbRecords, persistedAnalyses, onDismissNew, onRecheck, recheckLoading }) => {
   const [open, setOpen] = useState(defaultOpen);
   const trackedInYear = results.filter(r => r.status === 'tracked').length;
 
   // Split into genuinely-new filings (top) vs everything else (bottom)
-  const newEntries = results.filter(r => newAccessions.has(r.filing.accessionNumber) && r.status === 'new');
-  const oldEntries = results.filter(r => !(newAccessions.has(r.filing.accessionNumber) && r.status === 'new'));
+  const newEntries = results.filter(r => newAccessions.has(r.filing.accessionNumber));
+  const oldEntries = results.filter(r => !newAccessions.has(r.filing.accessionNumber));
   const hasNewAndOld = newEntries.length > 0 && oldEntries.length > 0;
 
   const renderRow = (r: MatchResult, i: number) => (
-    <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} onRecheck={onRecheck} recheckLoading={recheckLoading} />
+    <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} dbRecord={dbRecords.get(r.filing.accessionNumber) || null} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} onDismissNew={() => onDismissNew?.(r.filing.accessionNumber)} onRecheck={onRecheck} recheckLoading={recheckLoading} />
   );
 
   return (
@@ -1183,10 +1184,12 @@ const FilingList: React.FC<{
   filter: string;
   ticker: string;
   newAccessions: Set<string>;
+  dbRecords: Map<string, DbFilingRecord>;
   persistedAnalyses: Record<string, string>;
+  onDismissNew?: (accession: string) => void;
   onRecheck?: () => void;
   recheckLoading?: boolean;
-}> = ({ results, typeColors, filter, ticker, newAccessions, persistedAnalyses, onRecheck, recheckLoading }) => {
+}> = ({ results, typeColors, filter, ticker, newAccessions, dbRecords, persistedAnalyses, onDismissNew, onRecheck, recheckLoading }) => {
   const filtered = applyFilter(results, filter);
 
   if (filtered.length === 0) {
@@ -1217,7 +1220,9 @@ const FilingList: React.FC<{
           ticker={ticker}
           defaultOpen={i === 0}
           newAccessions={newAccessions}
+          dbRecords={dbRecords}
           persistedAnalyses={persistedAnalyses}
+          onDismissNew={onDismissNew}
           onRecheck={onRecheck}
           recheckLoading={recheckLoading}
         />
@@ -1264,11 +1269,14 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   const [refreshedLocalFilings, setRefreshedLocalFilings] = useState<LocalFiling[] | null>(null);
   const [refreshedCrossRefs, setRefreshedCrossRefs] = useState<Record<string, { source: string; data: string }[]> | null>(null);
 
-  // Track genuinely new filings: only those appearing after a refresh that weren't in the previous load
-  const knownAccessionsRef = useRef<Set<string>>(new Set());
+  // DB records map: accessionNumber → DB row. Source of truth for DB status and NEW detection.
+  const dbRecordsRef = useRef<Map<string, DbFilingRecord>>(new Map());
+  const [dbRecords, setDbRecords] = useState<Map<string, DbFilingRecord>>(new Map());
+
+  // NEW badge: filings with dismissed=false in the DB
   const [newAccessions, setNewAccessions] = useState<Set<string>>(new Set());
 
-  // Persistent analysis cache (survives page reloads — loaded from disk)
+  // Persistent analysis cache (survives page reloads — loaded from Postgres)
   const [persistedAnalyses, setPersistedAnalyses] = useState<Record<string, string>>({});
 
   const effectiveLocalFilings = refreshedLocalFilings ?? localFilings;
@@ -1293,12 +1301,14 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
     return opts;
   }, [results, dataOnlyCount]);
 
-  // Fetch live filings from SEC EDGAR (checks for new filings)
+  // Fetch live filings from SEC EDGAR, compare with DB, save new ones
   const fetchFilings = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/edgar/${ticker}`);
+      const res = await fetch(`/api/edgar/${ticker}`, {
+        signal: AbortSignal.timeout(15000),
+      });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || `Failed to fetch (${res.status})`);
@@ -1306,33 +1316,80 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       const data = await res.json();
       const filings: EdgarFiling[] = data.filings || [];
 
-      // Track genuinely new filings (only those not in previous load)
-      const currentAccessions = new Set(filings.map(f => f.accessionNumber));
-      if (knownAccessionsRef.current.size === 0) {
-        // First load — everything is already known, nothing is "new"
-        knownAccessionsRef.current = currentAccessions;
-        setNewAccessions(new Set());
-      } else {
-        // Refresh — only filings not previously seen are genuinely new
-        const fresh = new Set<string>();
-        for (const acc of currentAccessions) {
-          if (!knownAccessionsRef.current.has(acc)) fresh.add(acc);
-        }
-        knownAccessionsRef.current = currentAccessions;
-        setNewAccessions(fresh);
+      // Identify genuinely new filings (not in DB yet) → mark as NEW
+      const newKeys = new Set<string>();
+      for (const f of filings) {
+        if (!dbRecordsRef.current.has(f.accessionNumber)) newKeys.add(f.accessionNumber);
       }
 
       setEdgarFilings(filings);
       setLoaded(true);
-      const now = Date.now();
-      setFetchedAt(now);
-      setCachedEdgar(ticker, filings);
+      setFetchedAt(Date.now());
+
+      // Mark new filings
+      if (newKeys.size > 0) {
+        setNewAccessions(prev => {
+          const next = new Set(prev);
+          for (const k of newKeys) next.add(k);
+          return next;
+        });
+      }
+
+      // Match filings against local DB to determine status
+      const matched = matchFilings(filings, effectiveLocalFilings, effectiveCrossRefs);
+
+      // Save ALL fetched filings to DB with full metadata (upsert fixes legacy data)
+      const allToSave = matched.map(m => ({
+        accessionNumber: m.filing.accessionNumber,
+        form: m.filing.form,
+        filingDate: m.filing.filingDate,
+        description: m.filing.primaryDocDescription,
+        reportDate: m.filing.reportDate,
+        fileUrl: m.filing.fileUrl,
+        status: m.status,
+        crossRefs: m.crossRefs || null,
+      }));
+
+      if (allToSave.length > 0) {
+        console.log(`[edgar-fetch] saving ${allToSave.length} filings to DB (${newKeys.size} NEW)...`);
+        try {
+          const saveRes = await fetch('/api/seen-filings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ticker, filings: allToSave }),
+          });
+          const saveBody = await saveRes.json().catch(() => ({}));
+          if (saveRes.ok) {
+            console.log('[edgar-fetch] save OK:', saveBody);
+            // Update local DB records
+            for (const m of matched) {
+              const rec: DbFilingRecord = {
+                accessionNumber: m.filing.accessionNumber,
+                form: m.filing.form,
+                filingDate: m.filing.filingDate,
+                description: m.filing.primaryDocDescription,
+                reportDate: m.filing.reportDate,
+                fileUrl: m.filing.fileUrl,
+                status: m.status,
+                crossRefs: m.crossRefs || null,
+                dismissed: !newKeys.has(m.filing.accessionNumber),
+              };
+              dbRecordsRef.current.set(m.filing.accessionNumber, rec);
+            }
+            setDbRecords(new Map(dbRecordsRef.current));
+          } else {
+            console.error('[edgar-fetch] save FAILED:', saveRes.status, saveBody);
+          }
+        } catch (err) {
+          console.error('[edgar-fetch] save error:', err);
+        }
+      }
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setLoading(false);
     }
-  }, [ticker]);
+  }, [ticker, effectiveLocalFilings, effectiveCrossRefs]);
 
   // Re-check local database from disk (picks up AI Agent patches / new cross-refs)
   const recheckDB = useCallback(async () => {
@@ -1352,21 +1409,60 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
     finally { setRecheckLoading(false); }
   }, [ticker]);
 
+  // DB-first init: load filings from database on mount (no SEC API call)
   useEffect(() => {
-    const cached = getCachedEdgar(ticker);
-    if (cached) {
-      // Cache restore — all cached filings are already known, none are "new"
-      knownAccessionsRef.current = new Set(cached.filings.map(f => f.accessionNumber));
-      setNewAccessions(new Set());
-      setEdgarFilings(cached.filings);
-      setLoaded(true);
-      setFetchedAt(cached.fetchedAt);
-    } else {
-      fetchFilings();
+    let cancelled = false;
+
+    async function init() {
+      try {
+        const res = await fetch(`/api/seen-filings?ticker=${ticker}`);
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({}));
+          console.error('[db-init] GET seen-filings failed:', res.status, errBody);
+          throw new Error(`HTTP ${res.status}: ${errBody.error || 'unknown'}`);
+        }
+        const data = await res.json();
+        const filings: DbFilingRecord[] = data.filings || [];
+
+        if (cancelled) return;
+
+        const edgarFromDb: EdgarFiling[] = [];
+        const newKeys = new Set<string>();
+        const records = new Map<string, DbFilingRecord>();
+
+        for (const f of filings) {
+          edgarFromDb.push({
+            accessionNumber: f.accessionNumber,
+            filingDate: f.filingDate || '',
+            form: f.form,
+            primaryDocDescription: f.description || '',
+            reportDate: f.reportDate || '',
+            fileUrl: f.fileUrl || '',
+          });
+          records.set(f.accessionNumber, f);
+          if (!f.dismissed) newKeys.add(f.accessionNumber);
+        }
+
+        dbRecordsRef.current = records;
+        setDbRecords(new Map(records));
+        setNewAccessions(newKeys);
+        setEdgarFilings(edgarFromDb);
+        setLoaded(edgarFromDb.length > 0);
+        console.log(`[db-init] loaded ${filings.length} filings from DB (${newKeys.size} NEW)`);
+      } catch (err) {
+        console.error('[db-init] error:', err);
+        if (!cancelled) {
+          // Empty state — user can click Fetch Filings
+          setLoaded(false);
+        }
+      }
     }
+
+    init();
     // Always re-check local DB on mount (picks up patches applied while away)
     recheckDB();
-  }, [ticker, fetchFilings, recheckDB]);
+    return () => { cancelled = true; };
+  }, [ticker, recheckDB]);
 
   // Hydrate persisted analyses from disk on mount
   useEffect(() => {
@@ -1382,6 +1478,39 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       .catch(() => {}); // best-effort
   }, [ticker]);
 
+  // Dismiss a NEW filing (click on NEW badge)
+  const dismissNewFiling = useCallback((accession: string) => {
+    setNewAccessions(prev => {
+      const next = new Set(prev);
+      next.delete(accession);
+      return next;
+    });
+    // Update local DB record
+    const rec = dbRecordsRef.current.get(accession);
+    if (rec) {
+      dbRecordsRef.current.set(accession, { ...rec, dismissed: true });
+      setDbRecords(new Map(dbRecordsRef.current));
+    }
+    // Persist dismiss to DB
+    const filing = edgarFilings.find(f => f.accessionNumber === accession);
+    if (filing) {
+      fetch('/api/seen-filings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticker,
+          filings: [{
+            accessionNumber: accession,
+            form: filing.form,
+            filingDate: filing.filingDate,
+            description: filing.primaryDocDescription,
+          }],
+          dismiss: true,
+        }),
+      }).catch(err => console.error('[dismiss] error:', err));
+    }
+  }, [ticker, edgarFilings]);
+
   const edgarBrowseUrl = `https://www.sec.gov/edgar/browse/?CIK=${cik}&owner=exclude`;
 
   return (
@@ -1392,7 +1521,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>SEC Filings</div>
         <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>EDGAR<span style={{ color: 'var(--accent)' }}>.</span></h2>
         <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>
-          Live SEC EDGAR filings for {companyName} compared against the local database. Click <b>AI</b> on any filing to analyze.
+          SEC EDGAR filings for {companyName}. Loaded from database on mount — click <b>Fetch Filings</b> to check SEC for new ones, or <b>AI</b> to analyze.
         </p>
       </div>
 
@@ -1465,12 +1594,12 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             </svg>
             SEC EDGAR
           </a>
-          {/* Refresh — fetch new filings from SEC */}
+          {/* Fetch Filings — fetch from SEC EDGAR */}
           <button
             onClick={fetchFilings}
             disabled={loading}
-            aria-label={loaded ? 'Refresh EDGAR filings' : 'Fetch EDGAR filings'}
-            title="Fetch new filings from SEC EDGAR"
+            aria-label="Fetch EDGAR filings"
+            title="Fetch filings from SEC EDGAR"
             style={{
               fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
               padding: '5px 14px', borderRadius: 4,
@@ -1487,35 +1616,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            {loading ? 'Fetching...' : loaded ? 'Refresh' : 'Fetch'}
+            {loading ? 'Fetching...' : 'Fetch Filings'}
           </button>
           {/* Re-check — re-read local database from disk */}
-          {/* Simulate New — dev-only: pretend some untracked filings just appeared */}
-          {loaded && (
-            <button
-              onClick={() => {
-                const untracked = results.filter(r => r.status === 'new').slice(0, 3);
-                if (untracked.length === 0) return;
-                setNewAccessions(new Set(untracked.map(r => r.filing.accessionNumber)));
-              }}
-              title="DEV: Simulate new filings appearing (picks up to 3 untracked filings)"
-              style={{
-                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-                padding: '5px 14px', borderRadius: 4,
-                color: 'rgba(200,170,100,0.5)',
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(200,170,100,0.15)',
-                cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 6,
-                transition: 'all 0.15s', outline: 'none',
-              }}
-            >
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
-                <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-              Simulate New
-            </button>
-          )}
           {loaded && (
             <button
               onClick={recheckDB}
@@ -1597,7 +1700,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
             <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
-          <span style={{ fontSize: 12 }}>Fetching from SEC EDGAR...</span>
+          <span style={{ fontSize: 12 }}>Loading from database...</span>
         </div>
       )}
 
@@ -1617,7 +1720,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           </div>
 
           {/* Filing list */}
-          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} newAccessions={newAccessions} persistedAnalyses={persistedAnalyses} onRecheck={recheckDB} recheckLoading={recheckLoading} />
+          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} newAccessions={newAccessions} dbRecords={dbRecords} persistedAnalyses={persistedAnalyses} onDismissNew={dismissNewFiling} onRecheck={recheckDB} recheckLoading={recheckLoading} />
         </>
       )}
     </div>

@@ -123,6 +123,27 @@ CREATE TABLE IF NOT EXISTS partner_news (
 CREATE INDEX IF NOT EXISTS partner_news_ticker_date_idx
   ON partner_news (ticker, date);
 
+CREATE TABLE IF NOT EXISTS seen_filings (
+  id SERIAL PRIMARY KEY,
+  ticker TEXT NOT NULL,
+  accession_number TEXT NOT NULL,
+  form TEXT NOT NULL,
+  filing_date TEXT,
+  description TEXT,
+  report_date TEXT,
+  file_url TEXT,
+  status TEXT,
+  cross_refs TEXT,
+  dismissed BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS seen_filings_ticker_accession_idx
+  ON seen_filings (ticker, accession_number);
+
+CREATE INDEX IF NOT EXISTS seen_filings_ticker_idx
+  ON seen_filings (ticker);
+
 CREATE TABLE IF NOT EXISTS seen_articles (
   id SERIAL PRIMARY KEY,
   ticker TEXT NOT NULL,
