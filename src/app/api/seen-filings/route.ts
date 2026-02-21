@@ -19,11 +19,21 @@ export const dynamic = 'force-dynamic';
  * POST /api/seen-filings
  *
  * Batch-upsert filings.
- * Body: { ticker, filings: [{accessionNumber, form, filingDate?, description?,
- *         reportDate?, fileUrl?, status?, crossRefs?}], dismiss?: boolean }
+ * Body: { ticker, filings: IncomingFiling[], dismiss?: boolean }
  *   - dismiss: true  = user clicked NEW badge to dismiss
  *   - dismiss: false  = saving filings from SEC fetch
  */
+
+interface IncomingFiling {
+  accessionNumber: string;
+  form: string;
+  filingDate?: string;
+  description?: string;
+  reportDate?: string;
+  fileUrl?: string;
+  status?: string;
+  crossRefs?: unknown;
+}
 
 // ---------------------------------------------------------------------------
 // ensureTable — creates seen_filings if it doesn't exist.
@@ -162,12 +172,8 @@ export async function POST(request: NextRequest) {
     }
 
     const values = filings
-      .filter((f: { accessionNumber?: string; form?: string }) => f.accessionNumber && f.form)
-      .map((f: {
-        accessionNumber: string; form: string; filingDate?: string;
-        description?: string; reportDate?: string; fileUrl?: string;
-        status?: string; crossRefs?: unknown;
-      }) => ({
+      .filter((f: Partial<IncomingFiling>): f is IncomingFiling => !!(f.accessionNumber && f.form))
+      .map((f: IncomingFiling) => ({
         ticker: t,
         accessionNumber: f.accessionNumber,
         form: f.form,

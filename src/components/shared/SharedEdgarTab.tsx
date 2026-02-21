@@ -1449,7 +1449,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                 fileUrl: m.filing.fileUrl,
                 status: m.status,
                 crossRefs: m.crossRefs || null,
-                dismissed: !newKeys.has(m.filing.accessionNumber),
+                dismissed: newKeys.has(m.filing.accessionNumber) ? false : (dbRecordsRef.current.get(m.filing.accessionNumber)?.dismissed ?? true),
               };
               dbRecordsRef.current.set(m.filing.accessionNumber, rec);
             }
