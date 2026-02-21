@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { seenArticles } from '@/lib/schema';
-import { eq, count } from 'drizzle-orm';
+import { eq, count, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
@@ -128,7 +128,16 @@ export async function POST(request: NextRequest) {
             set: { dismissed: true },
           });
         } else {
-          await db.insert(seenArticles).values(values).onConflictDoNothing();
+          // Upsert: update articleType/url/source for existing rows (fixes legacy null values)
+          // Uses COALESCE so only non-null new values overwrite, and dismissed is never touched
+          await db.insert(seenArticles).values(values).onConflictDoUpdate({
+            target: [seenArticles.ticker, seenArticles.cacheKey],
+            set: {
+              articleType: sql`COALESCE(excluded.article_type, ${seenArticles.articleType})`,
+              url: sql`COALESCE(excluded.url, ${seenArticles.url})`,
+              source: sql`COALESCE(excluded.source, ${seenArticles.source})`,
+            },
+          });
         }
       } catch (insertErr) {
         // Fallback: try without new columns (old schema)

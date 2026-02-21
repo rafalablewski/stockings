@@ -845,6 +845,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
 
     // Merge new articles into existing display (keep old + add new on top)
+    // Also reclassify: articles currently in news that fresh API says are PRs get moved
+    const freshPrKeys = new Set(prs.map(a => articleCacheKey(a)));
     setMainCard(prev => {
       const existingKeys = new Set([
         ...prev.pressReleases.map(a => articleCacheKey(a)),
@@ -852,13 +854,31 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       ]);
       const addedPrs = prs.filter(a => !existingKeys.has(articleCacheKey(a)));
       const addedNews = news.filter(a => !existingKeys.has(articleCacheKey(a)));
+
+      // Reclassify: move articles from news→PR based on fresh API data
+      const movedToPr = prev.news.filter(a => freshPrKeys.has(articleCacheKey(a)));
+      const remainingNews = prev.news.filter(a => !freshPrKeys.has(articleCacheKey(a)));
+
       return {
         ...prev, loading: false, loaded: true, error,
-        pressReleases: [...addedPrs, ...prev.pressReleases],
-        news: [...addedNews, ...prev.news],
+        pressReleases: [...addedPrs, ...movedToPr, ...prev.pressReleases],
+        news: [...addedNews, ...remainingNews],
       };
     });
     setLastFetchedAt(Date.now());
+
+    // Re-save all fetched articles with proper articleType to fix legacy null values in DB
+    const allFetched = [
+      ...prs.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' })),
+      ...news.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'news' })),
+    ];
+    if (allFetched.length > 0) {
+      fetch('/api/seen-articles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker, articles: allFetched }),
+      }).catch(() => {});
+    }
 
     // Run check-analyzed on all new articles
     if (allNew.length > 0) {
