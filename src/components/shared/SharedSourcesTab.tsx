@@ -96,10 +96,11 @@ const SourceArticleRow: React.FC<{
   showAnalysis?: boolean;
   ticker: string;
   isGenuinelyNew?: boolean;
+  isDismissed?: boolean;
   dbRecord?: DbRecord | null;
   persistedAnalysis?: string | null;
   onDismissNew?: () => void;
-}> = ({ article, type, showAnalysis, ticker, isGenuinelyNew, dbRecord, persistedAnalysis, onDismissNew }) => {
+}> = ({ article, type, showAnalysis, ticker, isGenuinelyNew, isDismissed, dbRecord, persistedAnalysis, onDismissNew }) => {
   const cacheKey = articleCacheKey(article);
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(persistedAnalysis || null);
 
@@ -370,11 +371,11 @@ const SourceArticleRow: React.FC<{
             </div>
           )}
         </span>
-        {/* NEW badge — clickable: dismisses the article as "seen" */}
-        {isGenuinelyNew && (
+        {/* NEW badge — clickable: acknowledge as "seen"; SEEN badge after dismiss */}
+        {isGenuinelyNew && !isDismissed && (
           <button
             onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
-            title="Mark as seen"
+            title="Click to acknowledge"
             style={{
               fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
               padding: '1px 5px', borderRadius: 3, flexShrink: 0,
@@ -388,6 +389,16 @@ const SourceArticleRow: React.FC<{
           >
             NEW
           </button>
+        )}
+        {isGenuinelyNew && isDismissed && (
+          <span style={{
+            fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+            color: 'var(--sky)', opacity: 0.3,
+            border: '1px solid transparent',
+          }}>
+            SEEN
+          </span>
         )}
         {/* Action buttons — stop propagation so clicks don't toggle expand */}
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
@@ -531,7 +542,7 @@ const SourceArticleSection: React.FC<{
       {displayed.map((a, i) => {
         const key = articleCacheKey(a);
         return (
-          <SourceArticleRow key={`${type}-${i}`} article={a} type={type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(key)} dbRecord={dbRecords.get(key) || null} persistedAnalysis={persistedSourceAnalyses[key] || null} onDismissNew={() => onDismissNew?.(key)} />
+          <SourceArticleRow key={`${type}-${i}`} article={a} type={type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(key)} isDismissed={dbRecords.get(key)?.dismissed ?? false} dbRecord={dbRecords.get(key) || null} persistedAnalysis={persistedSourceAnalyses[key] || null} onDismissNew={() => onDismissNew?.(key)} />
         );
       })}
     </div>
@@ -1258,13 +1269,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       .catch(() => {}); // best-effort
   }, [ticker]);
 
-  // Dismiss a single NEW article: remove from newArticleKeys + persist to DB
+  // Dismiss a single NEW article: mark as dismissed (keep in newArticleKeys so SEEN badge shows)
   const dismissNewArticle = useCallback((cacheKey: string) => {
-    setNewArticleKeys(prev => {
-      const next = new Set(prev);
-      next.delete(cacheKey);
-      return next;
-    });
     // Update local DB record (immutable — create new object)
     const rec = dbRecordsRef.current.get(cacheKey);
     if (rec) {
