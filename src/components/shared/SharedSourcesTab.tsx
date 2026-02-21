@@ -1005,7 +1005,11 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     async function init() {
       try {
         const res = await fetch(`/api/seen-articles?ticker=${ticker}`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({}));
+          console.error('[db-init] GET failed:', res.status, errBody);
+          throw new Error(`HTTP ${res.status}: ${errBody.error || errBody.detail || 'unknown'}`);
+        }
         const data = await res.json();
         const articles: { cacheKey: string; headline: string; date: string | null; url: string | null; source: string | null; articleType: string | null; dismissed: boolean }[] = data.articles || [];
 

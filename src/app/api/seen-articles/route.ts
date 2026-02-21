@@ -36,35 +36,60 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const rows = await db
-      .select({
-        cacheKey: seenArticles.cacheKey,
-        headline: seenArticles.headline,
-        date: seenArticles.date,
-        url: seenArticles.url,
-        source: seenArticles.source,
-        articleType: seenArticles.articleType,
-        dismissed: seenArticles.dismissed,
-      })
-      .from(seenArticles)
-      .where(eq(seenArticles.ticker, t));
+    // Try full query with new columns first
+    let articles: { cacheKey: string; headline: string; date: string | null; url: string | null; source: string | null; articleType: string | null; dismissed: boolean }[];
+    try {
+      const rows = await db
+        .select({
+          cacheKey: seenArticles.cacheKey,
+          headline: seenArticles.headline,
+          date: seenArticles.date,
+          url: seenArticles.url,
+          source: seenArticles.source,
+          articleType: seenArticles.articleType,
+          dismissed: seenArticles.dismissed,
+        })
+        .from(seenArticles)
+        .where(eq(seenArticles.ticker, t));
 
-    // Map to response objects. Legacy rows without url are forced dismissed.
-    const articles = rows.map(row => ({
-      cacheKey: row.cacheKey,
-      headline: row.headline,
-      date: row.date,
-      url: row.url,
-      source: row.source,
-      articleType: row.articleType,
-      dismissed: row.url ? row.dismissed : true,
-    }));
+      articles = rows.map(row => ({
+        cacheKey: row.cacheKey,
+        headline: row.headline,
+        date: row.date,
+        url: row.url,
+        source: row.source,
+        articleType: row.articleType,
+        dismissed: row.url ? row.dismissed : true,
+      }));
+    } catch (colErr) {
+      // Fallback: old schema without new columns
+      console.warn('Seen articles: new columns missing, using fallback query', (colErr as Error).message);
+      const rows = await db
+        .select({
+          cacheKey: seenArticles.cacheKey,
+          headline: seenArticles.headline,
+          date: seenArticles.date,
+          dismissed: seenArticles.dismissed,
+        })
+        .from(seenArticles)
+        .where(eq(seenArticles.ticker, t));
+
+      articles = rows.map(row => ({
+        cacheKey: row.cacheKey,
+        headline: row.headline,
+        date: row.date,
+        url: null,
+        source: null,
+        articleType: null,
+        dismissed: true, // legacy rows: no NEW badge
+      }));
+    }
 
     return NextResponse.json({ articles });
   } catch (error) {
     console.error('Seen articles read error:', error);
     const msg = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: msg, detail: String(error) }, { status: 500 });
   }
 }
 
@@ -96,15 +121,33 @@ export async function POST(request: NextRequest) {
 
     let totalInDb = 0;
     if (values.length > 0) {
-      if (dismiss) {
-        // User clicked NEW — set dismissed=true, also update article data if provided
-        await db.insert(seenArticles).values(values).onConflictDoUpdate({
-          target: [seenArticles.ticker, seenArticles.cacheKey],
-          set: { dismissed: true },
-        });
-      } else {
-        // AI Fetch saving new articles — insert with full data, don't overwrite existing rows
-        await db.insert(seenArticles).values(values).onConflictDoNothing();
+      try {
+        if (dismiss) {
+          await db.insert(seenArticles).values(values).onConflictDoUpdate({
+            target: [seenArticles.ticker, seenArticles.cacheKey],
+            set: { dismissed: true },
+          });
+        } else {
+          await db.insert(seenArticles).values(values).onConflictDoNothing();
+        }
+      } catch (insertErr) {
+        // Fallback: try without new columns (old schema)
+        console.warn('Seen articles: insert with new columns failed, trying fallback', (insertErr as Error).message);
+        const fallbackValues = values.map(v => ({
+          ticker: v.ticker,
+          cacheKey: v.cacheKey,
+          headline: v.headline,
+          date: v.date,
+          dismissed: v.dismissed,
+        }));
+        if (dismiss) {
+          await db.insert(seenArticles).values(fallbackValues).onConflictDoUpdate({
+            target: [seenArticles.ticker, seenArticles.cacheKey],
+            set: { dismissed: true },
+          });
+        } else {
+          await db.insert(seenArticles).values(fallbackValues).onConflictDoNothing();
+        }
       }
       const [row] = await db.select({ n: count() }).from(seenArticles).where(eq(seenArticles.ticker, t));
       totalInDb = row?.n ?? 0;
@@ -114,6 +157,6 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Seen articles write error:', error);
     const msg = error instanceof Error ? error.message : 'Internal server error';
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: msg, detail: String(error) }, { status: 500 });
   }
 }
