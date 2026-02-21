@@ -1773,6 +1773,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Save to DB (dismissed=false)</div>
                   <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
                   <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>NEW badge</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>User clicks NEW</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600, opacity: 0.3 }}>SEEN badge</div>
                 </div>
               </div>
             </div>
@@ -1780,8 +1784,9 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div><span style={{ color: 'var(--text)' }}>On mount:</span> loads articles from DB only &mdash; no external API calls</div>
               <div><span style={{ color: 'var(--text)' }}>Fetch PRs / Fetch News:</span> independent buttons, each searches its own API</div>
               <div><span style={{ color: 'var(--text)' }}>AI Fetch All:</span> fires both pipelines in parallel</div>
-              <div><span style={{ color: 'var(--text)' }}>NEW badge:</span> stays until user clicks it &rarr; sets dismissed=true in DB</div>
-              <div><span style={{ color: 'var(--text)' }}>Cross-device:</span> NEW badge persists across all devices until dismissed</div>
+              <div><span style={{ color: 'var(--text)' }}>NEW badge:</span> bright clickable badge &mdash; article not yet acknowledged</div>
+              <div><span style={{ color: 'var(--text)' }}>SEEN badge:</span> dimmed label after user clicks NEW &rarr; sets dismissed=true in DB</div>
+              <div><span style={{ color: 'var(--text)' }}>Persistence:</span> both NEW and SEEN survive page reloads &amp; work cross-device</div>
             </div>
 
             {/* Divider */}

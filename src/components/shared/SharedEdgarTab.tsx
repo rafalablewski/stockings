@@ -1938,14 +1938,19 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                   <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Save to DB (dismissed=false)</div>
                   <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
                   <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>NEW badge</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>User clicks NEW</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600, opacity: 0.3 }}>SEEN badge</div>
                 </div>
               </div>
             </div>
             <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
               <div><span style={{ color: 'var(--text)' }}>On mount:</span> loads filings from DB only &mdash; no SEC API calls</div>
               <div><span style={{ color: 'var(--text)' }}>Fetch Filings:</span> fetches from SEC EDGAR, matches, saves all to DB</div>
-              <div><span style={{ color: 'var(--text)' }}>NEW badge:</span> stays until user clicks it &rarr; sets dismissed=true in DB</div>
-              <div><span style={{ color: 'var(--text)' }}>Cross-device:</span> NEW badge persists across all devices until dismissed</div>
+              <div><span style={{ color: 'var(--text)' }}>NEW badge:</span> bright clickable badge &mdash; filing not yet acknowledged</div>
+              <div><span style={{ color: 'var(--text)' }}>SEEN badge:</span> dimmed label after user clicks NEW &rarr; sets dismissed=true in DB</div>
+              <div><span style={{ color: 'var(--text)' }}>Persistence:</span> both NEW and SEEN survive page reloads &amp; work cross-device</div>
             </div>
 
             <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
