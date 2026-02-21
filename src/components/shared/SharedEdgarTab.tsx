@@ -400,6 +400,49 @@ const FilingRow: React.FC<{
   useEffect(() => {
     if (!analysis && persistedAnalysis) setAnalysis(persistedAnalysis);
   }, [persistedAnalysis]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // DB tooltip: live data fetched from database on hover
+  const [dbTooltip, setDbTooltip] = useState<{ status: string; form: string; description: string; filingDate: string; crossRefs: string; fresh: string } | null>(null);
+  const [dbTooltipLoading, setDbTooltipLoading] = useState(false);
+  const [dbTooltipVisible, setDbTooltipVisible] = useState(false);
+  const dbHoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dbTooltipRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => () => { if (dbHoverTimer.current) clearTimeout(dbHoverTimer.current); }, []);
+
+  const handleDbHoverEnter = () => {
+    if (dbHoverTimer.current) clearTimeout(dbHoverTimer.current);
+    dbHoverTimer.current = setTimeout(async () => {
+      setDbTooltipVisible(true);
+      setDbTooltipLoading(true);
+      try {
+        const res = await fetch(`/api/seen-filings?ticker=${encodeURIComponent(ticker)}&accessionNumber=${encodeURIComponent(accession)}`);
+        if (res.ok) {
+          const data = await res.json();
+          const rec = data.filings?.[0];
+          if (rec) {
+            const xrefs = rec.crossRefs;
+            setDbTooltip({
+              status: rec.status === 'tracked' ? 'TRACKED' : rec.status === 'data_only' ? 'DATA ONLY' : rec.status === 'new' ? 'UNTRACKED' : rec.status?.toUpperCase() || '—',
+              form: rec.form || '—',
+              description: rec.description || '—',
+              filingDate: rec.filingDate || '—',
+              crossRefs: xrefs ? `${Array.isArray(xrefs) ? xrefs.length : 0} refs` : 'none',
+              fresh: rec.dismissed ? 'OLD' : 'NEW',
+            });
+          } else {
+            setDbTooltip(null);
+          }
+        }
+      } catch { /* best-effort */ }
+      finally { setDbTooltipLoading(false); }
+    }, 200);
+  };
+  const handleDbHoverLeave = () => {
+    if (dbHoverTimer.current) { clearTimeout(dbHoverTimer.current); dbHoverTimer.current = null; }
+    setDbTooltipVisible(false);
+  };
+
   const [copied, setCopied] = useState(false);
   const [applyStep, setApplyStep] = useState<"idle" | "previewing" | "previewed" | "applying" | "applied" | "error">("idle");
   const [applyError, setApplyError] = useState("");
@@ -660,25 +703,58 @@ const FilingRow: React.FC<{
         }}>
           {statusCfg.label}
         </span>
-        {/* DB save status indicator */}
+        {/* DB status button — hover fetches live data from database */}
         {(() => {
           const dbColor = !dbRecord ? 'var(--text3)' : (dbRecord.filingDate != null && dbRecord.fileUrl != null && dbRecord.status != null) ? 'var(--mint)' : 'var(--gold)';
           const dbOpacity = !dbRecord ? 0.25 : 0.8;
-          const dbTitle = !dbRecord
-            ? 'Not saved to DB'
-            : `DB: ${dbRecord.form} | ${dbRecord.filingDate || 'no date'} | ${dbRecord.status || '?'} | ${dbRecord.description?.slice(0, 40) || 'no desc'}${(dbRecord.description?.length || 0) > 40 ? '...' : ''}`;
           return (
-            <span
-              title={dbTitle}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0,
-                fontSize: 8, fontFamily: 'Space Mono, monospace', color: dbColor, opacity: dbOpacity,
-                padding: '1px 4px', borderRadius: 3,
-                border: `1px solid color-mix(in srgb, ${dbColor} 20%, transparent)`,
-              }}
-            >
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: dbColor }} />
-              DB
+            <span style={{ position: 'relative', flexShrink: 0 }} onMouseEnter={handleDbHoverEnter} onMouseLeave={handleDbHoverLeave}>
+              <button
+                type="button"
+                aria-label="Show database record"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 3,
+                  fontSize: 8, fontFamily: 'Space Mono, monospace', color: dbColor, opacity: dbOpacity,
+                  padding: '1px 4px', borderRadius: 3,
+                  border: `1px solid color-mix(in srgb, ${dbColor} 20%, transparent)`,
+                  background: 'transparent', cursor: 'pointer', outline: 'none',
+                  transition: 'all 0.15s',
+                }}
+                onFocus={handleDbHoverEnter}
+                onBlur={handleDbHoverLeave}
+              >
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: dbColor }} />
+                DB
+              </button>
+              {/* Tooltip — shows live DB data */}
+              {dbTooltipVisible && (
+                <div ref={dbTooltipRef} style={{
+                  position: 'absolute', top: '100%', right: 0, marginTop: 6, zIndex: 100,
+                  background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8,
+                  padding: '10px 14px', minWidth: 280, maxWidth: 380,
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                  fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)',
+                  lineHeight: 1.8, pointerEvents: 'none',
+                }}>
+                  <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text3)', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
+                    Saved in seen_filings DB?
+                  </div>
+                  {dbTooltipLoading ? (
+                    <div style={{ color: 'var(--text3)', fontStyle: 'italic' }}>Fetching from database...</div>
+                  ) : dbTooltip ? (
+                    <>
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>status:</span> <span style={{ color: dbTooltip.status === 'TRACKED' ? 'var(--mint)' : dbTooltip.status === 'UNTRACKED' ? 'var(--coral)' : dbTooltip.status === 'DATA ONLY' ? 'var(--gold)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.status}</span></div>
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>form:</span> {dbTooltip.form}</div>
+                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>desc:</span> {dbTooltip.description}</div>
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>filed:</span> {dbTooltip.filingDate}</div>
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>cross-refs:</span> {dbTooltip.crossRefs}</div>
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>fresh:</span> <span style={{ color: dbTooltip.fresh === 'NEW' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.fresh}</span></div>
+                    </>
+                  ) : (
+                    <div style={{ color: 'var(--coral)', fontWeight: 600 }}>NOT IN DATABASE</div>
+                  )}
+                </div>
+              )}
             </span>
           );
         })()}
