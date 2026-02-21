@@ -47,6 +47,7 @@ async function fetchWireServiceRSS(companyName: string, ticker: string): Promise
     const response = await fetch(rssUrl, {
       headers: { 'User-Agent': 'stockings-app/1.0 (research-tool)' },
       next: { revalidate: 600 },
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!response.ok) return [];
@@ -99,6 +100,7 @@ async function fetchIRPage(symbol: string): Promise<PressRelease[]> {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       },
       next: { revalidate: 600 },
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!response.ok) return [];

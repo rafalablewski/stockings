@@ -5,7 +5,7 @@
  *
  * 1. On mount: load articles ONLY from database (GET /api/seen-articles).
  *    If nothing saved yet → empty state.
- * 2. "AI Fetch" button → fetches fresh articles from news/PR APIs.
+ * 2. "Fetch PRs" / "Fetch News" buttons → independently fetch from PR or news APIs.
  *    New articles (not already in DB) are saved with dismissed=false → NEW badge.
  * 3. NEW badge stays until user clicks it → sets dismissed=true in DB.
  * 4. NEW articles are visually separated from old articles.
@@ -49,6 +49,8 @@ interface ArticleItem {
 
 interface CardData {
   loading: boolean;
+  loadingPR: boolean;
+  loadingNews: boolean;
   loaded: boolean;
   error: string | null;
   activeTab: 'pr' | 'news';
@@ -108,6 +110,15 @@ const SourceArticleRow: React.FC<{
   const [expanded, setExpanded] = useState(false);
   const [recheckLoading, setRecheckLoading] = useState(false);
   const [localAnalyzed, setLocalAnalyzed] = useState<boolean | null>(article.analyzed ?? null);
+  // DB tooltip: live data fetched from database on hover
+  const [dbTooltip, setDbTooltip] = useState<{ status: string; category: string; heading: string; source: string; date: string; fresh: string } | null>(null);
+  const [dbTooltipLoading, setDbTooltipLoading] = useState(false);
+  const [dbTooltipVisible, setDbTooltipVisible] = useState(false);
+  const dbHoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dbTooltipRef = useRef<HTMLDivElement | null>(null);
+
+  // Cleanup hover timer on unmount to prevent memory leak
+  useEffect(() => () => { if (dbHoverTimer.current) clearTimeout(dbHoverTimer.current); }, []);
 
   useEffect(() => {
     const parentVal = article.analyzed ?? null;
@@ -131,6 +142,39 @@ const SourceArticleRow: React.FC<{
     finally { setRecheckLoading(false); }
   };
 
+  // Fetch live DB record on hover (always re-fetches for fresh data)
+  const handleDbHoverEnter = () => {
+    if (dbHoverTimer.current) clearTimeout(dbHoverTimer.current);
+    dbHoverTimer.current = setTimeout(async () => {
+      setDbTooltipVisible(true);
+      setDbTooltipLoading(true);
+      try {
+        const res = await fetch(`/api/seen-articles?ticker=${encodeURIComponent(ticker)}&cacheKey=${encodeURIComponent(cacheKey)}`);
+        if (res.ok) {
+          const data = await res.json();
+          const rec = data.articles?.[0];
+          if (rec) {
+            setDbTooltip({
+              status: localAnalyzed === true ? 'TRACKED' : localAnalyzed === false ? 'UNTRACKED' : 'PENDING',
+              category: rec.articleType === 'pr' ? 'PRESS RELEASE' : rec.articleType === 'news' ? 'NEWS' : rec.articleType || '—',
+              heading: rec.headline || '—',
+              source: rec.source || '—',
+              date: rec.date || '—',
+              fresh: rec.dismissed ? 'OLD' : 'NEW',
+            });
+          } else {
+            setDbTooltip(null);
+          }
+        }
+      } catch { /* best-effort */ }
+      finally { setDbTooltipLoading(false); }
+    }, 200);
+  };
+  const handleDbHoverLeave = () => {
+    if (dbHoverTimer.current) { clearTimeout(dbHoverTimer.current); dbHoverTimer.current = null; }
+    setDbTooltipVisible(false);
+  };
+
   const statusColor = localAnalyzed === null || localAnalyzed === undefined
     ? 'var(--text3)' : localAnalyzed ? 'var(--mint)' : 'var(--coral)';
   const statusLabel = localAnalyzed === null || localAnalyzed === undefined
@@ -144,9 +188,6 @@ const SourceArticleRow: React.FC<{
   // DB status: green = all fields saved, yellow = partial, gray = not in DB
   const dbColor = !dbRecord ? 'var(--text3)' : (dbRecord.date != null && dbRecord.url != null && dbRecord.source != null && dbRecord.articleType != null) ? 'var(--mint)' : 'var(--gold)';
   const dbOpacity = !dbRecord ? 0.25 : 0.8;
-  const dbTitle = !dbRecord
-    ? 'Not saved to DB'
-    : `DB: ${dbRecord.articleType || '?'} | ${dbRecord.date || 'no date'} | ${dbRecord.source || 'no source'} | ${dbRecord.headline?.slice(0, 40)}${(dbRecord.headline?.length || 0) > 40 ? '...' : ''} | ${dbRecord.url ? 'has URL' : 'no URL'}`;
 
   const handleAnalyze = async () => {
     const isError = isErrorAnalysis(aiAnalysis);
@@ -279,18 +320,55 @@ const SourceArticleRow: React.FC<{
             {statusLabel}
           </span>
         )}
-        {/* DB save status indicator */}
-        <span
-          title={dbTitle}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0,
-            fontSize: 8, fontFamily: 'Space Mono, monospace', color: dbColor, opacity: dbOpacity,
-            padding: '1px 4px', borderRadius: 3,
-            border: `1px solid color-mix(in srgb, ${dbColor} 20%, transparent)`,
-          }}
-        >
-          <span style={{ width: 5, height: 5, borderRadius: '50%', background: dbColor }} />
-          DB
+        {/* DB status button — hover fetches live data from database */}
+        <span style={{ position: 'relative', flexShrink: 0 }} onMouseEnter={handleDbHoverEnter} onMouseLeave={handleDbHoverLeave}>
+          <button
+            type="button"
+            aria-label="Show database record"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 3,
+              fontSize: 8, fontFamily: 'Space Mono, monospace', color: dbColor, opacity: dbOpacity,
+              padding: '1px 4px', borderRadius: 3,
+              border: `1px solid color-mix(in srgb, ${dbColor} 20%, transparent)`,
+              background: 'transparent', cursor: 'pointer', outline: 'none',
+              transition: 'all 0.15s',
+            }}
+            onFocus={handleDbHoverEnter}
+            onBlur={handleDbHoverLeave}
+          >
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: dbColor }} />
+            DB
+          </button>
+          {/* Tooltip — shows live DB data */}
+          {dbTooltipVisible && (
+            <div ref={dbTooltipRef} style={{
+              position: 'absolute', top: '100%', right: 0, marginTop: 6, zIndex: 100,
+              background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8,
+              padding: '10px 14px', minWidth: 260, maxWidth: 340,
+              boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+              fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)',
+              lineHeight: 1.8, pointerEvents: 'none',
+            }}>
+              {/* Header — explains what this tooltip checks */}
+              <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text3)', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
+                Saved in seen_articles DB?
+              </div>
+              {dbTooltipLoading ? (
+                <div style={{ color: 'var(--text3)', fontStyle: 'italic' }}>Fetching from database...</div>
+              ) : dbTooltip ? (
+                <>
+                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>status:</span> <span style={{ color: dbTooltip.status === 'TRACKED' ? 'var(--mint)' : dbTooltip.status === 'UNTRACKED' ? 'var(--coral)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.status}</span></div>
+                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>category:</span> <span style={{ color: dbTooltip.category === 'PRESS RELEASE' ? 'var(--sky)' : dbTooltip.category === 'NEWS' ? 'var(--mint)' : 'var(--text3)' }}>{dbTooltip.category}</span></div>
+                  <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>heading:</span> {dbTooltip.heading}</div>
+                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>source:</span> {dbTooltip.source}</div>
+                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>date:</span> {dbTooltip.date}</div>
+                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>fresh:</span> <span style={{ color: dbTooltip.fresh === 'NEW' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.fresh}</span></div>
+                </>
+              ) : (
+                <div style={{ color: 'var(--coral)', fontWeight: 600 }}>NOT IN DATABASE</div>
+              )}
+            </div>
+          )}
         </span>
         {/* NEW badge — clickable: dismisses the article as "seen" */}
         {isGenuinelyNew && (
@@ -355,7 +433,7 @@ const SourceArticleRow: React.FC<{
             <button
               onClick={handleRecheck}
               disabled={recheckLoading}
-              title="Re-check if this article is in the database"
+              title="Re-check tracked/untracked status"
               style={{
                 fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
                 padding: '2px 5px', borderRadius: 4,
@@ -503,13 +581,15 @@ const CompanyFeedCard: React.FC<{
   dbRecords: Map<string, DbRecord>;
   persistedSourceAnalyses: Record<string, string>;
   onLoad: () => void;
+  onLoadPR?: () => void;
+  onLoadNews?: () => void;
   onRecheck?: () => void;
   onTabChange?: (tab: 'pr' | 'news') => void;
   onDismissNew?: (cacheKey: string) => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onLoad, onRecheck, onDismissNew }) => {
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onLoad, onLoadPR, onLoadNews, onRecheck, onDismissNew }) => {
   const prCount = Math.min(data.pressReleases.length, SECTION_MAX);
   const newsCount = Math.min(data.news.length, SECTION_MAX);
-  const isActive = data.loading || (aiChecking ?? false);
+  const isActive = data.loading || data.loadingPR || data.loadingNews || (aiChecking ?? false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   return (
@@ -594,41 +674,91 @@ const CompanyFeedCard: React.FC<{
           )}
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
-          {/* Refresh — fetch new articles */}
-          <button
-            ref={buttonRef}
-            onClick={onLoad}
-            disabled={data.loading}
-            aria-label={`AI Fetch ${label} feeds`}
-            title="Search for new articles via AI"
-            style={{
-              fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-              padding: '5px 14px', borderRadius: 4,
-              color: data.loading ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
-              background: 'rgba(255,255,255,0.04)',
-              border: `1px solid ${data.loading ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
-              cursor: data.loading ? 'wait' : 'pointer',
-              display: 'flex', alignItems: 'center', gap: 6,
-              opacity: data.loading ? 0.5 : 1,
-              transition: 'all 0.15s', outline: 'none',
-            }}
-          >
-            <svg
-              width="10" height="10" viewBox="0 0 16 16" fill="none"
-              style={{ animation: data.loading ? 'spin 1s linear infinite' : 'none', transition: 'transform 0.2s' }}
+          {/* Fetch PRs */}
+          {onLoadPR ? (
+            <button
+              onClick={onLoadPR}
+              disabled={data.loadingPR || data.loading}
+              aria-label={`Fetch ${label} press releases`}
+              title="Fetch press releases"
+              style={{
+                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+                padding: '5px 10px', borderRadius: 4,
+                color: data.loadingPR ? 'var(--text3)' : 'var(--sky)',
+                background: 'rgba(255,255,255,0.04)',
+                border: `1px solid ${data.loadingPR ? 'var(--border)' : 'color-mix(in srgb, var(--sky) 25%, transparent)'}`,
+                cursor: data.loadingPR ? 'wait' : 'pointer',
+                display: 'flex', alignItems: 'center', gap: 5,
+                opacity: data.loadingPR ? 0.5 : 0.6,
+                transition: 'all 0.15s', outline: 'none',
+              }}
             >
-              <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            {data.loading ? 'Fetching...' : 'AI Fetch'}
-          </button>
-          {/* Re-check — check if articles have been added to database */}
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: data.loadingPR ? 'spin 1s linear infinite' : 'none' }}>
+                <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              {data.loadingPR ? 'PRs...' : 'Fetch PRs'}
+            </button>
+          ) : null}
+          {/* Fetch News */}
+          {onLoadNews ? (
+            <button
+              onClick={onLoadNews}
+              disabled={data.loadingNews || data.loading}
+              aria-label={`Fetch ${label} news`}
+              title="Fetch news articles"
+              style={{
+                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+                padding: '5px 10px', borderRadius: 4,
+                color: data.loadingNews ? 'var(--text3)' : 'var(--mint)',
+                background: 'rgba(255,255,255,0.04)',
+                border: `1px solid ${data.loadingNews ? 'var(--border)' : 'color-mix(in srgb, var(--mint) 25%, transparent)'}`,
+                cursor: data.loadingNews ? 'wait' : 'pointer',
+                display: 'flex', alignItems: 'center', gap: 5,
+                opacity: data.loadingNews ? 0.5 : 0.6,
+                transition: 'all 0.15s', outline: 'none',
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: data.loadingNews ? 'spin 1s linear infinite' : 'none' }}>
+                <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              {data.loadingNews ? 'News...' : 'Fetch News'}
+            </button>
+          ) : (
+            /* Fallback single button for competitor cards that don't have separate loaders */
+            <button
+              ref={buttonRef}
+              onClick={onLoad}
+              disabled={data.loading}
+              aria-label={`AI Fetch ${label} feeds`}
+              title="Search for new articles via AI"
+              style={{
+                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
+                padding: '5px 14px', borderRadius: 4,
+                color: data.loading ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
+                background: 'rgba(255,255,255,0.04)',
+                border: `1px solid ${data.loading ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
+                cursor: data.loading ? 'wait' : 'pointer',
+                display: 'flex', alignItems: 'center', gap: 6,
+                opacity: data.loading ? 0.5 : 1,
+                transition: 'all 0.15s', outline: 'none',
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: data.loading ? 'spin 1s linear infinite' : 'none', transition: 'transform 0.2s' }}>
+                <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              {data.loading ? 'Fetching...' : 'AI Fetch'}
+            </button>
+          )}
+          {/* Re-check — checks tracked/untracked status only (via /api/check-analyzed, NOT seen_articles) */}
           {data.loaded && onRecheck && (
             <button
               onClick={onRecheck}
               disabled={aiChecking ?? false}
-              aria-label={`Re-check ${label} against database`}
-              title="Re-check if articles have been added to database"
+              aria-label={`Re-check ${label} tracked/untracked status`}
+              title="Re-check tracked/untracked status for all articles (does NOT query seen_articles DB)"
               style={{
                 fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
                 padding: '5px 14px', borderRadius: 4,
@@ -679,7 +809,7 @@ const CompanyFeedCard: React.FC<{
           </div>
         )}
 
-        {data.loading && (
+        {(data.loading || data.loadingPR || data.loadingNews) && (
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
             padding: '24px 0', color: 'var(--text3)',
@@ -687,7 +817,9 @@ const CompanyFeedCard: React.FC<{
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
-            <span style={{ fontSize: 12 }}>Fetching press releases & news...</span>
+            <span style={{ fontSize: 12 }}>
+              {data.loading ? 'Fetching press releases & news...' : data.loadingPR ? 'Fetching press releases...' : 'Fetching news...'}
+            </span>
           </div>
         )}
 
@@ -702,7 +834,7 @@ const CompanyFeedCard: React.FC<{
 // ── Main component ──────────────────────────────────────────────────────────
 const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName, researchSources, competitorLabel, competitors }) => {
   const [mainCard, setMainCard] = useState<CardData>({
-    loading: false, loaded: false, error: null, activeTab: 'pr', pressReleases: [], news: [],
+    loading: false, loadingPR: false, loadingNews: false, loaded: false, error: null, activeTab: 'pr', pressReleases: [], news: [],
   });
   const [aiChecking, setAiChecking] = useState(false);
   const [compCards, setCompCards] = useState<Record<string, CardData>>({});
@@ -748,9 +880,109 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
   }, [ticker, forceLocal]);
 
-  // AI Fetch: fetch new articles from news/PR APIs, compare with DB, save new ones
+  // Helper: save articles to DB and update local state
+  const saveArticlesToDb = useCallback(async (articles: { cacheKey: string; headline: string; date: string; url: string; source?: string; articleType: string }[], newKeys: Set<string>) => {
+    if (articles.length === 0) return;
+    console.log(`[ai-fetch] saving ${articles.length} articles to DB (${newKeys.size} NEW)...`);
+    try {
+      const saveRes = await fetch('/api/seen-articles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker, articles }),
+      });
+      const saveBody = await saveRes.json().catch(() => ({}));
+      if (saveRes.ok) {
+        console.log('[ai-fetch] save OK:', saveBody);
+        for (const a of articles) {
+          const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: !newKeys.has(a.cacheKey) };
+          dbRecordsRef.current.set(a.cacheKey, rec);
+        }
+        setDbRecords(new Map(dbRecordsRef.current));
+      } else {
+        console.error('[ai-fetch] save FAILED:', saveRes.status, saveBody);
+      }
+    } catch (err) {
+      console.error('[ai-fetch] save error:', err);
+    }
+  }, [ticker]);
+
+  // Fetch Press Releases only
+  const loadPRsOnly = useCallback(async () => {
+    setMainCard(prev => ({ ...prev, loadingPR: true, error: null }));
+    try {
+      const res = await fetch(`/api/press-releases/${ticker}`);
+      if (!res.ok) throw new Error('Failed');
+      const d = await res.json();
+      const prs: ArticleItem[] = (d.releases || []).slice(0, SECTION_MAX).map((r: { date: string; headline: string; url: string; source?: string; items?: string }) => ({
+        headline: r.headline, date: r.date, url: r.url, source: r.source, items: r.items, analyzed: null as boolean | null,
+      }));
+
+      const newKeys = new Set<string>();
+      for (const a of prs) {
+        const key = articleCacheKey(a);
+        if (!dbRecordsRef.current.has(key)) newKeys.add(key);
+      }
+
+      setMainCard(prev => ({ ...prev, loadingPR: false, loaded: true, pressReleases: prs }));
+      setLastFetchedAt(Date.now());
+      if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
+
+      const toSave = prs.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' }));
+      await saveArticlesToDb(toSave, newKeys);
+
+      if (prs.length > 0) {
+        setAiChecking(true);
+        try {
+          const checked = await checkAnalyzed(prs);
+          setMainCard(prev => ({ ...prev, pressReleases: checked }));
+        } catch { /* handled */ }
+        finally { setAiChecking(false); }
+      }
+    } catch {
+      setMainCard(prev => ({ ...prev, loadingPR: false, error: 'Could not fetch press releases' }));
+    }
+  }, [ticker, checkAnalyzed, saveArticlesToDb]);
+
+  // Fetch News only
+  const loadNewsOnly = useCallback(async () => {
+    setMainCard(prev => ({ ...prev, loadingNews: true, error: null }));
+    try {
+      const res = await fetch(`/api/news/${ticker}`);
+      if (!res.ok) throw new Error('Failed');
+      const d = await res.json();
+      const news: ArticleItem[] = (d.articles || []).slice(0, SECTION_MAX).map((a: { title: string; date: string; url: string; source: string }) => ({
+        headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null,
+      }));
+
+      const newKeys = new Set<string>();
+      for (const a of news) {
+        const key = articleCacheKey(a);
+        if (!dbRecordsRef.current.has(key)) newKeys.add(key);
+      }
+
+      setMainCard(prev => ({ ...prev, loadingNews: false, loaded: true, news }));
+      setLastFetchedAt(Date.now());
+      if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
+
+      const toSave = news.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'news' }));
+      await saveArticlesToDb(toSave, newKeys);
+
+      if (news.length > 0) {
+        setAiChecking(true);
+        try {
+          const checked = await checkAnalyzed(news);
+          setMainCard(prev => ({ ...prev, news: checked }));
+        } catch { /* handled */ }
+        finally { setAiChecking(false); }
+      }
+    } catch {
+      setMainCard(prev => ({ ...prev, loadingNews: false, error: 'Could not fetch news' }));
+    }
+  }, [ticker, checkAnalyzed, saveArticlesToDb]);
+
+  // AI Fetch: fetch both PRs and news in parallel
   const loadMainCard = useCallback(async () => {
-    setMainCard(prev => ({ ...prev, loading: true, error: null }));
+    setMainCard(prev => ({ ...prev, loading: true, loadingPR: true, loadingNews: true, error: null }));
     let prs: ArticleItem[] = [];
     let news: ArticleItem[] = [];
 
@@ -758,14 +990,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       fetch(`/api/press-releases/${ticker}`).then(async res => {
         if (!res.ok) throw new Error('Failed');
         const d = await res.json();
-        return (d.releases || []).slice(0, 10).map((r: { date: string; headline: string; url: string; source?: string; items?: string }) => ({
+        return (d.releases || []).slice(0, SECTION_MAX).map((r: { date: string; headline: string; url: string; source?: string; items?: string }) => ({
           headline: r.headline, date: r.date, url: r.url, source: r.source, items: r.items, analyzed: null as boolean | null,
         }));
       }),
       fetch(`/api/news/${ticker}`).then(async res => {
         if (!res.ok) throw new Error('Failed');
         const d = await res.json();
-        return (d.articles || []).slice(0, 10).map((a: { title: string; date: string; url: string; source: string }) => ({
+        return (d.articles || []).slice(0, SECTION_MAX).map((a: { title: string; date: string; url: string; source: string }) => ({
           headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null,
         }));
       }),
@@ -775,61 +1007,25 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     if (newsResult.status === 'fulfilled') news = newsResult.value;
     const error = (prResult.status === 'rejected' && newsResult.status === 'rejected') ? 'Could not fetch feeds' : null;
 
-    // Identify genuinely new articles (not in DB yet) → mark as NEW
     const newKeys = new Set<string>();
     for (const a of [...prs, ...news]) {
       const key = articleCacheKey(a);
       if (!dbRecordsRef.current.has(key)) newKeys.add(key);
     }
 
-    // Replace state with fresh API results (max 10 each)
     setMainCard(prev => ({
-      ...prev, loading: false, loaded: true, error,
-      pressReleases: prs,
-      news: news,
+      ...prev, loading: false, loadingPR: false, loadingNews: false, loaded: true, error,
+      pressReleases: prs, news,
     }));
     setLastFetchedAt(Date.now());
+    if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
 
-    // Mark new articles
-    if (newKeys.size > 0) {
-      setNewArticleKeys(prev => {
-        const next = new Set(prev);
-        for (const k of newKeys) next.add(k);
-        return next;
-      });
-    }
-
-    // Save ALL fetched articles to DB with proper articleType (upsert fixes legacy nulls)
     const allToSave = [
       ...prs.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' })),
       ...news.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'news' })),
     ];
-    if (allToSave.length > 0) {
-      console.log(`[ai-fetch] saving ${allToSave.length} articles to DB (${prs.length} PR, ${news.length} news, ${newKeys.size} NEW)...`);
-      try {
-        const saveRes = await fetch('/api/seen-articles', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ticker, articles: allToSave }),
-        });
-        const saveBody = await saveRes.json().catch(() => ({}));
-        if (saveRes.ok) {
-          console.log('[ai-fetch] save OK:', saveBody);
-          // Update local DB records with what we just saved
-          for (const a of allToSave) {
-            const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: !newKeys.has(a.cacheKey) };
-            dbRecordsRef.current.set(a.cacheKey, rec);
-          }
-          setDbRecords(new Map(dbRecordsRef.current));
-        } else {
-          console.error('[ai-fetch] save FAILED:', saveRes.status, saveBody);
-        }
-      } catch (err) {
-        console.error('[ai-fetch] save error:', err);
-      }
-    }
+    await saveArticlesToDb(allToSave, newKeys);
 
-    // Run check-analyzed on all fetched articles
     const allArticles = [...prs, ...news];
     if (allArticles.length > 0) {
       initialRecheckDone.current = true;
@@ -844,7 +1040,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       } catch { /* handled */ }
       finally { setAiChecking(false); }
     }
-  }, [ticker, checkAnalyzed]);
+  }, [ticker, checkAnalyzed, saveArticlesToDb]);
 
   // Re-check whether current articles have been added to the database.
   // Only promotes articles (untracked→tracked), never demotes (tracked→untracked).
@@ -896,14 +1092,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   }, [compCards, checkAnalyzed]);
 
   const loadCompetitor = useCallback(async (name: string) => {
-    setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: true, loaded: false, error: null } }));
+    setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [], loadingPR: false, loadingNews: false }), loading: true, loaded: false, error: null } }));
     try {
       const res = await fetch(`/api/competitor-feed/${encodeURIComponent(name)}`);
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
-      const prs: ArticleItem[] = (data.pressReleases || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
-      const news: ArticleItem[] = (data.news || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
-      setCompCards(prev => ({ ...prev, [name]: { loading: false, loaded: true, error: null, activeTab: prev[name]?.activeTab || 'pr', pressReleases: prs, news } }));
+      const prs: ArticleItem[] = (data.pressReleases || []).slice(0, SECTION_MAX).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
+      const news: ArticleItem[] = (data.news || []).slice(0, SECTION_MAX).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
+      setCompCards(prev => ({ ...prev, [name]: { loading: false, loadingPR: false, loadingNews: false, loaded: true, error: null, activeTab: prev[name]?.activeTab || 'pr', pressReleases: prs, news } }));
 
       // Save all competitor articles to DB
       const all = [...prs, ...news];
@@ -955,7 +1151,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         finally { setCompAiChecking(prev => ({ ...prev, [name]: false })); }
       }
     } catch {
-      setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [] }), loading: false, loaded: false, error: 'Could not fetch feeds' } }));
+      setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [], loadingPR: false, loadingNews: false }), loading: false, loaded: false, error: 'Could not fetch feeds' } }));
     }
   }, [ticker, checkAnalyzed]);
 
@@ -1007,7 +1203,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         dbRecordsRef.current = records;
         setDbRecords(new Map(records));
         setNewArticleKeys(newKeys);
-        setMainCard({ loading: false, loaded: true, error: null, activeTab: 'pr', pressReleases: prs, news });
+        setMainCard({ loading: false, loadingPR: false, loadingNews: false, loaded: true, error: null, activeTab: 'pr', pressReleases: prs, news });
         console.log(`[db-init] loaded ${articles.length} articles from DB (${prs.length} PR, ${news.length} news, ${newKeys.size} NEW)`);
 
         // Run check-analyzed on DB articles
@@ -1030,7 +1226,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       } catch (err) {
         console.error('[db-init] error:', err);
         if (!cancelled) {
-          setMainCard({ loading: false, loaded: true, error: null, activeTab: 'pr', pressReleases: [], news: [] });
+          setMainCard({ loading: false, loadingPR: false, loadingNews: false, loaded: true, error: null, activeTab: 'pr', pressReleases: [], news: [] });
         }
       }
     }
@@ -1069,22 +1265,23 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       next.delete(cacheKey);
       return next;
     });
-    // Update local DB record
+    // Update local DB record (immutable — create new object)
     const rec = dbRecordsRef.current.get(cacheKey);
     if (rec) {
-      rec.dismissed = true;
+      dbRecordsRef.current.set(cacheKey, { ...rec, dismissed: true });
       setDbRecords(new Map(dbRecordsRef.current));
     }
-    // Persist dismiss to DB
-    const allArticles = [...mainCard.pressReleases, ...mainCard.news];
-    const article = allArticles.find(a => articleCacheKey(a) === cacheKey);
+    // Persist dismiss to DB (include all fields so record is complete even on first save)
+    const prArticle = mainCard.pressReleases.find(a => articleCacheKey(a) === cacheKey);
+    const newsArticle = !prArticle ? mainCard.news.find(a => articleCacheKey(a) === cacheKey) : null;
+    const article = prArticle || newsArticle;
     if (article) {
       fetch('/api/seen-articles', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ticker,
-          articles: [{ cacheKey, headline: article.headline, date: article.date }],
+          articles: [{ cacheKey, headline: article.headline, date: article.date, url: article.url, source: article.source, articleType: prArticle ? 'pr' : 'news' }],
           dismiss: true,
         }),
       }).catch(err => console.error('[dismiss] error:', err));
@@ -1092,7 +1289,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   }, [ticker, mainCard.pressReleases, mainCard.news]);
 
   const setCompTab = (name: string, tab: 'pr' | 'news') => {
-    setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { loading: false, loaded: false, error: null, pressReleases: [], news: [] }), activeTab: tab } }));
+    setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { loading: false, loadingPR: false, loadingNews: false, loaded: false, error: null, pressReleases: [], news: [] }), activeTab: tab } }));
   };
 
   const totalCompanies = 1 + (competitors?.length || 0);
@@ -1239,6 +1436,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           dbRecords={dbRecords}
           persistedSourceAnalyses={persistedSourceAnalyses}
           onLoad={loadMainCard}
+          onLoadPR={loadPRsOnly}
+          onLoadNews={loadNewsOnly}
           onRecheck={recheckMainCard}
           onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
           onDismissNew={dismissNewArticle}
@@ -1269,7 +1468,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {competitors.map(comp => {
               const data: CardData = compCards[comp.name] || {
-                loading: false, loaded: false, error: null, activeTab: 'pr', pressReleases: [], news: [],
+                loading: false, loadingPR: false, loadingNews: false, loaded: false, error: null, activeTab: 'pr', pressReleases: [], news: [],
               };
               return (
                 <CompanyFeedCard
@@ -1364,8 +1563,61 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         </div>
         {methodologyOpen && (
           <div style={{ padding: '24px 24px', fontSize: 13, color: 'var(--text2)' }}>
-            {/* ── ROUTING FLOW ─────────────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Routing</div>
+            {/* ── DB-FIRST ARCHITECTURE ────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>DB-First Architecture</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Page loads</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>GET /api/seen-articles?ticker=X</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>ensureTable() &mdash; auto-creates seen_articles if missing</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Load saved articles from Neon PostgreSQL</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>Render from DB &mdash; no external API calls on mount</div>
+            </div>
+            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+              <div><span style={{ color: 'var(--text)' }}>Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_articles table</div>
+              <div><span style={{ color: 'var(--text)' }}>Self-healing:</span> ensureTable() creates table + indexes on first request</div>
+              <div><span style={{ color: 'var(--text)' }}>Graceful fallback:</span> returns empty array if table cannot be created</div>
+              <div><span style={{ color: 'var(--text)' }}>Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites url, source, headline, date, articleType</div>
+            </div>
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── TWO DATA PIPELINES ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Data Pipelines: Press Releases vs News</div>
+            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+              <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>Fetch PRs</div>
+                <div style={{ width: 2, height: 10, background: 'var(--sky)' }} />
+                <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>GET /api/press-releases/[ticker]</div>
+                <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.6 }}>Google News RSS filtered to wire services<br />(PRN, BusinessWire, GlobeNewsWire) + IR pages</div>
+                <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>articleType: &quot;pr&quot;</div>
+              </div>
+              <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ padding: '6px 14px', background: 'var(--mint-dim)', border: '1px solid var(--mint)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', textAlign: 'center', fontWeight: 600 }}>Fetch News</div>
+                <div style={{ width: 2, height: 10, background: 'var(--mint)' }} />
+                <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>GET /api/news/[ticker]</div>
+                <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.6 }}>Google News RSS by company name + ticker<br />filtered for relevance (Yahoo, Reuters, etc.)</div>
+                <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>articleType: &quot;news&quot;</div>
+              </div>
+            </div>
+            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+              <div><span style={{ color: 'var(--text)' }}>Independent:</span> each button fetches, saves, and checks independently</div>
+              <div><span style={{ color: 'var(--text)' }}>Max per type:</span> 10 articles (SECTION_MAX)</div>
+              <div><span style={{ color: 'var(--text)' }}>Save path:</span> POST /api/seen-articles &rarr; upsert with articleType tag</div>
+              <div><span style={{ color: 'var(--text)' }}>AI Fetch All:</span> fires both pipelines in parallel via Promise.allSettled</div>
+            </div>
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── ANALYSIS ROUTING FLOW ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Analysis Routing</div>
             <div style={{ display: 'flex', gap: 24 }}>
               {/* Left column: vertical flow */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180 }}>
@@ -1494,16 +1746,20 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             {/* ── NEW ARTICLE DETECTION ──────────────────────── */}
             <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>New Article Detection</div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>User clicks AI Fetch</div>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center' }}>Fetch PRs</div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', alignSelf: 'center' }}>or</div>
+                <div style={{ padding: '6px 14px', background: 'var(--mint-dim)', border: '1px solid var(--mint)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', textAlign: 'center' }}>Fetch News</div>
+              </div>
               <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Fetch articles from news/PR APIs</div>
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Compare cacheKey against DB records</div>
               <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Already in DB?</div>
               <div style={{ display: 'flex', gap: 32, marginTop: 8 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>Yes</div>
                   <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
-                  <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>Skip (already displayed)</div>
+                  <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>Upsert (update metadata)</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No</div>
@@ -1515,20 +1771,52 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               </div>
             </div>
             <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
-              <div><span style={{ color: 'var(--text3)' }}>On mount:</span> loads articles from DB only &mdash; no external API calls</div>
-              <div><span style={{ color: 'var(--text3)' }}>AI Fetch:</span> searches external APIs, saves new articles to DB with NEW badge</div>
-              <div><span style={{ color: 'var(--text3)' }}>NEW badge:</span> stays until user clicks it &rarr; sets dismissed=true in DB</div>
-              <div><span style={{ color: 'var(--text3)' }}>Cross-device:</span> NEW badge persists across all devices until dismissed</div>
-              <div><span style={{ color: 'var(--text3)' }}>No staleness guard:</span> all newly fetched articles get NEW regardless of age</div>
+              <div><span style={{ color: 'var(--text)' }}>On mount:</span> loads articles from DB only &mdash; no external API calls</div>
+              <div><span style={{ color: 'var(--text)' }}>Fetch PRs / Fetch News:</span> independent buttons, each searches its own API</div>
+              <div><span style={{ color: 'var(--text)' }}>AI Fetch All:</span> fires both pipelines in parallel</div>
+              <div><span style={{ color: 'var(--text)' }}>NEW badge:</span> stays until user clicks it &rarr; sets dismissed=true in DB</div>
+              <div><span style={{ color: 'var(--text)' }}>Cross-device:</span> NEW badge persists across all devices until dismissed</div>
             </div>
 
             {/* Divider */}
             <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
 
+            {/* ── BUTTON DISTINCTION ────────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Button Distinction: RE-CHECK DB vs DB</div>
+            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+              <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,180,220,0.7)', marginBottom: 6 }}>RE-CHECK DB</div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                  <div><span style={{ color: 'var(--text)' }}>Purpose:</span> checks tracked / untracked</div>
+                  <div><span style={{ color: 'var(--text)' }}>API:</span> POST /api/check-analyzed</div>
+                  <div><span style={{ color: 'var(--text)' }}>Checks:</span> timeline_events, sec_filings, catalysts, partner_news</div>
+                  <div><span style={{ color: 'var(--text)' }}>Does NOT:</span> query seen_articles table</div>
+                </div>
+              </div>
+              <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', marginBottom: 6 }}>DB (per article)</div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                  <div><span style={{ color: 'var(--text)' }}>Purpose:</span> is this article saved in the database?</div>
+                  <div><span style={{ color: 'var(--text)' }}>API:</span> GET /api/seen-articles?cacheKey=X</div>
+                  <div><span style={{ color: 'var(--text)' }}>Shows:</span> status, category, heading, source, date, fresh</div>
+                  <div><span style={{ color: 'var(--text)' }}>Trigger:</span> hover &rarr; fetches live from Neon PostgreSQL</div>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginTop: 10, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> In DB (all fields)</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} /> In DB (partial data)</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4, display: 'inline-block' }} /> Not in DB</span>
+              </div>
+            </div>
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
             {/* ── Legend & config ──────────────────────────── */}
             <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 11, lineHeight: 2 }}>
               <div>
-                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Status</span>
+                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Analysis Status</span>
                 <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> Tracked</span>
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} /> Untracked</span>
