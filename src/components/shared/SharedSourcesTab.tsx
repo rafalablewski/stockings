@@ -139,12 +139,11 @@ const SourceArticleRow: React.FC<{
     finally { setRecheckLoading(false); }
   };
 
-  // Fetch live DB record on hover (with debounce to avoid spam)
+  // Fetch live DB record on hover (always re-fetches for fresh data)
   const handleDbHoverEnter = () => {
     if (dbHoverTimer.current) clearTimeout(dbHoverTimer.current);
     dbHoverTimer.current = setTimeout(async () => {
       setDbTooltipVisible(true);
-      if (dbTooltip) return; // already fetched
       setDbTooltipLoading(true);
       try {
         const res = await fetch(`/api/seen-articles?ticker=${encodeURIComponent(ticker)}&cacheKey=${encodeURIComponent(cacheKey)}`);
@@ -161,7 +160,7 @@ const SourceArticleRow: React.FC<{
               fresh: rec.dismissed ? 'OLD' : 'NEW',
             });
           } else {
-            setDbTooltip({ status: '—', category: '—', heading: '—', source: '—', date: '—', fresh: 'NOT IN DB' });
+            setDbTooltip(null);
           }
         }
       } catch { /* best-effort */ }
@@ -347,8 +346,12 @@ const SourceArticleRow: React.FC<{
               fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)',
               lineHeight: 1.8, pointerEvents: 'none',
             }}>
+              {/* Header — explains what this tooltip checks */}
+              <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text3)', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
+                Saved in seen_articles DB?
+              </div>
               {dbTooltipLoading ? (
-                <div style={{ color: 'var(--text3)', fontStyle: 'italic' }}>Loading from DB...</div>
+                <div style={{ color: 'var(--text3)', fontStyle: 'italic' }}>Fetching from database...</div>
               ) : dbTooltip ? (
                 <>
                   <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>status:</span> <span style={{ color: dbTooltip.status === 'TRACKED' ? 'var(--mint)' : dbTooltip.status === 'UNTRACKED' ? 'var(--coral)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.status}</span></div>
@@ -356,10 +359,10 @@ const SourceArticleRow: React.FC<{
                   <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>heading:</span> {dbTooltip.heading}</div>
                   <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>source:</span> {dbTooltip.source}</div>
                   <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>date:</span> {dbTooltip.date}</div>
-                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>fresh:</span> <span style={{ color: dbTooltip.fresh === 'NEW' ? 'var(--sky)' : dbTooltip.fresh === 'NOT IN DB' ? 'var(--coral)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.fresh}</span></div>
+                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>fresh:</span> <span style={{ color: dbTooltip.fresh === 'NEW' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.fresh}</span></div>
                 </>
               ) : (
-                <div style={{ color: 'var(--text3)', fontStyle: 'italic' }}>Not found in DB</div>
+                <div style={{ color: 'var(--coral)', fontWeight: 600 }}>NOT IN DATABASE</div>
               )}
             </div>
           )}
@@ -1774,12 +1777,34 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             {/* Divider */}
             <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
 
-            {/* ── DB Status Indicators ──────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>DB Status Indicators</div>
-            <div style={{ display: 'flex', gap: 16, fontSize: 11, fontFamily: 'Space Mono, monospace', marginBottom: 4 }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> In DB (all fields)</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} /> In DB (partial data)</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4, display: 'inline-block' }} /> Not in DB</span>
+            {/* ── BUTTON DISTINCTION ────────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Button Distinction: RE-CHECK DB vs DB</div>
+            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+              <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,180,220,0.7)', marginBottom: 6 }}>RE-CHECK DB</div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                  <div><span style={{ color: 'var(--text)' }}>Purpose:</span> checks tracked / untracked</div>
+                  <div><span style={{ color: 'var(--text)' }}>API:</span> POST /api/check-analyzed</div>
+                  <div><span style={{ color: 'var(--text)' }}>Checks:</span> timeline_events, sec_filings, catalysts, partner_news</div>
+                  <div><span style={{ color: 'var(--text)' }}>Does NOT:</span> query seen_articles table</div>
+                </div>
+              </div>
+              <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', marginBottom: 6 }}>DB (per article)</div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                  <div><span style={{ color: 'var(--text)' }}>Purpose:</span> is this article saved in the database?</div>
+                  <div><span style={{ color: 'var(--text)' }}>API:</span> GET /api/seen-articles?cacheKey=X</div>
+                  <div><span style={{ color: 'var(--text)' }}>Shows:</span> status, category, heading, source, date, fresh</div>
+                  <div><span style={{ color: 'var(--text)' }}>Trigger:</span> hover &rarr; fetches live from Neon PostgreSQL</div>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginTop: 10, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+              <div style={{ display: 'flex', gap: 16 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> In DB (all fields)</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} /> In DB (partial data)</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4, display: 'inline-block' }} /> Not in DB</span>
+              </div>
             </div>
 
             <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
