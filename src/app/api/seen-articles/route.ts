@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { neon } from '@neondatabase/serverless';
 import { db } from '@/lib/db';
 import { seenArticles } from '@/lib/schema';
-import { eq, count } from 'drizzle-orm';
+import { eq, count, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,6 +25,53 @@ export const dynamic = 'force-dynamic';
 
 const VALID_TICKERS = new Set(['asts', 'bmnr', 'crcl', 'mstr']);
 
+// ---------------------------------------------------------------------------
+// ensureTable — creates seen_articles if it doesn't exist.
+// Uses the raw neon() HTTP driver (same as /api/db/setup) instead of drizzle's
+// execute(), which was silently failing to run DDL over the neon-http proxy.
+// ---------------------------------------------------------------------------
+let tableVerified = false;
+
+async function ensureTable(): Promise<void> {
+  if (tableVerified) return;
+
+  const connStr = process.env.DATABASE_URL;
+  if (!connStr) throw new Error('DATABASE_URL is not set');
+
+  const rawSql = neon(connStr);
+
+  // Run each DDL statement individually
+  await rawSql`CREATE TABLE IF NOT EXISTS seen_articles (
+    id SERIAL PRIMARY KEY,
+    ticker TEXT NOT NULL,
+    cache_key TEXT NOT NULL,
+    headline TEXT NOT NULL,
+    date TEXT,
+    url TEXT,
+    source TEXT,
+    article_type TEXT,
+    dismissed BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW() NOT NULL
+  )`;
+
+  await rawSql`CREATE UNIQUE INDEX IF NOT EXISTS seen_articles_ticker_key_idx
+    ON seen_articles (ticker, cache_key)`;
+
+  await rawSql`CREATE INDEX IF NOT EXISTS seen_articles_ticker_idx
+    ON seen_articles (ticker)`;
+
+  tableVerified = true;
+}
+
+/** True if the error looks like "relation ... does not exist" */
+function isTableMissing(err: unknown): boolean {
+  const msg = String(err);
+  return msg.includes('does not exist') || msg.includes('relation') || msg.includes('42P01');
+}
+
+// ---------------------------------------------------------------------------
+// GET
+// ---------------------------------------------------------------------------
 export async function GET(request: NextRequest) {
   const ticker = request.nextUrl.searchParams.get('ticker');
   if (!ticker) {
@@ -36,63 +84,57 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Try full query with new columns first
-    let articles: { cacheKey: string; headline: string; date: string | null; url: string | null; source: string | null; articleType: string | null; dismissed: boolean }[];
-    try {
-      const rows = await db
-        .select({
-          cacheKey: seenArticles.cacheKey,
-          headline: seenArticles.headline,
-          date: seenArticles.date,
-          url: seenArticles.url,
-          source: seenArticles.source,
-          articleType: seenArticles.articleType,
-          dismissed: seenArticles.dismissed,
-        })
-        .from(seenArticles)
-        .where(eq(seenArticles.ticker, t));
+    await ensureTable();
+  } catch (e) {
+    // ensureTable failed — return empty so the UI doesn't break
+    console.error('[seen-articles] ensureTable failed in GET:', e);
+    return NextResponse.json({ articles: [], _ensureTableError: String(e) });
+  }
 
-      articles = rows.map(row => ({
-        cacheKey: row.cacheKey,
-        headline: row.headline,
-        date: row.date,
-        url: row.url,
-        source: row.source,
-        articleType: row.articleType,
-        dismissed: row.url ? row.dismissed : true,
-      }));
-    } catch (colErr) {
-      // Fallback: old schema without new columns
-      console.warn('Seen articles: new columns missing, using fallback query', (colErr as Error).message);
-      const rows = await db
-        .select({
-          cacheKey: seenArticles.cacheKey,
-          headline: seenArticles.headline,
-          date: seenArticles.date,
-          dismissed: seenArticles.dismissed,
-        })
-        .from(seenArticles)
-        .where(eq(seenArticles.ticker, t));
+  try {
+    const rows = await db
+      .select({
+        cacheKey: seenArticles.cacheKey,
+        headline: seenArticles.headline,
+        date: seenArticles.date,
+        url: seenArticles.url,
+        source: seenArticles.source,
+        articleType: seenArticles.articleType,
+        dismissed: seenArticles.dismissed,
+      })
+      .from(seenArticles)
+      .where(eq(seenArticles.ticker, t));
 
-      articles = rows.map(row => ({
-        cacheKey: row.cacheKey,
-        headline: row.headline,
-        date: row.date,
-        url: null,
-        source: null,
-        articleType: null,
-        dismissed: true, // legacy rows: no NEW badge
-      }));
-    }
+    // Legacy rows (url is null — saved before the schema had url column)
+    // are forced to dismissed=true so they don't show a stale NEW badge
+    const articles = rows.map(row => ({
+      cacheKey: row.cacheKey,
+      headline: row.headline,
+      date: row.date,
+      url: row.url,
+      source: row.source,
+      articleType: row.articleType,
+      dismissed: row.url ? row.dismissed : true,
+    }));
 
     return NextResponse.json({ articles });
   } catch (error) {
-    console.error('Seen articles read error:', error);
+    console.error('[seen-articles] GET query error:', error);
+
+    // If the table somehow still doesn't exist, return empty instead of 500
+    if (isTableMissing(error)) {
+      tableVerified = false; // reset so next request retries creation
+      return NextResponse.json({ articles: [] });
+    }
+
     const msg = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ error: msg, detail: String(error) }, { status: 500 });
   }
 }
 
+// ---------------------------------------------------------------------------
+// POST
+// ---------------------------------------------------------------------------
 export async function POST(request: NextRequest) {
   try {
     const { ticker, articles, dismiss } = await request.json();
@@ -104,6 +146,13 @@ export async function POST(request: NextRequest) {
     const t = ticker.toLowerCase();
     if (!VALID_TICKERS.has(t)) {
       return NextResponse.json({ error: `Unknown ticker: ${ticker}` }, { status: 400 });
+    }
+
+    try {
+      await ensureTable();
+    } catch (e) {
+      console.error('[seen-articles] ensureTable failed in POST:', e);
+      return NextResponse.json({ error: 'Table creation failed', detail: String(e) }, { status: 500 });
     }
 
     const values = articles
@@ -121,33 +170,24 @@ export async function POST(request: NextRequest) {
 
     let totalInDb = 0;
     if (values.length > 0) {
-      try {
-        if (dismiss) {
-          await db.insert(seenArticles).values(values).onConflictDoUpdate({
-            target: [seenArticles.ticker, seenArticles.cacheKey],
-            set: { dismissed: true },
-          });
-        } else {
-          await db.insert(seenArticles).values(values).onConflictDoNothing();
-        }
-      } catch (insertErr) {
-        // Fallback: try without new columns (old schema)
-        console.warn('Seen articles: insert with new columns failed, trying fallback', (insertErr as Error).message);
-        const fallbackValues = values.map(v => ({
-          ticker: v.ticker,
-          cacheKey: v.cacheKey,
-          headline: v.headline,
-          date: v.date,
-          dismissed: v.dismissed,
-        }));
-        if (dismiss) {
-          await db.insert(seenArticles).values(fallbackValues).onConflictDoUpdate({
-            target: [seenArticles.ticker, seenArticles.cacheKey],
-            set: { dismissed: true },
-          });
-        } else {
-          await db.insert(seenArticles).values(fallbackValues).onConflictDoNothing();
-        }
+      if (dismiss) {
+        await db.insert(seenArticles).values(values).onConflictDoUpdate({
+          target: [seenArticles.ticker, seenArticles.cacheKey],
+          set: { dismissed: true },
+        });
+      } else {
+        // Upsert: always overwrite articleType/url/source/headline/date
+        // dismissed is NOT touched — only the dismiss=true path sets it
+        await db.insert(seenArticles).values(values).onConflictDoUpdate({
+          target: [seenArticles.ticker, seenArticles.cacheKey],
+          set: {
+            articleType: sql`excluded.article_type`,
+            url: sql`excluded.url`,
+            source: sql`excluded.source`,
+            headline: sql`excluded.headline`,
+            date: sql`excluded.date`,
+          },
+        });
       }
       const [row] = await db.select({ n: count() }).from(seenArticles).where(eq(seenArticles.ticker, t));
       totalInDb = row?.n ?? 0;
@@ -155,7 +195,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ ok: true, sent: articles.length, filtered: values.length, totalInDb });
   } catch (error) {
-    console.error('Seen articles write error:', error);
+    console.error('[seen-articles] POST error:', error);
+
+    // If table disappeared mid-request, reset the flag so next request retries
+    if (isTableMissing(error)) {
+      tableVerified = false;
+    }
+
     const msg = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ error: msg, detail: String(error) }, { status: 500 });
   }

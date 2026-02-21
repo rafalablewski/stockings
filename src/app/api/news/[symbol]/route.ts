@@ -49,7 +49,7 @@ export async function GET(
 
     const itemRegex = /<item>([\s\S]*?)<\/item>/g;
     let match;
-    while ((match = itemRegex.exec(xml)) !== null && items.length < 10) {
+    while ((match = itemRegex.exec(xml)) !== null && items.length < 30) {
       const itemXml = match[1];
       const title = itemXml.match(/<title>([\s\S]*?)<\/title>/)?.[1]?.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').trim() || '';
       const link = itemXml.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim() || '';
@@ -66,13 +66,26 @@ export async function GET(
       }
     }
 
+    // Filter out articles unrelated to this company
+    const nameLower = stock.name.toLowerCase();
+    const tickerLower = symbol.toLowerCase();
+    // Build keywords from company name (e.g. "AST SpaceMobile" → ["ast", "spacemobile"])
+    const nameWords = nameLower.split(/\s+/).filter(w => w.length >= 3);
+    const relevant = items.filter(item => {
+      const t = item.title.toLowerCase();
+      // Must mention ticker or at least one significant name word
+      if (t.includes(tickerLower)) return true;
+      if (t.includes(nameLower)) return true;
+      return nameWords.some(w => t.includes(w));
+    });
+
     // Sort by date descending (newest first)
-    items.sort((a, b) => b.date.localeCompare(a.date));
+    relevant.sort((a, b) => b.date.localeCompare(a.date));
 
     return NextResponse.json({
       symbol,
       companyName: stock.name,
-      articles: items,
+      articles: relevant.slice(0, 10),
       fetchedAt: new Date().toISOString(),
     });
   } catch (error) {
