@@ -1200,11 +1200,6 @@ const YearSection: React.FC<{
   const [open, setOpen] = useState(defaultOpen);
   const trackedInYear = results.filter(r => r.status === 'tracked').length;
 
-  // Split into genuinely-new filings (top) vs everything else (bottom)
-  const newEntries = results.filter(r => newAccessions.has(r.filing.accessionNumber));
-  const oldEntries = results.filter(r => !newAccessions.has(r.filing.accessionNumber));
-  const hasNewAndOld = newEntries.length > 0 && oldEntries.length > 0;
-
   const renderRow = (r: MatchResult, i: number) => {
     const dbRec = dbRecords.get(r.filing.accessionNumber);
     return (
@@ -1241,16 +1236,7 @@ const YearSection: React.FC<{
       </button>
       {open && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-          {newEntries.map(renderRow)}
-          {hasNewAndOld && (
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              padding: '6px 12px', margin: '2px 0',
-            }}>
-              <span style={{ flex: 1, height: 1, background: 'color-mix(in srgb, var(--border) 40%, transparent)' }} />
-            </div>
-          )}
-          {oldEntries.map(renderRow)}
+          {results.map(renderRow)}
         </div>
       )}
     </div>
