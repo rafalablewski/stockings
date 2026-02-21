@@ -36,54 +36,30 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Try full query with new columns first
-    let articles: { cacheKey: string; headline: string; date: string | null; url: string | null; source: string | null; articleType: string | null; dismissed: boolean }[];
-    try {
-      const rows = await db
-        .select({
-          cacheKey: seenArticles.cacheKey,
-          headline: seenArticles.headline,
-          date: seenArticles.date,
-          url: seenArticles.url,
-          source: seenArticles.source,
-          articleType: seenArticles.articleType,
-          dismissed: seenArticles.dismissed,
-        })
-        .from(seenArticles)
-        .where(eq(seenArticles.ticker, t));
+    const rows = await db
+      .select({
+        cacheKey: seenArticles.cacheKey,
+        headline: seenArticles.headline,
+        date: seenArticles.date,
+        url: seenArticles.url,
+        source: seenArticles.source,
+        articleType: seenArticles.articleType,
+        dismissed: seenArticles.dismissed,
+      })
+      .from(seenArticles)
+      .where(eq(seenArticles.ticker, t));
 
-      articles = rows.map(row => ({
-        cacheKey: row.cacheKey,
-        headline: row.headline,
-        date: row.date,
-        url: row.url,
-        source: row.source,
-        articleType: row.articleType,
-        dismissed: row.url ? row.dismissed : true,
-      }));
-    } catch (colErr) {
-      // Fallback: old schema without new columns
-      console.warn('Seen articles: new columns missing, using fallback query', (colErr as Error).message);
-      const rows = await db
-        .select({
-          cacheKey: seenArticles.cacheKey,
-          headline: seenArticles.headline,
-          date: seenArticles.date,
-          dismissed: seenArticles.dismissed,
-        })
-        .from(seenArticles)
-        .where(eq(seenArticles.ticker, t));
-
-      articles = rows.map(row => ({
-        cacheKey: row.cacheKey,
-        headline: row.headline,
-        date: row.date,
-        url: null,
-        source: null,
-        articleType: null,
-        dismissed: true, // legacy rows: no NEW badge
-      }));
-    }
+    // Legacy rows (url is null — saved before the schema had url column)
+    // are forced to dismissed=true so they don't show a stale NEW badge
+    const articles = rows.map(row => ({
+      cacheKey: row.cacheKey,
+      headline: row.headline,
+      date: row.date,
+      url: row.url,
+      source: row.source,
+      articleType: row.articleType,
+      dismissed: row.url ? row.dismissed : true,
+    }));
 
     return NextResponse.json({ articles });
   } catch (error) {
@@ -121,42 +97,24 @@ export async function POST(request: NextRequest) {
 
     let totalInDb = 0;
     if (values.length > 0) {
-      try {
-        if (dismiss) {
-          await db.insert(seenArticles).values(values).onConflictDoUpdate({
-            target: [seenArticles.ticker, seenArticles.cacheKey],
-            set: { dismissed: true },
-          });
-        } else {
-          // Upsert: update articleType/url/source for existing rows (fixes legacy null values)
-          // Uses COALESCE so only non-null new values overwrite, and dismissed is never touched
-          await db.insert(seenArticles).values(values).onConflictDoUpdate({
-            target: [seenArticles.ticker, seenArticles.cacheKey],
-            set: {
-              articleType: sql`COALESCE(excluded.article_type, ${seenArticles.articleType})`,
-              url: sql`COALESCE(excluded.url, ${seenArticles.url})`,
-              source: sql`COALESCE(excluded.source, ${seenArticles.source})`,
-            },
-          });
-        }
-      } catch (insertErr) {
-        // Fallback: try without new columns (old schema)
-        console.warn('Seen articles: insert with new columns failed, trying fallback', (insertErr as Error).message);
-        const fallbackValues = values.map(v => ({
-          ticker: v.ticker,
-          cacheKey: v.cacheKey,
-          headline: v.headline,
-          date: v.date,
-          dismissed: v.dismissed,
-        }));
-        if (dismiss) {
-          await db.insert(seenArticles).values(fallbackValues).onConflictDoUpdate({
-            target: [seenArticles.ticker, seenArticles.cacheKey],
-            set: { dismissed: true },
-          });
-        } else {
-          await db.insert(seenArticles).values(fallbackValues).onConflictDoNothing();
-        }
+      if (dismiss) {
+        await db.insert(seenArticles).values(values).onConflictDoUpdate({
+          target: [seenArticles.ticker, seenArticles.cacheKey],
+          set: { dismissed: true },
+        });
+      } else {
+        // Upsert: always overwrite articleType/url/source/headline/date
+        // dismissed is NOT touched — only the dismiss=true path sets it
+        await db.insert(seenArticles).values(values).onConflictDoUpdate({
+          target: [seenArticles.ticker, seenArticles.cacheKey],
+          set: {
+            articleType: sql`excluded.article_type`,
+            url: sql`excluded.url`,
+            source: sql`excluded.source`,
+            headline: sql`excluded.headline`,
+            date: sql`excluded.date`,
+          },
+        });
       }
       const [row] = await db.select({ n: count() }).from(seenArticles).where(eq(seenArticles.ticker, t));
       totalInDb = row?.n ?? 0;
