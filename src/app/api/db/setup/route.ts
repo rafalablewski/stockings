@@ -129,9 +129,17 @@ CREATE TABLE IF NOT EXISTS seen_articles (
   cache_key TEXT NOT NULL,
   headline TEXT NOT NULL,
   date TEXT,
+  url TEXT,
+  source TEXT,
+  article_type TEXT,
   dismissed BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
+
+-- Add columns if table already exists (safe to re-run)
+ALTER TABLE seen_articles ADD COLUMN IF NOT EXISTS url TEXT;
+ALTER TABLE seen_articles ADD COLUMN IF NOT EXISTS source TEXT;
+ALTER TABLE seen_articles ADD COLUMN IF NOT EXISTS article_type TEXT;
 
 CREATE UNIQUE INDEX IF NOT EXISTS seen_articles_ticker_key_idx
   ON seen_articles (ticker, cache_key);
