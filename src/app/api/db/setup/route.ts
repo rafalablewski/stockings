@@ -123,7 +123,9 @@ CREATE TABLE IF NOT EXISTS partner_news (
 CREATE INDEX IF NOT EXISTS partner_news_ticker_date_idx
   ON partner_news (ticker, date);
 
-CREATE TABLE IF NOT EXISTS seen_articles (
+DROP TABLE IF EXISTS seen_articles;
+
+CREATE TABLE seen_articles (
   id SERIAL PRIMARY KEY,
   ticker TEXT NOT NULL,
   cache_key TEXT NOT NULL,
@@ -135,10 +137,6 @@ CREATE TABLE IF NOT EXISTS seen_articles (
   dismissed BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
-
-ALTER TABLE seen_articles ADD COLUMN IF NOT EXISTS url TEXT;
-ALTER TABLE seen_articles ADD COLUMN IF NOT EXISTS source TEXT;
-ALTER TABLE seen_articles ADD COLUMN IF NOT EXISTS article_type TEXT;
 
 CREATE UNIQUE INDEX IF NOT EXISTS seen_articles_ticker_key_idx
   ON seen_articles (ticker, cache_key);
