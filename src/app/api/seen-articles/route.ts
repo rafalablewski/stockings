@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { db } from '@/lib/db';
 import { seenArticles } from '@/lib/schema';
-import { eq, count, sql } from 'drizzle-orm';
+import { eq, and, count, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
 
@@ -91,6 +91,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ articles: [], _ensureTableError: String(e) });
   }
 
+  // Optional: single-record lookup by cacheKey (used by DB tooltip hover)
+  const cacheKey = request.nextUrl.searchParams.get('cacheKey');
+
   try {
     const rows = await db
       .select({
@@ -103,7 +106,10 @@ export async function GET(request: NextRequest) {
         dismissed: seenArticles.dismissed,
       })
       .from(seenArticles)
-      .where(eq(seenArticles.ticker, t));
+      .where(cacheKey
+        ? and(eq(seenArticles.ticker, t), eq(seenArticles.cacheKey, cacheKey))
+        : eq(seenArticles.ticker, t)
+      );
 
     // Legacy rows (url is null — saved before the schema had url column)
     // are forced to dismissed=true so they don't show a stale NEW badge

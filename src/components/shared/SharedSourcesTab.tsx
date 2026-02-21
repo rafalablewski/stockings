@@ -110,6 +110,12 @@ const SourceArticleRow: React.FC<{
   const [expanded, setExpanded] = useState(false);
   const [recheckLoading, setRecheckLoading] = useState(false);
   const [localAnalyzed, setLocalAnalyzed] = useState<boolean | null>(article.analyzed ?? null);
+  // DB tooltip: live data fetched from database on hover
+  const [dbTooltip, setDbTooltip] = useState<{ status: string; category: string; heading: string; source: string; date: string; fresh: string } | null>(null);
+  const [dbTooltipLoading, setDbTooltipLoading] = useState(false);
+  const [dbTooltipVisible, setDbTooltipVisible] = useState(false);
+  const dbHoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dbTooltipRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const parentVal = article.analyzed ?? null;
@@ -133,6 +139,40 @@ const SourceArticleRow: React.FC<{
     finally { setRecheckLoading(false); }
   };
 
+  // Fetch live DB record on hover (with debounce to avoid spam)
+  const handleDbHoverEnter = () => {
+    if (dbHoverTimer.current) clearTimeout(dbHoverTimer.current);
+    dbHoverTimer.current = setTimeout(async () => {
+      setDbTooltipVisible(true);
+      if (dbTooltip) return; // already fetched
+      setDbTooltipLoading(true);
+      try {
+        const res = await fetch(`/api/seen-articles?ticker=${encodeURIComponent(ticker)}&cacheKey=${encodeURIComponent(cacheKey)}`);
+        if (res.ok) {
+          const data = await res.json();
+          const rec = data.articles?.[0];
+          if (rec) {
+            setDbTooltip({
+              status: localAnalyzed === true ? 'TRACKED' : localAnalyzed === false ? 'UNTRACKED' : 'PENDING',
+              category: rec.articleType === 'pr' ? 'PRESS RELEASE' : rec.articleType === 'news' ? 'NEWS' : rec.articleType || '—',
+              heading: rec.headline || '—',
+              source: rec.source || '—',
+              date: rec.date || '—',
+              fresh: rec.dismissed ? 'OLD' : 'NEW',
+            });
+          } else {
+            setDbTooltip({ status: '—', category: '—', heading: '—', source: '—', date: '—', fresh: 'NOT IN DB' });
+          }
+        }
+      } catch { /* best-effort */ }
+      finally { setDbTooltipLoading(false); }
+    }, 200);
+  };
+  const handleDbHoverLeave = () => {
+    if (dbHoverTimer.current) { clearTimeout(dbHoverTimer.current); dbHoverTimer.current = null; }
+    setDbTooltipVisible(false);
+  };
+
   const statusColor = localAnalyzed === null || localAnalyzed === undefined
     ? 'var(--text3)' : localAnalyzed ? 'var(--mint)' : 'var(--coral)';
   const statusLabel = localAnalyzed === null || localAnalyzed === undefined
@@ -146,9 +186,6 @@ const SourceArticleRow: React.FC<{
   // DB status: green = all fields saved, yellow = partial, gray = not in DB
   const dbColor = !dbRecord ? 'var(--text3)' : (dbRecord.date != null && dbRecord.url != null && dbRecord.source != null && dbRecord.articleType != null) ? 'var(--mint)' : 'var(--gold)';
   const dbOpacity = !dbRecord ? 0.25 : 0.8;
-  const dbTitle = !dbRecord
-    ? 'Not saved to DB'
-    : `DB: ${dbRecord.articleType || '?'} | ${dbRecord.date || 'no date'} | ${dbRecord.source || 'no source'} | ${dbRecord.headline?.slice(0, 40)}${(dbRecord.headline?.length || 0) > 40 ? '...' : ''} | ${dbRecord.url ? 'has URL' : 'no URL'}`;
 
   const handleAnalyze = async () => {
     const isError = isErrorAnalysis(aiAnalysis);
@@ -281,18 +318,51 @@ const SourceArticleRow: React.FC<{
             {statusLabel}
           </span>
         )}
-        {/* DB save status indicator */}
-        <span
-          title={dbTitle}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0,
-            fontSize: 8, fontFamily: 'Space Mono, monospace', color: dbColor, opacity: dbOpacity,
-            padding: '1px 4px', borderRadius: 3,
-            border: `1px solid color-mix(in srgb, ${dbColor} 20%, transparent)`,
-          }}
-        >
-          <span style={{ width: 5, height: 5, borderRadius: '50%', background: dbColor }} />
-          DB
+        {/* DB status button — hover fetches live data from database */}
+        <span style={{ position: 'relative', flexShrink: 0 }} onMouseEnter={handleDbHoverEnter} onMouseLeave={handleDbHoverLeave}>
+          <button
+            type="button"
+            aria-label="Show database record"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 3,
+              fontSize: 8, fontFamily: 'Space Mono, monospace', color: dbColor, opacity: dbOpacity,
+              padding: '1px 4px', borderRadius: 3,
+              border: `1px solid color-mix(in srgb, ${dbColor} 20%, transparent)`,
+              background: 'transparent', cursor: 'pointer', outline: 'none',
+              transition: 'all 0.15s',
+            }}
+            onFocus={handleDbHoverEnter}
+            onBlur={handleDbHoverLeave}
+          >
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: dbColor }} />
+            DB
+          </button>
+          {/* Tooltip — shows live DB data */}
+          {dbTooltipVisible && (
+            <div ref={dbTooltipRef} style={{
+              position: 'absolute', top: '100%', right: 0, marginTop: 6, zIndex: 100,
+              background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8,
+              padding: '10px 14px', minWidth: 260, maxWidth: 340,
+              boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+              fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)',
+              lineHeight: 1.8, pointerEvents: 'none',
+            }}>
+              {dbTooltipLoading ? (
+                <div style={{ color: 'var(--text3)', fontStyle: 'italic' }}>Loading from DB...</div>
+              ) : dbTooltip ? (
+                <>
+                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>status:</span> <span style={{ color: dbTooltip.status === 'TRACKED' ? 'var(--mint)' : dbTooltip.status === 'UNTRACKED' ? 'var(--coral)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.status}</span></div>
+                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>category:</span> <span style={{ color: dbTooltip.category === 'PRESS RELEASE' ? 'var(--sky)' : dbTooltip.category === 'NEWS' ? 'var(--mint)' : 'var(--text3)' }}>{dbTooltip.category}</span></div>
+                  <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>heading:</span> {dbTooltip.heading}</div>
+                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>source:</span> {dbTooltip.source}</div>
+                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>date:</span> {dbTooltip.date}</div>
+                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>fresh:</span> <span style={{ color: dbTooltip.fresh === 'NEW' ? 'var(--sky)' : dbTooltip.fresh === 'NOT IN DB' ? 'var(--coral)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.fresh}</span></div>
+                </>
+              ) : (
+                <div style={{ color: 'var(--text3)', fontStyle: 'italic' }}>Not found in DB</div>
+              )}
+            </div>
+          )}
         </span>
         {/* NEW badge — clickable: dismisses the article as "seen" */}
         {isGenuinelyNew && (
@@ -357,7 +427,7 @@ const SourceArticleRow: React.FC<{
             <button
               onClick={handleRecheck}
               disabled={recheckLoading}
-              title="Re-check if this article is in the database"
+              title="Re-check tracked/untracked status"
               style={{
                 fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
                 padding: '2px 5px', borderRadius: 4,
@@ -676,13 +746,13 @@ const CompanyFeedCard: React.FC<{
               {data.loading ? 'Fetching...' : 'AI Fetch'}
             </button>
           )}
-          {/* Re-check — check if articles have been added to database */}
+          {/* Re-check — checks tracked/untracked status only (via /api/check-analyzed, NOT seen_articles) */}
           {data.loaded && onRecheck && (
             <button
               onClick={onRecheck}
               disabled={aiChecking ?? false}
-              aria-label={`Re-check ${label} against database`}
-              title="Re-check if articles have been added to database"
+              aria-label={`Re-check ${label} tracked/untracked status`}
+              title="Re-check tracked/untracked status for all articles (does NOT query seen_articles DB)"
               style={{
                 fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
                 padding: '5px 14px', borderRadius: 4,
