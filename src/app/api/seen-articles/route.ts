@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { neon } from '@neondatabase/serverless';
 import { db } from '@/lib/db';
 import { seenArticles } from '@/lib/schema';
 import { eq, count, sql } from 'drizzle-orm';
@@ -24,37 +25,40 @@ export const dynamic = 'force-dynamic';
 
 const VALID_TICKERS = new Set(['asts', 'bmnr', 'crcl', 'mstr']);
 
-// Auto-create the table if it doesn't exist (self-healing after setup drops it)
+// Auto-create the table if it doesn't exist (self-healing after setup drops it).
+// Uses raw neon() driver for DDL — same mechanism as /api/db/setup which is proven to work.
 let tableVerified = false;
 async function ensureTable() {
   if (tableVerified) return;
-  try {
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS seen_articles (
-        id SERIAL PRIMARY KEY,
-        ticker TEXT NOT NULL,
-        cache_key TEXT NOT NULL,
-        headline TEXT NOT NULL,
-        date TEXT,
-        url TEXT,
-        source TEXT,
-        article_type TEXT,
-        dismissed BOOLEAN NOT NULL DEFAULT FALSE,
-        created_at TIMESTAMP DEFAULT NOW() NOT NULL
-      )
-    `);
-    await db.execute(sql`
-      CREATE UNIQUE INDEX IF NOT EXISTS seen_articles_ticker_key_idx
-        ON seen_articles (ticker, cache_key)
-    `);
-    await db.execute(sql`
-      CREATE INDEX IF NOT EXISTS seen_articles_ticker_idx
-        ON seen_articles (ticker)
-    `);
-    tableVerified = true;
-  } catch (e) {
-    console.error('ensureTable failed:', e);
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error('DATABASE_URL not set');
+
+  const rawSql = neon(url);
+
+  const ddlStatements = [
+    `CREATE TABLE IF NOT EXISTS seen_articles (
+      id SERIAL PRIMARY KEY,
+      ticker TEXT NOT NULL,
+      cache_key TEXT NOT NULL,
+      headline TEXT NOT NULL,
+      date TEXT,
+      url TEXT,
+      source TEXT,
+      article_type TEXT,
+      dismissed BOOLEAN NOT NULL DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT NOW() NOT NULL
+    )`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS seen_articles_ticker_key_idx
+      ON seen_articles (ticker, cache_key)`,
+    `CREATE INDEX IF NOT EXISTS seen_articles_ticker_idx
+      ON seen_articles (ticker)`,
+  ];
+
+  for (const stmt of ddlStatements) {
+    const tsa = Object.assign([stmt], { raw: [stmt] }) as unknown as TemplateStringsArray;
+    await rawSql(tsa);
   }
+  tableVerified = true;
 }
 
 export async function GET(request: NextRequest) {
