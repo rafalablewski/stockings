@@ -387,12 +387,13 @@ const FilingRow: React.FC<{
   typeColors: Record<string, { bg: string; text: string }>;
   ticker: string;
   isGenuinelyNew?: boolean;
+  isDismissed?: boolean;
   dbRecord?: DbFilingRecord | null;
   persistedAnalysis?: string | null;
   onDismissNew?: () => void;
   onRecheck?: () => void;
   recheckLoading?: boolean;
-}> = ({ r, typeColors, ticker, isGenuinelyNew, dbRecord, persistedAnalysis, onDismissNew, onRecheck, recheckLoading }) => {
+}> = ({ r, typeColors, ticker, isGenuinelyNew, isDismissed, dbRecord, persistedAnalysis, onDismissNew, onRecheck, recheckLoading }) => {
   const accession = r.filing.accessionNumber;
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<string | null>(persistedAnalysis || null);
@@ -758,11 +759,11 @@ const FilingRow: React.FC<{
             </span>
           );
         })()}
-        {/* NEW badge — clickable: dismisses the filing as "seen" */}
-        {isGenuinelyNew && (
+        {/* NEW badge — bright if unacknowledged, dim if acknowledged */}
+        {isGenuinelyNew && !isDismissed && (
           <button
             onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
-            title="Mark as seen"
+            title="Click to acknowledge"
             style={{
               fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
               padding: '1px 5px', borderRadius: 3, flexShrink: 0,
@@ -774,6 +775,16 @@ const FilingRow: React.FC<{
           >
             NEW
           </button>
+        )}
+        {isGenuinelyNew && isDismissed && (
+          <span style={{
+            fontSize: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em',
+            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+            color: 'var(--sky)', opacity: 0.3,
+            border: '1px solid color-mix(in srgb, var(--sky) 10%, transparent)',
+          }}>
+            SEEN
+          </span>
         )}
         {/* Action buttons — stop propagation so clicks don't toggle expand */}
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
@@ -1194,9 +1205,12 @@ const YearSection: React.FC<{
   const oldEntries = results.filter(r => !newAccessions.has(r.filing.accessionNumber));
   const hasNewAndOld = newEntries.length > 0 && oldEntries.length > 0;
 
-  const renderRow = (r: MatchResult, i: number) => (
-    <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} dbRecord={dbRecords.get(r.filing.accessionNumber) || null} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} onDismissNew={() => onDismissNew?.(r.filing.accessionNumber)} onRecheck={onRecheck} recheckLoading={recheckLoading} />
-  );
+  const renderRow = (r: MatchResult, i: number) => {
+    const dbRec = dbRecords.get(r.filing.accessionNumber);
+    return (
+      <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} isDismissed={dbRec?.dismissed ?? false} dbRecord={dbRec || null} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} onDismissNew={() => onDismissNew?.(r.filing.accessionNumber)} onRecheck={onRecheck} recheckLoading={recheckLoading} />
+    );
+  };
 
   return (
     <div>
@@ -1555,14 +1569,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       .catch(() => {}); // best-effort
   }, [ticker]);
 
-  // Dismiss a NEW filing (click on NEW badge)
+  // Acknowledge a NEW filing (click on NEW badge) — dims badge but keeps it visible
   const dismissNewFiling = useCallback((accession: string) => {
-    setNewAccessions(prev => {
-      const next = new Set(prev);
-      next.delete(accession);
-      return next;
-    });
-    // Update local DB record
+    // Update local DB record to dismissed (dims the badge from NEW to SEEN)
     const rec = dbRecordsRef.current.get(accession);
     if (rec) {
       dbRecordsRef.current.set(accession, { ...rec, dismissed: true });
