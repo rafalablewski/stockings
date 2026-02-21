@@ -14,18 +14,19 @@
  * Each article is identified by a cache key derived from its URL.
  *
  * On mount:
- *   1. Hydrate seenArticleKeysRef from DB (GET /api/seen-articles?ticker=X)
+ *   1. Hydrate seenArticleKeysRef + dismissedKeysRef from DB (GET /api/seen-articles?ticker=X)
  *   2. Restore main + competitor feeds from sessionStorage (10-min TTL)
- *   3. Diff cached articles against seen keys → genuinely new → NEW badge
+ *   3. Diff cached articles against dismissedKeysRef → not dismissed + recent → NEW badge
  *   4. Save any unseen articles to DB (POST /api/seen-articles)
  *
  * On fresh fetch (loadMainCard / loadCompetitor):
- *   - Compare fetched articles against seenArticleKeysRef
- *   - New articles get added to newArticleKeys Set → NEW badge rendered
+ *   - Compare fetched articles against dismissedKeysRef (not seenArticleKeysRef)
+ *   - Non-dismissed, recent articles get added to newArticleKeys Set → NEW badge
  *   - Articles are saved to DB + sessionStorage for next reload
  *
- * NEW badge is auto-dismissed when:
- *   - User clicks the dismiss (×) button → removes key from newArticleKeys
+ * NEW badge shows when: article is not dismissed AND published within 48h
+ * NEW badge is removed when:
+ *   - User clicks the dismiss (×) button → persisted to DB across all devices
  *   - Article is analyzed by AI → badge hidden (analyzed === true)
  *
  * Session cache:
@@ -848,6 +849,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   // Track genuinely new articles: persisted via DB so NEW badges survive page reloads.
   // seenArticleKeysRef holds all cache keys previously stored in the seen_articles table.
   const seenArticleKeysRef = useRef<Set<string>>(new Set());
+  // dismissedKeysRef holds keys the user explicitly dismissed (clicked NEW badge).
+  // NEW badge logic uses dismissedKeysRef — not seenArticleKeysRef — so that
+  // articles show as NEW on every device until the user actively dismisses them.
+  const dismissedKeysRef = useRef<Set<string>>(new Set());
   const [newArticleKeys, setNewArticleKeys] = useState<Set<string>>(new Set());
 
   // Track whether the initial auto-recheck has fired (prevents double-checking)
@@ -909,11 +914,11 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     const all = [...prs, ...news];
     const currentKeys = new Set(all.map(a => articleCacheKey(a)));
 
-    // Identify articles we haven't seen before (not in the DB) AND recent enough
+    // Identify articles not dismissed AND recent enough → NEW badge
     const fresh = new Set<string>();
     for (const a of all) {
       const key = articleCacheKey(a);
-      if (!seenArticleKeysRef.current.has(key) && isRecentEnoughForNew(a)) fresh.add(key);
+      if (!dismissedKeysRef.current.has(key) && isRecentEnoughForNew(a)) fresh.add(key);
     }
     // Merge: replace main-feed keys but preserve competitor NEW keys
     setNewArticleKeys(prev => {
@@ -1081,7 +1086,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       if (newCompToSave.length > 0) {
         // Mark new competitor articles in the shared newArticleKeys set (only recent ones)
         const recentCompKeys = all
-          .filter(a => !seenArticleKeysRef.current.has(articleCacheKey(a)) && isRecentEnoughForNew(a))
+          .filter(a => !dismissedKeysRef.current.has(articleCacheKey(a)) && isRecentEnoughForNew(a))
           .map(a => articleCacheKey(a));
         if (recentCompKeys.length > 0) {
           setNewArticleKeys(prev => {
@@ -1145,8 +1150,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         if (res.ok) {
           const data = await res.json();
           const keys: string[] = data.keys || [];
+          const dismissed: string[] = data.dismissed || [];
           seenArticleKeysRef.current = new Set(keys);
-          console.log(`[seen-articles] hydrated ${keys.length} keys from DB`);
+          dismissedKeysRef.current = new Set(dismissed);
+          console.log(`[seen-articles] hydrated ${keys.length} keys (${dismissed.length} dismissed) from DB`);
         } else {
           const body = await res.json().catch(() => ({}));
           console.error('[seen-articles] hydrate failed:', res.status, body.error || '');
@@ -1158,12 +1165,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       // 2. Load articles (from cache or fetch)
       const cached = getCachedFeed(ticker);
       if (cached) {
-        // Restore from session cache — compare against DB-persisted seen keys
+        // Restore from session cache — compare against dismissed keys (not just seen)
         const allCached = [...cached.pressReleases, ...cached.news];
         const fresh = new Set<string>();
         for (const a of allCached) {
           const key = articleCacheKey(a);
-          if (!seenArticleKeysRef.current.has(key) && isRecentEnoughForNew(a)) fresh.add(key);
+          if (!dismissedKeysRef.current.has(key) && isRecentEnoughForNew(a)) fresh.add(key);
         }
         setNewArticleKeys(fresh);
 
@@ -1213,7 +1220,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             const compFresh: string[] = [];
             for (const a of allComp) {
               const key = articleCacheKey(a);
-              if (!seenArticleKeysRef.current.has(key) && isRecentEnoughForNew(a)) compFresh.push(key);
+              if (!dismissedKeysRef.current.has(key) && isRecentEnoughForNew(a)) compFresh.push(key);
             }
             if (compFresh.length > 0) {
               setNewArticleKeys(prev => {
@@ -1297,7 +1304,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       return next;
     });
     seenArticleKeysRef.current.add(cacheKey);
-    // Persist dismiss to DB so it survives page refresh
+    dismissedKeysRef.current.add(cacheKey);
+    // Persist dismiss to DB so it survives page refresh + across devices
     const allArticles = [...mainCard.pressReleases, ...mainCard.news];
     const article = allArticles.find(a => articleCacheKey(a) === cacheKey);
     if (article) {
@@ -1728,8 +1736,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               {/* Node: Cache key */}
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center' }}>Cache key = URL (alphanum, first 60 chars)</div>
               <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
-              {/* Node: In DB? */}
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Key in seen_articles DB?</div>
+              {/* Node: Dismissed? */}
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Key in dismissed set? (DB: dismissed=true)</div>
               <div style={{ display: 'flex', gap: 32, marginTop: 8 }}>
                 {/* Yes branch */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -1758,10 +1766,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               </div>
             </div>
             <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
-              <div><span style={{ color: 'var(--text3)' }}>Persistence:</span> seen_articles table (Neon) — survives sessions</div>
+              <div><span style={{ color: 'var(--text3)' }}>Persistence:</span> seen_articles table (Neon) — tracks all fetched articles</div>
+              <div><span style={{ color: 'var(--text3)' }}>Dismiss field:</span> dismissed=true in DB — controls NEW badge across all devices</div>
+              <div><span style={{ color: 'var(--text3)' }}>Cross-device:</span> NEW badge shows on every device until explicitly dismissed</div>
               <div><span style={{ color: 'var(--text3)' }}>Session cache:</span> sessionStorage — 10 min TTL, avoids re-fetch on tab switch</div>
               <div><span style={{ color: 'var(--text3)' }}>Staleness guard:</span> articles &gt;48h old never get NEW badge</div>
-              <div><span style={{ color: 'var(--text3)' }}>Dismiss:</span> click NEW badge to mark dismissed in DB</div>
+              <div><span style={{ color: 'var(--text3)' }}>Dismiss:</span> click NEW badge &rarr; sets dismissed=true in DB &rarr; hidden everywhere</div>
             </div>
 
             {/* Divider */}
