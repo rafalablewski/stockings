@@ -819,13 +819,19 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         source: a.source,
         articleType: newPrs.includes(a) ? 'pr' : 'news',
       }));
-      console.log(`[ai-fetch] saving ${toSave.length} new articles to DB...`);
+      console.log(`[ai-fetch] saving ${toSave.length} new articles to DB...`, toSave.slice(0, 2));
       try {
-        await fetch('/api/seen-articles', {
+        const saveRes = await fetch('/api/seen-articles', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ticker, articles: toSave }),
         });
+        const saveBody = await saveRes.json().catch(() => ({}));
+        if (saveRes.ok) {
+          console.log('[ai-fetch] save OK:', saveBody);
+        } else {
+          console.error('[ai-fetch] save FAILED:', saveRes.status, saveBody);
+        }
       } catch (err) {
         console.error('[ai-fetch] save error:', err);
       }

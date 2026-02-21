@@ -136,7 +136,6 @@ CREATE TABLE IF NOT EXISTS seen_articles (
   created_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
--- Add columns if table already exists (safe to re-run)
 ALTER TABLE seen_articles ADD COLUMN IF NOT EXISTS url TEXT;
 ALTER TABLE seen_articles ADD COLUMN IF NOT EXISTS source TEXT;
 ALTER TABLE seen_articles ADD COLUMN IF NOT EXISTS article_type TEXT;
