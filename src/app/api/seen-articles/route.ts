@@ -8,19 +8,21 @@ export const dynamic = 'force-dynamic';
 /**
  * GET /api/seen-articles?ticker=ASTS
  *
- * Returns all seen article cache keys for a ticker.
- * Response: { keys: string[], dismissed: string[] }
- *   - keys: all cache keys we've ever seen
- *   - dismissed: cache keys the user explicitly dismissed (clicked NEW)
+ * Returns all stored articles for a ticker (full article data for DB-first loading).
+ * Response: { articles: [{cacheKey, headline, date, url, source, articleType, dismissed}] }
+ *
+ * Legacy rows (url is null — saved before the schema addition) are returned with
+ * dismissed forced to true so they don't show a NEW badge.
  *
  * POST /api/seen-articles
  *
- * Batch-upsert seen articles.
- * Body: { ticker, articles: { cacheKey, headline, date? }[], dismiss?: boolean }
+ * Batch-upsert articles.
+ * Body: { ticker, articles: { cacheKey, headline, date?, url?, source?, articleType? }[], dismiss?: boolean }
  *   - dismiss: true = user clicked NEW badge to dismiss these articles
+ *   - dismiss: false/omitted = saving new articles from AI Fetch
  */
 
-const VALID_TICKERS = new Set(['asts', 'bmnr', 'crcl']);
+const VALID_TICKERS = new Set(['asts', 'bmnr', 'crcl', 'mstr']);
 
 export async function GET(request: NextRequest) {
   const ticker = request.nextUrl.searchParams.get('ticker');
@@ -35,18 +37,30 @@ export async function GET(request: NextRequest) {
 
   try {
     const rows = await db
-      .select({ cacheKey: seenArticles.cacheKey, dismissed: seenArticles.dismissed })
+      .select({
+        cacheKey: seenArticles.cacheKey,
+        headline: seenArticles.headline,
+        date: seenArticles.date,
+        url: seenArticles.url,
+        source: seenArticles.source,
+        articleType: seenArticles.articleType,
+        dismissed: seenArticles.dismissed,
+      })
       .from(seenArticles)
       .where(eq(seenArticles.ticker, t));
 
-    const keys: string[] = [];
-    const dismissed: string[] = [];
-    for (const row of rows) {
-      keys.push(row.cacheKey);
-      if (row.dismissed) dismissed.push(row.cacheKey);
-    }
+    // Map to response objects. Legacy rows without url are forced dismissed.
+    const articles = rows.map(row => ({
+      cacheKey: row.cacheKey,
+      headline: row.headline,
+      date: row.date,
+      url: row.url,
+      source: row.source,
+      articleType: row.articleType,
+      dismissed: row.url ? row.dismissed : true,
+    }));
 
-    return NextResponse.json({ keys, dismissed });
+    return NextResponse.json({ articles });
   } catch (error) {
     console.error('Seen articles read error:', error);
     const msg = error instanceof Error ? error.message : 'Internal server error';
@@ -67,33 +81,36 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Unknown ticker: ${ticker}` }, { status: 400 });
     }
 
-    // Batch upsert — single INSERT per request instead of one per article
     const values = articles
       .filter((art: { cacheKey?: string; headline?: string }) => art.cacheKey && art.headline)
-      .map((art: { cacheKey: string; headline: string; date?: string }) => ({
+      .map((art: { cacheKey: string; headline: string; date?: string; url?: string; source?: string; articleType?: string }) => ({
         ticker: t,
         cacheKey: art.cacheKey,
         headline: art.headline,
         date: art.date || null,
+        url: art.url || null,
+        source: art.source || null,
+        articleType: art.articleType || null,
         dismissed: !!dismiss,
       }));
 
-    let inserted = 0;
+    let totalInDb = 0;
     if (values.length > 0) {
       if (dismiss) {
+        // User clicked NEW — set dismissed=true, also update article data if provided
         await db.insert(seenArticles).values(values).onConflictDoUpdate({
           target: [seenArticles.ticker, seenArticles.cacheKey],
           set: { dismissed: true },
         });
       } else {
+        // AI Fetch saving new articles — insert with full data, don't overwrite existing rows
         await db.insert(seenArticles).values(values).onConflictDoNothing();
       }
-      // Verify: count rows for this ticker
       const [row] = await db.select({ n: count() }).from(seenArticles).where(eq(seenArticles.ticker, t));
-      inserted = row?.n ?? 0;
+      totalInDb = row?.n ?? 0;
     }
 
-    return NextResponse.json({ ok: true, sent: articles.length, filtered: values.length, totalInDb: inserted });
+    return NextResponse.json({ ok: true, sent: articles.length, filtered: values.length, totalInDb });
   } catch (error) {
     console.error('Seen articles write error:', error);
     const msg = error instanceof Error ? error.message : 'Internal server error';

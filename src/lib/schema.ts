@@ -115,6 +115,9 @@ export const seenArticles = pgTable('seen_articles', {
   cacheKey: text('cache_key').notNull(),   // articleCacheKey(article)
   headline: text('headline').notNull(),
   date: text('date'),                      // article publication date
+  url: text('url'),                        // article URL (null for legacy rows)
+  source: text('source'),                  // e.g. 'Yahoo Finance', 'CoinDesk'
+  articleType: text('article_type'),       // 'pr' | 'news'
   dismissed: boolean('dismissed').default(false).notNull(), // user clicked NEW to dismiss
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => [
