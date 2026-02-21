@@ -1208,7 +1208,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           else news.push(item);
 
           records.set(art.cacheKey, art);
-          if (!art.dismissed) newKeys.add(art.cacheKey);
+          newKeys.add(art.cacheKey);
         }
 
         dbRecordsRef.current = records;

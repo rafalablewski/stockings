@@ -1517,7 +1517,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             fileUrl: f.fileUrl || '',
           });
           records.set(f.accessionNumber, f);
-          if (!f.dismissed) newKeys.add(f.accessionNumber);
+          newKeys.add(f.accessionNumber);
         }
 
         // Sort newest-first (by filingDate descending)
