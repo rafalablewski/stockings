@@ -24,6 +24,39 @@ export const dynamic = 'force-dynamic';
 
 const VALID_TICKERS = new Set(['asts', 'bmnr', 'crcl', 'mstr']);
 
+// Auto-create the table if it doesn't exist (self-healing after setup drops it)
+let tableVerified = false;
+async function ensureTable() {
+  if (tableVerified) return;
+  try {
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS seen_articles (
+        id SERIAL PRIMARY KEY,
+        ticker TEXT NOT NULL,
+        cache_key TEXT NOT NULL,
+        headline TEXT NOT NULL,
+        date TEXT,
+        url TEXT,
+        source TEXT,
+        article_type TEXT,
+        dismissed BOOLEAN NOT NULL DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL
+      )
+    `);
+    await db.execute(sql`
+      CREATE UNIQUE INDEX IF NOT EXISTS seen_articles_ticker_key_idx
+        ON seen_articles (ticker, cache_key)
+    `);
+    await db.execute(sql`
+      CREATE INDEX IF NOT EXISTS seen_articles_ticker_idx
+        ON seen_articles (ticker)
+    `);
+    tableVerified = true;
+  } catch (e) {
+    console.error('ensureTable failed:', e);
+  }
+}
+
 export async function GET(request: NextRequest) {
   const ticker = request.nextUrl.searchParams.get('ticker');
   if (!ticker) {
@@ -36,6 +69,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    await ensureTable();
+
     const rows = await db
       .select({
         cacheKey: seenArticles.cacheKey,
@@ -81,6 +116,8 @@ export async function POST(request: NextRequest) {
     if (!VALID_TICKERS.has(t)) {
       return NextResponse.json({ error: `Unknown ticker: ${ticker}` }, { status: 400 });
     }
+
+    await ensureTable();
 
     const values = articles
       .filter((art: { cacheKey?: string; headline?: string }) => art.cacheKey && art.headline)

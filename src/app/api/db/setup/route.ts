@@ -123,9 +123,7 @@ CREATE TABLE IF NOT EXISTS partner_news (
 CREATE INDEX IF NOT EXISTS partner_news_ticker_date_idx
   ON partner_news (ticker, date);
 
-DROP TABLE IF EXISTS seen_articles;
-
-CREATE TABLE seen_articles (
+CREATE TABLE IF NOT EXISTS seen_articles (
   id SERIAL PRIMARY KEY,
   ticker TEXT NOT NULL,
   cache_key TEXT NOT NULL,

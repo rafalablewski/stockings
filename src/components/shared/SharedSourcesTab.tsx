@@ -142,7 +142,7 @@ const SourceArticleRow: React.FC<{
   const isErrorAnalysis = (text: string | null) => !!text && (text.startsWith('Error:') || text === 'No analysis returned.' || text === 'AI analysis failed');
 
   // DB status: green = all fields saved, yellow = partial, gray = not in DB
-  const dbColor = !dbRecord ? 'var(--text3)' : (dbRecord.date && dbRecord.url && dbRecord.source && dbRecord.articleType) ? 'var(--mint)' : 'var(--gold)';
+  const dbColor = !dbRecord ? 'var(--text3)' : (dbRecord.date != null && dbRecord.url != null && dbRecord.source != null && dbRecord.articleType != null) ? 'var(--mint)' : 'var(--gold)';
   const dbOpacity = !dbRecord ? 0.25 : 0.8;
   const dbTitle = !dbRecord
     ? 'Not saved to DB'
@@ -817,7 +817,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           console.log('[ai-fetch] save OK:', saveBody);
           // Update local DB records with what we just saved
           for (const a of allToSave) {
-            const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: a.articleType, dismissed: !newKeys.has(a.cacheKey) };
+            const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: !newKeys.has(a.cacheKey) };
             dbRecordsRef.current.set(a.cacheKey, rec);
           }
           setDbRecords(new Map(dbRecordsRef.current));
