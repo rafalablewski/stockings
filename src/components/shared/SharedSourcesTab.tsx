@@ -56,8 +56,6 @@ interface CardData {
   news: ArticleItem[];
 }
 
-// (Session cache removed — articles are loaded from DB only)
-
 function formatTimeAgo(ts: number): string {
   const seconds = Math.floor((Date.now() - ts) / 1000);
   if (seconds < 60) return 'just now';
@@ -73,80 +71,51 @@ const SOURCE_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
   news: { bg: 'var(--mint-dim)', text: 'var(--mint)' },
 };
 
-// ── Per-article analysis cache (survives tab switches) ─────────────────────
-function getSourceAnalysisCache(ticker: string, articleKey: string): string | null {
-  try {
-    const raw = sessionStorage.getItem(`source_analysis_${ticker}_${articleKey}`);
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
-}
-
-function setSourceAnalysisCache(ticker: string, articleKey: string, text: string) {
-  try { sessionStorage.setItem(`source_analysis_${ticker}_${articleKey}`, JSON.stringify(text)); } catch { /* quota */ }
-}
-
-function removeSourceAnalysisCache(ticker: string, articleKey: string) {
-  try { sessionStorage.removeItem(`source_analysis_${ticker}_${articleKey}`); } catch { /* ignore */ }
-}
-
 /** Generate a stable cache key for an article */
 function articleCacheKey(article: ArticleItem): string {
   return (article.url || article.headline || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 60);
 }
 
-// (48h staleness check removed — NEW badge stays until user clicks it)
-
-// ── Per-article tracked-status overrides (survives refresh within session) ──
-// When a per-article re-check confirms an article is tracked, store the override
-// so that loadMainCard carry-over and promote logic can pick it up.
-const trackedOverrides = new Map<string, boolean>();
-
-function getTrackedOverride(article: ArticleItem): boolean | undefined {
-  return trackedOverrides.get(articleCacheKey(article));
+/** DB record shape for per-article status display */
+interface DbRecord {
+  cacheKey: string;
+  headline: string;
+  date: string | null;
+  url: string | null;
+  source: string | null;
+  articleType: string | null;
+  dismissed: boolean;
 }
 
-function setTrackedOverride(article: ArticleItem, value: boolean) {
-  trackedOverrides.set(articleCacheKey(article), value);
-}
-
-// Verdict types and utilities imported from './verdictUtils'
-
-// ── Article row (EDGAR filing-row style) ────────────────────────────────────
+// ── Article row ─────────────────────────────────────────────────────────────
 const SourceArticleRow: React.FC<{
   article: ArticleItem;
   type: 'pr' | 'news';
   showAnalysis?: boolean;
   ticker: string;
   isGenuinelyNew?: boolean;
+  dbRecord?: DbRecord | null;
   persistedAnalysis?: string | null;
   onDismissNew?: () => void;
-}> = ({ article, type, showAnalysis, ticker, isGenuinelyNew, persistedAnalysis, onDismissNew }) => {
+}> = ({ article, type, showAnalysis, ticker, isGenuinelyNew, dbRecord, persistedAnalysis, onDismissNew }) => {
   const cacheKey = articleCacheKey(article);
-  const [aiAnalysis, setAiAnalysis] = useState<string | null>(() => getSourceAnalysisCache(ticker, cacheKey) || persistedAnalysis || null);
+  const [aiAnalysis, setAiAnalysis] = useState<string | null>(persistedAnalysis || null);
 
-  // Hydrate from persistent storage when it becomes available after async fetch
   useEffect(() => {
-    if (!aiAnalysis && persistedAnalysis) {
-      setAiAnalysis(persistedAnalysis);
-      setSourceAnalysisCache(ticker, cacheKey, persistedAnalysis);
-    }
+    if (!aiAnalysis && persistedAnalysis) setAiAnalysis(persistedAnalysis);
   }, [persistedAnalysis]); // eslint-disable-line react-hooks/exhaustive-deps
   const [analyzing, setAnalyzing] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [recheckLoading, setRecheckLoading] = useState(false);
   const [localAnalyzed, setLocalAnalyzed] = useState<boolean | null>(article.analyzed ?? null);
 
-  // Sync with parent prop. Promote-only: once tracked, never demote.
-  // DB is append-only so a tracked article should stay tracked.
   useEffect(() => {
     const parentVal = article.analyzed ?? null;
     setLocalAnalyzed(prev => (prev === true && parentVal !== true) ? true : parentVal);
   }, [article.analyzed]);
 
   const handleRecheck = async () => {
-    // Already tracked — DB is append-only, skip the API call entirely
     if (localAnalyzed === true) return;
-
     setRecheckLoading(true);
     try {
       const res = await fetch('/api/check-analyzed', {
@@ -156,9 +125,7 @@ const SourceArticleRow: React.FC<{
       });
       if (res.ok) {
         const data = await res.json();
-        const result = data.results?.[0]?.analyzed ?? null;
-        setLocalAnalyzed(result);
-        if (result === true) setTrackedOverride(article, true);
+        setLocalAnalyzed(data.results?.[0]?.analyzed ?? null);
       }
     } catch { /* best-effort */ }
     finally { setRecheckLoading(false); }
@@ -174,18 +141,21 @@ const SourceArticleRow: React.FC<{
 
   const isErrorAnalysis = (text: string | null) => !!text && (text.startsWith('Error:') || text === 'No analysis returned.' || text === 'AI analysis failed');
 
+  // DB status: green = all fields saved, yellow = partial, gray = not in DB
+  const dbColor = !dbRecord ? 'var(--text3)' : (dbRecord.date && dbRecord.url && dbRecord.source && dbRecord.articleType) ? 'var(--mint)' : 'var(--gold)';
+  const dbOpacity = !dbRecord ? 0.25 : 0.8;
+  const dbTitle = !dbRecord
+    ? 'Not saved to DB'
+    : `DB: ${dbRecord.articleType || '?'} | ${dbRecord.date || 'no date'} | ${dbRecord.source || 'no source'} | ${dbRecord.headline?.slice(0, 40)}${(dbRecord.headline?.length || 0) > 40 ? '...' : ''} | ${dbRecord.url ? 'has URL' : 'no URL'}`;
+
   const handleAnalyze = async () => {
     const isError = isErrorAnalysis(aiAnalysis);
     if (aiAnalysis && !isError) {
-      setAiAnalysis(null); removeSourceAnalysisCache(ticker, cacheKey); setExpanded(false);
-      // Also remove from persistent storage (fire-and-forget)
+      setAiAnalysis(null); setExpanded(false);
       fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'sources', key: cacheKey, text: null }) }).catch(() => {});
       return;
     }
-    // If previous result was an error, clear it before retrying
-    if (isError) {
-      setAiAnalysis(null); removeSourceAnalysisCache(ticker, cacheKey);
-    }
+    if (isError) setAiAnalysis(null);
     setAnalyzing(true);
     setExpanded(true);
     try {
@@ -204,16 +174,11 @@ const SourceArticleRow: React.FC<{
       const text = data.analysis || data.error || 'No analysis returned.';
       const failed = isErrorAnalysis(text);
       setAiAnalysis(text);
-      setSourceAnalysisCache(ticker, cacheKey, text);
-      // Only persist successful analyses to Postgres (don't save error strings)
       if (!failed) {
         fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'sources', key: cacheKey, text }) }).catch(() => {});
       }
     } catch (err) {
-      const errText = `Error: ${(err as Error).message}`;
-      setAiAnalysis(errText);
-      setSourceAnalysisCache(ticker, cacheKey, errText);
-      // Don't persist errors to Postgres
+      setAiAnalysis(`Error: ${(err as Error).message}`);
     } finally {
       setAnalyzing(false);
     }
@@ -314,8 +279,21 @@ const SourceArticleRow: React.FC<{
             {statusLabel}
           </span>
         )}
+        {/* DB save status indicator */}
+        <span
+          title={dbTitle}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0,
+            fontSize: 8, fontFamily: 'Space Mono, monospace', color: dbColor, opacity: dbOpacity,
+            padding: '1px 4px', borderRadius: 3,
+            border: `1px solid color-mix(in srgb, ${dbColor} 20%, transparent)`,
+          }}
+        >
+          <span style={{ width: 5, height: 5, borderRadius: '50%', background: dbColor }} />
+          DB
+        </span>
         {/* NEW badge — clickable: dismisses the article as "seen" */}
-        {isGenuinelyNew && !aiAnalysis && (
+        {isGenuinelyNew && (
           <button
             onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
             title="Mark as seen"
@@ -455,9 +433,10 @@ const SourceArticleSection: React.FC<{
   showAnalysis?: boolean;
   ticker: string;
   newArticleKeys: Set<string>;
+  dbRecords: Map<string, DbRecord>;
   persistedSourceAnalyses: Record<string, string>;
   onDismissNew?: (cacheKey: string) => void;
-}> = ({ articles, type, label, showAnalysis, ticker, newArticleKeys, persistedSourceAnalyses, onDismissNew }) => {
+}> = ({ articles, type, label, showAnalysis, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onDismissNew }) => {
   const sorted = [...articles].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   const displayed = sorted.slice(0, SECTION_MAX);
 
@@ -474,7 +453,7 @@ const SourceArticleSection: React.FC<{
       {displayed.map((a, i) => {
         const key = articleCacheKey(a);
         return (
-          <SourceArticleRow key={`${type}-${i}`} article={a} type={type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(key)} persistedAnalysis={persistedSourceAnalyses[key] || null} onDismissNew={() => onDismissNew?.(key)} />
+          <SourceArticleRow key={`${type}-${i}`} article={a} type={type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(key)} dbRecord={dbRecords.get(key) || null} persistedAnalysis={persistedSourceAnalyses[key] || null} onDismissNew={() => onDismissNew?.(key)} />
         );
       })}
     </div>
@@ -487,9 +466,10 @@ const SourceArticleList: React.FC<{
   showAnalysis?: boolean;
   ticker: string;
   newArticleKeys: Set<string>;
+  dbRecords: Map<string, DbRecord>;
   persistedSourceAnalyses: Record<string, string>;
   onDismissNew?: (cacheKey: string) => void;
-}> = ({ pressReleases, news, showAnalysis, ticker, newArticleKeys, persistedSourceAnalyses, onDismissNew }) => {
+}> = ({ pressReleases, news, showAnalysis, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onDismissNew }) => {
   if (pressReleases.length === 0 && news.length === 0) {
     return (
       <div style={{ fontSize: 13, color: 'var(--text3)', padding: '16px 12px', lineHeight: 1.6 }}>
@@ -500,11 +480,11 @@ const SourceArticleList: React.FC<{
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <SourceArticleSection articles={pressReleases} type="pr" label="Press Releases" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
+      <SourceArticleSection articles={pressReleases} type="pr" label="Press Releases" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} dbRecords={dbRecords} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
       {pressReleases.length > 0 && news.length > 0 && (
         <div style={{ height: 1, background: 'color-mix(in srgb, var(--border) 40%, transparent)', margin: '4px 12px' }} />
       )}
-      <SourceArticleSection articles={news} type="news" label="News" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
+      <SourceArticleSection articles={news} type="news" label="News" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} dbRecords={dbRecords} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
     </div>
   );
 };
@@ -520,12 +500,13 @@ const CompanyFeedCard: React.FC<{
   fetchedAt?: number | null;
   ticker: string;
   newArticleKeys: Set<string>;
+  dbRecords: Map<string, DbRecord>;
   persistedSourceAnalyses: Record<string, string>;
   onLoad: () => void;
   onRecheck?: () => void;
   onTabChange?: (tab: 'pr' | 'news') => void;
   onDismissNew?: (cacheKey: string) => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, persistedSourceAnalyses, onLoad, onRecheck, onDismissNew }) => {
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onLoad, onRecheck, onDismissNew }) => {
   const prCount = Math.min(data.pressReleases.length, SECTION_MAX);
   const newsCount = Math.min(data.news.length, SECTION_MAX);
   const isActive = data.loading || (aiChecking ?? false);
@@ -711,7 +692,7 @@ const CompanyFeedCard: React.FC<{
         )}
 
         {data.loaded && (
-          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
+          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} dbRecords={dbRecords} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
         )}
       </div>
     </article>
@@ -732,16 +713,18 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const [matchMethod, setMatchMethod] = useState<'ai' | 'local' | 'hybrid' | null>(null);
   const [forceLocal, setForceLocal] = useState(false);
 
-  // NEW badge: articles with dismissed=false in the DB.
-  // dbArticleKeysRef tracks all cache keys in DB so AI Fetch can identify truly new articles.
-  const dbArticleKeysRef = useRef<Set<string>>(new Set());
+  // DB records map: cacheKey → DB row. Source of truth for DB status and NEW detection.
+  const dbRecordsRef = useRef<Map<string, DbRecord>>(new Map());
+  const [dbRecords, setDbRecords] = useState<Map<string, DbRecord>>(new Map());
+
+  // NEW badge: articles with dismissed=false in the DB + articles not in DB when AI Fetch runs
   const [newArticleKeys, setNewArticleKeys] = useState<Set<string>>(new Set());
 
   // Track whether the initial auto-recheck has fired (prevents double-checking)
   const initialRecheckDone = useRef(false);
   const compRecheckDone = useRef<Set<string>>(new Set());
 
-  // Persistent analysis cache (survives page reloads — loaded from disk)
+  // Persistent analysis cache (survives page reloads — loaded from Postgres)
   const [persistedSourceAnalyses, setPersistedSourceAnalyses] = useState<Record<string, string>>({});
 
   const checkAnalyzed = useCallback(async (articles: ArticleItem[]): Promise<ArticleItem[]> => {
@@ -792,7 +775,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     if (newsResult.status === 'fulfilled') news = newsResult.value;
     const error = (prResult.status === 'rejected' && newsResult.status === 'rejected') ? 'Could not fetch feeds' : null;
 
-    // Replace state with fresh API results (max 10 each, sorted by date)
+    // Identify genuinely new articles (not in DB yet) → mark as NEW
+    const newKeys = new Set<string>();
+    for (const a of [...prs, ...news]) {
+      const key = articleCacheKey(a);
+      if (!dbRecordsRef.current.has(key)) newKeys.add(key);
+    }
+
+    // Replace state with fresh API results (max 10 each)
     setMainCard(prev => ({
       ...prev, loading: false, loaded: true, error,
       pressReleases: prs,
@@ -800,13 +790,22 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }));
     setLastFetchedAt(Date.now());
 
+    // Mark new articles
+    if (newKeys.size > 0) {
+      setNewArticleKeys(prev => {
+        const next = new Set(prev);
+        for (const k of newKeys) next.add(k);
+        return next;
+      });
+    }
+
     // Save ALL fetched articles to DB with proper articleType (upsert fixes legacy nulls)
     const allToSave = [
       ...prs.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' })),
       ...news.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'news' })),
     ];
     if (allToSave.length > 0) {
-      console.log(`[ai-fetch] saving ${allToSave.length} articles to DB (${prs.length} PR, ${news.length} news)...`);
+      console.log(`[ai-fetch] saving ${allToSave.length} articles to DB (${prs.length} PR, ${news.length} news, ${newKeys.size} NEW)...`);
       try {
         const saveRes = await fetch('/api/seen-articles', {
           method: 'POST',
@@ -816,14 +815,18 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         const saveBody = await saveRes.json().catch(() => ({}));
         if (saveRes.ok) {
           console.log('[ai-fetch] save OK:', saveBody);
+          // Update local DB records with what we just saved
+          for (const a of allToSave) {
+            const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: a.articleType, dismissed: !newKeys.has(a.cacheKey) };
+            dbRecordsRef.current.set(a.cacheKey, rec);
+          }
+          setDbRecords(new Map(dbRecordsRef.current));
         } else {
           console.error('[ai-fetch] save FAILED:', saveRes.status, saveBody);
         }
       } catch (err) {
         console.error('[ai-fetch] save error:', err);
       }
-      // Update local DB ref
-      for (const a of [...prs, ...news]) dbArticleKeysRef.current.add(articleCacheKey(a));
     }
 
     // Run check-analyzed on all fetched articles
@@ -904,6 +907,18 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
       // Save all competitor articles to DB
       const all = [...prs, ...news];
+      const compNewKeys = new Set<string>();
+      for (const a of all) {
+        const key = articleCacheKey(a);
+        if (!dbRecordsRef.current.has(key)) compNewKeys.add(key);
+      }
+      if (compNewKeys.size > 0) {
+        setNewArticleKeys(prev => {
+          const next = new Set(prev);
+          for (const k of compNewKeys) next.add(k);
+          return next;
+        });
+      }
       const allToSave = all.map(a => ({
         cacheKey: articleCacheKey(a),
         headline: a.headline,
@@ -919,8 +934,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ticker, articles: allToSave }),
           });
+          for (const a of allToSave) {
+            const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: a.articleType, dismissed: !compNewKeys.has(a.cacheKey) };
+            dbRecordsRef.current.set(a.cacheKey, rec);
+          }
+          setDbRecords(new Map(dbRecordsRef.current));
         } catch { /* best-effort */ }
-        for (const a of all) dbArticleKeysRef.current.add(articleCacheKey(a));
       }
 
       // Check analyzed status
@@ -967,6 +986,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
         const prs: ArticleItem[] = [];
         const news: ArticleItem[] = [];
+        const newKeys = new Set<string>();
+        const records = new Map<string, DbRecord>();
 
         for (const art of articles) {
           const item: ArticleItem = {
@@ -979,12 +1000,15 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           if (art.articleType === 'pr') prs.push(item);
           else news.push(item);
 
-          dbArticleKeysRef.current.add(art.cacheKey);
+          records.set(art.cacheKey, art);
+          if (!art.dismissed) newKeys.add(art.cacheKey);
         }
 
-        // Don't restore NEW status from DB — NEW is session-only (AI Fetch discovers new articles)
+        dbRecordsRef.current = records;
+        setDbRecords(new Map(records));
+        setNewArticleKeys(newKeys);
         setMainCard({ loading: false, loaded: true, error: null, activeTab: 'pr', pressReleases: prs, news });
-        console.log(`[db-init] loaded ${articles.length} articles from DB (${prs.length} PR, ${news.length} news)`);
+        console.log(`[db-init] loaded ${articles.length} articles from DB (${prs.length} PR, ${news.length} news, ${newKeys.size} NEW)`);
 
         // Run check-analyzed on DB articles
         const all = [...prs, ...news];
@@ -1045,6 +1069,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       next.delete(cacheKey);
       return next;
     });
+    // Update local DB record
+    const rec = dbRecordsRef.current.get(cacheKey);
+    if (rec) {
+      rec.dismissed = true;
+      setDbRecords(new Map(dbRecordsRef.current));
+    }
     // Persist dismiss to DB
     const allArticles = [...mainCard.pressReleases, ...mainCard.news];
     const article = allArticles.find(a => articleCacheKey(a) === cacheKey);
@@ -1206,6 +1236,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           fetchedAt={lastFetchedAt}
           ticker={ticker}
           newArticleKeys={newArticleKeys}
+          dbRecords={dbRecords}
           persistedSourceAnalyses={persistedSourceAnalyses}
           onLoad={loadMainCard}
           onRecheck={recheckMainCard}
@@ -1250,6 +1281,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   aiChecking={compAiChecking[comp.name] || false}
                   ticker={ticker}
                   newArticleKeys={newArticleKeys}
+                  dbRecords={dbRecords}
                   persistedSourceAnalyses={persistedSourceAnalyses}
                   onLoad={() => loadCompetitor(comp.name)}
                   onRecheck={() => recheckCompetitor(comp.name)}
