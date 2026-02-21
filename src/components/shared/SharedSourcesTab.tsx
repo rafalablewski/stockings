@@ -526,8 +526,8 @@ const CompanyFeedCard: React.FC<{
   onTabChange?: (tab: 'pr' | 'news') => void;
   onDismissNew?: (cacheKey: string) => void;
 }> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, persistedSourceAnalyses, onLoad, onRecheck, onDismissNew }) => {
-  const prCount = data.pressReleases.length;
-  const newsCount = data.news.length;
+  const prCount = Math.min(data.pressReleases.length, SECTION_MAX);
+  const newsCount = Math.min(data.news.length, SECTION_MAX);
   const isActive = data.loading || (aiChecking ?? false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -792,27 +792,26 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     if (newsResult.status === 'fulfilled') news = newsResult.value;
     const error = (prResult.status === 'rejected' && newsResult.status === 'rejected') ? 'Could not fetch feeds' : null;
 
-    // Identify articles NOT already in DB → these are genuinely new
-    const newPrs = prs.filter(a => !dbArticleKeysRef.current.has(articleCacheKey(a)));
-    const newNews = news.filter(a => !dbArticleKeysRef.current.has(articleCacheKey(a)));
-    const allNew = [...newPrs, ...newNews];
+    // Replace state with fresh API results (max 10 each, sorted by date)
+    setMainCard(prev => ({
+      ...prev, loading: false, loaded: true, error,
+      pressReleases: prs,
+      news: news,
+    }));
+    setLastFetchedAt(Date.now());
 
-    // Save new articles to DB with dismissed=false (they get NEW badge)
-    if (allNew.length > 0) {
-      const toSave = allNew.map(a => ({
-        cacheKey: articleCacheKey(a),
-        headline: a.headline,
-        date: a.date,
-        url: a.url,
-        source: a.source,
-        articleType: newPrs.includes(a) ? 'pr' : 'news',
-      }));
-      console.log(`[ai-fetch] saving ${toSave.length} new articles to DB...`, toSave.slice(0, 2));
+    // Save ALL fetched articles to DB with proper articleType (upsert fixes legacy nulls)
+    const allToSave = [
+      ...prs.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' })),
+      ...news.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'news' })),
+    ];
+    if (allToSave.length > 0) {
+      console.log(`[ai-fetch] saving ${allToSave.length} articles to DB (${prs.length} PR, ${news.length} news)...`);
       try {
         const saveRes = await fetch('/api/seen-articles', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ticker, articles: toSave }),
+          body: JSON.stringify({ ticker, articles: allToSave }),
         });
         const saveBody = await saveRes.json().catch(() => ({}));
         if (saveRes.ok) {
@@ -823,70 +822,21 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       } catch (err) {
         console.error('[ai-fetch] save error:', err);
       }
-      // Update local DB ref + mark as NEW
-      for (const a of allNew) dbArticleKeysRef.current.add(articleCacheKey(a));
-      setNewArticleKeys(prev => {
-        const next = new Set(prev);
-        for (const a of allNew) next.add(articleCacheKey(a));
-        return next;
-      });
+      // Update local DB ref
+      for (const a of [...prs, ...news]) dbArticleKeysRef.current.add(articleCacheKey(a));
     }
 
-    // Merge new articles into existing display (keep old + add new on top)
-    // Also reclassify: articles currently in news that fresh API says are PRs get moved
-    const freshPrKeys = new Set(prs.map(a => articleCacheKey(a)));
-    setMainCard(prev => {
-      const existingKeys = new Set([
-        ...prev.pressReleases.map(a => articleCacheKey(a)),
-        ...prev.news.map(a => articleCacheKey(a)),
-      ]);
-      const addedPrs = prs.filter(a => !existingKeys.has(articleCacheKey(a)));
-      const addedNews = news.filter(a => !existingKeys.has(articleCacheKey(a)));
-
-      // Reclassify: move articles from news→PR based on fresh API data
-      const movedToPr = prev.news.filter(a => freshPrKeys.has(articleCacheKey(a)));
-      const remainingNews = prev.news.filter(a => !freshPrKeys.has(articleCacheKey(a)));
-
-      return {
-        ...prev, loading: false, loaded: true, error,
-        pressReleases: [...addedPrs, ...movedToPr, ...prev.pressReleases],
-        news: [...addedNews, ...remainingNews],
-      };
-    });
-    setLastFetchedAt(Date.now());
-
-    // Re-save all fetched articles with proper articleType to fix legacy null values in DB
-    const allFetched = [
-      ...prs.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' })),
-      ...news.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'news' })),
-    ];
-    if (allFetched.length > 0) {
-      fetch('/api/seen-articles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker, articles: allFetched }),
-      }).catch(() => {});
-    }
-
-    // Run check-analyzed on all new articles
-    if (allNew.length > 0) {
+    // Run check-analyzed on all fetched articles
+    const allArticles = [...prs, ...news];
+    if (allArticles.length > 0) {
       initialRecheckDone.current = true;
       setAiChecking(true);
       try {
-        const checked = await checkAnalyzed(allNew);
-        // Update only the newly added articles with their analyzed status
-        const checkedMap = new Map<string, boolean | null>();
-        for (const a of checked) checkedMap.set(articleCacheKey(a), a.analyzed ?? null);
+        const checked = await checkAnalyzed(allArticles);
         setMainCard(prev => ({
           ...prev,
-          pressReleases: prev.pressReleases.map(a => {
-            const status = checkedMap.get(articleCacheKey(a));
-            return status !== undefined ? { ...a, analyzed: (a.analyzed === true || status === true) ? true : status } : a;
-          }),
-          news: prev.news.map(a => {
-            const status = checkedMap.get(articleCacheKey(a));
-            return status !== undefined ? { ...a, analyzed: (a.analyzed === true || status === true) ? true : status } : a;
-          }),
+          pressReleases: checked.slice(0, prs.length),
+          news: checked.slice(prs.length),
         }));
       } catch { /* handled */ }
       finally { setAiChecking(false); }
@@ -952,33 +902,25 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       const news: ArticleItem[] = (data.news || []).map((a: { title: string; date: string; url: string; source: string }) => ({ headline: a.title, date: a.date, url: a.url, source: a.source, analyzed: null as boolean | null }));
       setCompCards(prev => ({ ...prev, [name]: { loading: false, loaded: true, error: null, activeTab: prev[name]?.activeTab || 'pr', pressReleases: prs, news } }));
 
-      // Identify new competitor articles not in DB
+      // Save all competitor articles to DB
       const all = [...prs, ...news];
-      const newComp = all.filter(a => !dbArticleKeysRef.current.has(articleCacheKey(a)));
-      if (newComp.length > 0) {
-        const toSave = newComp.map(a => ({
-          cacheKey: articleCacheKey(a),
-          headline: a.headline,
-          date: a.date,
-          url: a.url,
-          source: a.source,
-          articleType: prs.includes(a) ? 'pr' : 'news',
-        }));
-        // Mark as NEW
-        setNewArticleKeys(prev => {
-          const next = new Set(prev);
-          for (const a of newComp) next.add(articleCacheKey(a));
-          return next;
-        });
-        // Save to DB
+      const allToSave = all.map(a => ({
+        cacheKey: articleCacheKey(a),
+        headline: a.headline,
+        date: a.date,
+        url: a.url,
+        source: a.source,
+        articleType: prs.includes(a) ? 'pr' : 'news',
+      }));
+      if (allToSave.length > 0) {
         try {
           await fetch('/api/seen-articles', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ticker, articles: toSave }),
+            body: JSON.stringify({ ticker, articles: allToSave }),
           });
         } catch { /* best-effort */ }
-        for (const a of newComp) dbArticleKeysRef.current.add(articleCacheKey(a));
+        for (const a of all) dbArticleKeysRef.current.add(articleCacheKey(a));
       }
 
       // Check analyzed status
