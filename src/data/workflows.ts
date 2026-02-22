@@ -3940,7 +3940,7 @@ Rules: NEVER output actual secret values. Use [REDACTED]. Report file, line, and
     id: 'earnings-quality',
     name: 'Earnings Quality Audit',
     description: 'Validates earnings and financial data for accuracy, GAAP vs non-GAAP consistency, quarter-over-quarter trend integrity, and proper sourcing against SEC filings. Flags discrepancies, missing periods, and suspect data quality.',
-    requiresUserData: true,
+    requiresUserData: false,
     category: 'audit',
     variants: [
       {
@@ -4106,7 +4106,7 @@ Rules: Compare actual database values. Do not estimate or infer figures not pres
     id: 'peer-comparables',
     name: 'Peer Comparables Audit',
     description: 'Evaluates the comp set for relevance, completeness, and data consistency. Checks that valuation multiples use comparable methodologies, flags stale competitor data, and validates that the peer universe reflects current market positioning.',
-    requiresUserData: true,
+    requiresUserData: false,
     category: 'audit',
     variants: [
       {
@@ -4271,7 +4271,7 @@ Rules: Use actual database values. Flag gaps; do not fill with estimates.`,
     id: 'disclosure-completeness',
     name: 'Disclosure Completeness Audit',
     description: 'Maps SEC filings and press releases to the database, identifies material disclosures not yet captured, checks risk factor coverage, and validates that management commentary and guidance are reflected in the research data.',
-    requiresUserData: true,
+    requiresUserData: false,
     category: 'audit',
     variants: [
       {
@@ -4442,7 +4442,7 @@ Rules: Use actual database contents. Flag what's missing; don't fabricate filing
     id: 'model-consistency',
     name: 'Model Consistency Audit',
     description: 'Cross-checks financial model inputs against source data, validates calculation formulas, tests assumption consistency across modules, and checks that model outputs (valuations, projections) are logically coherent with their inputs.',
-    requiresUserData: true,
+    requiresUserData: false,
     category: 'audit',
     variants: [
       {
