@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import {
   AUDIT_FINDINGS,
   AUDIT_METADATA,
@@ -8,6 +8,7 @@ import {
   type AuditFinding,
   type Severity,
 } from '@/data/audit-findings';
+import { workflows } from '@/data/workflows';
 
 // ── Severity Config ──────────────────────────────────────────────────────────
 
@@ -365,6 +366,89 @@ export default function AuditDashboard() {
   const [filterSeverity, setFilterSeverity] = useState<FilterSeverity>('ALL');
   const stats = useMemo(() => getAuditStats(), []);
 
+  // ── Re-run state ──
+  const [rerunResult, setRerunResult] = useState('');
+  const [rerunRunning, setRerunRunning] = useState(false);
+  const [rerunError, setRerunError] = useState('');
+  const [rerunExpanded, setRerunExpanded] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
+
+  const codeAuditPrompt = useMemo(() => {
+    const wf = workflows.find(w => w.id === 'code-audit');
+    return wf?.variants[0]?.prompt ?? '';
+  }, []);
+
+  const handleRerun = useCallback(async () => {
+    if (!codeAuditPrompt) return;
+    setRerunRunning(true);
+    setRerunResult('');
+    setRerunError('');
+    setRerunExpanded(true);
+
+    abortRef.current = new AbortController();
+
+    try {
+      const res = await fetch('/api/workflow/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: codeAuditPrompt }),
+        signal: abortRef.current.signal,
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Request failed' }));
+        setRerunError(err.error || `Error ${res.status}`);
+        setRerunRunning(false);
+        return;
+      }
+
+      const reader = res.body?.getReader();
+      if (!reader) {
+        setRerunError('No response stream');
+        setRerunRunning(false);
+        return;
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const jsonStr = line.slice(6).trim();
+            if (jsonStr === '[DONE]') continue;
+            try {
+              const data = JSON.parse(jsonStr);
+              if (data.text) {
+                setRerunResult(prev => prev + data.text);
+              }
+            } catch {
+              // skip
+            }
+          }
+        }
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name !== 'AbortError') {
+        setRerunError(err.message);
+      }
+    } finally {
+      setRerunRunning(false);
+    }
+  }, [codeAuditPrompt]);
+
+  const handleRerunStop = () => {
+    abortRef.current?.abort();
+    setRerunRunning(false);
+  };
+
   const filteredFindings = useMemo(() => {
     if (filterSeverity === 'ALL') return AUDIT_FINDINGS;
     return AUDIT_FINDINGS.filter(f => f.severity === filterSeverity);
@@ -403,6 +487,62 @@ export default function AuditDashboard() {
           >
             {stats.bySeverity.CRITICAL > 0 ? `${stats.bySeverity.CRITICAL} Critical` : 'No Critical'}
           </span>
+
+          {/* Re-run button */}
+          {!rerunRunning ? (
+            <button
+              onClick={handleRerun}
+              style={{
+                marginLeft: 'auto',
+                fontSize: 9,
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                padding: '4px 12px',
+                borderRadius: 4,
+                background: 'rgba(121,192,255,0.06)',
+                border: '1px solid rgba(121,192,255,0.2)',
+                color: 'rgba(121,192,255,0.8)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+              }}
+            >
+              <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 4 23 10 17 10" />
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+              </svg>
+              Re-run Audit
+            </button>
+          ) : (
+            <button
+              onClick={handleRerunStop}
+              style={{
+                marginLeft: 'auto',
+                fontSize: 9,
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                padding: '4px 12px',
+                borderRadius: 4,
+                background: 'rgba(255,77,79,0.06)',
+                border: '1px solid rgba(255,77,79,0.2)',
+                color: 'rgba(255,77,79,0.8)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+              }}
+            >
+              <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <rect x={6} y={6} width={12} height={12} />
+              </svg>
+              Stop
+            </button>
+          )}
         </div>
         <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', margin: 0, lineHeight: 1.6 }}>
           Institutional-grade vulnerability assessment across 35 audit categories.
@@ -637,6 +777,89 @@ export default function AuditDashboard() {
         High (7.0–8.9), Medium (4.0–6.9), Low (0.1–3.9). Remediation effort estimates assume
         a single engineer with codebase familiarity.
       </div>
+
+      {/* ── Re-run Results ────────────────────────────────────────────── */}
+      {(rerunResult || rerunRunning || rerunError) && (
+        <div style={{ marginTop: 32 }}>
+          <button
+            onClick={() => setRerunExpanded(!rerunExpanded)}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '14px 18px',
+              background: 'rgba(121,192,255,0.03)',
+              border: '1px solid rgba(121,192,255,0.12)',
+              borderRadius: rerunExpanded ? '8px 8px 0 0' : 8,
+              cursor: 'pointer',
+              color: 'inherit',
+              fontFamily: 'inherit',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(121,192,255,0.7)' }}>
+                Re-run Results
+              </span>
+              {rerunRunning && (
+                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(121,192,255,0.6)', animation: 'pulse 2s infinite' }} />
+                  <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)' }}>Analyzing...</span>
+                </span>
+              )}
+              {!rerunRunning && rerunResult && (
+                <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(126,231,135,0.5)' }}>Complete</span>
+              )}
+            </div>
+            <svg
+              width={14}
+              height={14}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="rgba(255,255,255,0.25)"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ transform: rerunExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+
+          {rerunExpanded && (
+            <div
+              style={{
+                border: '1px solid rgba(121,192,255,0.12)',
+                borderTop: 'none',
+                borderRadius: '0 0 8px 8px',
+                background: 'rgba(255,255,255,0.01)',
+              }}
+            >
+              {rerunError && (
+                <div style={{ padding: '12px 18px' }}>
+                  <span style={{ fontSize: 11, color: '#FF4D4F' }}>{rerunError}</span>
+                </div>
+              )}
+              {rerunResult && (
+                <div style={{ maxHeight: 600, overflowY: 'auto', padding: '16px 18px' }}>
+                  <pre
+                    style={{
+                      fontSize: 12,
+                      fontFamily: 'Space Mono, monospace',
+                      color: 'rgba(255,255,255,0.65)',
+                      lineHeight: 1.8,
+                      whiteSpace: 'pre-wrap',
+                      margin: 0,
+                    }}
+                  >
+                    {rerunResult}
+                  </pre>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
