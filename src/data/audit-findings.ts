@@ -1,12 +1,14 @@
 /**
- * Institutional-Grade Code Audit Findings Registry
+ * Stockings Comprehensive Code Audit v1.0 — Findings Registry
  *
- * Structured vulnerability and risk data extracted from the comprehensive
- * 35-category code audit performed 2026-02-22.
+ * Structured vulnerability and risk data extracted from the
+ * Stockings Comprehensive Code Audit v1.0 performed 2026-02-22.
  *
  * Taxonomy follows OWASP, CWE, and CVSS v3.1 scoring conventions.
  * Each finding includes severity, CVSS score, affected assets,
  * remediation guidance with estimated effort, and compliance mapping.
+ *
+ * See also: docs/AUDIT_REGISTRY.md for the unified audit index.
  */
 
 // ── Severity Taxonomy ────────────────────────────────────────────────────────
@@ -56,6 +58,7 @@ export interface AuditFinding {
 // ── Audit Metadata ───────────────────────────────────────────────────────────
 
 export const AUDIT_METADATA = {
+  name: 'Stockings Comprehensive Code Audit v1.0',
   date: '2026-02-22',
   scope: 'Full codebase — 108 files',
   stack: 'Next.js 16 / TypeScript 5.9 / Neon PostgreSQL / Drizzle ORM',

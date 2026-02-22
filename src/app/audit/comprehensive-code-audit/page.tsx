@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import AuditDashboard from "@/components/AuditDashboard";
 
 export const metadata: Metadata = {
-  title: "Comprehensive Code Audit | ABISON",
+  title: "Stockings Comprehensive Code Audit v1.0 | ABISON",
   description:
     "35-category institutional-grade code audit with CVSS scoring, CWE mapping, and compliance analysis",
 };
@@ -13,7 +13,7 @@ export default function ComprehensiveCodeAuditPage() {
       <div className="max-w-5xl mx-auto">
         <div className="mb-12">
           <h1 className="text-2xl font-semibold tracking-tight text-white mb-3">
-            Comprehensive Code Audit
+            Stockings Comprehensive Code Audit v1.0
           </h1>
           <p className="text-[13px] text-white/40 leading-relaxed max-w-2xl">
             35-category institutional-grade analysis covering security

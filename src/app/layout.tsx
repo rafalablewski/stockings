@@ -17,7 +17,7 @@ export const viewport = {
 const audits = [
   {
     slug: "comprehensive-code-audit",
-    label: "Comprehensive Code Audit",
+    label: "Code Audit v1.0",
   },
 ];
 

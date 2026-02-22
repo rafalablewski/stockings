@@ -102,7 +102,7 @@ export default function HomePage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-[13px] font-medium text-white tracking-wide">
-                      Comprehensive Code Audit
+                      Stockings Comprehensive Code Audit v1.0
                     </span>
                     <span className="text-[11px] uppercase tracking-wider text-white/20">
                       {AUDIT_METADATA.date}
