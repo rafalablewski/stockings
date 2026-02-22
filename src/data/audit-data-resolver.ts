@@ -81,6 +81,7 @@ function serializeModule(moduleName: string, mod: DataModule): string {
       lines.push(`${key}: ${JSON.stringify(value, null, 2)}`);
     } catch {
       // Skip non-serializable values (symbols, circular refs, etc.)
+      console.warn(`[audit-data-resolver] Could not serialize key "${key}" in module "${moduleName}".`);
     }
   }
   return lines.join('\n');
@@ -98,18 +99,20 @@ export async function getAuditData(auditId: string, ticker: string): Promise<str
 
   if (!tickerModules || !tickerLoaders) return '';
 
-  const sections: string[] = [];
-
-  for (const moduleName of tickerModules) {
-    const loader = tickerLoaders[moduleName];
-    if (!loader) continue;
-    const mod = await loader();
-    sections.push(serializeModule(moduleName, mod));
-  }
+  const sections = (
+    await Promise.all(
+      tickerModules.map(async (moduleName) => {
+        const loader = tickerLoaders[moduleName];
+        if (!loader) return null;
+        const mod = await loader();
+        return serializeModule(moduleName, mod);
+      }),
+    )
+  ).filter((s): s is string => s !== null);
 
   return [
     `DATABASE SNAPSHOT — ${ticker.toUpperCase()}`,
-    '═'.repeat(50),
+    '═'.repeat(60),
     '',
     ...sections,
   ].join('\n\n');
