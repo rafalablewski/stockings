@@ -3,6 +3,7 @@ import { stockList } from "@/lib/stocks";
 import { workflows } from "@/data/workflows";
 import { PromptCard } from "@/components/PromptCard";
 const CODE_AUDIT_IDS = new Set([
+  "code-audit",
   "dependency-vulnerability",
   "api-endpoint-security",
   "performance-audit",
@@ -18,6 +19,7 @@ const dataAuditWorkflows = workflows.filter(
 );
 
 const AUDIT_BADGE: Record<string, string> = {
+  "code-audit": "Code",
   "dependency-vulnerability": "Deps",
   "api-endpoint-security": "API",
   "performance-audit": "Perf",
