@@ -10,6 +10,16 @@ import {
 } from '@/data/audit-findings';
 import { workflows } from '@/data/workflows';
 
+// ── Re-check Types ───────────────────────────────────────────────────────────
+
+type CheckVerdict = 'passed' | 'failed';
+
+interface CheckResult {
+  verdict: CheckVerdict;
+  summary: string;
+  timestamp: number;
+}
+
 // ── Severity Config ──────────────────────────────────────────────────────────
 
 const SEVERITY_CONFIG: Record<Severity, { color: string; bg: string; border: string; label: string }> = {
@@ -165,7 +175,21 @@ function SeverityBar({ bySeverity }: { bySeverity: Record<Severity, number> }) {
   );
 }
 
-function FindingRow({ finding, expanded, onToggle }: { finding: AuditFinding; expanded: boolean; onToggle: () => void }) {
+function FindingRow({
+  finding,
+  expanded,
+  onToggle,
+  checkResult,
+  isChecking,
+  onRecheck,
+}: {
+  finding: AuditFinding;
+  expanded: boolean;
+  onToggle: () => void;
+  checkResult?: CheckResult;
+  isChecking: boolean;
+  onRecheck: () => void;
+}) {
   const cfg = SEVERITY_CONFIG[finding.severity];
 
   return (
@@ -181,7 +205,7 @@ function FindingRow({ finding, expanded, onToggle }: { finding: AuditFinding; ex
         style={{
           width: '100%',
           display: 'grid',
-          gridTemplateColumns: '72px 72px 1fr 100px 80px 32px',
+          gridTemplateColumns: '72px 72px 1fr 100px 80px 120px 32px',
           alignItems: 'center',
           gap: 12,
           padding: '14px 16px',
@@ -218,6 +242,84 @@ function FindingRow({ finding, expanded, onToggle }: { finding: AuditFinding; ex
         >
           {finding.effort}
         </span>
+
+        {/* Status Cell */}
+        <span
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+          onClick={e => e.stopPropagation()}
+        >
+          {isChecking ? (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(121,192,255,0.6)', animation: 'pulse 1.5s infinite' }} />
+              <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(121,192,255,0.6)', fontFamily: 'Space Mono, monospace' }}>
+                Checking
+              </span>
+            </span>
+          ) : checkResult ? (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+              <span
+                style={{
+                  fontSize: 9,
+                  fontWeight: 700,
+                  fontFamily: 'Space Mono, monospace',
+                  letterSpacing: '0.08em',
+                  padding: '2px 7px',
+                  borderRadius: 3,
+                  textTransform: 'uppercase',
+                  color: checkResult.verdict === 'passed' ? '#7EE787' : '#FF4D4F',
+                  background: checkResult.verdict === 'passed' ? 'rgba(126,231,135,0.08)' : 'rgba(255,77,79,0.08)',
+                  border: `1px solid ${checkResult.verdict === 'passed' ? 'rgba(126,231,135,0.25)' : 'rgba(255,77,79,0.25)'}`,
+                }}
+              >
+                {checkResult.verdict}
+              </span>
+              <button
+                onClick={onRecheck}
+                title="Re-check this finding"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 20,
+                  height: 20,
+                  borderRadius: 3,
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'rgba(255,255,255,0.03)',
+                  cursor: 'pointer',
+                  color: 'rgba(255,255,255,0.3)',
+                  padding: 0,
+                  flexShrink: 0,
+                }}
+              >
+                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="23 4 23 10 17 10" />
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                </svg>
+              </button>
+            </span>
+          ) : (
+            <button
+              onClick={onRecheck}
+              style={{
+                fontSize: 9,
+                fontWeight: 600,
+                fontFamily: 'Space Mono, monospace',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                padding: '3px 10px',
+                borderRadius: 4,
+                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'rgba(255,255,255,0.03)',
+                color: 'rgba(255,255,255,0.4)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}
+            >
+              Check
+            </button>
+          )}
+        </span>
+
         <svg
           width="14"
           height="14"
@@ -320,6 +422,36 @@ function FindingRow({ finding, expanded, onToggle }: { finding: AuditFinding; ex
             </div>
           </div>
 
+          {/* Verification Result */}
+          {checkResult && (
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.25)', marginBottom: 6 }}>
+                Verification Result
+              </div>
+              <div
+                style={{
+                  fontSize: 12,
+                  lineHeight: 1.7,
+                  color: checkResult.verdict === 'passed' ? 'rgba(126,231,135,0.85)' : 'rgba(255,77,79,0.85)',
+                  padding: '10px 14px',
+                  background: checkResult.verdict === 'passed' ? 'rgba(126,231,135,0.04)' : 'rgba(255,77,79,0.04)',
+                  border: `1px solid ${checkResult.verdict === 'passed' ? 'rgba(126,231,135,0.12)' : 'rgba(255,77,79,0.12)'}`,
+                  borderRadius: 6,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    {checkResult.verdict}
+                  </span>
+                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', fontFamily: 'Space Mono, monospace' }}>
+                    {new Date(checkResult.timestamp).toLocaleTimeString()}
+                  </span>
+                </div>
+                {checkResult.summary}
+              </div>
+            </div>
+          )}
+
           {/* Metadata Row */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
             {finding.cwe && (
@@ -357,6 +489,42 @@ function FindingRow({ finding, expanded, onToggle }: { finding: AuditFinding; ex
   );
 }
 
+// ── Re-check Prompt Builder ──────────────────────────────────────────────────
+
+function buildRecheckPrompt(finding: AuditFinding): string {
+  return `You are a senior security engineer performing a targeted re-check of a single audit finding.
+
+FINDING TO VERIFY:
+- ID: ${finding.id}
+- Title: ${finding.title}
+- Severity: ${finding.severity}
+- CVSS: ${finding.cvss}
+- Category: ${finding.category}
+${finding.cwe ? `- CWE: ${finding.cwe}` : ''}
+
+DESCRIPTION:
+${finding.description}
+
+AFFECTED ASSETS:
+${finding.affectedAssets.map(a => `  - ${a}`).join('\n')}
+
+EXPECTED REMEDIATION:
+${finding.remediation}
+
+IMPACT IF UNRESOLVED:
+${finding.impact}
+
+────────────────────────────────────────
+INSTRUCTIONS:
+Analyze whether this specific issue has been resolved in the current codebase. Check the affected files and verify whether the remediation has been applied.
+
+Your response MUST start with exactly one of these two lines:
+VERDICT: PASSED
+VERDICT: FAILED
+
+Then provide a 1-3 sentence explanation of what you found. Be specific — cite file paths if relevant.`;
+}
+
 // ── Main Component ───────────────────────────────────────────────────────────
 
 type FilterSeverity = 'ALL' | Severity;
@@ -365,6 +533,11 @@ export default function AuditDashboard() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [filterSeverity, setFilterSeverity] = useState<FilterSeverity>('ALL');
   const stats = useMemo(() => getAuditStats(), []);
+
+  // ── Per-finding re-check state ──
+  const [checkResults, setCheckResults] = useState<Record<string, CheckResult>>({});
+  const [checkingIds, setCheckingIds] = useState<Set<string>>(new Set());
+  const checkAbortRefs = useRef<Record<string, AbortController>>({});
 
   // ── Re-run state ──
   const [rerunResult, setRerunResult] = useState('');
@@ -448,6 +621,90 @@ export default function AuditDashboard() {
     abortRef.current?.abort();
     setRerunRunning(false);
   };
+
+  // ── Per-finding re-check ──
+  const handleRecheck = useCallback(async (finding: AuditFinding) => {
+    const id = finding.id;
+
+    // Abort any existing check for this finding
+    checkAbortRefs.current[id]?.abort();
+    const controller = new AbortController();
+    checkAbortRefs.current[id] = controller;
+
+    setCheckingIds(prev => new Set(prev).add(id));
+
+    try {
+      const res = await fetch('/api/workflow/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: buildRecheckPrompt(finding) }),
+        signal: controller.signal,
+      });
+
+      if (!res.ok) {
+        // On error, mark as failed with error message
+        setCheckResults(prev => ({
+          ...prev,
+          [id]: { verdict: 'failed', summary: `API error ${res.status}`, timestamp: Date.now() },
+        }));
+        setCheckingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
+        return;
+      }
+
+      const reader = res.body?.getReader();
+      if (!reader) {
+        setCheckingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
+        return;
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let fullText = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const jsonStr = line.slice(6).trim();
+            if (jsonStr === '[DONE]') continue;
+            try {
+              const data = JSON.parse(jsonStr);
+              if (data.text) fullText += data.text;
+            } catch {
+              // skip
+            }
+          }
+        }
+      }
+
+      // Parse verdict from response
+      const trimmed = fullText.trim();
+      const firstLine = trimmed.split('\n')[0]?.toUpperCase() ?? '';
+      const verdict: CheckVerdict = firstLine.includes('PASSED') ? 'passed' : 'failed';
+      const summary = trimmed.split('\n').slice(1).join(' ').trim() || trimmed;
+
+      setCheckResults(prev => ({
+        ...prev,
+        [id]: { verdict, summary, timestamp: Date.now() },
+      }));
+    } catch (err) {
+      if (err instanceof Error && err.name !== 'AbortError') {
+        setCheckResults(prev => ({
+          ...prev,
+          [id]: { verdict: 'failed', summary: err instanceof Error ? err.message : 'Unknown error', timestamp: Date.now() },
+        }));
+      }
+    } finally {
+      setCheckingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
+      delete checkAbortRefs.current[id];
+    }
+  }, []);
 
   const filteredFindings = useMemo(() => {
     if (filterSeverity === 'ALL') return AUDIT_FINDINGS;
@@ -646,7 +903,7 @@ export default function AuditDashboard() {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '72px 72px 1fr 100px 80px 32px',
+            gridTemplateColumns: '72px 72px 1fr 100px 80px 120px 32px',
             gap: 12,
             padding: '10px 16px',
             background: 'rgba(255,255,255,0.03)',
@@ -663,6 +920,7 @@ export default function AuditDashboard() {
           <span>Finding</span>
           <span>CVSS</span>
           <span>Effort</span>
+          <span>Status</span>
           <span></span>
         </div>
 
@@ -673,6 +931,9 @@ export default function AuditDashboard() {
             finding={finding}
             expanded={expandedId === finding.id}
             onToggle={() => setExpandedId(expandedId === finding.id ? null : finding.id)}
+            checkResult={checkResults[finding.id]}
+            isChecking={checkingIds.has(finding.id)}
+            onRecheck={() => handleRecheck(finding)}
           />
         ))}
       </div>
