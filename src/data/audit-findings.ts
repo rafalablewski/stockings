@@ -684,6 +684,1811 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
     compliance: [],
     status: 'Open',
   },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ADDITIONAL FINDINGS — FULL 35-CATEGORY COVERAGE
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // ── Category 1: Hardcoded Data (1.2–1.7) ────────────────────────────────
+  {
+    id: 'HARD-002',
+    title: 'Hardcoded IR (Investor Relations) URLs Per Ticker',
+    category: '1. Hardcoded Data',
+    description:
+      'IR_URLS map is hardcoded per ticker in the press-releases route. Adding a new stock requires code changes in multiple files rather than a single configuration update.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/app/api/press-releases/[symbol]/route.ts:7-11'],
+    impact:
+      'Adding new stock coverage requires modifying source code in multiple locations. Maintenance burden grows linearly.',
+    remediation:
+      'Move IR URLs into src/lib/stocks.ts as part of the StockMeta interface so all per-stock metadata is centralized.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'HARD-003',
+    title: 'Hardcoded SEC User-Agent Email',
+    category: '1. Hardcoded Data',
+    description:
+      'SEC_HEADERS contains a hardcoded email address research@stockings.dev. SEC requires a valid contact email — if this domain becomes inactive, SEC could block all EDGAR requests.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/app/api/edgar/[ticker]/route.ts:29-32'],
+    impact:
+      'If the hardcoded email domain becomes invalid, SEC may block all EDGAR API requests, breaking the filing integration entirely.',
+    remediation:
+      'Move the SEC contact email to an environment variable (SEC_CONTACT_EMAIL) so it can be updated without code changes.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'HARD-004',
+    title: 'Spoofed Browser User-Agent for Yahoo Finance',
+    category: '1. Hardcoded Data',
+    description:
+      'The Yahoo Finance API route uses a hardcoded, spoofed browser User-Agent string to bypass bot detection. If Yahoo tightens detection, stock price functionality breaks silently.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/app/api/stock/[symbol]/route.ts:28'],
+    impact:
+      'Stock price API calls could be blocked without warning if Yahoo detects non-browser User-Agent patterns.',
+    remediation:
+      'Move to an official financial data API with proper authentication rather than spoofing browser headers.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'HARD-005',
+    title: 'Hardcoded Risk-Free Rate Constant',
+    category: '1. Hardcoded Data',
+    description:
+      'RISK_FREE_RATE = 0.04 is hardcoded in src/lib/constants.ts. In a changing interest-rate environment this becomes stale and impacts all DCF/valuation calculations.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/lib/constants.ts:27'],
+    impact:
+      'Valuation models use an outdated risk-free rate, potentially producing incorrect DCF calculations and misleading investment analysis.',
+    remediation:
+      'Make RISK_FREE_RATE configurable via environment variable or fetch from a treasury rate API (e.g., FRED API).',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'HARD-006',
+    title: 'Hardcoded Competitor Search Configurations',
+    category: '1. Hardcoded Data',
+    description:
+      'SEARCH_CONFIG in competitor-feed route hardcodes ~18 company search queries. Maintenance burden grows linearly with coverage.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['src/app/api/competitor-feed/[company]/route.ts:14-36'],
+    impact:
+      'Adding or modifying competitor tracking requires source code changes rather than configuration updates.',
+    remediation:
+      'Move search configurations into a data file or the centralized stock registry in src/lib/stocks.ts.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'HARD-007',
+    title: 'Claude Model IDs Hardcoded in Multiple Files',
+    category: '1. Hardcoded Data',
+    description:
+      'Claude model identifiers (claude-haiku-4-5-20251001, claude-sonnet-4-5-20250929) are hardcoded in edgar/analyze, sources/analyze, and check-analyzed routes. Model version upgrades require touching every file.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: [
+      'src/app/api/edgar/analyze/route.ts:94',
+      'src/app/api/sources/analyze/route.ts:94',
+      'src/app/api/check-analyzed/route.ts:302',
+    ],
+    impact:
+      'Model upgrades require multi-file changes with risk of inconsistency. Easy to miss one file and run different models in different endpoints.',
+    remediation:
+      'Extract model IDs to environment variables (AI_MODEL_HAIKU, AI_MODEL_SONNET) or a single constants file.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 2: Database / API Connections (2.1–2.4) ────────────────────
+  {
+    id: 'DB-001',
+    title: 'Proxy-Based DB Initialization Obscures Stack Traces',
+    category: '2. Database / API Connections',
+    description:
+      'The db export uses a Proxy object that delegates every property access to getDb(). While clever for lazy initialization, stack traces do not clearly show the origin of database calls and TypeScript loses full type inference on the proxy.',
+    severity: 'MEDIUM',
+    cvss: 3.0,
+    affectedAssets: ['src/lib/db.ts:24-28'],
+    impact:
+      'Debugging database-related errors is harder due to obscured stack traces. TypeScript cannot fully infer types through the Proxy layer.',
+    remediation:
+      'Consider a simpler lazy initialization pattern (e.g., a getter function) or initialize the DB connection eagerly with proper error handling.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'DB-002',
+    title: 'No Connection Timeout or Retry Logic for Neon',
+    category: '2. Database / API Connections',
+    description:
+      'No retry logic exists for the Neon serverless database connection. While Neon uses HTTP-based queries (stateless), there is no timeout or retry for transient failures.',
+    severity: 'LOW',
+    cvss: 2.5,
+    affectedAssets: ['src/lib/db.ts'],
+    impact:
+      'Transient Neon connection failures cause immediate API errors with no recovery attempt. Users experience intermittent failures.',
+    remediation:
+      'Add retry logic with exponential backoff for transient Neon connection failures in critical API routes. Set connection timeouts.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'DB-003',
+    title: 'Cold-Start DDL Execution on Every Serverless Init',
+    category: '2. Database / API Connections',
+    description:
+      'Module-level tableVerified = false in seen-articles and seen-filings routes causes DDL (CREATE TABLE IF NOT EXISTS) to run on every serverless cold start, adding latency. Drizzle migrations would be more robust.',
+    severity: 'MEDIUM',
+    cvss: 3.0,
+    affectedAssets: [
+      'src/app/api/seen-articles/route.ts:32-63',
+      'src/app/api/seen-filings/route.ts:42-74',
+    ],
+    impact:
+      'Added latency on cold starts. Runtime DDL is fragile compared to migration-based schema management.',
+    remediation:
+      'Use Drizzle migrations (drizzle-kit generate + drizzle-kit migrate) instead of runtime DDL. Remove ensureTable() pattern entirely.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'DB-004',
+    title: 'Fragile Raw SQL Splitting in DB Setup Route',
+    category: '2. Database / API Connections',
+    description:
+      'Raw SQL in db/setup route is split on ";" and executed via Object.assign([stmt], { raw: [stmt] }) to fake tagged template literals for the Neon driver. Semicolons inside string literals or comments would break parsing.',
+    severity: 'MEDIUM',
+    cvss: 4.0,
+    affectedAssets: ['src/app/api/db/setup/route.ts:188-192'],
+    impact:
+      'Schema modifications containing semicolons in default values or comments cause silent failures or partial DDL execution.',
+    remediation:
+      'Replace raw SQL with proper Drizzle migrations. Use drizzle-kit generate to create migration files and drizzle-kit migrate to apply them.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 3: TypeScript Best Practices (3.1–3.5) ─────────────────────
+  {
+    id: 'TS-001',
+    title: 'File-Wide eslint-disable in 2000+ Line Components',
+    category: '3. TypeScript Best Practices',
+    description:
+      'ASTS.tsx, BMNR.tsx, and CRCL.tsx each have a file-wide eslint-disable @typescript-eslint/no-explicit-any directive, suppressing all type safety for the entire 2000+ line component.',
+    severity: 'MEDIUM',
+    cvss: 4.0,
+    affectedAssets: [
+      'src/components/stocks/ASTS.tsx:1',
+      'src/components/stocks/BMNR.tsx:1',
+      'src/components/stocks/CRCL.tsx:1',
+    ],
+    impact:
+      'Type errors are silently suppressed across ~6000+ lines of code. Refactoring is dangerous as TypeScript cannot catch type mismatches.',
+    remediation:
+      'Remove file-wide eslint-disable directives. Fix underlying type issues by adding proper TypeScript interfaces for financial data, API responses, and component props.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'TS-002',
+    title: 'Unsafe "as any" Casts on Database Insert Operations',
+    category: '3. TypeScript Best Practices',
+    description:
+      'Multiple as any casts on db.insert(table).values(batch as any) indicate a type mismatch between mapper output and Drizzle schema insert types.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: [
+      'src/app/api/db/setup/route.ts:217',
+      'scripts/seed-database.ts:62',
+    ],
+    impact:
+      'Type mismatches between data mappers and database schema go undetected. Schema changes could silently break seed operations.',
+    remediation:
+      'Type the mapper functions to return the exact Drizzle insert type (e.g., typeof schema.secFilings.$inferInsert). Remove all as any casts.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'TS-003',
+    title: 'Undocumented process.env Access Workaround',
+    category: '3. TypeScript Best Practices',
+    description:
+      'process.env is cast to Record<string, string | undefined> as a workaround to prevent Next.js build-time inlining. This pattern is undocumented and relies on internal Next.js behavior.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/app/api/edgar/analyze/route.ts:12'],
+    impact:
+      'If Next.js changes its env var inlining behavior, this workaround may break silently or become unnecessary.',
+    remediation:
+      'Use serverRuntimeConfig in next.config.ts or the env field to properly declare runtime-only environment variables.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'TS-004',
+    title: 'Broken Custom Stemmer Implementation',
+    category: '3. TypeScript Best Practices',
+    description:
+      'The stem() function uses a sequential chain of regex replacements that produces incorrect stems in many cases (e.g., "press" → "pres" if /(ss)$/ fails to match before /s$/).',
+    severity: 'LOW',
+    cvss: 2.5,
+    affectedAssets: ['src/app/api/check-analyzed/route.ts:40'],
+    impact:
+      'Incorrect stemming reduces accuracy of the local keyword matching algorithm, causing articles to be unnecessarily sent to the paid AI matching endpoint.',
+    remediation:
+      'Replace the custom stemmer with a well-tested stemming library like "natural" or "stemmer" from npm.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'TS-005',
+    title: 'Missing "as const" on Exported Data Arrays',
+    category: '3. TypeScript Best Practices',
+    description:
+      'Numerous exported data arrays lack "as const" assertions, causing TypeScript to widen literal types to their base types (string instead of specific string literals).',
+    severity: 'LOW',
+    cvss: 1.0,
+    affectedAssets: ['Various data files in src/data/'],
+    impact:
+      'Downstream consumers lose literal type inference. Type narrowing and exhaustive checks are not available.',
+    remediation:
+      'Add "as const" to all exported static data arrays and objects where literal types are meaningful.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 4: Security Vulnerabilities (4.5) ──────────────────────────
+  {
+    id: 'SEC-006',
+    title: 'Unhandled JSON.parse on Database Data',
+    category: '4. Security Vulnerabilities',
+    description:
+      'JSON.parse(row.crossRefs) in seen-filings route operates on data from the database without try-catch. Corrupted data throws an unhandled exception that crashes the request handler.',
+    severity: 'LOW',
+    cvss: 2.5,
+    affectedAssets: ['src/app/api/seen-filings/route.ts:133'],
+    impact:
+      'Corrupted database data causes 500 errors for all users viewing the affected ticker. No graceful degradation.',
+    remediation:
+      'Wrap JSON.parse calls in try-catch with a graceful fallback (return empty array on parse failure).',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 5: Authentication & Authorization (5.2–5.3) ────────────────
+  {
+    id: 'AUTH-001',
+    title: 'No Session Management or User Accounts',
+    category: '5. Authentication & Authorization',
+    description:
+      'No session management, user accounts, or role-based access control exists. The app assumes a single trusted user with direct access. There is no mechanism to distinguish between different users or permission levels.',
+    severity: 'HIGH',
+    cvss: 7.0,
+    affectedAssets: ['Entire application — no auth infrastructure'],
+    impact:
+      'Multi-user deployment is impossible. All users have identical (maximum) privileges. No audit trail of who performed what action.',
+    remediation:
+      'Integrate NextAuth.js or Clerk for session-based authentication with role separation (admin vs. viewer). Add user identification to all write operations for audit trail.',
+    effort: 'Short-term',
+    compliance: ['OWASP-A07', 'SOC2', 'ISO-27001'],
+    status: 'Open',
+  },
+  {
+    id: 'AUTH-002',
+    title: 'No CSRF Protection on POST Endpoints',
+    category: '5. Authentication & Authorization',
+    description:
+      'No CSRF protection exists on any POST endpoint. If authentication is added later without CSRF tokens, all state-changing endpoints would be vulnerable to cross-site request forgery.',
+    severity: 'MEDIUM',
+    cvss: 4.0,
+    affectedAssets: ['All POST API routes'],
+    impact:
+      'When authentication is added, attackers could trick authenticated users into performing unintended actions via malicious websites.',
+    remediation:
+      'Add CSRF protection when implementing authentication: use SameSite cookie attributes and token-based verification (double-submit cookie pattern).',
+    effort: 'Short-term',
+    compliance: ['OWASP-A01'],
+    status: 'Open',
+  },
+
+  // ── Category 6: Data Privacy Compliance (6.1, 6.3) ──────────────────────
+  {
+    id: 'PRIV-002',
+    title: 'No Privacy Policy or Terms of Service',
+    category: '6. Data Privacy Compliance',
+    description:
+      'No privacy policy or terms of service are displayed anywhere in the application. The footer says "Not financial advice" but contains no data privacy disclosures.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/app/layout.tsx (footer)'],
+    impact:
+      'GDPR non-compliance for EU users. No legal basis documented for data processing. User trust concerns.',
+    remediation:
+      'Add a privacy policy page documenting what data is collected, how it is used, and how users can exercise their rights. Add link to footer.',
+    effort: 'Medium-term',
+    compliance: ['GDPR', 'CCPA'],
+    status: 'Open',
+  },
+  {
+    id: 'PRIV-003',
+    title: 'No Data Retention Policy for Behavioral Data',
+    category: '6. Data Privacy Compliance',
+    description:
+      'Article reading history (seen-articles) and filing reading history (seen-filings) are stored per ticker with no retention policy. If the app becomes multi-user, this becomes user behavioral data subject to GDPR/CCPA.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: [
+      'src/app/api/seen-articles/route.ts',
+      'src/app/api/seen-filings/route.ts',
+    ],
+    impact:
+      'Accumulated behavioral data with no cleanup schedule. Storage grows indefinitely. No mechanism for users to request data deletion.',
+    remediation:
+      'Implement data retention policies with automatic cleanup of records older than a configurable threshold (e.g., 90 days). Add a data deletion API.',
+    effort: 'Medium-term',
+    compliance: ['GDPR', 'CCPA'],
+    status: 'Open',
+  },
+
+  // ── Category 7: Performance Bottlenecks (7.2–7.6) ──────────────────────
+  {
+    id: 'PERF-002',
+    title: 'Sequential SEC Filing Page Fetches',
+    category: '7. Performance Bottlenecks',
+    description:
+      'Older SEC filing pages are fetched via Promise.allSettled on every request. For companies with many filing pages, this can add seconds of latency. The 15-minute revalidate helps but is insufficient for first-hit performance.',
+    severity: 'MEDIUM',
+    cvss: 3.5,
+    affectedAssets: ['src/app/api/edgar/[ticker]/route.ts:119-136'],
+    impact:
+      'First-hit latency for EDGAR filings can be 3-8 seconds for companies with many filing pages. Poor user experience on initial load.',
+    remediation:
+      'Pre-compute and cache EDGAR filing page results in the database rather than fetching from SEC on every request. Use background job to refresh periodically.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'PERF-003',
+    title: 'Inefficient HTML-to-Text via Chained Regex',
+    category: '7. Performance Bottlenecks',
+    description:
+      'HTML-to-text conversion in analyze endpoints uses 8 chained regex replacements on potentially large documents (up to 15KB). Each regex runs sequentially over the entire string.',
+    severity: 'MEDIUM',
+    cvss: 3.0,
+    affectedAssets: [
+      'src/app/api/edgar/analyze/route.ts:30-42',
+      'src/app/api/sources/analyze/route.ts:32-43',
+    ],
+    impact:
+      'Unnecessary CPU usage on large documents. Multiple full-string passes instead of a single-pass parser.',
+    remediation:
+      'Replace chained regex with a streaming HTML parser or a library like "html-to-text" for single-pass extraction.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'PERF-004',
+    title: 'Monolithic Client-Side Bundle for Stock Components',
+    category: '7. Performance Bottlenecks',
+    description:
+      'Stock components (ASTS, BMNR, CRCL) are ~2000+ line monolithic client components. Even with ssr: false and dynamic imports, the browser must parse and execute the entire bundle at once. No code-splitting within components.',
+    severity: 'MEDIUM',
+    cvss: 3.5,
+    affectedAssets: [
+      'src/components/stocks/ASTS.tsx',
+      'src/components/stocks/BMNR.tsx',
+      'src/components/stocks/CRCL.tsx',
+    ],
+    impact:
+      'Large JavaScript bundle increases Time to Interactive (TTI). Users on slower devices experience delayed interactivity.',
+    remediation:
+      'Split each stock component into lazy-loaded tab sub-components. Only load the active tab\'s code on demand.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'PERF-005',
+    title: 'Rough Token Estimation Heuristic',
+    category: '7. Performance Bottlenecks',
+    description:
+      'Token estimation uses Math.ceil(prompt.length / 4) which is a rough heuristic. For prompts near the MAX_PROMPT_TOKENS limit, this could either waste API budget or incorrectly fall back to local matching.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/app/api/check-analyzed/route.ts:283'],
+    impact:
+      'Inaccurate token counting near the limit causes either wasted AI API credits or unnecessary fallback to less accurate local matching.',
+    remediation:
+      'Use a proper tokenizer library (e.g., tiktoken or @anthropic-ai/tokenizer) for accurate token counting.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'PERF-006',
+    title: 'Render-Blocking External Google Fonts Import',
+    category: '7. Performance Bottlenecks',
+    description:
+      'External Google Fonts @import in globals.css blocks rendering until the font CSS is downloaded from fonts.googleapis.com. This adds a round-trip to an external CDN before any content is displayed.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/app/globals.css:1'],
+    impact:
+      'Increased First Contentful Paint (FCP) time due to render-blocking external CSS. Worse on slow connections.',
+    remediation:
+      'Replace with next/font (built into Next.js) which self-hosts fonts and eliminates the external request. Also resolves GDPR concern (PRIV-001).',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 8: Error Handling & Logging (8.1, 8.3–8.5) ────────────────
+  {
+    id: 'ERR-002',
+    title: 'Console.error-Only Logging in Production',
+    category: '8. Error Handling & Logging',
+    description:
+      'All API routes use console.error exclusively for logging. In production (Vercel), these produce ephemeral, unstructured logs with no correlation IDs, no severity levels, and no alerting integration.',
+    severity: 'MEDIUM',
+    cvss: 4.0,
+    affectedAssets: ['All API routes'],
+    impact:
+      'Production errors are difficult to trace. No correlation between related log entries. No ability to set up alerts based on log severity.',
+    remediation:
+      'Integrate a structured logging library (e.g., Pino) with log levels, correlation IDs, and JSON output for machine parsing.',
+    effort: 'Short-term',
+    compliance: ['SOC2', 'OWASP-A09'],
+    status: 'Open',
+  },
+  {
+    id: 'ERR-003',
+    title: 'Error Message Embedded in AI Prompt When Fetch Fails',
+    category: '8. Error Handling & Logging',
+    description:
+      'When SEC document fetch fails in edgar/analyze, the error message is embedded directly in the AI prompt: docText = "[Could not fetch document: ...]". The AI model then "analyzes" this error message, producing confusing output.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/app/api/edgar/analyze/route.ts:48-49'],
+    impact:
+      'Users see AI-generated analysis of an error message instead of a clear failure notification.',
+    remediation:
+      'When document fetch fails, skip AI analysis entirely and return a clear error to the client: { error: "Could not fetch SEC document" }.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'ERR-004',
+    title: 'Silent SSE Stream Parsing Failures',
+    category: '8. Error Handling & Logging',
+    description:
+      'Unparseable SSE lines in the workflow run streaming handler are silently dropped. No logging or error reporting for malformed events from the Anthropic API.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['src/app/api/workflow/run/route.ts:93-95'],
+    impact:
+      'Malformed SSE events are silently lost. If the Anthropic API changes its streaming format, the application silently degrades.',
+    remediation:
+      'Log unparseable SSE lines at warning level. Consider counting dropped lines and including a warning in the response.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'ERR-005',
+    title: 'Silent Fallback on AI JSON Parse Failure',
+    category: '8. Error Handling & Logging',
+    description:
+      'When Claude\'s JSON response in check-analyzed cannot be parsed, the handler falls back to an empty array with no indication to the caller that AI matching failed.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/app/api/check-analyzed/route.ts:321-326'],
+    impact:
+      'AI matching failures are invisible to the user. Articles that should have been matched by AI appear as unmatched with no explanation.',
+    remediation:
+      'Log the parse failure with the raw AI response. Include a flag in the API response indicating whether AI matching was used successfully.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 9: Code Maintainability (9.2–9.5) ─────────────────────────
+  {
+    id: 'MAINT-002',
+    title: 'Duplicated SQL DDL in API Route',
+    category: '9. Code Maintainability',
+    description:
+      '127 lines of raw SQL DDL in db/setup route duplicates the Drizzle schema defined in src/lib/schema.ts. Schema changes must be applied in two places or they drift apart.',
+    severity: 'MEDIUM',
+    cvss: 4.0,
+    affectedAssets: [
+      'src/app/api/db/setup/route.ts:39-165',
+      'src/lib/schema.ts',
+    ],
+    impact:
+      'Schema drift between raw SQL and Drizzle definitions. A change to one is easily forgotten in the other, causing data integrity issues.',
+    remediation:
+      'Replace raw SQL DDL with Drizzle migrations (drizzle-kit generate + drizzle-kit migrate). Delete the CREATE_TABLES_SQL constant.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'MAINT-003',
+    title: 'Dead prompts Export Still in Codebase',
+    category: '9. Code Maintainability',
+    description:
+      'The prompts array in src/data/prompts.ts is empty ([]) with a comment "All prompts have been migrated to workflows." This dead export was previously imported and rendered on the home page, producing an empty section.',
+    severity: 'LOW',
+    cvss: 1.0,
+    affectedAssets: ['src/data/prompts.ts'],
+    impact:
+      'Dead code increases codebase noise. Developers may waste time understanding or maintaining unused exports.',
+    remediation:
+      'Delete src/data/prompts.ts entirely or remove the empty prompts export if other exports in the file are still used.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'MAINT-004',
+    title: 'Global CSS Injection from Component',
+    category: '9. Code Maintainability',
+    description:
+      'LivePrice.tsx uses <style jsx global> for a single @keyframes spin animation. This injects global CSS from a component, which can conflict with other styles.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['src/components/shared/LivePrice.tsx:183-188'],
+    impact:
+      'Global style injection from a component is unpredictable — multiple instances could create duplicate keyframe definitions.',
+    remediation:
+      'Use Tailwind\'s built-in animate-spin utility class instead of injecting custom global keyframes.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'MAINT-005',
+    title: 'Inconsistent Inline Styles vs Tailwind in Shared Components',
+    category: '9. Code Maintainability',
+    description:
+      'SharedEdgarTab and SharedSourcesTab use extensive inline style={{}} objects rather than Tailwind classes, creating an inconsistent styling approach within the same project.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: [
+      'src/components/shared/SharedEdgarTab.tsx',
+      'src/components/shared/SharedSourcesTab.tsx',
+    ],
+    impact:
+      'Mixed styling approaches make it harder to maintain a consistent design system. Theming changes require updating both Tailwind and inline styles.',
+    remediation:
+      'Standardize on Tailwind classes for all components. Convert inline style objects to equivalent Tailwind utility classes.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 10: Dependency Management (10.1–10.4) ──────────────────────
+  {
+    id: 'DEP-001',
+    title: 'No Lock File Integrity Verification',
+    category: '10. Dependency Management',
+    description:
+      'All dependencies use caret ranges (^) which is normal, but there is no CI pipeline to run npm ci (which verifies package-lock.json integrity). Dependencies could drift between environments.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['package.json', 'package-lock.json'],
+    impact:
+      'Different environments may install different dependency versions. Subtle bugs from version differences are hard to diagnose.',
+    remediation:
+      'Add npm ci to the CI pipeline (once CI exists per CICD-001). This ensures package-lock.json integrity on every build.',
+    effort: 'Short-term',
+    compliance: ['SOC2'],
+    status: 'Open',
+  },
+  {
+    id: 'DEP-002',
+    title: 'dotenv Listed as Production Dependency',
+    category: '10. Dependency Management',
+    description:
+      'dotenv is listed as a production dependency but is only needed for scripts (seed, validate) and drizzle.config.ts. Next.js handles .env files natively at runtime.',
+    severity: 'LOW',
+    cvss: 1.0,
+    affectedAssets: ['package.json'],
+    impact:
+      'Slightly larger production bundle. Misleading dependency classification.',
+    remediation:
+      'Move dotenv from dependencies to devDependencies.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'DEP-003',
+    title: '@types/node Version Mismatch',
+    category: '10. Dependency Management',
+    description:
+      '@types/node is pinned to ^20 but the project uses Next.js 16 which targets Node 22+. This could cause type definition mismatches for newer Node.js APIs.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['package.json'],
+    impact:
+      'TypeScript may not recognize Node 22+ APIs or may have incorrect type definitions for changed APIs.',
+    remediation:
+      'Update @types/node to ^22 to match the target Node.js runtime version.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'DEP-004',
+    title: 'No Automated Security Audit Tooling',
+    category: '10. Dependency Management',
+    description:
+      'No dependency security audit tooling is configured. No npm audit, no Snyk, no Dependabot, no Renovate. Vulnerable dependency versions can persist indefinitely.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['package.json', '.github/ (missing)'],
+    impact:
+      'Known vulnerabilities in dependencies go undetected. No automated alerts when CVEs are published for installed packages.',
+    remediation:
+      'Add npm audit to the CI pipeline. Configure Dependabot or Renovate for automated dependency update PRs.',
+    effort: 'Short-term',
+    compliance: ['SOC2', 'ISO-27001'],
+    status: 'Open',
+  },
+
+  // ── Category 11: Testing Coverage (11.2) ────────────────────────────────
+  {
+    id: 'QA-002',
+    title: 'Data Validation Not Integrated Into Build',
+    category: '11. Testing Coverage',
+    description:
+      'The only validation is a Zod schema check on competitor news data (npm run validate), run manually. It is not integrated into the build pipeline or any CI process.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['scripts/validate-data.ts', 'package.json:6-13'],
+    impact:
+      'Invalid data can be deployed to production without detection. Data schema violations are only caught if a developer remembers to run validate manually.',
+    remediation:
+      'Integrate npm run validate into the build script: "build": "npm run validate && next build". Add to CI pipeline.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 12: Styling Consistency (12.1–12.4) ────────────────────────
+  {
+    id: 'CSS-001',
+    title: 'Mixed Styling Approaches Across Codebase',
+    category: '12. Styling Consistency',
+    description:
+      'Four different styling approaches are used: Tailwind utility classes (pages, layout), inline style={{}} objects (shared components, stock components), CSS custom properties (globals.css), and <style jsx global> (LivePrice). This fragmentation makes theming changes error-prone.',
+    severity: 'MEDIUM',
+    cvss: 3.0,
+    affectedAssets: [
+      'src/app/globals.css',
+      'src/components/shared/SharedEdgarTab.tsx',
+      'src/components/shared/LivePrice.tsx',
+      'src/components/stocks/ASTS.tsx',
+    ],
+    impact:
+      'Theming changes require updating four different styling systems. Inconsistent visual behavior. New developers must learn multiple styling conventions.',
+    remediation:
+      'Establish a single styling standard: either all Tailwind or all CSS variables with utility classes. Migrate inline styles to Tailwind.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'CSS-002',
+    title: 'Missing Tailwind Preflight (CSS Reset)',
+    category: '12. Styling Consistency',
+    description:
+      'Tailwind is imported WITHOUT preflight — only @import "tailwindcss/theme" and "tailwindcss/utilities" but not "tailwindcss/preflight". Browser default styles (margins on headings, list bullets, etc.) are NOT reset.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/app/globals.css:3-5'],
+    impact:
+      'Inconsistencies between browsers due to varying default styles. Headings, paragraphs, and lists may render differently across Chrome, Firefox, and Safari.',
+    remediation:
+      'Add @import "tailwindcss/preflight" or a custom CSS reset for cross-browser consistency.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'CSS-003',
+    title: 'Manual Re-implementations of Tailwind Utilities',
+    category: '12. Styling Consistency',
+    description:
+      'globals.css contains manual re-implementations of Tailwind space-y-* and gap-* utilities scoped to .stock-model-app. These will drift from Tailwind\'s actual values if the design system changes.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['src/app/globals.css:78-84'],
+    impact:
+      'Duplicate definitions that can diverge from Tailwind\'s design tokens. Maintenance confusion.',
+    remediation:
+      'Remove manual Tailwind reimplementations and use actual Tailwind utility classes in components instead.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'CSS-004',
+    title: 'DB Setup Page Uses Entirely Inline Styles',
+    category: '12. Styling Consistency',
+    description:
+      'The DB setup page (/db-setup) uses entirely inline styles with no Tailwind classes, visually inconsistent with the rest of the application.',
+    severity: 'LOW',
+    cvss: 1.0,
+    affectedAssets: ['src/app/db-setup/page.tsx:24-53'],
+    impact:
+      'Visual inconsistency. The page looks different from the rest of the app.',
+    remediation:
+      'Convert inline styles to Tailwind classes to match the rest of the application styling.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 13: UI/UX Design Flaws (13.1–13.4) ────────────────────────
+  {
+    id: 'UX-001',
+    title: 'Empty "Prompts" Section Renders on Home Page',
+    category: '13. UI/UX Design Flaws',
+    description:
+      'The "Prompts" section renders from an empty array (prompts: Prompt[] = []), producing a section header with no content below it on the home page.',
+    severity: 'LOW',
+    cvss: 1.0,
+    affectedAssets: ['src/app/page.tsx:92-98', 'src/data/prompts.ts'],
+    impact:
+      'Users see an empty section on the home page. Confusing and unprofessional appearance.',
+    remediation:
+      'Remove or conditionally hide the Prompts section when the array is empty.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'UX-002',
+    title: 'No Server-Side Rendering or SEO for Stock Pages',
+    category: '13. UI/UX Design Flaws',
+    description:
+      'Stock pages use client-side routing (useParams) with ssr: false dynamic imports. No SEO, no server-side rendering, and a loading spinner on every page visit — even for returning users.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/app/stocks/[ticker]/page.tsx:53-68'],
+    impact:
+      'Search engines cannot index stock pages. Users always see a loading spinner on initial visit. No social media preview cards.',
+    remediation:
+      'Consider server components or ISR (Incremental Static Regeneration) for stock pages to improve SEO and initial load time.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'UX-003',
+    title: 'Publicly Accessible DB Setup Page Without Confirmation',
+    category: '13. UI/UX Design Flaws',
+    description:
+      'The database setup page at /db-setup is publicly accessible with a single "Run Setup" button that wipes and reseeds the entire database. No confirmation dialog, no authentication.',
+    severity: 'MEDIUM',
+    cvss: 5.0,
+    affectedAssets: ['src/app/db-setup/page.tsx'],
+    impact:
+      'Accidental or malicious clicks immediately destroy all production data. No "are you sure?" safeguard.',
+    remediation:
+      'Add a confirmation dialog ("This will delete all data. Are you sure?"). Add authentication. Consider removing the page entirely and using CLI-only seeding.',
+    effort: 'Short-term',
+    compliance: ['OWASP-A01'],
+    status: 'Open',
+  },
+  {
+    id: 'UX-004',
+    title: 'Hardcoded Dollar Sign in Price Display',
+    category: '13. UI/UX Design Flaws',
+    description:
+      'Price display uses a dollar sign prefix ($) hardcoded in JSX. This won\'t work for non-USD markets or international users.',
+    severity: 'LOW',
+    cvss: 1.0,
+    affectedAssets: ['src/components/shared/LivePrice.tsx:117'],
+    impact:
+      'Non-US users or non-USD securities display incorrect currency symbols.',
+    remediation:
+      'Use Intl.NumberFormat with currency option instead of hardcoded "$" prefix.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 14: Accessibility Compliance (14.4–14.6) ───────────────────
+  {
+    id: 'A11Y-003',
+    title: 'Missing aria-label on Icon Buttons',
+    category: '14. Accessibility Compliance',
+    description:
+      'The LivePrice refresh button has a title attribute but no aria-label. The SVG icon inside has no accessible text. Screen readers announce the button with no meaningful label.',
+    severity: 'MEDIUM',
+    cvss: 3.5,
+    cwe: 'CWE-1263',
+    affectedAssets: ['src/components/shared/LivePrice.tsx:118-136'],
+    impact:
+      'Screen reader users cannot understand the purpose of icon-only buttons. Violates WCAG 2.1 SC 1.1.1 (Non-text Content).',
+    remediation:
+      'Add aria-label="Refresh price" to the button element. Add role="img" and aria-hidden="true" to decorative SVGs.',
+    effort: 'Immediate',
+    compliance: ['WCAG-2.1-AA'],
+    status: 'Open',
+  },
+  {
+    id: 'A11Y-004',
+    title: 'No ARIA Tab Roles for Stock Page Navigation',
+    category: '14. Accessibility Compliance',
+    description:
+      'Navigation between tabs and sections in stock components relies on custom JavaScript without ARIA roles (tablist, tab, tabpanel). Screen readers cannot announce the tab structure.',
+    severity: 'MEDIUM',
+    cvss: 3.5,
+    cwe: 'CWE-1263',
+    affectedAssets: [
+      'src/components/stocks/ASTS.tsx',
+      'src/components/stocks/BMNR.tsx',
+      'src/components/stocks/CRCL.tsx',
+    ],
+    impact:
+      'Screen reader users cannot navigate stock page tabs. Keyboard users cannot use arrow keys to switch tabs as expected.',
+    remediation:
+      'Implement ARIA tablist/tab/tabpanel roles. Add aria-selected state. Support arrow key navigation between tabs per WAI-ARIA Authoring Practices.',
+    effort: 'Short-term',
+    compliance: ['WCAG-2.1-AA'],
+    status: 'Open',
+  },
+  {
+    id: 'A11Y-005',
+    title: 'Custom Scrollbar Removes Visible Scroll Indicator',
+    category: '14. Accessibility Compliance',
+    description:
+      'Custom scrollbar styling in globals.css removes the native scrollbar appearance. This can confuse users who rely on visible scroll indicators to understand page content length.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['src/app/globals.css:68-71'],
+    impact:
+      'Users may not realize content is scrollable. Reduced discoverability of below-fold content.',
+    remediation:
+      'Ensure custom scrollbars remain visible enough to indicate scrollable content. Consider keeping the track visible.',
+    effort: 'Short-term',
+    compliance: ['WCAG-2.1-AA'],
+    status: 'Open',
+  },
+
+  // ── Category 15: Internationalization & Localization (15.1, 15.4) ───────
+  {
+    id: 'I18N-002',
+    title: 'No i18n Framework Configured',
+    category: '15. Internationalization & Localization',
+    description:
+      'All UI text is hardcoded in English. No internationalization framework (next-intl, react-intl) is configured. Translating the app would require manually extracting all strings.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['Entire UI layer'],
+    impact:
+      'The application cannot serve non-English-speaking users without a complete rewrite of all UI text handling.',
+    remediation:
+      'If international expansion is planned, adopt next-intl for i18n. Extract all hardcoded strings to translation files.',
+    effort: 'Long-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'I18N-003',
+    title: 'Inconsistent Date Formatting',
+    category: '15. Internationalization & Localization',
+    description:
+      'Dates are displayed using toLocaleTimeString() and toISOString() inconsistently across the codebase. No standardized date formatting library or convention.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['Various components and API routes'],
+    impact:
+      'Dates may display differently across components. Locale-specific date formatting is inconsistent.',
+    remediation:
+      'Use Intl.DateTimeFormat or a library like date-fns for consistent date formatting throughout the application.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 16: Mobile Responsiveness (16.4, 16.2–16.3 Good) ──────────
+  {
+    id: 'MOB-001',
+    title: 'Financial Data Tables Break on Mobile',
+    category: '16. Mobile Responsiveness',
+    description:
+      'Financial data tables with many columns use inline gridTemplateColumns with fixed column counts (e.g., repeat(7, 1fr)). On mobile, the CSS override forces these to 2 columns, but the data meaning may be lost when the layout changes dramatically.',
+    severity: 'MEDIUM',
+    cvss: 3.0,
+    affectedAssets: [
+      'src/components/stocks/ASTS.tsx',
+      'src/components/stocks/BMNR.tsx',
+      'src/components/stocks/CRCL.tsx',
+    ],
+    impact:
+      'Financial data tables become difficult to read on mobile. Column headers and data may misalign when forced from 7 columns to 2.',
+    remediation:
+      'Redesign financial tables for mobile with a card-based layout instead of forcing grid column changes. Test on iPhone SE and Pixel 5 sizes.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'MOB-002',
+    title: 'Viewport Meta Properly Configured',
+    category: '16. Mobile Responsiveness',
+    description:
+      'Viewport meta is properly set with width: device-width, initialScale: 1, and maximumScale: 5. This correctly enables responsive behavior and allows user zoom.',
+    severity: 'INFO',
+    cvss: 0.0,
+    affectedAssets: ['src/app/layout.tsx:10-14'],
+    impact: 'Positive: Proper viewport configuration for mobile devices.',
+    remediation: 'No action needed. This is correctly implemented.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Resolved',
+  },
+  {
+    id: 'MOB-003',
+    title: 'Touch-Friendly Button Sizes Enforced',
+    category: '16. Mobile Responsiveness',
+    description:
+      'Touch-friendly minimum button sizes (44px) are enforced on mobile via CSS, meeting Apple HIG and WCAG guidelines for touch targets.',
+    severity: 'INFO',
+    cvss: 0.0,
+    affectedAssets: ['src/app/globals.css:108-112'],
+    impact: 'Positive: Proper touch target sizing for mobile usability.',
+    remediation: 'No action needed. This is correctly implemented.',
+    effort: 'Immediate',
+    compliance: ['WCAG-2.1-AA'],
+    status: 'Resolved',
+  },
+
+  // ── Category 17: Browser Compatibility (17.1–17.3) ──────────────────────
+  {
+    id: 'COMPAT-001',
+    title: 'AbortSignal.timeout() Requires Modern Browsers',
+    category: '17. Browser Compatibility',
+    description:
+      'AbortSignal.timeout() is used for Yahoo Finance API requests. This API requires Node 18+ and modern browsers — not available in older Safari versions (< 16.4).',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/app/api/stock/[symbol]/route.ts:31'],
+    impact:
+      'Server-side only (Node.js), so browser compatibility is not directly affected. However, if this pattern is used client-side in the future, it would fail on older Safari.',
+    remediation:
+      'Low priority — this runs server-side only. If ever used client-side, add a polyfill or use AbortController with setTimeout instead.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Accepted Risk',
+  },
+  {
+    id: 'COMPAT-002',
+    title: 'WebKit-Only Scrollbar Styling',
+    category: '17. Browser Compatibility',
+    description:
+      '::-webkit-scrollbar styling only works in Chromium-based browsers. Firefox uses scrollbar-width and scrollbar-color properties instead. Firefox users see the default scrollbar.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['src/app/globals.css:68-71'],
+    impact:
+      'Visual inconsistency between Chromium and Firefox browsers. Firefox shows default system scrollbar instead of the custom dark theme scrollbar.',
+    remediation:
+      'Add Firefox scrollbar styling: scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'COMPAT-003',
+    title: 'Styled-JSX Dependency for Keyframe Animation',
+    category: '17. Browser Compatibility',
+    description:
+      '<style jsx global> in LivePrice.tsx is a Next.js-specific feature (styled-jsx). If the project ever migrates away from Next.js, this CSS injection method would break.',
+    severity: 'LOW',
+    cvss: 1.0,
+    affectedAssets: ['src/components/shared/LivePrice.tsx:183-188'],
+    impact:
+      'Framework lock-in for a single CSS animation. Migration to other React frameworks would require rewriting this pattern.',
+    remediation:
+      'Replace with Tailwind\'s animate-spin utility or move the keyframe to globals.css for framework independence.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 18: Network Security (18.2–18.3) ──────────────────────────
+  {
+    id: 'NET-003',
+    title: 'No Explicit CORS Configuration',
+    category: '18. Network Security',
+    description:
+      'No CORS configuration exists. Default Next.js behavior allows same-origin requests only, but there are no explicit Access-Control-* headers. If the API is consumed by other origins, this will need configuration.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['next.config.ts', 'All API routes'],
+    impact:
+      'Cross-origin API consumption is blocked by default. If the API needs to serve other frontends or mobile apps, CORS headers must be added.',
+    remediation:
+      'Add explicit CORS headers if cross-origin access is needed. If not, document that the API is same-origin only.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Accepted Risk',
+  },
+  {
+    id: 'NET-004',
+    title: 'SSE Streaming Response Missing nosniff Header',
+    category: '18. Network Security',
+    description:
+      'The SSE streaming response in workflow/run does not set X-Content-Type-Options: nosniff, which could allow MIME type sniffing attacks in older browsers.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/app/api/workflow/run/route.ts:107-113'],
+    impact:
+      'MIME type sniffing in older browsers could misinterpret the SSE stream content type.',
+    remediation:
+      'Add X-Content-Type-Options: nosniff header to the SSE streaming response. This is also addressed globally by NET-001.',
+    effort: 'Immediate',
+    compliance: ['OWASP-A05'],
+    status: 'Open',
+  },
+
+  // ── Category 19: Input Validation (19.3, 19.5) ─────────────────────────
+  {
+    id: 'INP-003',
+    title: 'Minimal Validation on Stored Article Data',
+    category: '19. Input Validation',
+    description:
+      'Article data from the request body in seen-articles is stored with minimal validation — only cacheKey and headline are required. Fields like url, source, and date accept any string without format validation.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/app/api/seen-articles/route.ts:163-174'],
+    impact:
+      'Malformed or malicious data can be stored in the database. No protection against storing invalid URLs or dates.',
+    remediation:
+      'Add Zod schema validation for incoming article data. Validate URL format, date format, and string lengths.',
+    effort: 'Short-term',
+    compliance: ['OWASP-A03'],
+    status: 'Open',
+  },
+  {
+    id: 'INP-004',
+    title: 'Unvalidated Yahoo Finance Interval Parameter',
+    category: '19. Input Validation',
+    description:
+      'The interval query parameter is passed directly to Yahoo Finance API without validation against a known list of valid intervals (1d, 1wk, 1mo, etc.).',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['src/app/api/stock/[symbol]/route.ts:13'],
+    impact:
+      'Invalid interval values are forwarded to Yahoo Finance, causing opaque 400 errors. No input sanitization at the boundary.',
+    remediation:
+      'Validate the interval parameter against known valid values: ["1d", "5d", "1mo", "3mo", "6mo", "1y", "2y", "5y", "10y", "ytd", "max"].',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 20: Output Encoding (20.1–20.3) ───────────────────────────
+  {
+    id: 'ENC-001',
+    title: 'Incomplete HTML Entity Decoding in RSS Parser',
+    category: '20. Output Encoding',
+    description:
+      'decodeHTMLEntities() only handles 6 named entities (&amp;, &lt;, &gt;, &quot;, &#039;, &apos;). RSS feeds may contain numeric HTML entities (e.g., &#8217; for curly quotes) that are not decoded.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: [
+      'src/app/api/news/[symbol]/route.ts:101-108',
+      'src/app/api/press-releases/[symbol]/route.ts:21-29',
+      'src/app/api/competitor-feed/[company]/route.ts:44-52',
+    ],
+    impact:
+      'Some RSS feed content displays raw HTML entities instead of proper characters. Minor display issue only — React auto-escaping prevents XSS.',
+    remediation:
+      'Extend decodeHTMLEntities to handle numeric entities (&#NNN; and &#xHHH;) or use a library like "he" for comprehensive decoding.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'ENC-002',
+    title: 'Error Details Exposed in API Responses',
+    category: '20. Output Encoding',
+    description:
+      'Error responses include detail: String(error) which can expose stack traces, database connection strings, and internal file paths. This overlaps with ERR-001 but is specifically an output encoding concern.',
+    severity: 'LOW',
+    cvss: 2.5,
+    cwe: 'CWE-209',
+    affectedAssets: [
+      'src/app/api/seen-articles/route.ts:136',
+      'src/app/api/seen-filings/route.ts:147',
+    ],
+    impact:
+      'Information disclosure through error detail leakage. Attackers gain knowledge of internal architecture.',
+    remediation:
+      'Sanitize error output: return generic messages to clients, log detailed errors server-side only.',
+    effort: 'Short-term',
+    compliance: ['OWASP-A09'],
+    status: 'Open',
+  },
+  {
+    id: 'ENC-003',
+    title: 'React JSX Auto-Escaping Provides Strong XSS Protection',
+    category: '20. Output Encoding',
+    description:
+      'React\'s JSX automatically escapes interpolated values, providing strong XSS protection for all rendered content. No dangerouslySetInnerHTML usage was found anywhere in the codebase.',
+    severity: 'INFO',
+    cvss: 0.0,
+    affectedAssets: ['All React components'],
+    impact: 'Positive: Strong default XSS protection through React auto-escaping.',
+    remediation: 'No action needed. This is correctly implemented.',
+    effort: 'Immediate',
+    compliance: ['OWASP-A03'],
+    status: 'Resolved',
+  },
+
+  // ── Category 21: Configuration Management (21.2) ────────────────────────
+  {
+    id: 'CONF-002',
+    title: 'Undocumented MAX_PROMPT_TOKENS Default',
+    category: '21. Configuration Management',
+    description:
+      'MAX_PROMPT_TOKENS defaults to 40000 if not set in environment variables. This is a reasonable default but is completely undocumented — developers have no way to know this limit exists without reading the source code.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['src/app/api/check-analyzed/route.ts:195'],
+    impact:
+      'Developers may unknowingly hit the default limit and not understand why AI matching behavior changes.',
+    remediation:
+      'Document MAX_PROMPT_TOKENS in .env.example with its default value and purpose.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 22: Build & Deployment Processes (22.2–22.4) ──────────────
+  {
+    id: 'CICD-002',
+    title: 'Data Validation Not Chained Into Build Script',
+    category: '22. Build & Deployment Processes',
+    description:
+      'npm run validate is a standalone script not part of npm run build. Data validation is entirely manual and easy to forget before deployment.',
+    severity: 'MEDIUM',
+    cvss: 3.5,
+    affectedAssets: ['package.json:6-13'],
+    impact:
+      'Invalid data files can be deployed to production without detection. Schema violations only caught if a developer remembers to run validate.',
+    remediation:
+      'Chain validation into the build script: "build": "npm run validate && next build".',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'CICD-003',
+    title: 'tsx Not in devDependencies',
+    category: '22. Build & Deployment Processes',
+    description:
+      'npm run seed uses npx tsx which downloads tsx on every invocation if not installed. tsx should be in devDependencies for reliable script execution.',
+    severity: 'LOW',
+    cvss: 1.0,
+    affectedAssets: ['package.json:12'],
+    impact:
+      'Slower script execution due to repeated downloads. CI environments without network access would fail.',
+    remediation:
+      'Add tsx to devDependencies: npm install -D tsx.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'CICD-004',
+    title: 'No Containerization or Deployment Documentation',
+    category: '22. Build & Deployment Processes',
+    description:
+      'No Dockerfile exists for containerized deployment. The app is assumed to deploy on Vercel, but no deployment documentation or configuration exists.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['Dockerfile (missing)', 'README.md'],
+    impact:
+      'Cannot deploy to non-Vercel environments without reverse-engineering the setup. No documented deployment procedure.',
+    remediation:
+      'Add a Dockerfile for containerized deployment and document the Vercel deployment procedure in the README.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 23: Documentation Quality (23.4) ──────────────────────────
+  {
+    id: 'DOC-002',
+    title: 'API Routes Have Good JSDoc Comments',
+    category: '23. Documentation Quality',
+    description:
+      'API routes have helpful JSDoc comments explaining endpoints, request/response formats, and behavior. Stock components include extensive maintenance protocol documentation with update procedures and changelogs.',
+    severity: 'INFO',
+    cvss: 0.0,
+    affectedAssets: [
+      'src/app/api/ (all routes)',
+      'src/components/stocks/ASTS.tsx:1-100',
+    ],
+    impact: 'Positive: Good inline documentation aids developer understanding.',
+    remediation: 'No action needed. This is well-implemented.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Resolved',
+  },
+
+  // ── Category 24: Licensing & Intellectual Property (24.2–24.3) ─────────
+  {
+    id: 'LIC-002',
+    title: 'Yahoo Finance Terms of Service Compliance Concern',
+    category: '24. Licensing & Intellectual Property',
+    description:
+      'Yahoo Finance API is used without an official API key via the undocumented query1.finance.yahoo.com endpoint. Yahoo\'s Terms of Service may prohibit automated scraping via this endpoint.',
+    severity: 'LOW',
+    cvss: 2.5,
+    affectedAssets: ['src/app/api/stock/[symbol]/route.ts'],
+    impact:
+      'Potential ToS violation. Yahoo could block access or pursue legal action. No SLA guarantees on data availability or accuracy.',
+    remediation:
+      'Evaluate official financial data APIs with SLAs: Polygon.io, Finnhub, or Alpha Vantage. All offer free tiers.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'LIC-003',
+    title: 'All Dependencies Have Permissive Licenses',
+    category: '24. Licensing & Intellectual Property',
+    description:
+      'All npm dependencies have permissive licenses (MIT, ISC, Apache-2.0). No copyleft (GPL) dependencies detected. No license compliance issues.',
+    severity: 'INFO',
+    cvss: 0.0,
+    affectedAssets: ['package.json (all dependencies)'],
+    impact: 'Positive: No licensing conflicts or copyleft obligations.',
+    remediation: 'No action needed. Continue monitoring on dependency updates.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Resolved',
+  },
+
+  // ── Category 25: Environmental Impact (25.1–25.3) ──────────────────────
+  {
+    id: 'ENV-001',
+    title: 'Hybrid AI Matching Reduces Unnecessary API Calls',
+    category: '25. Environmental Impact',
+    description:
+      'The AI-matching pipeline in check-analyzed runs local keyword matching first, only sending unmatched articles to Claude for AI analysis. This reduces unnecessary AI API calls significantly. The Neon serverless database scales to zero when idle.',
+    severity: 'INFO',
+    cvss: 0.0,
+    affectedAssets: [
+      'src/app/api/check-analyzed/route.ts',
+      'src/lib/db.ts',
+    ],
+    impact: 'Positive: Energy-efficient design through local-first processing and serverless architecture.',
+    remediation: 'No action needed. Consider batching multiple ticker requests to further reduce API overhead.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Resolved',
+  },
+
+  // ── Category 26: Scalability Architecture (26.1–26.3) ──────────────────
+  {
+    id: 'SCALE-002',
+    title: 'Adding a New Stock Requires 6+ File Changes',
+    category: '26. Scalability Architecture',
+    description:
+      'Adding a new stock requires changes in 6+ files: stocks.ts, CIK_MAP, IR_URLS, a new component in components/stocks/, new data files in data/, and updating stockComponents in the route page. No plugin or config-driven architecture.',
+    severity: 'MEDIUM',
+    cvss: 3.5,
+    affectedAssets: [
+      'src/lib/stocks.ts',
+      'src/app/api/edgar/[ticker]/route.ts',
+      'src/app/api/press-releases/[symbol]/route.ts',
+      'src/app/stocks/[ticker]/page.tsx',
+    ],
+    impact:
+      'High friction for adding new stock coverage. Error-prone process with many manual steps. Easy to miss one file.',
+    remediation:
+      'Create a stock registration system where adding a new stock only requires creating data files and adding an entry to a central config.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'SCALE-003',
+    title: 'No Read-Replica Support for DB',
+    category: '26. Scalability Architecture',
+    description:
+      'Single database connection instance (Neon HTTP). Neon handles concurrency via HTTP pooling, but there is no read-replica support or optimization for read-heavy workloads.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/lib/db.ts'],
+    impact:
+      'All reads and writes compete on a single database endpoint. Under high concurrency, read performance degrades.',
+    remediation:
+      'If needed, configure a Neon read replica for query-heavy endpoints. For current scale, this is acceptable.',
+    effort: 'Long-term',
+    compliance: [],
+    status: 'Accepted Risk',
+  },
+  {
+    id: 'SCALE-004',
+    title: 'Full Wipe-and-Reseed Does Not Scale',
+    category: '26. Scalability Architecture',
+    description:
+      'The seed operation deletes all data and re-inserts everything. For a production system with growing data, this becomes increasingly slow and risky.',
+    severity: 'MEDIUM',
+    cvss: 3.5,
+    affectedAssets: [
+      'src/app/api/db/setup/route.ts',
+      'scripts/seed-database.ts',
+    ],
+    impact:
+      'Seed time grows linearly with data volume. Downtime during reseed increases. Risk of data loss during the delete-insert gap.',
+    remediation:
+      'Support incremental upsert operations instead of full wipe-and-reseed. Use INSERT ... ON CONFLICT DO UPDATE for idempotent seeding.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 27: Backup & Recovery (27.3) ──────────────────────────────
+  {
+    id: 'DATA-002',
+    title: 'No Data Export Functionality',
+    category: '27. Backup & Recovery Mechanisms',
+    description:
+      'No data export functionality exists. Users cannot export their analysis cache, seen articles/filings, or other accumulated state for backup or migration purposes.',
+    severity: 'MEDIUM',
+    cvss: 3.0,
+    affectedAssets: ['No export API endpoint exists'],
+    impact:
+      'Users cannot back up their research data. Migration to another system is impossible without direct database access.',
+    remediation:
+      'Add a data export API endpoint that returns all user data as JSON. Consider adding CSV export for financial data tables.',
+    effort: 'Short-term',
+    compliance: ['GDPR'],
+    status: 'Open',
+  },
+
+  // ── Category 28: Monitoring & Analytics (28.2–28.3) ────────────────────
+  {
+    id: 'MON-002',
+    title: 'No User Analytics or Usage Tracking',
+    category: '28. Monitoring & Analytics',
+    description:
+      'No user analytics exists. No way to understand which stocks are most viewed, which features are used, or where users drop off. No engagement metrics.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['Entire application'],
+    impact:
+      'Product decisions are made without data. Cannot identify underused features or popular content.',
+    remediation:
+      'Add Vercel Analytics or a privacy-respecting alternative (Plausible, Umami) for basic usage insights.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'MON-003',
+    title: 'No API Request Timing or Performance Metrics',
+    category: '28. Monitoring & Analytics',
+    description:
+      'No request timing or performance metrics are recorded for API routes. The only logging is console.error for failures. No P50/P95/P99 latency tracking.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['All API routes'],
+    impact:
+      'Performance regressions go undetected. No baseline for SLA commitments. Cannot identify slow endpoints.',
+    remediation:
+      'Add basic API request logging middleware with timing metrics. Consider Vercel Speed Insights for automated performance monitoring.',
+    effort: 'Short-term',
+    compliance: ['SOC2'],
+    status: 'Open',
+  },
+
+  // ── Category 29: Third-Party Integrations (29.2–29.4) ──────────────────
+  {
+    id: 'VENDOR-002',
+    title: 'No Anthropic API Key Rotation or Usage Tracking',
+    category: '29. Third-Party Integrations',
+    description:
+      'No API key rotation mechanism for Anthropic. If the key is compromised, every endpoint using Claude breaks simultaneously. No usage tracking or budget limits configured.',
+    severity: 'MEDIUM',
+    cvss: 4.0,
+    affectedAssets: [
+      'src/app/api/edgar/analyze/route.ts',
+      'src/app/api/sources/analyze/route.ts',
+      'src/app/api/workflow/run/route.ts',
+      'src/app/api/check-analyzed/route.ts',
+    ],
+    impact:
+      'Single point of failure for all AI features. Compromised key means unlimited API credit consumption. No spend visibility.',
+    remediation:
+      'Add Anthropic API usage tracking and budget alerts. Implement key rotation capability with zero-downtime switchover.',
+    effort: 'Short-term',
+    compliance: ['SOC2'],
+    status: 'Open',
+  },
+  {
+    id: 'VENDOR-003',
+    title: 'Google News RSS Is Undocumented and Fragile',
+    category: '29. Third-Party Integrations',
+    description:
+      'Google News RSS is an informal/undocumented feed. Google could discontinue or change it at any time. No fallback news source is configured.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: [
+      'src/app/api/news/[symbol]/route.ts',
+      'src/app/api/competitor-feed/[company]/route.ts',
+    ],
+    impact:
+      'News functionality could break without warning if Google changes or removes the RSS feed.',
+    remediation:
+      'Add fallback news sources or graceful degradation. Consider official news APIs (NewsAPI, Bing News) as alternatives.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'VENDOR-004',
+    title: 'SEC EDGAR Integration Properly Implemented',
+    category: '29. Third-Party Integrations',
+    description:
+      'SEC EDGAR API integration properly implements SEC rate limiting guidelines with a valid User-Agent. Uses revalidate to avoid excessive requests. Follows SEC Fair Access policy.',
+    severity: 'INFO',
+    cvss: 0.0,
+    affectedAssets: ['src/app/api/edgar/[ticker]/route.ts'],
+    impact: 'Positive: Compliant and well-implemented SEC API integration.',
+    remediation: 'No action needed. This is correctly implemented.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Resolved',
+  },
+
+  // ── Category 30: Code Duplication (30.3–30.4) ──────────────────────────
+  {
+    id: 'DUP-003',
+    title: 'HTML-to-Text Logic Duplicated in Analyze Endpoints',
+    category: '30. Code Duplication',
+    description:
+      'HTML-to-text stripping logic (8 chained regex replacements) is duplicated in both edgar/analyze and sources/analyze routes.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: [
+      'src/app/api/edgar/analyze/route.ts:30-42',
+      'src/app/api/sources/analyze/route.ts:32-43',
+    ],
+    impact:
+      'Bug fixes to HTML stripping must be applied in both files. Inconsistencies between copies can cause different analysis quality.',
+    remediation:
+      'Create src/lib/html-to-text.ts with a shared stripHtml() function. Update both analyze routes to import from the shared module.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'DUP-004',
+    title: 'ensureTable() Pattern Duplicated in Two Routes',
+    category: '30. Code Duplication',
+    description:
+      'The ensureTable() pattern with tableVerified flag and isTableMissing() helper is duplicated between seen-articles and seen-filings routes.',
+    severity: 'MEDIUM',
+    cvss: 3.0,
+    affectedAssets: [
+      'src/app/api/seen-articles/route.ts:32-69',
+      'src/app/api/seen-filings/route.ts:42-80',
+    ],
+    impact:
+      'Bug fixes to table verification must be applied in both files. Inconsistent behavior between the two routes possible.',
+    remediation:
+      'Create src/lib/ensure-table.ts with a shared ensureTable() utility. Use Drizzle migrations instead to eliminate the pattern entirely.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+
+  // ── Category 31: Memory Management (31.1–31.4) ─────────────────────────
+  {
+    id: 'MEM-001',
+    title: 'Short-Lived Object Allocation in Keyword Extraction',
+    category: '31. Memory Management',
+    description:
+      'extractKeywords() creates a Set from split/filter/map operations on every call. For batch processing of many articles, this creates many short-lived objects that increase GC pressure.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: ['src/app/api/check-analyzed/route.ts:40-48'],
+    impact:
+      'Increased garbage collection overhead during batch article processing. Acceptable for current scale.',
+    remediation:
+      'Consider memoizing keyword extraction results per article. Low priority unless processing volume increases significantly.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Accepted Risk',
+  },
+  {
+    id: 'MEM-002',
+    title: 'Full HTML Document Loaded Before Truncation',
+    category: '31. Memory Management',
+    description:
+      'Large HTML documents (potentially megabytes) are loaded entirely into memory via res.text() before being truncated to 15KB. The initial allocation is wasteful for very large documents.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: [
+      'src/app/api/edgar/analyze/route.ts:28-42',
+      'src/app/api/sources/analyze/route.ts:30-43',
+    ],
+    impact:
+      'Unnecessary memory spikes when fetching large SEC filings. Could cause issues under high concurrency.',
+    remediation:
+      'Check Content-Length header before reading body. For large documents, use streaming with a size limit or fetch with ArrayBuffer and manual truncation.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'MEM-003',
+    title: 'Large Client Component State in Memory',
+    category: '31. Memory Management',
+    description:
+      'The 2000+ line stock components hold significant state in memory. React\'s reconciliation on these large component trees may cause GC pressure during re-renders.',
+    severity: 'LOW',
+    cvss: 1.5,
+    affectedAssets: [
+      'src/components/stocks/ASTS.tsx',
+      'src/components/stocks/BMNR.tsx',
+      'src/components/stocks/CRCL.tsx',
+    ],
+    impact:
+      'Potential janky re-renders on lower-end devices due to large virtual DOM trees. Users may experience UI lag.',
+    remediation:
+      'Decompose into smaller sub-components so React can selectively re-render. Use React.memo() for expensive subtrees.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'MEM-004',
+    title: 'Module-Level State Safe in Serverless Context',
+    category: '31. Memory Management',
+    description:
+      'Module-level let tableVerified = false persists across requests in non-serverless environments. In serverless (Vercel), each invocation starts fresh, making this harmless.',
+    severity: 'INFO',
+    cvss: 0.0,
+    affectedAssets: [
+      'src/app/api/seen-articles/route.ts:32',
+      'src/app/api/seen-filings/route.ts:42',
+    ],
+    impact: 'Positive: No memory leak risk in the target serverless deployment environment.',
+    remediation: 'No action needed for Vercel deployment. Document the assumption for non-serverless environments.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Accepted Risk',
+  },
+
+  // ── Category 32: Threading & Concurrency (32.1–32.2) ───────────────────
+  {
+    id: 'CONC-002',
+    title: 'tableVerified Race Condition in Multi-Instance Deploy',
+    category: '32. Threading & Concurrency',
+    description:
+      'The tableVerified flag is a module-level boolean. In multi-instance deployment, race conditions could cause multiple instances to simultaneously run CREATE TABLE IF NOT EXISTS. The IF NOT EXISTS clause prevents data loss, but the DDL overhead is unnecessary.',
+    severity: 'MEDIUM',
+    cvss: 3.0,
+    affectedAssets: [
+      'src/app/api/seen-articles/route.ts:32',
+      'src/app/api/seen-filings/route.ts:42',
+    ],
+    impact:
+      'Unnecessary concurrent DDL execution on cold starts in multi-instance environments. No data corruption risk due to IF NOT EXISTS.',
+    remediation:
+      'Use proper Drizzle migrations instead of runtime DDL to eliminate the race condition entirely.',
+    effort: 'Short-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'CONC-003',
+    title: 'DB Singleton Safe Due to Node.js Single-Thread Model',
+    category: '32. Threading & Concurrency',
+    description:
+      'The _db singleton in db.ts is not thread-safe in theory, but Node.js is single-threaded so this is safe in practice. If the app ever uses worker threads, this would need a mutex.',
+    severity: 'INFO',
+    cvss: 0.0,
+    affectedAssets: ['src/lib/db.ts:7-21'],
+    impact: 'Positive: Safe under Node.js single-threaded execution model.',
+    remediation: 'No action needed. Document the single-thread assumption.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Accepted Risk',
+  },
+
+  // ── Category 33: File Handling Security (33.1–33.4) ────────────────────
+  {
+    id: 'FILE-001',
+    title: 'Excellent File Handling Security in Workflow/Commit',
+    category: '33. File Handling Security',
+    description:
+      'The workflow/commit endpoint has multiple layers of defense: TICKER_PATTERN (/^[a-z]{2,10}$/) prevents path traversal, SAFE_PATH_PATTERN restricts staged files to src/data/[ticker]/*.ts, execFileSync prevents shell injection, and sanitizeCommitMsg() strips dangerous characters with a 200-char cap. No file upload endpoints exist, eliminating a common attack vector.',
+    severity: 'INFO',
+    cvss: 0.0,
+    affectedAssets: [
+      'src/app/api/workflow/commit/route.ts:16-17',
+      'src/app/api/workflow/commit/route.ts:18-20',
+      'src/app/api/workflow/commit/route.ts:27-32',
+    ],
+    impact: 'Positive: Defense-in-depth file handling with multiple validation layers.',
+    remediation: 'No action needed. File handling security is well-implemented.',
+    effort: 'Immediate',
+    compliance: ['OWASP-A03'],
+    status: 'Resolved',
+  },
+
+  // ── Category 34: Compliance with Industry Standards (34.3–34.6) ────────
+  {
+    id: 'COMP-001',
+    title: 'OWASP A10 — Server-Side Request Forgery (SSRF)',
+    category: '34. Compliance with Industry Standards',
+    description:
+      'Per OWASP Top 10 2021 A10:2021, user-supplied URLs are fetched server-side without validation in analyze endpoints. See SEC-004 for details.',
+    severity: 'MEDIUM',
+    cvss: 5.5,
+    cwe: 'CWE-918',
+    affectedAssets: [
+      'src/app/api/edgar/analyze/route.ts:24',
+      'src/app/api/sources/analyze/route.ts:24',
+    ],
+    impact:
+      'Cloud metadata exfiltration, internal service discovery, potential lateral movement within cloud VPC.',
+    remediation:
+      'Implement URL allowlisting per SEC-004. Validate URL scheme is HTTPS only. Reject private/reserved IP ranges.',
+    effort: 'Short-term',
+    compliance: ['OWASP-A10'],
+    status: 'Open',
+  },
+  {
+    id: 'COMP-002',
+    title: 'OWASP A05 — Security Misconfiguration (Headers)',
+    category: '34. Compliance with Industry Standards',
+    description:
+      'Per OWASP Top 10 2021 A05:2021, the application is missing all standard security headers. See NET-001 for details.',
+    severity: 'MEDIUM',
+    cvss: 5.3,
+    cwe: 'CWE-693',
+    affectedAssets: ['next.config.ts'],
+    impact:
+      'Clickjacking, MIME sniffing, referrer leakage, and reduced transport security due to missing security headers.',
+    remediation:
+      'Add security headers via next.config.ts headers() function per NET-001 recommendations.',
+    effort: 'Short-term',
+    compliance: ['OWASP-A05'],
+    status: 'Open',
+  },
+  {
+    id: 'COMP-003',
+    title: 'OWASP A09 — Security Logging & Monitoring Failures',
+    category: '34. Compliance with Industry Standards',
+    description:
+      'Per OWASP Top 10 2021 A09:2021, the application has insufficient logging infrastructure. See MON-001 and ERR-002 for details.',
+    severity: 'MEDIUM',
+    cvss: 4.0,
+    affectedAssets: ['All API routes'],
+    impact:
+      'Security events go undetected. No audit trail for forensic analysis after an incident.',
+    remediation:
+      'Implement structured logging per ERR-002. Add Sentry for error tracking per MON-001. Log access control failures.',
+    effort: 'Short-term',
+    compliance: ['OWASP-A09', 'SOC2'],
+    status: 'Open',
+  },
+  {
+    id: 'COMP-004',
+    title: 'SOC 2 — Not Applicable but Would Fail All Criteria',
+    category: '34. Compliance with Industry Standards',
+    description:
+      'SOC 2 compliance is not applicable for a personal research tool. However, if evaluation were required, the application would fail all five trust service criteria: Security, Availability, Processing Integrity, Confidentiality, and Privacy.',
+    severity: 'INFO',
+    cvss: 0.0,
+    affectedAssets: ['Entire application'],
+    impact: 'Informational: SOC 2 not required for current use case.',
+    remediation: 'No action needed unless the tool transitions to a commercial SaaS product.',
+    effort: 'Long-term',
+    compliance: ['SOC2'],
+    status: 'Accepted Risk',
+  },
+
+  // ── Category 35: Overall Architectural Soundness (35.1–35.7) ───────────
+  {
+    id: 'ARCH-001',
+    title: 'Next.js App Router Conventions Well-Followed',
+    category: '35. Overall Architectural Soundness',
+    description:
+      'The application follows Next.js App Router conventions well: server components for pages, client components for interactivity, API routes for backend logic. Good separation of concerns at the route level. RESTful conventions followed with consistent JSON error responses.',
+    severity: 'INFO',
+    cvss: 0.0,
+    affectedAssets: ['src/app/', 'src/components/', 'src/app/api/'],
+    impact: 'Positive: Clean architectural patterns aligned with framework conventions.',
+    remediation: 'No action needed. Framework conventions are properly followed.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Resolved',
+  },
+  {
+    id: 'ARCH-002',
+    title: 'Clean Data Layer Separation',
+    category: '35. Overall Architectural Soundness',
+    description:
+      'Clean separation between layers: src/lib/schema.ts (DB schema), src/data/* (static data), src/lib/seed-helpers.ts (mappers). The Drizzle ORM integration is solid. Database schema is well-normalized with appropriate indexes.',
+    severity: 'INFO',
+    cvss: 0.0,
+    affectedAssets: ['src/lib/schema.ts', 'src/data/', 'src/lib/seed-helpers.ts'],
+    impact: 'Positive: Well-organized data layer with clear responsibilities.',
+    remediation: 'No action needed. Data layer architecture is well-designed.',
+    effort: 'Immediate',
+    compliance: [],
+    status: 'Resolved',
+  },
+  {
+    id: 'ARCH-003',
+    title: 'SOLID Principles — Partial Adherence',
+    category: '35. Overall Architectural Soundness',
+    description:
+      'Single Responsibility: violated by monolithic stock components (see MAINT-001). Open/Closed: adding a new stock requires modifying multiple files (see SCALE-002). Liskov: N/A. Interface Segregation: good — TypeScript interfaces are focused. Dependency Inversion: partial — direct DB imports in routes instead of injected services.',
+    severity: 'MEDIUM',
+    cvss: 3.0,
+    affectedAssets: [
+      'src/components/stocks/ASTS.tsx',
+      'src/components/stocks/BMNR.tsx',
+      'src/components/stocks/CRCL.tsx',
+      'src/lib/stocks.ts',
+    ],
+    impact:
+      'Architecture is maintainable at current scale but will become a bottleneck as the application grows. SRP and OCP violations increase maintenance burden.',
+    remediation:
+      'Break monolithic components per MAINT-001. Create a stock registration system per SCALE-002. Consider a service layer between API routes and the database for testability.',
+    effort: 'Long-term',
+    compliance: [],
+    status: 'Open',
+  },
 ];
 
 // ── Computed Statistics ──────────────────────────────────────────────────────
