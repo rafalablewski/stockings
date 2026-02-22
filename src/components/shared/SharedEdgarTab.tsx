@@ -748,15 +748,7 @@ const FilingRow: React.FC<{
                       <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>form:</span> {dbTooltip.form}</div>
                       <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>desc:</span> {dbTooltip.description}</div>
                       <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>filed:</span> {dbTooltip.filingDate}</div>
-                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>cross-refs:</span> {dbTooltip.crossRefs ? `${dbTooltip.crossRefs.length}` : 'none'}</div>
-                      {dbTooltip.crossRefs && dbTooltip.crossRefs.map((ref, i) => (
-                        <div key={i} style={{ paddingLeft: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          <span style={{ opacity: 0.5 }}>{'// '}</span>
-                          <span style={{ color: 'var(--text3)', opacity: 0.7 }}>{ref.source}</span>
-                          <span style={{ opacity: 0.5 }}>{' \u2192 '}</span>
-                          <span style={{ opacity: 0.7 }}>{ref.data}</span>
-                        </div>
-                      ))}
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>cross-refs:</span> {dbTooltip.crossRefs ? [...new Set(dbTooltip.crossRefs.map(r => r.source))].join(', ') : 'none'}</div>
                       <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>fresh:</span> <span style={{ color: dbTooltip.fresh === 'NEW' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.fresh}</span></div>
                     </>
                   ) : (
