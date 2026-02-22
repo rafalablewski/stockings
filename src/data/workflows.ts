@@ -3209,4 +3209,180 @@ Rules: Report facts only. Use actual dates from the database. Do not estimate or
       },
     ],
   },
+  // =========================================================================
+  // 19. COMPREHENSIVE CODE AUDIT
+  // =========================================================================
+  {
+    id: 'code-audit',
+    name: 'Comprehensive Code Audit',
+    description: 'Performs a 35-category institutional-grade code audit covering security vulnerabilities, authentication, data privacy, performance bottlenecks, accessibility, compliance, and architecture. Outputs CVSS-scored findings with CWE/OWASP mapping and prioritized remediation.',
+    requiresUserData: false,
+    category: 'audit',
+    variants: [
+      {
+        label: 'ASTS',
+        ticker: 'asts',
+
+        prompt: `You are a senior application security engineer performing a comprehensive code audit of the ABISON investment research platform. This audit covers the AST SpaceMobile (ASTS) research module and shared platform infrastructure.
+
+════════════════════════════════════════
+AUDIT SCOPE
+════════════════════════════════════════
+
+Audit the full codebase across these 35 categories. For each category, identify specific issues with file paths and line numbers.
+
+CATEGORIES:
+1.  Hardcoded Data — secrets, API keys, credentials in source
+2.  Database / API Connections — connection security, query safety, injection risks
+3.  TypeScript Best Practices — any usage, type assertions, missing generics
+4.  Security Vulnerabilities — XSS, CSRF, injection, insecure deserialization
+5.  Authentication & Authorization — endpoint protection, session management
+6.  Data Privacy Compliance — PII handling, GDPR, CCPA exposure
+7.  Performance Bottlenecks — N+1 queries, unbounded loops, missing caching
+8.  Error Handling & Logging — unhandled promises, swallowed errors, info leaks
+9.  Code Maintainability — complexity, dead code, naming conventions
+10. Dependency Management — outdated packages, known CVEs, lock file hygiene
+11. Testing Coverage — unit, integration, E2E gaps
+12. Styling Consistency — CSS methodology, design tokens, responsive gaps
+13. UI/UX Design Flaws — usability issues, interaction patterns
+14. Accessibility Compliance — WCAG 2.1 AA, ARIA, keyboard navigation
+15. Internationalization & Localization — hardcoded strings, locale handling
+16. Mobile Responsiveness — breakpoint coverage, touch targets
+17. Browser Compatibility — API usage, polyfill needs
+18. Network Security — HTTPS, CORS, CSP, rate limiting
+19. Input Validation — boundary checks, type coercion, sanitization
+20. Output Encoding — HTML escaping, JSON serialization safety
+21. Configuration Management — env vars, feature flags, build config
+22. Build & Deployment Processes — CI/CD, build optimization, tree shaking
+23. Documentation Quality — API docs, README, inline comments
+24. Licensing & Intellectual Property — license compatibility, attribution
+25. Environmental Impact — bundle size, unnecessary computation
+26. Scalability Architecture — state management, data flow, caching strategy
+27. Backup & Recovery Mechanisms — data persistence, error recovery
+28. Monitoring & Analytics — observability, error tracking, performance metrics
+29. Third-Party Integrations — API client safety, error handling, timeouts
+30. Code Duplication — DRY violations, copy-paste patterns
+31. Memory Management — leaks, unbounded caches, large object retention
+32. Threading & Concurrency — race conditions, parallel execution safety
+33. File Handling Security — path traversal, upload validation
+34. Compliance with Industry Standards — OWASP Top 10, CWE Top 25
+35. Overall Architectural Soundness — separation of concerns, coupling, cohesion
+
+════════════════════════════════════════
+OUTPUT FORMAT
+════════════════════════════════════════
+
+For each finding:
+
+| Field | Content |
+|-------|---------|
+| ID | [CAT]-[NNN] (e.g., SEC-001, PERF-003) |
+| Severity | CRITICAL / HIGH / MEDIUM / LOW / INFO |
+| CVSS v3.1 | Base score (0.0–10.0) |
+| CWE | CWE-XXX identifier |
+| Title | One-line summary |
+| Location | file:line_number |
+| Description | What the issue is and why it matters |
+| Impact | Business/technical consequences |
+| Remediation | Specific fix with code example |
+| Effort | Immediate / Short-term / Medium-term / Long-term |
+| Compliance | OWASP-A01–A10 / GDPR / SOC2 / WCAG / PCI-DSS / ISO-27001 |
+
+════════════════════════════════════════
+SUMMARY REPORT
+════════════════════════════════════════
+
+End with:
+1. Executive summary (3–5 sentences)
+2. Severity distribution table (Critical/High/Medium/Low/Info counts)
+3. Top 5 priority fixes
+4. Compliance coverage matrix
+5. Recommended remediation roadmap (Immediate → Short-term → Medium-term → Long-term)
+
+Rules: Be specific — cite file paths and line numbers. Do not fabricate issues. Every finding must reference real code.`,
+      },
+      {
+        label: 'BMNR',
+        ticker: 'bmnr',
+
+        prompt: `You are a senior application security engineer performing a comprehensive code audit of the ABISON investment research platform. This audit covers the BitMine Immersion Technologies (BMNR) research module and shared platform infrastructure.
+
+════════════════════════════════════════
+AUDIT SCOPE
+════════════════════════════════════════
+
+Audit the full codebase across these 35 categories. For each category, identify specific issues with file paths and line numbers.
+
+CATEGORIES:
+1.  Hardcoded Data — secrets, API keys, credentials in source
+2.  Database / API Connections — connection security, query safety, injection risks
+3.  TypeScript Best Practices — any usage, type assertions, missing generics
+4.  Security Vulnerabilities — XSS, CSRF, injection, insecure deserialization
+5.  Authentication & Authorization — endpoint protection, session management
+6.  Data Privacy Compliance — PII handling, GDPR, CCPA exposure
+7.  Performance Bottlenecks — N+1 queries, unbounded loops, missing caching
+8.  Error Handling & Logging — unhandled promises, swallowed errors, info leaks
+9.  Code Maintainability — complexity, dead code, naming conventions
+10. Dependency Management — outdated packages, known CVEs, lock file hygiene
+11. Testing Coverage — unit, integration, E2E gaps
+12. Styling Consistency — CSS methodology, design tokens, responsive gaps
+13. UI/UX Design Flaws — usability issues, interaction patterns
+14. Accessibility Compliance — WCAG 2.1 AA, ARIA, keyboard navigation
+15. Internationalization & Localization — hardcoded strings, locale handling
+16. Mobile Responsiveness — breakpoint coverage, touch targets
+17. Browser Compatibility — API usage, polyfill needs
+18. Network Security — HTTPS, CORS, CSP, rate limiting
+19. Input Validation — boundary checks, type coercion, sanitization
+20. Output Encoding — HTML escaping, JSON serialization safety
+21. Configuration Management — env vars, feature flags, build config
+22. Build & Deployment Processes — CI/CD, build optimization, tree shaking
+23. Documentation Quality — API docs, README, inline comments
+24. Licensing & Intellectual Property — license compatibility, attribution
+25. Environmental Impact — bundle size, unnecessary computation
+26. Scalability Architecture — state management, data flow, caching strategy
+27. Backup & Recovery Mechanisms — data persistence, error recovery
+28. Monitoring & Analytics — observability, error tracking, performance metrics
+29. Third-Party Integrations — API client safety, error handling, timeouts
+30. Code Duplication — DRY violations, copy-paste patterns
+31. Memory Management — leaks, unbounded caches, large object retention
+32. Threading & Concurrency — race conditions, parallel execution safety
+33. File Handling Security — path traversal, upload validation
+34. Compliance with Industry Standards — OWASP Top 10, CWE Top 25
+35. Overall Architectural Soundness — separation of concerns, coupling, cohesion
+
+════════════════════════════════════════
+OUTPUT FORMAT
+════════════════════════════════════════
+
+For each finding:
+
+| Field | Content |
+|-------|---------|
+| ID | [CAT]-[NNN] (e.g., SEC-001, PERF-003) |
+| Severity | CRITICAL / HIGH / MEDIUM / LOW / INFO |
+| CVSS v3.1 | Base score (0.0–10.0) |
+| CWE | CWE-XXX identifier |
+| Title | One-line summary |
+| Location | file:line_number |
+| Description | What the issue is and why it matters |
+| Impact | Business/technical consequences |
+| Remediation | Specific fix with code example |
+| Effort | Immediate / Short-term / Medium-term / Long-term |
+| Compliance | OWASP-A01–A10 / GDPR / SOC2 / WCAG / PCI-DSS / ISO-27001 |
+
+════════════════════════════════════════
+SUMMARY REPORT
+════════════════════════════════════════
+
+End with:
+1. Executive summary (3–5 sentences)
+2. Severity distribution table (Critical/High/Medium/Low/Info counts)
+3. Top 5 priority fixes
+4. Compliance coverage matrix
+5. Recommended remediation roadmap (Immediate → Short-term → Medium-term → Long-term)
+
+Rules: Be specific — cite file paths and line numbers. Do not fabricate issues. Every finding must reference real code.`,
+      },
+    ],
+  },
 ];
