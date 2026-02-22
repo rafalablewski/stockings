@@ -14,13 +14,6 @@ export const viewport = {
   maximumScale: 5,
 };
 
-const audits = [
-  {
-    slug: "comprehensive-code-audit",
-    label: "Code Audit v1.0",
-  },
-];
-
 function Navigation() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-xl">
@@ -51,28 +44,6 @@ function Navigation() {
                       </span>
                       <span className="text-[12px] text-white/40">
                         {stock.name}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Audit dropdown */}
-            <div className="relative group/audit">
-              <span className="text-[13px] text-white/60 group-hover/audit:text-white transition-colors cursor-default select-none">
-                Audit
-              </span>
-              <div className="absolute top-full right-0 pt-3 hidden group-hover/audit:block">
-                <div className="bg-black/95 backdrop-blur-xl border border-white/[0.08] rounded-xl py-2 min-w-[260px] shadow-2xl">
-                  {audits.map((audit) => (
-                    <Link
-                      key={audit.slug}
-                      href={`/audit/${audit.slug}`}
-                      className="block px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
-                    >
-                      <span className="text-[12px] text-white/80">
-                        {audit.label}
                       </span>
                     </Link>
                   ))}
