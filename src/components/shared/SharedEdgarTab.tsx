@@ -1918,6 +1918,51 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
 
             <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
 
+            {/* ── CROSS-REFERENCE SOURCES ──────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Cross-Reference Sources</div>
+            <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.6, marginBottom: 12 }}>
+              Each filing can carry one or more cross-refs &mdash; extracted data lines written to other parts of the research database. Displayed as dimmed <span style={{ opacity: 0.7 }}>{'// source → data'}</span> lines below each filing.
+            </div>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>capital</div>
+                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                  Share offerings, debt issuances, insider transactions, institutional holdings, conversions
+                </div>
+              </div>
+              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>timeline</div>
+                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                  Key company events, board changes, material agreements, launches
+                </div>
+              </div>
+              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>financials</div>
+                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                  Quarterly results: revenue, cash, debt, operating metrics
+                </div>
+              </div>
+              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>catalysts</div>
+                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                  Milestone completions, contract awards, product launches
+                </div>
+              </div>
+              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>company</div>
+                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                  Company-level data updates (satellite counts, operational status)
+                </div>
+              </div>
+            </div>
+            <div style={{ marginTop: 10, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+              <div><span style={{ color: 'var(--text)' }}>Storage:</span> filing_cross_refs table &mdash; keyed by ticker + filing_key (accession or FORM|DATE)</div>
+              <div><span style={{ color: 'var(--text)' }}>Lookup:</span> accession number first, then FORM|YYYY-MM-DD &plusmn;1 day</div>
+              <div><span style={{ color: 'var(--text)' }}>Display:</span> shown as <span style={{ opacity: 0.5 }}>{'// source → extracted data'}</span> lines below the filing row</div>
+            </div>
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
             {/* ── NEW FILING DETECTION ──────────────────────── */}
             <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>New Filing Detection</div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
