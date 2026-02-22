@@ -24,12 +24,20 @@ function Navigation() {
           >
             abison
           </Link>
-          <Link
-            href="/stocks"
-            className="text-[13px] text-white/60 hover:text-white transition-colors"
-          >
-            Research
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link
+              href="/stocks"
+              className="text-[13px] text-white/60 hover:text-white transition-colors"
+            >
+              Research
+            </Link>
+            <Link
+              href="/#audit"
+              className="text-[13px] text-white/60 hover:text-white transition-colors"
+            >
+              Audit
+            </Link>
+          </div>
         </div>
       </div>
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />

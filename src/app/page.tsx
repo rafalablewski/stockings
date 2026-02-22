@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { stockList } from "@/lib/stocks";
-import { prompts } from "@/data/prompts";
 import { workflows } from "@/data/workflows";
 import { PromptCard } from "@/components/PromptCard";
+import AuditDashboard from "@/components/AuditDashboard";
 
 export default function HomePage() {
   const workflowPrompts = workflows.map((w) => ({
@@ -25,12 +25,20 @@ export default function HomePage() {
           <p className="text-lg text-white/50 mb-10 leading-relaxed">
             Deep-dive analysis on high-conviction opportunities.
           </p>
-          <Link
-            href="/stocks"
-            className="inline-block text-[13px] text-white/50 hover:text-white transition-colors"
-          >
-            View all research →
-          </Link>
+          <div className="flex items-center justify-center gap-6">
+            <Link
+              href="/stocks"
+              className="inline-block text-[13px] text-white/50 hover:text-white transition-colors"
+            >
+              View all research →
+            </Link>
+            <Link
+              href="#audit"
+              className="inline-block text-[13px] text-white/50 hover:text-white transition-colors"
+            >
+              Security audit →
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -82,18 +90,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Prompts */}
-      <section className="py-20 px-6">
-        <div className="max-w-3xl mx-auto">
+      {/* Security & Risk Audit */}
+      <section id="audit" className="py-20 px-6">
+        <div className="max-w-5xl mx-auto">
           <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
-            Prompts
+            Security &amp; Risk Audit
           </h2>
-
-          <div className="grid gap-4">
-            {prompts.map((prompt) => (
-              <PromptCard key={prompt.name} name={prompt.name} description={prompt.description} variants={prompt.variants} />
-            ))}
-          </div>
+          <AuditDashboard />
         </div>
       </section>
 
