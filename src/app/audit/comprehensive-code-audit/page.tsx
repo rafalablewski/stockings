@@ -8,6 +8,30 @@ export const metadata: Metadata = {
     "35-category institutional-grade code audit with CVSS scoring, CWE mapping, and compliance analysis",
 };
 
+const CODE_AUDIT_IDS = new Set([
+  "code-audit",
+  "dependency-vulnerability",
+  "api-endpoint-security",
+  "performance-audit",
+  "secrets-exposure",
+]);
+
+const AUDIT_BADGE: Record<string, string> = {
+  "code-audit": "Code",
+  "dependency-vulnerability": "Deps",
+  "api-endpoint-security": "API",
+  "performance-audit": "Perf",
+  "secrets-exposure": "Secrets",
+  "capital-parity": "Capital",
+  "crossref-integrity": "Integrity",
+  "sources-completeness": "Sources",
+  "data-freshness": "Freshness",
+  "earnings-quality": "Earnings",
+  "peer-comparables": "Comps",
+  "disclosure-completeness": "Disclosure",
+  "model-consistency": "Model",
+};
+
 const auditWorkflows = workflows.filter((w) => w.category === "audit");
 
 export default function ComprehensiveCodeAuditPage() {
@@ -44,8 +68,12 @@ export default function ComprehensiveCodeAuditPage() {
                       <span className="text-[13px] font-medium text-white tracking-wide">
                         {audit.name}
                       </span>
-                      <span className="text-[9px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-500/70 border border-yellow-500/20">
-                        {audit.id === "code-audit" ? "Code" : "DBV"}
+                      <span className={`text-[9px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded border ${
+                        CODE_AUDIT_IDS.has(audit.id)
+                          ? "bg-violet-500/10 text-violet-400/70 border-violet-500/20"
+                          : "bg-amber-500/10 text-amber-400/70 border-amber-500/20"
+                      }`}>
+                        {AUDIT_BADGE[audit.id] ?? "Audit"}
                       </span>
                     </div>
                     <p className="text-[12px] text-white/30 leading-relaxed">

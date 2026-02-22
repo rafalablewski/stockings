@@ -115,7 +115,7 @@ function serializeModule(moduleName: string, mod: DataModule): string {
  */
 export async function getAuditData(auditId: string, ticker: string): Promise<string> {
   const tickerModules = AUDIT_MODULES[auditId]?.[ticker];
-  const tickerLoaders = MODULE_LOADERS[ticker];
+  const tickerLoaders = MODULE_LOADERS?.[ticker];
 
   if (!tickerModules || !tickerLoaders) return '';
 
