@@ -4,7 +4,16 @@ import { workflows } from "@/data/workflows";
 import { PromptCard } from "@/components/PromptCard";
 import { getAuditStats, AUDIT_METADATA } from "@/data/audit-findings";
 
-const auditWorkflows = workflows.filter((w) => w.category === "audit");
+const dataAuditWorkflows = workflows.filter(
+  (w) => w.category === "audit" && w.id !== "code-audit"
+);
+
+const AUDIT_BADGE: Record<string, string> = {
+  "capital-parity": "Capital",
+  "crossref-integrity": "Integrity",
+  "sources-completeness": "Sources",
+  "data-freshness": "Freshness",
+};
 
 export default function HomePage() {
   const workflowPrompts = workflows.map((w) => ({
@@ -86,14 +95,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Security & Risk Audit */}
+      {/* Audits */}
       <section className="py-20 px-6">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
-            Security &amp; Risk Audit
+            Audits
           </h2>
 
-          <div className="grid gap-4">
+          {/* Code & Security */}
+          <p className="text-[10px] uppercase tracking-[0.15em] text-white/20 mb-4">
+            Code &amp; Security
+          </p>
+          <div className="grid gap-4 mb-10">
             <Link
               href="/audit/comprehensive-code-audit"
               className="group relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300"
@@ -105,6 +118,9 @@ export default function HomePage() {
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-[13px] font-medium text-white tracking-wide">
                       Stockings Comprehensive Code Audit v1.0
+                    </span>
+                    <span className="text-[9px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded bg-violet-500/10 text-violet-400/70 border border-violet-500/20">
+                      Static Report
                     </span>
                     <span className="text-[11px] uppercase tracking-wider text-white/20">
                       {AUDIT_METADATA.date}
@@ -153,8 +169,14 @@ export default function HomePage() {
                 </div>
               </div>
             </Link>
+          </div>
 
-            {auditWorkflows.map((audit) => (
+          {/* Research Data Quality */}
+          <p className="text-[10px] uppercase tracking-[0.15em] text-white/20 mb-4">
+            Research Data Quality
+          </p>
+          <div className="grid gap-4">
+            {dataAuditWorkflows.map((audit) => (
               <div
                 key={audit.id}
                 className="relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]"
@@ -165,8 +187,8 @@ export default function HomePage() {
                       <span className="text-[13px] font-medium text-white tracking-wide">
                         {audit.name}
                       </span>
-                      <span className="text-[9px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-500/60 border border-yellow-500/20">
-                        {audit.id === "code-audit" ? "Code" : "DBV"}
+                      <span className="text-[9px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400/70 border border-amber-500/20">
+                        {AUDIT_BADGE[audit.id] ?? "Audit"}
                       </span>
                     </div>
                     <p className="text-[13px] text-white/40 leading-relaxed mb-3">
@@ -188,7 +210,7 @@ export default function HomePage() {
             ))}
           </div>
           <p className="text-[11px] text-white/15 mt-4">
-            Audits run from the AI Agents tab on each stock page.
+            Data quality audits run from the AI Agents tab on each stock page.
           </p>
         </div>
       </section>
