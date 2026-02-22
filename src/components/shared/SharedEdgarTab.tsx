@@ -403,7 +403,7 @@ const FilingRow: React.FC<{
   }, [persistedAnalysis]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // DB tooltip: live data fetched from database on hover
-  const [dbTooltip, setDbTooltip] = useState<{ status: string; form: string; description: string; filingDate: string; crossRefs: { source: string; data: string }[] | null; fresh: string } | null>(null);
+  const [dbTooltip, setDbTooltip] = useState<{ status: string; form: string; description: string; filingDate: string; crossRefs: { source: string; data: string }[] | null; seen: string } | null>(null);
   const [dbTooltipLoading, setDbTooltipLoading] = useState(false);
   const [dbTooltipVisible, setDbTooltipVisible] = useState(false);
   const dbHoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -429,7 +429,7 @@ const FilingRow: React.FC<{
               description: rec.description || '—',
               filingDate: rec.filingDate || '—',
               crossRefs: xrefs && Array.isArray(xrefs) && xrefs.length > 0 ? xrefs : null,
-              fresh: rec.dismissed ? 'OLD' : 'NEW',
+              seen: rec.dismissed ? 'YES' : 'NO',
             });
           } else {
             setDbTooltip(null);
@@ -749,7 +749,7 @@ const FilingRow: React.FC<{
                       <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>desc:</span> {dbTooltip.description}</div>
                       <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>filed:</span> {dbTooltip.filingDate}</div>
                       <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>cross-refs:</span> {dbTooltip.crossRefs ? [...new Set(dbTooltip.crossRefs.map(r => r.source))].join(', ') : 'none'}</div>
-                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>fresh:</span> <span style={{ color: dbTooltip.fresh === 'NEW' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.fresh}</span></div>
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>seen:</span> <span style={{ color: dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.seen}</span></div>
                     </>
                   ) : (
                     <div style={{ color: 'var(--coral)', fontWeight: 600 }}>NOT IN DATABASE</div>

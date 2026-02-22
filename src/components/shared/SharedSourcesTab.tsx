@@ -112,7 +112,7 @@ const SourceArticleRow: React.FC<{
   const [recheckLoading, setRecheckLoading] = useState(false);
   const [localAnalyzed, setLocalAnalyzed] = useState<boolean | null>(article.analyzed ?? null);
   // DB tooltip: live data fetched from database on hover
-  const [dbTooltip, setDbTooltip] = useState<{ status: string; category: string; heading: string; source: string; date: string; fresh: string } | null>(null);
+  const [dbTooltip, setDbTooltip] = useState<{ status: string; category: string; heading: string; source: string; date: string; seen: string } | null>(null);
   const [dbTooltipLoading, setDbTooltipLoading] = useState(false);
   const [dbTooltipVisible, setDbTooltipVisible] = useState(false);
   const dbHoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -161,7 +161,7 @@ const SourceArticleRow: React.FC<{
               heading: rec.headline || '—',
               source: rec.source || '—',
               date: rec.date || '—',
-              fresh: rec.dismissed ? 'OLD' : 'NEW',
+              seen: rec.dismissed ? 'YES' : 'NO',
             });
           } else {
             setDbTooltip(null);
@@ -363,7 +363,7 @@ const SourceArticleRow: React.FC<{
                   <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>heading:</span> {dbTooltip.heading}</div>
                   <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>source:</span> {dbTooltip.source}</div>
                   <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>date:</span> {dbTooltip.date}</div>
-                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>fresh:</span> <span style={{ color: dbTooltip.fresh === 'NEW' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.fresh}</span></div>
+                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>seen:</span> <span style={{ color: dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.seen}</span></div>
                 </>
               ) : (
                 <div style={{ color: 'var(--coral)', fontWeight: 600 }}>NOT IN DATABASE</div>
@@ -1809,7 +1809,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
                   <div><span style={{ color: 'var(--text)' }}>Purpose:</span> is this article saved in the database?</div>
                   <div><span style={{ color: 'var(--text)' }}>API:</span> GET /api/seen-articles?cacheKey=X</div>
-                  <div><span style={{ color: 'var(--text)' }}>Shows:</span> status, category, heading, source, date, fresh</div>
+                  <div><span style={{ color: 'var(--text)' }}>Shows:</span> status, category, heading, source, date, seen</div>
                   <div><span style={{ color: 'var(--text)' }}>Trigger:</span> hover &rarr; fetches live from Neon PostgreSQL</div>
                 </div>
               </div>
