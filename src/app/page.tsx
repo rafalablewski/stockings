@@ -4,6 +4,8 @@ import { workflows } from "@/data/workflows";
 import { PromptCard } from "@/components/PromptCard";
 import { getAuditStats, AUDIT_METADATA } from "@/data/audit-findings";
 
+const auditWorkflows = workflows.filter((w) => w.category === "audit");
+
 export default function HomePage() {
   const workflowPrompts = workflows.map((w) => ({
     name: w.name,
@@ -151,7 +153,43 @@ export default function HomePage() {
                 </div>
               </div>
             </Link>
+
+            {auditWorkflows.map((audit) => (
+              <div
+                key={audit.id}
+                className="relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]"
+              >
+                <div className="flex items-start justify-between gap-6">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-[13px] font-medium text-white tracking-wide">
+                        {audit.name}
+                      </span>
+                      <span className="text-[9px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-500/60 border border-yellow-500/20">
+                        {audit.id === "code-audit" ? "Code" : "DBV"}
+                      </span>
+                    </div>
+                    <p className="text-[13px] text-white/40 leading-relaxed mb-3">
+                      {audit.description}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      {audit.variants.map((v) => (
+                        <span
+                          key={v.ticker}
+                          className="text-[10px] font-mono text-white/20 px-1.5 py-0.5 rounded bg-white/[0.03]"
+                        >
+                          {v.label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
+          <p className="text-[11px] text-white/15 mt-4">
+            Audits run from the AI Agents tab on each stock page.
+          </p>
         </div>
       </section>
 
