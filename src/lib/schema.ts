@@ -105,6 +105,30 @@ export const partnerNews = pgTable('partner_news', {
 ]);
 
 // ============================================================================
+// SEEN FILINGS — tracks EDGAR filings loaded into the UI so that genuinely
+// new filings can be flagged with a NEW badge. Stores full filing metadata,
+// status (tracked/data_only/new), cross-references, and dismiss state.
+// ============================================================================
+
+export const seenFilings = pgTable('seen_filings', {
+  id: serial('id').primaryKey(),
+  ticker: text('ticker').notNull(),
+  accessionNumber: text('accession_number').notNull(),
+  form: text('form').notNull(),                   // e.g. '10-Q', '8-K', 'Form 4'
+  filingDate: text('filing_date'),                // ISO date from SEC
+  description: text('description'),               // primaryDocDescription
+  reportDate: text('report_date'),
+  fileUrl: text('file_url'),
+  status: text('status'),                         // 'tracked' | 'data_only' | 'new'
+  crossRefs: text('cross_refs'),                  // JSON stringified cross-reference data
+  dismissed: boolean('dismissed').default(false).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex('seen_filings_ticker_accession_idx').on(table.ticker, table.accessionNumber),
+  index('seen_filings_ticker_idx').on(table.ticker),
+]);
+
+// ============================================================================
 // SEEN ARTICLES — tracks which fetched articles the user has already seen
 // so that genuinely new articles can be flagged with a NEW badge on refresh.
 // ============================================================================

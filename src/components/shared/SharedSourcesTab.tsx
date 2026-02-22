@@ -96,10 +96,11 @@ const SourceArticleRow: React.FC<{
   showAnalysis?: boolean;
   ticker: string;
   isGenuinelyNew?: boolean;
+  isDismissed?: boolean;
   dbRecord?: DbRecord | null;
   persistedAnalysis?: string | null;
   onDismissNew?: () => void;
-}> = ({ article, type, showAnalysis, ticker, isGenuinelyNew, dbRecord, persistedAnalysis, onDismissNew }) => {
+}> = ({ article, type, showAnalysis, ticker, isGenuinelyNew, isDismissed, dbRecord, persistedAnalysis, onDismissNew }) => {
   const cacheKey = articleCacheKey(article);
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(persistedAnalysis || null);
 
@@ -111,7 +112,7 @@ const SourceArticleRow: React.FC<{
   const [recheckLoading, setRecheckLoading] = useState(false);
   const [localAnalyzed, setLocalAnalyzed] = useState<boolean | null>(article.analyzed ?? null);
   // DB tooltip: live data fetched from database on hover
-  const [dbTooltip, setDbTooltip] = useState<{ status: string; category: string; heading: string; source: string; date: string; fresh: string } | null>(null);
+  const [dbTooltip, setDbTooltip] = useState<{ status: string; category: string; heading: string; source: string; date: string; seen: string } | null>(null);
   const [dbTooltipLoading, setDbTooltipLoading] = useState(false);
   const [dbTooltipVisible, setDbTooltipVisible] = useState(false);
   const dbHoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -160,7 +161,7 @@ const SourceArticleRow: React.FC<{
               heading: rec.headline || '—',
               source: rec.source || '—',
               date: rec.date || '—',
-              fresh: rec.dismissed ? 'OLD' : 'NEW',
+              seen: rec.dismissed ? 'YES' : 'NO',
             });
           } else {
             setDbTooltip(null);
@@ -362,7 +363,7 @@ const SourceArticleRow: React.FC<{
                   <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>heading:</span> {dbTooltip.heading}</div>
                   <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>source:</span> {dbTooltip.source}</div>
                   <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>date:</span> {dbTooltip.date}</div>
-                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>fresh:</span> <span style={{ color: dbTooltip.fresh === 'NEW' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.fresh}</span></div>
+                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>seen:</span> <span style={{ color: dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.seen}</span></div>
                 </>
               ) : (
                 <div style={{ color: 'var(--coral)', fontWeight: 600 }}>NOT IN DATABASE</div>
@@ -370,11 +371,11 @@ const SourceArticleRow: React.FC<{
             </div>
           )}
         </span>
-        {/* NEW badge — clickable: dismisses the article as "seen" */}
-        {isGenuinelyNew && (
+        {/* NEW badge — clickable: acknowledge as "seen"; SEEN badge after dismiss */}
+        {isGenuinelyNew && !isDismissed && (
           <button
             onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
-            title="Mark as seen"
+            title="Click to acknowledge"
             style={{
               fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
               padding: '1px 5px', borderRadius: 3, flexShrink: 0,
@@ -388,6 +389,16 @@ const SourceArticleRow: React.FC<{
           >
             NEW
           </button>
+        )}
+        {isGenuinelyNew && isDismissed && (
+          <span style={{
+            fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+            color: 'var(--sky)', opacity: 0.3,
+            border: '1px solid transparent',
+          }}>
+            SEEN
+          </span>
         )}
         {/* Action buttons — stop propagation so clicks don't toggle expand */}
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
@@ -531,7 +542,7 @@ const SourceArticleSection: React.FC<{
       {displayed.map((a, i) => {
         const key = articleCacheKey(a);
         return (
-          <SourceArticleRow key={`${type}-${i}`} article={a} type={type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(key)} dbRecord={dbRecords.get(key) || null} persistedAnalysis={persistedSourceAnalyses[key] || null} onDismissNew={() => onDismissNew?.(key)} />
+          <SourceArticleRow key={`${type}-${i}`} article={a} type={type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(key)} isDismissed={dbRecords.get(key)?.dismissed ?? false} dbRecord={dbRecords.get(key) || null} persistedAnalysis={persistedSourceAnalyses[key] || null} onDismissNew={() => onDismissNew?.(key)} />
         );
       })}
     </div>
@@ -1197,7 +1208,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           else news.push(item);
 
           records.set(art.cacheKey, art);
-          if (!art.dismissed) newKeys.add(art.cacheKey);
+          newKeys.add(art.cacheKey);
         }
 
         dbRecordsRef.current = records;
@@ -1258,13 +1269,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       .catch(() => {}); // best-effort
   }, [ticker]);
 
-  // Dismiss a single NEW article: remove from newArticleKeys + persist to DB
+  // Dismiss a single NEW article: mark as dismissed (keep in newArticleKeys so SEEN badge shows)
   const dismissNewArticle = useCallback((cacheKey: string) => {
-    setNewArticleKeys(prev => {
-      const next = new Set(prev);
-      next.delete(cacheKey);
-      return next;
-    });
     // Update local DB record (immutable — create new object)
     const rec = dbRecordsRef.current.get(cacheKey);
     if (rec) {
@@ -1767,6 +1773,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Save to DB (dismissed=false)</div>
                   <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
                   <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>NEW badge</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>User clicks NEW</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600, opacity: 0.3 }}>SEEN badge</div>
                 </div>
               </div>
             </div>
@@ -1774,8 +1784,9 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div><span style={{ color: 'var(--text)' }}>On mount:</span> loads articles from DB only &mdash; no external API calls</div>
               <div><span style={{ color: 'var(--text)' }}>Fetch PRs / Fetch News:</span> independent buttons, each searches its own API</div>
               <div><span style={{ color: 'var(--text)' }}>AI Fetch All:</span> fires both pipelines in parallel</div>
-              <div><span style={{ color: 'var(--text)' }}>NEW badge:</span> stays until user clicks it &rarr; sets dismissed=true in DB</div>
-              <div><span style={{ color: 'var(--text)' }}>Cross-device:</span> NEW badge persists across all devices until dismissed</div>
+              <div><span style={{ color: 'var(--text)' }}>NEW badge:</span> bright clickable badge &mdash; article not yet acknowledged</div>
+              <div><span style={{ color: 'var(--text)' }}>SEEN badge:</span> dimmed label after user clicks NEW &rarr; sets dismissed=true in DB</div>
+              <div><span style={{ color: 'var(--text)' }}>Persistence:</span> both NEW and SEEN survive page reloads &amp; work cross-device</div>
             </div>
 
             {/* Divider */}
@@ -1798,7 +1809,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
                   <div><span style={{ color: 'var(--text)' }}>Purpose:</span> is this article saved in the database?</div>
                   <div><span style={{ color: 'var(--text)' }}>API:</span> GET /api/seen-articles?cacheKey=X</div>
-                  <div><span style={{ color: 'var(--text)' }}>Shows:</span> status, category, heading, source, date, fresh</div>
+                  <div><span style={{ color: 'var(--text)' }}>Shows:</span> status, category, heading, source, date, seen</div>
                   <div><span style={{ color: 'var(--text)' }}>Trigger:</span> hover &rarr; fetches live from Neon PostgreSQL</div>
                 </div>
               </div>

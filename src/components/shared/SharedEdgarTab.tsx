@@ -1,16 +1,18 @@
 /**
- * SharedEdgarTab — SEC EDGAR Filing Monitor (v2)
+ * SharedEdgarTab — DB-First SEC EDGAR Filing Monitor
  *
- * Fetches the latest filings from SEC EDGAR and compares them
- * against the local database to highlight which filings have been
- * tracked and which are new. Per-filing actions: open in new tab
- * or analyze with AI.
+ * ── Flow ──
  *
- * v3.1.0 — Accession-number matching replaces form+date tolerance.
- *   Exact matching via SEC accession number (primary), with ±1 day form+date
- *   fallback only for legacy entries that lack accession numbers.
+ * 1. On mount: load filings ONLY from database (GET /api/seen-filings).
+ *    If nothing saved yet → empty state.
+ * 2. "Fetch Filings" button → fetches fresh filings from SEC EDGAR API.
+ *    New filings (not already in DB) are saved with dismissed=false → NEW badge.
+ * 3. NEW badge stays until user clicks it → sets dismissed=true in DB.
+ * 4. All filing metadata (status, cross-refs, form, date, etc.) persisted to DB.
  *
- * @version 3.1.0
+ * No session cache. No auto-fetch on mount.
+ *
+ * @version 4.0.0
  */
 
 'use client';
@@ -59,39 +61,19 @@ interface MatchResult {
 // ── Constants ────────────────────────────────────────────────────────────────
 const STATUS_RING_CIRCUMFERENCE = 2 * Math.PI * 12; // r=12 SVG circle
 
-// ── Session cache (15-min TTL) ──────────────────────────────────────────────
-const CACHE_TTL_MS = 15 * 60 * 1000;
+// (Session caches removed — filings and analyses are loaded from DB only)
 
-interface CachedEdgar { filings: EdgarFiling[]; fetchedAt: number; }
-
-function getCachedEdgar(ticker: string): CachedEdgar | null {
-  try {
-    const raw = sessionStorage.getItem(`edgar_${ticker}`);
-    if (!raw) return null;
-    const parsed: CachedEdgar = JSON.parse(raw);
-    if (Date.now() - parsed.fetchedAt > CACHE_TTL_MS) { sessionStorage.removeItem(`edgar_${ticker}`); return null; }
-    return parsed;
-  } catch { return null; }
-}
-
-function setCachedEdgar(ticker: string, filings: EdgarFiling[]) {
-  try { sessionStorage.setItem(`edgar_${ticker}`, JSON.stringify({ filings, fetchedAt: Date.now() })); } catch { /* quota */ }
-}
-
-// ── Per-filing analysis cache (survives tab switches) ─────────────────────
-function getAnalysisCache(ticker: string, accession: string): string | null {
-  try {
-    const raw = sessionStorage.getItem(`edgar_analysis_${ticker}_${accession}`);
-    return raw ? JSON.parse(raw) : null;
-  } catch { return null; }
-}
-
-function setAnalysisCache(ticker: string, accession: string, text: string) {
-  try { sessionStorage.setItem(`edgar_analysis_${ticker}_${accession}`, JSON.stringify(text)); } catch { /* quota */ }
-}
-
-function removeAnalysisCache(ticker: string, accession: string) {
-  try { sessionStorage.removeItem(`edgar_analysis_${ticker}_${accession}`); } catch { /* ignore */ }
+/** DB record shape for per-filing status display */
+interface DbFilingRecord {
+  accessionNumber: string;
+  form: string;
+  filingDate: string | null;
+  description: string | null;
+  reportDate: string | null;
+  fileUrl: string | null;
+  status: string | null;
+  crossRefs: { source: string; data: string }[] | null;
+  dismissed: boolean;
 }
 
 function formatTimeAgo(ts: number): string {
@@ -405,21 +387,63 @@ const FilingRow: React.FC<{
   typeColors: Record<string, { bg: string; text: string }>;
   ticker: string;
   isGenuinelyNew?: boolean;
+  isDismissed?: boolean;
+  dbRecord?: DbFilingRecord | null;
   persistedAnalysis?: string | null;
+  onDismissNew?: () => void;
   onRecheck?: () => void;
   recheckLoading?: boolean;
-}> = ({ r, typeColors, ticker, isGenuinelyNew, persistedAnalysis, onRecheck, recheckLoading }) => {
+}> = ({ r, typeColors, ticker, isGenuinelyNew, isDismissed, dbRecord, persistedAnalysis, onDismissNew, onRecheck, recheckLoading }) => {
   const accession = r.filing.accessionNumber;
   const [analyzing, setAnalyzing] = useState(false);
-  const [analysis, setAnalysis] = useState<string | null>(() => getAnalysisCache(ticker, accession) || persistedAnalysis || null);
+  const [analysis, setAnalysis] = useState<string | null>(persistedAnalysis || null);
 
-  // Hydrate from persistent storage when it becomes available after async fetch
   useEffect(() => {
-    if (!analysis && persistedAnalysis) {
-      setAnalysis(persistedAnalysis);
-      setAnalysisCache(ticker, accession, persistedAnalysis);
-    }
+    if (!analysis && persistedAnalysis) setAnalysis(persistedAnalysis);
   }, [persistedAnalysis]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // DB tooltip: live data fetched from database on hover
+  const [dbTooltip, setDbTooltip] = useState<{ status: string; form: string; description: string; filingDate: string; crossRefs: { source: string; data: string }[] | null; seen: string } | null>(null);
+  const [dbTooltipLoading, setDbTooltipLoading] = useState(false);
+  const [dbTooltipVisible, setDbTooltipVisible] = useState(false);
+  const dbHoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dbTooltipRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => () => { if (dbHoverTimer.current) clearTimeout(dbHoverTimer.current); }, []);
+
+  const handleDbHoverEnter = () => {
+    if (dbHoverTimer.current) clearTimeout(dbHoverTimer.current);
+    dbHoverTimer.current = setTimeout(async () => {
+      setDbTooltipVisible(true);
+      setDbTooltipLoading(true);
+      try {
+        const res = await fetch(`/api/seen-filings?ticker=${encodeURIComponent(ticker)}&accessionNumber=${encodeURIComponent(accession)}`);
+        if (res.ok) {
+          const data = await res.json();
+          const rec = data.filings?.[0];
+          if (rec) {
+            const xrefs = rec.crossRefs;
+            setDbTooltip({
+              status: rec.status === 'tracked' ? 'TRACKED' : rec.status === 'data_only' ? 'DATA ONLY' : rec.status === 'new' ? 'UNTRACKED' : rec.status?.toUpperCase() || '—',
+              form: rec.form || '—',
+              description: rec.description || '—',
+              filingDate: rec.filingDate || '—',
+              crossRefs: xrefs && Array.isArray(xrefs) && xrefs.length > 0 ? xrefs : null,
+              seen: rec.dismissed ? 'YES' : 'NO',
+            });
+          } else {
+            setDbTooltip(null);
+          }
+        }
+      } catch { /* best-effort */ }
+      finally { setDbTooltipLoading(false); }
+    }, 200);
+  };
+  const handleDbHoverLeave = () => {
+    if (dbHoverTimer.current) { clearTimeout(dbHoverTimer.current); dbHoverTimer.current = null; }
+    setDbTooltipVisible(false);
+  };
+
   const [copied, setCopied] = useState(false);
   const [applyStep, setApplyStep] = useState<"idle" | "previewing" | "previewed" | "applying" | "applied" | "error">("idle");
   const [applyError, setApplyError] = useState("");
@@ -447,15 +471,11 @@ const FilingRow: React.FC<{
   const handleAnalyze = async () => {
     const isError = isErrorAnalysis(analysis);
     if (analysis && !isError) {
-      setAnalysis(null); removeAnalysisCache(ticker, accession); resetWorkflowState(); setExpanded(false);
-      // Also remove from persistent storage (fire-and-forget)
+      setAnalysis(null); resetWorkflowState(); setExpanded(false);
       fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'edgar', key: accession, text: null }) }).catch(() => {});
       return;
-    } // toggle off
-    // If previous result was an error, clear it before retrying
-    if (isError) {
-      setAnalysis(null); removeAnalysisCache(ticker, accession); resetWorkflowState();
     }
+    if (isError) { setAnalysis(null); resetWorkflowState(); }
     setAnalyzing(true);
     setExpanded(true);
     try {
@@ -474,16 +494,11 @@ const FilingRow: React.FC<{
       const text = data.analysis || data.error || 'No analysis returned.';
       const failed = isErrorAnalysis(text);
       setAnalysis(text);
-      setAnalysisCache(ticker, accession, text);
-      // Only persist successful analyses to Postgres (don't save error strings)
       if (!failed) {
         fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'edgar', key: accession, text }) }).catch(() => {});
       }
     } catch (err) {
-      const errText = `Error: ${(err as Error).message}`;
-      setAnalysis(errText);
-      setAnalysisCache(ticker, accession, errText);
-      // Don't persist errors to Postgres
+      setAnalysis(`Error: ${(err as Error).message}`);
     } finally {
       setAnalyzing(false);
     }
@@ -689,15 +704,86 @@ const FilingRow: React.FC<{
         }}>
           {statusCfg.label}
         </span>
-        {/* NEW badge — only for genuinely new filings that appeared after a refresh */}
-        {isGenuinelyNew && !analysis && !(r.crossRefs && r.crossRefs.length > 0) && r.status === 'new' && (
-          <span style={{
-            fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
-            color: 'var(--sky)', background: 'var(--sky-dim)',
-            border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
-          }}>
+        {/* DB status button — hover fetches live data from database */}
+        {(() => {
+          const dbColor = !dbRecord ? 'var(--text3)' : (dbRecord.filingDate != null && dbRecord.fileUrl != null && dbRecord.status != null) ? 'var(--mint)' : 'var(--gold)';
+          const dbOpacity = !dbRecord ? 0.25 : 0.8;
+          return (
+            <span style={{ position: 'relative', flexShrink: 0 }} onMouseEnter={handleDbHoverEnter} onMouseLeave={handleDbHoverLeave}>
+              <button
+                type="button"
+                aria-label="Show database record"
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 3,
+                  fontSize: 8, fontFamily: 'Space Mono, monospace', color: dbColor, opacity: dbOpacity,
+                  padding: '1px 4px', borderRadius: 3,
+                  border: `1px solid color-mix(in srgb, ${dbColor} 20%, transparent)`,
+                  background: 'transparent', cursor: 'pointer', outline: 'none',
+                  transition: 'all 0.15s',
+                }}
+                onFocus={handleDbHoverEnter}
+                onBlur={handleDbHoverLeave}
+              >
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: dbColor }} />
+                DB
+              </button>
+              {/* Tooltip — shows live DB data */}
+              {dbTooltipVisible && (
+                <div ref={dbTooltipRef} style={{
+                  position: 'absolute', top: '100%', right: 0, marginTop: 6, zIndex: 100,
+                  background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8,
+                  padding: '10px 14px', minWidth: 280, maxWidth: 380,
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                  fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)',
+                  lineHeight: 1.8, pointerEvents: 'none',
+                }}>
+                  <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text3)', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
+                    Saved in seen_filings DB?
+                  </div>
+                  {dbTooltipLoading ? (
+                    <div style={{ color: 'var(--text3)', fontStyle: 'italic' }}>Fetching from database...</div>
+                  ) : dbTooltip ? (
+                    <>
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>status:</span> <span style={{ color: dbTooltip.status === 'TRACKED' ? 'var(--mint)' : dbTooltip.status === 'UNTRACKED' ? 'var(--coral)' : dbTooltip.status === 'DATA ONLY' ? 'var(--gold)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.status}</span></div>
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>form:</span> {dbTooltip.form}</div>
+                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>desc:</span> {dbTooltip.description}</div>
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>filed:</span> {dbTooltip.filingDate}</div>
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>cross-refs:</span> {dbTooltip.crossRefs ? [...new Set(dbTooltip.crossRefs.map(r => r.source))].join(', ') : 'none'}</div>
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>seen:</span> <span style={{ color: dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.seen}</span></div>
+                    </>
+                  ) : (
+                    <div style={{ color: 'var(--coral)', fontWeight: 600 }}>NOT IN DATABASE</div>
+                  )}
+                </div>
+              )}
+            </span>
+          );
+        })()}
+        {/* NEW badge — bright if unacknowledged, dim if acknowledged */}
+        {isGenuinelyNew && !isDismissed && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
+            title="Click to acknowledge"
+            style={{
+              fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+              padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+              color: 'var(--sky)', background: 'var(--sky-dim)',
+              border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
+              cursor: 'pointer', transition: 'all 0.15s', outline: 'none',
+              fontFamily: 'inherit',
+            }}
+          >
             NEW
+          </button>
+        )}
+        {isGenuinelyNew && isDismissed && (
+          <span style={{
+            fontSize: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em',
+            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+            color: 'var(--sky)', opacity: 0.3,
+            border: '1px solid color-mix(in srgb, var(--sky) 10%, transparent)',
+          }}>
+            SEEN
           </span>
         )}
         {/* Action buttons — stop propagation so clicks don't toggle expand */}
@@ -1105,21 +1191,21 @@ const YearSection: React.FC<{
   ticker: string;
   defaultOpen: boolean;
   newAccessions: Set<string>;
+  dbRecords: Map<string, DbFilingRecord>;
   persistedAnalyses: Record<string, string>;
+  onDismissNew?: (accession: string) => void;
   onRecheck?: () => void;
   recheckLoading?: boolean;
-}> = ({ year, results, typeColors, ticker, defaultOpen, newAccessions, persistedAnalyses, onRecheck, recheckLoading }) => {
+}> = ({ year, results, typeColors, ticker, defaultOpen, newAccessions, dbRecords, persistedAnalyses, onDismissNew, onRecheck, recheckLoading }) => {
   const [open, setOpen] = useState(defaultOpen);
   const trackedInYear = results.filter(r => r.status === 'tracked').length;
 
-  // Split into genuinely-new filings (top) vs everything else (bottom)
-  const newEntries = results.filter(r => newAccessions.has(r.filing.accessionNumber) && r.status === 'new');
-  const oldEntries = results.filter(r => !(newAccessions.has(r.filing.accessionNumber) && r.status === 'new'));
-  const hasNewAndOld = newEntries.length > 0 && oldEntries.length > 0;
-
-  const renderRow = (r: MatchResult, i: number) => (
-    <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} onRecheck={onRecheck} recheckLoading={recheckLoading} />
-  );
+  const renderRow = (r: MatchResult, i: number) => {
+    const dbRec = dbRecords.get(r.filing.accessionNumber);
+    return (
+      <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} isDismissed={dbRec?.dismissed ?? false} dbRecord={dbRec || null} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} onDismissNew={() => onDismissNew?.(r.filing.accessionNumber)} onRecheck={onRecheck} recheckLoading={recheckLoading} />
+    );
+  };
 
   return (
     <div>
@@ -1150,16 +1236,7 @@ const YearSection: React.FC<{
       </button>
       {open && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-          {newEntries.map(renderRow)}
-          {hasNewAndOld && (
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: 10,
-              padding: '6px 12px', margin: '2px 0',
-            }}>
-              <span style={{ flex: 1, height: 1, background: 'color-mix(in srgb, var(--border) 40%, transparent)' }} />
-            </div>
-          )}
-          {oldEntries.map(renderRow)}
+          {results.map(renderRow)}
         </div>
       )}
     </div>
@@ -1183,10 +1260,12 @@ const FilingList: React.FC<{
   filter: string;
   ticker: string;
   newAccessions: Set<string>;
+  dbRecords: Map<string, DbFilingRecord>;
   persistedAnalyses: Record<string, string>;
+  onDismissNew?: (accession: string) => void;
   onRecheck?: () => void;
   recheckLoading?: boolean;
-}> = ({ results, typeColors, filter, ticker, newAccessions, persistedAnalyses, onRecheck, recheckLoading }) => {
+}> = ({ results, typeColors, filter, ticker, newAccessions, dbRecords, persistedAnalyses, onDismissNew, onRecheck, recheckLoading }) => {
   const filtered = applyFilter(results, filter);
 
   if (filtered.length === 0) {
@@ -1217,7 +1296,9 @@ const FilingList: React.FC<{
           ticker={ticker}
           defaultOpen={i === 0}
           newAccessions={newAccessions}
+          dbRecords={dbRecords}
           persistedAnalyses={persistedAnalyses}
+          onDismissNew={onDismissNew}
           onRecheck={onRecheck}
           recheckLoading={recheckLoading}
         />
@@ -1255,6 +1336,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   const [edgarFilings, setEdgarFilings] = useState<EdgarFiling[]>([]);
   const [loading, setLoading] = useState(false);
   const [recheckLoading, setRecheckLoading] = useState(false);
+  const [methodologyOpen, setMethodologyOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
@@ -1264,11 +1346,14 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   const [refreshedLocalFilings, setRefreshedLocalFilings] = useState<LocalFiling[] | null>(null);
   const [refreshedCrossRefs, setRefreshedCrossRefs] = useState<Record<string, { source: string; data: string }[]> | null>(null);
 
-  // Track genuinely new filings: only those appearing after a refresh that weren't in the previous load
-  const knownAccessionsRef = useRef<Set<string>>(new Set());
+  // DB records map: accessionNumber → DB row. Source of truth for DB status and NEW detection.
+  const dbRecordsRef = useRef<Map<string, DbFilingRecord>>(new Map());
+  const [dbRecords, setDbRecords] = useState<Map<string, DbFilingRecord>>(new Map());
+
+  // NEW badge: filings with dismissed=false in the DB
   const [newAccessions, setNewAccessions] = useState<Set<string>>(new Set());
 
-  // Persistent analysis cache (survives page reloads — loaded from disk)
+  // Persistent analysis cache (survives page reloads — loaded from Postgres)
   const [persistedAnalyses, setPersistedAnalyses] = useState<Record<string, string>>({});
 
   const effectiveLocalFilings = refreshedLocalFilings ?? localFilings;
@@ -1293,12 +1378,14 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
     return opts;
   }, [results, dataOnlyCount]);
 
-  // Fetch live filings from SEC EDGAR (checks for new filings)
+  // Fetch live filings from SEC EDGAR, compare with DB, save new ones
   const fetchFilings = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/edgar/${ticker}`);
+      const res = await fetch(`/api/edgar/${ticker}`, {
+        signal: AbortSignal.timeout(15000),
+      });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || `Failed to fetch (${res.status})`);
@@ -1306,33 +1393,80 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       const data = await res.json();
       const filings: EdgarFiling[] = data.filings || [];
 
-      // Track genuinely new filings (only those not in previous load)
-      const currentAccessions = new Set(filings.map(f => f.accessionNumber));
-      if (knownAccessionsRef.current.size === 0) {
-        // First load — everything is already known, nothing is "new"
-        knownAccessionsRef.current = currentAccessions;
-        setNewAccessions(new Set());
-      } else {
-        // Refresh — only filings not previously seen are genuinely new
-        const fresh = new Set<string>();
-        for (const acc of currentAccessions) {
-          if (!knownAccessionsRef.current.has(acc)) fresh.add(acc);
-        }
-        knownAccessionsRef.current = currentAccessions;
-        setNewAccessions(fresh);
+      // Identify genuinely new filings (not in DB yet) → mark as NEW
+      const newKeys = new Set<string>();
+      for (const f of filings) {
+        if (!dbRecordsRef.current.has(f.accessionNumber)) newKeys.add(f.accessionNumber);
       }
 
       setEdgarFilings(filings);
       setLoaded(true);
-      const now = Date.now();
-      setFetchedAt(now);
-      setCachedEdgar(ticker, filings);
+      setFetchedAt(Date.now());
+
+      // Mark new filings
+      if (newKeys.size > 0) {
+        setNewAccessions(prev => {
+          const next = new Set(prev);
+          for (const k of newKeys) next.add(k);
+          return next;
+        });
+      }
+
+      // Match filings against local DB to determine status
+      const matched = matchFilings(filings, effectiveLocalFilings, effectiveCrossRefs);
+
+      // Save ALL fetched filings to DB with full metadata (upsert fixes legacy data)
+      const allToSave = matched.map(m => ({
+        accessionNumber: m.filing.accessionNumber,
+        form: m.filing.form,
+        filingDate: m.filing.filingDate,
+        description: m.filing.primaryDocDescription,
+        reportDate: m.filing.reportDate,
+        fileUrl: m.filing.fileUrl,
+        status: m.status,
+        crossRefs: m.crossRefs || null,
+      }));
+
+      if (allToSave.length > 0) {
+        console.log(`[edgar-fetch] saving ${allToSave.length} filings to DB (${newKeys.size} NEW)...`);
+        try {
+          const saveRes = await fetch('/api/seen-filings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ticker, filings: allToSave }),
+          });
+          const saveBody = await saveRes.json().catch(() => ({}));
+          if (saveRes.ok) {
+            console.log('[edgar-fetch] save OK:', saveBody);
+            // Update local DB records
+            for (const m of matched) {
+              const rec: DbFilingRecord = {
+                accessionNumber: m.filing.accessionNumber,
+                form: m.filing.form,
+                filingDate: m.filing.filingDate,
+                description: m.filing.primaryDocDescription,
+                reportDate: m.filing.reportDate,
+                fileUrl: m.filing.fileUrl,
+                status: m.status,
+                crossRefs: m.crossRefs || null,
+                dismissed: newKeys.has(m.filing.accessionNumber) ? false : (dbRecordsRef.current.get(m.filing.accessionNumber)?.dismissed ?? true),
+              };
+              dbRecordsRef.current.set(m.filing.accessionNumber, rec);
+            }
+            setDbRecords(new Map(dbRecordsRef.current));
+          } else {
+            console.error('[edgar-fetch] save FAILED:', saveRes.status, saveBody);
+          }
+        } catch (err) {
+          console.error('[edgar-fetch] save error:', err);
+        }
+      }
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setLoading(false);
     }
-  }, [ticker]);
+  }, [ticker, effectiveLocalFilings, effectiveCrossRefs]);
 
   // Re-check local database from disk (picks up AI Agent patches / new cross-refs)
   const recheckDB = useCallback(async () => {
@@ -1352,21 +1486,63 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
     finally { setRecheckLoading(false); }
   }, [ticker]);
 
+  // DB-first init: load filings from database on mount (no SEC API call)
   useEffect(() => {
-    const cached = getCachedEdgar(ticker);
-    if (cached) {
-      // Cache restore — all cached filings are already known, none are "new"
-      knownAccessionsRef.current = new Set(cached.filings.map(f => f.accessionNumber));
-      setNewAccessions(new Set());
-      setEdgarFilings(cached.filings);
-      setLoaded(true);
-      setFetchedAt(cached.fetchedAt);
-    } else {
-      fetchFilings();
+    let cancelled = false;
+
+    async function init() {
+      try {
+        const res = await fetch(`/api/seen-filings?ticker=${ticker}`);
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({}));
+          console.error('[db-init] GET seen-filings failed:', res.status, errBody);
+          throw new Error(`HTTP ${res.status}: ${errBody.error || 'unknown'}`);
+        }
+        const data = await res.json();
+        const filings: DbFilingRecord[] = data.filings || [];
+
+        if (cancelled) return;
+
+        const edgarFromDb: EdgarFiling[] = [];
+        const newKeys = new Set<string>();
+        const records = new Map<string, DbFilingRecord>();
+
+        for (const f of filings) {
+          edgarFromDb.push({
+            accessionNumber: f.accessionNumber,
+            filingDate: f.filingDate || '',
+            form: f.form,
+            primaryDocDescription: f.description || '',
+            reportDate: f.reportDate || '',
+            fileUrl: f.fileUrl || '',
+          });
+          records.set(f.accessionNumber, f);
+          newKeys.add(f.accessionNumber);
+        }
+
+        // Sort newest-first (by filingDate descending)
+        edgarFromDb.sort((a, b) => (b.filingDate || '').localeCompare(a.filingDate || ''));
+
+        dbRecordsRef.current = records;
+        setDbRecords(new Map(records));
+        setNewAccessions(newKeys);
+        setEdgarFilings(edgarFromDb);
+        setLoaded(edgarFromDb.length > 0);
+        console.log(`[db-init] loaded ${filings.length} filings from DB (${newKeys.size} NEW)`);
+      } catch (err) {
+        console.error('[db-init] error:', err);
+        if (!cancelled) {
+          // Empty state — user can click Fetch Filings
+          setLoaded(false);
+        }
+      }
     }
+
+    init();
     // Always re-check local DB on mount (picks up patches applied while away)
     recheckDB();
-  }, [ticker, fetchFilings, recheckDB]);
+    return () => { cancelled = true; };
+  }, [ticker, recheckDB]);
 
   // Hydrate persisted analyses from disk on mount
   useEffect(() => {
@@ -1382,6 +1558,34 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       .catch(() => {}); // best-effort
   }, [ticker]);
 
+  // Acknowledge a NEW filing (click on NEW badge) — dims badge but keeps it visible
+  const dismissNewFiling = useCallback((accession: string) => {
+    // Update local DB record to dismissed (dims the badge from NEW to SEEN)
+    const rec = dbRecordsRef.current.get(accession);
+    if (rec) {
+      dbRecordsRef.current.set(accession, { ...rec, dismissed: true });
+      setDbRecords(new Map(dbRecordsRef.current));
+    }
+    // Persist dismiss to DB
+    const filing = edgarFilings.find(f => f.accessionNumber === accession);
+    if (filing) {
+      fetch('/api/seen-filings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticker,
+          filings: [{
+            accessionNumber: accession,
+            form: filing.form,
+            filingDate: filing.filingDate,
+            description: filing.primaryDocDescription,
+          }],
+          dismiss: true,
+        }),
+      }).catch(err => console.error('[dismiss] error:', err));
+    }
+  }, [ticker, edgarFilings]);
+
   const edgarBrowseUrl = `https://www.sec.gov/edgar/browse/?CIK=${cik}&owner=exclude`;
 
   return (
@@ -1392,7 +1596,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>SEC Filings</div>
         <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>EDGAR<span style={{ color: 'var(--accent)' }}>.</span></h2>
         <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>
-          Live SEC EDGAR filings for {companyName} compared against the local database. Click <b>AI</b> on any filing to analyze.
+          SEC EDGAR filings for {companyName}. Loaded from database on mount — click <b>Fetch Filings</b> to check SEC for new ones, or <b>AI</b> to analyze.
         </p>
       </div>
 
@@ -1465,12 +1669,12 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             </svg>
             SEC EDGAR
           </a>
-          {/* Refresh — fetch new filings from SEC */}
+          {/* Fetch Filings — fetch from SEC EDGAR */}
           <button
             onClick={fetchFilings}
             disabled={loading}
-            aria-label={loaded ? 'Refresh EDGAR filings' : 'Fetch EDGAR filings'}
-            title="Fetch new filings from SEC EDGAR"
+            aria-label="Fetch EDGAR filings"
+            title="Fetch filings from SEC EDGAR"
             style={{
               fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
               padding: '5px 14px', borderRadius: 4,
@@ -1487,35 +1691,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            {loading ? 'Fetching...' : loaded ? 'Refresh' : 'Fetch'}
+            {loading ? 'Fetching...' : 'Fetch Filings'}
           </button>
           {/* Re-check — re-read local database from disk */}
-          {/* Simulate New — dev-only: pretend some untracked filings just appeared */}
-          {loaded && (
-            <button
-              onClick={() => {
-                const untracked = results.filter(r => r.status === 'new').slice(0, 3);
-                if (untracked.length === 0) return;
-                setNewAccessions(new Set(untracked.map(r => r.filing.accessionNumber)));
-              }}
-              title="DEV: Simulate new filings appearing (picks up to 3 untracked filings)"
-              style={{
-                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-                padding: '5px 14px', borderRadius: 4,
-                color: 'rgba(200,170,100,0.5)',
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(200,170,100,0.15)',
-                cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 6,
-                transition: 'all 0.15s', outline: 'none',
-              }}
-            >
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
-                <path d="M8 2v12M2 8h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-              Simulate New
-            </button>
-          )}
           {loaded && (
             <button
               onClick={recheckDB}
@@ -1597,7 +1775,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
             <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
-          <span style={{ fontSize: 12 }}>Fetching from SEC EDGAR...</span>
+          <span style={{ fontSize: 12 }}>Loading from database...</span>
         </div>
       )}
 
@@ -1617,9 +1795,279 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           </div>
 
           {/* Filing list */}
-          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} newAccessions={newAccessions} persistedAnalyses={persistedAnalyses} onRecheck={recheckDB} recheckLoading={recheckLoading} />
+          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} newAccessions={newAccessions} dbRecords={dbRecords} persistedAnalyses={persistedAnalyses} onDismissNew={dismissNewFiling} onRecheck={recheckDB} recheckLoading={recheckLoading} />
         </>
       )}
+
+      {/* ── Methodology ────────────────────────────────────────────────────── */}
+      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#edgar-methodology</div>
+      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+        <div
+          onClick={() => setMethodologyOpen(prev => !prev)}
+          style={{
+            padding: '24px 24px',
+            borderBottom: methodologyOpen ? '1px solid var(--border)' : 'none',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer',
+          }}
+          role="button"
+          tabIndex={0}
+          aria-expanded={methodologyOpen}
+          aria-label="Toggle EDGAR Methodology"
+          onKeyDown={(e) => e.key === 'Enter' && setMethodologyOpen(prev => !prev)}
+        >
+          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Methodology</span>
+          <span style={{ color: 'var(--text3)', fontSize: 18 }}>{methodologyOpen ? '\u2212' : '+'}</span>
+        </div>
+        {methodologyOpen && (
+          <div style={{ padding: '24px 24px', fontSize: 13, color: 'var(--text2)' }}>
+            {/* ── DB-FIRST ARCHITECTURE ────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>DB-First Architecture</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Page loads</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>GET /api/seen-filings?ticker=X</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>ensureTable() &mdash; auto-creates seen_filings if missing</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Load saved filings from Neon PostgreSQL</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>Render from DB &mdash; no SEC API calls on mount</div>
+            </div>
+            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+              <div><span style={{ color: 'var(--text)' }}>Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_filings table</div>
+              <div><span style={{ color: 'var(--text)' }}>Self-healing:</span> ensureTable() creates table + indexes on first request</div>
+              <div><span style={{ color: 'var(--text)' }}>Graceful fallback:</span> returns empty array if table cannot be created</div>
+              <div><span style={{ color: 'var(--text)' }}>Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites form, filingDate, description, reportDate, fileUrl, status, crossRefs</div>
+            </div>
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── FILING DATA PIPELINE ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Filing Data Pipeline</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>Fetch Filings</div>
+              <div style={{ width: 2, height: 10, background: 'var(--sky)' }} />
+              <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>GET /api/edgar/[ticker]</div>
+              <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+              <div style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.6 }}>SEC EDGAR submissions API<br />(CIK-based, paginated, 15s timeout)</div>
+              <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+              <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Match against sec_filings + filing_cross_refs</div>
+              <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+              <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>POST /api/seen-filings &mdash; upsert all with status + crossRefs</div>
+              <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+              <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>New filings get NEW badge (dismissed=false)</div>
+            </div>
+            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+              <div><span style={{ color: 'var(--text)' }}>Save path:</span> POST /api/seen-filings &rarr; upsert with status, crossRefs, form, filingDate, description, reportDate, fileUrl</div>
+              <div><span style={{ color: 'var(--text)' }}>Re-check DB:</span> re-reads sec_filings + filing_cross_refs from Postgres to pick up new patches</div>
+              <div><span style={{ color: 'var(--text)' }}>Analysis:</span> POST /api/edgar/analyze &rarr; Claude Haiku (15K chars) &rarr; persisted to analysis_cache table</div>
+            </div>
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── THREE-TIER MATCHING ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Three-Tier Filing Matcher</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>SEC filing arrives (accessionNumber, form, filingDate)</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              {/* Tier 1a */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
+                  <div>Tier 1a: Accession number exact match</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>O(1) hash lookup, strip dashes</div>
+                </div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
+                </div>
+              </div>
+              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No match</div>
+              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              {/* Tier 1b */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
+                  <div>Tier 1b: Legacy form+date fuzzy match</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&plusmn;1 day tolerance, form type normalized</div>
+                </div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
+                </div>
+              </div>
+              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No match</div>
+              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              {/* Tier 2 */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
+                  <div>Tier 2: Cross-reference key lookup</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>accession or FORM|YYYY-MM-DD in cross-ref index</div>
+                </div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                  Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} /><span style={{ color: 'var(--gold)', fontWeight: 600 }}>DATA ONLY</span></span>
+                </div>
+              </div>
+              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No match</div>
+              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              {/* Result: Untracked */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} />
+                <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>UNTRACKED</span>
+              </div>
+            </div>
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── CROSS-REFERENCE SOURCES ──────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Cross-Reference Sources</div>
+            <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.6, marginBottom: 12 }}>
+              Each filing can carry one or more cross-refs &mdash; extracted data lines written to other parts of the research database. Displayed as dimmed <span style={{ opacity: 0.7 }}>{'// source → data'}</span> lines below each filing.
+            </div>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>capital</div>
+                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                  Share offerings, debt issuances, insider transactions, institutional holdings, conversions
+                </div>
+              </div>
+              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>timeline</div>
+                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                  Key company events, board changes, material agreements, launches
+                </div>
+              </div>
+              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>financials</div>
+                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                  Quarterly results: revenue, cash, debt, operating metrics
+                </div>
+              </div>
+              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>catalysts</div>
+                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                  Milestone completions, contract awards, product launches
+                </div>
+              </div>
+              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>company</div>
+                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                  Company-level data updates (satellite counts, operational status)
+                </div>
+              </div>
+            </div>
+            <div style={{ marginTop: 10, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+              <div><span style={{ color: 'var(--text)' }}>Storage:</span> filing_cross_refs table &mdash; keyed by ticker + filing_key (accession or FORM|DATE)</div>
+              <div><span style={{ color: 'var(--text)' }}>Lookup:</span> accession number first, then FORM|YYYY-MM-DD &plusmn;1 day</div>
+              <div><span style={{ color: 'var(--text)' }}>Display:</span> shown as <span style={{ opacity: 0.5 }}>{'// source → extracted data'}</span> lines below the filing row</div>
+            </div>
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── NEW FILING DETECTION ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>New Filing Detection</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center' }}>Fetch Filings</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Compare accessionNumber against DB records</div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Already in DB?</div>
+              <div style={{ display: 'flex', gap: 32, marginTop: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>Yes</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>Upsert (update metadata + status)</div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Save to DB (dismissed=false)</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>NEW badge</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>User clicks NEW</div>
+                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600, opacity: 0.3 }}>SEEN badge</div>
+                </div>
+              </div>
+            </div>
+            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+              <div><span style={{ color: 'var(--text)' }}>On mount:</span> loads filings from DB only &mdash; no SEC API calls</div>
+              <div><span style={{ color: 'var(--text)' }}>Fetch Filings:</span> fetches from SEC EDGAR, matches, saves all to DB</div>
+              <div><span style={{ color: 'var(--text)' }}>NEW badge:</span> bright clickable badge &mdash; filing not yet acknowledged</div>
+              <div><span style={{ color: 'var(--text)' }}>SEEN badge:</span> dimmed label after user clicks NEW &rarr; sets dismissed=true in DB</div>
+              <div><span style={{ color: 'var(--text)' }}>Persistence:</span> both NEW and SEEN survive page reloads &amp; work cross-device</div>
+            </div>
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── DB STATUS INDICATORS ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>DB Status Indicators</div>
+            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+              <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)' }} />
+                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--mint)' }}>GREEN DB</span>
+                </div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                  Complete record: filingDate, fileUrl, and status all present in DB.
+                </div>
+              </div>
+              <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)' }} />
+                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--gold)' }}>GOLD DB</span>
+                </div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                  Partial record: filing saved to DB but missing some metadata fields.
+                </div>
+              </div>
+              <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', opacity: 0.3 }} />
+                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', opacity: 0.5 }}>GRAY DB</span>
+                </div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                  Not in seen_filings table. Click Fetch Filings to populate.
+                </div>
+              </div>
+            </div>
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── BUTTON DISTINCTION ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Button Distinction: Fetch Filings vs Re-check DB</div>
+            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+              <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,200,130,0.7)', marginBottom: 6 }}>FETCH FILINGS</div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                  Calls SEC EDGAR API. Fetches latest filings, matches against local DB,
+                  saves all to seen_filings with full metadata. New filings get NEW badge.
+                </div>
+              </div>
+              <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,180,220,0.7)', marginBottom: 6 }}>RE-CHECK DB</div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                  Re-reads sec_filings + filing_cross_refs from Postgres.
+                  Picks up new tracked entries or cross-refs added by AI Agent patches.
+                  Does not call SEC EDGAR API. Changes filing status dots.
+                </div>
+              </div>
+            </div>
+
+            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+
+            {/* ── PERSISTED DATA ──────────────────────── */}
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>What Gets Persisted to DB</div>
+            <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2.2 }}>
+              <div><span style={{ color: 'var(--text)' }}>seen_filings:</span> accession_number, form, filing_date, description, report_date, file_url, status, cross_refs (JSON), dismissed</div>
+              <div><span style={{ color: 'var(--text)' }}>analysis_cache:</span> ticker + &quot;edgar&quot; + accession_number &rarr; analysis text (successful only)</div>
+              <div><span style={{ color: 'var(--text)' }}>sec_filings:</span> tracked filings from research database (populated by AI Agent / db/setup)</div>
+              <div><span style={{ color: 'var(--text)' }}>filing_cross_refs:</span> cross-reference data linking filings to capital, timeline, financials, catalysts</div>
+              <div style={{ marginTop: 4, color: 'var(--coral)', opacity: 0.7 }}>No sessionStorage. No in-memory caches. Everything in Postgres.</div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
