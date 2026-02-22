@@ -539,6 +539,11 @@ export default function AuditDashboard() {
   const [checkingIds, setCheckingIds] = useState<Set<string>>(new Set());
   const checkAbortRefs = useRef<Record<string, AbortController>>({});
 
+  // ── Check All state ──
+  const [checkAllRunning, setCheckAllRunning] = useState(false);
+  const [checkAllProgress, setCheckAllProgress] = useState<{ current: number; total: number } | null>(null);
+  const checkAllAbortRef = useRef(false);
+
   // ── Re-run state ──
   const [rerunResult, setRerunResult] = useState('');
   const [rerunRunning, setRerunRunning] = useState(false);
@@ -711,6 +716,31 @@ export default function AuditDashboard() {
     return AUDIT_FINDINGS.filter(f => f.severity === filterSeverity);
   }, [filterSeverity]);
 
+  // ── Check All callbacks ──
+  const handleCheckAll = useCallback(async () => {
+    setCheckAllRunning(true);
+    checkAllAbortRef.current = false;
+    const findings = filteredFindings;
+    setCheckAllProgress({ current: 0, total: findings.length });
+
+    for (let i = 0; i < findings.length; i++) {
+      if (checkAllAbortRef.current) break;
+      setCheckAllProgress({ current: i + 1, total: findings.length });
+      await handleRecheck(findings[i]);
+      if (checkAllAbortRef.current) break;
+    }
+
+    setCheckAllRunning(false);
+    setCheckAllProgress(null);
+  }, [filteredFindings, handleRecheck]);
+
+  const handleCheckAllStop = useCallback(() => {
+    checkAllAbortRef.current = true;
+    Object.values(checkAbortRefs.current).forEach(c => c.abort());
+    setCheckAllRunning(false);
+    setCheckAllProgress(null);
+  }, []);
+
   const severityFilters: FilterSeverity[] = ['ALL', 'CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
 
   return (
@@ -745,61 +775,116 @@ export default function AuditDashboard() {
             {stats.bySeverity.CRITICAL > 0 ? `${stats.bySeverity.CRITICAL} Critical` : 'No Critical'}
           </span>
 
-          {/* Re-run button */}
-          {!rerunRunning ? (
-            <button
-              onClick={handleRerun}
-              style={{
-                marginLeft: 'auto',
-                fontSize: 9,
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                padding: '4px 12px',
-                borderRadius: 4,
-                background: 'rgba(121,192,255,0.06)',
-                border: '1px solid rgba(121,192,255,0.2)',
-                color: 'rgba(121,192,255,0.8)',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-              }}
-            >
-              <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="23 4 23 10 17 10" />
-                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-              </svg>
-              Re-run Audit
-            </button>
-          ) : (
-            <button
-              onClick={handleRerunStop}
-              style={{
-                marginLeft: 'auto',
-                fontSize: 9,
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.08em',
-                padding: '4px 12px',
-                borderRadius: 4,
-                background: 'rgba(255,77,79,0.06)',
-                border: '1px solid rgba(255,77,79,0.2)',
-                color: 'rgba(255,77,79,0.8)',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-              }}
-            >
-              <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                <rect x={6} y={6} width={12} height={12} />
-              </svg>
-              Stop
-            </button>
-          )}
+          {/* Action buttons */}
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
+            {/* Check All button */}
+            {!checkAllRunning ? (
+              <button
+                onClick={handleCheckAll}
+                disabled={checkAllRunning}
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  padding: '4px 12px',
+                  borderRadius: 4,
+                  background: 'rgba(121,192,255,0.06)',
+                  border: '1px solid rgba(121,192,255,0.2)',
+                  color: 'rgba(121,192,255,0.8)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                }}
+              >
+                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Check All
+              </button>
+            ) : (
+              <button
+                onClick={handleCheckAllStop}
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  padding: '4px 12px',
+                  borderRadius: 4,
+                  background: 'rgba(255,77,79,0.06)',
+                  border: '1px solid rgba(255,77,79,0.2)',
+                  color: 'rgba(255,77,79,0.8)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                }}
+              >
+                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <rect x={6} y={6} width={12} height={12} />
+                </svg>
+                {checkAllProgress ? `${checkAllProgress.current}/${checkAllProgress.total}` : 'Stop'}
+              </button>
+            )}
+
+            {/* Re-run Audit button */}
+            {!rerunRunning ? (
+              <button
+                onClick={handleRerun}
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  padding: '4px 12px',
+                  borderRadius: 4,
+                  background: 'rgba(121,192,255,0.06)',
+                  border: '1px solid rgba(121,192,255,0.2)',
+                  color: 'rgba(121,192,255,0.8)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                }}
+              >
+                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="23 4 23 10 17 10" />
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+                </svg>
+                Re-run Audit
+              </button>
+            ) : (
+              <button
+                onClick={handleRerunStop}
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  padding: '4px 12px',
+                  borderRadius: 4,
+                  background: 'rgba(255,77,79,0.06)',
+                  border: '1px solid rgba(255,77,79,0.2)',
+                  color: 'rgba(255,77,79,0.8)',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 5,
+                }}
+              >
+                <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <rect x={6} y={6} width={12} height={12} />
+                </svg>
+                Stop
+              </button>
+            )}
+          </div>
         </div>
         <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', margin: 0, lineHeight: 1.6 }}>
           Institutional-grade vulnerability assessment across 35 audit categories.
