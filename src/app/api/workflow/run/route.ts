@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { prompt, data } = body as { prompt: string; data: string };
+    const { prompt, data, dataLabel } = body as { prompt: string; data: string; dataLabel?: string };
 
     if (!prompt) {
       return new Response(JSON.stringify({ error: 'Missing prompt' }), {
@@ -23,8 +23,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Build the full message: prompt + optional user data
-    const dataSeparator = '\n\n════════════════════════════════════════════════════════════\nUSER-PROVIDED DATA\n════════════════════════════════════════════════════════════\n\n';
+    // Build the full message: prompt + optional data context
+    const label = dataLabel || 'USER-PROVIDED DATA';
+    const dataSeparator = `\n\n${'═'.repeat(60)}\n${label}\n${'═'.repeat(60)}\n\n`;
 
     let fullMessage = prompt;
     if (data) {

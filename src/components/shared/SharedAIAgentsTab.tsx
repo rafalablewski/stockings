@@ -64,12 +64,20 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
     abortRef.current = new AbortController();
 
     try {
+      // For audit workflows, auto-inject the relevant database data
+      let injectedData: string | undefined;
+      if (workflow.category === 'audit') {
+        const { getAuditData } = await import('@/data/audit-data-resolver');
+        injectedData = await getAuditData(workflow.id, ticker);
+      }
+
       const res = await fetch("/api/workflow/run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt: workflow.prompt,
-          data: userData || undefined,
+          data: injectedData || userData || undefined,
+          ...(injectedData ? { dataLabel: 'DATABASE CONTEXT' } : {}),
         }),
         signal: abortRef.current.signal,
       });
