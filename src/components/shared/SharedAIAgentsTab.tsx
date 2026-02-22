@@ -926,8 +926,13 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
     );
   }
 
+  const SEC_FINANCIALS_IDS = new Set(["earnings-call", "sec-filing-delta", "analyst-report"]);
+  const OWNERSHIP_IDS = new Set(["insider-activity", "institutional-holdings"]);
+
   const dbAgents = availableWorkflows.filter((w) => !w.requiresUserData && w.category !== 'audit');
-  const dataAgents = availableWorkflows.filter((w) => w.requiresUserData && w.id !== "ask-agent" && w.category !== 'audit');
+  const secFinancialsAgents = availableWorkflows.filter((w) => w.requiresUserData && w.category !== 'audit' && SEC_FINANCIALS_IDS.has(w.id));
+  const ownershipAgents = availableWorkflows.filter((w) => w.requiresUserData && w.category !== 'audit' && OWNERSHIP_IDS.has(w.id));
+  const intelAgents = availableWorkflows.filter((w) => w.requiresUserData && w.category !== 'audit' && !SEC_FINANCIALS_IDS.has(w.id) && !OWNERSHIP_IDS.has(w.id) && w.id !== "ask-agent");
   const codeAuditAgents = availableWorkflows.filter((w) => w.category === 'audit' && CODE_AUDIT_IDS.has(w.id));
   const dataAuditAgents = availableWorkflows.filter((w) => w.category === 'audit' && !CODE_AUDIT_IDS.has(w.id) && !w.requiresUserData);
   const dataInputAuditAgents = availableWorkflows.filter((w) => w.category === 'audit' && !CODE_AUDIT_IDS.has(w.id) && w.requiresUserData);
@@ -956,16 +961,103 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
         </div>
       )}
 
-      {/* Data-input agents — require pasted content */}
-      {dataAgents.length > 0 && (
+      {/* ── Data Input — Paste & Analyze ────────────────────────── */}
+      {(secFinancialsAgents.length > 0 || ownershipAgents.length > 0 || intelAgents.length > 0) && (
         <div>
           <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#data-agents</div>
-          <SectionLabel>Data input — paste &amp; analyze</SectionLabel>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {dataAgents.map((wf) => (
-              <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
-            ))}
+          <div
+            style={{
+              padding: "32px 0 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: "2.5px",
+                textTransform: "uppercase",
+                color: "var(--text3)",
+              }}
+            >
+              Data Input — Paste &amp; Analyze
+            </span>
+            <span style={{ flex: 1, height: 1, background: "var(--border)" }} />
           </div>
+
+          {/* SEC & Financials */}
+          {secFinancialsAgents.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.12em",
+                  color: "rgba(121,192,255,0.5)",
+                  marginBottom: 10,
+                  paddingLeft: 2,
+                }}
+              >
+                SEC &amp; Financials
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {secFinancialsAgents.map((wf) => (
+                  <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Ownership & Governance */}
+          {ownershipAgents.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.12em",
+                  color: "rgba(121,192,255,0.5)",
+                  marginBottom: 10,
+                  paddingLeft: 2,
+                }}
+              >
+                Ownership &amp; Governance
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {ownershipAgents.map((wf) => (
+                  <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Intelligence & Research */}
+          {intelAgents.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.12em",
+                  color: "rgba(121,192,255,0.5)",
+                  marginBottom: 10,
+                  paddingLeft: 2,
+                }}
+              >
+                Intelligence &amp; Research
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {intelAgents.map((wf) => (
+                  <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
