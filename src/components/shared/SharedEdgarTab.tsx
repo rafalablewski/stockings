@@ -403,7 +403,7 @@ const FilingRow: React.FC<{
   }, [persistedAnalysis]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // DB tooltip: live data fetched from database on hover
-  const [dbTooltip, setDbTooltip] = useState<{ status: string; form: string; description: string; filingDate: string; crossRefs: string; fresh: string } | null>(null);
+  const [dbTooltip, setDbTooltip] = useState<{ status: string; form: string; description: string; filingDate: string; crossRefs: { source: string; data: string }[] | null; fresh: string } | null>(null);
   const [dbTooltipLoading, setDbTooltipLoading] = useState(false);
   const [dbTooltipVisible, setDbTooltipVisible] = useState(false);
   const dbHoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -428,7 +428,7 @@ const FilingRow: React.FC<{
               form: rec.form || '—',
               description: rec.description || '—',
               filingDate: rec.filingDate || '—',
-              crossRefs: xrefs ? `${Array.isArray(xrefs) ? xrefs.length : 0} refs` : 'none',
+              crossRefs: xrefs && Array.isArray(xrefs) && xrefs.length > 0 ? xrefs : null,
               fresh: rec.dismissed ? 'OLD' : 'NEW',
             });
           } else {
@@ -748,7 +748,15 @@ const FilingRow: React.FC<{
                       <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>form:</span> {dbTooltip.form}</div>
                       <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>desc:</span> {dbTooltip.description}</div>
                       <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>filed:</span> {dbTooltip.filingDate}</div>
-                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>cross-refs:</span> {dbTooltip.crossRefs}</div>
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>cross-refs:</span> {dbTooltip.crossRefs ? `${dbTooltip.crossRefs.length}` : 'none'}</div>
+                      {dbTooltip.crossRefs && dbTooltip.crossRefs.map((ref, i) => (
+                        <div key={i} style={{ paddingLeft: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <span style={{ opacity: 0.5 }}>{'// '}</span>
+                          <span style={{ color: 'var(--text3)', opacity: 0.7 }}>{ref.source}</span>
+                          <span style={{ opacity: 0.5 }}>{' \u2192 '}</span>
+                          <span style={{ opacity: 0.7 }}>{ref.data}</span>
+                        </div>
+                      ))}
                       <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>fresh:</span> <span style={{ color: dbTooltip.fresh === 'NEW' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.fresh}</span></div>
                     </>
                   ) : (
