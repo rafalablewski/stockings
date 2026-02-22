@@ -2,17 +2,36 @@ import Link from "next/link";
 import { stockList } from "@/lib/stocks";
 import { workflows } from "@/data/workflows";
 import { PromptCard } from "@/components/PromptCard";
-import { getAuditStats, AUDIT_METADATA } from "@/data/audit-findings";
+const CODE_AUDIT_IDS = new Set([
+  "code-audit",
+  "dependency-vulnerability",
+  "api-endpoint-security",
+  "performance-audit",
+  "secrets-exposure",
+]);
+
+const codeAuditWorkflows = workflows.filter(
+  (w) => w.category === "audit" && CODE_AUDIT_IDS.has(w.id)
+);
 
 const dataAuditWorkflows = workflows.filter(
-  (w) => w.category === "audit" && w.id !== "code-audit"
+  (w) => w.category === "audit" && !CODE_AUDIT_IDS.has(w.id)
 );
 
 const AUDIT_BADGE: Record<string, string> = {
+  "code-audit": "Code",
+  "dependency-vulnerability": "Deps",
+  "api-endpoint-security": "API",
+  "performance-audit": "Perf",
+  "secrets-exposure": "Secrets",
   "capital-parity": "Capital",
   "crossref-integrity": "Integrity",
   "sources-completeness": "Sources",
   "data-freshness": "Freshness",
+  "earnings-quality": "Earnings",
+  "peer-comparables": "Comps",
+  "disclosure-completeness": "Disclosure",
+  "model-consistency": "Model",
 };
 
 export default function HomePage() {
@@ -24,8 +43,6 @@ export default function HomePage() {
       content: v.prompt,
     })),
   }));
-
-  const stats = getAuditStats();
 
   return (
     <div className="min-h-screen">
@@ -107,68 +124,38 @@ export default function HomePage() {
             Code &amp; Security
           </p>
           <div className="grid gap-4 mb-10">
-            <Link
-              href="/audit/comprehensive-code-audit"
-              className="group relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300"
-            >
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-              <div className="relative flex items-start justify-between gap-6">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-[13px] font-medium text-white tracking-wide">
-                      Stockings Comprehensive Code Audit v1.0
-                    </span>
-                    <span className="text-[9px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded bg-violet-500/10 text-violet-400/70 border border-violet-500/20">
-                      Static Report
-                    </span>
-                    <span className="text-[11px] uppercase tracking-wider text-white/20">
-                      {AUDIT_METADATA.date}
-                    </span>
+            {codeAuditWorkflows.map((audit) => (
+              <div
+                key={audit.id}
+                className="relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]"
+              >
+                <div className="flex items-start justify-between gap-6">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-[13px] font-medium text-white tracking-wide">
+                        {audit.name}
+                      </span>
+                      <span className="text-[9px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded bg-violet-500/10 text-violet-400/70 border border-violet-500/20">
+                        {AUDIT_BADGE[audit.id] ?? "Audit"}
+                      </span>
+                    </div>
+                    <p className="text-[13px] text-white/40 leading-relaxed mb-3">
+                      {audit.description}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      {audit.variants.map((v) => (
+                        <span
+                          key={v.ticker}
+                          className="text-[10px] font-mono text-white/20 px-1.5 py-0.5 rounded bg-white/[0.03]"
+                        >
+                          {v.label}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <p className="text-[13px] text-white/40 leading-relaxed mb-3">
-                    35-category institutional-grade analysis &middot; CVSS v3.1
-                    scoring &middot; CWE &amp; OWASP mapping
-                  </p>
-                  <div className="flex items-center gap-3">
-                    {stats.bySeverity.CRITICAL > 0 && (
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20">
-                        {stats.bySeverity.CRITICAL} critical
-                      </span>
-                    )}
-                    {stats.bySeverity.HIGH > 0 && (
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 border border-orange-500/20">
-                        {stats.bySeverity.HIGH} high
-                      </span>
-                    )}
-                    {stats.bySeverity.MEDIUM > 0 && (
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
-                        {stats.bySeverity.MEDIUM} medium
-                      </span>
-                    )}
-                    {stats.bySeverity.LOW > 0 && (
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                        {stats.bySeverity.LOW} low
-                      </span>
-                    )}
-                    <span className="text-[11px] text-white/20">
-                      {stats.total} findings
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.03] group-hover:bg-white/[0.08] transition-colors">
-                  <svg
-                    className="w-3.5 h-3.5 text-white/30 group-hover:text-white/60 transition-colors"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
                 </div>
               </div>
-            </Link>
+            ))}
           </div>
 
           {/* Research Data Quality */}
@@ -210,7 +197,7 @@ export default function HomePage() {
             ))}
           </div>
           <p className="text-[11px] text-white/15 mt-4">
-            Data quality audits run from the AI Agents tab on each stock page.
+            All audits run from the AI Agents tab on each stock page.
           </p>
         </div>
       </section>

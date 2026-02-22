@@ -66,6 +66,26 @@ const AUDIT_MODULES: Record<string, Record<string, string[]>> = {
     bmnr: ['company', 'capital', 'catalysts', 'historical'],
     crcl: ['company', 'financials', 'catalysts', 'timeline'],
   },
+  'earnings-quality': {
+    asts: ['financials', 'company', 'sec-filings', 'capital'],
+    bmnr: ['company', 'sec-filings', 'capital', 'historical'],
+    crcl: ['financials', 'company'],
+  },
+  'peer-comparables': {
+    asts: ['company', 'capital'],
+    bmnr: ['company', 'capital'],
+    crcl: ['company'],
+  },
+  'disclosure-completeness': {
+    asts: ['sec-filings', 'company', 'press-releases', 'catalysts', 'partners'],
+    bmnr: ['sec-filings', 'company', 'catalysts'],
+    crcl: ['company', 'financials', 'catalysts', 'research-sources'],
+  },
+  'model-consistency': {
+    asts: ['financials', 'capital', 'company', 'catalysts'],
+    bmnr: ['capital', 'company', 'catalysts', 'historical'],
+    crcl: ['financials', 'company', 'catalysts'],
+  },
 };
 
 // ── Serialization ───────────────────────────────────────────────────────────
