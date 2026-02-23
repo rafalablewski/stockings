@@ -79,6 +79,26 @@ function articleCacheKey(article: ArticleItem): string {
   return (article.url || article.headline || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 60);
 }
 
+/** Normalize headline for deduplication (matches server-side deduplicateReleases logic) */
+function normalizeHeadline(headline: string): string {
+  return headline
+    .toLowerCase()
+    .replace(/\s*[-–—]\s*(business wire|pr newswire|globenewswire|prnewswire).*$/i, '')
+    .replace(/[^a-z0-9]/g, '')
+    .slice(0, 60);
+}
+
+/** Remove duplicate articles by normalized headline, keeping first occurrence */
+function deduplicateByHeadline(articles: ArticleItem[]): ArticleItem[] {
+  const seen = new Set<string>();
+  return articles.filter(a => {
+    const key = normalizeHeadline(a.headline);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 /** DB record shape for per-article status display */
 interface DbRecord {
   cacheKey: string;
@@ -560,7 +580,12 @@ const SourceArticleList: React.FC<{
   persistedSourceAnalyses: Record<string, string>;
   onDismissNew?: (cacheKey: string) => void;
 }> = ({ pressReleases, news, showAnalysis, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onDismissNew }) => {
-  if (pressReleases.length === 0 && news.length === 0) {
+  // Deduplicate within each section and across sections (PRs take priority)
+  const dedupedPRs = deduplicateByHeadline(pressReleases);
+  const prHeadlines = new Set(dedupedPRs.map(a => normalizeHeadline(a.headline)));
+  const dedupedNews = deduplicateByHeadline(news).filter(a => !prHeadlines.has(normalizeHeadline(a.headline)));
+
+  if (dedupedPRs.length === 0 && dedupedNews.length === 0) {
     return (
       <div style={{ fontSize: 13, color: 'var(--text3)', padding: '16px 12px', lineHeight: 1.6 }}>
         No articles yet. Click AI Fetch to search for articles.
@@ -570,11 +595,11 @@ const SourceArticleList: React.FC<{
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <SourceArticleSection articles={pressReleases} type="pr" label="Press Releases" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} dbRecords={dbRecords} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
-      {pressReleases.length > 0 && news.length > 0 && (
+      <SourceArticleSection articles={dedupedPRs} type="pr" label="Press Releases" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} dbRecords={dbRecords} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
+      {dedupedPRs.length > 0 && dedupedNews.length > 0 && (
         <div style={{ height: 1, background: 'color-mix(in srgb, var(--border) 40%, transparent)', margin: '4px 12px' }} />
       )}
-      <SourceArticleSection articles={news} type="news" label="News" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} dbRecords={dbRecords} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
+      <SourceArticleSection articles={dedupedNews} type="news" label="News" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} dbRecords={dbRecords} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
     </div>
   );
 };
@@ -1198,24 +1223,29 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           else news.push(item);
 
           records.set(art.cacheKey, art);
-          newKeys.add(art.cacheKey);
+          if (!art.dismissed) newKeys.add(art.cacheKey);
         }
 
         dbRecordsRef.current = records;
         setDbRecords(new Map(records));
         setNewArticleKeys(newKeys);
-        console.log(`[db-init] loaded ${articles.length} articles from DB (${prs.length} PR, ${news.length} news, ${newKeys.size} NEW)`);
+
+        // Deduplicate by normalized headline (DB may accumulate entries with different cache keys for the same article)
+        const dedupedPrs = deduplicateByHeadline(prs);
+        const prHeadlines = new Set(dedupedPrs.map(a => normalizeHeadline(a.headline)));
+        const dedupedNews = deduplicateByHeadline(news).filter(a => !prHeadlines.has(normalizeHeadline(a.headline)));
+        console.log(`[db-init] loaded ${articles.length} articles from DB (${dedupedPrs.length} PR, ${dedupedNews.length} news after dedup, ${newKeys.size} NEW)`);
 
         // Run check-analyzed on DB articles, then show everything in one render
-        const all = [...prs, ...news];
-        let finalPrs = prs;
-        let finalNews = news;
+        const all = [...dedupedPrs, ...dedupedNews];
+        let finalPrs = dedupedPrs;
+        let finalNews = dedupedNews;
         if (all.length > 0) {
           initialRecheckDone.current = true;
           try {
             const checked = await checkAnalyzed(all);
-            finalPrs = checked.slice(0, prs.length);
-            finalNews = checked.slice(prs.length);
+            finalPrs = checked.slice(0, dedupedPrs.length);
+            finalNews = checked.slice(dedupedPrs.length);
           } catch { /* show articles with analyzed: null as fallback */ }
         }
         if (!cancelled) {
