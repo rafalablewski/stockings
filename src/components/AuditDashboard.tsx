@@ -183,6 +183,7 @@ function FindingRow({
   checkResult,
   isChecking,
   onRecheck,
+  saveFailed,
 }: {
   finding: AuditFinding;
   expanded: boolean;
@@ -190,6 +191,7 @@ function FindingRow({
   checkResult?: CheckResult;
   isChecking: boolean;
   onRecheck: () => void;
+  saveFailed?: boolean;
 }) {
   const cfg = SEVERITY_CONFIG[finding.severity];
 
@@ -278,6 +280,14 @@ function FindingRow({
               >
                 {checkResult.verdict}
               </span>
+              {saveFailed && (
+                <span
+                  style={{ fontSize: 8, color: '#D29922', fontFamily: 'Space Mono, monospace' }}
+                  title="Result was not saved to database — it will be lost on refresh"
+                >
+                  unsaved
+                </span>
+              )}
               <button
                 onClick={onRecheck}
                 title="Re-check this finding"
@@ -543,24 +553,37 @@ export default function AuditDashboard() {
   const [checkResults, setCheckResults] = useState<Record<string, CheckResult>>({});
   const [checkingIds, setCheckingIds] = useState<Set<string>>(new Set());
   const checkAbortRefs = useRef<Record<string, AbortController>>({});
+  const [saveFailedIds, setSaveFailedIds] = useState<Set<string>>(new Set());
 
   // ── Load persisted check results on mount ──
   useEffect(() => {
-    fetch('/api/audit-checks')
-      .then(res => res.ok ? res.json() : null)
+    fetch('/api/audit-checks', {
+      headers: { 'Cache-Control': 'no-cache' },
+    })
+      .then(res => {
+        if (!res.ok) {
+          console.warn(`[audit-checks] Load returned HTTP ${res.status}`);
+          return null;
+        }
+        return res.json();
+      })
       .then((data: Record<string, { verdict: string; summary: string; updatedAt: number }> | null) => {
         if (!data) return;
         const loaded: Record<string, CheckResult> = {};
         for (const [findingId, row] of Object.entries(data)) {
-          loaded[findingId] = {
-            verdict: row.verdict as CheckVerdict,
-            summary: row.summary,
-            timestamp: row.updatedAt,
-          };
+          if (row.verdict && row.summary) {
+            loaded[findingId] = {
+              verdict: row.verdict as CheckVerdict,
+              summary: row.summary,
+              timestamp: row.updatedAt,
+            };
+          }
         }
         setCheckResults(prev => ({ ...loaded, ...prev }));
       })
-      .catch(() => { /* DB may not be set up yet — silently ignore */ });
+      .catch((err) => {
+        console.warn('[audit-checks] Failed to load saved checks:', err);
+      });
   }, []);
 
   // ── Check All state ──
@@ -730,16 +753,20 @@ export default function AuditDashboard() {
     }));
 
     try {
-      const saveRes = await fetch('/api/audit-checks', {
+      const saveRes = await authFetch('/api/audit-checks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ findingId: id, verdict, summary }),
       });
       if (!saveRes.ok) {
         console.error(`[audit-check] Save failed for ${id}: HTTP ${saveRes.status}`);
+        setSaveFailedIds(prev => new Set(prev).add(id));
+      } else {
+        setSaveFailedIds(prev => { const next = new Set(prev); next.delete(id); return next; });
       }
     } catch (saveErr) {
       console.error(`[audit-check] Save error for ${id}:`, saveErr);
+      setSaveFailedIds(prev => new Set(prev).add(id));
     }
 
     setCheckingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
@@ -1054,6 +1081,7 @@ export default function AuditDashboard() {
             checkResult={checkResults[finding.id]}
             isChecking={checkingIds.has(finding.id)}
             onRecheck={() => handleRecheck(finding)}
+            saveFailed={saveFailedIds.has(finding.id)}
           />
         ))}
       </div>
