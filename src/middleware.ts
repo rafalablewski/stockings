@@ -8,6 +8,16 @@ const PROTECTED_PATHS = [
   '/api/sources/analyze',
 ];
 
+/** Constant-time comparison (Edge-compatible, no Node crypto). */
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   if (!PROTECTED_PATHS.some(p => pathname.startsWith(p))) {
@@ -18,7 +28,7 @@ export function middleware(request: NextRequest) {
   if (!pin) return NextResponse.next(); // No PIN configured → open access
 
   const provided = request.headers.get('x-auth-pin');
-  if (provided === pin) return NextResponse.next();
+  if (provided && safeEqual(provided, pin)) return NextResponse.next();
 
   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 }
