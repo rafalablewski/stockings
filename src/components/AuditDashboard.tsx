@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useRef, useCallback } from 'react';
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import {
   AUDIT_FINDINGS,
   AUDIT_METADATA,
@@ -539,6 +539,25 @@ export default function AuditDashboard() {
   const [checkingIds, setCheckingIds] = useState<Set<string>>(new Set());
   const checkAbortRefs = useRef<Record<string, AbortController>>({});
 
+  // ── Load persisted check results on mount ──
+  useEffect(() => {
+    fetch('/api/audit-checks')
+      .then(res => res.ok ? res.json() : null)
+      .then((data: Record<string, { verdict: string; summary: string; updatedAt: number }> | null) => {
+        if (!data) return;
+        const loaded: Record<string, CheckResult> = {};
+        for (const [findingId, row] of Object.entries(data)) {
+          loaded[findingId] = {
+            verdict: row.verdict as CheckVerdict,
+            summary: row.summary,
+            timestamp: row.updatedAt,
+          };
+        }
+        setCheckResults(prev => ({ ...loaded, ...prev }));
+      })
+      .catch(() => { /* DB may not be set up yet — silently ignore */ });
+  }, []);
+
   // ── Check All state ──
   const [checkAllRunning, setCheckAllRunning] = useState(false);
   const [checkAllProgress, setCheckAllProgress] = useState<{ current: number; total: number } | null>(null);
@@ -698,12 +717,27 @@ export default function AuditDashboard() {
         ...prev,
         [id]: { verdict, summary, timestamp: Date.now() },
       }));
+
+      // Persist to database (fire-and-forget)
+      fetch('/api/audit-checks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ findingId: id, verdict, summary }),
+      }).catch(() => {});
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
+        const errSummary = err instanceof Error ? err.message : 'Unknown error';
         setCheckResults(prev => ({
           ...prev,
-          [id]: { verdict: 'failed', summary: err instanceof Error ? err.message : 'Unknown error', timestamp: Date.now() },
+          [id]: { verdict: 'failed', summary: errSummary, timestamp: Date.now() },
         }));
+
+        // Persist error result too
+        fetch('/api/audit-checks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ findingId: id, verdict: 'failed', summary: errSummary }),
+        }).catch(() => {});
       }
     } finally {
       setCheckingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
