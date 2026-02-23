@@ -18,7 +18,8 @@ export async function POST(request: NextRequest) {
   const pin = process.env.AUTH_PIN;
 
   if (!pin) {
-    return NextResponse.json({ ok: true, required: false });
+    // No PIN configured → deny access (secure by default)
+    return NextResponse.json({ error: 'Access denied — no AUTH_PIN configured' }, { status: 403 });
   }
 
   try {
@@ -41,5 +42,6 @@ export async function POST(request: NextRequest) {
  */
 export async function GET() {
   const pin = process.env.AUTH_PIN;
-  return NextResponse.json({ required: !!pin });
+  // Always require PIN — if AUTH_PIN is not set, the gate stays locked
+  return NextResponse.json({ required: true, configured: !!pin });
 }
