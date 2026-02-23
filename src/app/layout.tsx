@@ -36,6 +36,7 @@ function Navigation() {
               a b i s o n
             </Link>
             <PinStatus />
+            <AiToggle />
           </div>
           <div className="flex items-center gap-8">
             {/* Research dropdown */}
@@ -102,8 +103,6 @@ function Footer() {
           <span>Investment Research</span>
           <span className="text-white/10">·</span>
           <span>Not financial advice</span>
-          <span className="text-white/10">·</span>
-          <AiToggle />
         </div>
       </div>
     </footer>
