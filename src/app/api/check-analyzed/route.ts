@@ -89,6 +89,11 @@ function numbersDisagree(a: string, b: string): boolean {
   return true;
 }
 
+/** True if text contains a dollar amount like "$30", "$4.5 million" */
+function hasDollarAmount(text: string): boolean {
+  return /\$\s*\d/.test(text);
+}
+
 // Count how many words from set A appear in set B
 function overlapCount(a: Set<string>, b: Set<string>): number {
   let n = 0;
@@ -114,11 +119,17 @@ function localMatch(articleHeadline: string, articleDate: string, analysisData: 
 
   for (const entry of analysisData) {
     const gap = daysBetween(articleDate, entry.date);
+    const entryFullText = entry.detail ? `${entry.headline} ${entry.detail}` : entry.headline;
 
-    // If both headlines contain numbers and none overlap, they likely describe
+    // If both texts contain numbers and none overlap, they likely describe
     // different instances of a similar event (e.g. different contract awards).
-    // Skip local match — let AI matching handle the distinction.
-    if (numbersDisagree(articleHeadline, entry.headline)) continue;
+    // Check against full entry text (headline + detail) to catch numbers in summaries.
+    if (numbersDisagree(articleHeadline, entryFullText)) continue;
+
+    // If article mentions a dollar amount (e.g. "$30 Million") but the entry doesn't
+    // mention any dollar amount at all, skip — the $ figure is a key differentiator
+    // that the entry likely describes a different aspect of the same topic.
+    if (hasDollarAmount(articleHeadline) && !hasDollarAmount(entryFullText)) continue;
 
     // Tier 1: headline-only match (high confidence — headlines are short and focused)
     const headlineWords = extractKeywords(entry.headline);
