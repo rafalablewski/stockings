@@ -45,13 +45,15 @@ export default function PinGate({ children }: PinGateProps) {
                 localStorage.removeItem(STORAGE_KEY);
               }
             })
-            .catch(() => {});
+            .catch((err) => {
+              console.error('[PinGate] Stored PIN verification failed:', err);
+              localStorage.removeItem(STORAGE_KEY);
+            });
         }
       })
-      .catch(() => {
-        // Can't reach server — assume no PIN required
-        setPinRequired(false);
-        setUnlocked(true);
+      .catch((err) => {
+        console.error('[PinGate] Could not reach auth endpoint:', err);
+        setPinRequired(true);
       });
   }, []);
 
@@ -77,7 +79,8 @@ export default function PinGate({ children }: PinGateProps) {
         setPin('');
         inputRef.current?.focus();
       }
-    } catch {
+    } catch (err) {
+      console.error('[PinGate] PIN submission error:', err);
       setError('Connection error');
     } finally {
       setChecking(false);

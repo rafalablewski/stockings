@@ -1,4 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { timingSafeEqual } from 'crypto';
+
+/** Constant-time string comparison to prevent timing attacks. */
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(Buffer.from(a), Buffer.from(b));
+}
 
 /**
  * POST /api/auth/verify-pin
@@ -17,7 +24,7 @@ export async function POST(request: NextRequest) {
   try {
     const { pin: provided } = await request.json();
 
-    if (provided === pin) {
+    if (typeof provided === 'string' && safeEqual(provided, pin)) {
       return NextResponse.json({ ok: true });
     }
 
