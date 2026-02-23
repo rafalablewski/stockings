@@ -23,11 +23,7 @@ export default function PinGate({ children }: PinGateProps) {
       .then(res => res.json())
       .then(data => {
         setPinRequired(data.required);
-        setPinConfigured(data.configured !== false);
-        if (!data.required) {
-          setUnlocked(true);
-          return;
-        }
+        setPinConfigured(!!data.configured);
         if (data.configured === false) {
           // No AUTH_PIN configured — system is locked, no PIN will work
           return;
