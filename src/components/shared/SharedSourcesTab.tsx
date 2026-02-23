@@ -1136,18 +1136,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         articleType: prs.includes(a) ? 'pr' : 'news',
       }));
       if (allToSave.length > 0) {
-        try {
-          await fetch('/api/seen-articles', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ticker, articles: allToSave }),
-          });
-          for (const a of allToSave) {
-            const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: a.articleType, dismissed: !compNewKeys.has(a.cacheKey) };
-            dbRecordsRef.current.set(a.cacheKey, rec);
-          }
-          setDbRecords(new Map(dbRecordsRef.current));
-        } catch { /* best-effort */ }
+        await saveArticlesToDb(allToSave, compNewKeys);
       }
 
       // Check analyzed status
@@ -1165,7 +1154,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     } catch {
       setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [], loadingPR: false, loadingNews: false }), loading: false, loaded: false, error: 'Could not fetch feeds' } }));
     }
-  }, [ticker, checkAnalyzed]);
+  }, [ticker, checkAnalyzed, saveArticlesToDb]);
 
   const loadAll = useCallback(async () => {
     setLoadingAll(true);
