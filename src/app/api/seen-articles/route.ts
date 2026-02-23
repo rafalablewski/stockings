@@ -19,9 +19,10 @@ export const dynamic = 'force-dynamic';
  * POST /api/seen-articles
  *
  * Batch-upsert articles.
- * Body: { ticker, articles: { cacheKey, headline, date?, url?, source?, articleType? }[], dismiss?: boolean }
+ * Body: { ticker, articles: { cacheKey, headline, date?, url?, source?, articleType? }[], dismiss?: boolean, hide?: boolean }
  *   - dismiss: true = user clicked NEW badge to dismiss these articles
  *   - dismiss: false/omitted = saving new articles from AI Fetch
+ *   - hide: true/false = toggle hidden state for these articles
  */
 
 // ---------------------------------------------------------------------------
@@ -58,6 +59,9 @@ async function ensureTable(): Promise<void> {
 
   await rawSql`CREATE INDEX IF NOT EXISTS seen_articles_ticker_idx
     ON seen_articles (ticker)`;
+
+  // Add hidden column if it doesn't exist yet (added after initial schema)
+  await rawSql`ALTER TABLE seen_articles ADD COLUMN IF NOT EXISTS hidden BOOLEAN NOT NULL DEFAULT FALSE`;
 
   tableVerified = true;
 }
@@ -103,6 +107,7 @@ export async function GET(request: NextRequest) {
         source: seenArticles.source,
         articleType: seenArticles.articleType,
         dismissed: seenArticles.dismissed,
+        hidden: seenArticles.hidden,
       })
       .from(seenArticles)
       .where(cacheKey
@@ -120,6 +125,7 @@ export async function GET(request: NextRequest) {
       source: row.source,
       articleType: row.articleType,
       dismissed: row.url ? row.dismissed : true,
+      hidden: row.hidden,
     }));
 
     return NextResponse.json({ articles });
@@ -142,7 +148,7 @@ export async function GET(request: NextRequest) {
 // ---------------------------------------------------------------------------
 export async function POST(request: NextRequest) {
   try {
-    const { ticker, articles, dismiss } = await request.json();
+    const { ticker, articles, dismiss, hide } = await request.json();
 
     if (!ticker || !articles || !Array.isArray(articles)) {
       return NextResponse.json({ error: 'Missing required fields (ticker, articles[])' }, { status: 400 });
@@ -175,7 +181,13 @@ export async function POST(request: NextRequest) {
 
     let totalInDb = 0;
     if (values.length > 0) {
-      if (dismiss) {
+      if (hide !== undefined) {
+        // Toggle hidden state
+        await db.insert(seenArticles).values(values).onConflictDoUpdate({
+          target: [seenArticles.ticker, seenArticles.cacheKey],
+          set: { hidden: !!hide },
+        });
+      } else if (dismiss) {
         await db.insert(seenArticles).values(values).onConflictDoUpdate({
           target: [seenArticles.ticker, seenArticles.cacheKey],
           set: { dismissed: true },
