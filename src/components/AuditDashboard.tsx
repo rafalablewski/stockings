@@ -662,6 +662,9 @@ export default function AuditDashboard() {
 
     setCheckingIds(prev => new Set(prev).add(id));
 
+    let verdict: CheckVerdict = 'failed';
+    let summary = '(no details)';
+
     try {
       const res = await authFetch('/api/workflow/run', {
         method: 'POST',
@@ -671,98 +674,76 @@ export default function AuditDashboard() {
       });
 
       if (!res.ok) {
-        // On error, mark as failed with error message
-        setCheckResults(prev => ({
-          ...prev,
-          [id]: { verdict: 'failed', summary: `API error ${res.status}`, timestamp: Date.now() },
-        }));
-        setCheckingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
-        return;
-      }
+        summary = `API error ${res.status}`;
+      } else {
+        const reader = res.body?.getReader();
+        if (!reader) {
+          summary = 'No response stream';
+        } else {
+          const decoder = new TextDecoder();
+          let buffer = '';
+          let fullText = '';
 
-      const reader = res.body?.getReader();
-      if (!reader) {
-        setCheckingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
-        return;
-      }
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
 
-      const decoder = new TextDecoder();
-      let buffer = '';
-      let fullText = '';
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const jsonStr = line.slice(6).trim();
-            if (jsonStr === '[DONE]') continue;
-            try {
-              const data = JSON.parse(jsonStr);
-              if (data.text) fullText += data.text;
-            } catch {
-              // skip
+            for (const line of lines) {
+              if (line.startsWith('data: ')) {
+                const jsonStr = line.slice(6).trim();
+                if (jsonStr === '[DONE]') continue;
+                try {
+                  const data = JSON.parse(jsonStr);
+                  if (data.text) fullText += data.text;
+                } catch {
+                  // skip
+                }
+              }
             }
           }
+
+          // Parse verdict from response
+          const trimmed = fullText.trim();
+          const firstLine = trimmed.split('\n')[0]?.toUpperCase() ?? '';
+          verdict = firstLine.includes('PASSED') ? 'passed' : 'failed';
+          summary = trimmed.split('\n').slice(1).join(' ').trim() || trimmed || '(no details)';
         }
-      }
-
-      // Parse verdict from response
-      const trimmed = fullText.trim();
-      const firstLine = trimmed.split('\n')[0]?.toUpperCase() ?? '';
-      const verdict: CheckVerdict = firstLine.includes('PASSED') ? 'passed' : 'failed';
-      const summary = trimmed.split('\n').slice(1).join(' ').trim() || trimmed || '(no details)';
-
-      setCheckResults(prev => ({
-        ...prev,
-        [id]: { verdict, summary, timestamp: Date.now() },
-      }));
-
-      // Persist to database — await so Check-All waits for each save before
-      // moving to the next finding, preventing silent failures.
-      try {
-        const saveRes = await fetch('/api/audit-checks', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ findingId: id, verdict, summary }),
-        });
-        if (!saveRes.ok) {
-          console.error(`[audit-check] Save failed for ${id}: HTTP ${saveRes.status}`);
-        }
-      } catch (saveErr) {
-        console.error(`[audit-check] Save error for ${id}:`, saveErr);
       }
     } catch (err) {
-      if (err instanceof Error && err.name !== 'AbortError') {
-        const errSummary = err instanceof Error ? err.message : 'Unknown error';
-        setCheckResults(prev => ({
-          ...prev,
-          [id]: { verdict: 'failed', summary: errSummary, timestamp: Date.now() },
-        }));
-
-        // Persist error result
-        try {
-          const saveRes = await fetch('/api/audit-checks', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ findingId: id, verdict: 'failed', summary: errSummary }),
-          });
-          if (!saveRes.ok) {
-            console.error(`[audit-check] Error-save failed for ${id}: HTTP ${saveRes.status}`);
-          }
-        } catch (saveErr) {
-          console.error(`[audit-check] Error-save error for ${id}:`, saveErr);
-        }
+      if (err instanceof Error && err.name === 'AbortError') {
+        // User cancelled — skip save, just clean up
+        setCheckingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
+        delete checkAbortRefs.current[id];
+        return;
       }
-    } finally {
-      setCheckingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
-      delete checkAbortRefs.current[id];
+      summary = err instanceof Error ? err.message : 'Unknown error';
     }
+
+    // Single save path — always update UI state and persist to DB
+    setCheckResults(prev => ({
+      ...prev,
+      [id]: { verdict, summary, timestamp: Date.now() },
+    }));
+
+    try {
+      const saveRes = await fetch('/api/audit-checks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ findingId: id, verdict, summary }),
+      });
+      if (!saveRes.ok) {
+        console.error(`[audit-check] Save failed for ${id}: HTTP ${saveRes.status}`);
+      }
+    } catch (saveErr) {
+      console.error(`[audit-check] Save error for ${id}:`, saveErr);
+    }
+
+    setCheckingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
+    delete checkAbortRefs.current[id];
   }, []);
 
   const filteredFindings = useMemo(() => {
