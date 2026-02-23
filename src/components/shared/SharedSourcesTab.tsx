@@ -185,7 +185,7 @@ const SourceArticleRow: React.FC<{
     ? 'Not checked' : localAnalyzed ? 'In analysis' : 'Not in analysis';
   const tc = SOURCE_TYPE_COLORS[type];
 
-  const isErrorAnalysis = (text: string | null) => !!text && (text.startsWith('Error:') || text === 'No analysis returned.' || text === 'AI analysis failed');
+  const isErrorAnalysis = (text: string | null) => !!text && (text.startsWith('Error:') || text === 'No analysis returned.' || text === 'AI analysis failed' || text.includes('AI features are disabled'));
 
   // DB status: green = all fields saved, yellow = partial, gray = not in DB
   const dbColor = !dbRecord ? 'var(--text3)' : (dbRecord.date != null && dbRecord.url != null && dbRecord.source != null && dbRecord.articleType != null) ? 'var(--mint)' : 'var(--gold)';
@@ -498,13 +498,25 @@ const SourceArticleRow: React.FC<{
               </span>
             </div>
             <div style={{ maxHeight: 600, overflowY: 'auto' }}>
-              <pre style={{
-                fontSize: 12, fontFamily: 'var(--font-mono, monospace)',
-                color: 'var(--text2)', lineHeight: 1.8,
-                whiteSpace: 'pre-wrap', margin: 0,
-              }}>
-                {stripVerdict(aiAnalysis)}
-              </pre>
+              {aiAnalysis.includes('AI features are disabled') ? (
+                <div style={{
+                  fontSize: 12, color: 'var(--gold)', padding: '10px 14px',
+                  background: 'color-mix(in srgb, var(--gold) 8%, transparent)',
+                  borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8,
+                  border: '1px solid color-mix(in srgb, var(--gold) 15%, transparent)',
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                  {aiAnalysis}
+                </div>
+              ) : (
+                <pre style={{
+                  fontSize: 12, fontFamily: 'var(--font-mono, monospace)',
+                  color: 'var(--text2)', lineHeight: 1.8,
+                  whiteSpace: 'pre-wrap', margin: 0,
+                }}>
+                  {stripVerdict(aiAnalysis)}
+                </pre>
+              )}
             </div>
           </div>
         </div>
@@ -874,7 +886,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const checkAnalyzed = useCallback(async (articles: ArticleItem[]): Promise<ArticleItem[]> => {
     if (articles.length === 0) return articles;
     try {
-      const res = await fetch('/api/check-analyzed', {
+      const res = await authFetch('/api/check-analyzed', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ticker, articles: articles.map(a => ({ headline: a.headline, date: a.date })), forceLocal }),

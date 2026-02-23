@@ -528,10 +528,22 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
             )}
           </div>
 
-          {/* Error */}
+          {/* Error / AI-disabled info */}
           {error && (
             <div style={{ paddingTop: 8 }}>
-              <p style={{ fontSize: 11, color: "var(--coral)", margin: 0 }}>{error}</p>
+              {error.includes('AI features are disabled') ? (
+                <div style={{
+                  fontSize: 11, color: 'var(--gold)', padding: '8px 12px',
+                  background: 'color-mix(in srgb, var(--gold) 8%, transparent)',
+                  borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8,
+                  border: '1px solid color-mix(in srgb, var(--gold) 15%, transparent)',
+                }}>
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                  {error}
+                </div>
+              ) : (
+                <p style={{ fontSize: 11, color: "var(--coral)", margin: 0 }}>{error}</p>
+              )}
             </div>
           )}
 

@@ -7,7 +7,7 @@ import { NextResponse } from 'next/server';
 export function checkAiGate(req: Request): NextResponse | null {
   if (req.headers.get('x-ai-disabled') === 'true') {
     return NextResponse.json(
-      { error: 'AI features are disabled', disabled: true },
+      { error: 'AI features are disabled — re-enable with the toggle in the footer.', disabled: true },
       { status: 503 }
     );
   }

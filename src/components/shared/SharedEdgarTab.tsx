@@ -306,8 +306,28 @@ const ActionBtn: React.FC<{
 };
 
 // ── Analysis panel ──────────────────────────────────────────────────────────
+const AiDisabledBanner: React.FC<{ message: string }> = ({ message }) => (
+  <div style={{
+    margin: '6px 0 2px 19px', paddingTop: 16, marginTop: 8,
+    borderTop: '1px solid var(--border)',
+  }}>
+    <div style={{
+      fontSize: 12, color: 'var(--gold)', padding: '10px 14px',
+      background: 'color-mix(in srgb, var(--gold) 8%, transparent)',
+      borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8,
+      border: '1px solid color-mix(in srgb, var(--gold) 15%, transparent)',
+    }}>
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+      {message}
+    </div>
+  </div>
+);
+
 const AnalysisPanel: React.FC<{ text: string }> = ({ text }) => {
   const [copied, setCopied] = useState(false);
+  if (text.includes('AI features are disabled')) {
+    return <AiDisabledBanner message={text} />;
+  }
   const handleCopy = () => {
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
@@ -467,7 +487,7 @@ const FilingRow: React.FC<{
     setCommitMessage("");
   };
 
-  const isErrorAnalysis = (text: string | null) => !!text && (text.startsWith('Error:') || text === 'No analysis returned.' || text === 'AI analysis failed');
+  const isErrorAnalysis = (text: string | null) => !!text && (text.startsWith('Error:') || text === 'No analysis returned.' || text === 'AI analysis failed' || text.includes('AI features are disabled'));
 
   const handleAnalyze = async () => {
     const isError = isErrorAnalysis(analysis);
