@@ -10,6 +10,7 @@ interface AgentWorkflow {
   prompt: string;
   requiresUserData: boolean;
   category?: 'audit';
+  auditType?: 'code' | 'data';
 }
 
 interface SharedAIAgentsTabProps {
@@ -284,21 +285,31 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                 padding: "2px 6px",
                 borderRadius: 4,
                 background: "rgba(255,255,255,0.04)",
-                color: workflow.category === 'audit'
-                  ? "rgba(234,179,8,0.5)"
-                  : workflow.requiresUserData
-                    ? "rgba(255,255,255,0.2)"
-                    : "rgba(130,200,130,0.5)",
-                border: `1px solid ${
-                  workflow.category === 'audit'
-                    ? "rgba(234,179,8,0.15)"
+                color: workflow.auditType === 'code'
+                  ? "rgba(168,130,230,0.5)"
+                  : workflow.auditType === 'data'
+                    ? "rgba(234,179,8,0.5)"
                     : workflow.requiresUserData
-                      ? "rgba(255,255,255,0.06)"
-                      : "rgba(130,200,130,0.15)"
+                      ? "rgba(255,255,255,0.2)"
+                      : "rgba(130,200,130,0.5)",
+                border: `1px solid ${
+                  workflow.auditType === 'code'
+                    ? "rgba(168,130,230,0.15)"
+                    : workflow.auditType === 'data'
+                      ? "rgba(234,179,8,0.15)"
+                      : workflow.requiresUserData
+                        ? "rgba(255,255,255,0.06)"
+                        : "rgba(130,200,130,0.15)"
                 }`,
               }}
             >
-              {workflow.category === 'audit' ? "Audit" : workflow.requiresUserData ? "Paste data" : "Database"}
+              {workflow.auditType === 'code'
+                ? "Code Audit"
+                : workflow.auditType === 'data'
+                  ? "Data Audit"
+                  : workflow.requiresUserData
+                    ? "Paste data"
+                    : "Database"}
             </span>
           </div>
           <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", lineHeight: 1.5 }}>
@@ -880,6 +891,14 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
+const CODE_AUDIT_IDS = new Set([
+  "code-audit",
+  "dependency-vulnerability",
+  "api-endpoint-security",
+  "performance-audit",
+  "secrets-exposure",
+]);
+
 export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) => {
   const tickerLower = ticker.toLowerCase();
 
@@ -894,6 +913,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
         prompt: variant.prompt,
         requiresUserData: w.requiresUserData,
         ...(w.category ? { category: w.category } : {}),
+        ...(w.category === 'audit' ? { auditType: CODE_AUDIT_IDS.has(w.id) ? 'code' as const : 'data' as const } : {}),
       } as AgentWorkflow;
     })
     .filter((w): w is AgentWorkflow => w !== null);
@@ -906,9 +926,18 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
     );
   }
 
-  const dbAgents = availableWorkflows.filter((w) => !w.requiresUserData && w.category !== 'audit');
-  const dataAgents = availableWorkflows.filter((w) => w.requiresUserData && w.id !== "ask-agent");
-  const auditAgents = availableWorkflows.filter((w) => w.category === 'audit');
+  const THESIS_IDS = new Set(["thesis-review", "weekly-digest"]);
+  const SEC_FINANCIALS_IDS = new Set(["earnings-call", "sec-filing-delta", "analyst-report"]);
+  const OWNERSHIP_IDS = new Set(["insider-activity", "institutional-holdings"]);
+
+  const thesisAgents = availableWorkflows.filter((w) => !w.requiresUserData && w.category !== 'audit' && THESIS_IDS.has(w.id));
+  const capitalAgents = availableWorkflows.filter((w) => !w.requiresUserData && w.category !== 'audit' && !THESIS_IDS.has(w.id));
+  const secFinancialsAgents = availableWorkflows.filter((w) => w.requiresUserData && w.category !== 'audit' && SEC_FINANCIALS_IDS.has(w.id));
+  const ownershipAgents = availableWorkflows.filter((w) => w.requiresUserData && w.category !== 'audit' && OWNERSHIP_IDS.has(w.id));
+  const intelAgents = availableWorkflows.filter((w) => w.requiresUserData && w.category !== 'audit' && !SEC_FINANCIALS_IDS.has(w.id) && !OWNERSHIP_IDS.has(w.id) && w.id !== "ask-agent");
+  const codeAuditAgents = availableWorkflows.filter((w) => w.category === 'audit' && CODE_AUDIT_IDS.has(w.id));
+  const dataAuditAgents = availableWorkflows.filter((w) => w.category === 'audit' && !CODE_AUDIT_IDS.has(w.id) && !w.requiresUserData);
+  const dataInputAuditAgents = availableWorkflows.filter((w) => w.category === 'audit' && !CODE_AUDIT_IDS.has(w.id) && w.requiresUserData);
   const askAgent = availableWorkflows.find((w) => w.id === "ask-agent");
 
   return (
@@ -921,42 +950,279 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
         <p style={{ fontSize: 15, color: "var(--text3)", maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Run analysis agents against the database or paste raw data for instant AI-driven research. Each agent streams results in real time.</p>
       </div>
 
-      {/* Database-driven agents — one-click run */}
-      {dbAgents.length > 0 && (
+      {/* ── Database Analysis — Run Directly ──────────────────── */}
+      {(thesisAgents.length > 0 || capitalAgents.length > 0) && (
         <div>
           <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#db-agents</div>
-          <SectionLabel>Database analysis — run directly</SectionLabel>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {dbAgents.map((wf) => (
-              <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
-            ))}
+          <div
+            style={{
+              padding: "32px 0 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: "2.5px",
+                textTransform: "uppercase",
+                color: "var(--text3)",
+              }}
+            >
+              Database Analysis — Run Directly
+            </span>
+            <span style={{ flex: 1, height: 1, background: "var(--border)" }} />
           </div>
+
+          {/* Thesis & Strategy */}
+          {thesisAgents.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.12em",
+                  color: "rgba(130,200,130,0.5)",
+                  marginBottom: 10,
+                  paddingLeft: 2,
+                }}
+              >
+                Thesis &amp; Strategy
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {thesisAgents.map((wf) => (
+                  <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Capital Analysis */}
+          {capitalAgents.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.12em",
+                  color: "rgba(130,200,130,0.5)",
+                  marginBottom: 10,
+                  paddingLeft: 2,
+                }}
+              >
+                Capital Analysis
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {capitalAgents.map((wf) => (
+                  <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Data-input agents — require pasted content */}
-      {dataAgents.length > 0 && (
+      {/* ── Data Input — Paste & Analyze ────────────────────────── */}
+      {(secFinancialsAgents.length > 0 || ownershipAgents.length > 0 || intelAgents.length > 0) && (
         <div>
           <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#data-agents</div>
-          <SectionLabel>Data input — paste &amp; analyze</SectionLabel>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {dataAgents.map((wf) => (
-              <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
-            ))}
+          <div
+            style={{
+              padding: "32px 0 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: "2.5px",
+                textTransform: "uppercase",
+                color: "var(--text3)",
+              }}
+            >
+              Data Input — Paste &amp; Analyze
+            </span>
+            <span style={{ flex: 1, height: 1, background: "var(--border)" }} />
           </div>
+
+          {/* SEC & Financials */}
+          {secFinancialsAgents.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.12em",
+                  color: "rgba(121,192,255,0.5)",
+                  marginBottom: 10,
+                  paddingLeft: 2,
+                }}
+              >
+                SEC &amp; Financials
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {secFinancialsAgents.map((wf) => (
+                  <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Ownership & Governance */}
+          {ownershipAgents.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.12em",
+                  color: "rgba(121,192,255,0.5)",
+                  marginBottom: 10,
+                  paddingLeft: 2,
+                }}
+              >
+                Ownership &amp; Governance
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {ownershipAgents.map((wf) => (
+                  <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Intelligence & Research */}
+          {intelAgents.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.12em",
+                  color: "rgba(121,192,255,0.5)",
+                  marginBottom: 10,
+                  paddingLeft: 2,
+                }}
+              >
+                Intelligence &amp; Research
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {intelAgents.map((wf) => (
+                  <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Audit agents — database validation */}
-      {auditAgents.length > 0 && (
+      {/* ── Audits ────────────────────────────────────────────────── */}
+      {(codeAuditAgents.length > 0 || dataAuditAgents.length > 0 || dataInputAuditAgents.length > 0) && (
         <div>
-          <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#audit-agents</div>
-          <SectionLabel>Audit — database validation</SectionLabel>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {auditAgents.map((wf) => (
-              <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
-            ))}
+          <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#audits</div>
+          <div
+            style={{
+              padding: "32px 0 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: "2.5px",
+                textTransform: "uppercase",
+                color: "var(--text3)",
+              }}
+            >
+              Audits
+            </span>
+            <span style={{ flex: 1, height: 1, background: "var(--border)" }} />
           </div>
+
+          {/* Code & Security audits */}
+          {codeAuditAgents.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.12em",
+                  color: "rgba(168,130,230,0.5)",
+                  marginBottom: 10,
+                  paddingLeft: 2,
+                }}
+              >
+                Code &amp; Security
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {codeAuditAgents.map((wf) => (
+                  <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Research Data Quality audits — database validation */}
+          {dataAuditAgents.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.12em",
+                  color: "rgba(234,179,8,0.5)",
+                  marginBottom: 10,
+                  paddingLeft: 2,
+                }}
+              >
+                Research Data Quality — database validation
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {dataAuditAgents.map((wf) => (
+                  <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Research Data Quality audits — data input */}
+          {dataInputAuditAgents.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div
+                style={{
+                  fontSize: 9,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.12em",
+                  color: "rgba(234,179,8,0.5)",
+                  marginBottom: 10,
+                  paddingLeft: 2,
+                }}
+              >
+                Research Data Quality — paste &amp; analyze
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {dataInputAuditAgents.map((wf) => (
+                  <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

@@ -148,3 +148,19 @@ export const seenArticles = pgTable('seen_articles', {
   uniqueIndex('seen_articles_ticker_key_idx').on(table.ticker, table.cacheKey),
   index('seen_articles_ticker_idx').on(table.ticker),
 ]);
+
+// ============================================================================
+// AUDIT CHECKS — persists per-finding re-check verdicts so results survive
+// across page refreshes and can be referenced in future audit runs.
+// ============================================================================
+
+export const auditChecks = pgTable('audit_checks', {
+  id: serial('id').primaryKey(),
+  findingId: text('finding_id').notNull(),       // e.g. 'CRIT-001'
+  verdict: text('verdict').notNull(),            // 'passed' | 'failed'
+  summary: text('summary').notNull(),            // AI explanation
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex('audit_checks_finding_id_idx').on(table.findingId),
+]);

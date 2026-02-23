@@ -162,6 +162,18 @@ CREATE UNIQUE INDEX IF NOT EXISTS seen_articles_ticker_key_idx
 
 CREATE INDEX IF NOT EXISTS seen_articles_ticker_idx
   ON seen_articles (ticker);
+
+CREATE TABLE IF NOT EXISTS audit_checks (
+  id SERIAL PRIMARY KEY,
+  finding_id TEXT NOT NULL,
+  verdict TEXT NOT NULL,
+  summary TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS audit_checks_finding_id_idx
+  ON audit_checks (finding_id);
 `;
 
 // ── Main handler ─────────────────────────────────────────────────────────────
