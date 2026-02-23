@@ -628,8 +628,11 @@ const SourceArticleSection: React.FC<{
     if (aHidden !== bHidden) return aHidden - bHidden;
     return (b.date || '').localeCompare(a.date || '');
   });
-  const displayed = sorted.slice(0, SECTION_MAX);
-  const visibleCount = displayed.filter(a => !dbRecords.get(articleCacheKey(a))?.hidden).length;
+  // Split visible/hidden so hidden articles don't count toward SECTION_MAX
+  const visible = sorted.filter(a => !dbRecords.get(articleCacheKey(a))?.hidden);
+  const hidden = sorted.filter(a => dbRecords.get(articleCacheKey(a))?.hidden);
+  const displayed = [...visible.slice(0, SECTION_MAX), ...hidden];
+  const visibleCount = Math.min(visible.length, SECTION_MAX);
 
   if (displayed.length === 0) return null;
 
