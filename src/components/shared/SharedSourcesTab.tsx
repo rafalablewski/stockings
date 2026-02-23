@@ -540,10 +540,10 @@ const SourceArticleSection: React.FC<{
       }}>
         {label} ({displayed.length})
       </div>
-      {displayed.map((a, i) => {
+      {displayed.map((a) => {
         const key = articleCacheKey(a);
         return (
-          <SourceArticleRow key={`${type}-${i}`} article={a} type={type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(key)} isDismissed={dbRecords.get(key)?.dismissed ?? false} dbRecord={dbRecords.get(key) || null} persistedAnalysis={persistedSourceAnalyses[key] || null} onDismissNew={() => onDismissNew?.(key)} />
+          <SourceArticleRow key={key} article={a} type={type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(key)} isDismissed={dbRecords.get(key)?.dismissed ?? false} dbRecord={dbRecords.get(key) || null} persistedAnalysis={persistedSourceAnalyses[key] || null} onDismissNew={() => onDismissNew?.(key)} />
         );
       })}
     </div>
@@ -1154,7 +1154,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     } catch {
       setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [], loadingPR: false, loadingNews: false }), loading: false, loaded: false, error: 'Could not fetch feeds' } }));
     }
-  }, [ticker, checkAnalyzed, saveArticlesToDb]);
+  }, [checkAnalyzed, saveArticlesToDb]);
 
   const loadAll = useCallback(async () => {
     setLoadingAll(true);
@@ -1204,25 +1204,22 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         dbRecordsRef.current = records;
         setDbRecords(new Map(records));
         setNewArticleKeys(newKeys);
-        setMainCard({ loading: false, loadingPR: false, loadingNews: false, loaded: true, error: null, activeTab: 'pr', pressReleases: prs, news });
         console.log(`[db-init] loaded ${articles.length} articles from DB (${prs.length} PR, ${news.length} news, ${newKeys.size} NEW)`);
 
-        // Run check-analyzed on DB articles
+        // Run check-analyzed on DB articles, then show everything in one render
         const all = [...prs, ...news];
+        let finalPrs = prs;
+        let finalNews = news;
         if (all.length > 0) {
           initialRecheckDone.current = true;
-          setAiChecking(true);
           try {
             const checked = await checkAnalyzed(all);
-            if (!cancelled) {
-              setMainCard(prev => ({
-                ...prev,
-                pressReleases: checked.slice(0, prs.length),
-                news: checked.slice(prs.length),
-              }));
-            }
-          } catch { /* handled */ }
-          finally { if (!cancelled) setAiChecking(false); }
+            finalPrs = checked.slice(0, prs.length);
+            finalNews = checked.slice(prs.length);
+          } catch { /* show articles with analyzed: null as fallback */ }
+        }
+        if (!cancelled) {
+          setMainCard({ loading: false, loadingPR: false, loadingNews: false, loaded: true, error: null, activeTab: 'pr', pressReleases: finalPrs, news: finalNews });
         }
       } catch (err) {
         console.error('[db-init] error:', err);

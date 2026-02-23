@@ -65,7 +65,7 @@ async function fetchRSS(query: string, limit: number): Promise<NewsArticle[]> {
   try {
     const response = await fetch(rssUrl, {
       headers: { 'User-Agent': 'stockings-app/1.0 (research-tool)' },
-      next: { revalidate: 600 },
+      cache: 'no-store',
     });
     if (!response.ok) return [];
 

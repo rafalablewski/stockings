@@ -27,7 +27,7 @@ export async function GET(
       headers: {
         'User-Agent': 'stockings-app/1.0 (research-tool)',
       },
-      next: { revalidate: 600 },
+      cache: 'no-store',
       signal: AbortSignal.timeout(10000),
     });
 
