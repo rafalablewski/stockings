@@ -121,15 +121,17 @@ function localMatch(articleHeadline: string, articleDate: string, analysisData: 
     const gap = daysBetween(articleDate, entry.date);
     const entryFullText = entry.detail ? `${entry.headline} ${entry.detail}` : entry.headline;
 
-    // If both texts contain numbers and none overlap, they likely describe
-    // different instances of a similar event (e.g. different contract awards).
-    // Check against full entry text (headline + detail) to catch numbers in summaries.
-    if (numbersDisagree(articleHeadline, entryFullText)) continue;
-
-    // If article mentions a dollar amount (e.g. "$30 Million") but the entry doesn't
-    // mention any dollar amount at all, skip — the $ figure is a key differentiator
-    // that the entry likely describes a different aspect of the same topic.
-    if (hasDollarAmount(articleHeadline) && !hasDollarAmount(entryFullText)) continue;
+    // Dollar-amount guards: only apply number-based guards when the article
+    // contains a dollar figure (e.g. "$30 Million").  Without this gate,
+    // incidental date-derived numbers (e.g. "March 2, 2026" → "2","2026")
+    // cause numbersDisagree to skip legitimate matches for routine articles.
+    if (hasDollarAmount(articleHeadline)) {
+      // Entry has no dollar amounts at all → different aspect of same topic
+      if (!hasDollarAmount(entryFullText)) continue;
+      // Both have dollar amounts but the numbers don't overlap →
+      // different financial events (e.g. $30M vs $43M contract)
+      if (numbersDisagree(articleHeadline, entryFullText)) continue;
+    }
 
     // Tier 1: headline-only match (high confidence — headlines are short and focused)
     const headlineWords = extractKeywords(entry.headline);
