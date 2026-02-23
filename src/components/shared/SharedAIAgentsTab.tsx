@@ -2,6 +2,8 @@
 
 import React, { useState, useRef, useCallback } from "react";
 import { workflows } from "@/data/workflows";
+import { authFetch } from "@/lib/auth-fetch";
+import PinGate from "@/components/shared/PinGate";
 
 interface AgentWorkflow {
   id: string;
@@ -65,7 +67,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
     abortRef.current = new AbortController();
 
     try {
-      const res = await fetch("/api/workflow/run", {
+      const res = await authFetch("/api/workflow/run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -164,7 +166,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
     setApplyError("");
     setPatchPreview(null);
     try {
-      const res = await fetch("/api/workflow/apply", {
+      const res = await authFetch("/api/workflow/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ticker, agentId: workflow.id, analysis: result, dryRun: true }),
@@ -189,7 +191,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
     setApplyStep("applying");
     setApplyError("");
     try {
-      const res = await fetch("/api/workflow/apply", {
+      const res = await authFetch("/api/workflow/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ticker, agentId: workflow.id, dryRun: false, patches: patchPreview.patches }),
@@ -218,7 +220,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
     setCommitStatus("committing");
     setCommitMessage("");
     try {
-      const res = await fetch("/api/workflow/commit", {
+      const res = await authFetch("/api/workflow/commit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ticker, agentId: workflow.id, analysis: result }),
@@ -941,6 +943,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
   const askAgent = availableWorkflows.find((w) => w.id === "ask-agent");
 
   return (
+    <PinGate>
     <div style={{ display: "flex", flexDirection: "column" }}>
       <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#ai-agents-header</div>
       {/* Hero — Ive×Tesla */}
@@ -1237,5 +1240,6 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
         </div>
       )}
     </div>
+    </PinGate>
   );
 };

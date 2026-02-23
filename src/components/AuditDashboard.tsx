@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
+import { authFetch } from '@/lib/auth-fetch';
 import {
   AUDIT_FINDINGS,
   AUDIT_METADATA,
@@ -585,7 +586,7 @@ export default function AuditDashboard() {
     abortRef.current = new AbortController();
 
     try {
-      const res = await fetch('/api/workflow/run', {
+      const res = await authFetch('/api/workflow/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: codeAuditPrompt }),
@@ -658,7 +659,7 @@ export default function AuditDashboard() {
     setCheckingIds(prev => new Set(prev).add(id));
 
     try {
-      const res = await fetch('/api/workflow/run', {
+      const res = await authFetch('/api/workflow/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: buildRecheckPrompt(finding) }),

@@ -19,6 +19,7 @@
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { VERDICT_COLORS, parseVerdict, stripVerdict } from './verdictUtils';
+import { authFetch } from '@/lib/auth-fetch';
 
 export interface SourceGroup {
   category: string;
@@ -201,7 +202,7 @@ const SourceArticleRow: React.FC<{
     setAnalyzing(true);
     setExpanded(true);
     try {
-      const res = await fetch('/api/sources/analyze', {
+      const res = await authFetch('/api/sources/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

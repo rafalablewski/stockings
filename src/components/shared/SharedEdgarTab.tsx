@@ -19,6 +19,7 @@
 
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { VERDICT_COLORS, parseVerdict, stripVerdict } from './verdictUtils';
+import { authFetch } from '@/lib/auth-fetch';
 
 export interface EdgarTabProps {
   ticker: string;
@@ -479,7 +480,7 @@ const FilingRow: React.FC<{
     setAnalyzing(true);
     setExpanded(true);
     try {
-      const res = await fetch('/api/edgar/analyze', {
+      const res = await authFetch('/api/edgar/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
