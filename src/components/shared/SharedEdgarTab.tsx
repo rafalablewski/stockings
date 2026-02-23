@@ -487,7 +487,7 @@ const FilingRow: React.FC<{
     setCommitMessage("");
   };
 
-  const isErrorAnalysis = (text: string | null) => !!text && (text.startsWith('Error:') || text === 'No analysis returned.' || text === 'AI analysis failed' || text.includes('AI features are disabled'));
+  const isErrorAnalysis = (text: string | null) => !!text && (text.startsWith('Error:') || text === 'No analysis returned.' || text.includes('AI analysis failed') || text.includes('AI features are disabled'));
 
   const handleAnalyze = async () => {
     const isError = isErrorAnalysis(analysis);

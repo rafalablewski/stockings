@@ -52,8 +52,14 @@ export async function POST(request: NextRequest) {
 
     if (!claudeRes.ok) {
       const errText = await claudeRes.text();
-      console.error('Claude API error:', errText);
-      return new Response(JSON.stringify({ error: 'AI analysis failed' }), {
+      console.error('Claude API error:', claudeRes.status, errText);
+      // Parse the Anthropic error for a user-visible reason
+      let reason = `Upstream API returned ${claudeRes.status}`;
+      try {
+        const parsed = JSON.parse(errText);
+        if (parsed?.error?.message) reason = parsed.error.message;
+      } catch { /* use default reason */ }
+      return new Response(JSON.stringify({ error: `AI analysis failed: ${reason}` }), {
         status: 502,
         headers: { 'Content-Type': 'application/json' },
       });
