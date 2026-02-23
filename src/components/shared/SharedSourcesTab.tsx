@@ -608,6 +608,7 @@ const SourceArticleRow: React.FC<{
 
 // ── Separate PR / News article lists (max 10 each) ─────────────────────────
 const SECTION_MAX = 10;
+const HIDDEN_PREVIEW = 5;
 
 const SourceArticleSection: React.FC<{
   articles: ArticleItem[];
@@ -621,6 +622,7 @@ const SourceArticleSection: React.FC<{
   onDismissNew?: (cacheKey: string) => void;
   onToggleHide?: (cacheKey: string) => void;
 }> = ({ articles, type, label, showAnalysis, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onDismissNew, onToggleHide }) => {
+  const [showAllHidden, setShowAllHidden] = useState(false);
   const sorted = [...articles].sort((a, b) => {
     // Sort hidden articles to the bottom, then by date descending
     const aHidden = dbRecords.get(articleCacheKey(a))?.hidden ? 1 : 0;
@@ -631,8 +633,10 @@ const SourceArticleSection: React.FC<{
   // Split visible/hidden so hidden articles don't count toward SECTION_MAX
   const visible = sorted.filter(a => !dbRecords.get(articleCacheKey(a))?.hidden);
   const hidden = sorted.filter(a => dbRecords.get(articleCacheKey(a))?.hidden);
-  const displayed = [...visible.slice(0, SECTION_MAX), ...hidden];
+  const displayedHidden = showAllHidden ? hidden : hidden.slice(0, HIDDEN_PREVIEW);
+  const displayed = [...visible.slice(0, SECTION_MAX), ...displayedHidden];
   const visibleCount = Math.min(visible.length, SECTION_MAX);
+  const remainingHidden = hidden.length - HIDDEN_PREVIEW;
 
   if (displayed.length === 0) return null;
 
@@ -642,7 +646,7 @@ const SourceArticleSection: React.FC<{
         fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px',
         color: 'var(--text3)', padding: '8px 12px 4px', opacity: 0.7,
       }}>
-        {label} ({visibleCount}{visibleCount < displayed.length ? ` + ${displayed.length - visibleCount} hidden` : ''})
+        {label} ({visibleCount}{hidden.length > 0 ? ` + ${hidden.length} hidden` : ''})
       </div>
       {displayed.map((a) => {
         const key = articleCacheKey(a);
@@ -650,6 +654,37 @@ const SourceArticleSection: React.FC<{
           <SourceArticleRow key={key} article={a} type={type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(key)} isDismissed={dbRecords.get(key)?.dismissed ?? false} isHidden={dbRecords.get(key)?.hidden ?? false} dbRecord={dbRecords.get(key) || null} persistedAnalysis={persistedSourceAnalyses[key] || null} onDismissNew={() => onDismissNew?.(key)} onToggleHide={() => onToggleHide?.(key)} />
         );
       })}
+      {/* Load more / collapse for hidden articles */}
+      {remainingHidden > 0 && !showAllHidden && (
+        <button
+          onClick={() => setShowAllHidden(true)}
+          style={{
+            display: 'block', width: '100%', padding: '4px 12px', margin: '2px 0',
+            fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)',
+            background: 'transparent', border: 'none', cursor: 'pointer',
+            opacity: 0.25, textAlign: 'left', transition: 'opacity 0.15s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.5')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '0.25')}
+        >
+          + {remainingHidden} more hidden
+        </button>
+      )}
+      {showAllHidden && hidden.length > HIDDEN_PREVIEW && (
+        <button
+          onClick={() => setShowAllHidden(false)}
+          style={{
+            display: 'block', width: '100%', padding: '4px 12px', margin: '2px 0',
+            fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)',
+            background: 'transparent', border: 'none', cursor: 'pointer',
+            opacity: 0.25, textAlign: 'left', transition: 'opacity 0.15s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.5')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '0.25')}
+        >
+          collapse hidden
+        </button>
+      )}
     </div>
   );
 };
