@@ -1014,7 +1014,16 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       if (saveRes.ok) {
         console.log('[ai-fetch] save OK:', saveBody);
         for (const a of articles) {
-          const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: newKeys.has(a.cacheKey) ? false : (dbRecordsRef.current.get(a.cacheKey)?.dismissed ?? false), hidden: dbRecordsRef.current.get(a.cacheKey)?.hidden ?? false };
+          // Inherit hidden from same cache key OR any headline match (covers different URLs for same article)
+          const existingRec = dbRecordsRef.current.get(a.cacheKey);
+          let inheritHidden = existingRec?.hidden ?? false;
+          if (!inheritHidden) {
+            const nh = normalizeHeadline(a.headline);
+            for (const [, r] of dbRecordsRef.current) {
+              if (r.hidden && normalizeHeadline(r.headline) === nh) { inheritHidden = true; break; }
+            }
+          }
+          const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: newKeys.has(a.cacheKey) ? false : (existingRec?.dismissed ?? false), hidden: inheritHidden };
           dbRecordsRef.current.set(a.cacheKey, rec);
         }
         setDbRecords(new Map(dbRecordsRef.current));
@@ -1309,6 +1318,22 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           if (!art.dismissed) newKeys.add(art.cacheKey);
         }
 
+        // Propagate hidden state across headline duplicates: if ANY cache key
+        // for a headline is hidden, ALL variants should be treated as hidden.
+        // This prevents a fresh-fetch duplicate (different URL/cache key) from
+        // "unhiding" an article the user explicitly hid.
+        const hiddenHeadlines = new Set<string>();
+        for (const [, rec] of records) {
+          if (rec.hidden) hiddenHeadlines.add(normalizeHeadline(rec.headline));
+        }
+        if (hiddenHeadlines.size > 0) {
+          for (const [key, rec] of records) {
+            if (!rec.hidden && hiddenHeadlines.has(normalizeHeadline(rec.headline))) {
+              records.set(key, { ...rec, hidden: true });
+            }
+          }
+        }
+
         dbRecordsRef.current = records;
         setDbRecords(new Map(records));
         setNewArticleKeys(newKeys);
@@ -1394,36 +1419,40 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
   }, [ticker, mainCard.pressReleases, mainCard.news]);
 
-  // Toggle hide/unhide for an article: update local state + persist to DB
+  // Toggle hide/unhide for an article: propagate across ALL cache key
+  // variants sharing the same normalized headline, then persist to DB.
   const toggleHideArticle = useCallback((cacheKey: string) => {
     const rec = dbRecordsRef.current.get(cacheKey);
     const newHidden = !(rec?.hidden ?? false);
-    // Update local state immediately
-    if (rec) {
-      dbRecordsRef.current.set(cacheKey, { ...rec, hidden: newHidden });
-    } else {
-      // Article not yet in DB records — create a minimal record
-      const prArticle = mainCard.pressReleases.find(a => articleCacheKey(a) === cacheKey);
-      const newsArticle = !prArticle ? mainCard.news.find(a => articleCacheKey(a) === cacheKey) : null;
-      const article = prArticle || newsArticle;
-      if (article) {
-        dbRecordsRef.current.set(cacheKey, { cacheKey, headline: article.headline, date: article.date || null, url: article.url || null, source: article.source || null, articleType: prArticle ? 'pr' : 'news', dismissed: false, hidden: newHidden });
-      }
-    }
-    setDbRecords(new Map(dbRecordsRef.current));
-    // Persist to DB
+
+    // Find the article to get its headline
     const prArticle = mainCard.pressReleases.find(a => articleCacheKey(a) === cacheKey);
     const newsArticle = !prArticle ? mainCard.news.find(a => articleCacheKey(a) === cacheKey) : null;
     const article = prArticle || newsArticle;
-    if (article) {
+    const headline = rec?.headline || article?.headline || '';
+    const nh = normalizeHeadline(headline);
+
+    // Propagate to ALL cache keys with the same normalized headline
+    const affectedKeys: { cacheKey: string; headline: string; date: string; url: string; source?: string; articleType: string }[] = [];
+    for (const [k, r] of dbRecordsRef.current) {
+      if (normalizeHeadline(r.headline) === nh) {
+        dbRecordsRef.current.set(k, { ...r, hidden: newHidden });
+        affectedKeys.push({ cacheKey: k, headline: r.headline, date: r.date || '', url: r.url || '', source: r.source || undefined, articleType: r.articleType || 'pr' });
+      }
+    }
+    // Also cover the clicked key if it wasn't in records yet
+    if (!dbRecordsRef.current.has(cacheKey) && article) {
+      dbRecordsRef.current.set(cacheKey, { cacheKey, headline: article.headline, date: article.date || null, url: article.url || null, source: article.source || null, articleType: prArticle ? 'pr' : 'news', dismissed: false, hidden: newHidden });
+      affectedKeys.push({ cacheKey, headline: article.headline, date: article.date || '', url: article.url || '', source: article.source, articleType: prArticle ? 'pr' : 'news' });
+    }
+    setDbRecords(new Map(dbRecordsRef.current));
+
+    // Persist all affected keys to DB
+    if (affectedKeys.length > 0) {
       fetch('/api/seen-articles', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ticker,
-          articles: [{ cacheKey, headline: article.headline, date: article.date, url: article.url, source: article.source, articleType: prArticle ? 'pr' : 'news' }],
-          hide: newHidden,
-        }),
+        body: JSON.stringify({ ticker, articles: affectedKeys, hide: newHidden }),
       }).catch(err => console.error('[hide] error:', err));
     }
   }, [ticker, mainCard.pressReleases, mainCard.news]);
