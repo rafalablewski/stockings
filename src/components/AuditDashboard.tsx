@@ -199,9 +199,13 @@ function FindingRow({
         borderBottom: '1px solid rgba(255,255,255,0.04)',
       }}
     >
-      {/* Header Row */}
-      <button
+      {/* Header Row — uses div instead of button to avoid invalid nested
+           interactive content (the Check / re-check buttons live inside). */}
+      <div
+        role="button"
+        tabIndex={0}
         onClick={onToggle}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}
         aria-expanded={expanded}
         style={{
           width: '100%',
@@ -338,7 +342,7 @@ function FindingRow({
         >
           <polyline points="9 18 15 12 9 6" />
         </svg>
-      </button>
+      </div>
 
       {/* Expanded Details */}
       {expanded && (
@@ -712,19 +716,27 @@ export default function AuditDashboard() {
       const trimmed = fullText.trim();
       const firstLine = trimmed.split('\n')[0]?.toUpperCase() ?? '';
       const verdict: CheckVerdict = firstLine.includes('PASSED') ? 'passed' : 'failed';
-      const summary = trimmed.split('\n').slice(1).join(' ').trim() || trimmed;
+      const summary = trimmed.split('\n').slice(1).join(' ').trim() || trimmed || '(no details)';
 
       setCheckResults(prev => ({
         ...prev,
         [id]: { verdict, summary, timestamp: Date.now() },
       }));
 
-      // Persist to database (fire-and-forget)
-      fetch('/api/audit-checks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ findingId: id, verdict, summary }),
-      }).catch(() => {});
+      // Persist to database — await so Check-All waits for each save before
+      // moving to the next finding, preventing silent failures.
+      try {
+        const saveRes = await fetch('/api/audit-checks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ findingId: id, verdict, summary }),
+        });
+        if (!saveRes.ok) {
+          console.error(`[audit-check] Save failed for ${id}: HTTP ${saveRes.status}`);
+        }
+      } catch (saveErr) {
+        console.error(`[audit-check] Save error for ${id}:`, saveErr);
+      }
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
         const errSummary = err instanceof Error ? err.message : 'Unknown error';
@@ -733,12 +745,19 @@ export default function AuditDashboard() {
           [id]: { verdict: 'failed', summary: errSummary, timestamp: Date.now() },
         }));
 
-        // Persist error result too
-        fetch('/api/audit-checks', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ findingId: id, verdict: 'failed', summary: errSummary }),
-        }).catch(() => {});
+        // Persist error result
+        try {
+          const saveRes = await fetch('/api/audit-checks', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ findingId: id, verdict: 'failed', summary: errSummary }),
+          });
+          if (!saveRes.ok) {
+            console.error(`[audit-check] Error-save failed for ${id}: HTTP ${saveRes.status}`);
+          }
+        } catch (saveErr) {
+          console.error(`[audit-check] Error-save error for ${id}:`, saveErr);
+        }
       }
     } finally {
       setCheckingIds(prev => { const next = new Set(prev); next.delete(id); return next; });
