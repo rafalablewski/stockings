@@ -3,6 +3,8 @@ import { db } from '@/lib/db';
 import { auditChecks } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/audit-checks
  *
