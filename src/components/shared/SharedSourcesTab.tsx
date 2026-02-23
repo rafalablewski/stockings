@@ -906,7 +906,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       if (saveRes.ok) {
         console.log('[ai-fetch] save OK:', saveBody);
         for (const a of articles) {
-          const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: !newKeys.has(a.cacheKey) };
+          const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: newKeys.has(a.cacheKey) ? false : (dbRecordsRef.current.get(a.cacheKey)?.dismissed ?? false) };
           dbRecordsRef.current.set(a.cacheKey, rec);
         }
         setDbRecords(new Map(dbRecordsRef.current));
