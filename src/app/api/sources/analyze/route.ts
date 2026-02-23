@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { checkAiGate } from '@/lib/ai-gate';
 
 /**
  * POST /api/sources/analyze
@@ -9,6 +10,9 @@ import { NextRequest, NextResponse } from 'next/server';
  * Body: { url: string, headline: string, source?: string, date?: string, ticker: string }
  */
 export async function POST(request: NextRequest) {
+  const gateError = checkAiGate(request);
+  if (gateError) return gateError;
+
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || '';
 
   try {

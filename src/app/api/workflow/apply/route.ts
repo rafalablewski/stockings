@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { renderSchemaContext, renderFilingTemplateContext } from '@/data/schemas';
+import { checkAiGate } from '@/lib/ai-gate';
 
 /**
  * POST /api/workflow/apply
@@ -345,6 +346,9 @@ async function applyPatch(patch: PatchOp): Promise<PatchResult> {
 // ─── Route handler ──────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
+  const gateError = checkAiGate(request);
+  if (gateError) return gateError;
+
   const ANTHROPIC_API_KEY = (process.env as Record<string, string | undefined>)['ANTHROPIC_API_KEY'] || '';
 
   if (!ANTHROPIC_API_KEY) {

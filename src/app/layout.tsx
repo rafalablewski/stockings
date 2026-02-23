@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { stockList } from "@/lib/stocks";
 import PinStatus from "@/components/shared/PinStatus";
+import AiToggle from "@/components/shared/AiToggle";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -101,6 +102,8 @@ function Footer() {
           <span>Investment Research</span>
           <span className="text-white/10">·</span>
           <span>Not financial advice</span>
+          <span className="text-white/10">·</span>
+          <AiToggle />
         </div>
       </div>
     </footer>

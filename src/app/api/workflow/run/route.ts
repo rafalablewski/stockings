@@ -1,8 +1,12 @@
 import { NextRequest } from 'next/server';
+import { checkAiGate } from '@/lib/ai-gate';
 
 export const runtime = 'edge';
 
 export async function POST(request: NextRequest) {
+  const gateError = checkAiGate(request);
+  if (gateError) return gateError;
+
   const ANTHROPIC_API_KEY = (process.env as Record<string, string | undefined>)['ANTHROPIC_API_KEY'] || '';
 
   if (!ANTHROPIC_API_KEY) {
