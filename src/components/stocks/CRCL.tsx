@@ -116,6 +116,8 @@ import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
+import StockNavigation, { TabPanel } from '../shared/StockNavigation';
+import { useHashTab } from '@/hooks/useHashTab';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
   ResponsiveContainer, ScatterChart, Scatter, Cell, ReferenceLine,
@@ -2872,9 +2874,7 @@ const CRCLQuarterlyMetricsPanel = () => {
 };
 
 function CRCLModel() {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
-  const [aiDropdownOpen, setAiDropdownOpen] = useState(false);
+  const [activeTab, setActiveTab] = useHashTab(tabs.map(t => t.id));
 
   // Update indicator visibility toggle
   const [showIndicators, setShowIndicators] = useState(true);
@@ -3447,81 +3447,13 @@ function CRCLModel() {
         </div>
 
         {/* Nav */}
-        <nav className="nav">
-          {/* Overview tab (before dropdown) */}
-          {tabs.filter(t => !t.group).slice(0, 1).map(t => (
-            <button
-              key={t.id}
-              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-              onClick={() => setActiveTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
-
-          {/* Stock-specific dropdown trigger */}
-          <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'CRCL Analysis' && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => { setAnalysisDropdownOpen(!analysisDropdownOpen); setAiDropdownOpen(false); }}
-          >
-            CRCL Analysis ↕
-          </button>
-
-          {/* Remaining ungrouped tabs (includes Model) */}
-          {tabs.filter(t => !t.group).slice(1).map(t => (
-            <button
-              key={t.id}
-              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-              onClick={() => setActiveTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
-
-          {/* AI hub dropdown trigger */}
-          <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'AI' && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => { setAiDropdownOpen(!aiDropdownOpen); setAnalysisDropdownOpen(false); }}
-          >
-            AI ↕
-          </button>
-        </nav>
-
-        {/* Reserved space for dropdown menu - always present to prevent layout shift */}
-        <div className={`nav-dropdown-space ${analysisDropdownOpen || aiDropdownOpen ? 'open' : ''}`}>
-          {analysisDropdownOpen && (
-            <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group === 'CRCL Analysis').map(t => (
-                <button
-                  key={t.id}
-                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-                  onClick={() => setActiveTab(t.id)}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          )}
-          {aiDropdownOpen && (
-            <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group === 'AI').map(t => (
-                <button
-                  key={t.id}
-                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-                  onClick={() => setActiveTab(t.id)}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <StockNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} stockGroupName="CRCL Analysis" />
 
         {/* Main */}
         <main className="main">
           {/* Update Source Legend - Shows what each indicator color means */}
           <UpdateLegend />
-          {activeTab === 'overview' && (
+          {activeTab === 'overview' && (<TabPanel id="overview">
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#investment-thesis</div>
               {/* Hero — Ive×Tesla */}
@@ -3710,9 +3642,9 @@ function CRCLModel() {
                 { term: 'Regulatory Moat', def: 'US money transmitter licenses, potential federal stablecoin regulation creates barriers. Circle positioned for compliance.' },
               ]} />
             </div>
-          )}
+          </TabPanel>)}
 
-          {activeTab === 'financials' && (
+          {activeTab === 'financials' && (<TabPanel id="financials">
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {/* ═══════════════════════════════════════════════════════════════════ */}
               {/* UNIFIED FINANCIALS TAB - Canonical structure shared across all models */}
@@ -3790,9 +3722,9 @@ function CRCLModel() {
                 { term: 'Adjusted EBITDA', def: 'Earnings before interest, taxes, depreciation, amortization, and stock-based compensation. Preferred metric for SaaS/fintech companies to show operating profitability.' },
               ]} />
             </div>
-          )}
+          </TabPanel>)}
 
-          {activeTab === 'investment' && (
+          {activeTab === 'investment' && (<TabPanel id="investment">
             <>
               {/* Controls */}
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#investment-header</div>
@@ -4906,18 +4838,18 @@ function CRCLModel() {
                 { term: 'Network Effects', def: 'USDC adoption creates self-reinforcing cycles: more integrations attract more users, which attract more integrations. Critical competitive moat.' },
               ]} />
             </>
-          )}
+          </TabPanel>)}
 
-          {activeTab === 'model' && (
+          {activeTab === 'model' && (<TabPanel id="model">
             <CRCLModelTab
               currentUSDC={currentUSDC}
               currentShares={currentShares}
               currentStockPrice={currentStockPrice}
               currentMarketShare={currentMarketShare}
             />
-          )}
+          </TabPanel>)}
 
-          {activeTab === 'usdc' && (
+          {activeTab === 'usdc' && (<TabPanel id="usdc">
             <>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#usdc-header</div>
               {/* Hero — Ive×Tesla */}
@@ -5034,9 +4966,9 @@ function CRCLModel() {
                 { term: 'Platform vs Off-Platform', def: 'On-platform USDC (Circle accounts) has higher margin. Off-platform (public blockchain) has lower friction but less control.' },
               ]} />
             </>
-          )}
+          </TabPanel>)}
 
-          {activeTab === 'capital' && (
+          {activeTab === 'capital' && (<TabPanel id="capital">
             <>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#capital-header</div>
               <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
@@ -5457,9 +5389,9 @@ function CRCLModel() {
                 { term: 'Institutional Ownership', def: 'Percentage of shares held by institutional investors (mutual funds, pension funds, etc.). High institutional ownership signals professional conviction.' },
               ]} />
             </>
-          )}
+          </TabPanel>)}
 
-          {activeTab === 'monte-carlo' && (
+          {activeTab === 'monte-carlo' && (<TabPanel id="monte-carlo">
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#mc-header</div>
@@ -5955,9 +5887,9 @@ function CRCLModel() {
                 { term: 'Sharpe/Sortino Ratios', def: 'Risk-adjusted return metrics. Sortino only penalizes downside volatility.' },
               ]} />
             </div>
-          )}
+          </TabPanel>)}
 
-          {activeTab === 'timeline' && (
+          {activeTab === 'timeline' && (<TabPanel id="timeline">
             <>
               <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace', marginTop: 24 }}>#timeline-header</div>
               <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
@@ -6360,18 +6292,18 @@ function CRCLModel() {
                 { term: 'MiCA Compliance', def: 'Markets in Crypto-Assets regulation in EU. Circle obtained MiCA license, allowing USDC/EURC operations across EU member states.' },
               ]} />
             </>
-          )}
+          </TabPanel>)}
 
-          {activeTab === 'comps' && <CompsTab />}
+          {activeTab === 'comps' && <TabPanel id="comps"><CompsTab /></TabPanel>}
 
-          {activeTab === 'wall-street' && (
+          {activeTab === 'wall-street' && <TabPanel id="wall-street">
             <WallStreetTab />
-          )}
+          </TabPanel>}
 
-          {activeTab === 'ai-agents' && <SharedAIAgentsTab ticker="CRCL" />}
-          {activeTab === 'sources' && (
+          {activeTab === 'ai-agents' && <TabPanel id="ai-agents"><SharedAIAgentsTab ticker="CRCL" /></TabPanel>}
+          {activeTab === 'sources' && <TabPanel id="sources">
             <SharedSourcesTab ticker="CRCL" companyName="Circle Internet Group" researchSources={crclResearchSources} competitorLabel="Stablecoin Peers" competitors={crclCompetitors} />
-          )}
+          </TabPanel>}
         </main>
       </div>
     </UpdateIndicatorContext.Provider>

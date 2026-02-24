@@ -255,6 +255,31 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   border-color: var(--accent);
 }
 
+/* Focus styles for keyboard navigation */
+.nav-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  color: var(--text);
+  background: var(--surface2);
+}
+.nav-btn.active:focus-visible {
+  outline-color: var(--text);
+}
+.nav-dropdown-trigger:focus-visible {
+  outline: 2px solid var(--violet);
+  outline-offset: 2px;
+}
+
+/* Projection tab shape indicator (accessibility — non-color differentiator) */
+.tab-type-badge {
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.5;
+}
+.nav-btn.active .tab-type-badge {
+  opacity: 0.8;
+}
+
 /* Filter Buttons - For inline filtering (competitor filters, peer group selectors) */
 .filter-btn {
   padding: 4px 12px;
@@ -296,25 +321,48 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   border-color: var(--violet);
   border-left: 3px solid var(--violet);
 }
+.nav-dropdown-trigger.open {
+  background: var(--surface2);
+  color: var(--text);
+  border-color: var(--violet);
+}
 
-/* Reserved space below nav for dropdown content - always present */
+/* Dropdown chevron icon */
+.nav-dropdown-chevron {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+.nav-dropdown-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* Reserved space below nav for dropdown content — collapses when closed */
 .nav-dropdown-space {
-  height: 48px;
+  height: 0;
   padding: 0 64px;
   background: var(--bg);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid transparent;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: background 0.2s ease;
+  overflow: hidden;
+  transition: height 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
 .nav-dropdown-space.open {
+  height: 48px;
   background: var(--surface);
+  border-bottom-color: var(--border);
 }
 .nav-dropdown-menu {
   display: flex;
   align-items: center;
   gap: 4px;
+  animation: fadeSlideIn 0.15s ease-out;
+}
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .nav-dropdown-item {
   padding: 8px 16px;
@@ -334,8 +382,23 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   background: var(--surface2);
 }
 .nav-dropdown-item.active {
-  color: var(--accent);
-  background: var(--accent-dim);
+  color: var(--bg);
+  background: var(--accent);
+  font-weight: 600;
+}
+.nav-dropdown-item.tab-tracking.active {
+  background: var(--mint);
+  color: var(--bg);
+}
+.nav-dropdown-item.tab-projection.active {
+  background: var(--accent);
+  color: var(--bg);
+}
+.nav-dropdown-item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  color: var(--text);
+  background: var(--surface2);
 }
 
 /* Main Content */
@@ -842,6 +905,8 @@ input[type="range"]::-webkit-slider-thumb {
   }
   .nav-dropdown-space {
     padding: 0 16px;
+  }
+  .nav-dropdown-space.open {
     height: 44px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -1042,6 +1107,8 @@ input[type="range"]::-webkit-slider-thumb {
   }
   .nav-dropdown-space {
     padding: 0 12px;
+  }
+  .nav-dropdown-space.open {
     height: 40px;
   }
   .nav-dropdown-item {
@@ -1147,7 +1214,7 @@ input[type="range"]::-webkit-slider-thumb {
     border-width: 0.5px;
   }
   .nav-btn {
-    border-width: 3px;
+    border-left-width: 3px;
   }
 }
 

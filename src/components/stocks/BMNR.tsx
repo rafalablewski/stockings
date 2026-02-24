@@ -213,6 +213,8 @@ import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import SharedEdgarTab from '../shared/SharedEdgarTab';
+import StockNavigation, { TabPanel } from '../shared/StockNavigation';
+import { useHashTab } from '@/hooks/useHashTab';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
 
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
@@ -735,9 +737,6 @@ const BMNRDilutionAnalysis = () => {
   const [currentShares, setCurrentShares] = useState(DEFAULTS.currentShares);  // From @/data/bmnr/company.ts
   const [currentStockPrice, setCurrentStockPrice] = useState(DEFAULTS.currentStockPrice);  // From @/data/bmnr/company.ts
   const [ethPrice, setEthPrice] = useState(DEFAULTS.ethPrice);  // From @/data/bmnr/company.ts
-  const [activeTab, setActiveTab] = useState('overview');
-  const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
-  const [aiDropdownOpen, setAiDropdownOpen] = useState(false);
   const [dilutionPercent, setDilutionPercent] = useState(5);
   const [saleDiscount, setSaleDiscount] = useState(5);
   const [navMultiple, setNavMultiple] = useState(1.00); // NAV multiple (stock price = NAV × mNAV)
@@ -857,6 +856,8 @@ const BMNRDilutionAnalysis = () => {
     { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
     { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
   ];
+
+  const [activeTab, setActiveTab] = useHashTab(tabs.map(t => t.id));
 
   const bmnrCompetitors: Competitor[] = [
     { name: 'Strategy (MSTR)', url: 'https://www.strategy.com/investor-relations' },
@@ -1046,102 +1047,34 @@ const BMNRDilutionAnalysis = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="nav">
-          {/* Overview tab (before dropdown) */}
-          {tabs.filter(t => !t.group).slice(0, 1).map(t => (
-            <button
-              key={t.id}
-              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-              onClick={() => setActiveTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
-
-          {/* Stock-specific dropdown trigger */}
-          <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'BMNR Analysis' && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => { setAnalysisDropdownOpen(!analysisDropdownOpen); setAiDropdownOpen(false); }}
-          >
-            BMNR Analysis ↕
-          </button>
-
-          {/* Remaining ungrouped tabs (includes Model) */}
-          {tabs.filter(t => !t.group).slice(1).map(t => (
-            <button
-              key={t.id}
-              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-              onClick={() => setActiveTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
-
-          {/* AI hub dropdown trigger */}
-          <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'AI' && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => { setAiDropdownOpen(!aiDropdownOpen); setAnalysisDropdownOpen(false); }}
-          >
-            AI ↕
-          </button>
-        </nav>
-
-        {/* Reserved space for dropdown menu - always present to prevent layout shift */}
-        <div className={`nav-dropdown-space ${analysisDropdownOpen || aiDropdownOpen ? 'open' : ''}`}>
-          {analysisDropdownOpen && (
-            <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group === 'BMNR Analysis').map(t => (
-                <button
-                  key={t.id}
-                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-                  onClick={() => setActiveTab(t.id)}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          )}
-          {aiDropdownOpen && (
-            <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group === 'AI').map(t => (
-                <button
-                  key={t.id}
-                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-                  onClick={() => setActiveTab(t.id)}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <StockNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} stockGroupName="BMNR Analysis" />
 
         {/* Main Content */}
         <main className="main">
         {/* Update Source Legend - Shows what each indicator color means */}
         <UpdateLegend />
-        {activeTab === 'overview' && <OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} chartRefreshKey={chartRefreshKey} />}
-        {activeTab === 'model' && <ModelTab currentETH={currentETH} setCurrentETH={setCurrentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} />}
-        {activeTab === 'ethereum' && <EthereumTab ethPrice={ethPrice} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
-        {activeTab === 'staking' && <StakingTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} stakingType={stakingType} setStakingType={setStakingType} baseStakingAPY={baseStakingAPY} setBaseStakingAPY={setBaseStakingAPY} restakingBonus={restakingBonus} setRestakingBonus={setRestakingBonus} stakingRatio={stakingRatio} setStakingRatio={setStakingRatio} slashingRisk={slashingRisk} setSlashingRisk={setSlashingRisk} />}
-        {activeTab === 'dilution' && <DilutionTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} currentStockPrice={currentStockPrice} tranches={tranches} setTranches={setTranches} dilutionPercent={dilutionPercent} setDilutionPercent={setDilutionPercent} saleDiscount={saleDiscount} setSaleDiscount={setSaleDiscount} navMultiple={navMultiple} setNavMultiple={setNavMultiple} maxAuthorizedShares={maxAuthorizedShares} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} regulatoryRisk={regulatoryRisk} />}
-        {activeTab === 'debt' && <DebtTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} currentStockPrice={currentStockPrice} useDebt={useDebt} setUseDebt={setUseDebt} debtAmount={debtAmount} setDebtAmount={setDebtAmount} debtRate={debtRate} setDebtRate={setDebtRate} debtMaturity={debtMaturity} setDebtMaturity={setDebtMaturity} conversionPremium={conversionPremium} setConversionPremium={setConversionPremium} debtCovenantLTV={debtCovenantLTV} setDebtCovenantLTV={setDebtCovenantLTV} />}
-        {activeTab === 'capital' && <CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} currentETH={currentETH} ethPrice={ethPrice} />}
-        {activeTab === 'comps' && <CompsTab comparables={comparables} ethPrice={ethPrice} />}
-        {activeTab === 'sensitivity' && <SensitivityTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} />}
-        {activeTab === 'backtest' && <BacktestTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} historicalETH={historicalETH} baseStakingAPY={baseStakingAPY} navMultiple={currentStockPrice / calc.currentNAV} />}
-        {activeTab === 'monte-carlo' && <MonteCarloTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} ethPrice={ethPrice} stakingYield={calc.effectiveAPY} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} operatingCosts={operatingCosts} regulatoryRisk={regulatoryRisk} />}
-        {activeTab === 'investment' && <InvestmentTab />}
-        {activeTab === 'financials' && <FinancialsTab />}
-        {activeTab === 'timeline' && <TimelineTab />}
-        {activeTab === 'wall-street' && <WallStreetTab />}
-        {activeTab === 'ai-agents' && <SharedAIAgentsTab ticker="BMNR" />}
-        {activeTab === 'sources' && (
+        {activeTab === 'overview' && <TabPanel id="overview"><OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} chartRefreshKey={chartRefreshKey} /></TabPanel>}
+        {activeTab === 'model' && <TabPanel id="model"><ModelTab currentETH={currentETH} setCurrentETH={setCurrentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} /></TabPanel>}
+        {activeTab === 'ethereum' && <TabPanel id="ethereum"><EthereumTab ethPrice={ethPrice} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} /></TabPanel>}
+        {activeTab === 'staking' && <TabPanel id="staking"><StakingTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} stakingType={stakingType} setStakingType={setStakingType} baseStakingAPY={baseStakingAPY} setBaseStakingAPY={setBaseStakingAPY} restakingBonus={restakingBonus} setRestakingBonus={setRestakingBonus} stakingRatio={stakingRatio} setStakingRatio={setStakingRatio} slashingRisk={slashingRisk} setSlashingRisk={setSlashingRisk} /></TabPanel>}
+        {activeTab === 'dilution' && <TabPanel id="dilution"><DilutionTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} currentStockPrice={currentStockPrice} tranches={tranches} setTranches={setTranches} dilutionPercent={dilutionPercent} setDilutionPercent={setDilutionPercent} saleDiscount={saleDiscount} setSaleDiscount={setSaleDiscount} navMultiple={navMultiple} setNavMultiple={setNavMultiple} maxAuthorizedShares={maxAuthorizedShares} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} regulatoryRisk={regulatoryRisk} /></TabPanel>}
+        {activeTab === 'debt' && <TabPanel id="debt"><DebtTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} currentStockPrice={currentStockPrice} useDebt={useDebt} setUseDebt={setUseDebt} debtAmount={debtAmount} setDebtAmount={setDebtAmount} debtRate={debtRate} setDebtRate={setDebtRate} debtMaturity={debtMaturity} setDebtMaturity={setDebtMaturity} conversionPremium={conversionPremium} setConversionPremium={setConversionPremium} debtCovenantLTV={debtCovenantLTV} setDebtCovenantLTV={setDebtCovenantLTV} /></TabPanel>}
+        {activeTab === 'capital' && <TabPanel id="capital"><CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} currentETH={currentETH} ethPrice={ethPrice} /></TabPanel>}
+        {activeTab === 'comps' && <TabPanel id="comps"><CompsTab comparables={comparables} ethPrice={ethPrice} /></TabPanel>}
+        {activeTab === 'sensitivity' && <TabPanel id="sensitivity"><SensitivityTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} /></TabPanel>}
+        {activeTab === 'backtest' && <TabPanel id="backtest"><BacktestTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} historicalETH={historicalETH} baseStakingAPY={baseStakingAPY} navMultiple={currentStockPrice / calc.currentNAV} /></TabPanel>}
+        {activeTab === 'monte-carlo' && <TabPanel id="monte-carlo"><MonteCarloTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} ethPrice={ethPrice} stakingYield={calc.effectiveAPY} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} operatingCosts={operatingCosts} regulatoryRisk={regulatoryRisk} /></TabPanel>}
+        {activeTab === 'investment' && <TabPanel id="investment"><InvestmentTab /></TabPanel>}
+        {activeTab === 'financials' && <TabPanel id="financials"><FinancialsTab /></TabPanel>}
+        {activeTab === 'timeline' && <TabPanel id="timeline"><TimelineTab /></TabPanel>}
+        {activeTab === 'wall-street' && <TabPanel id="wall-street"><WallStreetTab /></TabPanel>}
+        {activeTab === 'ai-agents' && <TabPanel id="ai-agents"><SharedAIAgentsTab ticker="BMNR" /></TabPanel>}
+        {activeTab === 'sources' && <TabPanel id="sources">
           <SharedSourcesTab ticker="BMNR" companyName="BitMine Immersion Technologies" researchSources={bmnrResearchSources} competitorLabel="Crypto Treasury Peers" competitors={bmnrCompetitors} />
-        )}
-        {activeTab === 'edgar' && (
+        </TabPanel>}
+        {activeTab === 'edgar' && <TabPanel id="edgar">
           <SharedEdgarTab ticker="BMNR" companyName="BitMine Immersion Technologies" localFilings={BMNR_SEC_FILINGS} cik={BMNR_SEC_META.cik} typeColors={BMNR_SEC_TYPE_COLORS} crossRefIndex={BMNR_FILING_CROSS_REFS} />
-        )}
+        </TabPanel>}
         </main>
       </div>
     </UpdateIndicatorContext.Provider>

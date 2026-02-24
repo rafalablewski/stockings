@@ -120,6 +120,8 @@ import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import SharedEdgarTab from '../shared/SharedEdgarTab';
+import StockNavigation, { TabPanel } from '../shared/StockNavigation';
+import { useHashTab } from '@/hooks/useHashTab';
 import { COMPS_TIMELINE } from '@/data/asts/comps-timeline';
 import type { CompetitorNewsEntry } from '@/data/shared/competitor-schema';
 const COMPETITOR_NEWS: CompetitorNewsEntry[] = COMPS_TIMELINE;
@@ -692,10 +694,6 @@ const ASTSAnalysis = () => {
   const [terminalGrowth, setTerminalGrowth] = useState(3); // Perpetuity growth rate
   const [selectedScenario, setSelectedScenario] = useState<'bull' | 'base' | 'bear' | 'custom'>('base');
 
-  const [activeTab, setActiveTab] = useState('overview');
-  const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
-  const [aiDropdownOpen, setAiDropdownOpen] = useState(false);
-
   // Update indicator visibility toggle
   const [showIndicators, setShowIndicators] = useState(true);
 
@@ -871,6 +869,8 @@ const ASTSAnalysis = () => {
     { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
   ];
 
+  const [activeTab, setActiveTab] = useHashTab(tabs.map(t => t.id));
+
   return (
     <UpdateIndicatorContext.Provider value={{ showIndicators, setShowIndicators }}>
       <style>{css}</style>
@@ -983,89 +983,21 @@ const ASTSAnalysis = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="nav">
-          {/* Overview tab (before any grouped tabs) */}
-          {tabs.filter(t => !t.group).slice(0, 1).map(t => (
-            <button
-              key={t.id}
-              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-              onClick={() => setActiveTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
-
-          {/* Stock-specific dropdown trigger */}
-          <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'ASTS Analysis' && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => { setAnalysisDropdownOpen(!analysisDropdownOpen); setAiDropdownOpen(false); }}
-          >
-            ASTS Analysis ↕
-          </button>
-
-          {/* Remaining ungrouped tabs (includes Model) */}
-          {tabs.filter(t => !t.group).slice(1).map(t => (
-            <button
-              key={t.id}
-              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-              onClick={() => setActiveTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
-
-          {/* AI hub dropdown trigger */}
-          <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'AI' && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => { setAiDropdownOpen(!aiDropdownOpen); setAnalysisDropdownOpen(false); }}
-          >
-            AI ↕
-          </button>
-        </nav>
-
-        {/* Reserved space for dropdown menus - always present to prevent layout shift */}
-        <div className={`nav-dropdown-space ${analysisDropdownOpen || aiDropdownOpen ? 'open' : ''}`}>
-          {analysisDropdownOpen && (
-            <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group === 'ASTS Analysis').map(t => (
-                <button
-                  key={t.id}
-                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-                  onClick={() => setActiveTab(t.id)}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          )}
-          {aiDropdownOpen && (
-            <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group === 'AI').map(t => (
-                <button
-                  key={t.id}
-                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-                  onClick={() => setActiveTab(t.id)}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <StockNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} stockGroupName="ASTS Analysis" />
         
         {/* Main Content */}
         <main className="main">
           {/* Update Source Legend - Shows what each indicator color means */}
           <UpdateLegend />
-          {activeTab === 'overview' && <OverviewTab calc={calc} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} cashOnHand={cashOnHand} setCashOnHand={setCashOnHand} quarterlyBurn={quarterlyBurn} setQuarterlyBurn={setQuarterlyBurn} totalDebt={totalDebt} setTotalDebt={setTotalDebt} block1Sats={block1Sats} block2Sats={block2Sats} targetSats2026={targetSats2026} contractedRevenue={contractedRevenue} partnerReach={partnerReach} penetrationRate={penetrationRate} chartRefreshKey={chartRefreshKey} />}
-          {activeTab === 'catalysts' && <CatalystsTab upcomingCatalysts={upcomingCatalysts} completedMilestones={completedMilestones} />}
-          {activeTab === 'constellation' && <ConstellationTab calc={calc} block1Sats={block1Sats} setBlock1Sats={setBlock1Sats} block2Sats={block2Sats} setBlock2Sats={setBlock2Sats} targetSats2026={targetSats2026} setTargetSats2026={setTargetSats2026} launchFailureRate={launchFailureRate} setLaunchFailureRate={setLaunchFailureRate} />}
-          {activeTab === 'subscribers' && <SubscribersTab calc={calc} partnerReach={partnerReach} setPartnerReach={setPartnerReach} penetrationRate={penetrationRate} setPenetrationRate={setPenetrationRate} blendedARPU={blendedARPU} setBlendedARPU={setBlendedARPU} partners={partners} />}
-          {activeTab === 'revenue' && <RevenueTab calc={calc} revenueShare={revenueShare} setRevenueShare={setRevenueShare} govRevenue={govRevenue} setGovRevenue={setGovRevenue} revenueSources={revenueSources} contractedRevenue={contractedRevenue} />}
-          {activeTab === 'partners' && <PartnersTab partners={partners} revenueShare={revenueShare} blendedARPU={blendedARPU} penetrationRate={penetrationRate} />}
-          {activeTab === 'dilution' && <ASTSDilutionTab calc={calc} cashOnHand={cashOnHand} setCashOnHand={setCashOnHand} quarterlyBurn={quarterlyBurn} setQuarterlyBurn={setQuarterlyBurn} totalDebt={totalDebt} setTotalDebt={setTotalDebt} debtRate={debtRate} setDebtRate={setDebtRate} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
-          {activeTab === 'capital' && <CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} />}
-          {activeTab === 'model' && <ModelTab
+          {activeTab === 'overview' && <TabPanel id="overview"><OverviewTab calc={calc} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} cashOnHand={cashOnHand} setCashOnHand={setCashOnHand} quarterlyBurn={quarterlyBurn} setQuarterlyBurn={setQuarterlyBurn} totalDebt={totalDebt} setTotalDebt={setTotalDebt} block1Sats={block1Sats} block2Sats={block2Sats} targetSats2026={targetSats2026} contractedRevenue={contractedRevenue} partnerReach={partnerReach} penetrationRate={penetrationRate} chartRefreshKey={chartRefreshKey} /></TabPanel>}
+          {activeTab === 'catalysts' && <TabPanel id="catalysts"><CatalystsTab upcomingCatalysts={upcomingCatalysts} completedMilestones={completedMilestones} /></TabPanel>}
+          {activeTab === 'constellation' && <TabPanel id="constellation"><ConstellationTab calc={calc} block1Sats={block1Sats} setBlock1Sats={setBlock1Sats} block2Sats={block2Sats} setBlock2Sats={setBlock2Sats} targetSats2026={targetSats2026} setTargetSats2026={setTargetSats2026} launchFailureRate={launchFailureRate} setLaunchFailureRate={setLaunchFailureRate} /></TabPanel>}
+          {activeTab === 'subscribers' && <TabPanel id="subscribers"><SubscribersTab calc={calc} partnerReach={partnerReach} setPartnerReach={setPartnerReach} penetrationRate={penetrationRate} setPenetrationRate={setPenetrationRate} blendedARPU={blendedARPU} setBlendedARPU={setBlendedARPU} partners={partners} /></TabPanel>}
+          {activeTab === 'revenue' && <TabPanel id="revenue"><RevenueTab calc={calc} revenueShare={revenueShare} setRevenueShare={setRevenueShare} govRevenue={govRevenue} setGovRevenue={setGovRevenue} revenueSources={revenueSources} contractedRevenue={contractedRevenue} /></TabPanel>}
+          {activeTab === 'partners' && <TabPanel id="partners"><PartnersTab partners={partners} revenueShare={revenueShare} blendedARPU={blendedARPU} penetrationRate={penetrationRate} /></TabPanel>}
+          {activeTab === 'dilution' && <TabPanel id="dilution"><ASTSDilutionTab calc={calc} cashOnHand={cashOnHand} setCashOnHand={setCashOnHand} quarterlyBurn={quarterlyBurn} setQuarterlyBurn={setQuarterlyBurn} totalDebt={totalDebt} setTotalDebt={setTotalDebt} debtRate={debtRate} setDebtRate={setDebtRate} currentShares={currentShares} currentStockPrice={currentStockPrice} /></TabPanel>}
+          {activeTab === 'capital' && <TabPanel id="capital"><CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} /></TabPanel>}
+          {activeTab === 'model' && <TabPanel id="model"><ModelTab
             partnerReach={partnerReach} setPartnerReach={setPartnerReach}
             penetrationRate={penetrationRate} setPenetrationRate={setPenetrationRate}
             blendedARPU={blendedARPU} setBlendedARPU={setBlendedARPU}
@@ -1083,20 +1015,20 @@ const ASTSAnalysis = () => {
             selectedScenario={selectedScenario} setSelectedScenario={setSelectedScenario}
             currentShares={currentShares} currentStockPrice={currentStockPrice}
             cashOnHand={cashOnHand} totalDebt={totalDebt}
-          />}
-          {activeTab === 'monte-carlo' && <MonteCarloTab currentShares={currentShares} currentStockPrice={currentStockPrice} totalDebt={totalDebt} cashOnHand={cashOnHand} />}
-          {activeTab === 'comps' && <CompsTab calc={calc} currentStockPrice={currentStockPrice} />}
-          {activeTab === 'timeline' && <TimelineTab />}
-          {activeTab === 'financials' && <FinancialsTab />}
-          {activeTab === 'investment' && <InvestmentTab />}
-          {activeTab === 'wall-street' && <WallStreetTab />}
-          {activeTab === 'ai-agents' && <SharedAIAgentsTab ticker="ASTS" />}
-          {activeTab === 'sources' && (
+          /></TabPanel>}
+          {activeTab === 'monte-carlo' && <TabPanel id="monte-carlo"><MonteCarloTab currentShares={currentShares} currentStockPrice={currentStockPrice} totalDebt={totalDebt} cashOnHand={cashOnHand} /></TabPanel>}
+          {activeTab === 'comps' && <TabPanel id="comps"><CompsTab calc={calc} currentStockPrice={currentStockPrice} /></TabPanel>}
+          {activeTab === 'timeline' && <TabPanel id="timeline"><TimelineTab /></TabPanel>}
+          {activeTab === 'financials' && <TabPanel id="financials"><FinancialsTab /></TabPanel>}
+          {activeTab === 'investment' && <TabPanel id="investment"><InvestmentTab /></TabPanel>}
+          {activeTab === 'wall-street' && <TabPanel id="wall-street"><WallStreetTab /></TabPanel>}
+          {activeTab === 'ai-agents' && <TabPanel id="ai-agents"><SharedAIAgentsTab ticker="ASTS" /></TabPanel>}
+          {activeTab === 'sources' && <TabPanel id="sources">
             <SharedSourcesTab ticker="ASTS" companyName="AST SpaceMobile" researchSources={astsResearchSources} competitorLabel="Competitors & Partners" competitors={astsCompetitors} />
-          )}
-          {activeTab === 'edgar' && (
+          </TabPanel>}
+          {activeTab === 'edgar' && <TabPanel id="edgar">
             <SharedEdgarTab ticker="ASTS" companyName="AST SpaceMobile" localFilings={ASTS_SEC_FILINGS} cik={ASTS_SEC_META.cik} typeColors={ASTS_SEC_TYPE_COLORS} crossRefIndex={ASTS_FILING_CROSS_REFS} />
-          )}
+          </TabPanel>}
         </main>
       </div>
     </UpdateIndicatorContext.Provider>
