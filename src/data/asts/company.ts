@@ -10,8 +10,8 @@
  * - Cash/Debt: Latest 10-Q balance sheet
  * - Operational metrics: Press releases, earnings calls
  *
- * LAST UPDATED: 2025-12-30
- * NEXT UPDATE: After Q4 2025 10-K (~March 2026)
+ * LAST UPDATED: 2026-02-23
+ * NEXT UPDATE: After Q4 2025 business update (March 2, 2026)
  *
  * AI AGENT INSTRUCTIONS:
  * When updating from new 10-Q or 10-K:
@@ -28,10 +28,10 @@ import type { DataMetadata, StockDefaults } from '../shared/types';
 // ============================================================================
 
 export const ASTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-15',
-  source: 'Feb 13 424B5s, Feb 11 8-K, Pricing Term Sheets, BB6 unfolding PR',
-  nextExpectedUpdate: 'Q4 2025 10-K (~March 2026). Greenshoe deadline Feb 20.',
-  notes: 'Feb 15 audit: 10 filings cross-referenced. Price $82.51 post-financing selloff. 424B5s filed Feb 13. Greenshoe ($150M) pending by Feb 20. $51.4M annualized interest savings from $296.5M repurchases.',
+  lastUpdated: '2026-02-23',
+  source: 'SDA $30M Europa PR (Feb 23), Feb 20/23 8-Ks (greenshoe/settlements), Feb 19 business update scheduling PR, Feb 13 424B5s, Feb 11 8-K, BB6 unfolding PR',
+  nextExpectedUpdate: 'Q4 2025 business update (March 2, 2026).',
+  notes: 'Feb 23 audit: SDA $30M Europa contract (10th gov contract, $93M+ cumulative). $75M greenshoe exercised Feb 20 (total 2.25% notes $1.075B). RD settlements completed. Q4 call March 2. Price $82.51 post-financing. AST SpaceMobile USA defense subsidiary disclosed.',
 };
 
 // ============================================================================
@@ -76,10 +76,10 @@ export const DEFAULTS: StockDefaults = {
   currentShares: 380,         // Total implied shares outstanding (M)
 
   // === BALANCE SHEET (8-K preliminary as of Dec 31, 2025) ===
-  cashOnHand: 2780,           // $2,780M total cash per 8-K. Pro forma post-Feb offerings: ~$3,760M
+  cashOnHand: 2780,           // $2,780M total cash per 8-K. Pro forma post-Feb offerings: ~$3,834M (incl. $75M greenshoe)
   quarterlyBurn: 300,         // Q3 guidance: CapEx + OpEx ~$300M/quarter
-  totalDebt: 2264,            // $2,264M per 8-K. Pro forma post-Feb converts: ~$2,968M
-  debtRate: 2.15,             // Weighted avg: $3.5M@4.25%, $325M@2.375%, $1.15B@2.00%, $1B@2.25%
+  totalDebt: 2264,            // $2,264M per 8-K. Pro forma post-Feb converts: ~$3,043M ($1.075B new + $1.15B existing + $325M + $3.5M - repurchased)
+  debtRate: 2.15,             // Weighted avg: $3.5M@4.25%, $325M@2.375%, $1.15B@2.00%, $1.075B@2.25%
 };
 
 // ============================================================================
@@ -142,8 +142,8 @@ export const MODEL_ASSUMPTIONS = {
  * For display in the UI data freshness badge
  */
 export const DATA_FRESHNESS = {
-  dataAsOf: 'Feb 15, 2026',
-  lastFiling: '424B5 (Feb 13, 2026)',
-  nextFiling: '10-K (~March 2026)',
+  dataAsOf: 'Feb 23, 2026',
+  lastFiling: '8-K (Feb 23, 2026)',
+  nextFiling: 'Q4 2025 Business Update (March 2, 2026)',
   priceNote: 'Post-financing: $96.92→$82.22 (-15.17% Feb 12, vol 30.2M) →$82.51 (+0.35% Feb 13)',
 };

@@ -148,7 +148,7 @@ export const REVENUE_SOURCES: RevenueSource[] = [
   },
   {
     source: 'Government Contracts',
-    description: 'DoD, SDA, DIU ($63M+)',
+    description: 'DoD, SDA, DIU ($93M+; 10 contracts)',
     status: 'Active',
   },
   {
