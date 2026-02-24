@@ -7,9 +7,12 @@
 
 set -euo pipefail
 
-PHASE="${1:-}"        # "pre" or "post"
-TOOL_NAME="${2:-}"    # Edit, Write, NotebookEdit
-FILE_PATH="${3:-}"    # Path to the file being modified
+PHASE="${1:-}"        # "pre" or "post" (passed as arg from settings.json)
+
+# Read JSON input from stdin (Claude Code hooks protocol)
+INPUT_JSON=$(cat)
+TOOL_NAME=$(echo "$INPUT_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_name',''))" 2>/dev/null || true)
+FILE_PATH=$(echo "$INPUT_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('file_path',''))" 2>/dev/null || true)
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RULES_FILE="$PLUGIN_DIR/review-rules.json"
