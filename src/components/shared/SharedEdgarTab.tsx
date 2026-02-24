@@ -128,6 +128,18 @@ function daysBetween(a: string, b: string): number {
 const normalizeForm = (f: string) =>
   f.replace(/[/\s-]/g, '').replace(/^FORM/i, '').replace(/^SCHEDULE/i, 'SC');
 
+/**
+ * Form aliases for matching: SEC EDGAR press releases (PRNEWS) accompany 8-K
+ * filings and should match against 8-K entries in sec-filings.ts / cross-refs.
+ */
+const FORM_MATCH_ALIASES: Record<string, string> = { PRNEWS: '8K' };
+
+/** Normalize form for matching, applying aliases (PRNEWS → 8K, etc.) */
+const normalizeFormForMatch = (f: string) => {
+  const norm = normalizeForm(f.toUpperCase().trim());
+  return FORM_MATCH_ALIASES[norm] || norm;
+};
+
 /** Normalize accession number by stripping dashes for comparison */
 const normalizeAccession = (a: string) => a.replace(/-/g, '');
 
@@ -151,7 +163,7 @@ function lookupCrossRefs(
   if (index[accNorm]) return index[accNorm];
 
   // Fallback: closest-date match among form|date keys of the same form type
-  const lookupNorm = normalizeForm(form.toUpperCase().trim());
+  const lookupNorm = normalizeFormForMatch(form);
   let bestValue: { source: string; data: string }[] | undefined;
   let bestDays = Infinity;
   for (const [key, value] of Object.entries(index)) {
@@ -159,7 +171,7 @@ function lookupCrossRefs(
     if (pipeIdx === -1) continue;
     const keyForm = key.slice(0, pipeIdx);
     const keyDate = key.slice(pipeIdx + 1);
-    if (normalizeForm(keyForm.toUpperCase().trim()) !== lookupNorm) continue;
+    if (normalizeFormForMatch(keyForm) !== lookupNorm) continue;
     const days = daysBetween(isoDate, keyDate);
     if (days < bestDays) {
       bestDays = days;
@@ -201,7 +213,7 @@ function matchFilings(
   return edgarFilings.map(ef => {
     const edgarAccNorm = normalizeAccession(ef.accessionNumber);
     const edgarDate = normalizeDate(ef.filingDate);
-    const edgarForm = normalizeForm(ef.form.toUpperCase().trim());
+    const edgarForm = normalizeFormForMatch(ef.form);
 
     // Tier 1a: exact accession number match
     let match = accessionMap.get(edgarAccNorm);
@@ -210,7 +222,7 @@ function matchFilings(
     if (!match) {
       let bestDays = Infinity;
       for (const lf of legacyFilings) {
-        if (normalizeForm(lf.type.toUpperCase().trim()) !== edgarForm) continue;
+        if (normalizeFormForMatch(lf.type) !== edgarForm) continue;
         const days = daysBetween(edgarDate, normalizeDate(lf.date));
         if (days < bestDays) {
           bestDays = days;
