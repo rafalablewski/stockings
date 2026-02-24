@@ -1344,8 +1344,16 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           if (art.articleType === 'pr') prs.push(item);
           else news.push(item);
 
-          records.set(art.cacheKey, art);
-          newKeys.add(art.cacheKey);
+          // Index by the key that articleCacheKey() will produce for this item —
+          // this is what the rendering code uses for dbRecords lookups.
+          // If the DB-stored cacheKey differs (legacy rows, URL changes), also
+          // keep an entry under the DB key so toggleHide can find it.
+          const computedKey = articleCacheKey(item);
+          records.set(computedKey, art);
+          if (art.cacheKey !== computedKey) {
+            records.set(art.cacheKey, art);
+          }
+          newKeys.add(computedKey);
         }
 
         // Propagate hidden state across headline duplicates: if ANY cache key
@@ -1464,10 +1472,16 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
     // Propagate to ALL cache keys with the same normalized headline
     const affectedKeys: { cacheKey: string; headline: string; date: string; url: string; source?: string; articleType: string }[] = [];
+    const seenDbKeys = new Set<string>();
     for (const [k, r] of dbRecordsRef.current) {
       if (normalizeHeadline(r.headline) === nh) {
         dbRecordsRef.current.set(k, { ...r, hidden: newHidden });
-        affectedKeys.push({ cacheKey: k, headline: r.headline, date: r.date || '', url: r.url || '', source: r.source || undefined, articleType: r.articleType || 'pr' });
+        // Use the record's stored cacheKey (DB key) for API interactions,
+        // deduplicating in case the Map has entries under both DB and computed keys.
+        if (!seenDbKeys.has(r.cacheKey)) {
+          seenDbKeys.add(r.cacheKey);
+          affectedKeys.push({ cacheKey: r.cacheKey, headline: r.headline, date: r.date || '', url: r.url || '', source: r.source || undefined, articleType: r.articleType || 'pr' });
+        }
       }
     }
     // Also cover the clicked key if it wasn't in records yet
