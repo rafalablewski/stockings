@@ -53,7 +53,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/plugins/methodology-sync-checker/sync-hook.sh post \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
+            "command": "bash .claude/plugins/methodology-sync-checker/sync-hook.sh"
           }
         ]
       }

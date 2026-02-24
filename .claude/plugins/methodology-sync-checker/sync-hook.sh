@@ -15,14 +15,11 @@ MAGENTA='\033[0;35m'
 BOLD='\033[1m'
 NC='\033[0m'
 
-PHASE="${1:-}"
-TOOL_NAME="${2:-}"
-FILE_PATH="${3:-}"
+# Read JSON input from stdin (Claude Code hooks protocol)
+INPUT_JSON=$(cat)
 
-# Only run on post phase
-if [[ "$PHASE" != "post" ]]; then
-  exit 0
-fi
+TOOL_NAME=$(echo "$INPUT_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_name',''))" 2>/dev/null || true)
+FILE_PATH=$(echo "$INPUT_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('file_path',''))" 2>/dev/null || true)
 
 if [[ -z "$FILE_PATH" ]]; then
   exit 0
