@@ -322,7 +322,8 @@ const SourceArticleRow: React.FC<{
         onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
-        {/* Chevron (visible when analysis exists) */}
+        {/* Chevron (fixed-width slot so rows align whether analysis exists or not) */}
+        <span style={{ width: 12, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
         {aiAnalysis && (
           <svg
             width={12} height={12} viewBox="0 0 24 24" fill="none"
@@ -331,12 +332,12 @@ const SourceArticleRow: React.FC<{
             style={{
               transition: 'transform 0.2s',
               transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
-              flexShrink: 0,
             }}
           >
             <path d="M9 5l7 7-7 7" />
           </svg>
         )}
+        </span>
         {/* Status dot */}
         {showAnalysis && (
           <span
@@ -349,44 +350,46 @@ const SourceArticleRow: React.FC<{
             }}
           />
         )}
-        {/* Source type badge */}
+        {/* Source type badge — fixed width so columns align */}
         <span style={{
           fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
-          padding: '2px 8px', borderRadius: 5, flexShrink: 0,
-          minWidth: 48, textAlign: 'center',
+          padding: '2px 0', borderRadius: 5, flexShrink: 0,
+          width: 48, textAlign: 'center',
           background: tc.bg, color: tc.text, whiteSpace: 'nowrap',
         }}>
           {type === 'pr' ? 'PR' : 'NEWS'}
         </span>
-        {/* NEW / SEEN badge — placed right after type badge for visibility */}
-        {isGenuinelyNew && !isDismissed && (
-          <button
-            onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
-            title="Click to acknowledge"
-            style={{
+        {/* NEW / SEEN badge — fixed-width slot so headline column aligns */}
+        <span style={{ width: 34, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          {isGenuinelyNew && !isDismissed && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
+              title="Click to acknowledge"
+              style={{
+                fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+                padding: '1px 5px', borderRadius: 3,
+                color: 'var(--sky)', background: 'var(--sky-dim)',
+                border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
+                cursor: 'pointer', outline: 'none', fontFamily: 'inherit',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'color-mix(in srgb, var(--sky) 20%, transparent)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--sky-dim)'; }}
+            >
+              NEW
+            </button>
+          )}
+          {isGenuinelyNew && isDismissed && (
+            <span style={{
               fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-              padding: '1px 5px', borderRadius: 3, flexShrink: 0,
-              color: 'var(--sky)', background: 'var(--sky-dim)',
-              border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
-              cursor: 'pointer', outline: 'none', fontFamily: 'inherit',
-              transition: 'all 0.15s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'color-mix(in srgb, var(--sky) 20%, transparent)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'var(--sky-dim)'; }}
-          >
-            NEW
-          </button>
-        )}
-        {isGenuinelyNew && isDismissed && (
-          <span style={{
-            fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
-            color: 'var(--sky)', opacity: 0.3,
-            border: '1px solid transparent',
-          }}>
-            SEEN
-          </span>
-        )}
+              padding: '1px 5px', borderRadius: 3,
+              color: 'var(--sky)', opacity: 0.3,
+              border: '1px solid transparent',
+            }}>
+              SEEN
+            </span>
+          )}
+        </span>
         {/* Headline */}
         <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {article.headline}
@@ -407,27 +410,22 @@ const SourceArticleRow: React.FC<{
             </span>
           );
         })()}
-        {/* Source name */}
-        {article.source && (
-          <span style={{ fontSize: 11, color: 'var(--text3)', flexShrink: 0, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {article.source}
-          </span>
-        )}
-        {/* Date */}
-        {article.date && (
-          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px' }}>
-            {article.date}
-          </span>
-        )}
-        {/* Status label */}
-        {showAnalysis && statusLabel && (
-          <span style={{
-            fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
-            color: statusColor, flexShrink: 0, whiteSpace: 'nowrap',
-          }}>
-            {statusLabel}
-          </span>
-        )}
+        {/* Source name — fixed width for column alignment */}
+        <span style={{ fontSize: 11, color: 'var(--text3)', flexShrink: 0, width: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'right' }}>
+          {article.source || ''}
+        </span>
+        {/* Date — fixed width for column alignment */}
+        <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px', width: 72, textAlign: 'right' }}>
+          {article.date || ''}
+        </span>
+        {/* Status label — fixed width so DB column aligns */}
+        <span style={{
+          fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
+          color: showAnalysis && statusLabel ? statusColor : 'transparent', flexShrink: 0, whiteSpace: 'nowrap',
+          width: 72, textAlign: 'right',
+        }}>
+          {showAnalysis && statusLabel ? statusLabel : '\u00A0'}
+        </span>
         {/* DB status button — hover fetches live data from database */}
         <span style={{ position: 'relative', flexShrink: 0 }} onMouseEnter={handleDbHoverEnter} onMouseLeave={handleDbHoverLeave}>
           <button
