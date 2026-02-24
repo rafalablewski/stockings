@@ -460,7 +460,7 @@ const FilingRow: React.FC<{
           if (rec) {
             const xrefs = rec.crossRefs;
             setDbTooltip({
-              status: rec.status === 'tracked' ? 'TRACKED' : rec.status === 'data_only' ? 'DATA ONLY' : rec.status === 'new' ? 'UNTRACKED' : rec.status?.toUpperCase() || '—',
+              status: STATUS_CONFIG[r.status].label,
               form: rec.form || '—',
               description: rec.description || '—',
               filingDate: rec.filingDate || '—',
@@ -829,7 +829,7 @@ const FilingRow: React.FC<{
         </span>
         {/* DB status button — hover fetches live data from database */}
         {(() => {
-          const dbColor = !dbRecord ? 'var(--text3)' : (dbRecord.filingDate != null && dbRecord.fileUrl != null && dbRecord.status != null) ? 'var(--mint)' : 'var(--gold)';
+          const dbColor = !dbRecord ? 'var(--text3)' : STATUS_CONFIG[r.status].color;
           const dbOpacity = !dbRecord ? 0.25 : 0.8;
           return (
             <span style={{ position: 'relative', flexShrink: 0 }} onMouseEnter={handleDbHoverEnter} onMouseLeave={handleDbHoverLeave}>
@@ -867,7 +867,7 @@ const FilingRow: React.FC<{
                     <div style={{ color: 'var(--text3)', fontStyle: 'italic' }}>Fetching from database...</div>
                   ) : dbTooltip ? (
                     <>
-                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>status:</span> <span style={{ color: dbTooltip.status === 'TRACKED' ? 'var(--mint)' : dbTooltip.status === 'UNTRACKED' ? 'var(--coral)' : dbTooltip.status === 'DATA ONLY' ? 'var(--gold)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.status}</span></div>
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>status:</span> <span style={{ color: statusCfg.color, fontWeight: 600 }}>{dbTooltip.status}</span></div>
                       <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>form:</span> {dbTooltip.form}</div>
                       <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>desc:</span> {dbTooltip.description}</div>
                       <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>filed:</span> {dbTooltip.filingDate}</div>
