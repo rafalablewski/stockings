@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/plugins/code-review/review-hook.sh pre \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
+            "command": "bash .claude/plugins/code-review/review-hook.sh pre"
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/plugins/code-review/review-hook.sh post \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
+            "command": "bash .claude/plugins/code-review/review-hook.sh post"
           }
         ]
       },
@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/plugins/claude-md-management/md-hook.sh post \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
+            "command": "bash .claude/plugins/claude-md-management/md-hook.sh"
           }
         ]
       },
@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/plugins/code-simplifier/simplifier-hook.sh post \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
+            "command": "bash .claude/plugins/code-simplifier/simplifier-hook.sh"
           }
         ]
       },
@@ -44,7 +44,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/plugins/agent-impact-detector/impact-hook.sh post \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
+            "command": "bash .claude/plugins/agent-impact-detector/impact-hook.sh"
           }
         ]
       },
@@ -53,7 +53,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/plugins/methodology-sync-checker/sync-hook.sh post \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
+            "command": "bash .claude/plugins/methodology-sync-checker/sync-hook.sh"
           }
         ]
       }

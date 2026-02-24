@@ -34,16 +34,18 @@ GREEN='\033[0;32m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-PHASE="${1:-}"
-TOOL_NAME="${2:-}"
-FILE_PATH="${3:-}"
+# Read JSON input from stdin (Claude Code hooks protocol)
+INPUT_JSON=$(cat)
+TOOL_NAME=$(echo "$INPUT_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_name',''))" 2>/dev/null || true)
+FILE_PATH=$(echo "$INPUT_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('file_path',''))" 2>/dev/null || true)
 
 log_info()  { echo -e "${CYAN}[simplifier]${NC} INFO: $1"; }
 log_warn()  { echo -e "${YELLOW}[simplifier]${NC} WARN: $1"; }
 log_ok()    { echo -e "${GREEN}[simplifier]${NC} OK: $1"; }
 
-# Only run on post-edit phase
-if [[ "$PHASE" != "post" ]]; then
+# Only registered as PostToolUse, but guard just in case
+PHASE=$(echo "$INPUT_JSON" | python3 -c "import sys,json; print(json.load(sys.stdin).get('hook_event_name',''))" 2>/dev/null || true)
+if [[ "$PHASE" != "PostToolUse" ]]; then
   exit 0
 fi
 
