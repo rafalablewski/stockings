@@ -205,14 +205,17 @@
  * ╚═══════════════════════════════════════════════════════════════════════════════╝
  */
 
-import React, { useState, useMemo, useRef, useEffect, useCallback, Component, ErrorInfo, ReactNode } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { getStockModelCSS } from './stock-model-styles';
-import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice } from '../shared';
+import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner } from '../shared';
+import type { UpdateSource } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import SharedEdgarTab from '../shared/SharedEdgarTab';
+import StockNavigation, { TabPanel } from '../shared/StockNavigation';
+import { useHashTab } from '@/hooks/useHashTab';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
 
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
@@ -253,72 +256,8 @@ import { BMNR_ADOPTION_TIMELINE } from '@/data/bmnr/ethereum-adoption';
 // ============================================================================
 
 // ============================================================================
-// TYPESCRIPT INTERFACES (H1)
+// TYPESCRIPT INTERFACES — imported from '../shared' (stockModelTypes.ts)
 // ============================================================================
-
-/**
- * UPDATE SOURCE TYPES - Indicates which document type updates this field
- * PR = Press Release (weekly 8-K, PRNewswire)
- * SEC = SEC Filing (10-Q, 10-K, 424B5, S-3, DEF 14A)
- * WS = Wall Street (analyst reports, coverage)
- * MARKET = Market Data (prices updated regularly)
- */
-type UpdateSource = 'PR' | 'SEC' | 'WS' | 'MARKET';
-
-interface StatProps {
-  label: string;
-  value: string | number;
-  color?: 'white' | 'cyan' | 'mint' | 'coral' | 'sky' | 'violet' | 'gold';
-  updateSource?: UpdateSource | UpdateSource[];
-}
-
-interface CardProps {
-  label: string;
-  value: string | number;
-  sub?: string;
-  color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'violet' | 'mint' | 'emerald';
-  updateSource?: UpdateSource | UpdateSource[];
-}
-
-interface RowProps {
-  label: string;
-  value: string | number;
-  highlight?: boolean;
-  updateSource?: UpdateSource | UpdateSource[];
-}
-
-interface InputProps {
-  label: string;
-  value: number;
-  onChange: (val: number) => void;
-  step?: number;
-  min?: number;
-  max?: number;
-}
-
-interface PanelProps {
-  title?: string;
-  children: ReactNode;
-}
-
-interface GuideProps {
-  title: string;
-  children: ReactNode;
-}
-
-interface CFANotesProps {
-  title?: string;
-  items: Array<{ term: string; def: string }>;
-}
-
-interface ErrorBoundaryProps {
-  children: ReactNode;
-}
-
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
-}
 
 // ============================================================================
 // WALL STREET TAB - Type Definitions (Unified with ASTS/CRCL)
@@ -404,77 +343,6 @@ const MAX_CORRELATION = 1;
 const MIN_DISCOUNT_RATE = 5;
 
 // ============================================================================
-// LEGAL DISCLAIMERS
-// ============================================================================
-
-const LEGAL_DISCLAIMERS = {
-  notInvestmentAdvice: "NOT INVESTMENT ADVICE: This model is for educational and informational purposes only. It does not constitute investment advice, financial advice, trading advice, or any other sort of advice. You should not treat any of the model's content as such.",
-  forwardLooking: "FORWARD-LOOKING STATEMENTS: This model contains forward-looking statements based on assumptions about the future. Actual results may differ materially from those projected. Past performance is not indicative of future results."
-};
-
-// ============================================================================
-// ERROR BOUNDARY COMPONENT (C3)
-// ============================================================================
-
-class FinancialModelErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error('Financial Model Error:', error, errorInfo);
-  }
-
-  render(): ReactNode {
-    if (this.state.hasError) {
-      return (
-        <div style={{
-          padding: '48px',
-          background: 'linear-gradient(135deg, rgba(255,123,114,0.1) 0%, rgba(255,123,114,0.05) 100%)',
-          border: '1px solid rgba(255,123,114,0.3)',
-          borderRadius: '16px',
-          textAlign: 'center',
-          margin: '24px'
-        }}>
-          <div style={{ fontSize: '48px' }}>⚠️</div>
-          <h2 style={{ color: '#FF7B72', fontFamily: 'Outfit, sans-serif' }}>
-            Calculation Error
-          </h2>
-          <p style={{ color: '#8B949E', fontFamily: 'Outfit, sans-serif' }}>
-            An error occurred in the financial model. This may be due to invalid input parameters.
-          </p>
-          <p style={{ color: '#8B949E', fontSize: '14px', fontFamily: 'Space Mono, monospace' }}>
-            {this.state.error?.message || 'Unknown error'}
-          </p>
-          <button
-            onClick={() => window.location.reload()}
-            style={{
-                            padding: '12px 24px',
-              background: '#A78BFA',
-              color: '#05070A',
-              border: 'none',
-              borderRadius: '8px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              fontFamily: 'Outfit, sans-serif'
-            }}
-          >
-            Reload Application
-          </button>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
-
-// ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
 
@@ -494,215 +362,13 @@ const safeNumber = (value: number, fallback: number = 0): number =>
 // To modify styles, edit: ./stock-model-styles.ts
 const css = getStockModelCSS('violet');
 
-// ============================================================================
-// UPDATE INDICATOR SYSTEM - Visual markers for data update sources
-// ============================================================================
 
-/** Context to control indicator visibility globally */
-const UpdateIndicatorContext = React.createContext<{ showIndicators: boolean; setShowIndicators: (v: boolean) => void }>({ showIndicators: true, setShowIndicators: () => {} });
 
-const UPDATE_SOURCE_CONFIG: Record<UpdateSource, { tooltip: string; className: string }> = {
-  PR: { tooltip: 'Press Release', className: 'pr' },
-  SEC: { tooltip: 'SEC Filing', className: 'sec' },
-  WS: { tooltip: 'Wall Street', className: 'ws' },
-  MARKET: { tooltip: 'Market Data', className: 'market' },
-};
 
-/** Tiny dot indicator - always rendered, visibility controlled by CSS */
-const UpdateIndicator = React.memo<{ source: UpdateSource; hidden?: boolean }>(({ source, hidden }) => {
-  const config = UPDATE_SOURCE_CONFIG[source];
-  return (
-    <span
-      className={`update-indicator ${config.className}${hidden ? ' hidden' : ''}`}
-      data-tooltip={config.tooltip}
-      title={config.tooltip}
-    />
-  );
-});
-UpdateIndicator.displayName = 'UpdateIndicator';
 
-/** Renders one or more update indicators - always present to prevent layout shift */
-const UpdateIndicators = React.memo<{ sources?: UpdateSource | UpdateSource[] }>(({ sources }) => {
-  const { showIndicators } = React.useContext(UpdateIndicatorContext);
-  if (!sources) return null;
-  const sourceArray = Array.isArray(sources) ? sources : [sources];
-  return (
-    <span className="update-indicator-wrap">
-      {sourceArray.map((s) => <UpdateIndicator key={s} source={s} hidden={!showIndicators} />)}
-    </span>
-  );
-});
-UpdateIndicators.displayName = 'UpdateIndicators';
 
-/** Legend explaining what each indicator color means, with toggle button */
-const UpdateLegend = React.memo(() => {
-  const { showIndicators, setShowIndicators } = React.useContext(UpdateIndicatorContext);
-  return (
-    <div className="update-legend">
-      <span style={{ fontWeight: 500, color: 'var(--text3)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Sources</span>
-      <div className="update-legend-item"><span className="dot pr" /><span>PR</span></div>
-      <div className="update-legend-item"><span className="dot sec" /><span>SEC</span></div>
-      <div className="update-legend-item"><span className="dot ws" /><span>WS</span></div>
-      <div className="update-legend-item"><span className="dot market" /><span>Live</span></div>
-      <button
-        onClick={() => setShowIndicators(!showIndicators)}
-        style={{
-          marginLeft: 'auto',
-          padding: '4px 12px',
-          fontSize: '10px',
-          fontWeight: 500,
-          color: showIndicators ? 'var(--text)' : 'var(--text3)',
-          background: 'transparent',
-          border: '1px solid',
-          borderColor: showIndicators ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.06)',
-          borderRadius: '4px',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-          fontFamily: 'inherit',
-          letterSpacing: '0.3px',
-        }}
-      >
-        {showIndicators ? 'On' : 'Off'}
-      </button>
-    </div>
-  );
-});
-UpdateLegend.displayName = 'UpdateLegend';
 
-// ============================================================================
-// UNIFIED UI COMPONENT LIBRARY - Consistent Design System
-// Primary Accent: Violet (#A78BFA) for BMNR ETH Treasury theme
-// ============================================================================
 
-// N1: Memoized pure components for performance optimization
-const Stat = React.memo<StatProps>(({ label, value, color = 'white', updateSource }) => (
-  <div className="stat-item">
-    <div className="label" style={{ display: 'flex', alignItems: 'center' }}>
-      {label}
-      <UpdateIndicators sources={updateSource} />
-    </div>
-    <div className={`val ${color}`}>{value}</div>
-  </div>
-));
-Stat.displayName = 'Stat';
-
-const Guide = React.memo<GuideProps>(({ title, children }) => (
-  <div className="highlight">
-    <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-      <span>📚</span> {title}
-    </h3>
-    <div style={{ color: 'var(--text2)', lineHeight: 1.7, fontSize: '15px' }}>{children}</div>
-  </div>
-));
-Guide.displayName = 'Guide';
-
-const Panel = React.memo<PanelProps>(({ title, children }) => (
-  <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '24px 24px', marginBottom: 12 }}>
-    {title && <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>{title}</div>}
-    {children}
-  </div>
-));
-Panel.displayName = 'Panel';
-
-const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) => {
-  const colorMap: Record<string, { bg: string; border: string; text: string }> = {
-    blue: { bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)', text: '#60a5fa' },
-    green: { bg: 'rgba(34,197,94,0.15)', border: 'rgba(34,197,94,0.3)', text: '#4ade80' },
-    red: { bg: 'rgba(239,68,68,0.15)', border: 'rgba(239,68,68,0.3)', text: '#f87171' },
-    yellow: { bg: 'rgba(234,179,8,0.15)', border: 'rgba(234,179,8,0.3)', text: '#facc15' },
-    purple: { bg: 'rgba(168,85,247,0.15)', border: 'rgba(168,85,247,0.3)', text: '#c084fc' },
-    orange: { bg: 'rgba(249,115,22,0.15)', border: 'rgba(249,115,22,0.3)', text: '#fb923c' },
-    cyan: { bg: 'rgba(34,211,238,0.15)', border: 'rgba(34,211,238,0.3)', text: '#22d3ee' },
-    violet: { bg: 'rgba(167,139,250,0.15)', border: 'rgba(167,139,250,0.3)', text: '#a78bfa' },
-    mint: { bg: 'rgba(52,211,153,0.15)', border: 'rgba(52,211,153,0.3)', text: '#34d399' },
-    emerald: { bg: 'rgba(52,211,153,0.15)', border: 'rgba(52,211,153,0.3)', text: '#34d399' }
-  };
-  const c = colorMap[color || 'blue'] || colorMap.blue;
-  return (
-    <div style={{
-      background: c.bg,
-      border: `1px solid ${c.border}`,
-      borderRadius: '16px',
-      padding: '24px',
-      backdropFilter: 'blur(8px)'
-    }}>
-      <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600, display: 'flex', alignItems: 'center' }}>
-        {label}
-        <UpdateIndicators sources={updateSource} />
-      </div>
-      <div style={{ fontSize: '28px', fontWeight: 700, fontFamily: "'Space Mono', monospace", color: c.text }}>{value}</div>
-      {sub && <div style={{ fontSize: '12px', color: 'var(--text3)' }}>{sub}</div>}
-    </div>
-  );
-});
-Card.displayName = 'Card';
-
-const Row = React.memo<RowProps>(({ label, value, highlight = false, updateSource }) => (
-  <div style={{
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '12px 0',
-    borderBottom: '1px solid var(--border)',
-    background: highlight ? 'var(--accent-dim)' : 'transparent',
-    paddingLeft: highlight ? '12px' : 0,
-    paddingRight: highlight ? '12px' : 0,
-    marginLeft: highlight ? '-12px' : 0,
-    marginRight: highlight ? '-12px' : 0,
-    borderRadius: highlight ? '8px' : 0
-  }}>
-    <span style={{ fontSize: '14px', color: 'var(--text2)', display: 'flex', alignItems: 'center' }}>
-      {label}
-      <UpdateIndicators sources={updateSource} />
-    </span>
-    <span style={{ fontSize: '14px', fontWeight: 600, fontFamily: "'Space Mono', monospace", color: highlight ? 'var(--accent)' : 'var(--text)' }}>{value}</span>
-  </div>
-));
-Row.displayName = 'Row';
-
-const Input = React.memo<InputProps>(({ label, value, onChange, step = 1, min, max }) => (
-  <div>
-    <label style={{ display: 'block', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1.2px', color: 'var(--text3)', fontWeight: 600 }}>{label}</label>
-    <input 
-      type="number" 
-      value={value} 
-      onChange={e => onChange(Number(e.target.value))} 
-      step={step} 
-      min={min} 
-      max={max} 
-      style={{
-        width: '100%',
-        background: 'var(--surface2)',
-        border: '1px solid var(--border)',
-        borderRadius: '8px',
-        padding: '12px 16px',
-        fontSize: '14px',
-        fontFamily: "'Space Mono', monospace",
-        color: 'var(--text)',
-        outline: 'none'
-      }}
-    />
-  </div>
-));
-Input.displayName = 'Input';
-
-// CFA Level III Educational Notes Component - Subtle footer style
-const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
-  <div style={{ paddingTop: 16, borderTop: '1px solid var(--border)', opacity: 0.75 }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-      <span style={{ fontSize: 12, opacity: 0.7 }}>📚</span>
-      <h4 style={{ margin: 0, fontSize: 11, fontWeight: 500, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title || 'CFA Level III — Key Concepts'}</h4>
-    </div>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11, lineHeight: 1.5, color: 'var(--text3)' }}>
-      {items.map((item, i) => (
-        <p key={i} style={{ margin: 0 }}>
-          <strong style={{ color: 'var(--text2)' }}>{item.term}:</strong> {item.def}
-        </p>
-      ))}
-    </div>
-  </div>
-));
-CFANotes.displayName = 'CFANotes';
 
 /*
  * DEFAULT PARAMETERS - Based on latest official data (Feb 9, 2026 PR)
@@ -735,9 +401,6 @@ const BMNRDilutionAnalysis = () => {
   const [currentShares, setCurrentShares] = useState(DEFAULTS.currentShares);  // From @/data/bmnr/company.ts
   const [currentStockPrice, setCurrentStockPrice] = useState(DEFAULTS.currentStockPrice);  // From @/data/bmnr/company.ts
   const [ethPrice, setEthPrice] = useState(DEFAULTS.ethPrice);  // From @/data/bmnr/company.ts
-  const [activeTab, setActiveTab] = useState('overview');
-  const [analysisDropdownOpen, setAnalysisDropdownOpen] = useState(false);
-  const [aiDropdownOpen, setAiDropdownOpen] = useState(false);
   const [dilutionPercent, setDilutionPercent] = useState(5);
   const [saleDiscount, setSaleDiscount] = useState(5);
   const [navMultiple, setNavMultiple] = useState(1.00); // NAV multiple (stock price = NAV × mNAV)
@@ -858,6 +521,8 @@ const BMNRDilutionAnalysis = () => {
     { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
   ];
 
+  const [activeTab, setActiveTab] = useHashTab(tabs.map(t => t.id));
+
   const bmnrCompetitors: Competitor[] = [
     { name: 'Strategy (MSTR)', url: 'https://www.strategy.com/investor-relations' },
     { name: 'Coinbase Blog', url: 'https://www.coinbase.com/blog' },
@@ -941,13 +606,7 @@ const BMNRDilutionAnalysis = () => {
         {/* ============================================================================
             LEGAL DISCLAIMER BANNER
             ============================================================================ */}
-        <div className="disclaimer-banner">
-          <span className="disclaimer-title">⚠️ NOT INVESTMENT ADVICE:</span>
-          <span className="disclaimer-text">{LEGAL_DISCLAIMERS.notInvestmentAdvice.replace('NOT INVESTMENT ADVICE: ', '')}</span>
-          <span className="disclaimer-divider">|</span>
-          <span className="disclaimer-title">FORWARD-LOOKING STATEMENTS:</span>
-          <span className="disclaimer-text">{LEGAL_DISCLAIMERS.forwardLooking.replace('FORWARD-LOOKING STATEMENTS: ', '')}</span>
-        </div>
+        <DisclaimerBanner />
         
         {/* ============================================================================
             HERO HEADER - CRCL-Style Premium Design
@@ -1046,102 +705,34 @@ const BMNRDilutionAnalysis = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="nav">
-          {/* Overview tab (before dropdown) */}
-          {tabs.filter(t => !t.group).slice(0, 1).map(t => (
-            <button
-              key={t.id}
-              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-              onClick={() => setActiveTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
-
-          {/* Stock-specific dropdown trigger */}
-          <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'BMNR Analysis' && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => { setAnalysisDropdownOpen(!analysisDropdownOpen); setAiDropdownOpen(false); }}
-          >
-            BMNR Analysis ↕
-          </button>
-
-          {/* Remaining ungrouped tabs (includes Model) */}
-          {tabs.filter(t => !t.group).slice(1).map(t => (
-            <button
-              key={t.id}
-              className={`nav-btn ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-              onClick={() => setActiveTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
-
-          {/* AI hub dropdown trigger */}
-          <button
-            className={`nav-btn nav-dropdown-trigger ${tabs.some(t => t.group === 'AI' && activeTab === t.id) ? 'active' : ''}`}
-            onClick={() => { setAiDropdownOpen(!aiDropdownOpen); setAnalysisDropdownOpen(false); }}
-          >
-            AI ↕
-          </button>
-        </nav>
-
-        {/* Reserved space for dropdown menu - always present to prevent layout shift */}
-        <div className={`nav-dropdown-space ${analysisDropdownOpen || aiDropdownOpen ? 'open' : ''}`}>
-          {analysisDropdownOpen && (
-            <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group === 'BMNR Analysis').map(t => (
-                <button
-                  key={t.id}
-                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-                  onClick={() => setActiveTab(t.id)}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          )}
-          {aiDropdownOpen && (
-            <div className="nav-dropdown-menu">
-              {tabs.filter(t => t.group === 'AI').map(t => (
-                <button
-                  key={t.id}
-                  className={`nav-dropdown-item ${activeTab === t.id ? 'active' : ''} tab-${t.type}`}
-                  onClick={() => setActiveTab(t.id)}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <StockNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} stockGroupName="BMNR Analysis" />
 
         {/* Main Content */}
         <main className="main">
         {/* Update Source Legend - Shows what each indicator color means */}
         <UpdateLegend />
-        {activeTab === 'overview' && <OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} chartRefreshKey={chartRefreshKey} />}
-        {activeTab === 'model' && <ModelTab currentETH={currentETH} setCurrentETH={setCurrentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} />}
-        {activeTab === 'ethereum' && <EthereumTab ethPrice={ethPrice} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} />}
-        {activeTab === 'staking' && <StakingTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} stakingType={stakingType} setStakingType={setStakingType} baseStakingAPY={baseStakingAPY} setBaseStakingAPY={setBaseStakingAPY} restakingBonus={restakingBonus} setRestakingBonus={setRestakingBonus} stakingRatio={stakingRatio} setStakingRatio={setStakingRatio} slashingRisk={slashingRisk} setSlashingRisk={setSlashingRisk} />}
-        {activeTab === 'dilution' && <DilutionTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} currentStockPrice={currentStockPrice} tranches={tranches} setTranches={setTranches} dilutionPercent={dilutionPercent} setDilutionPercent={setDilutionPercent} saleDiscount={saleDiscount} setSaleDiscount={setSaleDiscount} navMultiple={navMultiple} setNavMultiple={setNavMultiple} maxAuthorizedShares={maxAuthorizedShares} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} regulatoryRisk={regulatoryRisk} />}
-        {activeTab === 'debt' && <DebtTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} currentStockPrice={currentStockPrice} useDebt={useDebt} setUseDebt={setUseDebt} debtAmount={debtAmount} setDebtAmount={setDebtAmount} debtRate={debtRate} setDebtRate={setDebtRate} debtMaturity={debtMaturity} setDebtMaturity={setDebtMaturity} conversionPremium={conversionPremium} setConversionPremium={setConversionPremium} debtCovenantLTV={debtCovenantLTV} setDebtCovenantLTV={setDebtCovenantLTV} />}
-        {activeTab === 'capital' && <CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} currentETH={currentETH} ethPrice={ethPrice} />}
-        {activeTab === 'comps' && <CompsTab comparables={comparables} ethPrice={ethPrice} />}
-        {activeTab === 'sensitivity' && <SensitivityTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} />}
-        {activeTab === 'backtest' && <BacktestTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} historicalETH={historicalETH} baseStakingAPY={baseStakingAPY} navMultiple={currentStockPrice / calc.currentNAV} />}
-        {activeTab === 'monte-carlo' && <MonteCarloTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} ethPrice={ethPrice} stakingYield={calc.effectiveAPY} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} operatingCosts={operatingCosts} regulatoryRisk={regulatoryRisk} />}
-        {activeTab === 'investment' && <InvestmentTab />}
-        {activeTab === 'financials' && <FinancialsTab />}
-        {activeTab === 'timeline' && <TimelineTab />}
-        {activeTab === 'wall-street' && <WallStreetTab />}
-        {activeTab === 'ai-agents' && <SharedAIAgentsTab ticker="BMNR" />}
-        {activeTab === 'sources' && (
+        {activeTab === 'overview' && <TabPanel id="overview"><OverviewTab calc={calc} currentETH={currentETH} setCurrentETH={setCurrentETH} currentShares={currentShares} setCurrentShares={setCurrentShares} currentStockPrice={currentStockPrice} setCurrentStockPrice={setCurrentStockPrice} ethPrice={ethPrice} setEthPrice={setEthPrice} quarterlyDividend={quarterlyDividend} setQuarterlyDividend={setQuarterlyDividend} chartRefreshKey={chartRefreshKey} /></TabPanel>}
+        {activeTab === 'model' && <TabPanel id="model"><ModelTab currentETH={currentETH} setCurrentETH={setCurrentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} baseStakingAPY={baseStakingAPY} stakingRatio={stakingRatio} /></TabPanel>}
+        {activeTab === 'ethereum' && <TabPanel id="ethereum"><EthereumTab ethPrice={ethPrice} currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} /></TabPanel>}
+        {activeTab === 'staking' && <TabPanel id="staking"><StakingTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} stakingType={stakingType} setStakingType={setStakingType} baseStakingAPY={baseStakingAPY} setBaseStakingAPY={setBaseStakingAPY} restakingBonus={restakingBonus} setRestakingBonus={setRestakingBonus} stakingRatio={stakingRatio} setStakingRatio={setStakingRatio} slashingRisk={slashingRisk} setSlashingRisk={setSlashingRisk} /></TabPanel>}
+        {activeTab === 'dilution' && <TabPanel id="dilution"><DilutionTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} currentStockPrice={currentStockPrice} tranches={tranches} setTranches={setTranches} dilutionPercent={dilutionPercent} setDilutionPercent={setDilutionPercent} saleDiscount={saleDiscount} setSaleDiscount={setSaleDiscount} navMultiple={navMultiple} setNavMultiple={setNavMultiple} maxAuthorizedShares={maxAuthorizedShares} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} regulatoryRisk={regulatoryRisk} /></TabPanel>}
+        {activeTab === 'debt' && <TabPanel id="debt"><DebtTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} currentStockPrice={currentStockPrice} useDebt={useDebt} setUseDebt={setUseDebt} debtAmount={debtAmount} setDebtAmount={setDebtAmount} debtRate={debtRate} setDebtRate={setDebtRate} debtMaturity={debtMaturity} setDebtMaturity={setDebtMaturity} conversionPremium={conversionPremium} setConversionPremium={setConversionPremium} debtCovenantLTV={debtCovenantLTV} setDebtCovenantLTV={setDebtCovenantLTV} /></TabPanel>}
+        {activeTab === 'capital' && <TabPanel id="capital"><CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} currentETH={currentETH} ethPrice={ethPrice} /></TabPanel>}
+        {activeTab === 'comps' && <TabPanel id="comps"><CompsTab comparables={comparables} ethPrice={ethPrice} /></TabPanel>}
+        {activeTab === 'sensitivity' && <TabPanel id="sensitivity"><SensitivityTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} /></TabPanel>}
+        {activeTab === 'backtest' && <TabPanel id="backtest"><BacktestTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} historicalETH={historicalETH} baseStakingAPY={baseStakingAPY} navMultiple={currentStockPrice / calc.currentNAV} /></TabPanel>}
+        {activeTab === 'monte-carlo' && <TabPanel id="monte-carlo"><MonteCarloTab currentETH={currentETH} currentShares={currentShares} currentStockPrice={currentStockPrice} ethPrice={ethPrice} stakingYield={calc.effectiveAPY} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} operatingCosts={operatingCosts} regulatoryRisk={regulatoryRisk} /></TabPanel>}
+        {activeTab === 'investment' && <TabPanel id="investment"><InvestmentTab /></TabPanel>}
+        {activeTab === 'financials' && <TabPanel id="financials"><FinancialsTab /></TabPanel>}
+        {activeTab === 'timeline' && <TabPanel id="timeline"><TimelineTab /></TabPanel>}
+        {activeTab === 'wall-street' && <TabPanel id="wall-street"><WallStreetTab /></TabPanel>}
+        {activeTab === 'ai-agents' && <TabPanel id="ai-agents"><SharedAIAgentsTab ticker="BMNR" /></TabPanel>}
+        {activeTab === 'sources' && <TabPanel id="sources">
           <SharedSourcesTab ticker="BMNR" companyName="BitMine Immersion Technologies" researchSources={bmnrResearchSources} competitorLabel="Crypto Treasury Peers" competitors={bmnrCompetitors} />
-        )}
-        {activeTab === 'edgar' && (
+        </TabPanel>}
+        {activeTab === 'edgar' && <TabPanel id="edgar">
           <SharedEdgarTab ticker="BMNR" companyName="BitMine Immersion Technologies" localFilings={BMNR_SEC_FILINGS} cik={BMNR_SEC_META.cik} typeColors={BMNR_SEC_TYPE_COLORS} crossRefIndex={BMNR_FILING_CROSS_REFS} />
-        )}
+        </TabPanel>}
         </main>
       </div>
     </UpdateIndicatorContext.Provider>
