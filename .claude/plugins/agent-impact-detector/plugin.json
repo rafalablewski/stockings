@@ -1,0 +1,48 @@
+{
+  "name": "agent-impact-detector",
+  "version": "1.0.0",
+  "description": "Detects when file modifications impact AI agent behavior. Warns when changes touch agent configuration, instructions, hooks, prompts, or context files.",
+  "hooks": ["PostToolUse"],
+  "matchers": ["Edit", "Write", "NotebookEdit"],
+  "config": {
+    "impactZones": {
+      "agentConfig": {
+        "label": "Agent Configuration",
+        "description": "Controls hooks, permissions, and custom instructions",
+        "paths": [".claude/settings.json", ".claude/settings.local.json"],
+        "severity": "high"
+      },
+      "agentInstructions": {
+        "label": "Agent Instructions",
+        "description": "Shapes agent behavior via project-level context",
+        "patterns": ["CLAUDE.md", ".claudeignore"],
+        "severity": "high"
+      },
+      "pluginScripts": {
+        "label": "Plugin Hook Scripts",
+        "description": "Executable hooks that run before/after agent tool calls",
+        "patterns": [".claude/plugins/*/*.sh"],
+        "severity": "high"
+      },
+      "pluginConfig": {
+        "label": "Plugin Configuration",
+        "description": "Rules and thresholds that plugin hooks read at runtime",
+        "patterns": [".claude/plugins/*/*.json"],
+        "severity": "medium"
+      },
+      "promptData": {
+        "label": "Prompt / AI Data",
+        "description": "Files containing prompts, system instructions, or AI-related content",
+        "contentPatterns": ["system.?prompt", "You are a", "SYSTEM:", "\\bprompt_template\\b", "\\bsystem_message\\b"],
+        "fileTypes": ["ts", "tsx", "js", "jsx", "py", "json", "yaml", "yml"],
+        "severity": "medium"
+      },
+      "mcpConfig": {
+        "label": "MCP Server Configuration",
+        "description": "Model Context Protocol server definitions that extend agent capabilities",
+        "patterns": [".claude/mcp*.json", "mcp.json", "mcp_servers.json"],
+        "severity": "high"
+      }
+    }
+  }
+}
