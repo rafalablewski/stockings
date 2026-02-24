@@ -743,8 +743,6 @@ const CompanyFeedCard: React.FC<{
   onDismissNew?: (cacheKey: string) => void;
   onToggleHide?: (cacheKey: string) => void;
 }> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onLoad, onLoadPR, onLoadNews, onRecheck, onDismissNew, onToggleHide }) => {
-  const prCount = Math.min(data.pressReleases.length, SECTION_MAX);
-  const newsCount = Math.min(data.news.length, SECTION_MAX);
   const isActive = data.loading || data.loadingPR || data.loadingNews || (aiChecking ?? false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -804,23 +802,6 @@ const CompanyFeedCard: React.FC<{
             >
               ↗
             </a>
-          )}
-          {/* Counts when loaded */}
-          {data.loaded && !isActive && (
-            <div aria-label={`${prCount} press releases, ${newsCount} news articles`} style={{ display: 'flex', gap: 4, marginLeft: 4 }}>
-              <span style={{
-                fontSize: 10, fontFamily: 'Space Mono, monospace', padding: '2px 7px',
-                borderRadius: 5, background: 'var(--sky-dim)', color: 'var(--sky)',
-              }}>
-                {prCount}
-              </span>
-              <span style={{
-                fontSize: 10, fontFamily: 'Space Mono, monospace', padding: '2px 7px',
-                borderRadius: 5, background: 'var(--mint-dim)', color: 'var(--mint)',
-              }}>
-                {newsCount}
-              </span>
-            </div>
           )}
           {/* Freshness indicator */}
           {data.loaded && !isActive && fetchedAt && (
