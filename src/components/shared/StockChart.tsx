@@ -2090,7 +2090,6 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       {/* Chart Guide - Separate Card */}
       {!loading && !error && chartData.length > 0 && (
         <>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-guide</div>
         <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
           <div
             onClick={() => setShowChartGuide(!showChartGuide)}

@@ -328,7 +328,6 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       </CollapsibleSection>
 
       {/* Competitive Moat */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#moat</div>
       <CollapsibleSection
         id="moat"
         title="Competitive Moat"
@@ -375,7 +374,6 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       </CollapsibleSection>
 
       {/* Risk Matrix */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#risks</div>
       <CollapsibleSection
         id="risks"
         title="Risk Matrix"
@@ -604,7 +602,6 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       )}
 
       {/* Archive */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#archive</div>
       <CollapsibleSection
         id="archive"
         title={`Historical Archive (${archive.length} entries)`}

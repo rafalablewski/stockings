@@ -956,7 +956,6 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#ai-agents-header</div>
       {/* Hero — Ive×Tesla */}
       <div style={{ padding: "48px 0 32px", borderBottom: "1px solid color-mix(in srgb, var(--border) 40%, transparent)" }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: "2.5px", textTransform: "uppercase", color: "var(--text3)", marginBottom: 8 }}>AI Analysis</div>
@@ -967,7 +966,6 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
       {/* ── Database Analysis — Run Directly ──────────────────── */}
       {(thesisAgents.length > 0 || capitalAgents.length > 0) && (
         <div>
-          <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#db-agents</div>
           <div
             style={{
               padding: "32px 0 16px",
@@ -1043,7 +1041,6 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
       {/* ── Data Input — Paste & Analyze ────────────────────────── */}
       {(secFinancialsAgents.length > 0 || ownershipAgents.length > 0 || intelAgents.length > 0) && (
         <div>
-          <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#data-agents</div>
           <div
             style={{
               padding: "32px 0 16px",
@@ -1143,7 +1140,6 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
       {/* ── Audits ────────────────────────────────────────────────── */}
       {(codeAuditAgents.length > 0 || dataAuditAgents.length > 0 || dataInputAuditAgents.length > 0) && (
         <div>
-          <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#audits</div>
           <div
             style={{
               padding: "32px 0 16px",
@@ -1243,7 +1239,6 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
       {/* Ask Agent — general-purpose query layer */}
       {askAgent && (
         <div>
-          <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#ask-agent</div>
           <SectionLabel>Ask Agent — general-purpose query</SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <AgentRunner workflow={askAgent} ticker={tickerLower} />

@@ -106,7 +106,6 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-header</div>
       <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
         <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Analyst Research<UpdateIndicators sources="WS" /></div>
         <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Wall Street Coverage<span style={{ color: 'var(--accent)' }}>.</span></h2>
@@ -114,7 +113,6 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
       </div>
 
       {/* Consensus Snapshot */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-consensus</div>
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Consensus Snapshot<UpdateIndicators sources="WS" /></span>
@@ -172,7 +170,6 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
       </div>
 
       {/* Coverage by Firm - Grouped Cards */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-coverage</div>
       <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
         <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Coverage by Firm</span>
         <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
