@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const PROTECTED_PATHS = [
-  '/api/workflow/run',
-  '/api/workflow/apply',
-  '/api/workflow/commit',
   '/api/edgar/analyze',
   '/api/sources/analyze',
 ];

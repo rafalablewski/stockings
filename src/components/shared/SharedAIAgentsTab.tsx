@@ -3,7 +3,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import { workflows } from "@/data/workflows";
 import { authFetch } from "@/lib/auth-fetch";
-import PinGate from "@/components/shared/PinGate";
+
 
 interface AgentWorkflow {
   id: string;
@@ -955,7 +955,6 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
   const askAgent = availableWorkflows.find((w) => w.id === "ask-agent");
 
   return (
-    <PinGate>
     <div style={{ display: "flex", flexDirection: "column" }}>
       <div style={{ fontSize: 10, color: "var(--text3)", opacity: 0.5, fontFamily: "monospace" }}>#ai-agents-header</div>
       {/* Hero — Ive×Tesla */}
@@ -1252,6 +1251,5 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
         </div>
       )}
     </div>
-    </PinGate>
   );
 };
