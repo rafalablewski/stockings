@@ -1911,6 +1911,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Stemmer: -s, -ed, -ing, -tion, -ment, -ies, -ly, -er, -or</div>
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Overlap: max(article→DB, DB→article) — bidirectional</div>
               <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              {/* Dollar-amount guard */}
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--gold)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
+                <div style={{ color: 'var(--gold)', fontWeight: 600 }}>Dollar-amount guard</div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>Article has $ figure? &rarr; DB entry must also have $</div>
+                <div style={{ fontSize: 10, color: 'var(--text3)' }}>Both have $? &rarr; numbers must overlap ($30M &ne; $50M)</div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic' }}>Prevents matching different awards/contracts from same entity</div>
+              </div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
               {/* Tier 1 row */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
@@ -1945,8 +1953,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} />
                 <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>UNTRACKED</span>
               </div>
-              {/* Date proximity note */}
-              <div style={{ marginTop: 8, padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', fontStyle: 'italic', textAlign: 'center' }}>Date proximity guard: recurring reports<br />require higher overlap when dates are &gt;30 days apart</div>
+              {/* Guard notes */}
+              <div style={{ marginTop: 8, padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', fontStyle: 'italic', textAlign: 'center' }}>Date proximity guard: recurring reports require higher overlap when dates are &gt;30 days apart<br />Dollar-amount guard: $30M award &ne; $50M award even from the same entity &mdash; numbers must match</div>
             </div>
 
             {/* Divider */}
