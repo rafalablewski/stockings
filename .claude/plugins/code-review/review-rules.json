@@ -1,0 +1,120 @@
+{
+  "rules": {
+    "security": {
+      "enabled": true,
+      "severity": "error",
+      "checks": [
+        {
+          "id": "no-eval",
+          "pattern": "\\beval\\s*\\(",
+          "message": "Avoid using eval() - it can lead to code injection vulnerabilities",
+          "fileTypes": ["ts", "tsx", "js", "jsx"]
+        },
+        {
+          "id": "no-innerhtml",
+          "pattern": "dangerouslySetInnerHTML",
+          "message": "Review dangerouslySetInnerHTML usage for XSS vulnerabilities",
+          "fileTypes": ["tsx", "jsx"],
+          "severity": "warning"
+        },
+        {
+          "id": "no-hardcoded-secrets",
+          "pattern": "(password|secret|api_key|apikey|token)\\s*[:=]\\s*['\"][^'\"]+['\"]",
+          "message": "Possible hardcoded secret detected - use environment variables instead",
+          "fileTypes": ["ts", "tsx", "js", "jsx"],
+          "ignorePatterns": [".env.example", "*.test.*", "*.spec.*"]
+        },
+        {
+          "id": "no-sql-injection",
+          "pattern": "sql`[^`]*\\$\\{(?!.*drizzle)",
+          "message": "Review SQL template literal for injection risks - prefer parameterized queries",
+          "fileTypes": ["ts", "tsx"],
+          "severity": "warning"
+        }
+      ]
+    },
+    "quality": {
+      "enabled": true,
+      "severity": "warning",
+      "checks": [
+        {
+          "id": "no-console-log",
+          "pattern": "console\\.log\\(",
+          "message": "Remove console.log before committing - use proper logging if needed",
+          "fileTypes": ["ts", "tsx"],
+          "ignorePatterns": ["scripts/*", "*.test.*"]
+        },
+        {
+          "id": "no-any-type",
+          "pattern": ":\\s*any\\b",
+          "message": "Avoid using 'any' type - prefer specific types or 'unknown'",
+          "fileTypes": ["ts", "tsx"],
+          "severity": "info"
+        },
+        {
+          "id": "no-todo-without-issue",
+          "pattern": "//\\s*TODO(?!.*#\\d)",
+          "message": "TODO comments should reference an issue number (e.g. TODO #123)",
+          "fileTypes": ["ts", "tsx", "js", "jsx"],
+          "severity": "info"
+        },
+        {
+          "id": "max-function-length",
+          "description": "Functions should not exceed 50 lines",
+          "severity": "info"
+        }
+      ]
+    },
+    "react": {
+      "enabled": true,
+      "severity": "warning",
+      "checks": [
+        {
+          "id": "no-inline-styles",
+          "pattern": "style=\\{\\{",
+          "message": "Prefer Tailwind CSS classes over inline styles",
+          "fileTypes": ["tsx", "jsx"],
+          "severity": "info"
+        },
+        {
+          "id": "missing-key-prop",
+          "pattern": "\\.map\\([^)]*\\)\\s*=>\\s*<(?!.*\\bkey=)",
+          "message": "Elements in .map() should have a unique key prop",
+          "fileTypes": ["tsx", "jsx"]
+        },
+        {
+          "id": "no-index-key",
+          "pattern": "key=\\{(index|i|idx)\\}",
+          "message": "Avoid using array index as key - use a stable unique identifier",
+          "fileTypes": ["tsx", "jsx"],
+          "severity": "info"
+        }
+      ]
+    },
+    "nextjs": {
+      "enabled": true,
+      "severity": "warning",
+      "checks": [
+        {
+          "id": "use-client-directive",
+          "description": "Client components must have 'use client' directive",
+          "fileTypes": ["tsx"]
+        },
+        {
+          "id": "no-server-secrets-in-client",
+          "pattern": "process\\.env\\.(?!NEXT_PUBLIC_)",
+          "message": "Non-NEXT_PUBLIC_ env vars should not be accessed in client components",
+          "fileTypes": ["tsx"],
+          "severity": "error"
+        }
+      ]
+    }
+  },
+  "ignoreFiles": [
+    "node_modules/**",
+    ".next/**",
+    "*.config.*",
+    "*.d.ts"
+  ],
+  "reportFormat": "inline"
+}

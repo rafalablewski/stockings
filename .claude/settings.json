@@ -1,0 +1,53 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/plugins/code-review/review-hook.sh pre \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/plugins/code-review/review-hook.sh post \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/plugins/claude-md-management/md-hook.sh post \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/plugins/code-simplifier/simplifier-hook.sh post \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npx eslint *)",
+      "Bash(npx tsc --noEmit *)",
+      "Bash(npm run lint *)",
+      "Bash(npm run build *)"
+    ]
+  },
+  "customInstructions": "When reviewing or modifying code in this project, follow the code review guidelines in .claude/plugins/code-review/review-rules.json. Run lint and type checks after making changes to TypeScript/TSX files."
+}
