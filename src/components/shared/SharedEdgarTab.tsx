@@ -107,17 +107,14 @@ function formatEdgarDate(isoDate: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-/** Get ±1 day ISO dates for fuzzy cross-ref lookup */
-function getDateNeighbors(isoDate: string): string[] {
-  const d = new Date(isoDate + 'T00:00:00');
-  if (isNaN(d.getTime())) return [isoDate];
-  const prev = new Date(d); prev.setDate(prev.getDate() - 1);
-  const next = new Date(d); next.setDate(next.getDate() + 1);
-  return [
-    prev.toISOString().slice(0, 10),
-    isoDate,
-    next.toISOString().slice(0, 10),
-  ];
+/** Maximum days between EDGAR filing date and local entry date for legacy (non-accession) matching */
+const MAX_LEGACY_MATCH_DAYS = 14;
+
+/** Absolute day difference between two ISO date strings */
+function daysBetween(a: string, b: string): number {
+  const da = new Date(a + 'T12:00:00Z');
+  const db = new Date(b + 'T12:00:00Z');
+  return Math.round(Math.abs(da.getTime() - db.getTime()) / 86400000);
 }
 
 // ── Filing matcher ──────────────────────────────────────────────────────────
@@ -137,6 +134,8 @@ const normalizeAccession = (a: string) => a.replace(/-/g, '');
 /**
  * Look up cross-refs by accession number first, then by form|date (legacy).
  * Accession-number keys have no pipe; form|date keys contain a pipe separator.
+ * Legacy fallback uses closest-date matching (within MAX_LEGACY_MATCH_DAYS)
+ * instead of a fixed ±N day window, so it works regardless of when data is entered.
  */
 function lookupCrossRefs(
   accessionNumber: string,
@@ -151,17 +150,24 @@ function lookupCrossRefs(
   if (index[accessionNumber]) return index[accessionNumber];
   if (index[accNorm]) return index[accNorm];
 
-  // Fallback: legacy form|date keys (±1 day for filing date variance)
+  // Fallback: closest-date match among form|date keys of the same form type
   const lookupNorm = normalizeForm(form.toUpperCase().trim());
-  const neighbors = getDateNeighbors(isoDate);
+  let bestValue: { source: string; data: string }[] | undefined;
+  let bestDays = Infinity;
   for (const [key, value] of Object.entries(index)) {
     const pipeIdx = key.indexOf('|');
     if (pipeIdx === -1) continue;
     const keyForm = key.slice(0, pipeIdx);
     const keyDate = key.slice(pipeIdx + 1);
-    if (neighbors.includes(keyDate) && normalizeForm(keyForm.toUpperCase().trim()) === lookupNorm) {
-      return value;
+    if (normalizeForm(keyForm.toUpperCase().trim()) !== lookupNorm) continue;
+    const days = daysBetween(isoDate, keyDate);
+    if (days < bestDays) {
+      bestDays = days;
+      bestValue = value;
     }
+  }
+  if (bestValue && bestDays <= MAX_LEGACY_MATCH_DAYS) {
+    return bestValue;
   }
   return undefined;
 }
@@ -170,7 +176,9 @@ function lookupCrossRefs(
  * Match EDGAR filings against local database.
  *
  * Primary matching: accession number (exact, unique per filing).
- * Legacy fallback: form type + date (±1 day) for entries without accession numbers.
+ * Legacy fallback: form type + closest-date match (within MAX_LEGACY_MATCH_DAYS)
+ * for entries without accession numbers. Uses nearest-date instead of a rigid
+ * day window so matching works regardless of when data files are updated.
  * The fallback only matches against local entries that lack accession numbers
  * to prevent double-matching entries that should be matched by accession number.
  */
@@ -193,19 +201,23 @@ function matchFilings(
   return edgarFilings.map(ef => {
     const edgarAccNorm = normalizeAccession(ef.accessionNumber);
     const edgarDate = normalizeDate(ef.filingDate);
-    const edgarForm = ef.form.toUpperCase().trim();
+    const edgarForm = normalizeForm(ef.form.toUpperCase().trim());
 
     // Tier 1a: exact accession number match
     let match = accessionMap.get(edgarAccNorm);
 
-    // Tier 1b: legacy form+date fallback (only entries without accession numbers)
+    // Tier 1b: closest-date match among legacy entries of the same form type
     if (!match) {
-      const neighbors = new Set(getDateNeighbors(edgarDate));
-      match = legacyFilings.find(lf => {
-        const localDate = normalizeDate(lf.date);
-        if (!neighbors.has(localDate)) return false;
-        return normalizeForm(edgarForm) === normalizeForm(lf.type.toUpperCase().trim());
-      });
+      let bestDays = Infinity;
+      for (const lf of legacyFilings) {
+        if (normalizeForm(lf.type.toUpperCase().trim()) !== edgarForm) continue;
+        const days = daysBetween(edgarDate, normalizeDate(lf.date));
+        if (days < bestDays) {
+          bestDays = days;
+          match = lf;
+        }
+      }
+      if (bestDays > MAX_LEGACY_MATCH_DAYS) match = undefined;
     }
 
     // Look up cross-refs regardless of match status
