@@ -44,8 +44,8 @@ import type { DataMetadata, StockDefaults } from '../shared/types';
 // ============================================================================
 
 export const BMNR_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-17',
-  source: 'Feb 17, 2026 Weekly Holdings PR (4.371M ETH)',
+  lastUpdated: '2026-02-23',
+  source: 'Feb 23, 2026 Weekly Holdings PR (4.423M ETH)',
   nextExpectedUpdate: 'Next weekly holdings update (8-K)',
   notes: 'ETH holdings updated weekly via 8-K filings',
 };
@@ -87,10 +87,10 @@ export const DEFAULTS: StockDefaults & {
   ethPrice: number;
   ethPriceAsOf: string;
 } = {
-  // === ETH HOLDINGS (Feb 17, 2026 PR) ===
-  currentETH: 4371497,        // 4.371M ETH (3.62% of supply)
-  ethPrice: 1998,             // UPDATE REGULARLY - Last: Feb 16, 2026 (Coinbase)
-  ethPriceAsOf: '2026-02-16', // Date of ETH price above
+  // === ETH HOLDINGS (Feb 23, 2026 PR) ===
+  currentETH: 4422659,        // 4.423M ETH (3.66% of supply)
+  ethPrice: 1958,             // UPDATE REGULARLY - Last: Feb 22, 2026 (Coinbase)
+  ethPriceAsOf: '2026-02-22', // Date of ETH price above
 
   // === MARKET DATA ===
   currentStockPrice: 27.15,   // UPDATE REGULARLY - Last: Feb 9, 2026
@@ -100,7 +100,7 @@ export const DEFAULTS: StockDefaults & {
   currentShares: 434,         // Shares outstanding (M)
 
   // === BALANCE SHEET ===
-  cashOnHand: 670,            // $670M cash (Feb 17, 2026 PR)
+  cashOnHand: 691,            // $691M cash (Feb 23, 2026 PR)
   totalDebt: 0,               // No debt
 
   // Not used for BMNR but required by interface
@@ -121,12 +121,12 @@ export const DEFAULTS: StockDefaults & {
  * - Update ethSupplyPercent from PR (or calculate from 120.7M supply)
  */
 export const ETH_HOLDINGS = {
-  totalETH: 4371497,          // Total ETH holdings (4.371M Feb 17)
+  totalETH: 4422659,          // Total ETH holdings (4.423M Feb 23)
   stakedETH: 3040483,         // ETH staked with validators (3.04M — largest staker globally)
-  stakingRatio: 69.6,         // % of holdings staked (3,040,483 / 4,371,497)
-  ethSupplyPercent: 3.62,     // % of total ETH supply (~120.7M)
+  stakingRatio: 68.7,         // % of holdings staked (3,040,483 / 4,422,659) — down from 69.6% as new ETH not yet staked
+  ethSupplyPercent: 3.66,     // % of total ETH supply (~120.7M)
   targetSupplyPercent: 5.0,   // "Alchemy of 5%" target = 6,035K ETH
-  progressToTarget: 72,       // % progress to 5% (72% — "over 72% of the way")
+  progressToTarget: 73,       // % progress to 5% (73% — "over 73% of the way")
 };
 
 // ============================================================================
@@ -141,7 +141,7 @@ export const ETH_HOLDINGS = {
  * - Update restakingBonus if company announces EigenLayer use
  */
 export const STAKING_PARAMS = {
-  baseStakingAPY: 2.84,       // CESR rate (Quatrefoil) - updated Feb 17, 2026 PR
+  baseStakingAPY: 2.81,       // CESR rate (Quatrefoil) - updated Feb 23, 2026 PR
   restakingBonus: 2.0,        // Additional yield from restaking (EigenLayer)
   slashingRisk: 0.5,          // Annual slashing risk %
   liquidityDiscount: 2,       // Discount for LST liquidity
@@ -176,8 +176,8 @@ export const DIVIDEND_DATA = {
  * For display in the UI data freshness badge
  */
 export const DATA_FRESHNESS = {
-  dataAsOf: 'Feb 17, 2026',
-  lastFiling: '8-K (Feb 17, 2026) 4.371M ETH Holdings Update',
+  dataAsOf: 'Feb 23, 2026',
+  lastFiling: '8-K (Feb 23, 2026) 4.423M ETH Holdings Update',
   nextFiling: 'Weekly 8-K Holdings Update',
   priceNote: 'Update prices regularly',
 };

@@ -89,6 +89,20 @@ function numbersDisagree(a: string, b: string): boolean {
   return true;
 }
 
+/** True if both strings have numbers unique to each side (distinguishing figures)
+ *  even though they also share some numbers.  Catches recurring periodic
+ *  announcements like weekly holdings PRs where structural numbers overlap
+ *  (e.g. "4" from "4.xxx", "9"/"6" from "$9.6B") but the specific figures
+ *  differ ("423" vs "371" from "4.423M" vs "4.371M"). */
+function hasDistinguishingNumbers(a: string, b: string): boolean {
+  const numsA = extractNumbers(a);
+  const numsB = extractNumbers(b);
+  if (numsA.size === 0 || numsB.size === 0) return false;
+  const uniqueToA = [...numsA].filter(n => !numsB.has(n));
+  const uniqueToB = [...numsB].filter(n => !numsA.has(n));
+  return uniqueToA.length > 0 && uniqueToB.length > 0;
+}
+
 /** True if text contains a dollar amount like "$30", "$4.5 million" */
 function hasDollarAmount(text: string): boolean {
   return /\$\s*\d/.test(text);
@@ -131,6 +145,12 @@ function localMatch(articleHeadline: string, articleDate: string, analysisData: 
       // Both have dollar amounts but the numbers don't overlap →
       // different financial events (e.g. $30M vs $43M contract)
       if (numbersDisagree(articleHeadline, entryFullText)) continue;
+      // Recurring periodic announcements: even when some numbers overlap
+      // (e.g. "$9.6B"), if both headlines also have UNIQUE numbers
+      // (e.g. "4.423M" vs "4.371M") and dates are >3 days apart,
+      // these are distinct periodic updates (weekly holdings, quarterly earnings).
+      // Defer to AI matching for these instead of false-positive local match.
+      if (gap > 3 && hasDistinguishingNumbers(articleHeadline, entry.headline)) continue;
     }
 
     // Tier 1: headline-only match (high confidence — headlines are short and focused)

@@ -7,6 +7,32 @@
 
 export const BMNR_TIMELINE_EVENTS = [
   // [PR_CHECKLIST_EVENT_TIMELINE] - Add new PR entry here at top!
+  // === FEBRUARY 23, 2026 - ETH HOLDINGS REACH 4.423M (73% TO ALCHEMY OF 5%) ===
+  {
+    date: '2026-02-23',
+    source: 'PRNewswire',
+    category: 'Holdings',
+    title: '📊 ETH Holdings Reach 4.423M — $9.6B Total, 3.66% of Supply, 73% to Alchemy of 5%',
+    changes: [
+      { metric: 'ETH Holdings', previous: '4,371,497', new: '4,422,659', change: '+51,162 (+1.2%)' },
+      { metric: 'ETH Price', previous: '$1,998', new: '$1,958', change: '-2.0% (Coinbase)' },
+      { metric: 'ETH Supply %', previous: '3.62%', new: '3.66%', change: '+0.04pp (73% to 5%)' },
+      { metric: 'Staked ETH', previous: '3,040,483', new: '3,040,483', change: 'Unchanged — new ETH not yet staked' },
+      { metric: 'Staking Ratio', previous: '69.6%', new: '68.7%', change: '-0.9pp (mechanical — denominator grew)' },
+      { metric: 'CESR Rate', previous: '2.84%', new: '2.81%', change: '-3bp (Quatrefoil)' },
+      { metric: 'BMNR 7-day Yield', previous: '2.89%', new: '2.89%', change: 'Unchanged annualized' },
+      { metric: 'Annualized Staking Rev', previous: '$176M/yr', new: '$171M/yr', change: '-3% (lower ETH price)' },
+      { metric: 'Full MAVAN Staking Rev', previous: '$252M/yr', new: '$249M/yr', change: 'Projected at full deployment' },
+      { metric: 'Total Cash', previous: '$670M', new: '$691M', change: '+$21M' },
+      { metric: 'Eightco (ORBS)', previous: '$17M', new: '$17M', change: 'Unchanged' },
+      { metric: 'Beast Industries', previous: '$200M', new: '$200M', change: 'Initial investment closed' },
+      { metric: 'BTC Holdings', previous: '193', new: '193', change: 'Unchanged' },
+      { metric: 'Trading Rank', previous: '#158 ($0.9B/day)', new: '#165 ($0.7B/day)', change: '-7 ranks' },
+      { metric: 'Total Holdings', previous: '$9.6B', new: '$9.6B', change: 'Flat (ETH price decline offset by accumulation + cash)' },
+    ],
+    notes: 'Tom Lee: "mini crypto winter" framing. 3 fundamental drivers gaining traction: (i) Wall Street tokenization, (ii) AI/agentic-AI using smart blockchains for execution + payments, (iii) emerging creator economy using blockchains for verification. "Price of ETH is not reflective of the high utility of ETH and its role as the future of finance." Bought 51,162 ETH in past week — continued accumulation during pullback. MAVAN on track Q1 2026 (3 staking providers). GENIUS Act + SEC Project Crypto = transformational. Institutional: ARK/Cathie Wood, MOZAYYX, Founders Fund, Bill Miller III, Pantera, Kraken, DCG, Galaxy Digital, Tom Lee.',
+    impact: 'neutral'
+  },
   // === FEBRUARY 17, 2026 - TOM LEE FORM 4/A (RSU GRANT + TAX WITHHOLDING) ===
   {
     date: '2026-02-17',

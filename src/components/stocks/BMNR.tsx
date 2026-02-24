@@ -5233,18 +5233,18 @@ const SECFilingTracker = () => {
     // Key dates
     firstFiling: 'October 27, 2020',
     firstFilingNote: 'As Sandy Springs Holdings (renamed Jul 2021)',
-    latestEvent: '4.371M ETH Holdings — $9.6B Total, Staking 3.04M',
-    latestEventDate: 'Feb 17, 2026',
+    latestEvent: '4.423M ETH Holdings — $9.6B Total, 3.66% Supply, 73% to 5%',
+    latestEventDate: 'Feb 23, 2026',
 
     // Last press release processed (for tracking)
-    lastPressRelease: 'February 17, 2026',
-    lastPressReleaseTitle: '4,371,497 ETH Holdings Update — $9.6B Total, Staking 3.04M (69.5%)',
+    lastPressRelease: 'February 23, 2026',
+    lastPressReleaseTitle: '4,422,659 ETH Holdings Update — $9.6B Total, 3.66% Supply, 73% to Alchemy of 5%',
 
     // Latest filings by type
     filings: {
       '10-K': { date: 'Nov 21, 2025', description: 'FY 2025', color: 'blue' },
       '10-Q': { date: 'Jan 13, 2026', description: 'Q1 FY2026', color: 'purple' },
-      '8-K': { date: 'Feb 17, 2026', description: '4.371M ETH Holdings', color: 'yellow' },
+      '8-K': { date: 'Feb 23, 2026', description: '4.423M ETH Holdings', color: 'yellow' },
       'S-3ASR': { date: 'Jul 9, 2025', description: '$2B ATM Shelf', color: 'green' },
       '424B5': { date: 'Sep 22, 2025', description: '$365M @ $70 + Warrants', color: 'orange' },
       'DEF 14A': { date: '—', description: 'Proxy (Annual)', color: 'cyan' },
@@ -5507,6 +5507,37 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
   // [PR_CHECKLIST_ARCHIVE] - MANDATORY: Add new full analysis at TOP with every press release!
   // Archive - Full historical investment summaries (generous detail for each period)
   const archive = [
+    {
+      date: '2026-02-23',
+      source: 'PR: 4.423M ETH Holdings + $9.6B Total + 3.66% Supply + 73% to Alchemy of 5%',
+      verdict: 'STRONG BUY',
+      verdictColor: 'green',
+      summary: '4.423M ETH ($9.6B @ $1,958). 3.04M ETH staked (68.7% — mechanical decline as new ETH not yet staked). +51,162 ETH acquired. 3.66% of supply (73% to 5%). $691M cash. Tom Lee: "mini crypto winter" — 3 fundamental drivers gaining traction.',
+      fullAnalysis: {
+        context: 'February 23, 2026 PR shows continued aggressive accumulation (+51,162 ETH WoW) despite further ETH price weakness ($1,998→$1,958). Supply % advances to 3.66% (73% to "Alchemy of 5%"). Cash builds to $691M (+$21M). Staked ETH unchanged at 3.04M — staking ratio mechanically declined to 68.7% as denominator grew. CESR slipped further to 2.81%. Tom Lee reiterates "mini crypto winter" framing and highlights 3 secular drivers: (i) Wall Street tokenization, (ii) AI/agentic-AI using smart blockchains for execution + payments, (iii) emerging creator economy using blockchains for verification. "Price of ETH is not reflective of the high utility of ETH." MAVAN on track Q1 2026. Trading liquidity declining (#165, $0.7B/day).',
+        keyHighlights: [
+          'ETH holdings: 4,422,659 ETH @ $1,958 = $8.66B (3.66% of 120.7M supply)',
+          'Total holdings: $9.6B (ETH + cash + BTC + moonshots + Beast Industries)',
+          'Cash position: $691M (up from $670M — +$21M)',
+          'Staked ETH: 3,040,483 ($6.0B) — 68.7% of holdings (mechanical decline)',
+          'Annualized staking revenue: $171M/yr (down from $176M — lower ETH price)',
+          'Full MAVAN staking revenue: $249M/yr projected at full deployment',
+          'CESR rate: 2.81% (Quatrefoil), BMNR 7-day yield: 2.89% annualized',
+          'Acquired 51,162 ETH in past week — largest weekly buy in recent weeks',
+          'Over 73% of the way to Alchemy of 5% target (was 72%)',
+          'Trading rank: #165 ($0.7B/day avg, 5-day as of Feb 20) — declining',
+          'Tom Lee: "mini crypto winter" — 3 secular drivers (tokenization, AI agents, creators)',
+          '"Price of ETH is not reflective of high utility and role as future of finance"',
+          'Beast Industries $200M stake, 193 BTC, $17M Eightco (ORBS)',
+          'Institutional: ARK/Cathie Wood, MOZAYYX, Founders Fund, Bill Miller III, Pantera, Kraken, DCG, Galaxy Digital',
+          'MAVAN on track Q1 2026 (3 staking providers)',
+        ],
+        verdict: 'Continued aggressive accumulation + cash build + supply % progression = strong execution. ETH price weakness creating opportunity window. 73% to 5% target. MAVAN imminent.',
+        scorecard: 9.3,
+        risks: 'ETH price continued decline ($1,998→$1,958). Staking ratio declining mechanically (69.6→68.7%). CESR rate falling (2.84→2.81%). Trading liquidity declining (#158→#165). Annualized staking revenue -3% WoW.',
+        strategy: 'STRONG BUY. Accumulation pace accelerating (51K ETH WoW — largest recent weekly buy). Cash building ($691M). Supply % advancing (3.66%). Sentiment at rock bottom = contrarian entry. MAVAN imminent. BNP Paribas same week tokenizing on public Ethereum validates thesis.'
+      }
+    },
     {
       date: '2026-02-17',
       source: 'PR: 4.371M ETH Holdings + $9.6B Total + Staking 3.04M (69.5%)',
@@ -7624,6 +7655,7 @@ const TimelineTab = () => {
   const [showAllPR, setShowAllPR] = useState(false);
 
   const pressReleases = [
+    { date: 'Feb 23, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,422,659 — 3.66% of Supply, $9.6B, 73% to Alchemy of 5%' },
     { date: 'Feb 17, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,371,497 — 3.62% of Supply, $9.6B, Staking 3.04M (69.5%)' },
     { date: 'Feb 11, 2026', category: 'Conference', color: 'var(--violet)', title: 'Tom Lee Presents at CoinDesk Consensus 2026 (Hong Kong)' },
     { date: 'Feb 10, 2026', category: 'Strategic', color: 'var(--sky)', title: 'Beast Industries Acquires Step Banking App (7M+ Users, ~$500M Raised)' },

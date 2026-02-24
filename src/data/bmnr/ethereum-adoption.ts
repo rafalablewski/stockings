@@ -8,6 +8,17 @@
 export const BMNR_ADOPTION_TIMELINE = [
     // === FEBRUARY 2026 ===
     {
+      date: '2026-02-20',
+      category: 'Enterprise',
+      company: 'BNP Paribas',
+      title: 'BNP Paribas Tokenizes Money Market Fund on Public Ethereum via AssetFoundry Platform',
+      summary: 'BNP Paribas Asset Management issued a tokenized share class of a French-domiciled money market fund on the public Ethereum network via BNP Paribas CIB\'s AssetFoundry platform. The tokenized shares use a permissioned access model restricting holding and transfers to authorized participants within a regulated framework. BNP Paribas Securities Services acted as transfer agent and fund dealing services provider, while also operating wallet setup and holding private keys within the controlled intra-group pilot. This follows an earlier Luxembourg tokenized MMF issuance on a private blockchain — this second project specifically tests public blockchain infrastructure. The initiative tests new end-to-end processes: issuance, transfer agency, tokenization, and public blockchain connectivity. BNP Paribas highlights MMFs as key tokenization use case for more regular and flexible processing vs. traditional batch-based fund operations. Edouard Legrand (Chief Digital and Data Officer, BNPP AM): "This second issuance of tokenised money market funds, this time using public blockchain infrastructure, supports our ongoing efforts to explore how tokenisation can contribute to greater operational efficiency and security within a regulated framework."',
+      significance: 'BNP Paribas (€2.6T+ assets, top-4 European bank) tokenizing its own money market fund on PUBLIC Ethereum is a significant escalation from their prior private blockchain experiments and from their roles as custodian/lead manager on third-party tokenized bonds (e.g., 2023 EIB sterling digital bond). Public Ethereum chosen over private chain for this pilot signals institutional confidence in public blockchain security and governance. MMF tokenization is a high-volume, institutional-grade use case — money market funds hold $6T+ globally.',
+      bmnrImplication: 'Major European bank choosing public Ethereum for fund tokenization directly validates BMNR\'s thesis that Ethereum is becoming the institutional settlement layer. BNP Paribas joins BlackRock (BUIDL), Franklin Templeton, and others tokenizing regulated fund products on Ethereum. Each new TradFi institution on public Ethereum strengthens network effects and ETH ecosystem value. MMF tokenization specifically addresses high-frequency, high-volume institutional fund operations — exactly the use case that drives sustained on-chain activity.',
+      impact: 'Bullish',
+      source: 'BNP Paribas Press Release'
+    },
+    {
       date: '2026-02-17',
       category: 'Enterprise',
       company: 'Northstake / P2P.org',
