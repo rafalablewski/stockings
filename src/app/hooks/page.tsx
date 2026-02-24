@@ -146,7 +146,7 @@ export default function HooksPage() {
           <div className="w-px h-6 bg-white/[0.08]" />
           <div>
             <span className="text-[22px] font-light text-white">
-              {plugins.length}
+              {plugins.filter((p) => p.phase.includes("Post")).length}
             </span>
             <span className="text-[11px] text-white/30 ml-2 uppercase tracking-[0.15em]">
               Post-hooks

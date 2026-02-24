@@ -50,6 +50,7 @@ BASENAME=$(basename "$FILE_PATH")
 # Load impact zones from plugin.json using python3
 # Output format: zone_key|label|severity|description|type|value
 # type is "path", "pattern", or "content"
+PARSE_ERR=""
 ZONES=$(python3 -c "
 import json, os
 config_path = '$CONFIG_FILE'
@@ -70,7 +71,13 @@ for key, zone in zones.items():
     file_types = ','.join(zone.get('fileTypes', []))
     for p in zone.get('contentPatterns', []):
         print(f'{key}|{label}|{severity}|{desc}|content|{p}|{file_types}')
-" 2>/dev/null || true)
+" 2>&1) || PARSE_ERR="$ZONES"
+
+if [[ -n "$PARSE_ERR" ]]; then
+  echo -e "${YELLOW}[agent-impact] Warning: failed to parse plugin.json:${NC}" >&2
+  echo -e "${YELLOW}  ${PARSE_ERR}${NC}" >&2
+  exit 0
+fi
 
 if [[ -z "$ZONES" ]]; then
   exit 0
@@ -89,10 +96,7 @@ glob_match() {
   regex=$(echo "$pattern" | sed 's/\./\\./g; s/\*\*/<<GLOBSTAR>>/g; s/\*/[^\/]*/g; s/<<GLOBSTAR>>/.*/g')
   regex="^${regex}$"
 
-  if echo "$path" | grep -qE "$regex" 2>/dev/null; then
-    return 0
-  fi
-  return 1
+  [[ "$path" =~ $regex ]]
 }
 
 while IFS='|' read -r zone_key label severity desc match_type value extra; do
@@ -137,20 +141,12 @@ while IFS='|' read -r zone_key label severity desc match_type value extra; do
   esac
 done <<< "$ZONES"
 
-# Deduplicate impacts
-SEEN=()
+# Deduplicate impacts using associative array (O(n) vs O(n^2))
+declare -A SEEN=()
 UNIQUE_IMPACTS=()
 for impact in "${IMPACTS[@]+"${IMPACTS[@]}"}"; do
-  KEY="${impact}"
-  IS_DUP=false
-  for s in "${SEEN[@]+"${SEEN[@]}"}"; do
-    if [[ "$s" == "$KEY" ]]; then
-      IS_DUP=true
-      break
-    fi
-  done
-  if [[ "$IS_DUP" == false ]]; then
-    SEEN+=("$KEY")
+  if [[ -z "${SEEN[$impact]+x}" ]]; then
+    SEEN["$impact"]=1
     UNIQUE_IMPACTS+=("$impact")
   fi
 done
