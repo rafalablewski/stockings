@@ -731,6 +731,35 @@ const FilingRow: React.FC<{
         }}>
           {formDisplay}
         </span>
+        {/* NEW / SEEN badge — placed right after form badge for visibility */}
+        {isGenuinelyNew && !isDismissed && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
+            title="Click to acknowledge"
+            style={{
+              fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+              padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+              color: 'var(--sky)', background: 'var(--sky-dim)',
+              border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
+              cursor: 'pointer', outline: 'none', fontFamily: 'inherit',
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'color-mix(in srgb, var(--sky) 20%, transparent)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--sky-dim)'; }}
+          >
+            NEW
+          </button>
+        )}
+        {isGenuinelyNew && isDismissed && (
+          <span style={{
+            fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
+            color: 'var(--sky)', opacity: 0.3,
+            border: '1px solid transparent',
+          }}>
+            SEEN
+          </span>
+        )}
         {/* Description */}
         <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {r.filing.primaryDocDescription || r.filing.form}
@@ -817,33 +846,6 @@ const FilingRow: React.FC<{
             </span>
           );
         })()}
-        {/* NEW badge — bright if unacknowledged, dim if acknowledged */}
-        {isGenuinelyNew && !isDismissed && (
-          <button
-            onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
-            title="Click to acknowledge"
-            style={{
-              fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-              padding: '1px 5px', borderRadius: 3, flexShrink: 0,
-              color: 'var(--sky)', background: 'var(--sky-dim)',
-              border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
-              cursor: 'pointer', transition: 'all 0.15s', outline: 'none',
-              fontFamily: 'inherit',
-            }}
-          >
-            NEW
-          </button>
-        )}
-        {isGenuinelyNew && isDismissed && (
-          <span style={{
-            fontSize: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em',
-            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
-            color: 'var(--sky)', opacity: 0.3,
-            border: '1px solid color-mix(in srgb, var(--sky) 10%, transparent)',
-          }}>
-            SEEN
-          </span>
-        )}
         {/* Action buttons — stop propagation so clicks don't toggle expand */}
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
         <div style={{ display: 'flex', gap: 4, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
