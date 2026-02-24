@@ -128,6 +128,18 @@ function daysBetween(a: string, b: string): number {
 const normalizeForm = (f: string) =>
   f.replace(/[/\s-]/g, '').replace(/^FORM/i, '').replace(/^SCHEDULE/i, 'SC');
 
+/**
+ * Form aliases for matching: SEC EDGAR press releases (PRNEWS) accompany 8-K
+ * filings and should match against 8-K entries in sec-filings.ts / cross-refs.
+ */
+const FORM_MATCH_ALIASES: Record<string, string> = { PRNEWS: '8K' };
+
+/** Normalize form for matching, applying aliases (PRNEWS → 8K, etc.) */
+const normalizeFormForMatch = (f: string) => {
+  const norm = normalizeForm(f.toUpperCase().trim());
+  return FORM_MATCH_ALIASES[norm] || norm;
+};
+
 /** Normalize accession number by stripping dashes for comparison */
 const normalizeAccession = (a: string) => a.replace(/-/g, '');
 
@@ -151,7 +163,7 @@ function lookupCrossRefs(
   if (index[accNorm]) return index[accNorm];
 
   // Fallback: closest-date match among form|date keys of the same form type
-  const lookupNorm = normalizeForm(form.toUpperCase().trim());
+  const lookupNorm = normalizeFormForMatch(form);
   let bestValue: { source: string; data: string }[] | undefined;
   let bestDays = Infinity;
   for (const [key, value] of Object.entries(index)) {
@@ -159,7 +171,7 @@ function lookupCrossRefs(
     if (pipeIdx === -1) continue;
     const keyForm = key.slice(0, pipeIdx);
     const keyDate = key.slice(pipeIdx + 1);
-    if (normalizeForm(keyForm.toUpperCase().trim()) !== lookupNorm) continue;
+    if (normalizeFormForMatch(keyForm) !== lookupNorm) continue;
     const days = daysBetween(isoDate, keyDate);
     if (days < bestDays) {
       bestDays = days;
@@ -201,7 +213,7 @@ function matchFilings(
   return edgarFilings.map(ef => {
     const edgarAccNorm = normalizeAccession(ef.accessionNumber);
     const edgarDate = normalizeDate(ef.filingDate);
-    const edgarForm = normalizeForm(ef.form.toUpperCase().trim());
+    const edgarForm = normalizeFormForMatch(ef.form);
 
     // Tier 1a: exact accession number match
     let match = accessionMap.get(edgarAccNorm);
@@ -210,7 +222,7 @@ function matchFilings(
     if (!match) {
       let bestDays = Infinity;
       for (const lf of legacyFilings) {
-        if (normalizeForm(lf.type.toUpperCase().trim()) !== edgarForm) continue;
+        if (normalizeFormForMatch(lf.type) !== edgarForm) continue;
         const days = daysBetween(edgarDate, normalizeDate(lf.date));
         if (days < bestDays) {
           bestDays = days;
@@ -460,7 +472,7 @@ const FilingRow: React.FC<{
           if (rec) {
             const xrefs = rec.crossRefs;
             setDbTooltip({
-              status: rec.status === 'tracked' ? 'TRACKED' : rec.status === 'data_only' ? 'DATA ONLY' : rec.status === 'new' ? 'UNTRACKED' : rec.status?.toUpperCase() || '—',
+              status: STATUS_CONFIG[r.status].label,
               form: rec.form || '—',
               description: rec.description || '—',
               filingDate: rec.filingDate || '—',
@@ -829,7 +841,7 @@ const FilingRow: React.FC<{
         </span>
         {/* DB status button — hover fetches live data from database */}
         {(() => {
-          const dbColor = !dbRecord ? 'var(--text3)' : (dbRecord.filingDate != null && dbRecord.fileUrl != null && dbRecord.status != null) ? 'var(--mint)' : 'var(--gold)';
+          const dbColor = !dbRecord ? 'var(--text3)' : STATUS_CONFIG[r.status].color;
           const dbOpacity = !dbRecord ? 0.25 : 0.8;
           return (
             <span style={{ position: 'relative', flexShrink: 0 }} onMouseEnter={handleDbHoverEnter} onMouseLeave={handleDbHoverLeave}>
@@ -867,7 +879,7 @@ const FilingRow: React.FC<{
                     <div style={{ color: 'var(--text3)', fontStyle: 'italic' }}>Fetching from database...</div>
                   ) : dbTooltip ? (
                     <>
-                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>status:</span> <span style={{ color: dbTooltip.status === 'TRACKED' ? 'var(--mint)' : dbTooltip.status === 'UNTRACKED' ? 'var(--coral)' : dbTooltip.status === 'DATA ONLY' ? 'var(--gold)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.status}</span></div>
+                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>status:</span> <span style={{ color: statusCfg.color, fontWeight: 600 }}>{dbTooltip.status}</span></div>
                       <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>form:</span> {dbTooltip.form}</div>
                       <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>desc:</span> {dbTooltip.description}</div>
                       <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>filed:</span> {dbTooltip.filingDate}</div>
@@ -2099,7 +2111,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
                   <div>Tier 1b: Closest form+date match</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>nearest date within 14 days, form type normalized</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>nearest date within 14 days, form type normalized (PRNEWS &rarr; 8-K)</div>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
                   Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
@@ -2112,7 +2124,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
                   <div>Tier 2: Cross-reference key lookup</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>accession or FORM|YYYY-MM-DD in cross-ref index</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>accession or FORM|YYYY-MM-DD in cross-ref index (with aliases)</div>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
                   Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} /><span style={{ color: 'var(--gold)', fontWeight: 600 }}>DATA ONLY</span></span>
@@ -2169,7 +2181,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             </div>
             <div style={{ marginTop: 10, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
               <div><span style={{ color: 'var(--text)' }}>Storage:</span> filing_cross_refs table &mdash; keyed by ticker + filing_key (accession or FORM|DATE)</div>
-              <div><span style={{ color: 'var(--text)' }}>Lookup:</span> accession number first, then closest FORM|YYYY-MM-DD (within 14 days)</div>
+              <div><span style={{ color: 'var(--text)' }}>Lookup:</span> accession number first, then closest FORM|YYYY-MM-DD (within 14 days, with aliases e.g. PRNEWS &rarr; 8-K)</div>
               <div><span style={{ color: 'var(--text)' }}>Display:</span> shown as <span style={{ opacity: 0.5 }}>{'// source → extracted data'}</span> lines below the filing row</div>
             </div>
 
@@ -2218,10 +2230,10 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)' }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--mint)' }}>GREEN DB</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--mint)' }}>MINT DB</span>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
-                  Complete record: filingDate, fileUrl, and status all present in DB.
+                  Filing is in DB and current status is TRACKED (matched in sec-filings.ts).
                 </div>
               </div>
               <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
@@ -2230,7 +2242,16 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                   <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--gold)' }}>GOLD DB</span>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
-                  Partial record: filing saved to DB but missing some metadata fields.
+                  Filing is in DB and current status is DATA ONLY (cross-refs exist but not in sec-filings.ts).
+                </div>
+              </div>
+              <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)' }} />
+                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--coral)' }}>CORAL DB</span>
+                </div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                  Filing is in DB but current status is UNTRACKED (no index entry, no cross-refs).
                 </div>
               </div>
               <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
