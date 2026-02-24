@@ -1085,7 +1085,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         setAiChecking(true);
         try {
           const checked = await checkAnalyzed(prs);
-          setMainCard(prev => ({ ...prev, pressReleases: checked }));
+          // Replace only the fresh articles (first N), keep merged DB-only articles intact
+          const checkedKeys = new Set(checked.map(articleCacheKey));
+          setMainCard(prev => ({
+            ...prev,
+            pressReleases: [...checked, ...prev.pressReleases.filter(a => !checkedKeys.has(articleCacheKey(a)))],
+          }));
         } catch { /* handled */ }
         finally { setAiChecking(false); }
       }
@@ -1127,7 +1132,11 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         setAiChecking(true);
         try {
           const checked = await checkAnalyzed(news);
-          setMainCard(prev => ({ ...prev, news: checked }));
+          const checkedKeys = new Set(checked.map(articleCacheKey));
+          setMainCard(prev => ({
+            ...prev,
+            news: [...checked, ...prev.news.filter(a => !checkedKeys.has(articleCacheKey(a)))],
+          }));
         } catch { /* handled */ }
         finally { setAiChecking(false); }
       }
@@ -1192,10 +1201,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       setAiChecking(true);
       try {
         const checked = await checkAnalyzed(allArticles);
+        const checkedPrs = checked.slice(0, prs.length);
+        const checkedNews = checked.slice(prs.length);
+        const checkedPrKeys = new Set(checkedPrs.map(articleCacheKey));
+        const checkedNewsKeys = new Set(checkedNews.map(articleCacheKey));
         setMainCard(prev => ({
           ...prev,
-          pressReleases: checked.slice(0, prs.length),
-          news: checked.slice(prs.length),
+          pressReleases: [...checkedPrs, ...prev.pressReleases.filter(a => !checkedPrKeys.has(articleCacheKey(a)))],
+          news: [...checkedNews, ...prev.news.filter(a => !checkedNewsKeys.has(articleCacheKey(a)))],
         }));
       } catch { /* handled */ }
       finally { setAiChecking(false); }
