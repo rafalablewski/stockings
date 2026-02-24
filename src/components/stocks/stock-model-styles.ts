@@ -212,7 +212,6 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   color: var(--text2);
   background: transparent;
   border: 1px solid transparent;
-  border-left: 3px solid transparent;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
@@ -223,6 +222,18 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   align-items: center;
   justify-content: center;
   gap: 6px;
+  position: relative;
+}
+.nav-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  border-radius: 1px;
+  background: transparent;
+  transition: background 0.2s, left 0.2s, right 0.2s;
 }
 
 .nav-btn:hover {
@@ -236,23 +247,41 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   border-color: var(--accent);
 }
 
-/* Tab Type Indicators - Subtle left border to distinguish tracking vs projection tabs */
+/* Tab Type Indicators — subtle background wash + bottom accent line */
 /* mint=tracking (actual data), accent color=projection (user models) */
 .nav-btn.tab-tracking {
-  border-left: 3px solid var(--mint);
+  background: color-mix(in srgb, var(--mint) 5%, transparent);
+}
+.nav-btn.tab-tracking::after {
+  background: color-mix(in srgb, var(--mint) 30%, transparent);
+  left: 25%;
+  right: 25%;
 }
 .nav-btn.tab-projection {
-  border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+.nav-btn.tab-projection::after {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  left: 25%;
+  right: 25%;
 }
 .nav-btn.tab-tracking.active {
-  border-left-color: var(--mint);
   background: var(--mint);
   border-color: var(--mint);
 }
+.nav-btn.tab-tracking.active::after {
+  background: var(--bg);
+  left: 15%;
+  right: 15%;
+}
 .nav-btn.tab-projection.active {
-  border-left-color: var(--accent);
   background: var(--accent);
   border-color: var(--accent);
+}
+.nav-btn.tab-projection.active::after {
+  background: var(--bg);
+  left: 15%;
+  right: 15%;
 }
 
 /* Focus styles for keyboard navigation */
@@ -313,18 +342,32 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   display: flex;
   align-items: center;
   gap: 6px;
-  border-left: 3px solid var(--violet);
+  background: color-mix(in srgb, var(--violet) 5%, transparent);
+}
+.nav-dropdown-trigger::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  right: 25%;
+  height: 2px;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--violet) 30%, transparent);
+  transition: background 0.2s, left 0.2s, right 0.2s;
 }
 .nav-dropdown-trigger.active {
   background: var(--violet);
   color: var(--bg);
   border-color: var(--violet);
-  border-left: 3px solid var(--violet);
+}
+.nav-dropdown-trigger.active::after {
+  background: var(--bg);
+  left: 15%;
+  right: 15%;
 }
 .nav-dropdown-trigger.open {
   background: var(--surface2);
   color: var(--text);
-  border-color: var(--violet);
 }
 
 /* Dropdown chevron icon */
@@ -1213,8 +1256,8 @@ input[type="range"]::-webkit-slider-thumb {
   .card, .highlight {
     border-width: 0.5px;
   }
-  .nav-btn {
-    border-left-width: 3px;
+  .nav-btn::after {
+    height: 2px;
   }
 }
 
