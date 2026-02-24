@@ -75,6 +75,7 @@ interface DbFilingRecord {
   status: string | null;
   crossRefs: { source: string; data: string }[] | null;
   dismissed: boolean;
+  hidden: boolean;
 }
 
 function formatTimeAgo(ts: number): string {
@@ -389,12 +390,14 @@ const FilingRow: React.FC<{
   ticker: string;
   isGenuinelyNew?: boolean;
   isDismissed?: boolean;
+  isHidden?: boolean;
   dbRecord?: DbFilingRecord | null;
   persistedAnalysis?: string | null;
   onDismissNew?: () => void;
+  onToggleHide?: () => void;
   onRecheck?: () => void;
   recheckLoading?: boolean;
-}> = ({ r, typeColors, ticker, isGenuinelyNew, isDismissed, dbRecord, persistedAnalysis, onDismissNew, onRecheck, recheckLoading }) => {
+}> = ({ r, typeColors, ticker, isGenuinelyNew, isDismissed, isHidden, dbRecord, persistedAnalysis, onDismissNew, onToggleHide, onRecheck, recheckLoading }) => {
   const accession = r.filing.accessionNumber;
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<string | null>(persistedAnalysis || null);
@@ -457,6 +460,60 @@ const FilingRow: React.FC<{
   const formDisplay = displayFormName(r.filing.form);
   const colors = typeColors[r.filing.form] || typeColors[formDisplay] || { bg: 'var(--surface2)', text: 'var(--text3)' };
   const statusCfg = STATUS_CONFIG[r.status];
+
+  // Hidden filings: collapsed single-line with low opacity and unhide button
+  if (isHidden) {
+    return (
+      <div style={{ opacity: 0.15, transition: 'opacity 0.2s' }}
+        onMouseEnter={e => (e.currentTarget.style.opacity = '0.35')}
+        onMouseLeave={e => (e.currentTarget.style.opacity = '0.15')}
+      >
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '3px 12px', borderRadius: 6,
+        }}>
+          <span style={{
+            fontSize: 9, fontFamily: 'Space Mono, monospace', fontWeight: 600,
+            padding: '1px 6px', borderRadius: 4, flexShrink: 0,
+            background: colors.bg, color: colors.text,
+          }}>
+            {formDisplay}
+          </span>
+          <span style={{
+            fontSize: 11, color: 'var(--text3)', flex: 1, minWidth: 0,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            textDecoration: 'line-through',
+          }}>
+            {r.filing.primaryDocDescription || r.filing.form}
+          </span>
+          {r.filing.filingDate && (
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)', flexShrink: 0 }}>
+              {formatEdgarDate(r.filing.filingDate)}
+            </span>
+          )}
+          <span style={{ fontSize: 8, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', flexShrink: 0, textTransform: 'uppercase' }}>hidden</span>
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+          <div style={{ flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => onToggleHide?.()}
+              title="Unhide filing"
+              style={{
+                fontSize: 9, fontFamily: 'inherit', padding: '1px 5px', borderRadius: 4,
+                color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
+                border: '1px solid var(--border)', cursor: 'pointer', outline: 'none',
+                display: 'inline-flex', alignItems: 'center',
+              }}
+            >
+              <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" />
+                <circle cx="8" cy="8" r="2" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const resetWorkflowState = () => {
     setCopied(false);
@@ -839,6 +896,22 @@ const FilingRow: React.FC<{
               </svg>
             </button>
           )}
+          <button
+            onClick={() => onToggleHide?.()}
+            title="Hide filing"
+            style={{
+              fontSize: 9, fontFamily: 'inherit', padding: '2px 5px', borderRadius: 4,
+              color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
+              border: '1px solid var(--border)', cursor: 'pointer', outline: 'none',
+              display: 'inline-flex', alignItems: 'center', transition: 'all 0.15s',
+              opacity: 0.5,
+            }}
+          >
+            <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" />
+              <line x1="2" y1="14" x2="14" y2="2" />
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -1185,6 +1258,8 @@ function getFilingYear(isoDate: string): string {
 }
 
 // ── Year section (collapsible) ──────────────────────────────────────────────
+const HIDDEN_PREVIEW = 3;
+
 const YearSection: React.FC<{
   year: string;
   results: MatchResult[];
@@ -1195,16 +1270,32 @@ const YearSection: React.FC<{
   dbRecords: Map<string, DbFilingRecord>;
   persistedAnalyses: Record<string, string>;
   onDismissNew?: (accession: string) => void;
+  onToggleHide?: (accession: string) => void;
   onRecheck?: () => void;
   recheckLoading?: boolean;
-}> = ({ year, results, typeColors, ticker, defaultOpen, newAccessions, dbRecords, persistedAnalyses, onDismissNew, onRecheck, recheckLoading }) => {
+}> = ({ year, results, typeColors, ticker, defaultOpen, newAccessions, dbRecords, persistedAnalyses, onDismissNew, onToggleHide, onRecheck, recheckLoading }) => {
   const [open, setOpen] = useState(defaultOpen);
-  const trackedInYear = results.filter(r => r.status === 'tracked').length;
+  const [showAllHidden, setShowAllHidden] = useState(false);
+
+  // Sort hidden to bottom, then by date descending
+  const sorted = [...results].sort((a, b) => {
+    const aHidden = dbRecords.get(a.filing.accessionNumber)?.hidden ? 1 : 0;
+    const bHidden = dbRecords.get(b.filing.accessionNumber)?.hidden ? 1 : 0;
+    if (aHidden !== bHidden) return aHidden - bHidden;
+    return (b.filing.filingDate || '').localeCompare(a.filing.filingDate || '');
+  });
+  const visible = sorted.filter(r => !dbRecords.get(r.filing.accessionNumber)?.hidden);
+  const hidden = sorted.filter(r => dbRecords.get(r.filing.accessionNumber)?.hidden);
+  const displayedHidden = showAllHidden ? hidden : hidden.slice(0, HIDDEN_PREVIEW);
+  const displayed = [...visible, ...displayedHidden];
+  const remainingHidden = hidden.length - HIDDEN_PREVIEW;
+
+  const trackedInYear = visible.filter(r => r.status === 'tracked').length;
 
   const renderRow = (r: MatchResult, i: number) => {
     const dbRec = dbRecords.get(r.filing.accessionNumber);
     return (
-      <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} isDismissed={dbRec?.dismissed ?? false} dbRecord={dbRec || null} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} onDismissNew={() => onDismissNew?.(r.filing.accessionNumber)} onRecheck={onRecheck} recheckLoading={recheckLoading} />
+      <FilingRow key={r.filing.accessionNumber || `${year}-${i}`} r={r} typeColors={typeColors} ticker={ticker} isGenuinelyNew={newAccessions.has(r.filing.accessionNumber)} isDismissed={dbRec?.dismissed ?? false} isHidden={dbRec?.hidden ?? false} dbRecord={dbRec || null} persistedAnalysis={persistedAnalyses[r.filing.accessionNumber] || null} onDismissNew={() => onDismissNew?.(r.filing.accessionNumber)} onToggleHide={() => onToggleHide?.(r.filing.accessionNumber)} onRecheck={onRecheck} recheckLoading={recheckLoading} />
     );
   };
 
@@ -1231,13 +1322,44 @@ const YearSection: React.FC<{
         }}>
           <span style={{ color: 'var(--mint)' }}>{trackedInYear}</span>
           <span style={{ opacity: 0.5 }}>/</span>
-          <span>{results.length}</span>
+          <span>{visible.length}{hidden.length > 0 ? ` + ${hidden.length} hidden` : ''}</span>
           <span style={{ fontSize: 9, opacity: 0.5 }}>{open ? '\u25B2' : '\u25BC'}</span>
         </span>
       </button>
       {open && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-          {results.map(renderRow)}
+          {displayed.map(renderRow)}
+          {/* Load more / collapse for hidden filings */}
+          {remainingHidden > 0 && !showAllHidden && (
+            <button
+              onClick={() => setShowAllHidden(true)}
+              style={{
+                display: 'block', width: '100%', padding: '4px 12px', margin: '2px 0',
+                fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)',
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                opacity: 0.25, textAlign: 'left', transition: 'opacity 0.15s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.5')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0.25')}
+            >
+              + {remainingHidden} more hidden
+            </button>
+          )}
+          {showAllHidden && hidden.length > HIDDEN_PREVIEW && (
+            <button
+              onClick={() => setShowAllHidden(false)}
+              style={{
+                display: 'block', width: '100%', padding: '4px 12px', margin: '2px 0',
+                fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)',
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                opacity: 0.25, textAlign: 'left', transition: 'opacity 0.15s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.5')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '0.25')}
+            >
+              collapse hidden
+            </button>
+          )}
         </div>
       )}
     </div>
@@ -1264,9 +1386,10 @@ const FilingList: React.FC<{
   dbRecords: Map<string, DbFilingRecord>;
   persistedAnalyses: Record<string, string>;
   onDismissNew?: (accession: string) => void;
+  onToggleHide?: (accession: string) => void;
   onRecheck?: () => void;
   recheckLoading?: boolean;
-}> = ({ results, typeColors, filter, ticker, newAccessions, dbRecords, persistedAnalyses, onDismissNew, onRecheck, recheckLoading }) => {
+}> = ({ results, typeColors, filter, ticker, newAccessions, dbRecords, persistedAnalyses, onDismissNew, onToggleHide, onRecheck, recheckLoading }) => {
   const filtered = applyFilter(results, filter);
 
   if (filtered.length === 0) {
@@ -1300,6 +1423,7 @@ const FilingList: React.FC<{
           dbRecords={dbRecords}
           persistedAnalyses={persistedAnalyses}
           onDismissNew={onDismissNew}
+          onToggleHide={onToggleHide}
           onRecheck={onRecheck}
           recheckLoading={recheckLoading}
         />
@@ -1451,6 +1575,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                 status: m.status,
                 crossRefs: m.crossRefs || null,
                 dismissed: newKeys.has(m.filing.accessionNumber) ? false : (dbRecordsRef.current.get(m.filing.accessionNumber)?.dismissed ?? true),
+                hidden: dbRecordsRef.current.get(m.filing.accessionNumber)?.hidden ?? false,
               };
               dbRecordsRef.current.set(m.filing.accessionNumber, rec);
             }
@@ -1584,6 +1709,54 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           dismiss: true,
         }),
       }).catch(err => console.error('[dismiss] error:', err));
+    }
+  }, [ticker, edgarFilings]);
+
+  // Toggle hide/unhide for a filing — persists to DB
+  const toggleHideFiling = useCallback((accession: string) => {
+    const rec = dbRecordsRef.current.get(accession);
+    const newHidden = !(rec?.hidden ?? false);
+
+    // Update local state
+    if (rec) {
+      dbRecordsRef.current.set(accession, { ...rec, hidden: newHidden });
+    } else {
+      // Filing not in DB records yet — create a minimal record
+      const filing = edgarFilings.find(f => f.accessionNumber === accession);
+      if (filing) {
+        dbRecordsRef.current.set(accession, {
+          accessionNumber: accession,
+          form: filing.form,
+          filingDate: filing.filingDate,
+          description: filing.primaryDocDescription,
+          reportDate: filing.reportDate || null,
+          fileUrl: filing.fileUrl,
+          status: null,
+          crossRefs: null,
+          dismissed: false,
+          hidden: newHidden,
+        });
+      }
+    }
+    setDbRecords(new Map(dbRecordsRef.current));
+
+    // Persist to DB
+    const filing = edgarFilings.find(f => f.accessionNumber === accession);
+    if (filing) {
+      fetch('/api/seen-filings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticker,
+          filings: [{
+            accessionNumber: accession,
+            form: filing.form,
+            filingDate: filing.filingDate,
+            description: filing.primaryDocDescription,
+          }],
+          hide: newHidden,
+        }),
+      }).catch(err => console.error('[hide] error:', err));
     }
   }, [ticker, edgarFilings]);
 
@@ -1796,7 +1969,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           </div>
 
           {/* Filing list */}
-          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} newAccessions={newAccessions} dbRecords={dbRecords} persistedAnalyses={persistedAnalyses} onDismissNew={dismissNewFiling} onRecheck={recheckDB} recheckLoading={recheckLoading} />
+          <FilingList results={results} typeColors={typeColors} filter={filter} ticker={ticker} newAccessions={newAccessions} dbRecords={dbRecords} persistedAnalyses={persistedAnalyses} onDismissNew={dismissNewFiling} onToggleHide={toggleHideFiling} onRecheck={recheckDB} recheckLoading={recheckLoading} />
         </>
       )}
 
