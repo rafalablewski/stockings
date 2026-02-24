@@ -415,7 +415,7 @@ const SourceArticleRow: React.FC<{
           {article.source || ''}
         </span>
         {/* Date — fixed width for column alignment */}
-        <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px', width: 72, textAlign: 'right' }}>
+        <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px', width: 100, textAlign: 'right', whiteSpace: 'nowrap' }}>
           {article.date || ''}
         </span>
         {/* Status label — fixed width so DB column aligns */}
