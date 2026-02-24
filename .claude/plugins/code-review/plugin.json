@@ -1,0 +1,17 @@
+{
+  "name": "code-review",
+  "version": "1.0.0",
+  "source": "claude-plugins-official",
+  "description": "Automated code review plugin for Claude Code. Enforces code quality standards through pre/post edit hooks, lint checks, and configurable review rules.",
+  "hooks": ["PreToolUse", "PostToolUse"],
+  "matchers": ["Edit", "Write", "NotebookEdit"],
+  "config": {
+    "enableLintCheck": true,
+    "enableTypeCheck": true,
+    "enableSecurityScan": true,
+    "enableStyleEnforcement": true,
+    "autoFixOnSave": false,
+    "blockOnError": false,
+    "reviewRulesPath": ".claude/plugins/code-review/review-rules.json"
+  }
+}
