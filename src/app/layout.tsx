@@ -24,6 +24,29 @@ const audits = [
   },
 ];
 
+const hooks = [
+  {
+    slug: "code-review",
+    label: "Code Review",
+    severity: "pre+post",
+  },
+  {
+    slug: "claude-md-management",
+    label: "CLAUDE.md Management",
+    severity: "post",
+  },
+  {
+    slug: "code-simplifier",
+    label: "Code Simplifier",
+    severity: "post",
+  },
+  {
+    slug: "agent-impact-detector",
+    label: "Agent Impact Detector",
+    severity: "post",
+  },
+];
+
 function Navigation() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-xl">
@@ -40,6 +63,41 @@ function Navigation() {
             <AiToggle />
           </div>
           <div className="flex items-center gap-8">
+            {/* Hooks dropdown */}
+            <div className="relative group/hooks">
+              <span className="text-[13px] text-white/60 group-hover/hooks:text-white transition-colors cursor-default select-none">
+                Hooks
+              </span>
+              <div className="absolute top-full right-0 pt-3 hidden group-hover/hooks:block">
+                <div className="bg-black/95 backdrop-blur-xl border border-white/[0.08] rounded-xl py-2 min-w-[260px] shadow-2xl">
+                  {hooks.map((hook) => (
+                    <Link
+                      key={hook.slug}
+                      href={`/hooks#${hook.slug}`}
+                      className="flex items-center justify-between gap-3 px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
+                    >
+                      <span className="text-[12px] text-white/80">
+                        {hook.label}
+                      </span>
+                      <span className="text-[9px] font-mono text-white/25 uppercase">
+                        {hook.severity}
+                      </span>
+                    </Link>
+                  ))}
+                  <div className="border-t border-white/[0.06] mt-1 pt-1">
+                    <Link
+                      href="/hooks"
+                      className="block px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
+                    >
+                      <span className="text-[11px] text-white/40">
+                        View all hooks →
+                      </span>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Research dropdown */}
             <div className="relative group/research">
               <span className="text-[13px] text-white/60 group-hover/research:text-white transition-colors cursor-default select-none">
