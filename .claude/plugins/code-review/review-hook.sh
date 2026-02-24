@@ -27,115 +27,145 @@ log_warn()    { echo -e "${YELLOW}[code-review] WARN:${NC} $*" >&2; }
 log_info()    { echo -e "${BLUE}[code-review] INFO:${NC} $*" >&2; }
 log_success() { echo -e "${GREEN}[code-review] OK:${NC} $*" >&2; }
 
-# Check if file should be ignored
-should_ignore() {
-    local file="$1"
-    case "$file" in
-        */node_modules/*|*/.next/*|*.config.*|*.d.ts)
-            return 0
-            ;;
-    esac
-    return 1
-}
-
 # Get file extension
 get_extension() {
     local file="$1"
     echo "${file##*.}"
 }
 
-# Run pattern-based security checks on a file
-run_security_checks() {
+# Check if file matches any ignore pattern from the rules file
+should_ignore() {
     local file="$1"
-    local ext
-    ext=$(get_extension "$file")
-    local found_issues=0
+    local ignore_patterns
+    ignore_patterns=$(python3 -c "
+import json
+with open('$RULES_FILE') as f:
+    data = json.load(f)
+for p in data.get('ignoreFiles', []):
+    print(p)
+" 2>/dev/null || true)
 
-    # no-eval check
-    if [[ "$ext" =~ ^(ts|tsx|js|jsx)$ ]]; then
-        if grep -nP '\beval\s*\(' "$file" 2>/dev/null; then
-            log_error "$file: Avoid using eval() - code injection risk (no-eval)"
-            found_issues=$((found_issues + 1))
-        fi
-    fi
-
-    # no-hardcoded-secrets check
-    if [[ "$ext" =~ ^(ts|tsx|js|jsx)$ ]]; then
-        if grep -niP '(password|secret|api_key|apikey|token)\s*[:=]\s*['"'"'"][^'"'"'"]+['"'"'"]' "$file" 2>/dev/null | grep -v '.env.example' | grep -v '.test.' | grep -v '.spec.' | head -3; then
-            log_warn "$file: Possible hardcoded secret detected - use environment variables (no-hardcoded-secrets)"
-            found_issues=$((found_issues + 1))
-        fi
-    fi
-
-    # dangerouslySetInnerHTML check
-    if [[ "$ext" =~ ^(tsx|jsx)$ ]]; then
-        if grep -n 'dangerouslySetInnerHTML' "$file" 2>/dev/null; then
-            log_warn "$file: Review dangerouslySetInnerHTML usage for XSS risk (no-innerhtml)"
-            found_issues=$((found_issues + 1))
-        fi
-    fi
-
-    return 0
-}
-
-# Run quality checks on a file
-run_quality_checks() {
-    local file="$1"
-    local ext
-    ext=$(get_extension "$file")
-    local found_issues=0
-
-    # no-console-log check (skip scripts and tests)
-    if [[ "$ext" =~ ^(ts|tsx)$ ]]; then
-        case "$file" in
-            */scripts/*|*.test.*|*.spec.*) ;;
+    while IFS= read -r pattern; do
+        [[ -z "$pattern" ]] && continue
+        case "$pattern" in
+            *"/**")
+                # Directory glob like "node_modules/**"
+                local dir="${pattern%/**}"
+                if [[ "$file" == *"/$dir/"* || "$file" == *"$dir/"* ]]; then
+                    return 0
+                fi
+                ;;
             *)
-                local count
-                count=$(grep -c 'console\.log(' "$file" 2>/dev/null | tail -1 || echo "0")
-                if [[ "$count" =~ ^[0-9]+$ ]] && [ "$count" -gt 0 ]; then
-                    log_info "$file: Found $count console.log statement(s) - consider removing (no-console-log)"
+                # Filename glob like "*.config.*" or "*.d.ts"
+                local base
+                base=$(basename "$file")
+                # Convert glob to a simple check
+                if [[ "$base" == $pattern ]]; then
+                    return 0
                 fi
                 ;;
         esac
-    fi
-
-    return 0
+    done <<< "$ignore_patterns"
+    return 1
 }
 
-# Run React-specific checks
-run_react_checks() {
+# Run all pattern-based checks from review-rules.json dynamically
+run_dynamic_checks() {
     local file="$1"
     local ext
     ext=$(get_extension "$file")
 
-    if [[ ! "$ext" =~ ^(tsx|jsx)$ ]]; then
+    # Use python3 to extract all pattern-based rules as tab-separated lines:
+    # category \t id \t severity \t pattern \t message \t fileTypes(comma-sep) \t ignorePatterns(comma-sep) \t prerequisite
+    local rules_output
+    rules_output=$(python3 -c "
+import json
+with open('$RULES_FILE') as f:
+    data = json.load(f)
+for category, section in data.get('rules', {}).items():
+    if not section.get('enabled', True):
+        continue
+    default_severity = section.get('severity', 'warning')
+    for check in section.get('checks', []):
+        pattern = check.get('pattern', '')
+        if not pattern:
+            continue
+        check_id = check.get('id', '')
+        severity = check.get('severity', default_severity)
+        message = check.get('message', '')
+        file_types = ','.join(check.get('fileTypes', []))
+        ignore_pats = ','.join(check.get('ignorePatterns', []))
+        # Mark checks that need special prerequisite logic
+        prerequisite = ''
+        if check_id == 'no-server-secrets-in-client':
+            prerequisite = 'use-client'
+        print(f'{category}\t{check_id}\t{severity}\t{pattern}\t{message}\t{file_types}\t{ignore_pats}\t{prerequisite}')
+" 2>/dev/null || true)
+
+    if [[ -z "$rules_output" ]]; then
+        log_warn "Could not parse rules from $RULES_FILE — skipping dynamic checks"
         return 0
     fi
 
-    # no-index-key check
-    if grep -nP 'key=\{(index|i|idx)\}' "$file" 2>/dev/null; then
-        log_info "$file: Avoid using array index as key (no-index-key)"
-    fi
+    while IFS=$'\t' read -r category check_id severity pattern message file_types ignore_pats prerequisite; do
+        [[ -z "$check_id" ]] && continue
 
-    return 0
-}
-
-# Run Next.js-specific checks
-run_nextjs_checks() {
-    local file="$1"
-    local ext
-    ext=$(get_extension "$file")
-
-    if [[ "$ext" != "tsx" ]]; then
-        return 0
-    fi
-
-    # Check for non-NEXT_PUBLIC_ env access in client components
-    if grep -q "'use client'" "$file" 2>/dev/null || grep -q '"use client"' "$file" 2>/dev/null; then
-        if grep -nP 'process\.env\.(?!NEXT_PUBLIC_)' "$file" 2>/dev/null; then
-            log_error "$file: Non-NEXT_PUBLIC_ env vars accessed in client component (no-server-secrets-in-client)"
+        # Check if file type matches
+        if [[ -n "$file_types" ]]; then
+            local type_match=false
+            IFS=',' read -ra types <<< "$file_types"
+            for ft in "${types[@]}"; do
+                if [[ "$ext" == "$ft" ]]; then
+                    type_match=true
+                    break
+                fi
+            done
+            if [[ "$type_match" == false ]]; then
+                continue
+            fi
         fi
-    fi
+
+        # Check ignore patterns (file path based)
+        if [[ -n "$ignore_pats" ]]; then
+            local should_skip=false
+            IFS=',' read -ra pats <<< "$ignore_pats"
+            for pat in "${pats[@]}"; do
+                if [[ "$file" == *"$pat"* ]]; then
+                    should_skip=true
+                    break
+                fi
+                # Handle glob-like patterns
+                local base
+                base=$(basename "$file")
+                if [[ "$base" == $pat ]]; then
+                    should_skip=true
+                    break
+                fi
+            done
+            if [[ "$should_skip" == true ]]; then
+                continue
+            fi
+        fi
+
+        # Handle prerequisites
+        if [[ "$prerequisite" == "use-client" ]]; then
+            if ! grep -q "'use client'" "$file" 2>/dev/null && ! grep -q '"use client"' "$file" 2>/dev/null; then
+                continue
+            fi
+        fi
+
+        # Run the pattern check
+        local matches
+        matches=$(grep -nP "$pattern" "$file" 2>/dev/null | head -5 || true)
+        if [[ -n "$matches" ]]; then
+            case "$severity" in
+                error)   log_error "$file: $message ($check_id)" ;;
+                warning) log_warn "$file: $message ($check_id)" ;;
+                info)    log_info "$file: $message ($check_id)" ;;
+                *)       log_warn "$file: $message ($check_id)" ;;
+            esac
+        fi
+    done <<< "$rules_output"
 
     return 0
 }
@@ -218,10 +248,8 @@ case "$PHASE" in
         # Post-edit phase: run all checks
         log_info "Running code review on $(basename "$FILE_PATH")..."
 
-        run_security_checks "$FILE_PATH" || true
-        run_quality_checks "$FILE_PATH" || true
-        run_react_checks "$FILE_PATH" || true
-        run_nextjs_checks "$FILE_PATH" || true
+        # Run dynamic pattern-based checks from review-rules.json
+        run_dynamic_checks "$FILE_PATH" || true
 
         # Lint and type checks are heavier - run only in post phase
         run_lint_check "$FILE_PATH" || true

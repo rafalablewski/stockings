@@ -5,6 +5,26 @@
 set -euo pipefail
 
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_FILE="$PLUGIN_DIR/plugin.json"
+
+# Read thresholds from plugin.json config (with fallback defaults)
+read_config() {
+  local key="$1" default="$2"
+  local val
+  val=$(python3 -c "
+import json
+with open('$CONFIG_FILE') as f:
+    data = json.load(f)
+print(data.get('config', {}).get('$key', '$default'))
+" 2>/dev/null || echo "$default")
+  echo "$val"
+}
+
+MAX_FUNC_LINES=$(read_config maxFunctionLines 50)
+MAX_NESTING=$(read_config maxNestingDepth 4)
+MAX_PARAMS=$(read_config maxParameters 5)
+MAX_CONDITION_CLAUSES=$(read_config maxConditionClauses 3)
+MAX_LINE_LEN=$(read_config maxLineLength 120)
 
 # Colors
 RED='\033[0;31m'
@@ -48,7 +68,7 @@ BASENAME=$(basename "$FILE_PATH")
 
 log_info "Checking complexity of ${BASENAME}..."
 
-# --- Check 1: Long functions (>50 lines) ---
+# --- Check 1: Long functions (>${MAX_FUNC_LINES} lines) ---
 # Count lines between function/arrow declarations and their closing braces
 FUNC_PATTERN='^\s*(export\s+)?(default\s+)?(async\s+)?function\s+\w+|^\s*(export\s+)?(const|let|var)\s+\w+\s*=\s*(async\s+)?\('
 LINE_NUM=0
@@ -82,7 +102,7 @@ while IFS= read -r line; do
     BRACE_DEPTH=$((BRACE_DEPTH + OPEN - CLOSE))
     if [[ "$BRACE_DEPTH" -le 0 ]]; then
       FUNC_LENGTH=$((LINE_NUM - FUNC_START))
-      if [[ "$FUNC_LENGTH" -gt 50 ]]; then
+      if [[ "$FUNC_LENGTH" -gt "$MAX_FUNC_LINES" ]]; then
         log_warn "Function '${FUNC_NAME}' is ${FUNC_LENGTH} lines (line ${FUNC_START}). Consider breaking it into smaller functions."
         WARNINGS=$((WARNINGS + 1))
       fi
@@ -92,7 +112,7 @@ while IFS= read -r line; do
   fi
 done < "$FILE_PATH"
 
-# --- Check 2: Deep nesting (>4 levels) ---
+# --- Check 2: Deep nesting (>${MAX_NESTING} levels) ---
 MAX_DEPTH=0
 while IFS= read -r line; do
   # Count leading whitespace (approximate nesting)
@@ -105,12 +125,14 @@ while IFS= read -r line; do
   fi
 done < "$FILE_PATH"
 
-if [[ "$MAX_DEPTH" -gt 6 ]]; then
+# Nesting threshold = maxNestingDepth config value, doubled for 2-space indent approximation
+NESTING_THRESHOLD=$(( MAX_NESTING + MAX_NESTING / 2 ))
+if [[ "$MAX_DEPTH" -gt "$NESTING_THRESHOLD" ]]; then
   log_warn "Deep nesting detected (${MAX_DEPTH} levels). Consider early returns or extracting helper functions."
   WARNINGS=$((WARNINGS + 1))
 fi
 
-# --- Check 3: Functions with too many parameters (>5) ---
+# --- Check 3: Functions with too many parameters (>${MAX_PARAMS}) ---
 while IFS= read -r line; do
   if echo "$line" | grep -qE '(function\s+\w+|=>)\s*\(' 2>/dev/null; then
     # Extract parameter list
@@ -122,7 +144,7 @@ while IFS= read -r line; do
       if echo "$PARAMS" | grep -qE '^\(\s*\)$' 2>/dev/null; then
         PARAM_COUNT=0
       fi
-      if [[ "$PARAM_COUNT" -gt 5 ]]; then
+      if [[ "$PARAM_COUNT" -gt "$MAX_PARAMS" ]]; then
         FUNC_NAME=$(echo "$line" | grep -oE '\w+\s*(' | head -1 | sed 's/[( ]//g')
         log_warn "Function '${FUNC_NAME}' has ${PARAM_COUNT} parameters. Consider using an options object."
         WARNINGS=$((WARNINGS + 1))
@@ -131,7 +153,7 @@ while IFS= read -r line; do
   fi
 done < "$FILE_PATH"
 
-# --- Check 4: Complex conditionals (>3 clauses) ---
+# --- Check 4: Complex conditionals (>${MAX_CONDITION_CLAUSES} clauses) ---
 LINE_NUM=0
 while IFS= read -r line; do
   LINE_NUM=$((LINE_NUM + 1))
@@ -140,23 +162,23 @@ while IFS= read -r line; do
     AND_COUNT=$(echo "$line" | grep -oE '&&' | wc -l)
     OR_COUNT=$(echo "$line" | grep -oE '\|\|' | wc -l)
     TOTAL=$((AND_COUNT + OR_COUNT))
-    if [[ "$TOTAL" -gt 3 ]]; then
+    if [[ "$TOTAL" -gt "$MAX_CONDITION_CLAUSES" ]]; then
       log_warn "Complex conditional at line ${LINE_NUM} (${TOTAL} clauses). Consider extracting into a named boolean or helper."
       WARNINGS=$((WARNINGS + 1))
     fi
   fi
 done < "$FILE_PATH"
 
-# --- Check 5: Long lines (>120 chars) ---
+# --- Check 5: Long lines (>${MAX_LINE_LEN} chars) ---
 LONG_LINES=0
 while IFS= read -r line; do
-  if [[ ${#line} -gt 120 ]]; then
+  if [[ ${#line} -gt "$MAX_LINE_LEN" ]]; then
     LONG_LINES=$((LONG_LINES + 1))
   fi
 done < "$FILE_PATH"
 
 if [[ "$LONG_LINES" -gt 5 ]]; then
-  log_warn "${LONG_LINES} lines exceed 120 characters. Consider breaking them up for readability."
+  log_warn "${LONG_LINES} lines exceed ${MAX_LINE_LEN} characters. Consider breaking them up for readability."
   WARNINGS=$((WARNINGS + 1))
 fi
 

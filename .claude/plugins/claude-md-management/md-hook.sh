@@ -27,6 +27,21 @@ log_error() { echo -e "${RED}[claude-md]${NC} ERROR: $1"; }
 # Load config
 CONFIG_FILE="$PLUGIN_DIR/plugin.json"
 
+# Helper: extract JSON array of strings using python3
+json_string_array() {
+  local file="$1" path="$2"
+  python3 -c "
+import json, sys
+with open('$file') as f:
+    data = json.load(f)
+keys = '$path'.split('.')
+for k in keys:
+    data = data[k]
+for item in data:
+    print(item)
+" 2>/dev/null
+}
+
 # Only run on post-edit phase
 if [[ "$PHASE" != "post" ]]; then
   exit 0
@@ -43,8 +58,15 @@ if [[ "$FILE_PATH" == *"CLAUDE.md"* ]]; then
 
   ERRORS=0
 
-  # Check for required sections
-  REQUIRED_SECTIONS=("Project Overview" "Tech Stack" "Development Commands" "Code Conventions")
+  # Check for required sections (read from plugin.json config)
+  REQUIRED_SECTIONS=()
+  while IFS= read -r section; do
+    [[ -n "$section" ]] && REQUIRED_SECTIONS+=("$section")
+  done < <(json_string_array "$CONFIG_FILE" "config.requiredSections")
+  # Fallback if config parsing fails
+  if [[ ${#REQUIRED_SECTIONS[@]} -eq 0 ]]; then
+    REQUIRED_SECTIONS=("Project Overview" "Tech Stack" "Development Commands" "Code Conventions")
+  fi
   for section in "${REQUIRED_SECTIONS[@]}"; do
     if ! grep -qi "^#.*${section}" "$CLAUDE_MD" 2>/dev/null; then
       log_warn "Missing recommended section: '${section}'"
