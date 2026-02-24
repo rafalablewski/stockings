@@ -1,0 +1,20 @@
+{
+  "name": "claude-md-management",
+  "version": "1.0.0",
+  "source": "claude-plugins-official",
+  "description": "Manages CLAUDE.md project instruction files. Validates structure, enforces consistent formatting, and warns when project conventions change without updating CLAUDE.md.",
+  "hooks": ["PostToolUse"],
+  "matchers": ["Edit", "Write"],
+  "config": {
+    "validateStructure": true,
+    "enforceRequiredSections": true,
+    "warnOnConventionDrift": true,
+    "requiredSections": [
+      "Project Overview",
+      "Tech Stack",
+      "Development Commands",
+      "Code Conventions"
+    ],
+    "claudeMdPath": "CLAUDE.md"
+  }
+}
