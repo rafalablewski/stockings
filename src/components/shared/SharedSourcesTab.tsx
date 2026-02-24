@@ -1914,6 +1914,9 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div>
                 <span style={{ color: 'var(--text3)' }}>Dedup:</span> normalized headline (first 80 chars)
               </div>
+              <div>
+                <span style={{ color: 'var(--text3)' }}>Auto-reseed:</span> workflow/apply &rarr; triggers /api/db/setup after patches so Postgres stays in sync with .ts files
+              </div>
             </div>
 
             {/* Divider */}
@@ -1926,6 +1929,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Extract keywords (stop words removed, stemmed, &gt;2 chars)</div>
               <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
               {/* Stemming note */}
+              <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Normalize: Q1-Q4 &rarr; quarter, FY &rarr; fiscal year</div>
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Stemmer: -s, -ed, -ing, -tion, -ment, -ies, -ly, -er, -or</div>
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Overlap: max(article→DB, DB→article) — bidirectional</div>
               <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
