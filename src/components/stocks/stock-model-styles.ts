@@ -222,18 +222,6 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   align-items: center;
   justify-content: center;
   gap: 6px;
-  position: relative;
-}
-.nav-btn::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 20%;
-  right: 20%;
-  height: 2px;
-  border-radius: 1px;
-  background: transparent;
-  transition: background 0.2s, left 0.2s, right 0.2s;
 }
 
 .nav-btn:hover {
@@ -247,41 +235,27 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   border-color: var(--accent);
 }
 
-/* Tab Type Indicators — subtle background wash + bottom accent line */
+/* Tab Type Indicators — background wash only, pure atmosphere */
 /* mint=tracking (actual data), accent color=projection (user models) */
 .nav-btn.tab-tracking {
-  background: color-mix(in srgb, var(--mint) 5%, transparent);
-}
-.nav-btn.tab-tracking::after {
-  background: color-mix(in srgb, var(--mint) 30%, transparent);
-  left: 25%;
-  right: 25%;
+  background: color-mix(in srgb, var(--mint) 6%, transparent);
 }
 .nav-btn.tab-projection {
-  background: color-mix(in srgb, var(--accent) 5%, transparent);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
 }
-.nav-btn.tab-projection::after {
-  background: color-mix(in srgb, var(--accent) 30%, transparent);
-  left: 25%;
-  right: 25%;
+.nav-btn.tab-tracking:hover {
+  background: color-mix(in srgb, var(--mint) 12%, transparent);
+}
+.nav-btn.tab-projection:hover {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 .nav-btn.tab-tracking.active {
   background: var(--mint);
   border-color: var(--mint);
 }
-.nav-btn.tab-tracking.active::after {
-  background: var(--bg);
-  left: 15%;
-  right: 15%;
-}
 .nav-btn.tab-projection.active {
   background: var(--accent);
   border-color: var(--accent);
-}
-.nav-btn.tab-projection.active::after {
-  background: var(--bg);
-  left: 15%;
-  right: 15%;
 }
 
 /* Focus styles for keyboard navigation */
@@ -342,28 +316,15 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   display: flex;
   align-items: center;
   gap: 6px;
-  background: color-mix(in srgb, var(--violet) 5%, transparent);
+  background: color-mix(in srgb, var(--violet) 6%, transparent);
 }
-.nav-dropdown-trigger::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 25%;
-  right: 25%;
-  height: 2px;
-  border-radius: 1px;
-  background: color-mix(in srgb, var(--violet) 30%, transparent);
-  transition: background 0.2s, left 0.2s, right 0.2s;
+.nav-dropdown-trigger:hover {
+  background: color-mix(in srgb, var(--violet) 12%, transparent);
 }
 .nav-dropdown-trigger.active {
   background: var(--violet);
   color: var(--bg);
   border-color: var(--violet);
-}
-.nav-dropdown-trigger.active::after {
-  background: var(--bg);
-  left: 15%;
-  right: 15%;
 }
 .nav-dropdown-trigger.open {
   background: var(--surface2);
@@ -1255,9 +1216,6 @@ input[type="range"]::-webkit-slider-thumb {
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
   .card, .highlight {
     border-width: 0.5px;
-  }
-  .nav-btn::after {
-    height: 2px;
   }
 }
 
