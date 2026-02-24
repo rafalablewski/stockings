@@ -29,6 +29,15 @@
             "command": "bash /home/user/stockings/.claude/plugins/claude-md-management/md-hook.sh post \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /home/user/stockings/.claude/plugins/code-simplifier/simplifier-hook.sh post \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
+          }
+        ]
       }
     ]
   },

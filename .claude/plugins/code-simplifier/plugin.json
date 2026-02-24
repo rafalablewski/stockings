@@ -1,0 +1,17 @@
+{
+  "name": "code-simplifier",
+  "version": "1.0.0",
+  "source": "claude-plugins-official",
+  "description": "Detects overly complex code patterns after edits. Flags long functions, deep nesting, excessive parameters, and complex conditionals to encourage simpler, more readable code.",
+  "hooks": ["PostToolUse"],
+  "matchers": ["Edit", "Write", "NotebookEdit"],
+  "config": {
+    "maxFunctionLines": 50,
+    "maxNestingDepth": 4,
+    "maxParameters": 5,
+    "maxConditionClauses": 3,
+    "maxLineLength": 120,
+    "ignorePaths": ["node_modules", ".next", "*.config.*", "*.d.ts"],
+    "fileTypes": [".ts", ".tsx", ".js", ".jsx"]
+  }
+}
