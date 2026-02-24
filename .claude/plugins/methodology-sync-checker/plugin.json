@@ -1,0 +1,45 @@
+{
+  "name": "methodology-sync-checker",
+  "version": "1.0.0",
+  "description": "Detects when Sources or EDGAR tab logic changes and reminds you to review the corresponding methodology section for accuracy.",
+  "hooks": ["PostToolUse"],
+  "matchers": ["Edit", "Write", "NotebookEdit"],
+  "config": {
+    "domains": {
+      "sources": {
+        "label": "Sources Pipeline",
+        "methodology": "SharedSourcesTab.tsx → #sources-methodology section",
+        "watchPaths": [
+          "src/components/shared/SharedSourcesTab.tsx",
+          "src/app/api/seen-articles/route.ts",
+          "src/app/api/press-releases/*/route.ts",
+          "src/app/api/news/*/route.ts",
+          "src/app/api/sources/analyze/route.ts",
+          "src/app/api/check-analyzed/route.ts"
+        ],
+        "watchDataGlobs": [
+          "src/data/*/research-sources.ts"
+        ],
+        "methodologyAnchor": "#sources-methodology",
+        "methodologyFile": "src/components/shared/SharedSourcesTab.tsx"
+      },
+      "edgar": {
+        "label": "EDGAR Pipeline",
+        "methodology": "SharedEdgarTab.tsx → #edgar-methodology section",
+        "watchPaths": [
+          "src/components/shared/SharedEdgarTab.tsx",
+          "src/app/api/edgar/*/route.ts",
+          "src/app/api/seen-filings/route.ts"
+        ],
+        "watchDataGlobs": [
+          "src/data/*/sec-filings.ts"
+        ],
+        "methodologyAnchor": "#edgar-methodology",
+        "methodologyFile": "src/components/shared/SharedEdgarTab.tsx"
+      }
+    },
+    "schemaFiles": [
+      "src/lib/schema.ts"
+    ]
+  }
+}
