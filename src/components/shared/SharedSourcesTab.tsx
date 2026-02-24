@@ -88,6 +88,12 @@ function normalizeHeadline(headline: string): string {
     .slice(0, 60);
 }
 
+/** Merge fresh articles with existing, preserving existing ones not in the fresh set */
+function mergeArticles(fresh: ArticleItem[], existing: ArticleItem[]): ArticleItem[] {
+  const freshKeys = new Set(fresh.map(articleCacheKey));
+  return [...fresh, ...existing.filter(a => !freshKeys.has(articleCacheKey(a)))];
+}
+
 /** Remove duplicate articles by normalized headline, keeping first occurrence */
 function deduplicateByHeadline(articles: ArticleItem[]): ArticleItem[] {
   const seen = new Set<string>();
@@ -1069,12 +1075,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         if (!dbRecordsRef.current.has(key)) newKeys.add(key);
       }
 
-      // Merge: keep DB-loaded PRs that aren't in the fresh fetch (e.g. hidden/older articles)
-      const freshKeys = new Set(prs.map(articleCacheKey));
-      setMainCard(prev => {
-        const dbOnly = prev.pressReleases.filter(a => !freshKeys.has(articleCacheKey(a)));
-        return { ...prev, loadingPR: false, loaded: true, pressReleases: [...prs, ...dbOnly] };
-      });
+      setMainCard(prev => ({
+        ...prev, loadingPR: false, loaded: true,
+        pressReleases: mergeArticles(prs, prev.pressReleases),
+      }));
       setLastFetchedAt(Date.now());
       if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
 
@@ -1085,12 +1089,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         setAiChecking(true);
         try {
           const checked = await checkAnalyzed(prs);
-          // Replace only the fresh articles (first N), keep merged DB-only articles intact
-          const checkedKeys = new Set(checked.map(articleCacheKey));
-          setMainCard(prev => ({
-            ...prev,
-            pressReleases: [...checked, ...prev.pressReleases.filter(a => !checkedKeys.has(articleCacheKey(a)))],
-          }));
+          setMainCard(prev => ({ ...prev, pressReleases: mergeArticles(checked, prev.pressReleases) }));
         } catch { /* handled */ }
         finally { setAiChecking(false); }
       }
@@ -1116,12 +1115,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         if (!dbRecordsRef.current.has(key)) newKeys.add(key);
       }
 
-      // Merge: keep DB-loaded news that aren't in the fresh fetch (e.g. hidden/older articles)
-      const freshNewsKeys = new Set(news.map(articleCacheKey));
-      setMainCard(prev => {
-        const dbOnly = prev.news.filter(a => !freshNewsKeys.has(articleCacheKey(a)));
-        return { ...prev, loadingNews: false, loaded: true, news: [...news, ...dbOnly] };
-      });
+      setMainCard(prev => ({
+        ...prev, loadingNews: false, loaded: true,
+        news: mergeArticles(news, prev.news),
+      }));
       setLastFetchedAt(Date.now());
       if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
 
@@ -1132,11 +1129,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         setAiChecking(true);
         try {
           const checked = await checkAnalyzed(news);
-          const checkedKeys = new Set(checked.map(articleCacheKey));
-          setMainCard(prev => ({
-            ...prev,
-            news: [...checked, ...prev.news.filter(a => !checkedKeys.has(articleCacheKey(a)))],
-          }));
+          setMainCard(prev => ({ ...prev, news: mergeArticles(checked, prev.news) }));
         } catch { /* handled */ }
         finally { setAiChecking(false); }
       }
@@ -1178,13 +1171,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       if (!dbRecordsRef.current.has(key)) newKeys.add(key);
     }
 
-    // Merge: keep DB-loaded articles that aren't in the fresh fetch (e.g. hidden/older articles)
-    const freshPrKeys = new Set(prs.map(articleCacheKey));
-    const freshNewsKeys = new Set(news.map(articleCacheKey));
     setMainCard(prev => ({
       ...prev, loading: false, loadingPR: false, loadingNews: false, loaded: true, error,
-      pressReleases: [...prs, ...prev.pressReleases.filter(a => !freshPrKeys.has(articleCacheKey(a)))],
-      news: [...news, ...prev.news.filter(a => !freshNewsKeys.has(articleCacheKey(a)))],
+      pressReleases: mergeArticles(prs, prev.pressReleases),
+      news: mergeArticles(news, prev.news),
     }));
     setLastFetchedAt(Date.now());
     if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
@@ -1201,14 +1191,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       setAiChecking(true);
       try {
         const checked = await checkAnalyzed(allArticles);
-        const checkedPrs = checked.slice(0, prs.length);
-        const checkedNews = checked.slice(prs.length);
-        const checkedPrKeys = new Set(checkedPrs.map(articleCacheKey));
-        const checkedNewsKeys = new Set(checkedNews.map(articleCacheKey));
         setMainCard(prev => ({
           ...prev,
-          pressReleases: [...checkedPrs, ...prev.pressReleases.filter(a => !checkedPrKeys.has(articleCacheKey(a)))],
-          news: [...checkedNews, ...prev.news.filter(a => !checkedNewsKeys.has(articleCacheKey(a)))],
+          pressReleases: mergeArticles(checked.slice(0, prs.length), prev.pressReleases),
+          news: mergeArticles(checked.slice(prs.length), prev.news),
         }));
       } catch { /* handled */ }
       finally { setAiChecking(false); }
