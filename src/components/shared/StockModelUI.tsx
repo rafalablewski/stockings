@@ -18,7 +18,7 @@ const CARD_COLOR_MAP: Record<string, { bg: string; border: string; text: string 
   red:     { bg: 'color-mix(in srgb, var(--coral) 15%, transparent)',  border: 'color-mix(in srgb, var(--coral) 30%, transparent)',  text: '#f87171' },
   yellow:  { bg: 'color-mix(in srgb, var(--gold) 15%, transparent)',   border: 'color-mix(in srgb, var(--gold) 30%, transparent)',   text: '#facc15' },
   purple:  { bg: 'color-mix(in srgb, var(--violet) 15%, transparent)', border: 'color-mix(in srgb, var(--violet) 30%, transparent)', text: '#c084fc' },
-  orange:  { bg: 'color-mix(in srgb, var(--coral) 15%, transparent)',  border: 'color-mix(in srgb, var(--coral) 30%, transparent)',  text: '#fb923c' },
+  orange:  { bg: 'color-mix(in srgb, var(--gold) 15%, transparent)',  border: 'color-mix(in srgb, var(--gold) 30%, transparent)',  text: '#fb923c' },
   cyan:    { bg: 'color-mix(in srgb, var(--cyan) 15%, transparent)',   border: 'color-mix(in srgb, var(--cyan) 30%, transparent)',   text: '#22d3ee' },
   violet:  { bg: 'color-mix(in srgb, var(--violet) 15%, transparent)', border: 'color-mix(in srgb, var(--violet) 30%, transparent)', text: '#a78bfa' },
   mint:    { bg: 'color-mix(in srgb, var(--mint) 15%, transparent)',   border: 'color-mix(in srgb, var(--mint) 30%, transparent)',   text: '#34d399' },

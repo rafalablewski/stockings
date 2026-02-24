@@ -27,28 +27,28 @@ export class FinancialModelErrorBoundary extends Component<ErrorBoundaryProps, E
       return (
         <div style={{
           padding: '48px',
-          background: 'linear-gradient(135deg, rgba(255,123,114,0.1) 0%, rgba(255,123,114,0.05) 100%)',
-          border: '1px solid rgba(255,123,114,0.3)',
+          background: 'linear-gradient(135deg, color-mix(in srgb, var(--coral) 10%, transparent) 0%, color-mix(in srgb, var(--coral) 5%, transparent) 100%)',
+          border: '1px solid color-mix(in srgb, var(--coral) 30%, transparent)',
           borderRadius: '16px',
           textAlign: 'center',
           margin: '24px'
         }}>
           <div style={{ fontSize: '48px' }}>⚠️</div>
-          <h2 style={{ color: '#FF7B72', fontFamily: 'Outfit, sans-serif' }}>
+          <h2 style={{ color: 'var(--coral)', fontFamily: 'Outfit, sans-serif' }}>
             Calculation Error
           </h2>
-          <p style={{ color: '#8B949E', fontFamily: 'Outfit, sans-serif' }}>
+          <p style={{ color: 'var(--text2)', fontFamily: 'Outfit, sans-serif' }}>
             An error occurred in the financial model. This may be due to invalid input parameters.
           </p>
-          <p style={{ color: '#8B949E', fontSize: '14px', fontFamily: 'Space Mono, monospace' }}>
+          <p style={{ color: 'var(--text2)', fontSize: '14px', fontFamily: 'Space Mono, monospace' }}>
             {this.state.error?.message || 'Unknown error'}
           </p>
           <button
             onClick={() => window.location.reload()}
             style={{
               padding: '12px 24px',
-              background: '#22D3EE',
-              color: '#05070A',
+              background: 'var(--cyan)',
+              color: 'var(--bg)',
               border: 'none',
               borderRadius: '8px',
               fontWeight: 600,

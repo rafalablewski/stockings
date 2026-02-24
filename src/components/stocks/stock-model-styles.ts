@@ -394,10 +394,6 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   background: var(--mint);
   color: var(--bg);
 }
-.nav-dropdown-item.tab-projection.active {
-  background: var(--accent);
-  color: var(--bg);
-}
 .nav-dropdown-item:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;

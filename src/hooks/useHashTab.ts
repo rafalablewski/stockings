@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 
 /**
  * Syncs the active tab with the URL hash so that:
@@ -9,11 +9,15 @@ import { useState, useCallback, useEffect } from 'react';
  * - Page refresh preserves the active tab
  */
 export function useHashTab(validIds: string[], defaultId: string = 'overview') {
-  const [activeTab, setActiveTabState] = useState(() => {
+  const validIdSet = useMemo(() => new Set(validIds), [validIds]);
+
+  const getTabFromHash = useCallback(() => {
     if (typeof window === 'undefined') return defaultId;
     const hash = window.location.hash.slice(1);
-    return validIds.includes(hash) ? hash : defaultId;
-  });
+    return validIdSet.has(hash) ? hash : defaultId;
+  }, [defaultId, validIdSet]);
+
+  const [activeTab, setActiveTabState] = useState(getTabFromHash);
 
   const setActiveTab = useCallback((tabId: string) => {
     setActiveTabState(tabId);
@@ -23,12 +27,11 @@ export function useHashTab(validIds: string[], defaultId: string = 'overview') {
   // Listen for browser back/forward
   useEffect(() => {
     const handlePopState = () => {
-      const hash = window.location.hash.slice(1);
-      setActiveTabState(validIds.includes(hash) ? hash : defaultId);
+      setActiveTabState(getTabFromHash());
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [validIds, defaultId]);
+  }, [getTabFromHash]);
 
   return [activeTab, setActiveTab] as const;
 }
