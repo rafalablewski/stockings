@@ -2111,7 +2111,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
                   <div>Tier 1b: Closest form+date match</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>nearest date within 14 days, form type normalized</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>nearest date within 14 days, form type normalized (PRNEWS &rarr; 8-K)</div>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
                   Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
@@ -2124,7 +2124,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
                   <div>Tier 2: Cross-reference key lookup</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>accession or FORM|YYYY-MM-DD in cross-ref index</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>accession or FORM|YYYY-MM-DD in cross-ref index (with aliases)</div>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
                   Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} /><span style={{ color: 'var(--gold)', fontWeight: 600 }}>DATA ONLY</span></span>
@@ -2181,7 +2181,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             </div>
             <div style={{ marginTop: 10, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
               <div><span style={{ color: 'var(--text)' }}>Storage:</span> filing_cross_refs table &mdash; keyed by ticker + filing_key (accession or FORM|DATE)</div>
-              <div><span style={{ color: 'var(--text)' }}>Lookup:</span> accession number first, then closest FORM|YYYY-MM-DD (within 14 days)</div>
+              <div><span style={{ color: 'var(--text)' }}>Lookup:</span> accession number first, then closest FORM|YYYY-MM-DD (within 14 days, with aliases e.g. PRNEWS &rarr; 8-K)</div>
               <div><span style={{ color: 'var(--text)' }}>Display:</span> shown as <span style={{ opacity: 0.5 }}>{'// source → extracted data'}</span> lines below the filing row</div>
             </div>
 
@@ -2230,10 +2230,10 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)' }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--mint)' }}>GREEN DB</span>
+                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--mint)' }}>MINT DB</span>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
-                  Complete record: filingDate, fileUrl, and status all present in DB.
+                  Filing is in DB and current status is TRACKED (matched in sec-filings.ts).
                 </div>
               </div>
               <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
@@ -2242,7 +2242,16 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                   <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--gold)' }}>GOLD DB</span>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
-                  Partial record: filing saved to DB but missing some metadata fields.
+                  Filing is in DB and current status is DATA ONLY (cross-refs exist but not in sec-filings.ts).
+                </div>
+              </div>
+              <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)' }} />
+                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--coral)' }}>CORAL DB</span>
+                </div>
+                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                  Filing is in DB but current status is UNTRACKED (no index entry, no cross-refs).
                 </div>
               </div>
               <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
