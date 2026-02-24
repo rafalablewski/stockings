@@ -1353,7 +1353,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           else news.push(item);
 
           records.set(art.cacheKey, art);
-          if (!art.dismissed) newKeys.add(art.cacheKey);
+          newKeys.add(art.cacheKey);
         }
 
         // Propagate hidden state across headline duplicates: if ANY cache key
