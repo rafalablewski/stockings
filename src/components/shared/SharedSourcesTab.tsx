@@ -79,6 +79,26 @@ function articleCacheKey(article: ArticleItem): string {
   return (article.url || article.headline || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 60);
 }
 
+/** Normalize headline for deduplication (matches server-side deduplicateReleases logic) */
+function normalizeHeadline(headline: string): string {
+  return headline
+    .toLowerCase()
+    .replace(/\s*[-–—]\s*(business wire|pr newswire|globenewswire|prnewswire).*$/i, '')
+    .replace(/[^a-z0-9]/g, '')
+    .slice(0, 60);
+}
+
+/** Remove duplicate articles by normalized headline, keeping first occurrence */
+function deduplicateByHeadline(articles: ArticleItem[]): ArticleItem[] {
+  const seen = new Set<string>();
+  return articles.filter(a => {
+    const key = normalizeHeadline(a.headline);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 /** DB record shape for per-article status display */
 interface DbRecord {
   cacheKey: string;
@@ -88,6 +108,7 @@ interface DbRecord {
   source: string | null;
   articleType: string | null;
   dismissed: boolean;
+  hidden: boolean;
 }
 
 // ── Article row ─────────────────────────────────────────────────────────────
@@ -98,10 +119,12 @@ const SourceArticleRow: React.FC<{
   ticker: string;
   isGenuinelyNew?: boolean;
   isDismissed?: boolean;
+  isHidden?: boolean;
   dbRecord?: DbRecord | null;
   persistedAnalysis?: string | null;
   onDismissNew?: () => void;
-}> = ({ article, type, showAnalysis, ticker, isGenuinelyNew, isDismissed, dbRecord, persistedAnalysis, onDismissNew }) => {
+  onToggleHide?: () => void;
+}> = ({ article, type, showAnalysis, ticker, isGenuinelyNew, isDismissed, isHidden, dbRecord, persistedAnalysis, onDismissNew, onToggleHide }) => {
   const cacheKey = articleCacheKey(article);
   const [aiAnalysis, setAiAnalysis] = useState<string | null>(persistedAnalysis || null);
 
@@ -227,6 +250,60 @@ const SourceArticleRow: React.FC<{
     }
   };
 
+  // Hidden articles: collapsed single-line with low opacity and unhide button
+  if (isHidden) {
+    return (
+      <div style={{ opacity: 0.15, transition: 'opacity 0.2s' }}
+        onMouseEnter={e => (e.currentTarget.style.opacity = '0.35')}
+        onMouseLeave={e => (e.currentTarget.style.opacity = '0.15')}
+      >
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '3px 12px', borderRadius: 6,
+        }}>
+          <span style={{
+            fontSize: 9, fontFamily: 'Space Mono, monospace', fontWeight: 600,
+            padding: '1px 6px', borderRadius: 4, flexShrink: 0,
+            background: tc.bg, color: tc.text,
+          }}>
+            {type === 'pr' ? 'PR' : 'NEWS'}
+          </span>
+          <span style={{
+            fontSize: 11, color: 'var(--text3)', flex: 1, minWidth: 0,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            textDecoration: 'line-through',
+          }}>
+            {article.headline}
+          </span>
+          {article.date && (
+            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)', flexShrink: 0 }}>
+              {article.date}
+            </span>
+          )}
+          <span style={{ fontSize: 8, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', flexShrink: 0, textTransform: 'uppercase' }}>hidden</span>
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+          <div style={{ flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => onToggleHide?.()}
+              title="Unhide article"
+              style={{
+                fontSize: 9, fontFamily: 'inherit', padding: '1px 5px', borderRadius: 4,
+                color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
+                border: '1px solid var(--border)', cursor: 'pointer', outline: 'none',
+                display: 'inline-flex', alignItems: 'center',
+              }}
+            >
+              <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" />
+                <circle cx="8" cy="8" r="2" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* Header row — clickable expand/collapse when analysis exists */}
@@ -245,7 +322,8 @@ const SourceArticleRow: React.FC<{
         onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
-        {/* Chevron (visible when analysis exists) */}
+        {/* Chevron (fixed-width slot so rows align whether analysis exists or not) */}
+        <span style={{ width: 12, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
         {aiAnalysis && (
           <svg
             width={12} height={12} viewBox="0 0 24 24" fill="none"
@@ -254,12 +332,12 @@ const SourceArticleRow: React.FC<{
             style={{
               transition: 'transform 0.2s',
               transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
-              flexShrink: 0,
             }}
           >
             <path d="M9 5l7 7-7 7" />
           </svg>
         )}
+        </span>
         {/* Status dot */}
         {showAnalysis && (
           <span
@@ -272,14 +350,45 @@ const SourceArticleRow: React.FC<{
             }}
           />
         )}
-        {/* Source type badge */}
+        {/* Source type badge — fixed width so columns align */}
         <span style={{
           fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
-          padding: '2px 8px', borderRadius: 5, flexShrink: 0,
-          minWidth: 48, textAlign: 'center',
+          padding: '2px 0', borderRadius: 5, flexShrink: 0,
+          width: 48, textAlign: 'center',
           background: tc.bg, color: tc.text, whiteSpace: 'nowrap',
         }}>
           {type === 'pr' ? 'PR' : 'NEWS'}
+        </span>
+        {/* NEW / SEEN badge — fixed-width slot so headline column aligns */}
+        <span style={{ width: 34, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          {isGenuinelyNew && !isDismissed && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
+              title="Click to acknowledge"
+              style={{
+                fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+                padding: '1px 5px', borderRadius: 3,
+                color: 'var(--sky)', background: 'var(--sky-dim)',
+                border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
+                cursor: 'pointer', outline: 'none', fontFamily: 'inherit',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'color-mix(in srgb, var(--sky) 20%, transparent)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--sky-dim)'; }}
+            >
+              NEW
+            </button>
+          )}
+          {isGenuinelyNew && isDismissed && (
+            <span style={{
+              fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+              padding: '1px 5px', borderRadius: 3,
+              color: 'var(--sky)', opacity: 0.3,
+              border: '1px solid transparent',
+            }}>
+              SEEN
+            </span>
+          )}
         </span>
         {/* Headline */}
         <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -301,27 +410,22 @@ const SourceArticleRow: React.FC<{
             </span>
           );
         })()}
-        {/* Source name */}
-        {article.source && (
-          <span style={{ fontSize: 11, color: 'var(--text3)', flexShrink: 0, maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {article.source}
-          </span>
-        )}
-        {/* Date */}
-        {article.date && (
-          <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px' }}>
-            {article.date}
-          </span>
-        )}
-        {/* Status label */}
-        {showAnalysis && statusLabel && (
-          <span style={{
-            fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
-            color: statusColor, flexShrink: 0, whiteSpace: 'nowrap',
-          }}>
-            {statusLabel}
-          </span>
-        )}
+        {/* Source name — fixed width for column alignment */}
+        <span style={{ fontSize: 11, color: 'var(--text3)', flexShrink: 0, width: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'right' }}>
+          {article.source || ''}
+        </span>
+        {/* Date — fixed width for column alignment */}
+        <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px', width: 100, textAlign: 'right', whiteSpace: 'nowrap' }}>
+          {article.date || ''}
+        </span>
+        {/* Status label — fixed width so DB column aligns */}
+        <span style={{
+          fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
+          color: showAnalysis && statusLabel ? statusColor : 'transparent', flexShrink: 0, whiteSpace: 'nowrap',
+          width: 72, textAlign: 'right',
+        }}>
+          {showAnalysis && statusLabel ? statusLabel : '\u00A0'}
+        </span>
         {/* DB status button — hover fetches live data from database */}
         <span style={{ position: 'relative', flexShrink: 0 }} onMouseEnter={handleDbHoverEnter} onMouseLeave={handleDbHoverLeave}>
           <button
@@ -372,35 +476,6 @@ const SourceArticleRow: React.FC<{
             </div>
           )}
         </span>
-        {/* NEW badge — clickable: acknowledge as "seen"; SEEN badge after dismiss */}
-        {isGenuinelyNew && !isDismissed && (
-          <button
-            onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
-            title="Click to acknowledge"
-            style={{
-              fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-              padding: '1px 5px', borderRadius: 3, flexShrink: 0,
-              color: 'var(--sky)', background: 'var(--sky-dim)',
-              border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
-              cursor: 'pointer', outline: 'none', fontFamily: 'inherit',
-              transition: 'all 0.15s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'color-mix(in srgb, var(--sky) 20%, transparent)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'var(--sky-dim)'; }}
-          >
-            NEW
-          </button>
-        )}
-        {isGenuinelyNew && isDismissed && (
-          <span style={{
-            fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
-            color: 'var(--sky)', opacity: 0.3,
-            border: '1px solid transparent',
-          }}>
-            SEEN
-          </span>
-        )}
         {/* Action buttons — stop propagation so clicks don't toggle expand */}
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
         <div style={{ display: 'flex', gap: 4, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
@@ -464,6 +539,22 @@ const SourceArticleRow: React.FC<{
               </svg>
             </button>
           )}
+          <button
+            onClick={() => onToggleHide?.()}
+            title="Hide article"
+            style={{
+              fontSize: 9, fontFamily: 'inherit', padding: '2px 5px', borderRadius: 4,
+              color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
+              border: '1px solid var(--border)', cursor: 'pointer', outline: 'none',
+              display: 'inline-flex', alignItems: 'center', transition: 'all 0.15s',
+              opacity: 0.5,
+            }}
+          >
+            <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" />
+              <line x1="2" y1="14" x2="14" y2="2" />
+            </svg>
+          </button>
         </div>
       </div>
 
@@ -527,6 +618,7 @@ const SourceArticleRow: React.FC<{
 
 // ── Separate PR / News article lists (max 10 each) ─────────────────────────
 const SECTION_MAX = 10;
+const HIDDEN_PREVIEW = 5;
 
 const SourceArticleSection: React.FC<{
   articles: ArticleItem[];
@@ -538,9 +630,23 @@ const SourceArticleSection: React.FC<{
   dbRecords: Map<string, DbRecord>;
   persistedSourceAnalyses: Record<string, string>;
   onDismissNew?: (cacheKey: string) => void;
-}> = ({ articles, type, label, showAnalysis, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onDismissNew }) => {
-  const sorted = [...articles].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-  const displayed = sorted.slice(0, SECTION_MAX);
+  onToggleHide?: (cacheKey: string) => void;
+}> = ({ articles, type, label, showAnalysis, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onDismissNew, onToggleHide }) => {
+  const [showAllHidden, setShowAllHidden] = useState(false);
+  const sorted = [...articles].sort((a, b) => {
+    // Sort hidden articles to the bottom, then by date descending
+    const aHidden = dbRecords.get(articleCacheKey(a))?.hidden ? 1 : 0;
+    const bHidden = dbRecords.get(articleCacheKey(b))?.hidden ? 1 : 0;
+    if (aHidden !== bHidden) return aHidden - bHidden;
+    return (b.date || '').localeCompare(a.date || '');
+  });
+  // Split visible/hidden so hidden articles don't count toward SECTION_MAX
+  const visible = sorted.filter(a => !dbRecords.get(articleCacheKey(a))?.hidden);
+  const hidden = sorted.filter(a => dbRecords.get(articleCacheKey(a))?.hidden);
+  const displayedHidden = showAllHidden ? hidden : hidden.slice(0, HIDDEN_PREVIEW);
+  const displayed = [...visible.slice(0, SECTION_MAX), ...displayedHidden];
+  const visibleCount = Math.min(visible.length, SECTION_MAX);
+  const remainingHidden = hidden.length - HIDDEN_PREVIEW;
 
   if (displayed.length === 0) return null;
 
@@ -550,14 +656,45 @@ const SourceArticleSection: React.FC<{
         fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px',
         color: 'var(--text3)', padding: '8px 12px 4px', opacity: 0.7,
       }}>
-        {label} ({displayed.length})
+        {label} ({visibleCount}{hidden.length > 0 ? ` + ${hidden.length} hidden` : ''})
       </div>
-      {displayed.map((a, i) => {
+      {displayed.map((a) => {
         const key = articleCacheKey(a);
         return (
-          <SourceArticleRow key={`${type}-${i}`} article={a} type={type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(key)} isDismissed={dbRecords.get(key)?.dismissed ?? false} dbRecord={dbRecords.get(key) || null} persistedAnalysis={persistedSourceAnalyses[key] || null} onDismissNew={() => onDismissNew?.(key)} />
+          <SourceArticleRow key={key} article={a} type={type} showAnalysis={showAnalysis} ticker={ticker} isGenuinelyNew={newArticleKeys.has(key)} isDismissed={dbRecords.get(key)?.dismissed ?? false} isHidden={dbRecords.get(key)?.hidden ?? false} dbRecord={dbRecords.get(key) || null} persistedAnalysis={persistedSourceAnalyses[key] || null} onDismissNew={() => onDismissNew?.(key)} onToggleHide={() => onToggleHide?.(key)} />
         );
       })}
+      {/* Load more / collapse for hidden articles */}
+      {remainingHidden > 0 && !showAllHidden && (
+        <button
+          onClick={() => setShowAllHidden(true)}
+          style={{
+            display: 'block', width: '100%', padding: '4px 12px', margin: '2px 0',
+            fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)',
+            background: 'transparent', border: 'none', cursor: 'pointer',
+            opacity: 0.25, textAlign: 'left', transition: 'opacity 0.15s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.5')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '0.25')}
+        >
+          + {remainingHidden} more hidden
+        </button>
+      )}
+      {showAllHidden && hidden.length > HIDDEN_PREVIEW && (
+        <button
+          onClick={() => setShowAllHidden(false)}
+          style={{
+            display: 'block', width: '100%', padding: '4px 12px', margin: '2px 0',
+            fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)',
+            background: 'transparent', border: 'none', cursor: 'pointer',
+            opacity: 0.25, textAlign: 'left', transition: 'opacity 0.15s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.5')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '0.25')}
+        >
+          collapse hidden
+        </button>
+      )}
     </div>
   );
 };
@@ -571,8 +708,14 @@ const SourceArticleList: React.FC<{
   dbRecords: Map<string, DbRecord>;
   persistedSourceAnalyses: Record<string, string>;
   onDismissNew?: (cacheKey: string) => void;
-}> = ({ pressReleases, news, showAnalysis, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onDismissNew }) => {
-  if (pressReleases.length === 0 && news.length === 0) {
+  onToggleHide?: (cacheKey: string) => void;
+}> = ({ pressReleases, news, showAnalysis, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onDismissNew, onToggleHide }) => {
+  // Deduplicate within each section and across sections (PRs take priority)
+  const dedupedPRs = deduplicateByHeadline(pressReleases);
+  const prHeadlines = new Set(dedupedPRs.map(a => normalizeHeadline(a.headline)));
+  const dedupedNews = deduplicateByHeadline(news).filter(a => !prHeadlines.has(normalizeHeadline(a.headline)));
+
+  if (dedupedPRs.length === 0 && dedupedNews.length === 0) {
     return (
       <div style={{ fontSize: 13, color: 'var(--text3)', padding: '16px 12px', lineHeight: 1.6 }}>
         No articles yet. Click AI Fetch to search for articles.
@@ -582,11 +725,11 @@ const SourceArticleList: React.FC<{
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <SourceArticleSection articles={pressReleases} type="pr" label="Press Releases" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} dbRecords={dbRecords} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
-      {pressReleases.length > 0 && news.length > 0 && (
+      <SourceArticleSection articles={dedupedPRs} type="pr" label="Press Releases" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} dbRecords={dbRecords} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} onToggleHide={onToggleHide} />
+      {dedupedPRs.length > 0 && dedupedNews.length > 0 && (
         <div style={{ height: 1, background: 'color-mix(in srgb, var(--border) 40%, transparent)', margin: '4px 12px' }} />
       )}
-      <SourceArticleSection articles={news} type="news" label="News" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} dbRecords={dbRecords} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
+      <SourceArticleSection articles={dedupedNews} type="news" label="News" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} dbRecords={dbRecords} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} onToggleHide={onToggleHide} />
     </div>
   );
 };
@@ -610,7 +753,8 @@ const CompanyFeedCard: React.FC<{
   onRecheck?: () => void;
   onTabChange?: (tab: 'pr' | 'news') => void;
   onDismissNew?: (cacheKey: string) => void;
-}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onLoad, onLoadPR, onLoadNews, onRecheck, onDismissNew }) => {
+  onToggleHide?: (cacheKey: string) => void;
+}> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onLoad, onLoadPR, onLoadNews, onRecheck, onDismissNew, onToggleHide }) => {
   const prCount = Math.min(data.pressReleases.length, SECTION_MAX);
   const newsCount = Math.min(data.news.length, SECTION_MAX);
   const isActive = data.loading || data.loadingPR || data.loadingNews || (aiChecking ?? false);
@@ -848,7 +992,7 @@ const CompanyFeedCard: React.FC<{
         )}
 
         {data.loaded && (
-          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} dbRecords={dbRecords} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} />
+          <SourceArticleList pressReleases={data.pressReleases} news={data.news} showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} dbRecords={dbRecords} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} onToggleHide={onToggleHide} />
         )}
       </div>
     </article>
@@ -918,7 +1062,16 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       if (saveRes.ok) {
         console.log('[ai-fetch] save OK:', saveBody);
         for (const a of articles) {
-          const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: !newKeys.has(a.cacheKey) };
+          // Inherit hidden from same cache key OR any headline match (covers different URLs for same article)
+          const existingRec = dbRecordsRef.current.get(a.cacheKey);
+          let inheritHidden = existingRec?.hidden ?? false;
+          if (!inheritHidden) {
+            const nh = normalizeHeadline(a.headline);
+            for (const [, r] of dbRecordsRef.current) {
+              if (r.hidden && normalizeHeadline(r.headline) === nh) { inheritHidden = true; break; }
+            }
+          }
+          const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: newKeys.has(a.cacheKey) ? false : (existingRec?.dismissed ?? false), hidden: inheritHidden };
           dbRecordsRef.current.set(a.cacheKey, rec);
         }
         setDbRecords(new Map(dbRecordsRef.current));
@@ -1148,18 +1301,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         articleType: prs.includes(a) ? 'pr' : 'news',
       }));
       if (allToSave.length > 0) {
-        try {
-          await fetch('/api/seen-articles', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ticker, articles: allToSave }),
-          });
-          for (const a of allToSave) {
-            const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: a.articleType, dismissed: !compNewKeys.has(a.cacheKey) };
-            dbRecordsRef.current.set(a.cacheKey, rec);
-          }
-          setDbRecords(new Map(dbRecordsRef.current));
-        } catch { /* best-effort */ }
+        await saveArticlesToDb(allToSave, compNewKeys);
       }
 
       // Check analyzed status
@@ -1177,7 +1319,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     } catch {
       setCompCards(prev => ({ ...prev, [name]: { ...(prev[name] || { activeTab: 'pr' as const, pressReleases: [], news: [], loadingPR: false, loadingNews: false }), loading: false, loaded: false, error: 'Could not fetch feeds' } }));
     }
-  }, [ticker, checkAnalyzed]);
+  }, [checkAnalyzed, saveArticlesToDb]);
 
   const loadAll = useCallback(async () => {
     setLoadingAll(true);
@@ -1200,7 +1342,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           throw new Error(`HTTP ${res.status}: ${errBody.error || errBody.detail || 'unknown'}`);
         }
         const data = await res.json();
-        const articles: { cacheKey: string; headline: string; date: string | null; url: string | null; source: string | null; articleType: string | null; dismissed: boolean }[] = data.articles || [];
+        const articles: { cacheKey: string; headline: string; date: string | null; url: string | null; source: string | null; articleType: string | null; dismissed: boolean; hidden: boolean }[] = data.articles || [];
 
         if (cancelled) return;
 
@@ -1224,28 +1366,46 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           newKeys.add(art.cacheKey);
         }
 
+        // Propagate hidden state across headline duplicates: if ANY cache key
+        // for a headline is hidden, ALL variants should be treated as hidden.
+        // This prevents a fresh-fetch duplicate (different URL/cache key) from
+        // "unhiding" an article the user explicitly hid.
+        const hiddenHeadlines = new Set<string>();
+        for (const [, rec] of records) {
+          if (rec.hidden) hiddenHeadlines.add(normalizeHeadline(rec.headline));
+        }
+        if (hiddenHeadlines.size > 0) {
+          for (const [key, rec] of records) {
+            if (!rec.hidden && hiddenHeadlines.has(normalizeHeadline(rec.headline))) {
+              records.set(key, { ...rec, hidden: true });
+            }
+          }
+        }
+
         dbRecordsRef.current = records;
         setDbRecords(new Map(records));
         setNewArticleKeys(newKeys);
-        setMainCard({ loading: false, loadingPR: false, loadingNews: false, loaded: true, error: null, activeTab: 'pr', pressReleases: prs, news });
-        console.log(`[db-init] loaded ${articles.length} articles from DB (${prs.length} PR, ${news.length} news, ${newKeys.size} NEW)`);
 
-        // Run check-analyzed on DB articles
-        const all = [...prs, ...news];
+        // Deduplicate by normalized headline (DB may accumulate entries with different cache keys for the same article)
+        const dedupedPrs = deduplicateByHeadline(prs);
+        const prHeadlines = new Set(dedupedPrs.map(a => normalizeHeadline(a.headline)));
+        const dedupedNews = deduplicateByHeadline(news).filter(a => !prHeadlines.has(normalizeHeadline(a.headline)));
+        console.log(`[db-init] loaded ${articles.length} articles from DB (${dedupedPrs.length} PR, ${dedupedNews.length} news after dedup, ${newKeys.size} NEW)`);
+
+        // Run check-analyzed on DB articles, then show everything in one render
+        const all = [...dedupedPrs, ...dedupedNews];
+        let finalPrs = dedupedPrs;
+        let finalNews = dedupedNews;
         if (all.length > 0) {
           initialRecheckDone.current = true;
-          setAiChecking(true);
           try {
             const checked = await checkAnalyzed(all);
-            if (!cancelled) {
-              setMainCard(prev => ({
-                ...prev,
-                pressReleases: checked.slice(0, prs.length),
-                news: checked.slice(prs.length),
-              }));
-            }
-          } catch { /* handled */ }
-          finally { if (!cancelled) setAiChecking(false); }
+            finalPrs = checked.slice(0, dedupedPrs.length);
+            finalNews = checked.slice(dedupedPrs.length);
+          } catch { /* show articles with analyzed: null as fallback */ }
+        }
+        if (!cancelled) {
+          setMainCard({ loading: false, loadingPR: false, loadingNews: false, loaded: true, error: null, activeTab: 'pr', pressReleases: finalPrs, news: finalNews });
         }
       } catch (err) {
         console.error('[db-init] error:', err);
@@ -1304,6 +1464,44 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           dismiss: true,
         }),
       }).catch(err => console.error('[dismiss] error:', err));
+    }
+  }, [ticker, mainCard.pressReleases, mainCard.news]);
+
+  // Toggle hide/unhide for an article: propagate across ALL cache key
+  // variants sharing the same normalized headline, then persist to DB.
+  const toggleHideArticle = useCallback((cacheKey: string) => {
+    const rec = dbRecordsRef.current.get(cacheKey);
+    const newHidden = !(rec?.hidden ?? false);
+
+    // Find the article to get its headline
+    const prArticle = mainCard.pressReleases.find(a => articleCacheKey(a) === cacheKey);
+    const newsArticle = !prArticle ? mainCard.news.find(a => articleCacheKey(a) === cacheKey) : null;
+    const article = prArticle || newsArticle;
+    const headline = rec?.headline || article?.headline || '';
+    const nh = normalizeHeadline(headline);
+
+    // Propagate to ALL cache keys with the same normalized headline
+    const affectedKeys: { cacheKey: string; headline: string; date: string; url: string; source?: string; articleType: string }[] = [];
+    for (const [k, r] of dbRecordsRef.current) {
+      if (normalizeHeadline(r.headline) === nh) {
+        dbRecordsRef.current.set(k, { ...r, hidden: newHidden });
+        affectedKeys.push({ cacheKey: k, headline: r.headline, date: r.date || '', url: r.url || '', source: r.source || undefined, articleType: r.articleType || 'pr' });
+      }
+    }
+    // Also cover the clicked key if it wasn't in records yet
+    if (!dbRecordsRef.current.has(cacheKey) && article) {
+      dbRecordsRef.current.set(cacheKey, { cacheKey, headline: article.headline, date: article.date || null, url: article.url || null, source: article.source || null, articleType: prArticle ? 'pr' : 'news', dismissed: false, hidden: newHidden });
+      affectedKeys.push({ cacheKey, headline: article.headline, date: article.date || '', url: article.url || '', source: article.source, articleType: prArticle ? 'pr' : 'news' });
+    }
+    setDbRecords(new Map(dbRecordsRef.current));
+
+    // Persist all affected keys to DB
+    if (affectedKeys.length > 0) {
+      fetch('/api/seen-articles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker, articles: affectedKeys, hide: newHidden }),
+      }).catch(err => console.error('[hide] error:', err));
     }
   }, [ticker, mainCard.pressReleases, mainCard.news]);
 
@@ -1460,6 +1658,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           onRecheck={recheckMainCard}
           onTabChange={(tab) => setMainCard(prev => ({ ...prev, activeTab: tab }))}
           onDismissNew={dismissNewArticle}
+          onToggleHide={toggleHideArticle}
         />
       </div>
 
@@ -1505,6 +1704,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   onRecheck={() => recheckCompetitor(comp.name)}
                   onTabChange={(tab) => setCompTab(comp.name, tab)}
                   onDismissNew={dismissNewArticle}
+                  onToggleHide={toggleHideArticle}
                 />
               );
             })}
@@ -1721,6 +1921,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Stemmer: -s, -ed, -ing, -tion, -ment, -ies, -ly, -er, -or</div>
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Overlap: max(article→DB, DB→article) — bidirectional</div>
               <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              {/* Dollar-amount guard */}
+              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--gold)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
+                <div style={{ color: 'var(--gold)', fontWeight: 600 }}>Dollar-amount guard</div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>Article has $ figure? &rarr; DB entry must also have $</div>
+                <div style={{ fontSize: 10, color: 'var(--text3)' }}>Both have $? &rarr; numbers must overlap ($30M &ne; $50M)</div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic' }}>Prevents matching different awards/contracts from same entity</div>
+              </div>
+              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
               {/* Tier 1 row */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
@@ -1755,8 +1963,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} />
                 <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>UNTRACKED</span>
               </div>
-              {/* Date proximity note */}
-              <div style={{ marginTop: 8, padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', fontStyle: 'italic', textAlign: 'center' }}>Date proximity guard: recurring reports<br />require higher overlap when dates are &gt;30 days apart</div>
+              {/* Guard notes */}
+              <div style={{ marginTop: 8, padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', fontStyle: 'italic', textAlign: 'center' }}>Date proximity guard: recurring reports require higher overlap when dates are &gt;30 days apart<br />Dollar-amount guard: $30M award &ne; $50M award even from the same entity &mdash; numbers must match</div>
             </div>
 
             {/* Divider */}

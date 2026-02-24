@@ -73,6 +73,27 @@ function daysBetween(a: string, b: string): number {
   return Math.abs(da.getTime() - db2.getTime()) / (1000 * 60 * 60 * 24);
 }
 
+/** Extract all numeric sequences (up to 4 digits) from text for distinguishing similar announcements */
+function extractNumbers(text: string): Set<string> {
+  const matches = text.match(/\d+/g);
+  if (!matches) return new Set();
+  return new Set(matches.filter(n => n.length <= 4));
+}
+
+/** True if both strings contain numbers but share none in common */
+function numbersDisagree(a: string, b: string): boolean {
+  const numsA = extractNumbers(a);
+  const numsB = extractNumbers(b);
+  if (numsA.size === 0 || numsB.size === 0) return false;
+  for (const n of numsA) { if (numsB.has(n)) return false; }
+  return true;
+}
+
+/** True if text contains a dollar amount like "$30", "$4.5 million" */
+function hasDollarAmount(text: string): boolean {
+  return /\$\s*\d/.test(text);
+}
+
 // Count how many words from set A appear in set B
 function overlapCount(a: Set<string>, b: Set<string>): number {
   let n = 0;
@@ -98,6 +119,19 @@ function localMatch(articleHeadline: string, articleDate: string, analysisData: 
 
   for (const entry of analysisData) {
     const gap = daysBetween(articleDate, entry.date);
+    const entryFullText = entry.detail ? `${entry.headline} ${entry.detail}` : entry.headline;
+
+    // Dollar-amount guards: only apply number-based guards when the article
+    // contains a dollar figure (e.g. "$30 Million").  Without this gate,
+    // incidental date-derived numbers (e.g. "March 2, 2026" → "2","2026")
+    // cause numbersDisagree to skip legitimate matches for routine articles.
+    if (hasDollarAmount(articleHeadline)) {
+      // Entry has no dollar amounts at all → different aspect of same topic
+      if (!hasDollarAmount(entryFullText)) continue;
+      // Both have dollar amounts but the numbers don't overlap →
+      // different financial events (e.g. $30M vs $43M contract)
+      if (numbersDisagree(articleHeadline, entryFullText)) continue;
+    }
 
     // Tier 1: headline-only match (high confidence — headlines are short and focused)
     const headlineWords = extractKeywords(entry.headline);

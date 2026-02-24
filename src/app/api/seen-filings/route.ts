@@ -19,9 +19,10 @@ export const dynamic = 'force-dynamic';
  * POST /api/seen-filings
  *
  * Batch-upsert filings.
- * Body: { ticker, filings: IncomingFiling[], dismiss?: boolean }
+ * Body: { ticker, filings: IncomingFiling[], dismiss?: boolean, hide?: boolean }
  *   - dismiss: true  = user clicked NEW badge to dismiss
  *   - dismiss: false  = saving filings from SEC fetch
+ *   - hide: true/false = toggle hidden state for these filings
  */
 
 interface IncomingFiling {
@@ -61,6 +62,7 @@ async function ensureTable(): Promise<void> {
     status TEXT,
     cross_refs TEXT,
     dismissed BOOLEAN NOT NULL DEFAULT FALSE,
+    hidden BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW() NOT NULL
   )`;
 
@@ -69,6 +71,9 @@ async function ensureTable(): Promise<void> {
 
   await rawSql`CREATE INDEX IF NOT EXISTS seen_filings_ticker_idx
     ON seen_filings (ticker)`;
+
+  // Add hidden column if it doesn't exist yet (added after initial schema)
+  await rawSql`ALTER TABLE seen_filings ADD COLUMN IF NOT EXISTS hidden BOOLEAN NOT NULL DEFAULT FALSE`;
 
   tableVerified = true;
 }
@@ -115,6 +120,7 @@ export async function GET(request: NextRequest) {
         status: seenFilings.status,
         crossRefs: seenFilings.crossRefs,
         dismissed: seenFilings.dismissed,
+        hidden: seenFilings.hidden,
       })
       .from(seenFilings)
       .where(accessionNumber
@@ -132,6 +138,7 @@ export async function GET(request: NextRequest) {
       status: row.status,
       crossRefs: row.crossRefs ? JSON.parse(row.crossRefs) : null,
       dismissed: row.dismissed,
+      hidden: row.hidden,
     }));
 
     return NextResponse.json({ filings });
@@ -153,7 +160,7 @@ export async function GET(request: NextRequest) {
 // ---------------------------------------------------------------------------
 export async function POST(request: NextRequest) {
   try {
-    const { ticker, filings, dismiss } = await request.json();
+    const { ticker, filings, dismiss, hide } = await request.json();
 
     if (!ticker || !filings || !Array.isArray(filings)) {
       return NextResponse.json({ error: 'Missing required fields (ticker, filings[])' }, { status: 400 });
@@ -188,7 +195,13 @@ export async function POST(request: NextRequest) {
 
     let totalInDb = 0;
     if (values.length > 0) {
-      if (dismiss) {
+      if (hide !== undefined) {
+        // Toggle hidden state
+        await db.insert(seenFilings).values(values).onConflictDoUpdate({
+          target: [seenFilings.ticker, seenFilings.accessionNumber],
+          set: { hidden: !!hide },
+        });
+      } else if (dismiss) {
         await db.insert(seenFilings).values(values).onConflictDoUpdate({
           target: [seenFilings.ticker, seenFilings.accessionNumber],
           set: { dismissed: true },

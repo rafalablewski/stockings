@@ -122,6 +122,7 @@ export const seenFilings = pgTable('seen_filings', {
   status: text('status'),                         // 'tracked' | 'data_only' | 'new'
   crossRefs: text('cross_refs'),                  // JSON stringified cross-reference data
   dismissed: boolean('dismissed').default(false).notNull(),
+  hidden: boolean('hidden').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => [
   uniqueIndex('seen_filings_ticker_accession_idx').on(table.ticker, table.accessionNumber),
@@ -143,6 +144,7 @@ export const seenArticles = pgTable('seen_articles', {
   source: text('source'),                  // e.g. 'Yahoo Finance', 'CoinDesk'
   articleType: text('article_type'),       // 'pr' | 'news'
   dismissed: boolean('dismissed').default(false).notNull(), // user clicked NEW to dismiss
+  hidden: boolean('hidden').default(false).notNull(),      // user hid this article from view
   createdAt: timestamp('created_at').defaultNow().notNull(),
 }, (table) => [
   uniqueIndex('seen_articles_ticker_key_idx').on(table.ticker, table.cacheKey),
