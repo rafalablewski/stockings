@@ -70,6 +70,21 @@ const plugins = [
       { key: "MCP Config", value: "HIGH" },
     ],
   },
+  {
+    id: "methodology-sync-checker",
+    name: "Methodology Sync Checker",
+    version: "1.0.0",
+    phase: "Post",
+    matchers: ["Edit", "Write", "NotebookEdit"],
+    description:
+      "Detects when Sources or EDGAR pipeline code changes and reminds you to review the corresponding methodology section for accuracy. Watches API routes, shared tab components, data files, and the DB schema.",
+    config: [
+      { key: "Sources Pipeline", value: "6 watch paths" },
+      { key: "EDGAR Pipeline", value: "3 watch paths" },
+      { key: "Data globs", value: "research-sources, sec-filings" },
+      { key: "Schema files", value: "schema.ts (both)" },
+    ],
+  },
 ];
 
 function PhaseBadge({ phase }: { phase: string }) {

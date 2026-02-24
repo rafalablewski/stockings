@@ -45,6 +45,11 @@ const hooks = [
     label: "Agent Impact Detector",
     severity: "post",
   },
+  {
+    slug: "methodology-sync-checker",
+    label: "Methodology Sync",
+    severity: "post",
+  },
 ];
 
 function Navigation() {
