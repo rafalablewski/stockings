@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { checkAiGate } from '@/lib/ai-gate';
 
 /**
  * POST /api/sources/analyze
@@ -9,6 +10,9 @@ import { NextRequest, NextResponse } from 'next/server';
  * Body: { url: string, headline: string, source?: string, date?: string, ticker: string }
  */
 export async function POST(request: NextRequest) {
+  const gateError = checkAiGate(request);
+  if (gateError) return gateError;
+
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || '';
 
   try {
@@ -100,8 +104,13 @@ Where <level> is one of:
 
     if (!claudeRes.ok) {
       const errText = await claudeRes.text();
-      console.error('Claude API error:', errText);
-      return NextResponse.json({ error: 'AI analysis failed' }, { status: 502 });
+      console.error('Claude API error:', claudeRes.status, errText);
+      let reason = `Upstream API returned ${claudeRes.status}`;
+      try {
+        const parsed = JSON.parse(errText);
+        if (parsed?.error?.message) reason = parsed.error.message;
+      } catch { /* use default reason */ }
+      return NextResponse.json({ error: `AI analysis failed: ${reason}` }, { status: 502 });
     }
 
     const claudeData = await claudeRes.json();

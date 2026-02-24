@@ -25,7 +25,10 @@ export function middleware(request: NextRequest) {
   }
 
   const pin = process.env.AUTH_PIN;
-  if (!pin) return NextResponse.next(); // No PIN configured → open access
+  if (!pin) {
+    // No PIN configured → deny access (secure by default)
+    return NextResponse.json({ error: 'Access denied — no AUTH_PIN configured' }, { status: 403 });
+  }
 
   const provided = request.headers.get('x-auth-pin');
   if (provided && safeEqual(provided, pin)) return NextResponse.next();

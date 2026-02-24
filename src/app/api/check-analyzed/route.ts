@@ -220,8 +220,10 @@ export async function POST(request: NextRequest) {
       console.log(`[check-analyzed] ${ticker}: NO ANTHROPIC_API_KEY set — local only. ${localMatchCount}/${articles.length} matched, ${analysisData.length} DB entries`);
       return NextResponse.json({ ticker, results: localResults, method: 'local', dbEntries: analysisData.length, reason: 'no_api_key' });
     }
-    if (DISABLE_AI_MATCHING === 'true' || forceLocal) {
-      console.log(`[check-analyzed] ${ticker}: AI matching disabled (${forceLocal ? 'client toggle' : 'env var'}). ${localMatchCount}/${articles.length} matched, ${analysisData.length} DB entries`);
+    const aiDisabledHeader = request.headers.get('x-ai-disabled') === 'true';
+    if (DISABLE_AI_MATCHING === 'true' || forceLocal || aiDisabledHeader) {
+      const reason = aiDisabledHeader ? 'client toggle' : forceLocal ? 'client toggle' : 'env var';
+      console.log(`[check-analyzed] ${ticker}: AI matching disabled (${reason}). ${localMatchCount}/${articles.length} matched, ${analysisData.length} DB entries`);
       return NextResponse.json({ ticker, results: localResults, method: 'local', dbEntries: analysisData.length });
     }
 

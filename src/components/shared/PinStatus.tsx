@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-type Status = 'loading' | 'open' | 'locked';
+type Status = 'loading' | 'closed' | 'locked';
 
 export default function PinStatus() {
   const [status, setStatus] = useState<Status>('loading');
@@ -10,17 +10,23 @@ export default function PinStatus() {
   useEffect(() => {
     fetch('/api/auth/verify-pin')
       .then(res => res.json())
-      .then(data => setStatus(data.required ? 'locked' : 'open'))
-      .catch(() => setStatus('open'));
+      .then(data => {
+        if (data.required && data.configured) {
+          setStatus('locked');  // PIN set and active
+        } else {
+          setStatus('closed');  // No PIN configured — access denied
+        }
+      })
+      .catch(() => setStatus('closed'));
   }, []);
 
   if (status === 'loading') return null;
 
-  const isOpen = status === 'open';
+  const isClosed = status === 'closed';
 
   return (
     <span
-      title={isOpen ? 'No PIN configured — open access' : 'PIN protection active'}
+      title={isClosed ? 'No AUTH_PIN configured — access denied' : 'PIN protection active'}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -31,13 +37,13 @@ export default function PinStatus() {
         letterSpacing: '0.1em',
         padding: '2px 7px',
         borderRadius: 3,
-        background: isOpen ? 'rgba(255,177,66,0.10)' : 'rgba(126,231,135,0.10)',
-        color: isOpen ? 'rgba(255,177,66,0.7)' : 'rgba(126,231,135,0.7)',
-        border: `1px solid ${isOpen ? 'rgba(255,177,66,0.20)' : 'rgba(126,231,135,0.20)'}`,
+        background: isClosed ? 'rgba(255,77,79,0.10)' : 'rgba(126,231,135,0.10)',
+        color: isClosed ? 'rgba(255,77,79,0.7)' : 'rgba(126,231,135,0.7)',
+        border: `1px solid ${isClosed ? 'rgba(255,77,79,0.20)' : 'rgba(126,231,135,0.20)'}`,
         lineHeight: 1,
       }}
     >
-      {/* lock / unlock icon */}
+      {/* lock icon */}
       <svg
         width={10}
         height={10}
@@ -48,19 +54,10 @@ export default function PinStatus() {
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        {isOpen ? (
-          <>
-            <rect x={3} y={11} width={18} height={11} rx={2} ry={2} />
-            <path d="M7 11V7a5 5 0 0 1 9.9-1" />
-          </>
-        ) : (
-          <>
-            <rect x={3} y={11} width={18} height={11} rx={2} ry={2} />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </>
-        )}
+        <rect x={3} y={11} width={18} height={11} rx={2} ry={2} />
+        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
       </svg>
-      {isOpen ? 'Open' : 'PIN'}
+      {isClosed ? 'Closed' : 'PIN'}
     </span>
   );
 }

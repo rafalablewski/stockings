@@ -11,6 +11,7 @@ const STORAGE_KEY = 'auth-pin';
 export default function PinGate({ children }: PinGateProps) {
   const [unlocked, setUnlocked] = useState(false);
   const [pinRequired, setPinRequired] = useState<boolean | null>(null); // null = loading
+  const [pinConfigured, setPinConfigured] = useState(true);
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [checking, setChecking] = useState(false);
@@ -21,13 +22,12 @@ export default function PinGate({ children }: PinGateProps) {
     fetch('/api/auth/verify-pin')
       .then(res => res.json())
       .then(data => {
-        if (!data.required) {
-          // No PIN configured on server — skip gate
-          setPinRequired(false);
-          setUnlocked(true);
+        setPinRequired(data.required);
+        setPinConfigured(!!data.configured);
+        if (data.configured === false) {
+          // No AUTH_PIN configured — system is locked, no PIN will work
           return;
         }
-        setPinRequired(true);
         // Check if we already have a stored PIN
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
@@ -92,6 +92,71 @@ export default function PinGate({ children }: PinGateProps) {
 
   // No PIN required or already unlocked
   if (unlocked) return <>{children}</>;
+
+  // No AUTH_PIN configured — fully locked, no PIN will work
+  if (!pinConfigured) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: 240,
+          padding: 32,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 16,
+            padding: '32px 40px',
+            background: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(255,77,79,0.15)',
+            borderRadius: 10,
+            maxWidth: 280,
+            width: '100%',
+          }}
+        >
+          <svg
+            width={28}
+            height={28}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="rgba(255,77,79,0.4)"
+            strokeWidth={1.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x={3} y={11} width={18} height={11} rx={2} ry={2} />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              color: 'rgba(255,77,79,0.7)',
+            }}
+          >
+            Access Closed
+          </div>
+          <div
+            style={{
+              fontSize: 10,
+              color: 'rgba(255,255,255,0.3)',
+              textAlign: 'center',
+              lineHeight: 1.5,
+            }}
+          >
+            No AUTH_PIN is configured on the server. Set the AUTH_PIN environment variable to enable access.
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Show PIN gate
   return (
