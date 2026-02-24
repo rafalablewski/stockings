@@ -692,7 +692,8 @@ const FilingRow: React.FC<{
         onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
-        {/* Chevron (visible when analysis exists) */}
+        {/* Chevron (fixed-width slot so rows align whether analysis exists or not) */}
+        <span style={{ width: 12, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
         {analysis && (
           <svg
             width={12}
@@ -707,12 +708,12 @@ const FilingRow: React.FC<{
             style={{
               transition: 'transform 0.2s',
               transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
-              flexShrink: 0,
             }}
           >
             <path d="M9 5l7 7-7 7" />
           </svg>
         )}
+        </span>
         {/* Status dot — always visible */}
         <span
           title={statusCfg.title}
@@ -722,44 +723,46 @@ const FilingRow: React.FC<{
             opacity: 0.9, transition: 'opacity 0.2s, background 0.2s',
           }}
         />
-        {/* Form badge */}
+        {/* Form badge — fixed width so columns align across rows */}
         <span style={{
           fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
-          padding: '2px 8px', borderRadius: 5, flexShrink: 0,
-          minWidth: 64, textAlign: 'center',
+          padding: '2px 0', borderRadius: 5, flexShrink: 0,
+          width: 82, textAlign: 'center',
           background: colors.bg, color: colors.text, whiteSpace: 'nowrap',
         }}>
           {formDisplay}
         </span>
-        {/* NEW / SEEN badge — placed right after form badge for visibility */}
-        {isGenuinelyNew && !isDismissed && (
-          <button
-            onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
-            title="Click to acknowledge"
-            style={{
+        {/* NEW / SEEN badge — fixed-width slot so description column aligns */}
+        <span style={{ width: 34, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          {isGenuinelyNew && !isDismissed && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
+              title="Click to acknowledge"
+              style={{
+                fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
+                padding: '1px 5px', borderRadius: 3,
+                color: 'var(--sky)', background: 'var(--sky-dim)',
+                border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
+                cursor: 'pointer', outline: 'none', fontFamily: 'inherit',
+                transition: 'all 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'color-mix(in srgb, var(--sky) 20%, transparent)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'var(--sky-dim)'; }}
+            >
+              NEW
+            </button>
+          )}
+          {isGenuinelyNew && isDismissed && (
+            <span style={{
               fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-              padding: '1px 5px', borderRadius: 3, flexShrink: 0,
-              color: 'var(--sky)', background: 'var(--sky-dim)',
-              border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
-              cursor: 'pointer', outline: 'none', fontFamily: 'inherit',
-              transition: 'all 0.15s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'color-mix(in srgb, var(--sky) 20%, transparent)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'var(--sky-dim)'; }}
-          >
-            NEW
-          </button>
-        )}
-        {isGenuinelyNew && isDismissed && (
-          <span style={{
-            fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-            padding: '1px 5px', borderRadius: 3, flexShrink: 0,
-            color: 'var(--sky)', opacity: 0.3,
-            border: '1px solid transparent',
-          }}>
-            SEEN
-          </span>
-        )}
+              padding: '1px 5px', borderRadius: 3,
+              color: 'var(--sky)', opacity: 0.3,
+              border: '1px solid transparent',
+            }}>
+              SEEN
+            </span>
+          )}
+        </span>
         {/* Description */}
         <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {r.filing.primaryDocDescription || r.filing.form}
@@ -780,14 +783,15 @@ const FilingRow: React.FC<{
             </span>
           );
         })()}
-        {/* Date */}
-        <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px' }}>
+        {/* Date — fixed width for column alignment */}
+        <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px', width: 72, textAlign: 'right' }}>
           {formatEdgarDate(r.filing.filingDate)}
         </span>
-        {/* Status label */}
+        {/* Status label — fixed width so DB column aligns */}
         <span style={{
           fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
           color: statusCfg.color, flexShrink: 0, whiteSpace: 'nowrap',
+          width: 72, textAlign: 'right',
         }}>
           {statusCfg.label}
         </span>
