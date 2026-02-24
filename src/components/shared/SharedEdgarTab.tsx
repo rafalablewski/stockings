@@ -239,7 +239,7 @@ function matchFilings(
 
 // ── Status helpers ──────────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<FilingStatus, { color: string; label: string; title: string; desc: string }> = {
-  tracked:   { color: 'var(--mint)',  label: 'IN DB',     title: 'Tracked in database', desc: 'Indexed in sec-filings.ts — matched by accession number or form+date' },
+  tracked:   { color: 'var(--mint)',  label: 'IN DB',     title: 'Tracked in database', desc: 'Indexed in sec-filings.ts — matched by accession number or closest form+date (within 14 days)' },
   data_only: { color: 'var(--gold)',  label: 'DATA ONLY', title: 'Data captured but filing not indexed in sec-filings.ts', desc: 'Data captured in other files (capital, timeline, etc.) but not indexed in sec-filings.ts' },
   new:       { color: 'var(--coral)', label: 'UNTRACKED', title: 'Not in database', desc: 'Not tracked — no index entry, no cross-reference data' },
 };
@@ -1962,7 +1962,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           fontFamily: 'Space Mono, monospace', lineHeight: 1.6,
         }}>
           Cross-refs checked: capital, timeline, financials, catalysts, company, quarterly-metrics
-          {' \u00B7 '}matched by accession # or FORM|DATE key (\u00B11 day)
+          {' \u00B7 '}matched by accession # or closest FORM|DATE key (within 14 days)
         </div>
       )}
 
@@ -2098,8 +2098,8 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               {/* Tier 1b */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
-                  <div>Tier 1b: Legacy form+date fuzzy match</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&plusmn;1 day tolerance, form type normalized</div>
+                  <div>Tier 1b: Closest form+date match</div>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>nearest date within 14 days, form type normalized</div>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
                   Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
@@ -2169,7 +2169,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             </div>
             <div style={{ marginTop: 10, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
               <div><span style={{ color: 'var(--text)' }}>Storage:</span> filing_cross_refs table &mdash; keyed by ticker + filing_key (accession or FORM|DATE)</div>
-              <div><span style={{ color: 'var(--text)' }}>Lookup:</span> accession number first, then FORM|YYYY-MM-DD &plusmn;1 day</div>
+              <div><span style={{ color: 'var(--text)' }}>Lookup:</span> accession number first, then closest FORM|YYYY-MM-DD (within 14 days)</div>
               <div><span style={{ color: 'var(--text)' }}>Display:</span> shown as <span style={{ opacity: 0.5 }}>{'// source → extracted data'}</span> lines below the filing row</div>
             </div>
 
