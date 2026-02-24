@@ -40,6 +40,8 @@ function extractKeywords(text: string): Set<string> {
   const stopWords = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','is','are','was','were','has','have','had','be','been','being','will','would','could','should','may','might','can','do','does','did','not','no','its','it','this','that','these','those','their','our','your','my','we','he','she','they','i','me','us','him','her','them','up','out','over','into','about','after','before','between','through','during','than','more','most','very','also','just','so','if','then','when','where','how','what','which','who','whom','why','all','each','every','any','few','some','new','said','says','according']);
   return new Set(
     text.toLowerCase()
+      .replace(/\bq[1-4]\b/g, 'quarter')   // Q1/Q2/Q3/Q4 → quarter (so "Q4" matches "Quarterly")
+      .replace(/\bfy\b/g, 'fiscal year')    // FY → fiscal year
       .replace(/[^a-z0-9\s]/g, ' ')
       .split(/\s+/)
       .filter(w => w.length > 2 && !stopWords.has(w))

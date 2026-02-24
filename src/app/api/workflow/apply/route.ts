@@ -634,12 +634,39 @@ ${analysis}`;
       const successCount = results.filter(r => r.success).length;
       const failCount = results.filter(r => !r.success).length;
 
+      // Auto re-seed the Postgres database so check-analyzed reflects newly written data.
+      // The workflow writes to .ts source files, but check-analyzed queries Postgres.
+      // Without this step, articles remain UNTRACKED until a manual db/setup is run.
+      let reseed: { triggered: boolean; success?: boolean; message?: string } = { triggered: false };
+      if (successCount > 0) {
+        try {
+          const origin = new URL(request.url).origin;
+          const reseedRes = await fetch(`${origin}/api/db/setup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          if (reseedRes.ok) {
+            const reseedData = await reseedRes.json();
+            reseed = { triggered: true, success: true, message: reseedData.message };
+            console.log(`[apply] Auto re-seeded database after patches: ${reseedData.message}`);
+          } else {
+            const errText = await reseedRes.text();
+            reseed = { triggered: true, success: false, message: `HTTP ${reseedRes.status}` };
+            console.error(`[apply] Database re-seed failed: ${reseedRes.status} — ${errText.slice(0, 200)}`);
+          }
+        } catch (e) {
+          reseed = { triggered: true, success: false, message: (e as Error).message };
+          console.error('[apply] Database re-seed error:', e);
+        }
+      }
+
       return NextResponse.json({
         dryRun: false,
         patchCount: patches.length,
         applied: successCount,
         failed: failCount,
         results,
+        reseed,
         summary: failCount === 0
           ? `Applied ${successCount} patches to ${ticker.toUpperCase()} database`
           : `Applied ${successCount}/${patches.length} patches (${failCount} failed)`,
