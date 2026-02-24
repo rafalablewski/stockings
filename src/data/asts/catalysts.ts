@@ -30,10 +30,10 @@ import type { Catalyst, CompletedMilestone, DataMetadata } from '../shared/types
 // ============================================================================
 
 export const CATALYSTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-15',
-  source: 'Q3 2025 earnings call, Feb 2026 8-K, BB6 unfolding PR, Mar 2025 8-Ks/Form 4s/S-3ASR/S-8/13D-A, Jan-Feb 2025 8-Ks/13D/Form 3s/13D-A',
-  nextExpectedUpdate: 'After Q4 2025 earnings (~March 2026)',
-  notes: 'BB6 unfolded Feb 10, 2026. $1B new converts + $614M registered directs announced Feb 11. Jan-Feb 2025: AT&T 13D (2.7%), Ligado RSA ($550M), Johnson/Larson board, Bernal 50K RSU, prelim Q4 ($1M first revenue).',
+  lastUpdated: '2026-02-23',
+  source: 'SDA $30M Europa PR (Feb 23), Feb 20/23 8-Ks (greenshoe/settlements), Q4 business update scheduling PR (Feb 19), Q3 2025 earnings call, Feb 2026 8-K, BB6 unfolding PR, Mar 2025 8-Ks/Form 4s/S-3ASR/S-8/13D-A, Jan-Feb 2025 8-Ks/13D/Form 3s/13D-A',
+  nextExpectedUpdate: 'After Q4 2025 business update (March 2, 2026)',
+  notes: 'SDA $30M HALO Europa contract Feb 23. $75M greenshoe exercised Feb 20 (total converts $1.075B). RD settlements completed. Q4 business update call March 2, 2026. BB6 unfolded Feb 10. Gov contracts now $93M+ (10 total).',
 };
 
 // ============================================================================
@@ -176,8 +176,8 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
     category: 'Service',
   },
   {
-    event: 'Q4 2025 10-K Filing & Full Year Financials',
-    timeline: 'March 2026',
+    event: 'Q4 2025 Business Update & Full Year Financials',
+    timeline: 'March 2, 2026',
     impact: 'Medium',
     category: 'Financing',
   },
@@ -190,7 +190,7 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
     category: 'Government',
   },
   {
-    event: 'DoD/SDA/DIU Contract Expansion (9x+)',
+    event: 'DoD/SDA/DIU Contract Expansion (10x and growing)',
     timeline: '2026',
     impact: 'High',
     category: 'Government',
@@ -239,6 +239,9 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
  */
 export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   // === 2026 ===
+  { event: 'SDA $30M HALO Europa Track 2 Prime Contract (AST SpaceMobile USA defense subsidiary; 10th gov contract)', date: 'Feb 23, 2026', category: 'Government' },
+  { event: 'Feb 2026 RD Settlements & $296.5M Notes Repurchases Completed (RD#1 Feb 20, RD#2 Feb 23)', date: 'Feb 23, 2026', category: 'Financing' },
+  { event: '$75M Greenshoe Exercised — Total 2.25% Notes Now $1.075B ($75M of $150M option)', date: 'Feb 20, 2026', category: 'Financing' },
   { event: '$1B 2.25% Convertible Notes Indenture Settled (U.S. Bank Trust trustee; ~$983.7M net)', date: 'Feb 17, 2026', category: 'Financing' },
   { event: 'Vodafone SC 13D/A: Dropped below 5% threshold (dilution, no sales; 14.5M shares)', date: 'Feb 17, 2026', category: 'Corporate' },
   { event: '$1B 2.25% Convertible Notes + $614M Registered Directs + $296.5M Notes Repurchased', date: 'Feb 11, 2026', category: 'Financing' },

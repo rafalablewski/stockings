@@ -5002,20 +5002,20 @@ const SECFilingTracker = () => {
     // Key dates
     firstFiling: 'April 6, 2021',
     firstFilingNote: 'SPAC Close / 8-K',
-    latestEvent: 'MDA SHIELD Contract',
-    latestEventDate: 'Jan 16, 2026',
+    latestEvent: 'SDA $30M HALO Europa Contract',
+    latestEventDate: 'Feb 23, 2026',
 
     // [PR_CHECKLIST_FILING_DATA] - MANDATORY: Update lastPressRelease, lastPressReleaseTitle,
     // latestEvent, latestEventDate, and filings['8-K'] with every ASTS PR!
     // See src/data/shared/types.ts for the full universal checklist.
-    lastPressRelease: 'January 16, 2026',
-    lastPressReleaseTitle: 'MDA SHIELD Prime Contract Award',
+    lastPressRelease: 'February 23, 2026',
+    lastPressReleaseTitle: 'SDA $30M HALO Europa Prime Contract',
     
     // Latest filings by type
     filings: {
       '10-K': { date: 'March 3, 2025', description: 'FY 2024', color: 'blue' },
       '10-Q': { date: 'Nov 10, 2025', description: 'Q3 2025', color: 'purple' },
-      '8-K': { date: 'Feb 17, 2026', description: 'Convertible Notes Indenture', color: 'yellow' },
+      '8-K': { date: 'Feb 23, 2026', description: 'RD Settlements + Notes Repurchases', color: 'yellow' },
       'S-3': { date: 'Oct 2025', description: 'Shelf Registration', color: 'green' },
       '424B5': { date: 'Oct 2025', description: '$1.15B Converts', color: 'orange' },
       'DEF 14A': { date: '—', description: 'Proxy (Annual)', color: 'cyan' },
@@ -5563,6 +5563,8 @@ const TimelineTab = () => {
 
   // [PR_CHECKLIST_RECENT_PRESS_RELEASES] - MANDATORY: Add new PR at top!
   const pressReleases = [
+    { date: 'Feb 23, 2026', category: 'Government', color: 'var(--gold)', title: 'SDA $30M HALO Europa Prime Contract — AST SpaceMobile USA Defense Subsidiary' },
+    { date: 'Feb 19, 2026', category: 'Event', color: 'var(--text3)', title: 'Q4 2025 Quarterly Business Update Scheduled for March 2, 2026' },
     { date: 'Jan 22, 2026', category: 'Launch', color: '#4ade80', title: 'BlueBird 7 Launch Timing — Late Feb on New Glenn' },
     { date: 'Jan 16, 2026', category: 'Government', color: 'var(--gold)', title: 'MDA SHIELD Prime Contract Award — Golden Dome Program' },
     { date: 'Dec 24, 2025', category: 'Launch', color: '#4ade80', title: 'BlueBird 6 Successfully Deployed — First Block 2 Satellite in Orbit' },

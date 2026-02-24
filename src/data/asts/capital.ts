@@ -10,8 +10,8 @@
  * - Equity offerings: 8-K filings, press releases
  * - SBC: 10-Q/10-K compensation disclosures
  *
- * LAST UPDATED: 2026-02-15 (23 filings: Feb offerings + Dec insider + 13G/13D/A + Form 4s)
- * NEXT UPDATE: After Q4 2025 10-K or new proxy filing. GREENSHOE DEADLINE: Feb 20.
+ * LAST UPDATED: 2026-02-23 (25 filings: Feb offerings/greenshoe/settlements + Dec insider + 13G/13D/A + Form 4s)
+ * NEXT UPDATE: After Q4 2025 10-K (~March 2, 2026) or new proxy filing.
  *
  * AI AGENT INSTRUCTIONS:
  * When updating from new 13D/A or proxy filing:
@@ -28,10 +28,10 @@ import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata, Conver
 // ============================================================================
 
 export const CAPITAL_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-19',
-  source: 'Feb 17 8-K (Indenture), Feb 17 SC 13D/A (Vodafone Amend. 3), Feb 17 Form 4 (Bernal RSU vest), Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7, Jun-Aug 2025 8-Ks/424B5s/FWP/Form 4s/13D-A/10-Q, Mar 2025 Form 4s/144/S-3ASR/S-8/13D-A/8-K, Jan-Feb 2025 8-Ks/13D/Form 3s/Form 4/13D-A',
-  nextExpectedUpdate: 'Q4 2025 10-K (~March 2026). GREENSHOE DEADLINE: Feb 20, 2026 ($150M convert option).',
-  notes: 'Feb 19 audit: 124 filings cross-referenced. Vodafone dropped below 5% threshold (dilution, no sales). Bernal 3K RSU vest (from 50K grant). Convertible notes indenture filed (settlement Feb 17). AT&T 13D: 2.7%. Avellan 25% (Amend. 12).',
+  lastUpdated: '2026-02-23',
+  source: 'Feb 23 8-K (RD settlements + notes repurchases), Feb 20 8-K ($75M greenshoe exercise), Feb 17 8-K (Indenture), Feb 17 SC 13D/A (Vodafone Amend. 3), Feb 17 Form 4 (Bernal RSU vest), Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7, Jun-Aug 2025 8-Ks/424B5s/FWP/Form 4s/13D-A/10-Q, Mar 2025 Form 4s/144/S-3ASR/S-8/13D-A/8-K, Jan-Feb 2025 8-Ks/13D/Form 3s/Form 4/13D-A',
+  nextExpectedUpdate: 'Q4 2025 10-K (~March 2, 2026).',
+  notes: 'Feb 23 audit: 126 filings cross-referenced. Greenshoe $75M of $150M exercised Feb 20 — total 2.25% notes now $1.075B. RD#1 settled Feb 20, RD#2 settled Feb 23. $296.5M notes repurchased. Vodafone below 5%. AT&T 13D: 2.7%. Avellan 25%.',
 };
 
 // ============================================================================
@@ -94,10 +94,10 @@ export const TOTAL_VOTING_SHARES =
  * Fully diluted share count
  * Including options, RSUs, remaining converts
  * Post-Feb 2026: 4.25% ($3.5M, ~0.1M), 2.375% ($325M, ~2.7M),
- * 2.00% ($1.15B, ~11.9M), new 2.25% ($1B, ~8.6M) = ~23.3M from converts
- * Plus RSUs/options ~12M = ~415M total
+ * 2.00% ($1.15B, ~11.9M), new 2.25% ($1.075B, ~11.1M) = ~25.8M from converts
+ * Plus RSUs/options ~12M = ~417.6M total
  */
-export const FULLY_DILUTED_SHARES = 415.0;
+export const FULLY_DILUTED_SHARES = 417.6;
 
 /**
  * Net dilution from Feb 2026 registered directs
@@ -121,14 +121,18 @@ export const FEB_2026_RD_NET_DILUTION = {
  */
 export const FEB_2026_GREENSHOE: {
   amount: number;
+  exercised: number;
   deadline: string;
-  exercised: boolean | null;
+  exercisedDate: string;
   additionalShares: number;
+  notes: string;
 } = {
-  amount: 150,                // $150M additional principal
+  amount: 150,                // $150M maximum additional principal
+  exercised: 75,              // $75M actually exercised (partial — 50% of option)
   deadline: '2026-02-20',     // Exercise deadline
-  exercised: null,            // null = pending; update when known
-  additionalShares: 1.3,      // ~1.3M additional conversion shares if exercised
+  exercisedDate: '2026-02-20', // Consummated Feb 20; notified Feb 19
+  additionalShares: 2.5,      // ~2,493,328 additional max conversion shares (11,091,528 total - 8,598,200 base)
+  notes: '$75M of $150M greenshoe exercised. Total 2.25% notes: $1,075M outstanding. Max shares on conversion: 11,091,528 at max rate 10.3177 shares/$1K. Same terms/indenture as Feb 17 base issuance.',
 };
 
 // ============================================================================
@@ -261,12 +265,12 @@ export const EQUITY_OFFERINGS: EquityOffering[] = [
   },
   {
     date: '2026-02-11',
-    event: 'Feb 2026 Convertible Notes',
+    event: 'Feb 2026 Convertible Notes (incl. $75M greenshoe)',
     type: 'Convertible',
-    amount: 1000,
+    amount: 1075,
     price: 116.30,
-    shares: 8.6,
-    notes: '2.25% due 2036. Conversion rate 8.5982/share per $1K. Rule 144A. UBS lead. $150M greenshoe option. Net ~$983.7M.',
+    shares: 11.1,
+    notes: '2.25% due 2036. $1B base + $75M greenshoe (of $150M option) = $1,075M total. Conversion rate 8.5982/share per $1K (max 10.3177). Rule 144A. UBS lead. Net ~$1,057M. Greenshoe exercised Feb 19-20.',
   },
   {
     date: '2025-10-15',
@@ -405,7 +409,7 @@ export const EQUITY_OFFERINGS: EquityOffering[] = [
  * Used for historical dilution analysis
  */
 export const DILUTION_HISTORY = [
-  { quarter: 'Q1 2026', classA: 290.4, implied: 379.8, fullyDiluted: 415.0, event: 'Feb 2026: $1B converts + two RDs (6.3M shares) + ATM continued' },
+  { quarter: 'Q1 2026', classA: 290.4, implied: 379.8, fullyDiluted: 417.6, event: 'Feb 2026: $1.075B converts (incl. $75M greenshoe) + two RDs (6.3M shares) + ATM continued' },
   { quarter: 'Q4 2025', classA: 280.0, implied: 369.4, fullyDiluted: 400.0, event: 'ATM sales + Oct RD. Vanguard 13G: 7.68% (21.5M shares)' },
   { quarter: 'Q3 2025', classA: 272.0, implied: 361.4, fullyDiluted: 395.0, event: 'Oct converts + ATM' },
   { quarter: 'Q2 2025', classA: 245.0, implied: 334.4, fullyDiluted: 380.0, event: 'Jul converts issued' },
@@ -497,14 +501,14 @@ export const CONVERTIBLE_NOTES: ConvertibleNoteDetail[] = [
   },
   {
     name: '2.25% Notes due 2036',
-    originalPrincipal: 1000,
-    outstandingPrincipal: 1000,
+    originalPrincipal: 1075,
+    outstandingPrincipal: 1075,
     couponRate: 2.25,
     maturityDate: '2036',
     conversionPrice: 116.30,
-    maxSharesOnConversion: 8.6,
+    maxSharesOnConversion: 11.1,
     status: 'outstanding',
-    notes: 'Feb 2026 issue. Rule 144A. UBS lead. $150M greenshoe option (through Feb 20). Net ~$983.7M. Indenture with U.S. Bank Trust Co. (trustee). Settled Feb 17. Max shares on conversion: 11,865,355 (at max rate 10.3177). Interest semi-annually Apr 15 & Oct 15, starting Oct 15, 2026.',
+    notes: 'Feb 2026 issue. $1B base (settled Feb 17) + $75M greenshoe (exercised Feb 19-20) = $1,075M total. Rule 144A. UBS lead. Net ~$1,057M. Indenture with U.S. Bank Trust Co. (trustee). Max shares on conversion: 11,091,528 (at max rate 10.3177 shares/$1K). Interest semi-annually Apr 15 & Oct 15, starting Oct 15, 2026.',
   },
 ];
 
@@ -532,18 +536,18 @@ export const CASH_RUNWAY_SCENARIOS: CashRunwayScenario[] = [
   },
   {
     label: 'Pro Forma (Post-Feb 2026)',
-    startingCash: 3760,
+    startingCash: 3834,
     quarterlyBurn: 300,
     quarterlyRevenue: 20,
-    runwayQuarters: 13.4,
-    notes: 'Includes ~$984M new converts, net of repurchases. Revenue ramp assumed.',
+    runwayQuarters: 13.7,
+    notes: 'Includes ~$1,057M converts ($984M base + $73M greenshoe net), net of repurchases. All Feb 2026 transactions settled.',
   },
   {
     label: 'Revenue Ramp',
-    startingCash: 3760,
+    startingCash: 3834,
     quarterlyBurn: 300,
     quarterlyRevenue: 75,
-    runwayQuarters: 16.7,
+    runwayQuarters: 17.0,
     notes: 'H2 2025 rev guidance $50-75M. Assumes $75M/Q steady state by H2 2026.',
   },
   {
@@ -562,14 +566,14 @@ export const CASH_RUNWAY_SCENARIOS: CashRunwayScenario[] = [
  */
 export const LIQUIDITY_POSITION = {
   cashAndEquiv: 2780,          // Per 8-K Dec 31, 2025
-  cashProForma: 3760,          // Post-Feb 2026 raises
+  cashProForma: 3834,          // Post-Feb 2026 raises (incl. $75M greenshoe)
   quarterlyBurn: 300,          // CapEx + OpEx guidance
-  totalDebt: 2264,             // Per 8-K
-  totalDebtProForma: 2968,     // Post-Feb 2026
+  totalDebt: 2264,             // Per 8-K (pre-Feb 2026)
+  totalDebtProForma: 3043,     // Post-Feb 2026 ($2,264 + $1,075 converts - $296.5 repurchased)
   atmRemaining: 80,            // ~$80M remaining on $800M ATM
   soundPointFacility: 550,     // $550M available for Ligado
   ubsLoan: 420,                // Cash-collateralized for Ligado
-  asOf: '2026-02-12',
+  asOf: '2026-02-23',
 };
 
 // ============================================================================
@@ -595,26 +599,26 @@ export const DILUTION_SCENARIOS: DilutionScenario[] = [
   },
   {
     label: 'Current (Fully Diluted)',
-    newShares: 35.2,
+    newShares: 37.8,
     source: 'Outstanding converts + options/RSUs',
-    resultingFD: 415.0,
-    dilutionPct: 9.3,
+    resultingFD: 417.6,
+    dilutionPct: 9.9,
     type: 'current',
   },
   {
     label: 'Base Case',
     newShares: 10,
     source: 'ATM remaining (~$80M) + employee equity vesting',
-    resultingFD: 425.0,
-    dilutionPct: 11.9,
+    resultingFD: 427.6,
+    dilutionPct: 12.6,
     type: 'base',
   },
   {
     label: 'Stress Case (All Converts)',
-    newShares: 23.3,
+    newShares: 25.8,
     source: 'All convertible notes convert to equity at strike prices',
-    resultingFD: 438.3,
-    dilutionPct: 15.4,
+    resultingFD: 443.4,
+    dilutionPct: 16.7,
     type: 'stress',
   },
 ];
