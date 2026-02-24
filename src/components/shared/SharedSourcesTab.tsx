@@ -1069,7 +1069,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         if (!dbRecordsRef.current.has(key)) newKeys.add(key);
       }
 
-      setMainCard(prev => ({ ...prev, loadingPR: false, loaded: true, pressReleases: prs }));
+      // Merge: keep DB-loaded PRs that aren't in the fresh fetch (e.g. hidden/older articles)
+      const freshKeys = new Set(prs.map(articleCacheKey));
+      setMainCard(prev => {
+        const dbOnly = prev.pressReleases.filter(a => !freshKeys.has(articleCacheKey(a)));
+        return { ...prev, loadingPR: false, loaded: true, pressReleases: [...prs, ...dbOnly] };
+      });
       setLastFetchedAt(Date.now());
       if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
 
@@ -1106,7 +1111,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         if (!dbRecordsRef.current.has(key)) newKeys.add(key);
       }
 
-      setMainCard(prev => ({ ...prev, loadingNews: false, loaded: true, news }));
+      // Merge: keep DB-loaded news that aren't in the fresh fetch (e.g. hidden/older articles)
+      const freshNewsKeys = new Set(news.map(articleCacheKey));
+      setMainCard(prev => {
+        const dbOnly = prev.news.filter(a => !freshNewsKeys.has(articleCacheKey(a)));
+        return { ...prev, loadingNews: false, loaded: true, news: [...news, ...dbOnly] };
+      });
       setLastFetchedAt(Date.now());
       if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
 
@@ -1159,9 +1169,13 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       if (!dbRecordsRef.current.has(key)) newKeys.add(key);
     }
 
+    // Merge: keep DB-loaded articles that aren't in the fresh fetch (e.g. hidden/older articles)
+    const freshPrKeys = new Set(prs.map(articleCacheKey));
+    const freshNewsKeys = new Set(news.map(articleCacheKey));
     setMainCard(prev => ({
       ...prev, loading: false, loadingPR: false, loadingNews: false, loaded: true, error,
-      pressReleases: prs, news,
+      pressReleases: [...prs, ...prev.pressReleases.filter(a => !freshPrKeys.has(articleCacheKey(a)))],
+      news: [...news, ...prev.news.filter(a => !freshNewsKeys.has(articleCacheKey(a)))],
     }));
     setLastFetchedAt(Date.now());
     if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
