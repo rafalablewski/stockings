@@ -3,6 +3,7 @@ import Link from "next/link";
 import { stockList } from "@/lib/stocks";
 import PinStatus from "@/components/shared/PinStatus";
 import AiToggle from "@/components/shared/AiToggle";
+import PinGate from "@/components/PinGate";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -117,11 +118,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="antialiased min-h-screen flex flex-col bg-black text-white">
-        <Navigation />
-        <main className="flex-1 pt-14">
-          {children}
-        </main>
-        <Footer />
+        <PinGate>
+          <Navigation />
+          <main className="flex-1 pt-14">
+            {children}
+          </main>
+          <Footer />
+        </PinGate>
       </body>
     </html>
   );
