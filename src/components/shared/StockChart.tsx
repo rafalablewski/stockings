@@ -1146,76 +1146,42 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
     <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', paddingBottom: 16 }}>
       {/* Header - responsive stacking */}
       <div style={{ marginBottom: 12, padding: '0 24px' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
-          <div style={{ minWidth: 200 }}>
-            <div style={{ padding: '24px 0', borderBottom: '1px solid var(--border)', marginBottom: 4 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>{symbol}</span></div>
-            {data && (
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 24, fontWeight: 600, fontFamily: 'Space Mono' }}>
-                  ${data.regularMarketPrice?.toFixed(2) || lastPrice.toFixed(2)}
-                </span>
-                <span style={{
-                  fontSize: 14,
-                  color: isPositive ? 'var(--mint)' : 'var(--red)',
-                  fontFamily: 'Space Mono',
-                }}>
-                  {isPositive ? '+' : ''}{priceChange.toFixed(2)} ({isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%)
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Chart type toggle */}
-          <div
-            role="group"
-            aria-label="Chart type"
-            style={{ display: 'flex', gap: 0, background: 'var(--surface2)', borderRadius: 8, padding: 2 }}
-          >
-            {([['line', 'Line'], ['candle', 'OHLC']] as const).map(([type, label]) => (
-              <button
-                key={type}
-                onClick={() => setChartType(type as 'line' | 'candle')}
-                aria-pressed={chartType === type}
-                aria-label={`${label} chart`}
-                style={{
-                  padding: '6px 14px',
-                  fontSize: 11,
-                  fontWeight: chartType === type ? 600 : 400,
-                  letterSpacing: '0.5px',
-                  borderRadius: 6,
-                  border: 'none',
-                  cursor: 'pointer',
-                  background: chartType === type ? 'var(--surface)' : 'transparent',
-                  color: chartType === type ? 'var(--text)' : 'var(--text3)',
-                  transition: 'all 0.15s',
-                  minHeight: 32,
-                  touchAction: 'manipulation',
-                  fontFamily: 'inherit',
-                }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+        <div>
+          <div style={{ padding: '24px 0', borderBottom: '1px solid var(--border)', marginBottom: 4 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>{symbol}</span></div>
+          {data && (
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+              <span style={{ fontSize: 24, fontWeight: 600, fontFamily: 'Space Mono' }}>
+                ${data.regularMarketPrice?.toFixed(2) || lastPrice.toFixed(2)}
+              </span>
+              <span style={{
+                fontSize: 14,
+                color: isPositive ? 'var(--mint)' : 'var(--red)',
+                fontFamily: 'Space Mono',
+              }}>
+                {isPositive ? '+' : ''}{priceChange.toFixed(2)} ({isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%)
+              </span>
+            </div>
+          )}
         </div>
 
-        {/* Time range buttons */}
-        <div
-          role="group"
-          aria-label="Time range"
-          style={{
-            display: 'flex',
-            gap: 2,
-            marginTop: 12,
-            overflowX: 'auto',
-            WebkitOverflowScrolling: 'touch',
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-            background: 'var(--surface2)',
-            borderRadius: 8,
-            padding: 2,
-          }}
-        >
+        {/* Controls row: time range + chart type */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
+          <div
+            role="group"
+            aria-label="Time range"
+            style={{
+              display: 'flex',
+              gap: 2,
+              overflowX: 'auto',
+              WebkitOverflowScrolling: 'touch',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              background: 'var(--surface2)',
+              borderRadius: 8,
+              padding: 2,
+              flex: 1,
+            }}
+          >
           {RANGES.map(r => (
             <button
               key={r.value}
@@ -1265,6 +1231,39 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
           >
             ↻
           </button>
+          </div>
+          {/* Chart type toggle */}
+          <div
+            role="group"
+            aria-label="Chart type"
+            style={{ display: 'flex', gap: 0, background: 'var(--surface2)', borderRadius: 8, padding: 2, flexShrink: 0 }}
+          >
+            {([['line', 'Line'], ['candle', 'OHLC']] as const).map(([type, label]) => (
+              <button
+                key={type}
+                onClick={() => setChartType(type as 'line' | 'candle')}
+                aria-pressed={chartType === type}
+                aria-label={`${label} chart`}
+                style={{
+                  padding: '6px 14px',
+                  fontSize: 11,
+                  fontWeight: chartType === type ? 600 : 400,
+                  letterSpacing: '0.5px',
+                  borderRadius: 6,
+                  border: 'none',
+                  cursor: 'pointer',
+                  background: chartType === type ? 'var(--surface)' : 'transparent',
+                  color: chartType === type ? 'var(--text)' : 'var(--text3)',
+                  transition: 'all 0.15s',
+                  minHeight: 30,
+                  touchAction: 'manipulation',
+                  fontFamily: 'inherit',
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
