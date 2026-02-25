@@ -410,7 +410,7 @@ const SourceArticleRow: React.FC<{
           </button>
           {/* Tooltip — shows live DB data */}
           {dbTooltipVisible && (
-            <div ref={dbTooltipRef} className="sm-ed-db-tooltip" style={{ minWidth: 260, maxWidth: 340 }}>
+            <div ref={dbTooltipRef} className="sm-ed-db-tooltip sm-db-tooltip-responsive">
               {/* Header — explains what this tooltip checks */}
               <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text3)', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
                 Saved in seen_articles DB?

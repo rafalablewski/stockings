@@ -237,7 +237,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         isOpen={investmentSections.has('moat')}
         onToggle={() => toggleSection('moat')}
       >
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+        <div className="sm-grid-2col-responsive" style={{ marginBottom: 16 }}>
           {/* Moat Sources */}
           <div>
             <div style={{ fontWeight: 600, color: 'var(--mint)', fontSize: 13 }} className="sm-mb-12">Moat Sources</div>
@@ -325,7 +325,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         isOpen={investmentSections.has('perspectives')}
         onToggle={() => toggleSection('perspectives')}
       >
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        <div className="sm-grid-3col-responsive">
           {Object.entries(current.perspectives).map(([key, p]) => (
             <div key={key} style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, borderTop: `3px solid ${p.color}` }}>
               <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14, marginBottom: 4 }}>{p.title}</div>
@@ -349,7 +349,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         isOpen={investmentSections.has('position')}
         onToggle={() => toggleSection('position')}
       >
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+        <div className="sm-grid-4col-responsive">
           {Object.entries(current.positionSizing).map(([key, size]) => (
             <div key={key} className="sm-text-center" style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
               <div className="sm-subtle-sm" style={{ textTransform: 'capitalize' }}>{key}</div>

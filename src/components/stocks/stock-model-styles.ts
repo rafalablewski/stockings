@@ -1956,8 +1956,8 @@ input[type="range"]::-webkit-slider-thumb {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 14px;
-  min-width: 280px;
-  max-width: 380px;
+  min-width: min(280px, calc(100vw - 3rem));
+  max-width: min(380px, calc(100vw - 2rem));
   box-shadow: 0 8px 24px rgba(0,0,0,0.3);
   font-size: 10px;
   font-family: 'Space Mono', monospace;
@@ -2377,6 +2377,37 @@ input[type="range"]::-webkit-slider-thumb {
   line-height: 1.6;
 }
 
+/* Responsive grid variants — used by Investment tab and any future multi-column layouts.
+   Inline gridTemplateColumns blocks media query overrides, so these CSS classes
+   provide the default columns while allowing responsive breakpoints to stack them. */
+
+/* 2-column grid (e.g., Moat Sources vs Threats) */
+.sm-grid-2col-responsive {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* 3-column grid (e.g., Perspectives) */
+.sm-grid-3col-responsive {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* 4-column grid (e.g., Position Sizing) */
+.sm-grid-4col-responsive {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* DB tooltip — clamped width for mobile safety */
+.sm-db-tooltip-responsive {
+  min-width: min(260px, calc(100vw - 3rem));
+  max-width: min(340px, calc(100vw - 2rem));
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    § 16. RESPONSIVE BREAKPOINTS
 
@@ -2721,6 +2752,11 @@ input[type="range"]::-webkit-slider-thumb {
     gap: 8px;
   }
 
+  /* ── Responsive Grids — Mobile ── */
+  .sm-grid-2col-responsive { grid-template-columns: 1fr; }
+  .sm-grid-3col-responsive { grid-template-columns: 1fr; }
+  .sm-grid-4col-responsive { grid-template-columns: repeat(2, 1fr); }
+
   /* ── Scrollbox & Textarea — Mobile ── */
   .sm-scrollbox-tall { max-height: 400px; }
   .sm-scrollbox-med { max-height: 280px; }
@@ -2890,6 +2926,9 @@ input[type="range"]::-webkit-slider-thumb {
     padding: 6px 4px;
     font-size: 8px;
   }
+
+  /* ── Responsive Grids — Small Mobile ── */
+  .sm-grid-4col-responsive { grid-template-columns: 1fr; }
 
   /* ── Scrollbox & Textarea — Small Mobile ── */
   .sm-scrollbox-tall { max-height: 300px; }
