@@ -272,7 +272,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 
           {/* Read-only prompt display */}
           {showPrompt && (
-            <div style={{ marginBottom: 16, borderRadius: 8, background: "var(--surface2)", borderLeft: "2px solid var(--border)", padding: 16, maxHeight: 256, overflowY: "auto", overflowX: "auto" }}>
+            <div className="sm-scrollbox-short" style={{ marginBottom: 16, borderRadius: 8, background: "var(--surface2)", borderLeft: "2px solid var(--border)", padding: 16 }}>
               <pre style={{ fontSize: 11, fontFamily: "var(--font-mono, monospace)", color: "var(--text3)", lineHeight: 1.7, whiteSpace: "pre-wrap", margin: 0 }}>
                 {workflow.prompt}
               </pre>
@@ -288,7 +288,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                 placeholder="Paste your data here — earnings call transcript, SEC filing, Form 4 filings, news articles..."
                 disabled={running}
                 aria-label={`Data input for ${workflow.name}`}
-                style={{ width: "100%", height: 192, borderRadius: 8, background: "transparent", border: "1px solid var(--border)", color: "var(--text2)", fontSize: 12, fontFamily: "var(--font-mono, monospace)", padding: 16, resize: "vertical", outline: "none", lineHeight: 1.6 }}
+                className="sm-agent-textarea"
+                style={{ resize: "vertical" }}
               />
               {userData.length > 0 && (
                 <div style={{ position: "absolute", bottom: 12, right: 12, fontSize: 9, fontWeight: 500, letterSpacing: "0.08em", color: "var(--text3)" }}>
@@ -354,7 +355,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
               <div className="sm-flex-between sm-mb-12">
                 <span className="sm-section-label" style={{ marginBottom: 0 }}>Analysis Result</span>
               </div>
-              <div style={{ maxHeight: 600, overflowY: "auto" }}>
+              <div className="sm-scrollbox-tall">
                 <pre className="sm-ed-analysis-pre">{result}</pre>
               </div>
 
@@ -455,7 +456,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                       </div>
 
                       {/* Per-file diffs */}
-                      <div style={{ maxHeight: 400, overflowY: "auto" }}>
+                      <div className="sm-scrollbox-med">
                         {patchPreview.previews?.map((p: { file: string; action: string; valid: boolean; detail: string; diff: string; linesAdded: number }, i: number) => (
                           <div key={i} style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.04)" : undefined, padding: "10px 16px" }}>
                             <div className="sm-flex sm-gap-8 sm-mb-8" style={{ marginBottom: 6 }}>

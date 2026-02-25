@@ -332,7 +332,7 @@ const AnalysisPanel: React.FC<{ text: string }> = ({ text }) => {
         {copied ? 'Copied' : 'Copy'}
       </button>
     </div>
-    <div style={{ maxHeight: 600, overflowY: 'auto' }}>
+    <div className="sm-scrollbox-tall">
       <pre className="sm-ed-analysis-pre">
         {text}
       </pre>
@@ -987,7 +987,7 @@ const FilingRow: React.FC<{
                   </div>
 
                   {/* Per-file diffs */}
-                  <div style={{ maxHeight: 400, overflowY: 'auto' }}>
+                  <div className="sm-scrollbox-med">
                     {patchPreview.previews?.map((p: { file: string; action: string; valid: boolean; detail: string; diff: string; linesAdded: number }, i: number) => (
                       <div key={i} style={{ borderTop: i > 0 ? '1px solid rgba(255,255,255,0.04)' : undefined, padding: '10px 16px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>

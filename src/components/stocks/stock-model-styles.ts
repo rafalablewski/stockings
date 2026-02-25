@@ -906,6 +906,24 @@ input[type="range"]::-webkit-slider-thumb {
   button, .btn { min-height: 44px; }
   .pill { min-height: 44px; padding: 10px 16px; }
   .nav-dropdown-item { min-height: 44px; padding: 12px 16px; }
+  /* Nav badges — expand touch target while keeping visual size */
+  .nav-ai-badge,
+  .nav-pin-badge {
+    min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
+  }
+  .sm-ed-action-btn,
+  .sm-ed-action-btn-sm {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+  .sm-ed-filter-pill {
+    min-height: 44px;
+  }
+  .sm-expand-btn {
+    min-height: 44px;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -2318,6 +2336,48 @@ input[type="range"]::-webkit-slider-thumb {
 [data-active="false"] { opacity: 0.5; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   § 16. RESPONSIVE SCROLL CONTAINERS & SIZING UTILITIES
+
+   CSS-class replacements for inline fixed dimensions.
+   Media queries override these at each breakpoint — impossible with inline styles.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Scrollable containers — tall variant (analysis results, filing lists) */
+.sm-scrollbox-tall {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+/* Scrollable containers — medium variant (diff previews, patch panels) */
+.sm-scrollbox-med {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Scrollable containers — short variant (prompts, previews) */
+.sm-scrollbox-short {
+  max-height: 256px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+/* Agent textarea (user data input) */
+.sm-agent-textarea {
+  width: 100%;
+  height: 192px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 12px;
+  font-family: var(--font-mono, monospace);
+  padding: 16px;
+  resize: vertical;
+  outline: none;
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    § 16. RESPONSIVE BREAKPOINTS
 
    Desktop-first approach. Each breakpoint progressively simplifies the layout:
@@ -2660,6 +2720,47 @@ input[type="range"]::-webkit-slider-thumb {
     flex-direction: column;
     gap: 8px;
   }
+
+  /* ── Scrollbox & Textarea — Mobile ── */
+  .sm-scrollbox-tall { max-height: 400px; }
+  .sm-scrollbox-med { max-height: 280px; }
+  .sm-scrollbox-short { max-height: 180px; }
+  .sm-agent-textarea { height: 150px; font-size: 13px; }
+
+  /* ── Shared Tab Overrides — Mobile ── */
+  .sm-ed-info-card-lg,
+  .sm-ed-info-card-xl {
+    flex-basis: 100%;
+    min-width: 0;
+  }
+  .sm-badge,
+  .sm-badge-impact {
+    padding: 3px 8px;
+    font-size: 9px;
+  }
+  .sm-expand-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  .sm-card-colored {
+    padding: 16px;
+  }
+
+  /* ── Edgar / Sources Analysis Results — Mobile ── */
+  .sm-ed-analysis {
+    padding: 16px;
+  }
+  .sm-ed-analysis-pre {
+    font-size: 11px;
+  }
+  .sm-ed-diff-panel {
+    border-radius: 8px;
+  }
+
+  /* ── Typography Scaling — Mobile ── */
+  .sm-mono-lg { font-size: 16px; }
+  .sm-body-lg { font-size: 14px; }
+  .sm-param-label { font-size: 12px; }
 }
 
 /* ═══ RESPONSIVE - SMALL MOBILE (480px) ═══ */
@@ -2789,6 +2890,46 @@ input[type="range"]::-webkit-slider-thumb {
     padding: 6px 4px;
     font-size: 8px;
   }
+
+  /* ── Scrollbox & Textarea — Small Mobile ── */
+  .sm-scrollbox-tall { max-height: 300px; }
+  .sm-scrollbox-med { max-height: 200px; }
+  .sm-scrollbox-short { max-height: 140px; }
+  .sm-agent-textarea { height: 120px; padding: 12px; font-size: 12px; }
+
+  /* ── sm-* Shared Overrides — Small Mobile ── */
+  .sm-tab-hero { padding: 16px 0 12px; }
+  .sm-tab-hero h2 { font-size: 20px; }
+  .sm-tab-hero p { font-size: 13px; }
+  .sm-section-label { font-size: 9px; letter-spacing: 1.5px; }
+  .sm-data-row { padding: 8px 12px; }
+  .sm-grid-cell { padding: 10px 12px; }
+  .sm-kpi-cell { padding: 12px 10px; }
+  .sm-kpi-value { font-size: 14px; }
+  .sm-panel { padding: 12px; }
+  .sm-panel-header { padding: 12px; }
+  .sm-panel-body { padding: 12px; }
+  .sm-mono-xl { font-size: 18px; }
+  .sm-mono-2xl { font-size: 22px; }
+  .sm-mono-3xl { font-size: 28px; }
+  .sm-mono-lg { font-size: 14px; }
+
+  /* ── Action buttons — Small Mobile ── */
+  .sm-ed-action-btn { font-size: 10px; padding: 4px 8px; }
+  .sm-ed-action-btn-sm { font-size: 8px; padding: 2px 6px; }
+  .sm-ed-filter-pill { font-size: 10px; padding: 4px 10px; }
+
+  /* ── Gap/Spacing — Small Mobile ── */
+  .sm-gap-16 { gap: 8px; }
+  .sm-gap-12 { gap: 6px; }
+  .sm-mb-16 { margin-bottom: 8px; }
+  .sm-mb-12 { margin-bottom: 6px; }
+  .sm-mt-16 { margin-top: 8px; }
+
+  /* ── Edgar Tab — Small Mobile ── */
+  .sm-ed-analysis { padding: 12px; }
+  .sm-ed-analysis-pre { font-size: 10px; line-height: 1.6; }
+  .sm-ed-diff-panel { margin: 0 -12px; border-radius: 0; }
 }
 
 /* ═══ RESPONSIVE - EXTRA SMALL (360px) ═══ */
@@ -2809,6 +2950,21 @@ input[type="range"]::-webkit-slider-thumb {
   .section-head { font-size: 18px; }
 
   .tbl th, .tbl td { padding: 6px 8px; font-size: 10px; }
+
+  /* ── Scrollbox — Extra Small ── */
+  .sm-scrollbox-tall { max-height: 250px; }
+  .sm-scrollbox-med { max-height: 180px; }
+  .sm-scrollbox-short { max-height: 120px; }
+  .sm-agent-textarea { height: 100px; padding: 10px; }
+
+  /* ── sm-* Overrides — Extra Small ── */
+  .sm-tab-hero h2 { font-size: 18px; }
+  .sm-tab-hero p { font-size: 12px; }
+  .sm-panel, .sm-panel-header, .sm-panel-body { padding: 10px; }
+  .sm-kpi-cell { padding: 10px 8px; }
+  .sm-kpi-value { font-size: 12px; }
+  .sm-section-label { font-size: 8px; }
+  .sm-ed-action-btn { font-size: 9px; padding: 3px 6px; }
 }
 
 /* ═══ LANDSCAPE MOBILE ADJUSTMENTS ═══ */

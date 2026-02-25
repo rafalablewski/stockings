@@ -522,7 +522,7 @@ const SourceArticleRow: React.FC<{
                 Analysis Result
               </span>
             </div>
-            <div style={{ maxHeight: 600, overflowY: 'auto' }}>
+            <div className="sm-scrollbox-tall">
               {aiAnalysis.includes('AI features are disabled') ? (
                 <div className="sm-ed-ai-banner">
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
