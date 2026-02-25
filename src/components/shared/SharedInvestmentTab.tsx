@@ -50,8 +50,7 @@ const CollapsibleSection = ({
   <div className="sm-panel">
     <div
       onClick={onToggle}
-      className="sm-flex-between"
-      style={{ cursor: 'pointer' }}
+      className="sm-flex-between sm-pointer"
       role="button"
       tabIndex={0}
       aria-expanded={isOpen}
@@ -108,7 +107,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
     <>
       {/* Header Controls */}
       <div className="sm-flex-between sm-mb-16">
-        <h2 style={{ fontSize: 15, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text)', display: 'flex', alignItems: 'center', margin: 0 }}>
+        <h2 className="sm-param-label sm-flex sm-text sm-fw-700 sm-text-15" style={{ margin: 0 }}>
           Investment Analysis
           <UpdateIndicators sources={['PR', 'SEC']} />
         </h2>
@@ -119,7 +118,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       </div>
 
       {/* Data Refresh Indicator */}
-      <div className="sm-subtle-sm sm-mb-16" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16 }}>
+      <div className="sm-subtle-sm sm-mb-16 sm-flex sm-gap-16" style={{ justifyContent: 'flex-end' }}>
         <span>Data as of: <strong className="sm-text2">{current.date}</strong></span>
         <span>•</span>
         <span>Source: <strong className="sm-text2">{current.source}</strong></span>
@@ -127,7 +126,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
 
       {/* Rating Header Card */}
       <div className="sm-panel" style={{ borderLeft: `4px solid var(--${current.verdictColor})`, marginBottom: 16 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+        <div className="sm-flex-between sm-flex-wrap sm-gap-16" style={{ alignItems: 'flex-start' }}>
           <div>
             <div className="sm-flex sm-gap-12 sm-mb-12">
               <span style={{ background: `var(--${current.verdictColor})`, color: 'var(--bg)', padding: '8px 24px', borderRadius: 6, fontWeight: 700, fontSize: 18 }}>
@@ -137,7 +136,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
                 {ticker}
               </span>
             </div>
-            <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 16, marginBottom: 8 }}>
+            <div className="sm-text sm-fw-600 sm-text-16 sm-mb-8">
               {current.tagline}
             </div>
             <div className="sm-subtle-sm">
@@ -159,12 +158,12 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       >
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
           {current.scorecard.map((item, i) => (
-            <div key={i} className="sm-flex-between" style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
+            <div key={i} className="sm-flex-between sm-bg-surface2 sm-rounded-8" style={{ padding: 12 }}>
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>{item.category}</div>
+                <div className="sm-text-13t sm-fw-600">{item.category}</div>
                 <div className="sm-subtle-sm">{item.detail}</div>
               </div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 20, fontWeight: 700, color: item.color }}>
+              <div className="sm-mono sm-fw-700" style={{ fontSize: 20, color: item.color }}>
                 {item.rating}
               </div>
             </div>
@@ -184,7 +183,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         onToggle={() => toggleSection('summary')}
       >
         <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 8, border: '1px solid rgba(126,231,135,0.2)', marginBottom: 16 }}>
-          <div style={{ fontWeight: 600, color: 'var(--mint)', marginBottom: 8 }}>
+          <div className="sm-mint sm-fw-600 sm-mb-8">
             What's New ({current.source})
           </div>
           <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
@@ -193,7 +192,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
             ))}
           </ul>
         </div>
-        <div style={{ color: 'var(--text2)', lineHeight: 1.8, fontSize: 14 }}>
+        <div className="sm-body sm-text2" style={{ lineHeight: 1.8 }}>
           <p className="sm-mb-12">
             <strong className="sm-text">Headline:</strong> {current.executiveSummary.headline}
           </p>
@@ -218,7 +217,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
           {current.growthDrivers.map((d, i) => (
             <div key={i} style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, borderLeft: `3px solid ${d.color}` }}>
               <div className="sm-flex-between sm-mb-8">
-                <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{d.driver}</span>
+                <span className="sm-text sm-fw-600 sm-text-14">{d.driver}</span>
                 <span style={{ fontSize: 11, padding: '4px 8px', borderRadius: 4, color: d.color, fontWeight: 600 }} className="sm-tinted-bg" {...{ style: { fontSize: 11, padding: '4px 8px', borderRadius: 4, color: d.color, fontWeight: 600, background: `color-mix(in srgb, ${d.color} 15%, transparent)` } }}>
                   {d.impact}
                 </span>
@@ -237,15 +236,15 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         isOpen={investmentSections.has('moat')}
         onToggle={() => toggleSection('moat')}
       >
-        <div className="sm-grid-2col-responsive" style={{ marginBottom: 16 }}>
+        <div className="sm-grid-2col-responsive sm-mb-16">
           {/* Moat Sources */}
           <div>
-            <div style={{ fontWeight: 600, color: 'var(--mint)', fontSize: 13 }} className="sm-mb-12">Moat Sources</div>
+            <div className="sm-mb-12 sm-mint sm-fw-600 sm-text-13">Moat Sources</div>
             <div className="sm-flex-col sm-gap-8">
               {current.moatSources.map((m, i) => (
                 <div key={i} style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
                   <div className="sm-flex-between">
-                    <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>{m.source}</span>
+                    <span className="sm-text-13t sm-fw-600">{m.source}</span>
                     <span style={{ fontSize: 11, color: m.color }}>{m.strength}</span>
                   </div>
                   <div className="sm-subtle" style={{ marginTop: 4 }}>{m.detail}</div>
@@ -255,12 +254,12 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
           </div>
           {/* Moat Threats */}
           <div>
-            <div style={{ fontWeight: 600, color: 'var(--coral)', fontSize: 13 }} className="sm-mb-12">Competitive Threats</div>
+            <div className="sm-mb-12 sm-coral sm-fw-600 sm-text-13">Competitive Threats</div>
             <div className="sm-flex-col sm-gap-8">
               {current.moatThreats.map((t, i) => (
                 <div key={i} style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
                   <div className="sm-flex-between">
-                    <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13 }}>{t.threat}</span>
+                    <span className="sm-text-13t sm-fw-600">{t.threat}</span>
                     <span style={{ fontSize: 11, color: t.color }}>{t.risk}</span>
                   </div>
                   <div className="sm-subtle" style={{ marginTop: 4 }}>{t.detail}</div>
@@ -291,7 +290,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
               }}
             >
               <div className="sm-flex-between sm-mb-8">
-                <span style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{r.risk}</span>
+                <span className="sm-text sm-fw-600 sm-text-14">{r.risk}</span>
                 <div className="sm-flex sm-gap-8">
                   <span style={{ fontSize: 10, padding: '3px 6px', borderRadius: 4, background: 'var(--surface)', color: 'var(--text3)' }}>{r.severity}</span>
                   <span style={{ fontSize: 10, padding: '3px 6px', borderRadius: 4, background: 'var(--surface)', color: 'var(--text3)' }}>P: {r.likelihood}</span>
@@ -328,7 +327,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         <div className="sm-grid-3col-responsive">
           {Object.entries(current.perspectives).map(([key, p]) => (
             <div key={key} style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, borderTop: `3px solid ${p.color}` }}>
-              <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14, marginBottom: 4 }}>{p.title}</div>
+              <div className="sm-text sm-fw-600 sm-text-14" style={{ marginBottom: 4 }}>{p.title}</div>
               <div style={{ fontSize: 12, color: p.color, fontWeight: 600, marginBottom: 12, padding: '4px 8px', background: `color-mix(in srgb, ${p.color} 10%, transparent)`, borderRadius: 4, display: 'inline-block' }}>
                 {p.assessment}
               </div>
@@ -351,8 +350,8 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       >
         <div className="sm-grid-4col-responsive">
           {Object.entries(current.positionSizing).map(([key, size]) => (
-            <div key={key} className="sm-text-center" style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
-              <div className="sm-subtle-sm" style={{ textTransform: 'capitalize' }}>{key}</div>
+            <div key={key} className="sm-text-center sm-bg-surface2 sm-rounded-8" style={{ padding: 12 }}>
+              <div className="sm-subtle-sm" style={{ textTransform: 'capitalize' as const }}>{key}</div>
               <div className="sm-mono-lg sm-mint">{size.range}</div>
               <div className="sm-subtle-sm">{size.description}</div>
             </div>
@@ -382,9 +381,9 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         >
           <div className="sm-flex-col sm-gap-12">
             {current.priceTargets.map((pt, i) => (
-              <div key={i} className="sm-flex-between" style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8 }}>
+              <div key={i} className="sm-flex-between sm-bg-surface2 sm-rounded-8 sm-p-16">
                 <div>
-                  <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 14 }}>{pt.period}</div>
+                  <div className="sm-text sm-fw-600 sm-text-14">{pt.period}</div>
                   <div className="sm-subtle">{pt.detail}</div>
                 </div>
                 <div className="sm-text-right">
@@ -406,11 +405,11 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       >
         <div className="sm-flex-col sm-gap-8">
           {archive.map((entry, i) => (
-            <div key={i} style={{ background: 'var(--surface2)', borderRadius: 8, overflow: 'hidden' }}>
+            <div key={i} className="sm-bg-surface2 sm-rounded-8 sm-overflow-hidden">
               <div
                 onClick={() => setExpandedArchive(expandedArchive === entry.date ? null : entry.date)}
                 className="sm-flex-between"
-                style={{ padding: 12, cursor: 'pointer' }}
+                style={{ padding: 12, cursor: 'pointer' as const }}
               >
                 <div className="sm-flex sm-gap-12">
                   <span className="sm-mono-sm sm-text3">{entry.date}</span>

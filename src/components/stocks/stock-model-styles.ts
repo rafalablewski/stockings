@@ -2945,6 +2945,7 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-grid-cell { padding: 10px 12px; }
   .sm-kpi-cell { padding: 12px 10px; }
   .sm-kpi-value { font-size: 14px; }
+  .sm-model-grid { --cols: 1 !important; border-radius: 8px; }
   .sm-panel { padding: 12px; }
   .sm-panel-header { padding: 12px; }
   .sm-panel-body { padding: 12px; }
@@ -3680,15 +3681,64 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--surface2);
 }
 
-/* Model overview grid (1px gap borders) */
+/* Model overview grid (1px gap borders)
+   Set column count: style={{ '--cols': 4 } as React.CSSProperties} */
 .sm-model-grid {
   display: grid;
+  grid-template-columns: repeat(var(--cols, 3), 1fr);
   gap: 1px;
   background: var(--border);
   border-radius: 16px;
   overflow: hidden;
   margin-top: 8px;
 }
+
+/* ── Background utilities ── */
+.sm-bg-surface { background: var(--surface); }
+.sm-bg-surface2 { background: var(--surface2); }
+.sm-bg-surface3 { background: var(--surface3); }
+
+/* ── Additional layout utilities ── */
+.sm-inline-flex { display: inline-flex; align-items: center; gap: 6px; }
+.sm-overflow-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.sm-p-16 { padding: 16px; }
+.sm-p-24 { padding: 24px; }
+.sm-px-24 { padding-left: 24px; padding-right: 24px; }
+.sm-py-12 { padding-top: 12px; padding-bottom: 12px; }
+
+/* ── Additional border radius utilities ── */
+.sm-rounded-4 { border-radius: 4px; }
+.sm-rounded-8 { border-radius: 8px; }
+.sm-rounded-12 { border-radius: 12px; }
+.sm-rounded-16 { border-radius: 16px; }
+.sm-rounded-full { border-radius: 9999px; }
+
+/* ── Additional typography ── */
+.sm-text-14 { font-size: 14px; }
+.sm-text-15 { font-size: 15px; }
+.sm-text-16 { font-size: 16px; }
+.sm-fw-300 { font-weight: 300; }
+.sm-fw-400 { font-weight: 400; }
+.sm-fw-500 { font-weight: 500; }
+.sm-fw-600 { font-weight: 600; }
+.sm-fw-700 { font-weight: 700; }
+.sm-lh-16 { line-height: 1.6; }
+.sm-lh-17 { line-height: 1.7; }
+.sm-ls-wide { letter-spacing: 0.12em; }
+.sm-uppercase { text-transform: uppercase; }
+
+/* ── Cursor / Transition ── */
+.sm-pointer { cursor: pointer; }
+.sm-transition { transition: all 0.2s; }
+.sm-transition-fast { transition: all 0.15s; }
+
+/* ── Border utilities ── */
+.sm-border { border: 1px solid var(--border); }
+.sm-border-b { border-bottom: 1px solid var(--border); }
+.sm-border-t { border-top: 1px solid var(--border); }
+
+/* ── Overflow hidden / scroll containers ── */
+.sm-overflow-hidden { overflow: hidden; }
 
 /* Data table row (grid with hover) - used in model tab tables */
 .sm-table-row {
@@ -3724,6 +3774,7 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-grid-2, .sm-grid-2-lg { grid-template-columns: 1fr; }
   .sm-grid-3 { grid-template-columns: 1fr; }
   .sm-grid-4 { grid-template-columns: 1fr 1fr; }
+  .sm-model-grid { --cols: 2 !important; border-radius: 12px; }
   .sm-table-row { padding: 10px 16px; }
 }
 

@@ -223,17 +223,18 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
   };
 
   return (
-    <div style={{ borderRadius: 12, border: "1px solid rgba(255,255,255,0.06)", overflow: "hidden", transition: "border-color 0.2s" }}>
+    <div className="sm-rounded-12 sm-overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.06)", transition: "border-color 0.2s" }}>
       {/* Header */}
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
-        style={{ width: "100%", padding: "16px 20px", cursor: "pointer", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, background: "none", border: "none", textAlign: "left" }}
+        className="sm-w-full sm-pointer sm-gap-16"
+        style={{ padding: "16px 20px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", background: "none", border: "none", textAlign: "left" }}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className="sm-flex sm-gap-8" style={{ marginBottom: 4 }}>
-            <span style={{ fontSize: 13, fontFamily: "var(--font-mono, monospace)", fontWeight: 500, color: "rgba(255,255,255,0.85)" }}>
+            <span className="sm-fw-500" style={{ fontSize: 13, fontFamily: "var(--font-mono, monospace)", color: "rgba(255,255,255,0.85)" }}>
               {workflow.name}
             </span>
             <span className="sm-ed-action-btn-sm" style={{
@@ -247,16 +248,16 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
             {workflow.description}
           </div>
         </div>
-        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ transition: "transform 0.2s", transform: expanded ? "rotate(90deg)" : "rotate(0deg)", marginTop: 4, flexShrink: 0 }}>
+        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="sm-shrink-0" style={{ transition: "transform 0.2s", transform: expanded ? "rotate(90deg)" : "rotate(0deg)", marginTop: 4 }}>
           <path d="M9 5l7 7-7 7" />
         </svg>
       </button>
 
       {/* Expanded body */}
       {expanded && (
-        <div style={{ padding: "0 20px 20px", borderTop: "1px solid var(--border)" }}>
+        <div className="sm-border-t" style={{ padding: "0 20px 20px" }}>
           {/* View prompt toggle */}
-          <div className="sm-flex sm-gap-6" style={{ paddingTop: 16, marginBottom: 16 }}>
+          <div className="sm-flex sm-gap-6 sm-mb-16" style={{ paddingTop: 16 }}>
             <button type="button" onClick={() => setShowPrompt(!showPrompt)} className="sm-ed-action-btn-sm" style={{ marginLeft: "auto" }}>
               {showPrompt ? "Hide prompt" : "View prompt"}
             </button>
@@ -272,8 +273,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 
           {/* Read-only prompt display */}
           {showPrompt && (
-            <div className="sm-scrollbox-short" style={{ marginBottom: 16, borderRadius: 8, background: "var(--surface2)", borderLeft: "2px solid var(--border)", padding: 16 }}>
-              <pre style={{ fontSize: 11, fontFamily: "var(--font-mono, monospace)", color: "var(--text3)", lineHeight: 1.7, whiteSpace: "pre-wrap", margin: 0 }}>
+            <div className="sm-scrollbox-short sm-mb-16 sm-rounded-8 sm-bg-surface2 sm-p-16" style={{ borderLeft: "2px solid var(--border)" }}>
+              <pre className="sm-subtle-sm" style={{ fontFamily: "var(--font-mono, monospace)", lineHeight: 1.7, whiteSpace: "pre-wrap", margin: 0 }}>
                 {workflow.prompt}
               </pre>
             </div>
@@ -281,7 +282,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 
           {/* Textarea — only for workflows that need user-pasted data */}
           {workflow.requiresUserData && (
-            <div style={{ position: "relative", marginBottom: 16 }}>
+            <div className="sm-mb-16" style={{ position: "relative" }}>
               <textarea
                 value={userData}
                 onChange={(e) => setUserData(e.target.value)}
@@ -292,7 +293,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                 style={{ resize: "vertical" }}
               />
               {userData.length > 0 && (
-                <div style={{ position: "absolute", bottom: 12, right: 12, fontSize: 9, fontWeight: 500, letterSpacing: "0.08em", color: "var(--text3)" }}>
+                <div className="sm-text3 sm-fw-500" style={{ position: "absolute", bottom: 12, right: 12, fontSize: 9, letterSpacing: "0.08em" }}>
                   {(userData.length / 1000).toFixed(1)}k chars
                 </div>
               )}
@@ -330,7 +331,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
             {running && (
               <div className="sm-flex sm-gap-8">
                 <div style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--text3)", animation: "pulse 2s infinite" }} />
-                <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text3)" }}>Analyzing...</span>
+                <span className="sm-text3 sm-uppercase sm-fw-500" style={{ fontSize: 9, letterSpacing: "0.08em" }}>Analyzing...</span>
               </div>
             )}
           </div>
@@ -344,7 +345,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                   {error}
                 </div>
               ) : (
-                <p style={{ fontSize: 11, color: "var(--coral)", margin: 0 }}>{error}</p>
+                <p className="sm-coral" style={{ fontSize: 11, margin: 0 }}>{error}</p>
               )}
             </div>
           )}
@@ -361,9 +362,9 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 
               {/* ── Action Toolbar ── */}
               {!running && (
-                <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--border)" }}>
+                <div className="sm-mt-16 sm-border-t" style={{ paddingTop: 16 }}>
                   {/* Button row */}
-                  <div className="sm-flex-wrap" style={{ gap: 8 }}>
+                  <div className="sm-flex-wrap">
                     {/* 1. Export PDF */}
                     <button type="button" onClick={handleExportPDF} className="sm-ed-action-btn">
                       <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -437,7 +438,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                       <span style={{ fontSize: 10, color: applyStep === "error" ? "var(--coral)" : "var(--text3)", marginLeft: 4 }}>{applyError}</span>
                     )}
                     {patchPreview?.applySummary && applyStep === "applied" && (
-                      <span style={{ fontSize: 10, color: "var(--text3)", marginLeft: 4 }}>{patchPreview.applySummary}</span>
+                      <span className="sm-text3" style={{ fontSize: 10, marginLeft: 4 }}>{patchPreview.applySummary}</span>
                     )}
                     {commitMessage && (
                       <span style={{ fontSize: 10, color: commitStatus === "error" ? "var(--coral)" : "var(--text3)", marginLeft: 4 }}>{commitMessage}</span>
@@ -450,8 +451,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                       {/* Header */}
                       <div className="sm-flex-between" style={{ padding: "12px 16px", borderBottom: "1px solid rgba(234,179,8,0.1)" }}>
                         <div>
-                          <span style={{ fontSize: 11, fontWeight: 600, color: "rgba(234,179,8,0.7)", letterSpacing: "1px", textTransform: "uppercase" }}>Patch Preview</span>
-                          <span style={{ fontSize: 10, color: "var(--text3)", marginLeft: 12 }}>{patchPreview.summary}</span>
+                          <span className="sm-fw-600 sm-uppercase" style={{ fontSize: 11, color: "rgba(234,179,8,0.7)", letterSpacing: "1px" }}>Patch Preview</span>
+                          <span className="sm-text3" style={{ fontSize: 10, marginLeft: 12 }}>{patchPreview.summary}</span>
                         </div>
                       </div>
 
@@ -460,8 +461,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                         {patchPreview.previews?.map((p: { file: string; action: string; valid: boolean; detail: string; diff: string; linesAdded: number }, i: number) => (
                           <div key={i} style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.04)" : undefined, padding: "10px 16px" }}>
                             <div className="sm-flex sm-gap-8 sm-mb-8" style={{ marginBottom: 6 }}>
-                              <span style={{ fontSize: 10, fontFamily: "var(--font-mono, monospace)", color: p.valid ? "var(--text2)" : "var(--coral)", fontWeight: 500 }}>{p.file}</span>
-                              <span style={{ fontSize: 8, textTransform: "uppercase", letterSpacing: "0.05em", padding: "1px 5px", borderRadius: 3, background: p.valid ? "rgba(130,200,130,0.1)" : "rgba(255,100,100,0.1)", color: p.valid ? "rgba(130,200,130,0.6)" : "var(--coral)", border: `1px solid ${p.valid ? "rgba(130,200,130,0.15)" : "rgba(255,100,100,0.15)"}` }}>
+                              <span className="sm-fw-500" style={{ fontSize: 10, fontFamily: "var(--font-mono, monospace)", color: p.valid ? "var(--text2)" : "var(--coral)" }}>{p.file}</span>
+                              <span className="sm-uppercase" style={{ fontSize: 8, letterSpacing: "0.05em", padding: "1px 5px", borderRadius: 3, background: p.valid ? "rgba(130,200,130,0.1)" : "rgba(255,100,100,0.1)", color: p.valid ? "rgba(130,200,130,0.6)" : "var(--coral)", border: `1px solid ${p.valid ? "rgba(130,200,130,0.15)" : "rgba(255,100,100,0.15)"}` }}>
                                 {p.action} {p.valid ? `+${p.linesAdded}` : "rejected"}
                               </span>
                             </div>
@@ -478,7 +479,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                                 ))}
                               </pre>
                             ) : !p.valid ? (
-                              <span style={{ fontSize: 10, color: "var(--coral)", opacity: 0.7 }}>{p.detail}</span>
+                              <span className="sm-coral" style={{ fontSize: 10, opacity: 0.7 }}>{p.detail}</span>
                             ) : null}
                           </div>
                         ))}
@@ -486,7 +487,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 
                       {/* Warning + action buttons */}
                       <div className="sm-flex-between" style={{ padding: "12px 16px", borderTop: "1px solid rgba(234,179,8,0.1)" }}>
-                        <span style={{ fontSize: 9, color: "rgba(234,179,8,0.5)", fontWeight: 500, letterSpacing: "0.05em" }}>
+                        <span className="sm-fw-500" style={{ fontSize: 9, color: "rgba(234,179,8,0.5)", letterSpacing: "0.05em" }}>
                           Review carefully — these changes will be written to the database
                         </span>
                         <div className="sm-flex sm-gap-8">
@@ -495,11 +496,10 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                             type="button"
                             onClick={handleConfirmApply}
                             disabled={!patchPreview.validCount}
-                            className="sm-ed-action-btn"
+                            className="sm-ed-action-btn sm-fw-600"
                             style={{
                               '--ed-btn-color': patchPreview.validCount ? "rgba(234,179,8,0.8)" : "var(--text3)",
                               borderColor: patchPreview.validCount ? "rgba(234,179,8,0.3)" : undefined,
-                              fontWeight: 600,
                               cursor: patchPreview.validCount ? "pointer" : "not-allowed",
                               opacity: patchPreview.validCount ? 1 : 0.4,
                             } as React.CSSProperties}
@@ -518,7 +518,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                   {applyStep === "applying" && (
                     <div className="sm-flex sm-gap-8 sm-mt-12">
                       <div style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(234,179,8,0.5)", animation: "pulse 2s infinite" }} />
-                      <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text3)" }}>
+                      <span className="sm-text3 sm-uppercase sm-fw-500" style={{ fontSize: 9, letterSpacing: "0.08em" }}>
                         Writing patches to database...
                       </span>
                     </div>
@@ -536,7 +536,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 // Section category label (subcategory heading)
 function CategoryLabel({ children, color }: { children: React.ReactNode; color: string }) {
   return (
-    <div style={{ fontSize: 9, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", color, marginBottom: 10, paddingLeft: 2 }}>
+    <div className="sm-fw-600 sm-uppercase sm-ls-wide" style={{ fontSize: 9, color, marginBottom: 10, paddingLeft: 2 }}>
       {children}
     </div>
   );

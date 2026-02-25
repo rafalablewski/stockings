@@ -640,8 +640,7 @@ const FilingRow: React.FC<{
         aria-expanded={analysis ? expanded : undefined}
         onClick={analysis ? () => setExpanded(!expanded) : undefined}
         onKeyDown={analysis ? (e) => { if (e.key === 'Enter') setExpanded(!expanded); } : undefined}
-        className="sm-ed-filing-row"
-        style={analysis ? { cursor: 'pointer' } : undefined}
+        className={`sm-ed-filing-row${analysis ? ' sm-pointer' : ''}`}
       >
         {/* Chevron (fixed-width slot so rows align whether analysis exists or not) */}
         <span className="sm-ed-chevron-slot">
@@ -739,22 +738,22 @@ const FilingRow: React.FC<{
               {/* Tooltip — shows live DB data */}
               {dbTooltipVisible && (
                 <div ref={dbTooltipRef} className="sm-ed-db-tooltip">
-                  <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text3)', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
+                  <div className="sm-micro-label" style={{ marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
                     Saved in seen_filings DB?
                   </div>
                   {dbTooltipLoading ? (
-                    <div style={{ color: 'var(--text3)', fontStyle: 'italic' }}>Fetching from database...</div>
+                    <div className="sm-text3" style={{ fontStyle: 'italic' }}>Fetching from database...</div>
                   ) : dbTooltip ? (
                     <>
-                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>status:</span> <span style={{ color: statusCfg.color, fontWeight: 600 }}>{dbTooltip.status}</span></div>
-                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>form:</span> {dbTooltip.form}</div>
-                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>desc:</span> {dbTooltip.description}</div>
-                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>filed:</span> {dbTooltip.filingDate}</div>
-                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>cross-refs:</span> {dbTooltip.crossRefs ? [...new Set(dbTooltip.crossRefs.map(r => r.source))].join(', ') : 'none'}</div>
-                      <div><span style={{ color: 'var(--text3)', minWidth: 80, display: 'inline-block' }}>seen:</span> <span style={{ color: dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.seen}</span></div>
+                      <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>status:</span> <span style={{ color: statusCfg.color }} className="sm-fw-600">{dbTooltip.status}</span></div>
+                      <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>form:</span> {dbTooltip.form}</div>
+                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>desc:</span> {dbTooltip.description}</div>
+                      <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>filed:</span> {dbTooltip.filingDate}</div>
+                      <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>cross-refs:</span> {dbTooltip.crossRefs ? [...new Set(dbTooltip.crossRefs.map(r => r.source))].join(', ') : 'none'}</div>
+                      <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>seen:</span> <span className="sm-fw-600" style={{ color: dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)' }}>{dbTooltip.seen}</span></div>
                     </>
                   ) : (
-                    <div style={{ color: 'var(--coral)', fontWeight: 600 }}>NOT IN DATABASE</div>
+                    <div className="sm-coral sm-fw-600">NOT IN DATABASE</div>
                   )}
                 </div>
               )}
@@ -809,8 +808,8 @@ const FilingRow: React.FC<{
             style={{ opacity: 0.5 }}
           >
             <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" />
-              <line x1="2" y1="14" x2="14" y2="2" />
+              <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z"/>
+              <line x1="2" y1="14" x2="14" y2="2"/>
             </svg>
           </button>
         </div>
@@ -828,13 +827,13 @@ const FilingRow: React.FC<{
             if (!verdict) return null;
             const vc = VERDICT_COLORS[verdict.level];
             return (
-              <div className="sm-ed-verdict-badge" style={{
-                margin: '12px 0 0 7px', display: 'inline-flex', alignItems: 'center', gap: 6,
-                fontSize: 9, letterSpacing: '0.08em', padding: '3px 8px', borderRadius: 4,
+              <div className="sm-ed-verdict-badge sm-inline-flex sm-rounded-4" style={{
+                margin: '12px 0 0 7px',
+                fontSize: 9, letterSpacing: '0.08em', padding: '3px 8px',
                 '--verdict-color': vc.color, '--verdict-bg': vc.bg,
               } as React.CSSProperties}>
                 {verdict.level}
-                <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, opacity: 0.7, fontSize: 10 }}>
+                <span className="sm-fw-400" style={{ textTransform: 'none', letterSpacing: 0, opacity: 0.7, fontSize: 10 }}>
                   {verdict.explanation}
                 </span>
               </div>
@@ -844,8 +843,8 @@ const FilingRow: React.FC<{
           {/* ── Database Action Toolbar ── */}
           {!analyzing && (
           <div style={{ margin: '8px 0 2px 7px' }}>
-            <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+            <div className="sm-mt-8 sm-border-t" style={{ paddingTop: 8 }}>
+              <div className="sm-flex-wrap" style={{ alignItems: 'center' }}>
                 {/* 1. Export PDF */}
                 <button type="button" onClick={handleExportPDF} className="sm-ed-action-btn">
                   <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -951,7 +950,7 @@ const FilingRow: React.FC<{
                   </span>
                 )}
                 {patchPreview?.applySummary && applyStep === 'applied' && (
-                  <span style={{ fontSize: 10, color: 'var(--text3)', marginLeft: 4 }}>
+                  <span className="sm-text3" style={{ fontSize: 10, marginLeft: 4 }}>
                     {patchPreview.applySummary}
                   </span>
                 )}
@@ -968,19 +967,17 @@ const FilingRow: React.FC<{
 
                   {/* Header */}
                   <div
+                    className="sm-flex-between"
                     style={{
                       padding: '12px 16px',
                       borderBottom: '1px solid rgba(234,179,8,0.1)',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
                     }}
                   >
                     <div>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: 'rgba(234,179,8,0.7)', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                      <span className="sm-fw-600" style={{ fontSize: 11, color: 'rgba(234,179,8,0.7)', letterSpacing: '1px', textTransform: 'uppercase' }}>
                         Patch Preview
                       </span>
-                      <span style={{ fontSize: 10, color: 'var(--text3)', marginLeft: 12 }}>
+                      <span className="sm-text3" style={{ fontSize: 10, marginLeft: 12 }}>
                         {patchPreview.summary}
                       </span>
                     </div>
@@ -990,7 +987,7 @@ const FilingRow: React.FC<{
                   <div className="sm-scrollbox-med">
                     {patchPreview.previews?.map((p: { file: string; action: string; valid: boolean; detail: string; diff: string; linesAdded: number }, i: number) => (
                       <div key={i} style={{ borderTop: i > 0 ? '1px solid rgba(255,255,255,0.04)' : undefined, padding: '10px 16px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                        <div className="sm-flex" style={{ marginBottom: 6 }}>
                           <span
                             style={{
                               fontSize: 10,
@@ -1036,7 +1033,7 @@ const FilingRow: React.FC<{
                             ))}
                           </pre>
                         ) : !p.valid ? (
-                          <span style={{ fontSize: 10, color: 'var(--coral)', opacity: 0.7 }}>{p.detail}</span>
+                          <span className="sm-coral" style={{ fontSize: 10, opacity: 0.7 }}>{p.detail}</span>
                         ) : null}
                       </div>
                     ))}
@@ -1044,18 +1041,16 @@ const FilingRow: React.FC<{
 
                   {/* Warning + action buttons */}
                   <div
+                    className="sm-flex-between"
                     style={{
                       padding: '12px 16px',
                       borderTop: '1px solid rgba(234,179,8,0.1)',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
                     }}
                   >
-                    <span style={{ fontSize: 9, color: 'rgba(234,179,8,0.5)', fontWeight: 500, letterSpacing: '0.05em' }}>
+                    <span className="sm-fw-500" style={{ fontSize: 9, color: 'rgba(234,179,8,0.5)', letterSpacing: '0.05em' }}>
                       Review carefully — these changes will be written to the database
                     </span>
-                    <div style={{ display: 'flex', gap: 8 }}>
+                    <div className="sm-flex sm-gap-8">
                       <button
                         type="button"
                         onClick={handleCancelPreview}
@@ -1087,9 +1082,9 @@ const FilingRow: React.FC<{
 
               {/* Applying spinner */}
               {applyStep === 'applying' && (
-                <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div className="sm-flex sm-mt-12">
                   <div style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(234,179,8,0.5)', animation: 'pulse 2s infinite' }} />
-                  <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text3)' }}>
+                  <span className="sm-text3 sm-fw-500" style={{ fontSize: 9, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                     Writing patches to database...
                   </span>
                 </div>
@@ -1174,14 +1169,11 @@ const YearSection: React.FC<{
         onClick={() => setOpen(!open)}
         className="sm-ed-year-btn"
       >
-        <span className="sm-mono-md sm-text" style={{ letterSpacing: '-0.5px', fontWeight: 700 }}>
+        <span className="sm-mono-md sm-text sm-fw-700" style={{ letterSpacing: '-0.5px' }}>
           {year}
         </span>
         <span style={{ flex: 1, height: 1, background: 'color-mix(in srgb, var(--border) 50%, transparent)' }} />
-        <span style={{
-          fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)',
-          display: 'flex', alignItems: 'center', gap: 8,
-        }}>
+        <span className="sm-mono-sm sm-text3 sm-flex sm-gap-8" style={{ fontSize: 10 }}>
           <span className="sm-mint">{trackedInYear}</span>
           <span style={{ opacity: 0.5 }}>/</span>
           <span>{visible.length}{hidden.length > 0 ? ` + ${hidden.length} hidden` : ''}</span>
@@ -1189,17 +1181,17 @@ const YearSection: React.FC<{
         </span>
       </button>
       {open && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+        <div className="sm-flex-col">
           {displayed.map(renderRow)}
           {/* Load more / collapse for hidden filings */}
           {remainingHidden > 0 && !showAllHidden && (
             <button
               onClick={() => setShowAllHidden(true)}
+              className="sm-mono-sm sm-text3 sm-w-full sm-pointer sm-transition-fast"
               style={{
-                display: 'block', width: '100%', padding: '4px 12px', margin: '2px 0',
-                fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)',
-                background: 'transparent', border: 'none', cursor: 'pointer',
-                opacity: 0.25, textAlign: 'left', transition: 'opacity 0.15s',
+                display: 'block', padding: '4px 12px', margin: '2px 0',
+                fontSize: 9, background: 'transparent', border: 'none',
+                opacity: 0.25, textAlign: 'left',
               }}
             >
               + {remainingHidden} more hidden
@@ -1208,11 +1200,11 @@ const YearSection: React.FC<{
           {showAllHidden && hidden.length > HIDDEN_PREVIEW && (
             <button
               onClick={() => setShowAllHidden(false)}
+              className="sm-mono-sm sm-text3 sm-w-full sm-pointer sm-transition-fast"
               style={{
-                display: 'block', width: '100%', padding: '4px 12px', margin: '2px 0',
-                fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)',
-                background: 'transparent', border: 'none', cursor: 'pointer',
-                opacity: 0.25, textAlign: 'left', transition: 'opacity 0.15s',
+                display: 'block', padding: '4px 12px', margin: '2px 0',
+                fontSize: 9, background: 'transparent', border: 'none',
+                opacity: 0.25, textAlign: 'left',
               }}
             >
               collapse hidden
@@ -1252,7 +1244,7 @@ const FilingList: React.FC<{
 
   if (filtered.length === 0) {
     return (
-      <div style={{ fontSize: 13, color: 'var(--text3)', padding: '24px 0', lineHeight: 1.6, textAlign: 'center' }}>
+      <div className="sm-text3 sm-text-center" style={{ fontSize: 13, padding: '24px 0', lineHeight: 1.6 }}>
         No filings match this filter.
       </div>
     );
@@ -1268,7 +1260,7 @@ const FilingList: React.FC<{
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+    <div className="sm-flex-col">
       {yearGroups.map((g, i) => (
         <YearSection
           key={g.year}
@@ -1654,7 +1646,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             )}
           </svg>
           <div className="sm-flex-col">
-            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>
+            <span className="sm-text sm-fw-600" style={{ fontSize: 13 }}>
               {!loaded ? 'EDGAR Monitor' : `${trackedCount} of ${results.length} in database`}
             </span>
             <span className="sm-text-11">
@@ -1678,7 +1670,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             className="sm-ed-action-btn"
             style={{ padding: '5px 14px', gap: 6 }}
           >
-            <svg width="8" height="8" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
+            <svg width="8" height="8" viewBox="0 0 12 12" fill="none" className="sm-shrink-0">
               <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             SEC EDGAR
@@ -1738,10 +1730,10 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           className="sm-ed-legend"
         >
           {(['tracked', 'data_only', 'new'] as FilingStatus[]).map(status => (
-            <span key={status} title={STATUS_CONFIG[status].desc} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, maxWidth: 260 }}>
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: STATUS_CONFIG[status].color, opacity: 0.9, marginTop: 3, flexShrink: 0 }} />
-              <span style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <span style={{ fontWeight: 500 }}>{status === 'tracked' ? 'In Database' : status === 'data_only' ? 'Data Only' : 'Untracked'}</span>
+            <span key={status} title={STATUS_CONFIG[status].desc} className="sm-flex sm-gap-6" style={{ alignItems: 'flex-start', maxWidth: 260 }}>
+              <span className="sm-shrink-0" style={{ width: 5, height: 5, borderRadius: '50%', background: STATUS_CONFIG[status].color, opacity: 0.9, marginTop: 3 }} />
+              <span className="sm-flex-col" style={{ gap: 1 }}>
+                <span className="sm-fw-500">{status === 'tracked' ? 'In Database' : status === 'data_only' ? 'Data Only' : 'Untracked'}</span>
                 <span style={{ fontSize: 9, opacity: 0.5, lineHeight: 1.4 }}>{STATUS_CONFIG[status].desc}</span>
               </span>
             </span>
@@ -1750,8 +1742,8 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       )}
       {/* Cross-ref criteria */}
       {loaded && (
-        <div style={{
-          fontSize: 9, color: 'var(--text3)', opacity: 0.4, padding: '0 4px 8px',
+        <div className="sm-text3" style={{
+          fontSize: 9, opacity: 0.4, padding: '0 4px 8px',
           fontFamily: 'Space Mono, monospace', lineHeight: 1.6,
         }}>
           Cross-refs checked: capital, timeline, financials, catalysts, company, quarterly-metrics
@@ -1773,7 +1765,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
             <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
-          <span style={{ fontSize: 12 }}>Loading from database...</span>
+          <span className="sm-subtle">Loading from database...</span>
         </div>
       )}
 
@@ -1781,10 +1773,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       {loaded && (
         <>
           {/* Filter pills */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 6, padding: '8px 0 16px',
-            flexWrap: 'wrap',
-          }}>
+          <div className="sm-flex sm-gap-6" style={{ padding: '8px 0 16px', flexWrap: 'wrap' }}>
             {filterOptions.map(f => {
               const count = applyFilter(results, f).length;
               return <FilterPill key={f} label={f} active={filter === f} count={count} onClick={() => setFilter(f)} />;
@@ -1800,8 +1789,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       <div className="sm-ws-panel sm-mt-8">
         <div
           onClick={() => setMethodologyOpen(prev => !prev)}
-          className="sm-ws-panel-header"
-          style={{ cursor: 'pointer' }}
+          className="sm-ws-panel-header sm-pointer"
           data-open={methodologyOpen ? 'true' : 'false'}
           role="button"
           tabIndex={0}
@@ -1825,7 +1813,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div className="sm-ed-vline" style={{ height: 12 }} />
               <div className="sm-ed-flowbox">Load saved filings from Neon PostgreSQL</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
-              <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>Render from DB &mdash; no SEC API calls on mount</div>
+              <div className="sm-mono-sm sm-mint sm-fw-600" style={{ padding: '4px 10px', fontSize: 10 }}>Render from DB &mdash; no SEC API calls on mount</div>
             </div>
             <div className="sm-ed-method-text sm-mt-12">
               <div><span className="sm-text">Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_filings table</div>
@@ -1843,13 +1831,13 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div style={{ width: 2, height: 10, background: 'var(--sky)' }} />
               <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>GET /api/edgar/[ticker]</div>
               <div className="sm-ed-vline" style={{ height: 8 }} />
-              <div style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.6 }}>SEC EDGAR submissions API<br />(CIK-based, paginated, 15s timeout)</div>
+              <div className="sm-mono-sm sm-text3 sm-text-center" style={{ fontSize: 9, lineHeight: 1.6 }}>SEC EDGAR submissions API<br />(CIK-based, paginated, 15s timeout)</div>
               <div className="sm-ed-vline" style={{ height: 8 }} />
               <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>Match against sec_filings + filing_cross_refs</div>
               <div className="sm-ed-vline" style={{ height: 8 }} />
               <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>POST /api/seen-filings &mdash; upsert all with status + crossRefs</div>
               <div className="sm-ed-vline" style={{ height: 8 }} />
-              <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>New filings get NEW badge (dismissed=false)</div>
+              <div className="sm-mono-sm sm-mint sm-fw-600" style={{ padding: '4px 10px', fontSize: 10 }}>New filings get NEW badge (dismissed=false)</div>
             </div>
             <div className="sm-ed-method-text sm-mt-12">
               <div><span className="sm-text">Save path:</span> POST /api/seen-filings &rarr; upsert with status, crossRefs, form, filingDate, description, reportDate, fileUrl</div>
@@ -1870,8 +1858,8 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                   <div>Tier 1a: Accession number exact match</div>
                   <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>O(1) hash lookup, strip dashes</div>
                 </div>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  Match &rarr; <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
+                <div className="sm-mono-sm sm-text3 sm-flex sm-gap-6" style={{ fontSize: 10 }}>
+                  Match &rarr; <span className="sm-inline-flex sm-gap-4"><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)' }} /><span className="sm-mint sm-fw-600">TRACKED</span></span>
                 </div>
               </div>
               <div className="sm-ed-vline" style={{ height: 6 }} />
@@ -1883,8 +1871,8 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                   <div>Tier 1b: Closest form+date match</div>
                   <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>nearest date within 14 days, form type normalized (PRNEWS &rarr; 8-K)</div>
                 </div>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  Match &rarr; <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
+                <div className="sm-mono-sm sm-text3 sm-flex sm-gap-6" style={{ fontSize: 10 }}>
+                  Match &rarr; <span className="sm-inline-flex sm-gap-4"><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)' }} /><span className="sm-mint sm-fw-600">TRACKED</span></span>
                 </div>
               </div>
               <div className="sm-ed-vline" style={{ height: 6 }} />
@@ -1896,17 +1884,17 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                   <div>Tier 2: Cross-reference key lookup</div>
                   <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>accession or FORM|YYYY-MM-DD in cross-ref index (with aliases)</div>
                 </div>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  Match &rarr; <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} /><span style={{ color: 'var(--gold)', fontWeight: 600 }}>DATA ONLY</span></span>
+                <div className="sm-mono-sm sm-text3 sm-flex sm-gap-6" style={{ fontSize: 10 }}>
+                  Match &rarr; <span className="sm-inline-flex sm-gap-4"><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)' }} /><span className="sm-gold sm-fw-600">DATA ONLY</span></span>
                 </div>
               </div>
               <div className="sm-ed-vline" style={{ height: 6 }} />
               <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No match</div>
               <div className="sm-ed-vline" style={{ height: 6 }} />
               {/* Result: Untracked */}
-              <div className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}>
-                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} />
-                <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>UNTRACKED</span>
+              <div className="sm-inline-flex sm-gap-4">
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)' }} />
+                <span className="sm-mono-sm sm-coral sm-fw-600" style={{ fontSize: 11 }}>UNTRACKED</span>
               </div>
             </div>
 
@@ -1914,42 +1902,42 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
 
             {/* ── CROSS-REFERENCE SOURCES ──────────────────── */}
             <div className="sm-ed-method-label">Cross-Reference Sources</div>
-            <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.6, marginBottom: 12 }}>
+            <div className="sm-mono-sm sm-text3 sm-mb-12" style={{ fontSize: 10, lineHeight: 1.6 }}>
               Each filing can carry one or more cross-refs &mdash; extracted data lines written to other parts of the research database. Displayed as dimmed <span style={{ opacity: 0.7 }}>{'// source → data'}</span> lines below each filing.
             </div>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <div className="sm-flex-wrap sm-gap-12">
               <div className="sm-ed-info-card">
-                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>capital</div>
-                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                <div className="sm-mono-sm sm-sky sm-fw-700" style={{ fontSize: 10, marginBottom: 4 }}>capital</div>
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 9.5, lineHeight: 1.7 }}>
                   Share offerings, debt issuances, insider transactions, institutional holdings, conversions
                 </div>
               </div>
               <div className="sm-ed-info-card">
-                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>timeline</div>
-                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                <div className="sm-mono-sm sm-sky sm-fw-700" style={{ fontSize: 10, marginBottom: 4 }}>timeline</div>
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 9.5, lineHeight: 1.7 }}>
                   Key company events, board changes, material agreements, launches
                 </div>
               </div>
               <div className="sm-ed-info-card">
-                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>financials</div>
-                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                <div className="sm-mono-sm sm-sky sm-fw-700" style={{ fontSize: 10, marginBottom: 4 }}>financials</div>
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 9.5, lineHeight: 1.7 }}>
                   Quarterly results: revenue, cash, debt, operating metrics
                 </div>
               </div>
               <div className="sm-ed-info-card">
-                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>catalysts</div>
-                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                <div className="sm-mono-sm sm-sky sm-fw-700" style={{ fontSize: 10, marginBottom: 4 }}>catalysts</div>
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 9.5, lineHeight: 1.7 }}>
                   Milestone completions, contract awards, product launches
                 </div>
               </div>
               <div className="sm-ed-info-card">
-                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>company</div>
-                <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
+                <div className="sm-mono-sm sm-sky sm-fw-700" style={{ fontSize: 10, marginBottom: 4 }}>company</div>
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 9.5, lineHeight: 1.7 }}>
                   Company-level data updates (satellite counts, operational status)
                 </div>
               </div>
             </div>
-            <div style={{ marginTop: 10, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+            <div className="sm-mono-sm sm-text3" style={{ marginTop: 10, fontSize: 10, lineHeight: 2 }}>
               <div><span className="sm-text">Storage:</span> filing_cross_refs table &mdash; keyed by ticker + filing_key (accession or FORM|DATE)</div>
               <div><span className="sm-text">Lookup:</span> accession number first, then closest FORM|YYYY-MM-DD (within 14 days, with aliases e.g. PRNEWS &rarr; 8-K)</div>
               <div><span className="sm-text">Display:</span> shown as <span style={{ opacity: 0.5 }}>{'// source → extracted data'}</span> lines below the filing row</div>
@@ -1965,22 +1953,22 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div className="sm-ed-flowbox">Compare accessionNumber against DB records</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
               <div className="sm-ed-flowbox">Already in DB?</div>
-              <div style={{ display: 'flex', gap: 32, marginTop: 8 }}>
+              <div className="sm-flex sm-mt-8" style={{ gap: 32 }}>
                 <div className="sm-flex-col" style={{ alignItems: 'center' }}>
                   <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>Yes</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
-                  <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>Upsert (update metadata + status)</div>
+                  <div className="sm-mono-sm sm-text3" style={{ fontSize: 10 }}>Upsert (update metadata + status)</div>
                 </div>
                 <div className="sm-flex-col" style={{ alignItems: 'center' }}>
                   <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
                   <div className="sm-ed-flowbox">Save to DB (dismissed=false)</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
-                  <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>NEW badge</div>
+                  <div className="sm-mono-sm sm-sky sm-fw-600" style={{ padding: '4px 10px', fontSize: 10 }}>NEW badge</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
                   <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>User clicks NEW</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
-                  <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600, opacity: 0.3 }}>SEEN badge</div>
+                  <div className="sm-mono-sm sm-sky sm-fw-600" style={{ padding: '4px 10px', fontSize: 10, opacity: 0.3 }}>SEEN badge</div>
                 </div>
               </div>
             </div>
@@ -1996,38 +1984,38 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
 
             {/* ── DB STATUS INDICATORS ──────────────────────── */}
             <div className="sm-ed-method-label">DB Status Indicators</div>
-            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+            <div className="sm-flex-wrap" style={{ gap: 20 }}>
               <div className="sm-ed-info-card-lg">
-                <div className="sm-flex sm-gap-6 sm-mb-8" style={{ marginBottom: 6 }}>
+                <div className="sm-flex sm-gap-6" style={{ marginBottom: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)' }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--mint)' }}>MINT DB</span>
+                  <span className="sm-mono-sm sm-mint sm-fw-700" style={{ fontSize: 10 }}>MINT DB</span>
                 </div>
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   Filing is in DB and current status is TRACKED (matched in sec-filings.ts).
                 </div>
               </div>
               <div className="sm-ed-info-card-lg">
-                <div className="sm-flex sm-gap-6 sm-mb-8" style={{ marginBottom: 6 }}>
+                <div className="sm-flex sm-gap-6" style={{ marginBottom: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)' }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--gold)' }}>GOLD DB</span>
+                  <span className="sm-mono-sm sm-gold sm-fw-700" style={{ fontSize: 10 }}>GOLD DB</span>
                 </div>
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   Filing is in DB and current status is DATA ONLY (cross-refs exist but not in sec-filings.ts).
                 </div>
               </div>
               <div className="sm-ed-info-card-lg">
-                <div className="sm-flex sm-gap-6 sm-mb-8" style={{ marginBottom: 6 }}>
+                <div className="sm-flex sm-gap-6" style={{ marginBottom: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)' }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--coral)' }}>CORAL DB</span>
+                  <span className="sm-mono-sm sm-coral sm-fw-700" style={{ fontSize: 10 }}>CORAL DB</span>
                 </div>
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   Filing is in DB but current status is UNTRACKED (no index entry, no cross-refs).
                 </div>
               </div>
               <div className="sm-ed-info-card-lg">
-                <div className="sm-flex sm-gap-6 sm-mb-8" style={{ marginBottom: 6 }}>
+                <div className="sm-flex sm-gap-6" style={{ marginBottom: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', opacity: 0.3 }} />
-                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', opacity: 0.5 }}>GRAY DB</span>
+                  <span className="sm-mono-sm sm-text3 sm-fw-700" style={{ fontSize: 10, opacity: 0.5 }}>GRAY DB</span>
                 </div>
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   Not in seen_filings table. Click Fetch Filings to populate.
@@ -2039,16 +2027,16 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
 
             {/* ── BUTTON DISTINCTION ──────────────────────── */}
             <div className="sm-ed-method-label">Button Distinction: Fetch Filings vs Re-check DB</div>
-            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+            <div className="sm-flex-wrap" style={{ gap: 20 }}>
               <div className="sm-ed-info-card-xl">
-                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,200,130,0.7)', marginBottom: 6 }}>FETCH FILINGS</div>
+                <div className="sm-mono-sm sm-fw-700" style={{ fontSize: 10, color: 'rgba(130,200,130,0.7)', marginBottom: 6 }}>FETCH FILINGS</div>
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   Calls SEC EDGAR API. Fetches latest filings, matches against local DB,
                   saves all to seen_filings with full metadata. New filings get NEW badge.
                 </div>
               </div>
               <div className="sm-ed-info-card-xl">
-                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,180,220,0.7)', marginBottom: 6 }}>RE-CHECK DB</div>
+                <div className="sm-mono-sm sm-fw-700" style={{ fontSize: 10, color: 'rgba(130,180,220,0.7)', marginBottom: 6 }}>RE-CHECK DB</div>
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   Re-reads sec_filings + filing_cross_refs from Postgres.
                   Picks up new tracked entries or cross-refs added by AI Agent patches.
@@ -2061,12 +2049,12 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
 
             {/* ── PERSISTED DATA ──────────────────────── */}
             <div className="sm-ed-method-label">What Gets Persisted to DB</div>
-            <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2.2 }}>
+            <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 2.2 }}>
               <div><span className="sm-text">seen_filings:</span> accession_number, form, filing_date, description, report_date, file_url, status, cross_refs (JSON), dismissed</div>
               <div><span className="sm-text">analysis_cache:</span> ticker + &quot;edgar&quot; + accession_number &rarr; analysis text (successful only)</div>
               <div><span className="sm-text">sec_filings:</span> tracked filings from research database (populated by AI Agent / db/setup)</div>
               <div><span className="sm-text">filing_cross_refs:</span> cross-reference data linking filings to capital, timeline, financials, catalysts</div>
-              <div style={{ marginTop: 4, color: 'var(--coral)', opacity: 0.7 }}>No sessionStorage. No in-memory caches. Everything in Postgres.</div>
+              <div className="sm-coral" style={{ marginTop: 4, opacity: 0.7 }}>No sessionStorage. No in-memory caches. Everything in Postgres.</div>
             </div>
           </div>
         )}

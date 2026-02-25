@@ -735,8 +735,8 @@ const OverviewParameterCard = ({
   };
 
   return (
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '24px 24px', marginBottom: 12 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>{title}</div>
+    <div className="sm-panel sm-mb-12" style={{ borderRadius: 14 }}>
+      <div className="sm-panel-title sm-mb-12">{title}</div>
       <p className="sm-note-list">
         {explanation}
       </p>
@@ -818,7 +818,7 @@ const OverviewParameterCard = ({
           </div>
         )}
       </div>
-      <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center', marginTop: 6 }}>
+      <div className="sm-subtle-sm sm-text-center" style={{ marginTop: 6 }}>
         ← Bearish | Bullish →
       </div>
     </div>
@@ -872,9 +872,9 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     </div>
 
     <div className="sm-model-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
-      <div className="sm-card-body" style={{ background: 'var(--surface)' }}>
+      <div className="sm-card-body sm-bg-surface">
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--mint)' }}>Bull Case</span>
+          <span className="sm-section-label sm-mint" style={{ fontSize: 13 }}>Bull Case</span>
           <UpdateIndicators sources="PR" />
         </div>
         {[
@@ -890,9 +890,9 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
           </div>
         ))}
       </div>
-      <div className="sm-card-body" style={{ background: 'var(--surface)' }}>
+      <div className="sm-card-body sm-bg-surface">
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--coral)' }}>Bear Case</span>
+          <span className="sm-section-label sm-coral" style={{ fontSize: 13 }}>Bear Case</span>
           <UpdateIndicators sources="PR" />
         </div>
         {[
@@ -998,7 +998,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       ].map(row => (
         <div key={row.metric} style={{ background: 'var(--surface)', padding: '16px', textAlign: 'center' }}>
           <div className="sm-micro-text">{row.metric}</div>
-          <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 18, fontWeight: 700, color: row.color, margin: '6px 0 4px' }}>{row.value}</div>
+          <div className="sm-mono-lg" style={{ color: row.color, margin: '6px 0 4px' }}>{row.value}</div>
           <div className="sm-text-11">{row.sub}</div>
         </div>
       ))}
@@ -1094,7 +1094,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
       </div>
 
       {/* Impact Summary — Glass cards */}
-      <div className="sm-model-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+      <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
         {[
           { level: 'Critical', count: upcomingCatalysts.filter(c => c.impact === 'Critical').length, color: '#ef4444', desc: 'Binary outcomes' },
           { level: 'High', count: upcomingCatalysts.filter(c => c.impact === 'High').length, color: 'var(--gold)', desc: 'Significant value' },
@@ -1102,7 +1102,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
           { level: 'Low', count: upcomingCatalysts.filter(c => c.impact === 'Low').length, color: 'var(--text3)', desc: 'Nice to have' },
         ].map(s => (
           <div key={s.level} className="sm-kpi-cell">
-            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 32, fontWeight: 700, color: s.color }}>{s.count}</div>
+            <div className="sm-mono-2xl" style={{ color: s.color }}>{s.count}</div>
             <div style={{ fontSize: 12, fontWeight: 600, color: s.color, letterSpacing: '1px', textTransform: 'uppercase', marginTop: 4 }}>{s.level}</div>
             <div className="sm-text-11 sm-mt-8" style={{ marginTop: 4 }}>{s.desc}</div>
           </div>
@@ -1212,7 +1212,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
         ].map(kpi => (
           <div key={kpi.label} className="sm-kpi-cell">
             <div className="sm-micro-text">{kpi.label}</div>
-            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 28, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div className="sm-mono-xl" style={{ color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
             <div className="sm-text-11">{kpi.sub}</div>
           </div>
         ))}
@@ -1316,7 +1316,7 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
       </div>
 
       {/* KPI Dashboard — Glass grid */}
-      <div className="sm-model-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+      <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
         {[
           { label: 'Total Reach', value: `${(partnerReach / 1000).toFixed(1)}B`, sub: '53+ MNOs', color: 'var(--sky)' },
           { label: 'Penetration', value: `${penetrationRate}%`, sub: 'Model assumption', color: 'var(--cyan)' },
@@ -1325,7 +1325,7 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
         ].map(kpi => (
           <div key={kpi.label} className="sm-kpi-cell">
             <div className="sm-micro-text">{kpi.label}</div>
-            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 28, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div className="sm-mono-xl" style={{ color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
             <div className="sm-text-11">{kpi.sub}</div>
           </div>
         ))}
@@ -1407,7 +1407,7 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
       </div>
 
       {/* Revenue KPIs — Glass grid */}
-      <div className="sm-model-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+      <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
         {[
           { label: 'Gross Revenue', value: `$${(calc.grossAnnualRev / 1000).toFixed(1)}B`, color: 'var(--cyan)' },
           { label: 'Revenue Share', value: `${revenueShare}%`, color: 'var(--sky)' },
@@ -1432,7 +1432,7 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
             <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', borderBottom: i < revenueSources.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
               <div className="sm-flex sm-gap-12">
                 <span style={{ width: 4, height: 4, borderRadius: '50%', background: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', flexShrink: 0 }} />
-                <span className="sm-text-13t" style={{ fontWeight: 500 }}>{r.source}</span>
+                <span className="sm-text-13t sm-fw-500">{r.source}</span>
                 <span className="sm-subtle">{r.description}</span>
               </div>
               <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', padding: '4px 12px', borderRadius: 100, background: r.status.includes('Active') ? 'color-mix(in srgb, var(--mint) 10%, transparent)' : 'color-mix(in srgb, var(--text3) 10%, transparent)', color: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)' }}>{r.status}</span>
@@ -1644,7 +1644,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* KPI Dashboard — Glass grid */}
-      <div className="sm-model-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+      <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
         {[
           { label: 'Contracted', value: '$1B+', sub: 'Hard commitments', color: 'var(--mint)' },
           { label: 'Prepayments', value: `$${totalPrepay}M`, sub: 'Cash received/due', color: 'var(--cyan)' },
@@ -1653,7 +1653,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         ].map(kpi => (
           <div key={kpi.label} className="sm-kpi-cell">
             <div className="sm-micro-text">{kpi.label}</div>
-            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 28, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div className="sm-mono-xl" style={{ color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
             <div className="sm-text-11">{kpi.sub}</div>
           </div>
         ))}
@@ -1661,7 +1661,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
 
       {/* Quick Stats — Side-by-side panels */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 16 }}>
-        <div className="sm-card-body" style={{ background: 'var(--surface)' }}>
+        <div className="sm-card-body sm-bg-surface">
           {[{ l: 'Definitive Partners', v: '4' }, { l: 'Definitive Subs', v: `${totalDefinitiveSubs}M` }, { l: 'Revenue Share', v: '50/50' }].map(r => (
             <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
               <span className="sm-subtle">{r.l}</span>
@@ -1669,7 +1669,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             </div>
           ))}
         </div>
-        <div className="sm-card-body" style={{ background: 'var(--surface)' }}>
+        <div className="sm-card-body sm-bg-surface">
           {[{ l: 'US Spectrum', v: '45 MHz', c: 'var(--mint)' }, { l: 'Global Tunable', v: '1,150 MHz', c: 'var(--cyan)' }, { l: 'S-band ITU', v: '60 MHz', c: 'var(--text)' }].map(r => (
             <div key={r.l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
               <span className="sm-subtle">{r.l}</span>
@@ -1692,12 +1692,12 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         <div style={{ overflowX: 'auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', minWidth: 700 }}>
             {['Partner', 'Region', 'Subs', 'Spectrum', 'Term', 'Prepay', 'Status'].map(h => (
-              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)' }}>{h}</span>
+              <span key={h} className="sm-micro-label">{h}</span>
             ))}
           </div>
           {definitiveAgreements.map((p, i) => (
             <div key={p.partner} style={{ display: 'grid', gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', alignItems: 'center', padding: '16px 24px', borderBottom: i < definitiveAgreements.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', minWidth: 700 }}>
-              <span className="sm-text-13t" style={{ fontWeight: 500 }}>{p.partner}</span>
+              <span className="sm-text-13t sm-fw-500">{p.partner}</span>
               <span className="sm-text-12">{p.region}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--cyan)' }}>{p.subs}M</span>
               <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', color: 'var(--sky)', display: 'inline-block' }}>{p.spectrum}</span>
@@ -1717,9 +1717,9 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Partner Details — Accent-bar panels */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+      <div className="sm-model-grid" style={{ '--cols': 2, marginTop: 8 } as React.CSSProperties}>
         {definitiveAgreements.map(p => (
-          <div key={p.partner} className="sm-card-body" style={{ background: 'var(--surface)' }}>
+          <div key={p.partner} className="sm-card-body sm-bg-surface">
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
               <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{p.partner}</span>
               <UpdateIndicators sources="PR" />
@@ -1751,7 +1751,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
           {ownedSpectrum.map((s, i) => (
             <div key={s.name} style={{ padding: '16px 24px', borderBottom: i < ownedSpectrum.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', borderLeft: '3px solid var(--cyan)', transition: 'background 0.15s' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span className="sm-text-13t" style={{ fontWeight: 600 }}>{s.name}</span>
+                <span className="sm-text-13t sm-fw-600">{s.name}</span>
                 <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', color: 'var(--mint)' }}>{s.status}</span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
@@ -1802,7 +1802,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         <div className="sm-p0">
           {govContracts.map((g, i) => (
             <div key={g.agency} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 120px 1fr', alignItems: 'center', padding: '16px 24px', borderBottom: i < govContracts.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
-              <span className="sm-text-13t" style={{ fontWeight: 500 }}>{g.agency}</span>
+              <span className="sm-text-13t sm-fw-500">{g.agency}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--mint)', fontWeight: 600 }}>{g.value}</span>
               <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, background: 'color-mix(in srgb, var(--sky) 10%, transparent)', color: 'var(--sky)' }}>{g.status}</span>
               <span className="sm-subtle">{g.notes}</span>
@@ -1823,12 +1823,12 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         <div className="sm-p0">
           <div style={{ display: 'grid', gridTemplateColumns: '130px 140px 80px 100px 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
             {['Partner', 'Region', 'Subs', 'Status', 'Notes'].map(h => (
-              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)' }}>{h}</span>
+              <span key={h} className="sm-micro-label">{h}</span>
             ))}
           </div>
           {otherPartners.map((p, i) => (
             <div key={p.partner} style={{ display: 'grid', gridTemplateColumns: '130px 140px 80px 100px 1fr', alignItems: 'center', padding: '12px 24px', borderBottom: i < otherPartners.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
-              <span className="sm-text-13t" style={{ fontWeight: 500 }}>{p.partner}</span>
+              <span className="sm-text-13t sm-fw-500">{p.partner}</span>
               <span className="sm-text-12">{p.region}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--cyan)' }}>{p.subs}M</span>
               <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, background: p.status === 'Definitive' ? 'color-mix(in srgb, var(--mint) 10%, transparent)' : 'color-mix(in srgb, var(--gold) 10%, transparent)', color: p.status === 'Definitive' ? 'var(--mint)' : 'var(--gold)' }}>{p.status}</span>
@@ -1846,7 +1846,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
           { value: '50/50', label: 'Revenue Share Model', sub: 'MNOs handle billing/support', color: 'var(--violet)' },
         ].map(c => (
           <div key={c.label} style={{ background: 'var(--surface)', padding: '24px 24px', textAlign: 'center' }}>
-            <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 28, fontWeight: 700, color: c.color }}>{c.value}</div>
+            <div className="sm-mono-xl" style={{ color: c.color }}>{c.value}</div>
             <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 6 }}>{c.label}</div>
             <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{c.sub}</div>
           </div>
@@ -1865,7 +1865,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
               <button onClick={() => setPartnerFilter('All')} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.5px', padding: '4px 12px', borderRadius: 100, background: 'color-mix(in srgb, var(--coral) 10%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer' }}>Clear Filter</button>
             )}
           </div>
-          <p style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.6, margin: 0 }}>Track news about ASTS MNO partners — IoT expansion, connected vehicles, 5G rollouts, coverage expansion</p>
+          <p className="sm-subtle sm-lh-16" style={{ margin: 0 }}>Track news about ASTS MNO partners — IoT expansion, connected vehicles, 5G rollouts, coverage expansion</p>
         </div>
 
         {/* Partner Filter Pills */}
@@ -1930,9 +1930,9 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
                   </span>
                 </div>
                 {isExpanded && (
-                  <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+                  <div className="sm-border-t" style={{ paddingTop: 12 }}>
                     {/* Summary */}
-                    <div className="sm-text-13" style={{ lineHeight: 1.6 }}>{news.summary}</div>
+                    <div className="sm-text-13 sm-lh-16">{news.summary}</div>
 
                     {/* ASTS Relevance */}
                     {news.astsRelevance && (
@@ -2382,7 +2382,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="sm-card-section">
           <span className="sm-param-label">Key Metrics</span>
         </div>
-        <div className="sm-model-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
           {[
             { label: 'Class A Shares', value: `${shareClasses[0].shares}M`, color: 'var(--sky)' },
             { label: 'Fully Diluted', value: `${fullyDiluted}M`, color: 'var(--violet)' },
@@ -2434,7 +2434,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <span className="sm-param-label">Navigation</span>
         <span className="sm-divider-line" />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+      <div className="sm-model-grid" style={{ '--cols': 7 } as React.CSSProperties}>
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Class A, B, C' },
           { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Strategic + founder' },
@@ -2511,7 +2511,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       {/* Voting Power Analysis */}
       <div className="sm-model-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
-        <div className="sm-card-body" style={{ background: 'var(--surface)' }}>
+        <div className="sm-card-body sm-bg-surface">
           <div className="sm-param-label sm-mb-16">Economic Ownership</div>
           {[
             { l: 'Class A (Public)', v: `${(shareClasses[0].shares / totalBasic * 100).toFixed(1)}%`, color: 'var(--sky)' },
@@ -2524,7 +2524,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             </div>
           ))}
         </div>
-        <div className="sm-card-body" style={{ background: 'var(--surface)' }}>
+        <div className="sm-card-body sm-bg-surface">
           <div className="sm-param-label sm-mb-16">Voting Power (C = 10x)</div>
           {[
             { l: 'Class A (Public)', v: `${(shareClasses[0].shares / totalVotingShares * 100).toFixed(1)}%`, color: 'var(--sky)' },
@@ -2854,12 +2854,12 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <span className="sm-param-label">Employee Equity Plans / SBC</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)' }}>
-          <div className="sm-card-body" style={{ background: 'var(--surface)' }}>
+          <div className="sm-card-body sm-bg-surface">
             <div className="sm-subtle">2025 YTD SBC (Q1-Q3)</div>
             <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: 'var(--violet)', marginTop: 4 }}>${sbc2025YTD.toFixed(1)}M</div>
             <div className="sm-text-11 sm-mt-8" style={{ marginTop: 4 }}>Engineering ${sbc2025Eng.toFixed(1)}M + G&A ${sbc2025GA.toFixed(1)}M</div>
           </div>
-          <div className="sm-card-body" style={{ background: 'var(--surface)' }}>
+          <div className="sm-card-body sm-bg-surface">
             <div className="sm-subtle">FY2024 Total SBC</div>
             <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: 'var(--violet)', marginTop: 4 }}>${sbcFY2024.toFixed(1)}M</div>
             <div className="sm-text-11 sm-mt-8" style={{ marginTop: 4 }}>Full year from 10-K</div>
@@ -2876,7 +2876,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {capitalView === 'liquidity' && (
       <>
       {/* Treasury Dashboard KPIs */}
-      <div className="sm-model-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+      <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
         {[
           { label: 'Cash (8-K)', value: `$${(LIQUIDITY_POSITION.cashAndEquiv / 1000).toFixed(1)}B`, sub: 'Dec 31, 2025', color: 'var(--mint)' },
           { label: 'Pro Forma Cash', value: `$${(LIQUIDITY_POSITION.cashProForma / 1000).toFixed(1)}B`, sub: 'Post-Feb 2026', color: 'var(--sky)' },
@@ -2959,7 +2959,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       {/* Position Summary */}
       <div className="sm-model-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
-        <div className="sm-card-body" style={{ background: 'var(--surface)' }}>
+        <div className="sm-card-body sm-bg-surface">
           <div className="sm-param-label sm-mb-16">Cash Position</div>
           {[
             { l: 'Cash & Equivalents', v: `$${(LIQUIDITY_POSITION.cashAndEquiv / 1000).toFixed(1)}B`, hl: true },
@@ -2973,7 +2973,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             </div>
           ))}
         </div>
-        <div className="sm-card-body" style={{ background: 'var(--surface)' }}>
+        <div className="sm-card-body sm-bg-surface">
           <div className="sm-param-label sm-mb-16">Debt Facilities</div>
           {[
             { l: 'Sound Point Facility', v: `$${LIQUIDITY_POSITION.soundPointFacility}M`, hl: true },
@@ -2992,8 +2992,8 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Recent Capital Activity */}
       <div className="sm-card sm-mt-8">
         <div style={{ padding: '24px 24px', background: 'linear-gradient(135deg, color-mix(in srgb, var(--mint) 5%, var(--surface)), color-mix(in srgb, var(--sky) 5%, var(--surface)))' }}>
-          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 8 }}>Feb 2026 Capital Activity</div>
-          <div className="sm-text-12" style={{ lineHeight: 1.6 }}>
+          <div className="sm-section-label sm-mint" style={{ fontSize: 13 }}>Feb 2026 Capital Activity</div>
+          <div className="sm-text-12 sm-lh-16">
             $1B 2.25% converts issued. $46.5M of 4.25% and $250M of 2.375% repurchased. ~$614M registered directs. Net new cash ~$980M.
           </div>
         </div>
@@ -3031,7 +3031,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', background: 'color-mix(in srgb, var(--gold) 3%, transparent)' }}>
           <div className="sm-flex-between">
             <div>
-              <span className="sm-text-13t" style={{ fontWeight: 600 }}>{AUG_2025_CEO_RSU_GRANT.name}</span>
+              <span className="sm-text-13t sm-fw-600">{AUG_2025_CEO_RSU_GRANT.name}</span>
               <span style={{ fontSize: 11, color: 'var(--text3)', marginLeft: 8 }}>{AUG_2025_CEO_RSU_GRANT.role}</span>
             </div>
             <span className="sm-mono-sm sm-text3" style={{ fontSize: 11 }}>{AUG_2025_CEO_RSU_GRANT.date}</span>
@@ -3245,7 +3245,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Ligado Deal */}
       <div className="sm-card sm-mt-8">
         <div style={{ padding: '24px 24px', background: 'linear-gradient(135deg, color-mix(in srgb, var(--gold) 5%, var(--surface)), color-mix(in srgb, var(--violet) 5%, var(--surface)))' }}>
-          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8 }}>Mar 2025 Ligado Material Agreement</div>
+          <div className="sm-section-label sm-gold" style={{ fontSize: 13 }}>Mar 2025 Ligado Material Agreement</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginTop: 12 }}>
             {[
               { label: 'Initial Investment', value: `$${MAR_2025_LIGADO_DEAL.initialInvestment}M`, color: 'var(--gold)' },
@@ -3260,10 +3260,10 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ))}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
-            <div className="sm-text-12" style={{ lineHeight: 1.6 }}>
+            <div className="sm-text-12 sm-lh-16">
               <span style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Bands:</span> {MAR_2025_LIGADO_DEAL.spectrumBands}
             </div>
-            <div className="sm-text-12" style={{ lineHeight: 1.6 }}>
+            <div className="sm-text-12 sm-lh-16">
               <span style={{ color: 'var(--text3)', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Annual Lease:</span> ${MAR_2025_LIGADO_DEAL.annualLease}M/yr + revenue share
             </div>
           </div>
@@ -3331,7 +3331,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       {/* Credit Facility */}
       <div className="sm-card sm-mt-8">
         <div style={{ padding: '24px 24px', background: 'linear-gradient(135deg, color-mix(in srgb, var(--sky) 5%, var(--surface)), color-mix(in srgb, var(--mint) 5%, var(--surface)))' }}>
-          <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--sky)', marginBottom: 8 }}>Jul 2025 UBS Credit Facility</div>
+          <div className="sm-section-label sm-sky" style={{ fontSize: 13 }}>Jul 2025 UBS Credit Facility</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginTop: 12 }}>
             {[
               { label: 'Amount', value: `$${JUL_2025_CREDIT_FACILITY.amount}M`, color: 'var(--sky)' },
@@ -3584,8 +3584,8 @@ const ParameterCard = ({
   };
 
   return (
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '24px 24px', marginBottom: 12 }}>
-      <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '0.5px', color: 'var(--text)', marginBottom: 12 }}>{title}</div>
+    <div className="sm-panel sm-mb-12" style={{ borderRadius: 14 }}>
+      <div className="sm-panel-title sm-mb-12">{title}</div>
       <p className="sm-note-list">
         {explanation}
       </p>
@@ -3664,7 +3664,7 @@ const ParameterCard = ({
           </div>
         )}
       </div>
-      <div style={{ fontSize: 11, color: 'var(--text3)', textAlign: 'center' }}>
+      <div className="sm-subtle-sm sm-text-center">
         ← Bearish | Bullish →
       </div>
     </div>
@@ -3831,7 +3831,7 @@ const ModelTab = ({
 
       {/* ASSUMPTIONS SECTION */}
       <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+          <div className="sm-model-grid" style={{ '--cols': 6, marginTop: 8 } as React.CSSProperties}>
             {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
               const preset = SCENARIO_PRESETS[s];
               const isActive = selectedScenario === s;
@@ -4030,7 +4030,7 @@ const ModelTab = ({
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'color-mix(in srgb, var(--accent) 30%, var(--border))', borderRadius: 16, overflow: 'hidden' }}>
             <div style={{ background: 'color-mix(in srgb, var(--accent) 8%, var(--surface))', padding: '24px 16px', textAlign: 'center' }}>
               <div style={{ fontSize: 10, color: 'var(--accent)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 600 }}>Target Price</div>
-              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 32, fontWeight: 700, color: 'var(--accent)', margin: '6px 0 4px' }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
+              <div className="sm-mono-2xl sm-accent" style={{ margin: '6px 0 4px' }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
               <div className="sm-text-11">vs ${currentStockPrice} current</div>
             </div>
             <div style={{ background: 'color-mix(in srgb, var(--accent) 8%, var(--surface))', padding: '24px 16px', textAlign: 'center' }}>
@@ -4041,7 +4041,7 @@ const ModelTab = ({
           </div>
 
           {/* Valuation Metrics Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 12 }}>
+          <div className="sm-model-grid" style={{ '--cols': 4, marginTop: 12 } as React.CSSProperties}>
             {[
               { label: 'PV Enterprise Value', value: `$${riskAdjustedEV.toFixed(1)}B`, sub: `${(riskFactor * 100).toFixed(0)}% prob`, color: 'var(--text)' },
               { label: 'Equity Value', value: `$${equityValue.toFixed(1)}B`, sub: netDebtB < 0 ? `+$${Math.abs(netDebtB).toFixed(2)}B cash` : `-$${netDebtB.toFixed(2)}B debt`, color: 'var(--text)' },
@@ -4058,7 +4058,7 @@ const ModelTab = ({
             ].map(kpi => (
               <div key={kpi.label} style={{ background: 'var(--surface)', padding: '16px', textAlign: 'center' }}>
                 <div className="sm-micro-text">{kpi.label}</div>
-                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 18, fontWeight: 700, color: kpi.color, margin: '6px 0 4px' }}>{kpi.value}</div>
+                <div className="sm-mono-lg" style={{ color: kpi.color, margin: '6px 0 4px' }}>{kpi.value}</div>
                 <div className="sm-text-11">{kpi.sub}</div>
               </div>
             ))}
@@ -4123,7 +4123,7 @@ const ModelTab = ({
               </div>
 
               <div style={{ padding: '16px 16px', background: 'color-mix(in srgb, var(--accent) 6%, transparent)', borderRadius: 10, fontSize: 12, color: 'var(--text3)', lineHeight: 1.7, marginTop: 16, border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)' }}>
-                <div style={{ fontWeight: 600, color: 'var(--text2)', marginBottom: 4 }}>Key Assumptions</div>
+                <div className="sm-text2 sm-fw-600" style={{ marginBottom: 4 }}>Key Assumptions</div>
                 <ul style={{ margin: 0, paddingLeft: 16 }}>
                   <li>Terminal year: {2025 + discountYears} ({discountYears} years out)</li>
                   <li>FCF margin = EBITDA margin - CapEx (simplified, ignores taxes/WC)</li>
@@ -4413,7 +4413,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
 
       {/* Scenario Presets */}
       <div>
-        <div className="sm-model-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
           {Object.entries(presets).filter(([key]) => key !== 'mgmt').map(([key, p]) => {
             const isActive = activePreset === key;
             return (
@@ -4754,7 +4754,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Percentile Distribution */}
       <div>
         <div className="sm-card sm-mt-8">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '16px 24px', borderBottom: '1px solid var(--border)', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
+          <div className="sm-section-label" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
             <span className="sm-text-left">Percentile</span>
             <span className="sm-text-right">Price Target</span>
             <span className="sm-text-right">vs Current</span>
@@ -4786,7 +4786,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Risk Metrics */}
       <div>
         <div className="sm-card sm-mt-8">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '16px 24px', borderBottom: '1px solid var(--border)', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
+          <div className="sm-section-label" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
             <span className="sm-text-left">Risk Metric</span>
             <span className="sm-text-right">Value</span>
             <span className="sm-text-left">Interpretation</span>
@@ -5098,29 +5098,29 @@ const QuarterlyMetricsPanel = () => {
         </div>
         <div className="sm-card-body">
         <div className="sm-grid-2-lg">
-          <div className="sm-card-body" style={{ background: 'var(--surface2)', borderRadius: 12 }}>
+          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
             <div className="sm-micro-text">Filing Source</div>
             <div className="sm-text-13">{quarterlyData['Q3 2025'].filing}</div>
           </div>
-          <div className="sm-card-body" style={{ background: 'var(--surface2)', borderRadius: 12 }}>
+          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
             <div className="sm-micro-text">Satellites in Orbit</div>
             <div className="sm-text-13">{quarterlyData['Q3 2025'].satellites} (BW3 + BB1-5)</div>
           </div>
-          <div className="sm-card-body" style={{ background: 'var(--surface2)', borderRadius: 12 }}>
+          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
             <div className="sm-micro-text">MNO Partnerships</div>
             <div className="sm-text-13">{quarterlyData['Q3 2025'].definitiveAgreements} definitive, {quarterlyData['Q3 2025'].mous}+ MOUs/LOIs</div>
           </div>
-          <div className="sm-card-body" style={{ background: 'var(--surface2)', borderRadius: 12 }}>
+          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
             <div className="sm-micro-text">Contracted Revenue</div>
             <div className="sm-text-13">${quarterlyData['Q3 2025'].contractedRevenue}M+ committed</div>
           </div>
-          <div className="sm-card-body" style={{ background: 'var(--surface2)', borderRadius: 12 }}>
+          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
             <div className="sm-micro-text">Spectrum Position</div>
             <div className="sm-text-13">
               {quarterlyData['Q3 2025'].spectrumOwned} MHz owned | {quarterlyData['Q3 2025'].spectrumUS}+ MHz US
             </div>
           </div>
-          <div className="sm-card-body" style={{ background: 'var(--surface2)', borderRadius: 12 }}>
+          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
             <div className="sm-micro-text">Headcount</div>
             <div className="sm-text-13">{quarterlyData['Q3 2025'].employees ? quarterlyData['Q3 2025'].employees.toLocaleString() : '—'} employees</div>
           </div>
@@ -5138,7 +5138,7 @@ const QuarterlyMetricsPanel = () => {
       <div className="sm-grid-2-lg">
         <div className="sm-card">
           <div className="sm-card-header">
-            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--cyan)', display: 'flex', alignItems: 'center', gap: 8 }}>Cash Position Evolution<UpdateIndicators sources="SEC" /></span>
+            <span className="sm-section-label sm-flex sm-cyan">Cash Position Evolution<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
             const data = Object.values(quarterlyData).filter(q => q.cashAndEquiv !== null).reverse().map(q => ({
@@ -5149,11 +5149,11 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
-                <div className="sm-card-body" style={{ paddingBottom: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
@@ -5168,7 +5168,7 @@ const QuarterlyMetricsPanel = () => {
 
         <div className="sm-card">
           <div className="sm-card-header">
-            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--violet)', display: 'flex', alignItems: 'center', gap: 8 }}>Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></span>
+            <span className="sm-section-label sm-flex sm-violet">Quarterly Burn Rate (OpEx)<UpdateIndicators sources="SEC" /></span>
           </div>
           <div className="sm-card-body">
           {(() => {
@@ -5183,7 +5183,7 @@ const QuarterlyMetricsPanel = () => {
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                   {data.map((d, i) => (
                     <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                      <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
                       <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                       <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                     </div>
@@ -5194,7 +5194,7 @@ const QuarterlyMetricsPanel = () => {
           })()}
           {/* OpEx Breakdown with quarter selector */}
           {opExQuarters.length > 0 && (
-            <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+            <div className="sm-border-t" style={{ paddingTop: 12 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span className="sm-text-11">OpEx Breakdown</span>
                 <select
@@ -5271,7 +5271,7 @@ const QuarterlyMetricsPanel = () => {
       <div className="sm-grid-2-lg">
         <div className="sm-card">
           <div className="sm-card-header">
-            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: 8 }}>Share Count (Outstanding / Implied / Fully Diluted)<UpdateIndicators sources="SEC" /></span>
+            <span className="sm-section-label sm-flex sm-gold">Share Count (Outstanding / Implied / Fully Diluted)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
             const data = Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0).map(d => ({
@@ -5282,11 +5282,11 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
-                <div className="sm-card-body" style={{ paddingBottom: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
@@ -5301,7 +5301,7 @@ const QuarterlyMetricsPanel = () => {
 
         <div className="sm-card">
           <div className="sm-card-header">
-            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--sky)', display: 'flex', alignItems: 'center', gap: 8 }}>Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></span>
+            <span className="sm-section-label sm-flex sm-sky">Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
             const data = Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0 && d.stockPrice > 0).map(d => ({
@@ -5312,11 +5312,11 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
-                <div className="sm-card-body" style={{ paddingBottom: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
@@ -5334,7 +5334,7 @@ const QuarterlyMetricsPanel = () => {
       <div className="sm-grid-2-lg">
         <div className="sm-card">
           <div className="sm-card-header">
-            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--cyan)', display: 'flex', alignItems: 'center', gap: 8 }}>Satellites Deployed<UpdateIndicators sources="PR" /></span>
+            <span className="sm-section-label sm-flex sm-cyan">Satellites Deployed<UpdateIndicators sources="PR" /></span>
           </div>
           {(() => {
             const data = Object.values(quarterlyData).reverse().map(d => ({
@@ -5345,11 +5345,11 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
-                <div className="sm-card-body" style={{ paddingBottom: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
@@ -5364,7 +5364,7 @@ const QuarterlyMetricsPanel = () => {
 
         <div className="sm-card">
           <div className="sm-card-header">
-            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--mint)', display: 'flex', alignItems: 'center', gap: 8 }}>Net Income/(Loss)<UpdateIndicators sources="SEC" /></span>
+            <span className="sm-section-label sm-flex sm-mint">Net Income/(Loss)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
             const data = Object.values(quarterlyData).filter(q => q.netLoss !== null).reverse().map(q => ({
@@ -5381,7 +5381,7 @@ const QuarterlyMetricsPanel = () => {
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: hasNegative ? 110 : 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
-                        {d.value >= 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>}
+                        {d.value >= 0 && <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>}
                         <div style={{ width: '100%', background: d.value >= 0 ? 'var(--mint)' : 'transparent', borderRadius: '4px 4px 0 0', height: d.value >= 0 && maxVal > 0 ? Math.round((d.value / maxVal) * (hasNegative ? 90 : 160)) : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
                       </div>
                     ))}
@@ -5653,7 +5653,7 @@ const TimelineTab = () => {
         )}
 
         {/* Footer with metadata and Last PR marker */}
-        <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+        <div className="sm-border-t" style={{ paddingTop: 12 }}>
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 12 }}>
             <div>
               <span className="sm-text3">CIK:</span>
@@ -5699,7 +5699,7 @@ const TimelineTab = () => {
           <div className="sm-flex-col-gap">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div>
-                <div className="sm-text" style={{ fontWeight: 600 }}>Q4 2025 Earnings</div>
+                <div className="sm-text sm-fw-600">Q4 2025 Earnings</div>
                 <div className="sm-subtle">10-K Annual Report</div>
               </div>
               <div className="sm-text-right">
@@ -5709,7 +5709,7 @@ const TimelineTab = () => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div>
-                <div className="sm-text" style={{ fontWeight: 600 }}>BB7-BB11 Launches</div>
+                <div className="sm-text sm-fw-600">BB7-BB11 Launches</div>
                 <div className="sm-subtle">Block 2 constellation expansion</div>
               </div>
               <div className="sm-text-right">
@@ -5719,7 +5719,7 @@ const TimelineTab = () => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div>
-                <div className="sm-text" style={{ fontWeight: 600 }}>Commercial Service Launch</div>
+                <div className="sm-text sm-fw-600">Commercial Service Launch</div>
                 <div className="sm-subtle">Initial revenue generation</div>
               </div>
               <div className="sm-text-right">
@@ -5729,7 +5729,7 @@ const TimelineTab = () => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
               <div>
-                <div className="sm-text" style={{ fontWeight: 600 }}>Convertible Notes Maturity</div>
+                <div className="sm-text sm-fw-600">Convertible Notes Maturity</div>
                 <div className="sm-subtle">$698M converts @ 4.25%</div>
               </div>
               <div className="sm-text-right">
@@ -5783,7 +5783,7 @@ const TimelineTab = () => {
       {/* Topic Filters (AND logic multi-select) */}
       <div style={{ padding: 16, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
         <div className="sm-flex-between">
-          <span className="sm-text-13t" style={{ fontWeight: 600 }}>Filter by Topic</span>
+          <span className="sm-text-13t sm-fw-600">Filter by Topic</span>
           {selectedTopics.length > 0 && (
             <button
               onClick={() => setSelectedTopics([])}
@@ -5819,7 +5819,7 @@ const TimelineTab = () => {
           })}
         </div>
         {selectedTopics.length > 0 && (
-          <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 8 }}>
+          <div className="sm-subtle sm-mt-8">
             {selectedTopics.map(t => topicTags[t].label).join(' + ')} → {filteredEntries.length} results
           </div>
         )}
@@ -5872,7 +5872,7 @@ const TimelineTab = () => {
               <div onClick={toggleExpand} style={{ display: 'grid', gridTemplateColumns: '100px 90px 1fr 80px 30px', alignItems: 'center', padding: '12px 16px', cursor: 'pointer', transition: 'background 0.15s' }}>
                 <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>{entry.date}</span>
                 <span className="sm-text-11">{entry.category}</span>
-                <span className="sm-text-13t" style={{ fontWeight: 500 }}>{entry.title}</span>
+                <span className="sm-text-13t sm-fw-500">{entry.title}</span>
                 <span style={{ fontSize: 11, fontWeight: 600, textAlign: 'right', color: entry.impact === 'Positive' ? 'var(--mint)' : entry.impact === 'Negative' ? 'var(--coral)' : 'var(--text3)' }}>
                   {entry.impact === 'Positive' && '↑ '}
                   {entry.impact === 'Negative' && '↓ '}
@@ -6234,7 +6234,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{c.name}</div>
-                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: 'var(--text3)' }}>{c.ticker} · {getCategoryLabel(c.category)}</div>
+                  <div className="sm-mono-sm sm-text3">{c.ticker} · {getCategoryLabel(c.category)}</div>
                 </div>
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
                   {qual && <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: threatLevel === 'high' || threatLevel === 'critical' ? 'rgba(255,123,114,0.15)' : threatLevel === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: threatLevel === 'high' || threatLevel === 'critical' ? 'var(--coral)' : threatLevel === 'medium' ? 'var(--gold)' : 'var(--mint)' }}>{qual.threat}</span>}
@@ -6242,10 +6242,10 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 8, padding: 12, background: 'var(--surface2)', borderRadius: 10, marginBottom: 12 }}>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${(c.mc / 1000).toFixed(0)}B</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Mkt Cap</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{c.evRev.toFixed(1)}x</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>EV/Rev</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${c.pSub.toLocaleString()}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>$/Sub</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{c.subs.toFixed(0)}M</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Subs</div></div>
+                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-sm sm-fw-600 sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>${(c.mc / 1000).toFixed(0)}B</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Mkt Cap</div></div>
+                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-sm sm-fw-600 sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>{c.evRev.toFixed(1)}x</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>EV/Rev</div></div>
+                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-sm sm-fw-600 sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>${c.pSub.toLocaleString()}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>$/Sub</div></div>
+                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-sm sm-fw-600 sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>{c.subs.toFixed(0)}M</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Subs</div></div>
               </div>
               {c.highlight && (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
@@ -6286,7 +6286,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{kc.name}</div>
-                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: 'var(--text3)' }}>{kc.type}</div>
+                  <div className="sm-mono-sm sm-text3">{kc.type}</div>
                 </div>
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
                   <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: extraThreat === 'high' || extraThreat === 'critical' ? 'rgba(255,123,114,0.15)' : extraThreat === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: extraThreat === 'high' || extraThreat === 'critical' ? 'var(--coral)' : extraThreat === 'medium' ? 'var(--gold)' : 'var(--mint)' }}>{kc.threat}</span>
@@ -6316,7 +6316,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 16 }}>
         <div className="sm-card">
           <div className="sm-card-section" style={{ padding: '16px 20px' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>EV/Rev Comparison</div>
+            <div className="sm-section-label sm-flex">EV/Rev Comparison</div>
           </div>
           <div style={{ padding: '24px 24px 16px', minHeight: 280 }}>
             <ResponsiveContainer width="100%" height={Math.max(280, Math.min(filteredComps.length * 44, 500))}>
@@ -6353,7 +6353,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
         <div className="sm-card">
           <div className="sm-card-section" style={{ padding: '16px 20px' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>$/Subscriber Comparison</div>
+            <div className="sm-section-label sm-flex">$/Subscriber Comparison</div>
           </div>
           <div style={{ padding: '24px 24px 16px', minHeight: 280 }}>
             <ResponsiveContainer width="100%" height={Math.max(280, Math.min(filteredComps.length * 44, 500))}>
@@ -6417,9 +6417,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
             { method: 'EV/Rev (Fwd)', basis: 'Telco Avg', metric: '2x', implied: calc.fwdRevenue * 2, premium: ((calc.fwdRevenue * 2) / calc.marketCap - 1) * 100 },
           ].map((v, i) => (
             <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</div>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>{v.basis}</div>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{v.metric}</div>
+              <div className="sm-mono-sm sm-fw-500" style={{ padding: '16px 16px', fontSize: 14 }}>{v.method}</div>
+              <div className="sm-mono-sm" style={{ padding: '16px 16px', fontSize: 14 }}>{v.basis}</div>
+              <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>{v.metric}</div>
               <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(v.implied / 1000).toFixed(1)}B</div>
               <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                 {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
@@ -6451,12 +6451,12 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               { segment: 'Spectrum Assets', basis: 'Licensed spectrum', metric: 'Strategic value', multiple: '—', value: 3000 },
             ].map((s, i) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
+                <div className="sm-mono-sm" style={{ padding: '16px 16px', fontSize: 14 }}>
                   <div style={{ fontWeight: 500 }}>{s.segment}</div>
                   <div className="sm-text-11">{s.basis}</div>
                 </div>
-                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.metric}</div>
-                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.multiple}</div>
+                <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>{s.metric}</div>
+                <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>{s.multiple}</div>
                 <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value / 1000).toFixed(1)}B</div>
               </div>
             ))}
@@ -6488,12 +6488,12 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               { scenario: 'Failure', desc: 'Technology or funding issues', prob: 10, value: calc.marketCap * 0.1 },
             ].map((s, i) => (
               <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14 }}>
+                <div className="sm-mono-sm" style={{ padding: '16px 16px', fontSize: 14 }}>
                   <div style={{ fontWeight: 500 }}>{s.scenario}</div>
                   <div className="sm-text-11">{s.desc}</div>
                 </div>
-                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>{s.prob}%</div>
-                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right' }}>${(s.value / 1000).toFixed(1)}B</div>
+                <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>{s.prob}%</div>
+                <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>${(s.value / 1000).toFixed(1)}B</div>
                 <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value * s.prob / 100 / 1000).toFixed(1)}B</div>
               </div>
             ))}
@@ -6519,7 +6519,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         <p style={{ color: 'var(--text2)', fontSize: 13, lineHeight: 1.6, margin: '0 0 4px' }}>Track developments across D2D satellite and terrestrial competitors impacting ASTS SpaceMobile's market position.</p>
         <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', margin: '0 0 16px' }}>Filter by competitor to focus on specific threat vectors.</p>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)' }}>Filter by Competitor</span>
+          <span className="sm-section-label">Filter by Competitor</span>
           {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} style={{ fontSize: 10, padding: '4px 12px', borderRadius: 99, background: 'color-mix(in srgb, var(--coral) 15%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}>Clear</button>}
         </div>
         <div className="sm-flex-wrap sm-gap-6">
@@ -6614,7 +6614,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 </div>
                 {isExpanded && (
                   <div style={{ paddingTop: 16, marginTop: 12, borderTop: '1px solid var(--border)' }}>
-                    <div className="sm-text-13" style={{ lineHeight: 1.6 }}>
+                    <div className="sm-text-13 sm-lh-16">
                       {news.details.map((d, j) => <div key={j} className="sm-flex sm-gap-8" style={{ alignItems: 'initial' }}><span style={{ color: 'var(--accent)', flexShrink: 0 }}>•</span>{d}</div>)}
                     </div>
                     {news.thesisComparison && (
@@ -6634,7 +6634,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       {/* Competitor Profiles (Collapsible) */}
       <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Competitor Profiles</div>
+        <div className="sm-section-label sm-mb-12">Competitor Profiles</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {COMPETITOR_PROFILES.map(comp => (
             <div key={comp.id} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
@@ -7070,7 +7070,7 @@ const InvestmentTab = () => {
           {current.scorecard.map((item, i) => (
             <div key={i} style={{ background: 'var(--surface2)', padding: '12px 16px', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div className="sm-text-13t" style={{ fontWeight: 600 }}>{item.category}</div>
+                <div className="sm-text-13t sm-fw-600">{item.category}</div>
                 <div className="sm-text-11">{item.detail}</div>
               </div>
               <div style={{ fontFamily: 'Space Mono', fontSize: 20, fontWeight: 700, color: item.color }}>{item.rating}</div>
@@ -7120,7 +7120,7 @@ const InvestmentTab = () => {
           {current.growthDrivers.map((d, i) => (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 6 }}>
               <div style={{ flex: 1 }}>
-                <div className="sm-text-13t" style={{ fontWeight: 600 }}>{d.driver}</div>
+                <div className="sm-text-13t sm-fw-600">{d.driver}</div>
                 <div className="sm-subtle">{d.description}</div>
               </div>
               <span style={{ color: d.color, fontWeight: 600, fontSize: 12, marginLeft: 16 }}>{d.impact}</span>
@@ -7137,7 +7137,7 @@ const InvestmentTab = () => {
             {current.moatSources.map((m, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 6 }}>
                 <div>
-                  <div className="sm-text-13t" style={{ fontWeight: 600 }}>{m.source}</div>
+                  <div className="sm-text-13t sm-fw-600">{m.source}</div>
                   <div className="sm-text-11">{m.detail}</div>
                 </div>
                 <span style={{ color: m.color, fontWeight: 600, fontSize: 12 }}>{m.strength}</span>
@@ -7149,7 +7149,7 @@ const InvestmentTab = () => {
             {current.moatThreats.map((t, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 6 }}>
                 <div>
-                  <div className="sm-text-13t" style={{ fontWeight: 600 }}>{t.threat}</div>
+                  <div className="sm-text-13t sm-fw-600">{t.threat}</div>
                   <div className="sm-text-11">{t.detail}</div>
                 </div>
                 <span style={{ color: t.color, fontWeight: 600, fontSize: 12 }}>{t.risk}</span>
@@ -7174,7 +7174,7 @@ const InvestmentTab = () => {
           {current.risks.map((r, i) => (
             <div key={i} style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12, borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}>
               <div className="sm-flex-between">
-                <span className="sm-text" style={{ fontWeight: 600 }}>{r.risk}</span>
+                <span className="sm-text sm-fw-600">{r.risk}</span>
                 <div className="sm-flex sm-gap-8" style={{ alignItems: 'initial' }}>
                   <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: r.severity === 'Critical' ? 'color-mix(in srgb, var(--coral) 20%, transparent)' : r.severity === 'High' ? 'color-mix(in srgb, var(--gold) 20%, transparent)' : 'color-mix(in srgb, var(--sky) 20%, transparent)', color: r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)' }}>{r.severity}</span>
                   <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{r.likelihood} likelihood</span>
@@ -7190,7 +7190,7 @@ const InvestmentTab = () => {
       {/* Risks & Strategic Assessment */}
       <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment" sources={['PR', 'SEC']}>
         {/* Section Header */}
-        <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>
+        <div className="sm-subtle" style={{ fontStyle: 'italic' }}>
           Multi-perspective risk evaluation and strategic decision framework for space-based cellular infrastructure
         </div>
 
@@ -7304,19 +7304,19 @@ const InvestmentTab = () => {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
             <div style={{ background: 'color-mix(in srgb, var(--gold) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--gold) 20%, transparent)' }}>
               <div style={{ fontWeight: 600, color: 'var(--gold)', fontSize: 13 }}>Short-Term (0-6 months)</div>
-              <div className="sm-text-13" style={{ lineHeight: 1.6 }}>
+              <div className="sm-text-13 sm-lh-16">
                 Catalyst-rich period: BB7-13 launches, US commercial service initiation, Q4 earnings. Expect 30-50% swings around events. Successful launches = 10-20% pops, then consolidation. Trading range likely $20-45 depending on execution. Volatility is your friend if sized correctly.
               </div>
             </div>
             <div style={{ background: 'color-mix(in srgb, var(--sky) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
               <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 13 }}>Mid-Term (6-18 months)</div>
-              <div className="sm-text-13" style={{ lineHeight: 1.6 }}>
+              <div className="sm-text-13 sm-lh-16">
                 Revenue recognition begins — first real P&L validation. If penetration tracks to 1%+, narrative shifts from "will it work?" to "how big can it get?" Multiple expansion potential. Target range: $50-100 if execution continues. This is where the thesis gets proven or broken.
               </div>
             </div>
             <div style={{ background: 'color-mix(in srgb, var(--cyan) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--cyan) 20%, transparent)' }}>
               <div style={{ fontWeight: 600, color: 'var(--cyan)', fontSize: 13 }}>Long-Term (3-5 years)</div>
-              <div className="sm-text-13" style={{ lineHeight: 1.6 }}>
+              <div className="sm-text-13 sm-lh-16">
                 At scale (2%+ penetration, 60M+ subs), ASTS could generate $5-10B revenue at 50%+ EBITDA margins. At telco multiples (8-12x EBITDA), that's $40-120B EV vs ~$12B today. 3-10x return potential. But crypto-like volatility along the way — expect multiple 40%+ drawdowns.
               </div>
             </div>
@@ -7376,21 +7376,21 @@ const InvestmentTab = () => {
         {/* Portfolio Context — Unified framework for multi-asset allocation */}
         <div style={{ padding: 16, background: 'color-mix(in srgb, var(--violet) 8%, transparent)', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
           <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 14 }}>Portfolio Construction Context</div>
-          <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>For multi-asset portfolios holding ASTS alongside other positions</div>
+          <div className="sm-subtle" style={{ fontStyle: 'italic' }}>For multi-asset portfolios holding ASTS alongside other positions</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, marginTop: 12 }}>
             <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 6 }}>
               <div className="sm-text-11">Asset Class Bucket</div>
-              <div className="sm-text-13t" style={{ fontWeight: 600 }}>Growth / Technology</div>
+              <div className="sm-text-13t sm-fw-600">Growth / Technology</div>
               <div style={{ fontSize: 11, color: 'var(--gold)' }}>Limit: 15-25% of portfolio</div>
             </div>
             <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 6 }}>
               <div className="sm-text-11">Single-Name Limit</div>
-              <div className="sm-text-13t" style={{ fontWeight: 600 }}>3-6% max</div>
+              <div className="sm-text-13t sm-fw-600">3-6% max</div>
               <div style={{ fontSize: 11, color: 'var(--coral)' }}>Pre-revenue, high volatility</div>
             </div>
             <div style={{ background: 'var(--surface)', padding: 12, borderRadius: 6 }}>
               <div className="sm-text-11">Correlation Note</div>
-              <div className="sm-text-13t" style={{ fontWeight: 600 }}>Low correlation</div>
+              <div className="sm-text-13t sm-fw-600">Low correlation</div>
               <div style={{ fontSize: 11, color: 'var(--mint)' }}>Unique D2D space exposure</div>
             </div>
           </div>
@@ -7410,7 +7410,7 @@ const InvestmentTab = () => {
               onMouseLeave={e => (e.currentTarget.style.background = i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)')}>
               <div className="sm-flex-between">
                 <div className="sm-flex">
-                  <span className="sm-text" style={{ fontWeight: 600 }}>{a.date}</span>
+                  <span className="sm-text sm-fw-600">{a.date}</span>
                   {i === 0 && <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '2px 8px', borderRadius: 99, fontSize: 10, fontWeight: 600 }}>CURRENT</span>}
                 </div>
                 <span style={{ color: getVerdictColor(a.verdict), fontWeight: 600, fontSize: 13 }}>{a.verdict}</span>
@@ -7420,7 +7420,7 @@ const InvestmentTab = () => {
               <div className="sm-text-11">Filing: {a.filing}</div>
               
               {expandedArchive === i && (
-                <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+                <div className="sm-border-t" style={{ paddingTop: 12 }}>
                   <div>
                     <div style={{ fontWeight: 600, color: 'var(--sky)', fontSize: 12 }}>Key Developments</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -7582,10 +7582,10 @@ const FinancialsTab = () => {
       </div>
       <div className="sm-card">
         <div className="sm-card-header">
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: 8 }}>Key Financial Milestones<UpdateIndicators sources="SEC" /></span>
+          <span className="sm-section-label sm-flex sm-gold">Key Financial Milestones<UpdateIndicators sources="SEC" /></span>
         </div>
         <div className="sm-card-body">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
           {config.milestones.map((m, i) => (
             <div key={i} style={{ padding: 12, background: 'var(--surface)', borderRadius: 0 }}>
               <div className="sm-text-11">{m.date}</div>

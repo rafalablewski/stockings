@@ -261,26 +261,26 @@ const SourceArticleRow: React.FC<{
     return (
       <div className="sm-ed-hidden-row">
         <div className="sm-flex" style={{ padding: '3px 12px', borderRadius: 6 }}>
-          <span style={{
+          <span className="sm-shrink-0" style={{
             fontSize: 9, fontFamily: 'Space Mono, monospace', fontWeight: 600,
-            padding: '1px 6px', borderRadius: 4, flexShrink: 0,
+            padding: '1px 6px', borderRadius: 4,
             background: tc.bg, color: tc.text,
           }}>
             {type === 'pr' ? 'PR' : 'NEWS'}
           </span>
-          <span style={{
-            fontSize: 11, color: 'var(--text3)', flex: 1, minWidth: 0,
+          <span className="sm-subtle-sm" style={{
+            flex: 1, minWidth: 0,
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             textDecoration: 'line-through',
           }}>
             {article.headline}
           </span>
           {article.date && (
-            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)', flexShrink: 0 }}>
+            <span className="sm-text3 sm-shrink-0" style={{ fontFamily: 'Space Mono, monospace', fontSize: 10 }}>
               {article.date}
             </span>
           )}
-          <span style={{ fontSize: 8, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', flexShrink: 0, textTransform: 'uppercase' }}>hidden</span>
+          <span className="sm-text3 sm-shrink-0" style={{ fontSize: 8, fontFamily: 'Space Mono, monospace', textTransform: 'uppercase' }}>hidden</span>
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
           <div className="sm-shrink-0" onClick={e => e.stopPropagation()}>
             <button
@@ -379,7 +379,7 @@ const SourceArticleRow: React.FC<{
           );
         })()}
         {/* Source name — fixed width for column alignment */}
-        <span className="sm-subtle-sm" style={{ flexShrink: 0, width: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'right' }}>
+        <span className="sm-subtle-sm sm-shrink-0 sm-text-right" style={{ width: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {article.source || ''}
         </span>
         {/* Date — fixed width for column alignment */}
@@ -393,7 +393,7 @@ const SourceArticleRow: React.FC<{
           {showAnalysis && statusLabel ? statusLabel : '\u00A0'}
         </span>
         {/* DB status button — hover fetches live data from database */}
-        <span style={{ position: 'relative', flexShrink: 0 }}>
+        <span className="sm-shrink-0" style={{ position: 'relative' }}>
           <button
             type="button"
             aria-label="Show database record"
@@ -412,22 +412,22 @@ const SourceArticleRow: React.FC<{
           {dbTooltipVisible && (
             <div ref={dbTooltipRef} className="sm-ed-db-tooltip sm-db-tooltip-responsive">
               {/* Header — explains what this tooltip checks */}
-              <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text3)', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
+              <div className="sm-text3" style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
                 Saved in seen_articles DB?
               </div>
               {dbTooltipLoading ? (
-                <div style={{ color: 'var(--text3)', fontStyle: 'italic' }}>Fetching from database...</div>
+                <div className="sm-text3" style={{ fontStyle: 'italic' }}>Fetching from database...</div>
               ) : dbTooltip ? (
                 <>
-                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>status:</span> <span style={{ color: dbTooltip.status === 'TRACKED' ? 'var(--mint)' : dbTooltip.status === 'UNTRACKED' ? 'var(--coral)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.status}</span></div>
-                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>category:</span> <span style={{ color: dbTooltip.category === 'PRESS RELEASE' ? 'var(--sky)' : dbTooltip.category === 'NEWS' ? 'var(--mint)' : 'var(--text3)' }}>{dbTooltip.category}</span></div>
-                  <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>heading:</span> {dbTooltip.heading}</div>
-                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>source:</span> {dbTooltip.source}</div>
-                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>date:</span> {dbTooltip.date}</div>
-                  <div><span style={{ color: 'var(--text3)', minWidth: 70, display: 'inline-block' }}>seen:</span> <span style={{ color: dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.seen}</span></div>
+                  <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>status:</span> <span style={{ color: dbTooltip.status === 'TRACKED' ? 'var(--mint)' : dbTooltip.status === 'UNTRACKED' ? 'var(--coral)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.status}</span></div>
+                  <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>category:</span> <span style={{ color: dbTooltip.category === 'PRESS RELEASE' ? 'var(--sky)' : dbTooltip.category === 'NEWS' ? 'var(--mint)' : 'var(--text3)' }}>{dbTooltip.category}</span></div>
+                  <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>heading:</span> {dbTooltip.heading}</div>
+                  <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>source:</span> {dbTooltip.source}</div>
+                  <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>date:</span> {dbTooltip.date}</div>
+                  <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>seen:</span> <span style={{ color: dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.seen}</span></div>
                 </>
               ) : (
-                <div style={{ color: 'var(--coral)', fontWeight: 600 }}>NOT IN DATABASE</div>
+                <div className="sm-coral" style={{ fontWeight: 600 }}>NOT IN DATABASE</div>
               )}
             </div>
           )}
@@ -517,7 +517,7 @@ const SourceArticleRow: React.FC<{
           })()}
           {/* Analysis panel */}
           <div className="sm-ed-analysis">
-            <div className="sm-flex-between" style={{ marginBottom: 12 }}>
+            <div className="sm-flex-between sm-mb-12">
               <span className="sm-section-label" style={{ marginBottom: 0 }}>
                 Analysis Result
               </span>
@@ -590,11 +590,11 @@ const SourceArticleSection: React.FC<{
       {remainingHidden > 0 && !showAllHidden && (
         <button
           onClick={() => setShowAllHidden(true)}
-          className="sm-ed-hidden-row"
+          className="sm-ed-hidden-row sm-text3 sm-pointer sm-w-full"
           style={{
-            display: 'block', width: '100%', padding: '4px 12px', margin: '2px 0',
-            fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)',
-            background: 'transparent', border: 'none', cursor: 'pointer',
+            display: 'block', padding: '4px 12px', margin: '2px 0',
+            fontSize: 9, fontFamily: 'Space Mono, monospace',
+            background: 'transparent', border: 'none',
             textAlign: 'left',
           }}
         >
@@ -604,11 +604,11 @@ const SourceArticleSection: React.FC<{
       {showAllHidden && hidden.length > HIDDEN_PREVIEW && (
         <button
           onClick={() => setShowAllHidden(false)}
-          className="sm-ed-hidden-row"
+          className="sm-ed-hidden-row sm-text3 sm-pointer sm-w-full"
           style={{
-            display: 'block', width: '100%', padding: '4px 12px', margin: '2px 0',
-            fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)',
-            background: 'transparent', border: 'none', cursor: 'pointer',
+            display: 'block', padding: '4px 12px', margin: '2px 0',
+            fontSize: 9, fontFamily: 'Space Mono, monospace',
+            background: 'transparent', border: 'none',
             textAlign: 'left',
           }}
         >
@@ -695,8 +695,9 @@ const CompanyFeedCard: React.FC<{
           {data.loaded && (
             <span
               aria-hidden="true"
+              className="sm-shrink-0"
               style={{
-                width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+                width: 8, height: 8, borderRadius: '50%',
                 background: isActive
                   ? 'var(--gold)'
                   : 'var(--mint)',
@@ -706,9 +707,9 @@ const CompanyFeedCard: React.FC<{
               }}
             />
           )}
-          <h3 style={{
+          <h3 className="sm-text sm-overflow-hidden" style={{
             margin: 0, fontSize: isPrimary ? 15 : 14, fontWeight: 700,
-            color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap', textOverflow: 'ellipsis',
           }}>
             {label}
           </h3>
@@ -726,7 +727,7 @@ const CompanyFeedCard: React.FC<{
           )}
           {/* Freshness indicator */}
           {data.loaded && !isActive && fetchedAt && (
-            <span style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.6, fontFamily: 'Space Mono, monospace', marginLeft: 4 }}>
+            <span className="sm-text3" style={{ fontSize: 10, opacity: 0.6, fontFamily: 'Space Mono, monospace', marginLeft: 4 }}>
               {formatTimeAgo(fetchedAt)}
             </span>
           )}
@@ -1420,7 +1421,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             />
           </svg>
           <div className="sm-flex-col">
-            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>
+            <span className="sm-text" style={{ fontSize: 13, fontWeight: 600 }}>
               {loadedCount === 0 ? 'Intelligence Feeds' : `${loadedCount} of ${totalCompanies} loaded`}
             </span>
             <span className="sm-subtle-sm">
@@ -1462,8 +1463,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             { label: 'Pending', color: 'var(--text3)', opacity: 0.4, desc: 'Status not yet checked — load feeds and run analysis to classify' },
           ] as const).map(s => (
             <span key={s.label} title={s.desc} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, maxWidth: 260 }}>
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: s.color, opacity: s.opacity, marginTop: 3, flexShrink: 0 }} />
-              <span style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <span className="sm-shrink-0" style={{ width: 5, height: 5, borderRadius: '50%', background: s.color, opacity: s.opacity, marginTop: 3 }} />
+              <span className="sm-flex-col" style={{ gap: 1 }}>
                 <span style={{ fontWeight: 500 }}>{s.label}</span>
                 <span style={{ fontSize: 9, opacity: 0.5, lineHeight: 1.4 }}>{s.desc}</span>
               </span>
@@ -1477,11 +1478,11 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         <div className="sm-flex" style={{ gap: 10, padding: '0 4px 12px' }}>
           <button
             onClick={() => setForceLocal(prev => !prev)}
+            className="sm-border sm-bg-surface2 sm-pointer"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               padding: '4px 10px', borderRadius: 6,
-              border: '1px solid var(--border)', background: 'var(--surface2)',
-              cursor: 'pointer', fontSize: 10, fontFamily: 'Space Mono, monospace',
+              fontSize: 10, fontFamily: 'Space Mono, monospace',
               color: forceLocal ? 'var(--gold)' : 'var(--sky)',
             }}
           >
@@ -1582,7 +1583,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       <div className="sm-grid-sep" style={{ '--cols': 2 } as React.CSSProperties}>
         {researchSources.map(group => (
           <div key={group.category} className="sm-grid-cell">
-            <div className="sm-micro-label" style={{ letterSpacing: '1.5px', marginBottom: 16 }}>
+            <div className="sm-micro-label sm-mb-16" style={{ letterSpacing: '1.5px' }}>
               {group.category}
             </div>
             <nav aria-label={`${group.category} links`} className="sm-flex-col" style={{ gap: 2 }}>
@@ -1596,7 +1597,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   style={{ textDecoration: 'none', padding: '6px 8px', gap: 6 }}
                 >
                   {s.name}
-                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style={{ opacity: 0.3, flexShrink: 0 }}>
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none" className="sm-shrink-0" style={{ opacity: 0.3 }}>
                     <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </a>
@@ -1610,8 +1611,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       <div className="sm-ws-panel sm-mt-8">
         <div
           onClick={() => setMethodologyOpen(prev => !prev)}
-          className="sm-ws-panel-header"
-          style={{ cursor: 'pointer' }}
+          className="sm-ws-panel-header sm-pointer"
           data-open={methodologyOpen ? 'true' : 'false'}
           role="button"
           tabIndex={0}
@@ -1635,7 +1635,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div className="sm-ed-vline" style={{ height: 12 }} />
               <div className="sm-ed-flowbox">Load saved articles from Neon PostgreSQL</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
-              <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>Render from DB &mdash; no external API calls on mount</div>
+              <div className="sm-mint" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600 }}>Render from DB &mdash; no external API calls on mount</div>
             </div>
             <div className="sm-ed-method-text sm-mt-12">
               <div><span className="sm-text">Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_articles table</div>
@@ -1648,24 +1648,24 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
             {/* ── TWO DATA PIPELINES ──────────────────────── */}
             <div className="sm-ed-method-label">Data Pipelines: Press Releases vs News</div>
-            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
-              <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="sm-flex-wrap" style={{ gap: 24 }}>
+              <div className="sm-flex-col" style={{ flex: '1 1 220px', alignItems: 'center' }}>
                 <div className="sm-ed-flowbox-accent">Fetch PRs</div>
                 <div style={{ width: 2, height: 10, background: 'var(--sky)' }} />
                 <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>GET /api/press-releases/[ticker]</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
-                <div style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.6 }}>Google News RSS filtered to wire services<br />(PRN, BusinessWire, GlobeNewsWire) + IR pages</div>
+                <div className="sm-text3 sm-text-center" style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', lineHeight: 1.6 }}>Google News RSS filtered to wire services<br />(PRN, BusinessWire, GlobeNewsWire) + IR pages</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
-                <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>articleType: &quot;pr&quot;</div>
+                <div className="sm-sky" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600 }}>articleType: &quot;pr&quot;</div>
               </div>
-              <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div className="sm-flex-col" style={{ flex: '1 1 220px', alignItems: 'center' }}>
                 <div className="sm-ed-flowbox-accent" style={{ background: 'var(--mint-dim)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>Fetch News</div>
                 <div style={{ width: 2, height: 10, background: 'var(--mint)' }} />
                 <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>GET /api/news/[ticker]</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
-                <div style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.6 }}>Google News RSS by company name + ticker<br />filtered for relevance (Yahoo, Reuters, etc.)</div>
+                <div className="sm-text3 sm-text-center" style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', lineHeight: 1.6 }}>Google News RSS by company name + ticker<br />filtered for relevance (Yahoo, Reuters, etc.)</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
-                <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>articleType: &quot;news&quot;</div>
+                <div className="sm-mint" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600 }}>articleType: &quot;news&quot;</div>
               </div>
             </div>
             <div className="sm-ed-method-text sm-mt-12">
@@ -1679,9 +1679,9 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
             {/* ── ANALYSIS ROUTING FLOW ──────────────────────── */}
             <div className="sm-ed-method-label">Analysis Routing</div>
-            <div style={{ display: 'flex', gap: 24 }}>
+            <div className="sm-flex sm-gap-24">
               {/* Left column: vertical flow */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180 }}>
+              <div className="sm-flex-col" style={{ alignItems: 'center', minWidth: 180 }}>
                 {/* Node: Article */}
                 <div className="sm-ed-flowbox">Article arrives</div>
                 <div className="sm-ed-vline" style={{ height: 12 }} />
@@ -1706,23 +1706,23 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>OK</div>
                 <div className="sm-ed-vline" style={{ height: 6 }} />
                 {/* Result */}
-                <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>AI Result</div>
+                <div className="sm-sky" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600 }}>AI Result</div>
               </div>
               {/* Right column: fallback labels */}
-              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 4, paddingTop: 28 }}>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
+              <div className="sm-flex-col" style={{ justifyContent: 'center', gap: 4, paddingTop: 28 }}>
+                <div className="sm-flex sm-text3" style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', gap: 6, height: 28 }}>
                   <span className="sm-coral" style={{ fontSize: 11 }}>&larr;</span> No
                 </div>
                 <div style={{ height: 22 }} />
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
+                <div className="sm-flex sm-text3" style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', gap: 6, height: 28 }}>
                   <span className="sm-coral" style={{ fontSize: 11 }}>&larr;</span> Yes
                 </div>
                 <div style={{ height: 22 }} />
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
+                <div className="sm-flex sm-text3" style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', gap: 6, height: 28 }}>
                   <span className="sm-coral" style={{ fontSize: 11 }}>&larr;</span> Yes
                 </div>
                 <div style={{ height: 22 }} />
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
+                <div className="sm-flex sm-text3" style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', gap: 6, height: 28 }}>
                   <span className="sm-coral" style={{ fontSize: 11 }}>&larr;</span> Fail
                 </div>
                 <div className="sm-ed-flowbox-accent" style={{ marginTop: 4, background: 'var(--gold-dim)', borderColor: 'var(--gold)', color: 'var(--gold)' }}>Local Matching</div>
@@ -1734,7 +1734,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
             {/* ── DATA EXTRACTION ─────────────────────────── */}
             <div className="sm-ed-method-label">Data Extraction</div>
-            <div style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', lineHeight: 2 }}>
+            <div className="sm-text2" style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', lineHeight: 2 }}>
               <div>Queries Neon PostgreSQL via Drizzle ORM — 4 tables in parallel.</div>
               <div style={{ marginTop: 4 }}>
                 <span className="sm-text3">Tables:</span> timeline_events, sec_filings, catalysts, partner_news
@@ -1763,16 +1763,16 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div className="sm-ed-flowbox">Extract keywords (stop words removed, stemmed, &gt;2 chars)</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
               {/* Stemming note */}
-              <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Normalize: Q1-Q4 &rarr; quarter, FY &rarr; fiscal year</div>
-              <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Stemmer: -s, -ed, -ing, -tion, -ment, -ies, -ly, -er, -or</div>
-              <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Overlap: max(article→DB, DB→article) — bidirectional</div>
+              <div className="sm-text3 sm-text-center" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', marginBottom: 4 }}>Normalize: Q1-Q4 &rarr; quarter, FY &rarr; fiscal year</div>
+              <div className="sm-text3 sm-text-center" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', marginBottom: 4 }}>Stemmer: -s, -ed, -ing, -tion, -ment, -ies, -ly, -er, -or</div>
+              <div className="sm-text3 sm-text-center" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', marginBottom: 4 }}>Overlap: max(article→DB, DB→article) — bidirectional</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
               {/* Dollar-amount guard */}
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--gold)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
-                <div style={{ color: 'var(--gold)', fontWeight: 600 }}>Dollar-amount guard</div>
+              <div className="sm-text sm-bg-surface2 sm-text-center sm-rounded-8" style={{ padding: '6px 14px', border: '1px solid var(--gold)', fontSize: 11, fontFamily: 'Space Mono, monospace' }}>
+                <div className="sm-gold" style={{ fontWeight: 600 }}>Dollar-amount guard</div>
                 <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>Article has $ figure? &rarr; DB entry must also have $</div>
                 <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>Both have $? &rarr; numbers must overlap ($30M &ne; $50M)</div>
-                <div style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic' }}>Prevents matching different awards/contracts from same entity</div>
+                <div className="sm-text3" style={{ fontSize: 10, fontStyle: 'italic' }}>Prevents matching different awards/contracts from same entity</div>
               </div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
               {/* Tier 1 row */}
@@ -1783,8 +1783,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>&gt;30 days: &ge;60%, &ge;3 kw</div>
                   <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>short: &ge;60%, &ge;2 kw, &le;30d</div>
                 </div>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  Match &rarr; <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
+                <div className="sm-flex sm-text3" style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', gap: 6 }}>
+                  Match &rarr; <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span className="sm-mint" style={{ fontWeight: 600 }}>TRACKED</span></span>
                 </div>
               </div>
               <div className="sm-ed-vline" style={{ height: 6 }} />
@@ -1797,8 +1797,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>&le;30 days: &ge;50%, &ge;3 kw</div>
                   <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>&gt;30 days: &ge;70%, &ge;3 kw</div>
                 </div>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  Match &rarr; <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
+                <div className="sm-flex sm-text3" style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', gap: 6 }}>
+                  Match &rarr; <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span className="sm-mint" style={{ fontWeight: 600 }}>TRACKED</span></span>
                 </div>
               </div>
               <div className="sm-ed-vline" style={{ height: 6 }} />
@@ -1807,10 +1807,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               {/* Result: UNTRACKED */}
               <div className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} />
-                <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>UNTRACKED</span>
+                <span className="sm-coral" style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', fontWeight: 600 }}>UNTRACKED</span>
               </div>
               {/* Guard notes */}
-              <div style={{ marginTop: 8, padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', fontStyle: 'italic', textAlign: 'center' }}>Date proximity guard: recurring reports require higher overlap when dates are &gt;30 days apart<br />Dollar-amount guard: $30M award &ne; $50M award even from the same entity &mdash; numbers must match</div>
+              <div className="sm-text3 sm-mt-8 sm-text-center" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', fontStyle: 'italic' }}>Date proximity guard: recurring reports require higher overlap when dates are &gt;30 days apart<br />Dollar-amount guard: $30M award &ne; $50M award even from the same entity &mdash; numbers must match</div>
             </div>
 
             {/* Divider */}
@@ -1819,31 +1819,31 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             {/* ── NEW ARTICLE DETECTION ──────────────────────── */}
             <div className="sm-ed-method-label">New Article Detection</div>
             <div className="sm-flex-col" style={{ alignItems: 'center' }}>
-              <div style={{ display: 'flex', gap: 16 }}>
-                <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center' }}>Fetch PRs</div>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', alignSelf: 'center' }}>or</div>
+              <div className="sm-flex sm-gap-16">
+                <div className="sm-sky sm-text-center sm-rounded-8" style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', fontSize: 11, fontFamily: 'Space Mono, monospace' }}>Fetch PRs</div>
+                <div className="sm-text3" style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', alignSelf: 'center' }}>or</div>
                 <div className="sm-ed-flowbox-accent" style={{ background: 'var(--mint-dim)', borderColor: 'var(--mint)', color: 'var(--mint)', fontWeight: 400 }}>Fetch News</div>
               </div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
               <div className="sm-ed-flowbox">Compare cacheKey against DB records</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
               <div className="sm-ed-flowbox">Already in DB?</div>
-              <div style={{ display: 'flex', gap: 32, marginTop: 8 }}>
+              <div className="sm-flex sm-mt-8" style={{ gap: 32 }}>
                 <div className="sm-flex-col" style={{ alignItems: 'center' }}>
                   <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>Yes</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
-                  <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>Upsert (update metadata)</div>
+                  <div className="sm-text3" style={{ fontSize: 10, fontFamily: 'Space Mono, monospace' }}>Upsert (update metadata)</div>
                 </div>
                 <div className="sm-flex-col" style={{ alignItems: 'center' }}>
                   <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
                   <div className="sm-ed-flowbox">Save to DB (dismissed=false)</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
-                  <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>NEW badge</div>
+                  <div className="sm-sky" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600 }}>NEW badge</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
                   <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>User clicks NEW</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
-                  <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600, opacity: 0.3 }}>SEEN badge</div>
+                  <div className="sm-sky" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600, opacity: 0.3 }}>SEEN badge</div>
                 </div>
               </div>
             </div>
@@ -1861,7 +1861,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
             {/* ── BUTTON DISTINCTION ────────────────────────── */}
             <div className="sm-ed-method-label">Button Distinction: RE-CHECK DB vs DB</div>
-            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+            <div className="sm-flex-wrap" style={{ gap: 20 }}>
               <div className="sm-ed-info-card-xl">
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,180,220,0.7)', marginBottom: 6 }}>RE-CHECK DB</div>
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
@@ -1872,7 +1872,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 </div>
               </div>
               <div className="sm-ed-info-card-xl">
-                <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', marginBottom: 6 }}>DB (per article)</div>
+                <div className="sm-mint" style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', marginBottom: 6 }}>DB (per article)</div>
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   <div><span className="sm-text">Purpose:</span> is this article saved in the database?</div>
                   <div><span className="sm-text">API:</span> GET /api/seen-articles?cacheKey=X</div>
@@ -1881,8 +1881,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 </div>
               </div>
             </div>
-            <div style={{ marginTop: 10, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
-              <div style={{ display: 'flex', gap: 16 }}>
+            <div className="sm-text3" style={{ marginTop: 10, fontSize: 10, fontFamily: 'Space Mono, monospace', lineHeight: 1.8 }}>
+              <div className="sm-flex sm-gap-16">
                 <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> In DB (all fields)</span>
                 <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} /> In DB (partial data)</span>
                 <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4, display: 'inline-block' }} /> Not in DB</span>
@@ -1892,10 +1892,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div className="sm-ed-hdivider" />
 
             {/* ── Legend & config ──────────────────────────── */}
-            <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 11, lineHeight: 2 }}>
+            <div className="sm-flex-wrap" style={{ gap: 24, fontSize: 11, lineHeight: 2 }}>
               <div>
                 <span className="sm-micro-text" style={{ letterSpacing: '2px' }}>Analysis Status</span>
-                <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
+                <div className="sm-flex sm-gap-16" style={{ marginTop: 4 }}>
                   <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> Tracked</span>
                   <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} /> Untracked</span>
                   <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', display: 'inline-block' }} /> Pending</span>
@@ -1905,15 +1905,15 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <span className="sm-micro-text" style={{ letterSpacing: '2px' }}>Controls</span>
                 <div style={{ marginTop: 4 }}>
                   <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace' }}>UI toggle</span>
-                  <span style={{ margin: '0 8px', color: 'var(--text3)' }}>|</span>
-                  <code style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>DISABLE_AI_MATCHING=true</code>
-                  <span style={{ margin: '0 8px', color: 'var(--text3)' }}>|</span>
-                  <code style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', padding: '1px 5px', borderRadius: 4, background: 'var(--surface2)' }}>MAX_PROMPT_TOKENS=40000</code>
+                  <span className="sm-text3" style={{ margin: '0 8px' }}>|</span>
+                  <code className="sm-bg-surface2 sm-rounded-4" style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', padding: '1px 5px' }}>DISABLE_AI_MATCHING=true</code>
+                  <span className="sm-text3" style={{ margin: '0 8px' }}>|</span>
+                  <code className="sm-bg-surface2 sm-rounded-4" style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', padding: '1px 5px' }}>MAX_PROMPT_TOKENS=40000</code>
                 </div>
               </div>
             </div>
             {matchMethod && (
-              <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div className="sm-flex sm-mt-12 sm-gap-8">
                 <span className="sm-micro-text" style={{ letterSpacing: '2px' }}>Active</span>
                 <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, padding: '2px 8px', borderRadius: 5, background: matchMethod === 'local' ? 'var(--gold-dim)' : 'var(--sky-dim)', color: matchMethod === 'local' ? 'var(--gold)' : 'var(--sky)' }}>{matchMethod === 'ai' ? 'AI semantic matching' : matchMethod === 'hybrid' ? 'hybrid (local + AI)' : 'local keyword matching'}</span>
               </div>

@@ -126,7 +126,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
             </div>
             {lowPT && highPT && (
               <div className="sm-ws-range sm-mt-8">
-                Range: <span className="sm-mono" style={{ color: 'var(--coral)', fontWeight: 400 }}>${lowPT}</span> — <span className="sm-mono" style={{ color: 'var(--mint)', fontWeight: 400 }}>${highPT}</span>
+                Range: <span className="sm-mono sm-coral sm-fw-400">${lowPT}</span> — <span className="sm-mono sm-mint sm-fw-400">${highPT}</span>
               </div>
             )}
           </div>
@@ -147,7 +147,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                     <div style={{ width: `${(ratingCounts.bearish / totalAnalysts) * 100}%`, background: 'var(--coral)' }} />
                   )}
                 </div>
-                <div className="sm-flex sm-gap-16" style={{ fontSize: 12 }}>
+                <div className="sm-flex sm-gap-16 sm-text-12">
                   <span className="sm-mint">● Buy/OW: {ratingCounts.bullish}</span>
                   <span className="sm-gold">● Hold/Neutral: {ratingCounts.neutral}</span>
                   <span className="sm-coral">● Sell/UW: {ratingCounts.bearish}</span>
@@ -198,13 +198,13 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
 
                     {/* Current PT */}
                     <div className="sm-ws-pt">
-                      <span style={{ color: 'var(--text)', fontSize: 16, fontWeight: 600 }}>
+                      <span className="sm-text sm-text-16 sm-fw-600">
                         {cov.currentPT ? `$${cov.currentPT}` : '—'}
                       </span>
                     </div>
 
                     {/* Report counts */}
-                    <div className="sm-flex sm-gap-8" style={{ fontSize: 11 }}>
+                    <div className="sm-flex sm-gap-8 sm-text-11">
                       <span className="sm-ws-count-badge" data-type="report">
                         {fullReportCount} Report{fullReportCount !== 1 ? 's' : ''}
                       </span>
@@ -278,7 +278,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                 <span className="sm-badge" style={{ '--badge-color': getActionColor(report.action) } as React.CSSProperties}>
                                   {report.action}
                                 </span>
-                                <span style={{ color: getRatingColor(report.rating, report.ratingNormalized), fontSize: 12, fontWeight: 500 }}>
+                                <span className="sm-text-12 sm-fw-500" style={{ color: getRatingColor(report.rating, report.ratingNormalized) }}>
                                   {report.rating}
                                 </span>
                               </div>
@@ -313,7 +313,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                             {/* Full report content (expandable) */}
                             {report.isFullReport && report.thesis && (
                               <>
-                                <div className="sm-body-sm sm-mb-8" style={{ lineHeight: 1.5 }}>
+                                <div className="sm-body-sm sm-mb-8">
                                   {report.thesis}
                                 </div>
 
@@ -340,7 +340,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                             const rest = paragraph.replace(/^\*\*.+?\*\*\s*/, '');
                                             return (
                                               <div key={pIdx} className="sm-mb-12">
-                                                <div className="sm-text" style={{ fontWeight: 600, fontSize: 11 }}>{header}</div>
+                                                <div className="sm-text sm-fw-600 sm-text-11">{header}</div>
                                                 <div>{rest}</div>
                                               </div>
                                             );
