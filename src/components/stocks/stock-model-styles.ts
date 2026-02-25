@@ -5123,4 +5123,718 @@ input[type="range"]::-webkit-slider-thumb {
   flex-direction: column;
   gap: 4px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 25. UTILITY CLASSES — Extended
+   Additional utility classes for inline style elimination.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.sm-m-0 { margin: 0; }
+.sm-p-12 { padding: 12px; }
+.sm-p-12-16 { padding: 12px 16px; }
+.sm-p-0-24-16 { padding: 0 24px 16px; }
+.sm-p-0-12-12 { padding: 0 12px 12px; }
+.sm-pl-16 { padding-left: 16px; }
+.sm-pt-12 { padding: 12px 0 0; }
+.sm-justify-end { justify-content: flex-end; }
+.sm-items-start { align-items: flex-start; }
+.sm-items-center { align-items: center; }
+.sm-italic { font-style: italic; }
+.sm-capitalize { text-transform: capitalize; }
+.sm-uppercase { text-transform: uppercase; }
+.sm-line-through { text-decoration: line-through; }
+.sm-lh-15 { line-height: 1.5; }
+.sm-lh-18 { line-height: 1.8; }
+.sm-list-none { list-style: none; }
+.sm-opacity-70 { opacity: 0.7; }
+.sm-opacity-50 { opacity: 0.5; }
+.sm-opacity-60 { opacity: 0.6; }
+.sm-nowrap { white-space: nowrap; }
+.sm-pre-line { white-space: pre-line; }
+.sm-min-w-80 { min-width: 80px; }
+.sm-min-w-90 { min-width: 90px; }
+.sm-min-w-100 { min-width: 100px; }
+.sm-inline-block { display: inline-block; }
+.sm-grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; }
+.sm-pointer { cursor: pointer; }
+.sm-cursor-default { cursor: default; }
+.sm-rounded-4 { border-radius: 4px; }
+.sm-rounded-6 { border-radius: 6px; }
+.sm-rounded-12 { border-radius: 12px; }
+.sm-rounded-full { border-radius: 9999px; }
+.sm-text-ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sm-ls-05 { letter-spacing: 0.5px; }
+.sm-ls-08 { letter-spacing: 0.8px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 26. INVESTMENT TAB (sm-inv-*)
+   Shared Investment tab component classes — scorecard, drivers, moat, risks,
+   perspectives, position sizing, archive.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Toggle expand/collapse icon */
+.sm-inv-toggle-icon {
+  font-size: 18px;
+  color: var(--text3);
+}
+
+/* Verdict badge — uses --badge-bg and --badge-color CSS vars */
+.sm-inv-verdict-badge {
+  background: var(--badge-bg);
+  color: var(--bg);
+  padding: 8px 24px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* Ticker badge — small mint-tinted pill */
+.sm-inv-ticker-badge {
+  background: rgba(0,212,170,0.15);
+  color: var(--mint);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Scorecard grid — auto-fit responsive */
+.sm-inv-scorecard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+/* Scorecard item — individual card */
+.sm-inv-scorecard-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+/* Scorecard rating — large mono number, uses --rating-color */
+.sm-inv-scorecard-rating {
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--rating-color);
+}
+
+/* What's New highlight box — mint-tinted */
+.sm-inv-whats-new {
+  background: rgba(126,231,135,0.05);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(126,231,135,0.2);
+  margin-bottom: 16px;
+}
+
+/* What's New bullet list */
+.sm-inv-whats-new-list {
+  margin: 0;
+  padding-left: 16px;
+  color: var(--text2);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* Bottom line quote — italic accent */
+.sm-inv-bottom-line {
+  font-style: italic;
+  color: var(--cyan);
+  padding: 12px;
+  background: var(--surface2);
+  border-radius: 8px;
+}
+
+/* Growth driver card — left border uses --driver-color */
+.sm-inv-driver-card {
+  background: var(--surface2);
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 3px solid var(--driver-color);
+}
+
+/* Impact badge — tinted background, uses --impact-color */
+.sm-inv-impact-badge {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: var(--impact-color);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--impact-color) 15%, transparent);
+}
+
+/* Moat source/threat card */
+.sm-inv-moat-card {
+  background: var(--surface2);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+/* Moat strength/risk label */
+.sm-inv-moat-strength {
+  font-size: 11px;
+  color: var(--strength-color);
+}
+
+/* Risk card — severity border uses --severity-color */
+.sm-inv-risk-card {
+  background: var(--surface2);
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 3px solid var(--severity-color);
+}
+
+/* Severity/likelihood pill badges */
+.sm-inv-severity-badge {
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text3);
+}
+
+/* Perspective card — top border uses --perspective-color */
+.sm-inv-perspective-card {
+  background: var(--surface2);
+  padding: 16px;
+  border-radius: 8px;
+  border-top: 3px solid var(--perspective-color);
+}
+
+/* Assessment badge — tinted inline */
+.sm-inv-assessment-badge {
+  font-size: 12px;
+  color: var(--assess-color);
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding: 4px 8px;
+  background: color-mix(in srgb, var(--assess-color) 10%, transparent);
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* Recommendation box — mint-tinted */
+.sm-inv-recommendation {
+  font-size: 12px;
+  color: var(--mint);
+  padding: 8px;
+  background: rgba(0,212,170,0.1);
+  border-radius: 4px;
+}
+
+/* Archive verdict badge — uses data-sentiment for colors */
+.sm-inv-archive-verdict {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.sm-inv-archive-verdict[data-sentiment="positive"] {
+  background: rgba(0,212,170,0.15);
+  color: var(--mint);
+}
+.sm-inv-archive-verdict[data-sentiment="constructive"] {
+  background: rgba(100,149,237,0.15);
+  color: var(--sky);
+}
+.sm-inv-archive-verdict[data-sentiment="neutral"] {
+  background: rgba(234,179,8,0.15);
+  color: var(--gold);
+}
+
+/* Archive expanded detail area */
+.sm-inv-archive-detail {
+  padding: 0 12px 12px;
+  border-top: 1px solid var(--surface);
+}
+
+/* Archive key developments list */
+.sm-inv-archive-list {
+  margin: 8px 0;
+  padding-left: 16px;
+  font-size: 12px;
+  color: var(--text3);
+}
+
+/* Panel with left-border accent — uses --panel-border-color */
+.sm-inv-panel-bordered {
+  border-left: 4px solid var(--panel-border-color);
+  margin-bottom: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 27. TIMELINE TAB ADDITIONS (sm-tl-*)
+   Additional classes for Timeline tab inline style elimination.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Upcoming event card */
+.sm-tl-upcoming-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-radius: 12px;
+}
+
+/* Date display — uses --date-color CSS var */
+.sm-tl-upcoming-date {
+  font-family: 'Space Mono', monospace;
+  color: var(--date-color);
+}
+
+/* Press release card */
+.sm-tl-pr-card {
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-radius: 12px;
+}
+
+/* PR category label — uses --cat-color */
+.sm-tl-pr-category {
+  font-size: 11px;
+  color: var(--cat-color);
+}
+
+/* PR title */
+.sm-tl-pr-title {
+  font-weight: 500;
+  color: var(--text);
+  font-size: 14px;
+}
+
+/* Filing type badge — pill with --type-bg and --type-text */
+.sm-tl-filing-type-badge {
+  background: var(--type-bg, rgba(100,100,100,0.2));
+  color: var(--type-text, var(--text2));
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Filing link cell */
+.sm-tl-filing-link {
+  font-size: 13px;
+  text-align: right;
+}
+
+/* Filing date cell */
+.sm-tl-filing-date {
+  font-size: 13px;
+  color: var(--text2);
+  white-space: nowrap;
+}
+
+/* SEC footer area */
+.sm-tl-footer {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  padding-top: 12px;
+}
+
+/* Footer metadata value */
+.sm-tl-footer-val {
+  color: var(--text2);
+  margin-left: 6px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* Last PR indicator */
+.sm-tl-last-pr {
+  font-size: 11px;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Impact label — uses data-impact attribute for color */
+.sm-tl-impact-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-align: right;
+}
+.sm-tl-impact-label[data-impact="Positive"] { color: var(--mint); }
+.sm-tl-impact-label[data-impact="Negative"] { color: var(--coral); }
+.sm-tl-impact-label[data-impact="Neutral"] { color: var(--text3); }
+
+/* Expand chevron with rotation */
+.sm-tl-chevron {
+  font-size: 12px;
+  color: var(--text3);
+  text-align: center;
+  transition: transform 0.2s;
+}
+.sm-tl-chevron[data-expanded="true"] {
+  transform: rotate(180deg);
+}
+
+/* Summary box in expanded detail */
+.sm-tl-summary-box {
+  padding: 12px;
+  background: var(--surface2);
+  border-radius: 12px;
+  font-style: italic;
+  color: var(--text3);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* Detail bullet list */
+.sm-tl-detail-list {
+  margin: 12px 0 0;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Detail list item */
+.sm-tl-detail-item {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* Accent-colored bullet */
+.sm-tl-detail-bullet {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* Before/after change indicator */
+.sm-tl-change-indicator {
+  margin-top: 12px;
+  font-size: 13px;
+  padding: 8px 12px;
+  background: var(--surface2);
+  border-radius: 8px;
+}
+
+/* Explain header */
+.sm-tl-explain-header {
+  color: var(--cyan);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+/* Explain list */
+.sm-tl-explain-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Topic filter card wrapper */
+.sm-tl-topic-filter-wrap {
+  padding: 16px;
+}
+
+/* Impact badge color */
+.sm-tl-impact-badge {
+  font-size: 13px;
+  font-weight: 600;
+}
+.sm-tl-impact-badge[data-impact="Positive"] { color: var(--mint); }
+.sm-tl-impact-badge[data-impact="Negative"] { color: var(--coral); }
+.sm-tl-impact-badge[data-impact="Neutral"],
+.sm-tl-impact-badge:not([data-impact]) { color: var(--text3); }
+
+/* Source label in detail */
+.sm-tl-source-val {
+  font-size: 13px;
+  color: var(--cyan);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 28. WALL STREET TAB ADDITIONS (sm-ws-*)
+   Additional classes for Wall Street tab inline style elimination.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Section label without bottom margin */
+.sm-ws-section-flush { margin-bottom: 0; }
+
+/* Metrics wrapper padding */
+.sm-ws-metrics-wrap { padding: 0 24px 16px; }
+
+/* Notes wrapper padding */
+.sm-ws-notes-wrap { padding: 0 24px 16px; }
+
+/* Date cell in report row */
+.sm-ws-date-cell { min-width: 90px; }
+
+/* Firm header border when expanded — driven by data-open */
+.sm-ws-firm-header[data-open="true"] {
+  border-bottom: 1px solid var(--border);
+}
+.sm-ws-firm-header[data-open="false"] {
+  border-bottom: none;
+}
+
+/* Report with expandable cursor */
+.sm-ws-report[data-expandable="true"] { cursor: pointer; }
+.sm-ws-report[data-expandable="false"] { cursor: default; }
+
+/* Block header with conditional spacing */
+.sm-ws-block-header-spaced {
+  margin-bottom: 4px;
+}
+.sm-ws-block-header-spaced:not(:first-child) {
+  margin-top: 12px;
+}
+
+/* Dynamic grid table — uses --ws-cols CSS var */
+.sm-ws-dynamic-grid {
+  display: grid;
+  grid-template-columns: var(--ws-cols);
+}
+
+/* KPI value with dynamic color — uses --kpi-color */
+.sm-ws-kpi-dynamic {
+  color: var(--kpi-color);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 29. STOCK MODEL COMPONENT CLASSES
+   Classes for Overview, Capital, and other stock-specific tab components.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Data freshness badge (hero section) */
+.sm-data-freshness {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34,211,238,0.1);
+  border: 1px solid rgba(34,211,238,0.3);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: #22d3ee;
+}
+.sm-data-freshness-sep {
+  color: rgba(34,211,238,0.5);
+}
+
+/* Price refresh button */
+.sm-refresh-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  opacity: 0.6;
+}
+.sm-refresh-btn[data-loading="true"] {
+  cursor: wait;
+  opacity: 0.5;
+}
+
+/* Bull/bear case list item */
+.sm-bull-bear-item {
+  display: flex;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+/* Bull/bear indicator prefix */
+.sm-bull-prefix { color: var(--mint); flex-shrink: 0; }
+.sm-bear-prefix { color: var(--coral); flex-shrink: 0; }
+
+/* Section label with custom font-size for bull/bear headers */
+.sm-section-label-sm {
+  font-size: 13px;
+}
+
+/* KPI row — flex between with subtle border */
+.sm-kpi-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+/* KPI value — mono, small, uses --kpi-color */
+.sm-kpi-mono-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--kpi-color);
+  font-weight: 600;
+}
+
+/* Model KPI cell with value and label */
+.sm-model-kpi-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--kpi-color);
+}
+.sm-model-kpi-label {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+/* Capital gradient footer (mint → violet) */
+.sm-cap-gradient-footer {
+  padding: 16px 24px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--mint) 8%, var(--surface)), color-mix(in srgb, var(--violet) 8%, var(--surface)));
+  border-top: 1px solid var(--border);
+}
+
+/* Capital note box */
+.sm-cap-note-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 8px;
+  padding: 12px 24px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* Multi-class structure label */
+.sm-cap-structure-label {
+  font-size: 11px;
+  color: var(--mint);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.sm-cap-structure-desc {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+/* Chart toggle button group */
+.sm-chart-toggle-group {
+  display: flex;
+  gap: 6px;
+}
+
+/* Updated timestamp */
+.sm-updated-ts {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+
+/* Footer value styling */
+.sm-tl-footer-ticker {
+  color: var(--cyan);
+  margin-left: 6px;
+  font-weight: 600;
+}
+
+/* Footer auto-margin link */
+.sm-tl-footer-link {
+  color: var(--sky);
+  margin-left: auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 30. AI AGENTS TAB (sm-ai-*)
+   Classes for the SharedAIAgentsTab component.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Agent runner container */
+.sm-ai-runner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Agent header */
+.sm-ai-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Agent status indicator */
+.sm-ai-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+/* Agent body */
+.sm-ai-body {
+  padding: 16px 20px;
+}
+
+/* Diff panel */
+.sm-ai-diff-panel {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  overflow-x: auto;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Streaming output container */
+.sm-ai-stream {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  min-height: 200px;
+  max-height: 600px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text2);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 31. RESPONSIVE ADDITIONS
+   Responsive breakpoints for new classes.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .sm-inv-scorecard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  .sm-tl-footer { flex-direction: column; gap: 8px; }
+  .sm-tl-upcoming-card { flex-direction: column; gap: 8px; align-items: flex-start; }
+  .sm-ws-metrics-wrap { padding: 0 16px 12px; }
+  .sm-ws-notes-wrap { padding: 0 16px 12px; }
+}
+
+@media (max-width: 480px) {
+  .sm-inv-verdict-badge { font-size: 14px; padding: 6px 16px; }
+  .sm-inv-scorecard-grid { grid-template-columns: 1fr; }
+}
 `;
