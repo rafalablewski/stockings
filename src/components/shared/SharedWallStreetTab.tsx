@@ -111,7 +111,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
         <div className="sm-ws-panel-body sm-ws-grid-2col">
           {/* Price Target Summary */}
           <div className="sm-flex-col sm-gap-16">
-            <div className="sm-ws-kpi-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+            <div className="sm-ws-kpi-grid sm-ws-kpi-4col">
               {[
                 { label: 'AVG PT', value: avgPT ? `$${avgPT.toFixed(0)}` : '—', color: 'var(--violet)' },
                 { label: 'MEDIAN PT', value: medianPT ? `$${medianPT.toFixed(0)}` : '—', color: 'var(--sky)' },
@@ -385,13 +385,13 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                       <div className="sm-mb-12">
                                         <div className="sm-ws-section-label sm-sky">ESTIMATES</div>
                                         <div className="sm-ws-table">
-                                          <div className="sm-ws-estimate-header" style={{ gridTemplateColumns: '1fr repeat(5, 80px)' }}>
+                                          <div className="sm-ws-estimate-header sm-ws-est-cols">
                                             {['Metric', 'FY24', 'FY25', 'FY26', 'FY27', 'FY28'].map(h => (
                                               <span key={h} className="sm-ws-th" data-align={h === 'Metric' ? undefined : 'right'}>{h}</span>
                                             ))}
                                           </div>
                                           {report.estimates.map((e, i) => (
-                                            <div key={i} className="sm-ws-estimate-grid" style={{ gridTemplateColumns: '1fr repeat(5, 80px)' }}>
+                                            <div key={i} className="sm-ws-estimate-grid sm-ws-est-cols">
                                               <span className="sm-ws-estimate-cell">{e.metric}</span>
                                               <span className="sm-ws-estimate-cell" data-align="right">{e.fy24 || '—'}</span>
                                               <span className="sm-ws-estimate-cell" data-align="right">{e.fy25 || '—'}</span>

@@ -91,9 +91,50 @@ a, a:visited {
 
 @media (max-width: 768px) {
   /* Tighten nav padding on mobile */
-  nav .max-w-7xl { padding-left: 1rem; padding-right: 1rem; }
+  nav .max-w-7xl {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  /* Nav dropdowns — prevent overflow on small screens */
+  nav .group\/hooks > div > div,
+  nav .group\/research > div > div,
+  nav .group\/audit > div > div {
+    min-width: 0;
+    max-width: calc(100vw - 2rem);
+    right: 0;
+  }
+
+  /* Nav gap tighter on mobile */
+  nav .flex.items-center.gap-8 {
+    gap: 1rem;
+  }
+
+  /* Footer safe-area */
+  footer {
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
 }
 
 @media (max-width: 480px) {
-  nav .max-w-7xl { padding-left: 0.75rem; padding-right: 0.75rem; }
+  nav .max-w-7xl {
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+  }
+
+  /* Hide secondary nav items on very small screens */
+  nav .flex.items-center.gap-8 {
+    gap: 0.5rem;
+  }
+  nav .flex.items-center.gap-8 > a,
+  nav .flex.items-center.gap-8 > div > span {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 360px) {
+  nav .max-w-7xl {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
 }

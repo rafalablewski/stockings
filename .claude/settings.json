@@ -9,6 +9,15 @@
             "command": "bash .claude/plugins/code-review/review-hook.sh pre \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/plugins/doc-change-detector/doc-hook.sh pre \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -54,6 +63,15 @@
           {
             "type": "command",
             "command": "bash .claude/plugins/methodology-sync-checker/sync-hook.sh post \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/plugins/doc-change-detector/doc-hook.sh post \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATH\""
           }
         ]
       }

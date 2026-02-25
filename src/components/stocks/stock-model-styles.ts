@@ -1647,6 +1647,16 @@ input[type="range"]::-webkit-slider-thumb {
   border: 1px solid var(--border);
 }
 
+/* KPI grid — 4 column default */
+.sm-ws-kpi-4col {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Estimates columns — 1fr + 5x80px default */
+.sm-ws-est-cols {
+  grid-template-columns: 1fr repeat(5, 80px);
+}
+
 /* Inline notes markdown-like block headers */
 .sm-ws-block-header {
   font-size: 10px;
@@ -2608,6 +2618,48 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-mono-2xl { font-size: 26px; }
   .sm-mono-3xl { font-size: 32px; }
   .sm-grid-sep { border-radius: 12px; }
+
+  /* ── Wall Street Tab — Mobile ── */
+  .sm-ws-grid-2col {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .sm-ws-kpi-4col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sm-ws-est-cols {
+    grid-template-columns: 1fr repeat(5, 56px);
+  }
+  .sm-ws-estimate-cell {
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+  .sm-ws-th {
+    padding: 8px 6px;
+    font-size: 9px;
+    letter-spacing: 0.5px;
+  }
+  .sm-ws-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .sm-ws-firm-header {
+    padding: 16px;
+  }
+  .sm-ws-panel-header,
+  .sm-ws-panel-body {
+    padding: 16px;
+  }
+  .sm-flex.sm-gap-16 {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  /* ── AI Agents Tab — Mobile ── */
+  .sm-ed-filing-row {
+    flex-direction: column;
+    gap: 8px;
+  }
 }
 
 /* ═══ RESPONSIVE - SMALL MOBILE (480px) ═══ */
@@ -2717,6 +2769,25 @@ input[type="range"]::-webkit-slider-thumb {
   .pill {
     padding: 8px 14px;
     font-size: 11px;
+  }
+
+  /* ── Wall Street Tab — Small Mobile ── */
+  .sm-ws-kpi-4col {
+    grid-template-columns: 1fr;
+  }
+  .sm-ws-est-cols {
+    grid-template-columns: 1fr repeat(3, 48px);
+  }
+  .sm-ws-est-cols > :nth-child(n+5) {
+    display: none;
+  }
+  .sm-ws-estimate-cell {
+    padding: 6px 4px;
+    font-size: 10px;
+  }
+  .sm-ws-th {
+    padding: 6px 4px;
+    font-size: 8px;
   }
 }
 

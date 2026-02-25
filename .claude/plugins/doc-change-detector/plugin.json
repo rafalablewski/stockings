@@ -1,0 +1,91 @@
+{
+  "name": "doc-change-detector",
+  "version": "1.0.0",
+  "description": "Detects meaningful UI/UX/CSS/component changes and suggests documentation updates. Captures before-state on PreToolUse, diffs on PostToolUse, and generates structured change deltas for the living design system.",
+  "source": "project-custom",
+  "hooks": ["PreToolUse", "PostToolUse"],
+  "matchers": ["Edit", "Write", "NotebookEdit"],
+  "config": {
+    "snapshotDir": ".claude/plugins/doc-change-detector/.snapshots",
+    "deltaLogFile": ".claude/plugins/doc-change-detector/change-log.jsonl",
+    "docTargets": {
+      "designSystem": "src/app/docs/page.tsx",
+      "cssReference": "src/components/stocks/stock-model-styles.ts"
+    },
+    "watchPatterns": {
+      "cssClasses": {
+        "label": "CSS Class Definitions",
+        "filePatterns": ["stock-model-styles.ts", "globals.css"],
+        "detectPatterns": [
+          "^\\s*\\.[a-zA-Z][a-zA-Z0-9_-]*\\s*\\{",
+          "--[a-zA-Z][a-zA-Z0-9-]*\\s*:",
+          "@media\\s*\\(",
+          "@keyframes\\s+"
+        ],
+        "severity": "high",
+        "docAction": "Update design system docs with new/removed/changed CSS classes"
+      },
+      "componentStructure": {
+        "label": "Component API / Structure",
+        "filePatterns": ["SharedWallStreetTab.tsx", "SharedAIAgentsTab.tsx", "SharedEdgarTab.tsx", "SharedSourcesTab.tsx", "SharedInvestmentTab.tsx", "StockModelUI.tsx", "StockNavigation.tsx", "StockChart.tsx"],
+        "detectPatterns": [
+          "^\\s*export\\s+(default\\s+)?function\\s+",
+          "^\\s*interface\\s+",
+          "^\\s*type\\s+\\w+\\s*=",
+          "className=[\"'{]",
+          "data-\\w+="
+        ],
+        "severity": "medium",
+        "docAction": "Review component documentation for API/prop changes"
+      },
+      "layoutAndResponsive": {
+        "label": "Layout / Responsive Behavior",
+        "filePatterns": ["layout.tsx", "globals.css", "stock-model-styles.ts"],
+        "detectPatterns": [
+          "@media\\s*\\(",
+          "grid-template",
+          "flex-direction",
+          "overflow",
+          "min-width|max-width|min-height|max-height",
+          "safe-area-inset",
+          "breakpoint"
+        ],
+        "severity": "high",
+        "docAction": "Update responsive behavior documentation"
+      },
+      "designTokens": {
+        "label": "Design Tokens / CSS Variables",
+        "filePatterns": ["globals.css", "stock-model-styles.ts"],
+        "detectPatterns": [
+          "--[a-zA-Z][a-zA-Z0-9-]*\\s*:",
+          ":root\\s*\\{",
+          "var\\(--"
+        ],
+        "severity": "high",
+        "docAction": "Update design tokens in docs page"
+      },
+      "animations": {
+        "label": "Animations / Transitions",
+        "filePatterns": ["*.tsx", "*.ts", "globals.css"],
+        "detectPatterns": [
+          "@keyframes\\s+",
+          "transition\\s*:",
+          "animation\\s*:",
+          "transform\\s*:"
+        ],
+        "severity": "low",
+        "docAction": "Document new animation patterns"
+      },
+      "dataAttributes": {
+        "label": "Data Attributes (styling hooks)",
+        "filePatterns": ["*.tsx"],
+        "detectPatterns": [
+          "data-[a-z]+=",
+          "\\[data-[a-z]+\\]"
+        ],
+        "severity": "medium",
+        "docAction": "Update data-attribute documentation in design system"
+      }
+    }
+  }
+}
