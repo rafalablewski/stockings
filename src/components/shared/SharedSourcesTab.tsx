@@ -259,11 +259,8 @@ const SourceArticleRow: React.FC<{
   // Hidden articles: collapsed single-line with low opacity and unhide button
   if (isHidden) {
     return (
-      <div style={{ opacity: 0.15 }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '3px 12px', borderRadius: 6,
-        }}>
+      <div className="sm-ed-hidden-row">
+        <div className="sm-flex" style={{ padding: '3px 12px', borderRadius: 6 }}>
           <span style={{
             fontSize: 9, fontFamily: 'Space Mono, monospace', fontWeight: 600,
             padding: '1px 6px', borderRadius: 4, flexShrink: 0,
@@ -285,16 +282,11 @@ const SourceArticleRow: React.FC<{
           )}
           <span style={{ fontSize: 8, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', flexShrink: 0, textTransform: 'uppercase' }}>hidden</span>
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-          <div style={{ flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+          <div className="sm-shrink-0" onClick={e => e.stopPropagation()}>
             <button
               onClick={() => onToggleHide?.()}
               title="Unhide article"
-              style={{
-                fontSize: 9, fontFamily: 'inherit', padding: '1px 5px', borderRadius: 4,
-                color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
-                border: '1px solid var(--border)', cursor: 'pointer', outline: 'none',
-                display: 'inline-flex', alignItems: 'center',
-              }}
+              className="sm-ed-action-btn-sm"
             >
               <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" />
@@ -316,14 +308,11 @@ const SourceArticleRow: React.FC<{
         aria-expanded={aiAnalysis ? expanded : undefined}
         onClick={aiAnalysis ? () => setExpanded(!expanded) : undefined}
         onKeyDown={aiAnalysis ? (e) => { if (e.key === 'Enter') setExpanded(!expanded); } : undefined}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 10,
-          padding: '8px 12px', borderRadius: 10,
-          cursor: aiAnalysis ? 'pointer' : undefined,
-        }}
+        className="sm-ed-filing-row"
+        style={{ cursor: aiAnalysis ? 'pointer' : undefined }}
       >
         {/* Chevron (fixed-width slot so rows align whether analysis exists or not) */}
-        <span style={{ width: 12, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span className="sm-ed-chevron-slot">
         {aiAnalysis && (
           <svg
             width={12} height={12} viewBox="0 0 24 24" fill="none"
@@ -341,52 +330,39 @@ const SourceArticleRow: React.FC<{
         {showAnalysis && (
           <span
             title={statusTitle}
+            className="sm-ed-status-dot"
             style={{
-              width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-              background: statusColor,
+              '--dot-color': statusColor,
               opacity: localAnalyzed === null || localAnalyzed === undefined ? 0.4 : 0.9,
-            }}
+            } as React.CSSProperties}
           />
         )}
         {/* Source type badge — fixed width so columns align */}
-        <span style={{
-          fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
-          padding: '2px 0', borderRadius: 5, flexShrink: 0,
-          width: 48, textAlign: 'center',
-          background: tc.bg, color: tc.text, whiteSpace: 'nowrap',
-        }}>
+        <span className="sm-ed-form-badge" style={{
+          width: 48,
+          '--badge-bg': tc.bg, '--badge-text': tc.text,
+        } as React.CSSProperties}>
           {type === 'pr' ? 'PR' : 'NEWS'}
         </span>
         {/* NEW / SEEN badge — fixed-width slot so headline column aligns */}
-        <span style={{ width: 34, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span className="sm-ed-badge-slot">
           {isGenuinelyNew && !isDismissed && (
             <button
               onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
               title="Click to acknowledge"
-              style={{
-                fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-                padding: '1px 5px', borderRadius: 3,
-                color: 'var(--sky)', background: 'var(--sky-dim)',
-                border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
-                cursor: 'pointer', outline: 'none', fontFamily: 'inherit',
-              }}
+              className="sm-ed-new-badge"
             >
               NEW
             </button>
           )}
           {isGenuinelyNew && isDismissed && (
-            <span style={{
-              fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-              padding: '1px 5px', borderRadius: 3,
-              color: 'var(--sky)', opacity: 0.3,
-              border: '1px solid transparent',
-            }}>
+            <span className="sm-ed-seen-badge">
               SEEN
             </span>
           )}
         </span>
         {/* Headline */}
-        <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span className="sm-ed-desc">
           {article.headline}
         </span>
         {/* Verdict badge inline (compact, shown in header when collapsed) */}
@@ -395,30 +371,25 @@ const SourceArticleRow: React.FC<{
           if (!verdict) return null;
           const vc = VERDICT_COLORS[verdict.level];
           return (
-            <span style={{
-              fontSize: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em',
-              padding: '2px 6px', borderRadius: 3, flexShrink: 0,
-              color: vc.color, background: vc.bg,
-              border: `1px solid color-mix(in srgb, ${vc.color} 20%, transparent)`,
-            }}>
+            <span className="sm-ed-verdict-badge" style={{
+              '--verdict-color': vc.color, '--verdict-bg': vc.bg,
+            } as React.CSSProperties}>
               {verdict.level}
             </span>
           );
         })()}
         {/* Source name — fixed width for column alignment */}
-        <span style={{ fontSize: 11, color: 'var(--text3)', flexShrink: 0, width: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'right' }}>
+        <span className="sm-subtle-sm" style={{ flexShrink: 0, width: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'right' }}>
           {article.source || ''}
         </span>
         {/* Date — fixed width for column alignment */}
-        <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px', width: 100, textAlign: 'right', whiteSpace: 'nowrap' }}>
+        <span className="sm-ed-date">
           {article.date || ''}
         </span>
         {/* Status label — fixed width so DB column aligns */}
-        <span style={{
-          fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
-          color: showAnalysis && statusLabel ? statusColor : 'transparent', flexShrink: 0, whiteSpace: 'nowrap',
-          width: 72, textAlign: 'right',
-        }}>
+        <span className="sm-ed-status-label" style={{
+          '--status-color': showAnalysis && statusLabel ? statusColor : 'transparent',
+        } as React.CSSProperties}>
           {showAnalysis && statusLabel ? statusLabel : '\u00A0'}
         </span>
         {/* DB status button — hover fetches live data from database */}
@@ -426,13 +397,11 @@ const SourceArticleRow: React.FC<{
           <button
             type="button"
             aria-label="Show database record"
+            className="sm-ed-db-btn"
             style={{
-              display: 'inline-flex', alignItems: 'center', gap: 3,
-              fontSize: 8, fontFamily: 'Space Mono, monospace', color: dbColor, opacity: dbOpacity,
-              padding: '1px 4px', borderRadius: 3,
-              border: `1px solid color-mix(in srgb, ${dbColor} 20%, transparent)`,
-              background: 'transparent', cursor: 'pointer', outline: 'none',
-            }}
+              '--db-color': dbColor,
+              '--db-opacity': dbOpacity,
+            } as React.CSSProperties}
             onFocus={handleDbHoverEnter}
             onBlur={handleDbHoverLeave}
           >
@@ -441,14 +410,7 @@ const SourceArticleRow: React.FC<{
           </button>
           {/* Tooltip — shows live DB data */}
           {dbTooltipVisible && (
-            <div ref={dbTooltipRef} style={{
-              position: 'absolute', top: '100%', right: 0, marginTop: 6, zIndex: 100,
-              background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8,
-              padding: '10px 14px', minWidth: 260, maxWidth: 340,
-              boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
-              fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)',
-              lineHeight: 1.8, pointerEvents: 'none',
-            }}>
+            <div ref={dbTooltipRef} className="sm-ed-db-tooltip" style={{ minWidth: 260, maxWidth: 340 }}>
               {/* Header — explains what this tooltip checks */}
               <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text3)', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
                 Saved in seen_articles DB?
@@ -472,20 +434,13 @@ const SourceArticleRow: React.FC<{
         </span>
         {/* Action buttons — stop propagation so clicks don't toggle expand */}
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+        <div className="sm-flex sm-gap-4 sm-shrink-0" onClick={e => e.stopPropagation()}>
           <a
             href={article.url}
             target="_blank"
             rel="noopener noreferrer"
             title="Open article"
-            style={{
-              fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
-              padding: '2px 5px', borderRadius: 4,
-              color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
-              border: '1px solid var(--border)',
-              cursor: 'pointer', outline: 'none', textDecoration: 'none',
-              display: 'inline-flex', alignItems: 'center',
-            }}
+            className="sm-ed-action-btn-sm"
           >
             <svg width={11} height={11} viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" />
@@ -495,17 +450,14 @@ const SourceArticleRow: React.FC<{
             onClick={handleAnalyze}
             disabled={analyzing}
             title={aiAnalysis ? 'Close AI analysis' : 'Analyze with AI'}
+            className="sm-ed-action-btn-sm"
             style={{
-              fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
+              '--ed-btn-color': aiAnalysis ? 'var(--accent)' : 'rgba(130,200,130,0.5)',
               textTransform: 'uppercase', letterSpacing: '0.08em',
-              padding: '2px 6px', borderRadius: 4,
-              color: aiAnalysis ? 'var(--accent)' : 'rgba(130,200,130,0.5)',
-              background: 'rgba(255,255,255,0.04)',
               border: `1px solid ${aiAnalysis ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(130,200,130,0.15)'}`,
-              cursor: analyzing ? 'wait' : 'pointer', outline: 'none',
-              display: 'inline-flex', alignItems: 'center', gap: 4,
+              cursor: analyzing ? 'wait' : 'pointer',
               opacity: analyzing ? 0.5 : 1,
-            }}
+            } as React.CSSProperties}
           >
             {analyzing ? '...' : 'AI'}
           </button>
@@ -514,16 +466,13 @@ const SourceArticleRow: React.FC<{
               onClick={handleRecheck}
               disabled={recheckLoading}
               title="Re-check tracked/untracked status"
+              className="sm-ed-action-btn-sm"
               style={{
-                fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
-                padding: '2px 5px', borderRadius: 4,
-                color: recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
-                background: 'rgba(255,255,255,0.04)',
+                '--ed-btn-color': recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
                 border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
-                cursor: recheckLoading ? 'wait' : 'pointer', outline: 'none',
-                display: 'inline-flex', alignItems: 'center',
+                cursor: recheckLoading ? 'wait' : 'pointer',
                 opacity: recheckLoading ? 0.5 : 1,
-              }}
+              } as React.CSSProperties}
             >
               <svg width={11} height={11} viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 0.8s linear infinite' : 'none' }}>
                 <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
@@ -534,13 +483,8 @@ const SourceArticleRow: React.FC<{
           <button
             onClick={() => onToggleHide?.()}
             title="Hide article"
-            style={{
-              fontSize: 9, fontFamily: 'inherit', padding: '2px 5px', borderRadius: 4,
-              color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
-              border: '1px solid var(--border)', cursor: 'pointer', outline: 'none',
-              display: 'inline-flex', alignItems: 'center',
-              opacity: 0.5,
-            }}
+            className="sm-ed-action-btn-sm"
+            style={{ opacity: 0.5 }}
           >
             <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" />
@@ -559,13 +503,11 @@ const SourceArticleRow: React.FC<{
             if (!verdict) return null;
             const vc = VERDICT_COLORS[verdict.level];
             return (
-              <div style={{
-                margin: '12px 0 0 7px', display: 'inline-flex', alignItems: 'center', gap: 6,
-                fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em',
-                padding: '3px 8px', borderRadius: 4,
-                color: vc.color, background: vc.bg,
-                border: `1px solid color-mix(in srgb, ${vc.color} 20%, transparent)`,
-              }}>
+              <div className="sm-ed-verdict-badge" style={{
+                margin: '12px 0 0 7px', display: 'inline-flex', gap: 6,
+                fontSize: 9, padding: '3px 8px', borderRadius: 4,
+                '--verdict-color': vc.color, '--verdict-bg': vc.bg,
+              } as React.CSSProperties}>
                 {verdict.level}
                 <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, opacity: 0.7, fontSize: 10 }}>
                   {verdict.explanation}
@@ -574,29 +516,20 @@ const SourceArticleRow: React.FC<{
             );
           })()}
           {/* Analysis panel */}
-          <div style={{ margin: '6px 0 2px 19px', paddingTop: 16, marginTop: 8, borderTop: '1px solid var(--border)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-              <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '2.5px', color: 'var(--text3)' }}>
+          <div className="sm-ed-analysis">
+            <div className="sm-flex-between" style={{ marginBottom: 12 }}>
+              <span className="sm-section-label" style={{ marginBottom: 0 }}>
                 Analysis Result
               </span>
             </div>
             <div style={{ maxHeight: 600, overflowY: 'auto' }}>
               {aiAnalysis.includes('AI features are disabled') ? (
-                <div style={{
-                  fontSize: 12, color: 'var(--gold)', padding: '10px 14px',
-                  background: 'color-mix(in srgb, var(--gold) 8%, transparent)',
-                  borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8,
-                  border: '1px solid color-mix(in srgb, var(--gold) 15%, transparent)',
-                }}>
+                <div className="sm-ed-ai-banner">
                   <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
                   {aiAnalysis}
                 </div>
               ) : (
-                <pre style={{
-                  fontSize: 12, fontFamily: 'var(--font-mono, monospace)',
-                  color: 'var(--text2)', lineHeight: 1.8,
-                  whiteSpace: 'pre-wrap', margin: 0,
-                }}>
+                <pre className="sm-ed-analysis-pre">
                   {stripVerdict(aiAnalysis)}
                 </pre>
               )}
@@ -644,10 +577,7 @@ const SourceArticleSection: React.FC<{
 
   return (
     <div>
-      <div style={{
-        fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px',
-        color: 'var(--text3)', padding: '8px 12px 4px', opacity: 0.7,
-      }}>
+      <div className="sm-micro-label" style={{ padding: '8px 12px 4px', opacity: 0.7, letterSpacing: '1.5px' }}>
         {label} ({visibleCount}{hidden.length > 0 ? ` + ${hidden.length} hidden` : ''})
       </div>
       {displayed.map((a) => {
@@ -660,11 +590,12 @@ const SourceArticleSection: React.FC<{
       {remainingHidden > 0 && !showAllHidden && (
         <button
           onClick={() => setShowAllHidden(true)}
+          className="sm-ed-hidden-row"
           style={{
             display: 'block', width: '100%', padding: '4px 12px', margin: '2px 0',
             fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)',
             background: 'transparent', border: 'none', cursor: 'pointer',
-            opacity: 0.25, textAlign: 'left',
+            textAlign: 'left',
           }}
         >
           + {remainingHidden} more hidden
@@ -673,11 +604,12 @@ const SourceArticleSection: React.FC<{
       {showAllHidden && hidden.length > HIDDEN_PREVIEW && (
         <button
           onClick={() => setShowAllHidden(false)}
+          className="sm-ed-hidden-row"
           style={{
             display: 'block', width: '100%', padding: '4px 12px', margin: '2px 0',
             fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)',
             background: 'transparent', border: 'none', cursor: 'pointer',
-            opacity: 0.25, textAlign: 'left',
+            textAlign: 'left',
           }}
         >
           collapse hidden
@@ -705,14 +637,14 @@ const SourceArticleList: React.FC<{
 
   if (dedupedPRs.length === 0 && dedupedNews.length === 0) {
     return (
-      <div style={{ fontSize: 13, color: 'var(--text3)', padding: '16px 12px', lineHeight: 1.6 }}>
+      <div className="sm-body-sm sm-text3" style={{ padding: '16px 12px' }}>
         No articles yet. Click AI Fetch to search for articles.
       </div>
     );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+    <div className="sm-flex-col sm-gap-4">
       <SourceArticleSection articles={dedupedPRs} type="pr" label="Press Releases" showAnalysis={showAnalysis} ticker={ticker} newArticleKeys={newArticleKeys} dbRecords={dbRecords} persistedSourceAnalyses={persistedSourceAnalyses} onDismissNew={onDismissNew} onToggleHide={onToggleHide} />
       {dedupedPRs.length > 0 && dedupedNews.length > 0 && (
         <div style={{ height: 1, background: 'color-mix(in srgb, var(--border) 40%, transparent)', margin: '4px 12px' }} />
@@ -749,20 +681,16 @@ const CompanyFeedCard: React.FC<{
   return (
     <article
       aria-label={`${label} news feed`}
-      style={{
-        border: '1px solid rgba(255,255,255,0.06)',
-        borderRadius: 12,
-        overflow: 'hidden',
-      }}
+      className="sm-tab-card"
+      style={{ padding: 0 }}
     >
       {/* Header */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      <div className="sm-flex-between" style={{
         padding: '16px 24px',
         borderBottom: data.loaded ? '1px solid var(--border)' : 'none',
         background: isPrimary ? 'color-mix(in srgb, var(--accent) 4%, transparent)' : 'transparent',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
+        <div className="sm-flex sm-gap-12" style={{ minWidth: 0 }}>
           {/* Status indicator */}
           {data.loaded && (
             <span
@@ -790,10 +718,8 @@ const CompanyFeedCard: React.FC<{
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Visit ${label} website`}
-              style={{
-                fontSize: 10, color: 'var(--text3)', textDecoration: 'none', flexShrink: 0,
-                padding: '2px 6px', borderRadius: 4,
-              }}
+              className="sm-subtle-sm sm-shrink-0"
+              style={{ textDecoration: 'none', padding: '2px 6px', borderRadius: 4 }}
             >
               ↗
             </a>
@@ -805,7 +731,7 @@ const CompanyFeedCard: React.FC<{
             </span>
           )}
         </div>
-        <div style={{ display: 'flex', gap: 6 }}>
+        <div className="sm-flex sm-gap-6">
           {/* Fetch PRs */}
           {onLoadPR ? (
             <button
@@ -813,16 +739,13 @@ const CompanyFeedCard: React.FC<{
               disabled={data.loadingPR || data.loading}
               aria-label={`Fetch ${label} press releases`}
               title="Fetch press releases"
+              className="sm-ed-action-btn"
               style={{
-                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-                padding: '5px 10px', borderRadius: 4,
-                color: data.loadingPR ? 'var(--text3)' : 'var(--sky)',
-                background: 'rgba(255,255,255,0.04)',
+                '--ed-btn-color': data.loadingPR ? 'var(--text3)' : 'var(--sky)',
                 border: `1px solid ${data.loadingPR ? 'var(--border)' : 'color-mix(in srgb, var(--sky) 25%, transparent)'}`,
                 cursor: data.loadingPR ? 'wait' : 'pointer',
-                display: 'flex', alignItems: 'center', gap: 5,
-                opacity: data.loadingPR ? 0.5 : 0.6, outline: 'none',
-              }}
+                opacity: data.loadingPR ? 0.5 : 0.6,
+              } as React.CSSProperties}
             >
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: data.loadingPR ? 'spin 1s linear infinite' : 'none' }}>
                 <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -838,16 +761,13 @@ const CompanyFeedCard: React.FC<{
               disabled={data.loadingNews || data.loading}
               aria-label={`Fetch ${label} news`}
               title="Fetch news articles"
+              className="sm-ed-action-btn"
               style={{
-                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-                padding: '5px 10px', borderRadius: 4,
-                color: data.loadingNews ? 'var(--text3)' : 'var(--mint)',
-                background: 'rgba(255,255,255,0.04)',
+                '--ed-btn-color': data.loadingNews ? 'var(--text3)' : 'var(--mint)',
                 border: `1px solid ${data.loadingNews ? 'var(--border)' : 'color-mix(in srgb, var(--mint) 25%, transparent)'}`,
                 cursor: data.loadingNews ? 'wait' : 'pointer',
-                display: 'flex', alignItems: 'center', gap: 5,
-                opacity: data.loadingNews ? 0.5 : 0.6, outline: 'none',
-              }}
+                opacity: data.loadingNews ? 0.5 : 0.6,
+              } as React.CSSProperties}
             >
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: data.loadingNews ? 'spin 1s linear infinite' : 'none' }}>
                 <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -863,16 +783,14 @@ const CompanyFeedCard: React.FC<{
               disabled={data.loading}
               aria-label={`AI Fetch ${label} feeds`}
               title="Search for new articles via AI"
+              className="sm-ed-action-btn"
               style={{
-                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-                padding: '5px 14px', borderRadius: 4,
-                color: data.loading ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
-                background: 'rgba(255,255,255,0.04)',
+                '--ed-btn-color': data.loading ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
+                padding: '5px 14px',
                 border: `1px solid ${data.loading ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
                 cursor: data.loading ? 'wait' : 'pointer',
-                display: 'flex', alignItems: 'center', gap: 6,
-                opacity: data.loading ? 0.5 : 1, outline: 'none',
-              }}
+                opacity: data.loading ? 0.5 : 1,
+              } as React.CSSProperties}
             >
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: data.loading ? 'spin 1s linear infinite' : 'none' }}>
                 <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -888,16 +806,14 @@ const CompanyFeedCard: React.FC<{
               disabled={aiChecking ?? false}
               aria-label={`Re-check ${label} tracked/untracked status`}
               title="Re-check tracked/untracked status for all articles (does NOT query seen_articles DB)"
+              className="sm-ed-action-btn"
               style={{
-                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-                padding: '5px 14px', borderRadius: 4,
-                color: aiChecking ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
-                background: 'rgba(255,255,255,0.04)',
+                '--ed-btn-color': aiChecking ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
+                padding: '5px 14px',
                 border: `1px solid ${aiChecking ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
                 cursor: aiChecking ? 'wait' : 'pointer',
-                display: 'flex', alignItems: 'center', gap: 6,
-                opacity: aiChecking ? 0.5 : 1, outline: 'none',
-              }}
+                opacity: aiChecking ? 0.5 : 1,
+              } as React.CSSProperties}
             >
               <svg
                 width="10" height="10" viewBox="0 0 16 16" fill="none"
@@ -915,21 +831,14 @@ const CompanyFeedCard: React.FC<{
       {/* Body */}
       <div style={{ padding: data.loaded || data.loading || data.error ? '16px 20px 20px' : '16px 20px' }}>
         {data.error && (
-          <div role="alert" style={{
-            fontSize: 12, color: 'var(--coral)', marginBottom: 12,
-            padding: '12px 16px', background: 'var(--coral-dim)', borderRadius: 10,
-            display: 'flex', alignItems: 'center', gap: 8,
-          }}>
+          <div role="alert" className="sm-ed-error">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
             {data.error}
           </div>
         )}
 
         {isPrimary && !data.loaded && !data.loading && !data.error && (
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-            padding: '24px 0', color: 'var(--text3)',
-          }}>
+          <div className="sm-ed-loading" style={{ padding: '24px 0' }}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
@@ -938,10 +847,7 @@ const CompanyFeedCard: React.FC<{
         )}
 
         {(data.loading || data.loadingPR || data.loadingNews) && (
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-            padding: '24px 0', color: 'var(--text3)',
-          }}>
+          <div className="sm-ed-loading" style={{ padding: '24px 0' }}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
             </svg>
@@ -1502,11 +1408,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         <p>Live press releases, news coverage, and competitor intelligence for {companyName}.</p>
       </div>
 
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '16px 20px', marginTop: 8,
-        borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)',
-      }}>
+      <div className="sm-ed-status-bar">
         <div className="sm-flex sm-gap-16">
           {/* Progress ring */}
           <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
@@ -1521,7 +1423,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>
               {loadedCount === 0 ? 'Intelligence Feeds' : `${loadedCount} of ${totalCompanies} loaded`}
             </span>
-            <span className="sm-text-11">
+            <span className="sm-subtle-sm">
               {totalCompanies} {totalCompanies === 1 ? 'company' : 'companies'} monitored
             </span>
           </div>
@@ -1530,16 +1432,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           onClick={loadAll}
           disabled={loadingAll}
           aria-label="AI Fetch all feeds"
+          className="sm-ed-action-btn"
           style={{
-            fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-            padding: '5px 14px', borderRadius: 4,
-            color: loadingAll ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
-            background: 'rgba(255,255,255,0.04)',
+            '--ed-btn-color': loadingAll ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
+            padding: '5px 14px',
             border: `1px solid ${loadingAll ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
             cursor: loadingAll ? 'wait' : 'pointer',
-            display: 'flex', alignItems: 'center', gap: 6, outline: 'none',
             opacity: loadingAll ? 0.5 : 1,
-          }}
+          } as React.CSSProperties}
         >
           <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: loadingAll ? 'spin 1s linear infinite' : 'none' }}>
             <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -1554,10 +1454,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         <div
           role="note"
           aria-label="Analysis status legend"
-          style={{
-            display: 'flex', alignItems: 'flex-start', gap: 24, padding: '16px 4px 12px',
-            fontSize: 10, color: 'var(--text3)', letterSpacing: '0.3px', flexWrap: 'wrap',
-          }}
+          className="sm-ed-legend"
         >
           {([
             { label: 'Tracked', color: 'var(--mint)', opacity: 0.9, desc: 'Article matched in database — found in research notes or tracked data files' },
@@ -1577,7 +1474,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
       {/* AI / Local toggle */}
       {(mainCard.loaded || loadedCount > 0) && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 4px 12px' }}>
+        <div className="sm-flex" style={{ gap: 10, padding: '0 4px 12px' }}>
           <button
             onClick={() => setForceLocal(prev => !prev)}
             style={{
@@ -1614,7 +1511,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         </div>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div className="sm-flex-col sm-gap-8">
         <CompanyFeedCard
           label={`${companyName} (${ticker})`}
           data={mainCard}
@@ -1638,25 +1535,16 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
       {competitors && competitors.length > 0 && (
         <>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 12,
-            padding: '32px 0 16px',
-          }}>
-            <span style={{
-              fontSize: 11, fontWeight: 600, color: 'var(--text3)',
-              textTransform: 'uppercase', letterSpacing: '1.2px',
-            }}>
+          <div className="sm-divider">
+            <span className="sm-card-label">
               {competitorLabel || 'Competitors'}
             </span>
-            <span className="sm-divider-line" />
-            <span style={{
-              fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)',
-            }}>
+            <span className="sm-mono-sm sm-text3">
               {competitors.length}
             </span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="sm-flex-col sm-gap-8">
             {competitors.map(comp => {
               const data: CardData = compCards[comp.name] || {
                 loading: false, loadingPR: false, loadingNews: false, loaded: false, error: null, activeTab: 'pr', pressReleases: [], news: [],
@@ -1686,38 +1574,26 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       )}
 
       <div className="sm-divider">
-        <span style={{
-          fontSize: 11, fontWeight: 600, color: 'var(--text3)',
-          textTransform: 'uppercase', letterSpacing: '1.2px',
-        }}>
+        <span className="sm-card-label">
           Research Sources
         </span>
-        <span className="sm-divider-line" />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 12, overflow: 'hidden' }}>
+      <div className="sm-grid-sep" style={{ '--cols': 2 } as React.CSSProperties}>
         {researchSources.map(group => (
-          <div key={group.category} style={{
-            background: 'var(--surface)',
-            padding: '24px 24px',
-          }}>
-            <div style={{
-              fontSize: 10, fontWeight: 600, textTransform: 'uppercase',
-              letterSpacing: '1.5px', color: 'var(--text3)', marginBottom: 16,
-            }}>
+          <div key={group.category} className="sm-grid-cell">
+            <div className="sm-micro-label" style={{ letterSpacing: '1.5px', marginBottom: 16 }}>
               {group.category}
             </div>
-            <nav aria-label={`${group.category} links`} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <nav aria-label={`${group.category} links`} className="sm-flex-col" style={{ gap: 2 }}>
               {group.sources.map(s => (
                 <a
                   key={s.url}
                   href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{
-                    fontSize: 13, color: 'var(--text2)', textDecoration: 'none',
-                    padding: '6px 8px', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 6,
-                  }}
+                  className="sm-body-sm sm-ed-filing-row"
+                  style={{ textDecoration: 'none', padding: '6px 8px', gap: 6 }}
                 >
                   {s.name}
                   <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style={{ opacity: 0.3, flexShrink: 0 }}>

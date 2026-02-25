@@ -68,6 +68,14 @@ function Navigation() {
             <AiToggle />
           </div>
           <div className="flex items-center gap-8">
+            {/* Docs link */}
+            <Link
+              href="/docs"
+              className="text-[13px] text-white/60 hover:text-white transition-colors"
+            >
+              Docs
+            </Link>
+
             {/* Hooks dropdown */}
             <div className="relative group/hooks">
               <span className="text-[13px] text-white/60 group-hover/hooks:text-white transition-colors cursor-default select-none">

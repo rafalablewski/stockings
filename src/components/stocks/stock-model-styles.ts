@@ -1,71 +1,153 @@
 /**
- * UNIFIED STOCK MODEL STYLES
+ * ╔══════════════════════════════════════════════════════════════════════════════╗
+ * ║  UNIFIED STOCK MODEL STYLES — stock-model-styles.ts                        ║
+ * ╚══════════════════════════════════════════════════════════════════════════════╝
  *
- * Golden Standard: ASTS
+ * Single source of truth for all stock component styling.
+ * Golden Standard: ASTS.tsx — all other models (BMNR, CRCL) mirror its structure.
  *
- * This is the single source of truth for all stock component styles.
- * All three models (ASTS, BMNR, CRCL) share these styles.
+ * ┌──────────────────────────────────────────────────────────────────────────────┐
+ * │  ARCHITECTURE                                                               │
+ * │                                                                             │
+ * │  1. DESIGN TOKENS (:root)       — Colors, surfaces, borders, typography     │
+ * │  2. BASE COMPONENTS             — Hero, stats, nav, cards, tables, charts   │
+ * │  3. INTERACTION PATTERNS        — Filters, dropdowns, sliders, pills        │
+ * │  4. DISCLAIMER                  — Legal banner                              │
+ * │  5. MOBILE RESPONSIVE           — Touch targets, scroll indicators          │
+ * │  6. SM-* UTILITY CLASSES        — Layout, typography, color utilities       │
+ * │  7. SM-* COMPONENT PATTERNS     — Grid-sep, panels, badges, data rows      │
+ * │  8. SHARED PRIMITIVES           — StockModelUI components (Card, Row, etc.) │
+ * │  9. WALL STREET TAB (sm-ws-*)   — Analyst research components              │
+ * │  10. EDGAR TAB (sm-ed-*)        — SEC filing browser components            │
+ * │  11. SHARED TAB COMPONENTS      — Sources, Investment, AI Agents           │
+ * │  12. DATA ATTRIBUTE SELECTORS   — Sentiment, active state                  │
+ * │  13. RESPONSIVE BREAKPOINTS     — 1200 → 900 → 768 → 480 → 360px         │
+ * │  14. ACCESSIBILITY              — Reduced motion, dark mode, retina        │
+ * │  15. TIMELINE SYSTEM            — Expandable event timeline                │
+ * │  16. UPDATE INDICATORS          — Data freshness dots                      │
+ * │  17. COMPETITOR CARDS           — Unified company comparison cards          │
+ * │  18. DISCLOSURE PANELS          — Expandable company info sections         │
+ * └──────────────────────────────────────────────────────────────────────────────┘
  *
- * Usage in component:
+ * USAGE:
  *   import { getStockModelCSS } from './stock-model-styles';
- *   const css = getStockModelCSS('cyan');  // ASTS
- *   const css = getStockModelCSS('violet'); // BMNR
- *   const css = getStockModelCSS('mint');   // CRCL
+ *   const css = getStockModelCSS('cyan');   // ASTS  → --accent: var(--cyan)
+ *   const css = getStockModelCSS('violet'); // BMNR  → --accent: var(--violet)
+ *   const css = getStockModelCSS('mint');   // CRCL  → --accent: var(--mint)
+ *
+ * DYNAMIC VALUES:
+ *   CSS custom properties (--var) are used for dynamic values instead of inline styles.
+ *   Set via: style={{ '--badge-color': 'var(--mint)' } as React.CSSProperties}
+ *   The CSS class reads the variable for background, color, or border.
+ *
+ * DATA ATTRIBUTES:
+ *   State-driven styling via data-* attributes on elements.
+ *   Example: data-sentiment="positive" → color: var(--mint)
+ *   Example: data-active="true" → full opacity, accent border
+ *
+ * HOVER EFFECTS:
+ *   All hover effects use CSS :hover on classes — never JS event handlers.
+ *   Removed patterns: onMouseEnter/onMouseLeave for style manipulation.
+ *
+ * FONTS:
+ *   Outfit — UI text (headings, labels, body, buttons)
+ *   Space Mono — Data display (prices, percentages, KPIs, tickers, dates)
+ *
+ * RESPONSIVE:
+ *   Desktop-first with breakpoints at 1200, 900, 768, 480, 360px.
+ *   Touch targets minimum 44px on coarse pointer devices.
+ *   Fade-mask scroll indicators on horizontal-scroll sections.
+ *
+ * DOCUMENTATION:
+ *   Full class reference available at /docs in the application.
+ *   See also: src/app/docs/page.tsx for the live documentation page.
  */
 
 export type AccentColor = 'cyan' | 'violet' | 'mint';
 
 /**
- * Returns the complete CSS for a stock model component with the specified accent color.
+ * Returns the complete CSS for a stock model component.
+ * The accent parameter sets --accent and --accent-dim CSS variables,
+ * which cascade through all component styles automatically.
+ *
+ * @param accent - 'cyan' (ASTS) | 'violet' (BMNR) | 'mint' (CRCL)
+ * @returns Complete CSS string to be injected via <style> tag
  */
 export const getStockModelCSS = (accent: AccentColor): string => `
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 
 :root {
-  /* ═══ UNIFIED DESIGN TOKENS (shared across ASTS/BMNR/CRCL) ═══ */
-  /* Background & Surfaces */
-  --bg: #05070A;
-  --surface: #0D1117;
-  --surface2: #161B22;
-  --surface3: #21262D;
-  --border: rgba(240,246,252,0.1);
+  /* ═══ UNIFIED DESIGN TOKENS (shared across ASTS/BMNR/CRCL) ═══
+   *
+   * These tokens define the entire color system. They are also mirrored
+   * in globals.css for pages outside the stock-model-app scope.
+   *
+   * Naming convention:
+   *   --bg/surface/surface2/surface3  → layered backgrounds (darkest → lightest)
+   *   --text/text2/text3              → text hierarchy (brightest → dimmest)
+   *   --{color}                       → full-strength semantic color
+   *   --{color}-dim                   → 15% opacity tint for backgrounds
+   * ═══════════════════════════════════════════════════════════════════════════ */
 
-  /* Typography */
-  --text: #F0F6FC;
-  --text2: #8B949E;
-  --text3: #6E7681;
+  /* Background & Surfaces — 4-level depth system */
+  --bg: #05070A;           /* Page background — near-black */
+  --surface: #0D1117;      /* Card / panel background */
+  --surface2: #161B22;     /* Hover state, secondary containers */
+  --surface3: #21262D;     /* Tertiary (inputs, legends, deeply nested) */
+  --border: rgba(240,246,252,0.1); /* Glass-edge border — subtle white at 10% */
 
-  /* Semantic Colors */
-  --cyan: #22D3EE;
+  /* Typography — 3-level hierarchy */
+  --text: #F0F6FC;         /* Primary — high contrast headings & values */
+  --text2: #8B949E;        /* Secondary — descriptions, body text */
+  --text3: #6E7681;        /* Tertiary — labels, muted helpers, timestamps */
+
+  /* Semantic Colors — each has a full and -dim (15% opacity) variant */
+  --cyan: #22D3EE;         /* ASTS accent — space/tech feel */
   --cyan-dim: rgba(34,211,238,0.15);
-  --mint: #7EE787;
+  --mint: #7EE787;         /* CRCL accent — positive / growth */
   --mint-dim: rgba(126,231,135,0.15);
-  --coral: #FF7B72;
+  --coral: #FF7B72;        /* Negative sentiment / errors / bearish */
   --coral-dim: rgba(255,123,114,0.15);
-  --sky: #79C0FF;
+  --sky: #79C0FF;          /* Info / links / neutral data */
   --sky-dim: rgba(121,192,255,0.15);
-  --gold: #D29922;
+  --gold: #D29922;         /* Neutral sentiment / warnings */
   --gold-dim: rgba(210,153,34,0.15);
-  --violet: #A78BFA;
+  --violet: #A78BFA;       /* BMNR accent — Wall Street / research */
   --violet-dim: rgba(167,139,250,0.15);
 
-  /* ═══ STOCK-SPECIFIC ACCENT ═══ */
+  /* ═══ STOCK-SPECIFIC ACCENT ═══
+   * Dynamically resolved by the accent parameter:
+   *   getStockModelCSS('cyan')   → --accent: var(--cyan)    (ASTS)
+   *   getStockModelCSS('violet') → --accent: var(--violet)  (BMNR)
+   *   getStockModelCSS('mint')   → --accent: var(--mint)    (CRCL)
+   *
+   * Used by: .nav-btn.active, .sm-accent, .highlight, .price-badge,
+   *          .sm-preset-btn[data-active], and many more.
+   * ═══════════════════════════════════════════════════════════════════════════ */
   --accent: var(--${accent});
   --accent-dim: var(--${accent}-dim);
 }
 
-/* Scoped reset — only applies inside model app to avoid overriding Tailwind :where() selectors */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 2. SCOPED RESET & ROOT CONTAINER
+   Scoped to .stock-model-app to avoid overriding Tailwind :where() selectors
+   used by the rest of the Next.js app (nav, hooks page, docs page, etc.).
+   ═══════════════════════════════════════════════════════════════════════════ */
 .stock-model-app, .stock-model-app * { box-sizing: border-box; margin: 0; padding: 0; }
 
 .stock-model-app {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', sans-serif;  /* Primary UI font — all non-data text */
   background: var(--bg);
   min-height: 100vh;
   color: var(--text);
   overflow-x: hidden;
 }
 
-/* Hero Header */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 3. HERO HEADER
+   Top section of each stock page: company name, ticker badge, price display.
+   Uses a radial gradient glow (::before pseudo) for depth.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .hero {
   position: relative;
   padding: 48px 64px 48px;
@@ -150,7 +232,11 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 .price-badge.up { background: var(--mint-dim); color: var(--mint); }
 .price-badge.down { background: var(--coral-dim); color: var(--coral); }
 
-/* Stats Row */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 4. STATS ROW
+   Horizontal strip below hero showing key metrics (price, market cap, etc.).
+   Horizontally scrollable on mobile with fade-mask indicators.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .stats-row {
   display: flex;
   gap: 32px;
@@ -185,7 +271,13 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 .stat-item .val.coral { color: var(--coral); }
 .stat-item .val.violet { color: var(--violet); }
 
-/* Navigation */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 5. NAVIGATION
+   Sticky tab bar for switching between model tabs (Overview, Chart, etc.).
+   Supports both flat buttons (.nav-btn) and dropdown groups (.nav-dropdown).
+   Tab type indicators: .tab-tracking (mint/data) vs .tab-projection (accent/model).
+   Keyboard-navigable with :focus-visible outlines.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .nav {
   display: flex;
   align-items: center;
@@ -283,7 +375,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   opacity: 0.8;
 }
 
-/* Filter Buttons - For inline filtering (competitor filters, peer group selectors) */
+/* ── Filter Buttons — For inline filtering (competitor filters, peer group selectors) ── */
 .filter-btn {
   padding: 4px 12px;
   font-size: 11px;
@@ -308,7 +400,10 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   font-weight: 600;
 }
 
-/* Dropdown Navigation - Stock-specific tabs in expandable menu */
+/* ── Dropdown Navigation — Stock-specific tabs in expandable menu ──
+   The dropdown trigger sits in the main nav; when open, a secondary bar
+   (.nav-dropdown-space) slides open below the nav to show sub-tabs.
+   Animation: fadeSlideIn keyframe for smooth appearance. */
 .nav-dropdown {
   display: inline-flex;
 }
@@ -401,7 +496,12 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   background: var(--surface2);
 }
 
-/* Main Content */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 6. MAIN CONTENT & CARDS
+   Primary content area for each tab. Cards (.card) are the fundamental
+   container unit. Highlight boxes use accent gradient backgrounds.
+   Grid layouts: .g2–.g5 for responsive column grids.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .main {
   padding: 48px 64px;
   max-width: 1400px;
@@ -471,7 +571,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   font-size: 15px;
 }
 
-/* Thesis Cards */
+/* ── Thesis Cards — Bull/bear investment thesis with sentiment-colored borders ── */
 .thesis {
   padding: 24px;
   border-radius: 16px;
@@ -509,7 +609,11 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   color: var(--text3);
 }
 
-/* Bar Charts — Ive×Tesla */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 7. CHARTS & DATA VISUALIZATION
+   Bar charts, Monte Carlo simulation, progress bars, big stats.
+   Bar charts use hover effects for interactive feedback.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .bars {
   display: flex;
   align-items: flex-end;
@@ -597,7 +701,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   color: var(--text3);
 }
 
-/* Tables */
+/* ── Tables — Standard data table with rounded header and hover rows ── */
 .tbl {
   width: 100%;
   border-collapse: collapse;
@@ -638,7 +742,11 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 .tbl .sky { color: var(--sky); }
 .tbl .violet { color: var(--violet); }
 
-/* Pills */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 8. INTERACTIVE CONTROLS
+   Pills (filter toggles), range sliders, and input controls.
+   All use accent color for active/selected states.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .pills {
   display: flex;
   gap: 8px;
@@ -723,7 +831,11 @@ input[type="range"]::-webkit-slider-thumb {
 .mc-bar:hover { opacity: 1; }
 .mc-bar.hl { background: var(--gold); opacity: 1; }
 
-/* Legal Disclaimer Banner */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 9. LEGAL DISCLAIMER
+   Red/gold gradient banner shown at top of stock pages.
+   Responsive: single-line on desktop, stacked on mobile.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .disclaimer-banner {
   background: linear-gradient(135deg, rgba(255,123,114,0.08) 0%, rgba(210,153,34,0.08) 100%);
   border-bottom: 1px solid rgba(255,123,114,0.2);
@@ -797,11 +909,30 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   STOCK MODEL UTILITY CLASSES (sm-*)
-   Replaces inline styles across all stock components.
+   § 11. STOCK MODEL UTILITY CLASSES (sm-*)
+
+   These classes replace inline styles across all stock components.
+   Prefixed with "sm-" (stock-model) to avoid collisions with Tailwind.
+
+   Categories:
+     - Layout:     sm-flex, sm-flex-between, sm-flex-col, sm-gap-*, sm-mt-*
+     - Typography:  sm-section-label, sm-param-label, sm-mono-*, sm-subtle, sm-body
+     - Color:       sm-accent, sm-mint, sm-coral, sm-sky, sm-gold, sm-violet, sm-text*
+     - Components:  sm-panel, sm-grid-sep, sm-data-row, sm-badge, sm-tab-hero, etc.
+     - Dynamic:     CSS custom properties (--badge-color, --kpi-color, etc.)
+
+   Usage pattern:
+     <div className="sm-section-label">SECTION TITLE</div>
+     <div className="sm-badge" style={{ '--badge-color': 'var(--mint)' } as React.CSSProperties}>
+
+   See /docs page for the complete class reference.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* ── Layout Utilities ────────────────────────────────────────────────────── */
+/* ── Layout Utilities ─────────────────────────────────────────────────────
+   Composable flex/grid helpers. Combine for complex layouts:
+   className="sm-flex sm-gap-16"  → flex row, align-center, 16px gap
+   className="sm-flex-between"    → space-between row
+   ──────────────────────────────────────────────────────────────────────── */
 .sm-flex { display: flex; align-items: center; gap: 8px; }
 .sm-flex-between { display: flex; justify-content: space-between; align-items: center; }
 .sm-flex-col { display: flex; flex-direction: column; }
@@ -826,9 +957,18 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-mb-16 { margin-bottom: 16px; }
 .sm-w-full { width: 100%; }
 
-/* ── Typography ──────────────────────────────────────────────────────────── */
+/* ── Typography ──────────────────────────────────────────────────────────
+   Text styling hierarchy. Two font families:
+   - Outfit (sans-serif): All UI text — inherited from .stock-model-app
+   - Space Mono (monospace): Numbers, data, KPIs — via sm-mono-* classes
 
-/* Section header — the single most repeated pattern across the codebase */
+   Label hierarchy (largest → smallest):
+   sm-panel-title (13px, 600) → sm-param-label (13px, 600, uppercase)
+   → sm-section-label (11px, 600, uppercase, 2.5px spacing)
+   → sm-micro-label (10px, 600, uppercase)
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Section header — the single most repeated pattern across the codebase (~577 instances) */
 .sm-section-label {
   font-size: 11px;
   font-weight: 600;
@@ -897,7 +1037,15 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-text2 { color: var(--text2); }
 .sm-text3 { color: var(--text3); }
 
-/* ── Component Patterns ──────────────────────────────────────────────────── */
+/* ── Component Patterns ──────────────────────────────────────────────────
+   Pre-built UI patterns covering 90% of the stock component layouts.
+   Dynamic values are injected via CSS custom properties, not inline styles.
+
+   Key pattern: "1px gap grid" (.sm-grid-sep)
+   The background color shows through the 1px gap between cells,
+   creating the appearance of thin borders without actual border properties.
+   Set column count via: style={{ '--cols': 4 } as React.CSSProperties}
+   ──────────────────────────────────────────────────────────────────────── */
 
 /* Grid separator — glass-card pattern with 1px gap borders */
 .sm-grid-sep {
@@ -962,7 +1110,9 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 24px;
 }
 
-/* Data row with CSS :hover (replaces onMouseEnter/onMouseLeave) */
+/* Data row with CSS :hover — replaces all JS onMouseEnter/onMouseLeave handlers.
+   Uses display: grid; the specific gridTemplateColumns is set inline since it
+   varies per usage context (e.g., '1fr 120px 1fr' vs '200px 1fr 80px'). */
 .sm-data-row {
   display: grid;
   padding: 12px 24px;
@@ -977,7 +1127,9 @@ input[type="range"]::-webkit-slider-thumb {
   border-bottom: none;
 }
 
-/* Badge / chip with dynamic color via CSS custom property */
+/* Badge / chip — dynamic color via --badge-color CSS custom property.
+   The background is auto-generated as 10% opacity of the badge color
+   using CSS color-mix(). No need to compute RGBA in JavaScript. */
 .sm-badge {
   font-size: 10px;
   font-weight: 600;
@@ -1115,9 +1267,13 @@ input[type="range"]::-webkit-slider-thumb {
   min-height: 2px;
 }
 
-/* ── Shared Primitives (StockModelUI components) ─────────────────────────── */
+/* ── Shared Primitives (StockModelUI.tsx components) ─────────────────────
+   These classes power the reusable primitives exported from StockModelUI:
+   Card, Row, Input, Panel, Guide, CFANotes, Stat.
+   Each uses CSS custom properties for dynamic color theming.
+   ──────────────────────────────────────────────────────────────────────── */
 
-/* Card with dynamic color via CSS custom properties */
+/* Card with dynamic color — set --card-bg, --card-border, --card-text inline */
 .sm-card-colored {
   border-radius: 16px;
   padding: 24px;
@@ -1250,7 +1406,13 @@ input[type="range"]::-webkit-slider-thumb {
   background: color-mix(in srgb, var(--tint) 10%, transparent);
 }
 
-/* ── Wall Street Tab Components ──────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 12. WALL STREET TAB COMPONENTS (sm-ws-*)
+
+   SharedWallStreetTab.tsx — analyst research, ratings, price targets.
+   Components: panels, firm headers, reports, estimates, rating badges.
+   Prefixed with "sm-ws-" to scope and avoid collision.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 /* Update indicator dot (inline portability component) */
 .sm-update-dots {
@@ -1560,7 +1722,14 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--text3);
 }
 
-/* ── EDGAR Tab Components ────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 13. EDGAR TAB COMPONENTS (sm-ed-*)
+
+   SharedEdgarTab.tsx — SEC filing browser with filtering, analysis, diffs.
+   Components: filing rows, form badges, status dots, verdict badges,
+   analysis panels, diff previews, methodology flowcharts.
+   Prefixed with "sm-ed-" to scope and avoid collision.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 /* Tiny action button (Ive×Tesla style) — shared by Edgar, AI Agents, etc. */
 .sm-ed-action-btn {
@@ -2067,7 +2236,10 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--mint);
 }
 
-/* ── Shared Tab Components (Sources, Investment, AI Agents) ──────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 14. SHARED TAB COMPONENTS (Sources, Investment, AI Agents)
+   Reusable patterns shared across multiple tab views.
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 /* Article / content card */
 .sm-tab-card {
@@ -2114,9 +2286,17 @@ input[type="range"]::-webkit-slider-thumb {
   background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
-/* ── Dynamic Value Support (data attributes) ─────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 15. DATA ATTRIBUTE SELECTORS
 
-/* Sentiment-based text colors */
+   State-driven styling via HTML data-* attributes.
+   Replaces conditional inline styles like:
+     style={{ color: val >= 0 ? 'var(--mint)' : 'var(--coral)' }}
+   With:
+     data-sentiment={val >= 0 ? 'positive' : 'negative'}
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Sentiment-based text colors — used on values, badges, indicators */
 [data-sentiment="positive"] { color: var(--mint); }
 [data-sentiment="negative"] { color: var(--coral); }
 [data-sentiment="neutral"] { color: var(--gold); }
@@ -2126,7 +2306,23 @@ input[type="range"]::-webkit-slider-thumb {
 [data-active="true"] { opacity: 1; }
 [data-active="false"] { opacity: 0.5; }
 
-/* ═══ RESPONSIVE - DESKTOP (1200px) ═══ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 16. RESPONSIVE BREAKPOINTS
+
+   Desktop-first approach. Each breakpoint progressively simplifies the layout:
+   1200px → tighter padding, fewer grid columns
+    900px → tablet, 2-col grids
+    768px → mobile, single column, touch targets, scroll masks
+    480px → small mobile, minimal spacing
+    360px → extra small (narrow phones)
+
+   Special media queries:
+   - (pointer: coarse) → touch targets 44px min
+   - (orientation: landscape) → landscape mobile grid adjustments
+   - (-webkit-min-device-pixel-ratio: 2) → retina border thinning
+   - (prefers-reduced-motion: reduce) → kill all animation
+   - (prefers-color-scheme: dark) → subtle card shadows
+   ═══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 1200px) {
   .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 32px; padding-right: 32px; }
   .g4 { grid-template-columns: repeat(2, 1fr); }
@@ -2583,7 +2779,12 @@ input[type="range"]::-webkit-slider-thumb {
   }
 }
 
-/* Timeline - Unified Style */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 17. TIMELINE SYSTEM
+   Expandable event timeline with categories (guidance, data, event, launch).
+   Each item has a header grid, verdict badge, and collapsible detail section.
+   Responsive: collapses columns at 900px and 600px breakpoints.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .timeline-item {
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -2759,8 +2960,13 @@ input[type="range"]::-webkit-slider-thumb {
   .t-details-meta { flex-direction: row; flex-wrap: wrap; min-width: auto; }
 }
 
-/* ═══ UPDATE INDICATOR SYSTEM (Ive-inspired minimal design) ═══ */
-/* Tiny, subtle dots - visible but never distracting */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 18. UPDATE INDICATOR SYSTEM
+   Tiny colored dots showing data freshness. Categories:
+   .pr (press/news — gold), .sec (SEC filings — cyan),
+   .ws (Wall Street — violet), .market (market data — green).
+   Tooltip appears on hover via ::after pseudo-element with data-tooltip attr.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .update-indicator-wrap {
   display: inline-flex;
   align-items: center;
@@ -2846,7 +3052,13 @@ input[type="range"]::-webkit-slider-thumb {
   to { transform: rotate(360deg); }
 }
 
-/* ═══ UNIFIED COMP CARDS - One card per company ═══ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 19. COMPETITOR CARDS
+   Unified company comparison cards with threat-level indicators.
+   Cards show metrics, capabilities, and optional notes.
+   Threat levels: high (coral), medium (gold), low (mint).
+   Self-card variant uses accent gradient background.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .comp-cards-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -3021,7 +3233,11 @@ input[type="range"]::-webkit-slider-thumb {
   .comp-card-badge { font-size: 9px; padding: 2px 6px; }
 }
 
-/* ═══ COMPANY DISCLOSURE PANELS ═══ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 20. COMPANY DISCLOSURE PANELS
+   Expandable <details>/<summary> panels for company information.
+   Uses native HTML disclosure widget with custom styling.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .comp-panel {
   border: 1px solid var(--border);
   border-radius: 12px;
