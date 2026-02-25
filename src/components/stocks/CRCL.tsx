@@ -4599,7 +4599,7 @@ function CRCLModel() {
               </div>
 
               {/* Navigation Cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
+              <div className="sm-cap-nav" style={{ '--cap-cols': 6 } as React.CSSProperties}>
                 {[
                   { id: 'structure', value: `${SHARE_CLASSES.length}`, label: 'Share Classes', sub: 'Class A, B, C' },
                   { id: 'shareholders', value: `${MAJOR_SHAREHOLDERS.length}`, label: 'Major Holders', sub: 'Insiders + institutions' },
@@ -4610,25 +4610,17 @@ function CRCLModel() {
                 ].map(nav => (
                   <div
                     key={nav.id}
+                    className="sm-cap-nav-item"
+                    data-active={capitalView === nav.id ? 'true' : undefined}
                     onClick={() => setCapitalView(nav.id)}
                     role="button"
                     tabIndex={0}
                     aria-label={`View ${nav.label}`}
                     onKeyDown={(e) => e.key === 'Enter' && setCapitalView(nav.id)}
-                    style={{
-                      background: 'var(--surface)',
-                      border: '1px solid var(--border)',
-                      borderRadius: 16,
-                      overflow: 'hidden',
-                      padding: '24px 24px',
-                      cursor: 'pointer',
-                      borderLeft: capitalView === nav.id ? '4px solid var(--mint)' : '4px solid transparent',
-                      transition: 'border-color 0.2s',
-                    }}
                   >
-                    <div style={{ fontSize: 24, fontWeight: 600, color: capitalView === nav.id ? 'var(--mint)' : 'var(--text)' }}>{nav.value}</div>
-                    <div style={{ fontSize: 14, fontWeight: 500 }}>{nav.label}</div>
-                    <div className="sm-subtle">{nav.sub}</div>
+                    <div className="sm-cap-nav-value">{nav.value}</div>
+                    <div className="sm-cap-nav-label">{nav.label}</div>
+                    <div className="sm-cap-nav-sub">{nav.sub}</div>
                   </div>
                 ))}
               </div>
@@ -4640,21 +4632,23 @@ function CRCLModel() {
                 <div className="sm-card-header">
                   <span className="sm-section-label">Share Class Structure<UpdateIndicators sources="SEC" /></span>
                 </div>
-                <div className="sm-p0">
-                  <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 1fr 1fr 2fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
-                    {['Class', 'Authorized', 'Outstanding', 'Votes/Share', 'Description'].map((h, i) => (
-                      <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 && i <= 3 ? 'right' : 'left' }}>{h}</span>
+                <div className="sm-cap-table-scroll">
+                  <div style={{ minWidth: 500 }}>
+                    <div className="sm-cap-table-header" style={{ gridTemplateColumns: '100px 1fr 1fr 1fr 2fr' }}>
+                      {['Class', 'Authorized', 'Outstanding', 'Votes/Share', 'Description'].map((h, i) => (
+                        <span key={h} className="sm-cap-th" data-align={i >= 1 && i <= 3 ? 'right' : undefined}>{h}</span>
+                      ))}
+                    </div>
+                    {SHARE_CLASSES.map((s, i) => (
+                      <div key={s.class} className="sm-cap-table-row" style={{ gridTemplateColumns: '100px 1fr 1fr 1fr 2fr' }}>
+                        <span className="sm-cap-td-label">{s.class}</span>
+                        <span className="sm-cap-td" data-align="right">{(s.authorized / 1000).toLocaleString()}M</span>
+                        <span className="sm-cap-td" data-align="right" data-highlight>{s.outstanding > 0 ? `${(s.outstanding / 1000).toFixed(1)}M` : '—'}</span>
+                        <span className="sm-cap-td" data-align="right">{s.votes}</span>
+                        <span className="sm-cap-td">{s.description}</span>
+                      </div>
                     ))}
                   </div>
-                  {SHARE_CLASSES.map((s, i) => (
-                    <div key={s.class} style={{ display: 'grid', gridTemplateColumns: '100px 1fr 1fr 1fr 2fr', padding: '12px 24px', borderBottom: i < SHARE_CLASSES.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
-                      <span className="sm-text sm-fw-600">{s.class}</span>
-                      <span className="sm-mono-sm sm-text-right sm-text2">{(s.authorized / 1000).toLocaleString()}M</span>
-                      <span className="sm-mono-sm sm-text-right sm-mint">{s.outstanding > 0 ? `${(s.outstanding / 1000).toFixed(1)}M` : '—'}</span>
-                      <span className="sm-mono-sm sm-text-right sm-text2">{s.votes}</span>
-                      <span className="sm-text-12">{s.description}</span>
-                    </div>
-                  ))}
                 </div>
               </div>
               </>
@@ -4667,22 +4661,24 @@ function CRCLModel() {
                 <div className="sm-card-header">
                   <span className="sm-section-label">Major Shareholders (from Aug 2025 S-1)<UpdateIndicators sources="SEC" /></span>
                 </div>
-                <div className="sm-p0">
-                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
-                    {['Shareholder', 'Class A (K)', 'Class B (K)', 'Voting %', 'Type'].map((h, i) => (
-                      <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 && i <= 3 ? 'right' : 'left' }}>{h}</span>
+                <div className="sm-cap-table-scroll">
+                  <div style={{ minWidth: 520 }}>
+                    <div className="sm-cap-table-header" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr' }}>
+                      {['Shareholder', 'Class A (K)', 'Class B (K)', 'Voting %', 'Type'].map((h, i) => (
+                        <span key={h} className="sm-cap-th" data-align={i >= 1 && i <= 3 ? 'right' : undefined}>{h}</span>
+                      ))}
+                    </div>
+                    {MAJOR_SHAREHOLDERS.map((s, i) => (
+                      <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr' }}>
+                        <span className="sm-cap-td-label">{s.name}</span>
+                        <span className="sm-cap-td" data-align="right">{s.classA > 0 ? `${(s.classA / 1000).toFixed(1)}M` : '—'}</span>
+                        <span className="sm-cap-td" data-align="right" data-highlight>{s.classB > 0 ? `${(s.classB / 1000).toFixed(1)}M` : '—'}</span>
+                        <span className="sm-cap-td" data-align="right" data-highlight>{s.pctVoting}%</span>
+                        <span className="sm-cap-td" style={{ color: s.type === 'Insider' ? 'var(--gold)' : s.type === 'Strategic' ? 'var(--violet)' : 'var(--text2)' }}>{s.type}</span>
+                      </div>
                     ))}
                   </div>
-                  {MAJOR_SHAREHOLDERS.map((s, i) => (
-                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: i < MAJOR_SHAREHOLDERS.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
-                      <span className="sm-text sm-fw-500">{s.name}</span>
-                      <span className="sm-mono-sm sm-text-right sm-text2">{s.classA > 0 ? `${(s.classA / 1000).toFixed(1)}M` : '—'}</span>
-                      <span className="sm-mono-sm sm-text-right sm-sky">{s.classB > 0 ? `${(s.classB / 1000).toFixed(1)}M` : '—'}</span>
-                      <span className="sm-mono-sm sm-text-right sm-mint">{s.pctVoting}%</span>
-                      <span style={{ color: s.type === 'Insider' ? 'var(--gold)' : s.type === 'Strategic' ? 'var(--violet)' : 'var(--text2)', fontSize: 12 }}>{s.type}</span>
-                    </div>
-                  ))}
-                  <div style={{ padding: '12px 24px', fontSize: 13, color: 'var(--text3)' }}>
+                  <div className="sm-card-body" style={{ fontSize: 13, color: 'var(--text3)' }}>
                     Note: Class B voting capped at 30% aggregate. Founder shares sunset June 2030 or upon Allaire departure from CEO/Chair.
                   </div>
                 </div>
@@ -4699,26 +4695,28 @@ function CRCLModel() {
                   <div className="sm-card-header">
                     <span className="sm-section-label">Equity Offerings<UpdateIndicators sources="SEC" /></span>
                   </div>
-                  <div className="sm-p0">
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
-                      {['Date', 'Type', 'Shares', 'Price', 'Proceeds'].map((h, i) => (
-                        <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 2 ? 'right' : 'left' }}>{h}</span>
-                      ))}
-                    </div>
-                    {EQUITY_OFFERINGS.map((o, i) => (
-                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}>
-                        <span className="sm-text-12">{o.date}</span>
-                        <span className="sm-mono-sm sm-text">{o.type}</span>
-                        <span className="sm-mono-sm sm-text-right sm-text2">{(o.shares / 1000).toFixed(1)}M</span>
-                        <span className="sm-mono-sm sm-text-right sm-text2">${o.price.toFixed(2)}</span>
-                        <span className="sm-mono-sm sm-text-right sm-mint">${o.grossProceeds >= 1000 ? `${(o.grossProceeds / 1000).toFixed(2)}B` : `${o.grossProceeds}M`}</span>
+                  <div className="sm-cap-table-scroll">
+                    <div style={{ minWidth: 400 }}>
+                      <div className="sm-cap-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr' }}>
+                        {['Date', 'Type', 'Shares', 'Price', 'Proceeds'].map((h, i) => (
+                          <span key={h} className="sm-cap-th" data-align={i >= 2 ? 'right' : undefined}>{h}</span>
+                        ))}
                       </div>
-                    ))}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', padding: '12px 24px', fontWeight: 600, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
-                      <span style={{ gridColumn: '1 / 5', color: 'var(--text)' }}>Total Raised</span>
-                      <span className="sm-mono-sm sm-text-right sm-mint">$2.5B</span>
+                      {EQUITY_OFFERINGS.map((o, i) => (
+                        <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr' }}>
+                          <span className="sm-cap-td-label">{o.date}</span>
+                          <span className="sm-cap-td">{o.type}</span>
+                          <span className="sm-cap-td" data-align="right">{(o.shares / 1000).toFixed(1)}M</span>
+                          <span className="sm-cap-td" data-align="right">${o.price.toFixed(2)}</span>
+                          <span className="sm-cap-td" data-align="right" data-highlight>${o.grossProceeds >= 1000 ? `${(o.grossProceeds / 1000).toFixed(2)}B` : `${o.grossProceeds}M`}</span>
+                        </div>
+                      ))}
+                      <div className="sm-cap-table-total" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr' }}>
+                        <span className="sm-cap-td-label" style={{ gridColumn: '1 / 5' }}>Total Raised</span>
+                        <span className="sm-cap-td" data-align="right" data-highlight>$2.5B</span>
+                      </div>
                     </div>
-                    <div style={{ padding: '12px 24px', fontSize: 12, color: 'var(--text3)' }}>
+                    <div className="sm-card-body" style={{ fontSize: 12, color: 'var(--text3)' }}>
                       IPO: {EQUITY_OFFERINGS[0].underwriters}<br/>
                       Follow-on: {EQUITY_OFFERINGS[1].underwriters}
                     </div>
@@ -4730,31 +4728,33 @@ function CRCLModel() {
                   <div className="sm-card-header">
                     <span className="sm-section-label">Outstanding Equity Awards (Jun 30, 2025)<UpdateIndicators sources="SEC" /></span>
                   </div>
-                  <div className="sm-p0">
-                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
-                      {['Award Type', 'Class A', 'Class B', 'Total'].map((h, i) => (
-                        <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 ? 'right' : 'left' }}>{h}</span>
-                      ))}
+                  <div className="sm-cap-table-scroll">
+                    <div style={{ minWidth: 380 }}>
+                      <div className="sm-cap-table-header" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                        {['Award Type', 'Class A', 'Class B', 'Total'].map((h, i) => (
+                          <span key={h} className="sm-cap-th" data-align={i >= 1 ? 'right' : undefined}>{h}</span>
+                        ))}
+                      </div>
+                      <div className="sm-cap-table-row" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                        <span className="sm-cap-td-label">Stock Options</span>
+                        <span className="sm-cap-td" data-align="right">{(EQUITY_AWARDS.options.classA / 1000).toFixed(1)}M</span>
+                        <span className="sm-cap-td" data-align="right">{(EQUITY_AWARDS.options.classB / 1000).toFixed(1)}M</span>
+                        <span className="sm-cap-td" data-align="right" data-highlight>{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.options.classB) / 1000).toFixed(1)}M</span>
+                      </div>
+                      <div className="sm-cap-table-row" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                        <span className="sm-cap-td-label">RSUs</span>
+                        <span className="sm-cap-td" data-align="right">{(EQUITY_AWARDS.rsus.classA / 1000).toFixed(1)}M</span>
+                        <span className="sm-cap-td" data-align="right">{(EQUITY_AWARDS.rsus.classB / 1000).toFixed(1)}M</span>
+                        <span className="sm-cap-td" data-align="right" data-highlight>{((EQUITY_AWARDS.rsus.classA + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</span>
+                      </div>
+                      <div className="sm-cap-table-total" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                        <span className="sm-cap-td-label">Total Outstanding</span>
+                        <span className="sm-cap-td" data-align="right">{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.rsus.classA) / 1000).toFixed(1)}M</span>
+                        <span className="sm-cap-td" data-align="right">{((EQUITY_AWARDS.options.classB + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</span>
+                        <span className="sm-cap-td" data-align="right" data-highlight>{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.options.classB + EQUITY_AWARDS.rsus.classA + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</span>
+                      </div>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}>
-                      <span className="sm-text">Stock Options</span>
-                      <span className="sm-mono-sm sm-text-right sm-text2">{(EQUITY_AWARDS.options.classA / 1000).toFixed(1)}M</span>
-                      <span className="sm-mono-sm sm-text-right sm-text2">{(EQUITY_AWARDS.options.classB / 1000).toFixed(1)}M</span>
-                      <span className="sm-mono-sm sm-text-right sm-mint">{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.options.classB) / 1000).toFixed(1)}M</span>
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}>
-                      <span className="sm-text">RSUs</span>
-                      <span className="sm-mono-sm sm-text-right sm-text2">{(EQUITY_AWARDS.rsus.classA / 1000).toFixed(1)}M</span>
-                      <span className="sm-mono-sm sm-text-right sm-text2">{(EQUITY_AWARDS.rsus.classB / 1000).toFixed(1)}M</span>
-                      <span className="sm-mono-sm sm-text-right sm-mint">{((EQUITY_AWARDS.rsus.classA + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</span>
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', padding: '12px 24px', fontWeight: 600 }}>
-                      <span className="sm-text">Total Outstanding</span>
-                      <span className="sm-mono-sm sm-text-right sm-text2">{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.rsus.classA) / 1000).toFixed(1)}M</span>
-                      <span className="sm-mono-sm sm-text-right sm-text2">{((EQUITY_AWARDS.options.classB + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</span>
-                      <span className="sm-mono-sm sm-text-right sm-mint">{((EQUITY_AWARDS.options.classA + EQUITY_AWARDS.options.classB + EQUITY_AWARDS.rsus.classA + EQUITY_AWARDS.rsus.classB) / 1000).toFixed(1)}M</span>
-                    </div>
-                    <div style={{ padding: '12px 24px', fontSize: 13, color: 'var(--text3)' }}>
+                    <div className="sm-card-body" style={{ fontSize: 13, color: 'var(--text3)' }}>
                       Wtd-avg option exercise price: ${EQUITY_AWARDS.options.weightedAvgPrice.toFixed(2)}
                     </div>
                   </div>
@@ -4766,29 +4766,31 @@ function CRCLModel() {
                 <div className="sm-card-header">
                   <span className="sm-section-label">Outstanding Warrants (Black-Scholes Valuation)<UpdateIndicators sources="SEC" /></span>
                 </div>
-                <div className="sm-p0">
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
-                    {['Grant', 'Shares (K)', 'Strike', 'Fair Value', 'Vol', 'Expiry', 'Status'].map((h, i) => (
-                      <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i >= 1 && i <= 4 ? 'right' : 'left' }}>{h}</span>
-                    ))}
-                  </div>
-                  {WARRANTS.map((w, i) => (
-                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}>
-                      <span style={{ fontSize: 12, color: 'var(--text)' }}>{w.date}</span>
-                      <span className="sm-mono-sm sm-text-right sm-text2">{(w.shares / 1000).toFixed(1)}M</span>
-                      <span className="sm-mono-sm sm-text-right sm-text2">${w.exercisePrice}</span>
-                      <span className="sm-mono-sm sm-text-right sm-sky">${w.fairValue}M</span>
-                      <span className="sm-mono-sm sm-text-right sm-text2">{w.volatility}%</span>
-                      <span className="sm-text-12">{w.expiry}</span>
-                      <span style={{ fontSize: 12, color: 'var(--gold)' }}>{w.status}</span>
+                <div className="sm-cap-table-scroll">
+                  <div style={{ minWidth: 580 }}>
+                    <div className="sm-cap-table-header" style={{ gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr' }}>
+                      {['Grant', 'Shares (K)', 'Strike', 'Fair Value', 'Vol', 'Expiry', 'Status'].map((h, i) => (
+                        <span key={h} className="sm-cap-th" data-align={i >= 1 && i <= 4 ? 'right' : undefined}>{h}</span>
+                      ))}
                     </div>
-                  ))}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 24px', fontWeight: 600 }}>
-                    <span className="sm-text">Total</span>
-                    <span className="sm-mono-sm sm-text-right sm-text2">{(WARRANTS.reduce((a, w) => a + w.shares, 0) / 1000).toFixed(1)}M</span>
-                    <span />
-                    <span className="sm-mono-sm sm-text-right sm-sky">${WARRANTS.reduce((a, w) => a + w.fairValue, 0).toFixed(1)}M</span>
-                    <span /><span /><span />
+                    {WARRANTS.map((w, i) => (
+                      <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr' }}>
+                        <span className="sm-cap-td-label">{w.date}</span>
+                        <span className="sm-cap-td" data-align="right">{(w.shares / 1000).toFixed(1)}M</span>
+                        <span className="sm-cap-td" data-align="right">${w.exercisePrice}</span>
+                        <span className="sm-cap-td" data-align="right" data-highlight>${w.fairValue}M</span>
+                        <span className="sm-cap-td" data-align="right">{w.volatility}%</span>
+                        <span className="sm-cap-td">{w.expiry}</span>
+                        <span className="sm-cap-td" style={{ color: 'var(--gold)' }}>{w.status}</span>
+                      </div>
+                    ))}
+                    <div className="sm-cap-table-total" style={{ gridTemplateColumns: '1.5fr 1fr 1fr 1fr 1fr 1fr 1fr' }}>
+                      <span className="sm-cap-td-label">Total</span>
+                      <span className="sm-cap-td" data-align="right">{(WARRANTS.reduce((a, w) => a + w.shares, 0) / 1000).toFixed(1)}M</span>
+                      <span className="sm-cap-td" />
+                      <span className="sm-cap-td" data-align="right" data-highlight>${WARRANTS.reduce((a, w) => a + w.fairValue, 0).toFixed(1)}M</span>
+                      <span className="sm-cap-td" /><span className="sm-cap-td" /><span className="sm-cap-td" />
+                    </div>
                   </div>
                 </div>
               </div>

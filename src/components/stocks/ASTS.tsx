@@ -2434,7 +2434,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <span className="sm-param-label">Navigation</span>
         <span className="sm-divider-line" />
       </div>
-      <div className="sm-model-grid" style={{ '--cols': 7 } as React.CSSProperties}>
+      <div className="sm-cap-nav" style={{ '--cap-cols': 7 } as React.CSSProperties}>
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Class A, B, C' },
           { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Strategic + founder' },
@@ -2446,18 +2446,13 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         ].map(nav => (
           <div
             key={nav.id}
+            className="sm-cap-nav-item"
+            data-active={capitalView === nav.id ? 'true' : undefined}
             onClick={() => setCapitalView(nav.id)}
-            style={{
-              background: 'var(--surface)',
-              padding: '24px 24px',
-              cursor: 'pointer',
-              borderLeft: capitalView === nav.id ? '4px solid var(--sky)' : '4px solid transparent',
-              transition: 'border-color 0.2s',
-            }}
           >
-            <div style={{ fontSize: 24, fontWeight: 600, color: capitalView === nav.id ? 'var(--sky)' : 'var(--text)' }}>{nav.value}</div>
-            <div style={{ fontSize: 14, fontWeight: 500 }}>{nav.label}</div>
-            <div className="sm-subtle">{nav.sub}</div>
+            <div className="sm-cap-nav-value">{nav.value}</div>
+            <div className="sm-cap-nav-label">{nav.label}</div>
+            <div className="sm-cap-nav-sub">{nav.sub}</div>
           </div>
         ))}
       </div>
@@ -2469,41 +2464,43 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="sm-card-header">
           <span className="sm-section-label">Share Class Structure</span>
         </div>
-        <div className="sm-card-body">
-          <div>
+        <div className="sm-cap-table-scroll">
+          <div style={{ minWidth: 520 }}>
             {/* Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: '1px solid var(--border)' }}>
+            <div className="sm-cap-table-header" style={{ gridTemplateColumns: '1fr 100px 100px 120px 1fr' }}>
               {['Class', 'Shares (M)', '% of Basic', 'Voting', 'Description'].map((h, idx) => (
-                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: [1, 2].includes(idx) ? 'right' : 'left' }}>{h}</span>
+                <span key={h} className="sm-cap-th" data-align={[1, 2].includes(idx) ? 'right' : undefined}>{h}</span>
               ))}
             </div>
             {/* Rows */}
             {shareClasses.map((sc, i) => (
-              <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: i < shareClasses.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
-                <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600 }}>{sc.classType}</span>
-                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--sky)' }}>{sc.shares}</span>
-                <span className="sm-mono-right" style={{ padding: '12px 16px' }}>{(sc.shares / totalBasic * 100).toFixed(1)}%</span>
-                <span style={{ padding: '12px 16px', fontSize: 13, color: 'var(--text2)' }}>{sc.votingRights}</span>
-                <span style={{ padding: '12px 16px', fontSize: 13, color: 'var(--text2)' }}>{sc.description}</span>
+              <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 100px 100px 120px 1fr' }}>
+                <span className="sm-cap-td-label">{sc.classType}</span>
+                <span className="sm-cap-td" data-align="right" data-highlight>{sc.shares}</span>
+                <span className="sm-cap-td" data-align="right">{(sc.shares / totalBasic * 100).toFixed(1)}%</span>
+                <span className="sm-cap-td">{sc.votingRights}</span>
+                <span className="sm-cap-td">{sc.description}</span>
               </div>
             ))}
             {/* Total Basic */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', background: 'var(--accent-dim)' }}>
-              <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600 }}>Total Basic</span>
-              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', fontWeight: 600 }}>{totalBasic.toFixed(1)}</span>
-              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', fontWeight: 600 }}>100%</span>
-              <span style={{ padding: '12px 16px' }}></span>
-              <span style={{ padding: '12px 16px' }}></span>
+            <div className="sm-cap-table-total" style={{ gridTemplateColumns: '1fr 100px 100px 120px 1fr' }}>
+              <span className="sm-cap-td-label">Total Basic</span>
+              <span className="sm-cap-td" data-align="right">{totalBasic.toFixed(1)}</span>
+              <span className="sm-cap-td" data-align="right">100%</span>
+              <span className="sm-cap-td"></span>
+              <span className="sm-cap-td"></span>
             </div>
             {/* FD Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
-              <span style={{ padding: '12px 16px', fontSize: 13 }}>Fully Diluted</span>
-              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--sky)' }}>{fullyDiluted.toFixed(1)}</span>
-              <span className="sm-mono-right" style={{ padding: '12px 16px' }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</span>
-              <span style={{ padding: '12px 16px', gridColumn: 'span 2', fontSize: 13, color: 'var(--text3)', fontWeight: 400 }}>+{(fullyDiluted - totalBasic).toFixed(1)}M from converts, options, RSUs</span>
+            <div className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
+              <span className="sm-cap-td-label">Fully Diluted</span>
+              <span className="sm-cap-td" data-align="right" data-highlight>{fullyDiluted.toFixed(1)}</span>
+              <span className="sm-cap-td" data-align="right">{(fullyDiluted / totalBasic * 100).toFixed(1)}%</span>
+              <span className="sm-cap-td" style={{ gridColumn: 'span 2', color: 'var(--text3)', fontWeight: 400 }}>+{(fullyDiluted - totalBasic).toFixed(1)}M from converts, options, RSUs</span>
             </div>
           </div>
-          <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 12 }}>
+        </div>
+        <div className="sm-card-body">
+          <div style={{ fontSize: 13, color: 'var(--text3)' }}>
             Multi-class structure with 10x super-voting Class C shares. NASDAQ: ASTS.
           </div>
         </div>
@@ -2551,29 +2548,31 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="sm-card-header">
           <span className="sm-section-label">Major Shareholders (Known from SEC Filings)<UpdateIndicators sources="SEC" /></span>
         </div>
-        <div className="sm-card-body">
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr', borderBottom: '1px solid var(--border)' }}>
-            <span className="sm-table-header">Shareholder</span>
-            <span className="sm-table-header">Role</span>
-            <span className="sm-table-header sm-text-right">Shares (M)</span>
-            <span className="sm-table-header">Class</span>
-            <span className="sm-table-header sm-text-right">% Own</span>
-            <span className="sm-table-header sm-text-right">% Vote</span>
-            <span className="sm-table-header">Notes</span>
+        <div className="sm-cap-table-scroll">
+        <div style={{ minWidth: 620 }}>
+          <div className="sm-cap-table-header" style={{ gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr' }}>
+            <span className="sm-cap-th">Shareholder</span>
+            <span className="sm-cap-th">Role</span>
+            <span className="sm-cap-th" data-align="right">Shares (M)</span>
+            <span className="sm-cap-th">Class</span>
+            <span className="sm-cap-th" data-align="right">% Own</span>
+            <span className="sm-cap-th" data-align="right">% Vote</span>
+            <span className="sm-cap-th">Notes</span>
           </div>
           {majorShareholders.map((sh, i) => (
-            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr', padding: '12px 16px', borderBottom: i < majorShareholders.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
-              <span className="sm-text-13t">{sh.name}</span>
-              <span className="sm-text-13">{sh.role}</span>
-              <span className="sm-mono-right">{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</span>
-              <span className="sm-text-13">{sh.shareClass}</span>
-              <span className="sm-mono-right">{sh.pct}%</span>
-              <span className="sm-mono-right">{sh.votingPct}%</span>
-              <span className="sm-text-13">{sh.notes}</span>
+            <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr' }}>
+              <span className="sm-cap-td-label">{sh.name}</span>
+              <span className="sm-cap-td">{sh.role}</span>
+              <span className="sm-cap-td" data-align="right">{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</span>
+              <span className="sm-cap-td">{sh.shareClass}</span>
+              <span className="sm-cap-td" data-align="right">{sh.pct}%</span>
+              <span className="sm-cap-td" data-align="right">{sh.votingPct}%</span>
+              <span className="sm-cap-td">{sh.notes}</span>
             </div>
           ))}
         </div>
+        </div>
+        <div className="sm-card-body">
         <div className="sm-text-13 sm-text3">
           Data from 13F (institutional) and DEF 14A (insiders). Strategic shares based on converts and PIPE disclosures.
         </div>
@@ -2589,32 +2588,34 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="sm-card-header">
           <span className="sm-section-label">Equity Offerings Timeline<UpdateIndicators sources="SEC" /></span>
         </div>
-        <div className="sm-card-body">
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 100px 80px 90px', borderBottom: '1px solid var(--border)' }}>
-            <span className="sm-table-header">Date</span>
-            <span className="sm-table-header">Event</span>
-            <span className="sm-table-header">Type</span>
-            <span className="sm-table-header sm-text-right">Amount</span>
-            <span className="sm-table-header sm-text-right">Price</span>
-            <span className="sm-table-header sm-text-right">Shares (M)</span>
+        <div className="sm-cap-table-scroll">
+        <div style={{ minWidth: 560 }}>
+          <div className="sm-cap-table-header" style={{ gridTemplateColumns: '100px 1fr 100px 100px 80px 90px' }}>
+            <span className="sm-cap-th">Date</span>
+            <span className="sm-cap-th">Event</span>
+            <span className="sm-cap-th">Type</span>
+            <span className="sm-cap-th" data-align="right">Amount</span>
+            <span className="sm-cap-th" data-align="right">Price</span>
+            <span className="sm-cap-th" data-align="right">Shares (M)</span>
           </div>
           {equityOfferings.map((offering, i) => (
-            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 100px 80px 90px', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
-              <span className="sm-text-13">{offering.date}</span>
-              <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{offering.event}</span>
-              <span className="sm-text-13">{offering.type}</span>
-              <span className="sm-mono-right">${offering.amount}M</span>
-              <span className="sm-mono-right">{offering.price ? `$${offering.price.toFixed(2)}` : '\u2014'}</span>
-              <span className="sm-mono-right">{offering.shares ? offering.shares.toFixed(1) : '\u2014'}</span>
+            <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '100px 1fr 100px 100px 80px 90px' }}>
+              <span className="sm-cap-td-label">{offering.date}</span>
+              <span className="sm-cap-td" style={{ fontWeight: 500 }}>{offering.event}</span>
+              <span className="sm-cap-td">{offering.type}</span>
+              <span className="sm-cap-td" data-align="right">${offering.amount}M</span>
+              <span className="sm-cap-td" data-align="right">{offering.price ? `$${offering.price.toFixed(2)}` : '\u2014'}</span>
+              <span className="sm-cap-td" data-align="right">{offering.shares ? offering.shares.toFixed(1) : '\u2014'}</span>
             </div>
           ))}
-          <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 100px 80px 90px', padding: '12px 16px', background: 'var(--accent-dim)' }}>
-            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600, gridColumn: 'span 3' }}>Total Capital Raised (2019-2026)</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>~$6.3B</span>
-            <span style={{ gridColumn: 'span 2' }}></span>
+          <div className="sm-cap-table-total" style={{ gridTemplateColumns: '100px 1fr 100px 100px 80px 90px' }}>
+            <span className="sm-cap-td-label" style={{ gridColumn: 'span 3' }}>Total Capital Raised (2019-2026)</span>
+            <span className="sm-cap-td" data-align="right">~$6.3B</span>
+            <span className="sm-cap-td" style={{ gridColumn: 'span 2' }}></span>
           </div>
         </div>
+        </div>
+        <div className="sm-card-body">
         <div className="sm-text-13 sm-text3">
           Equity + Convertibles + ATM + Registered Directs. Feb 2026: $1B converts + ~$614M RDs. Fully funded for 100+ satellites.
         </div>

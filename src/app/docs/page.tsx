@@ -135,6 +135,7 @@ const dataAttributes: DataAttr[] = [
   { attribute: "data-latest",    values: "present",                               effect: "On .sm-fin-th / .sm-fin-td: accent-dim background for latest quarter" },
   { attribute: "data-sticky",    values: "present",                               effect: "On .sm-fin-th: sticky left position with z-index for horizontal scroll" },
   { attribute: "data-overflow",  values: "true",                                  effect: "On .sm-fin-bar: switches to fixed-width (flex: 0 0 auto) for >8 bars" },
+  { attribute: "data-highlight", values: "present",                               effect: "On .sm-cap-td: accent color + font-weight 600 for key values" },
 ];
 
 interface CSSVarDynamic {
@@ -617,6 +618,29 @@ export default function DocsPage() {
             [".sm-fin-chart", "Flex container for bar charts. Height scales: 220→160→140→120px across breakpoints."],
             [".sm-fin-bar", "Individual bar column (flex: 1). data-overflow='true' for fixed-width mode (>8 bars)."],
             [".sm-scroll-hint", "Adds right-edge gradient fade (::after) to signal scrollable content."],
+          ]}
+        />
+
+        {/* ── Capital Tab Classes ──────────────────────────────────────────── */}
+        <SectionHeader id="capital-classes" title="Capital Tab Classes (sm-cap-*)" count={12} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Share structure, shareholders, offerings, and dilution tables — horizontal scroll nav on mobile, sticky label columns.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".sm-cap-nav", "Navigation grid container. Grid on desktop (--cap-cols), horizontal scroll strip on ≤768px."],
+            [".sm-cap-nav-item", "Individual nav card. data-active='true' sets accent border via --accent."],
+            [".sm-cap-nav-value", "Large metric value (22px→14px across breakpoints)."],
+            [".sm-cap-nav-label", "Nav item label (13px→10px). Below the value."],
+            [".sm-cap-nav-sub", "Subtitle text. Hidden at 360px (display: none)."],
+            [".sm-cap-table-scroll", "Horizontal scroll wrapper (overflow-x: auto) for data tables."],
+            [".sm-cap-table-header", "Grid header row with surface2 background and bottom border."],
+            [".sm-cap-table-row", "Grid data row with hover highlight and bottom border."],
+            [".sm-cap-th", "Header cell (10px uppercase). data-align='right' for numbers."],
+            [".sm-cap-td-label", "Label cell — sticky left on horizontal scroll. 13px/600."],
+            [".sm-cap-td", "Data cell — Space Mono monospace. data-align='right', data-highlight for accent color."],
+            [".sm-cap-table-total", "Summary/total row with accent-dim background."],
           ]}
         />
 

@@ -3102,6 +3102,15 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-ed-analysis-pre { font-size: 10px; line-height: 1.6; }
   .sm-ed-diff-panel { margin: 0 -12px; border-radius: 0; }
 
+  /* ── Capital Tab — Small Mobile ── */
+  .sm-cap-nav-item { min-width: 120px; padding: 12px 12px; }
+  .sm-cap-nav-value { font-size: 16px; }
+  .sm-cap-nav-label { font-size: 11px; }
+  .sm-cap-nav-sub { font-size: 10px; }
+  .sm-cap-th { padding: 8px 8px; font-size: 8px; letter-spacing: 0.5px; }
+  .sm-cap-td-label { padding: 8px 8px; font-size: 11px; }
+  .sm-cap-td { padding: 8px 8px; font-size: 10px; }
+
   /* ── Financials Tab — Small Mobile ── */
   .sm-fin-th { padding: 8px 6px; font-size: 8px; letter-spacing: 0.5px; }
   .sm-fin-td-label { padding: 8px 6px; font-size: 11px; }
@@ -3144,6 +3153,15 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-kpi-value { font-size: 12px; }
   .sm-section-label { font-size: 8px; }
   .sm-ed-action-btn { font-size: 9px; padding: 3px 6px; }
+
+  /* ── Capital Tab — Extra Small ── */
+  .sm-cap-nav-item { min-width: 100px; padding: 10px 10px; }
+  .sm-cap-nav-value { font-size: 14px; }
+  .sm-cap-nav-label { font-size: 10px; }
+  .sm-cap-nav-sub { display: none; }
+  .sm-cap-th { padding: 6px 6px; font-size: 8px; }
+  .sm-cap-td-label { padding: 6px 6px; font-size: 10px; }
+  .sm-cap-td { padding: 6px 6px; font-size: 9px; }
 
   /* ── Financials Tab — Extra Small ── */
   .sm-fin-th { padding: 6px 4px; font-size: 8px; }
@@ -4037,6 +4055,117 @@ input[type="range"]::-webkit-slider-thumb {
   line-height: 1.5;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   CAPITAL TAB CLASSES (sm-cap-*)
+   Navigation strip, data tables, and responsive overrides for Capital tab
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Capital nav — horizontal scroll strip on mobile, grid on desktop.
+   Set column count: style={{ '--cap-cols': 7 } as React.CSSProperties} */
+.sm-cap-nav {
+  display: grid;
+  grid-template-columns: repeat(var(--cap-cols, 7), 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+/* Individual nav card inside the strip */
+.sm-cap-nav-item {
+  background: var(--surface);
+  padding: 20px 20px;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+  transition: border-color 0.2s, background 0.15s;
+}
+.sm-cap-nav-item[data-active="true"] {
+  border-left-color: var(--accent);
+}
+.sm-cap-nav-value {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--text);
+}
+.sm-cap-nav-item[data-active="true"] .sm-cap-nav-value {
+  color: var(--accent);
+}
+.sm-cap-nav-label {
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+.sm-cap-nav-sub {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+/* Capital data table — header row */
+.sm-cap-table-header {
+  display: grid;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+/* Capital data table — header cell */
+.sm-cap-th {
+  padding: 12px 16px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.sm-cap-th[data-align="right"] { text-align: right; }
+
+/* Capital data table — data row */
+.sm-cap-table-row {
+  display: grid;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-cap-table-row:last-child { border-bottom: none; }
+.sm-cap-table-row:hover { background: color-mix(in srgb, var(--accent) 3%, transparent); }
+
+/* Capital table — label cell (first column, sticky on mobile scroll) */
+.sm-cap-td-label {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  position: sticky;
+  left: 0;
+  background: var(--bg1);
+  z-index: 1;
+}
+
+/* Capital table — data cell */
+.sm-cap-td {
+  padding: 12px 16px;
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+}
+.sm-cap-td[data-align="right"] { text-align: right; }
+.sm-cap-td[data-highlight] {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Capital table — summary/total row */
+.sm-cap-table-total {
+  display: grid;
+  background: var(--accent-dim);
+  font-weight: 600;
+}
+
+/* Capital table wrapper — enables horizontal scroll on mobile */
+.sm-cap-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* ── Financials bar chart container ──
    Wraps each bar chart section for consistent mobile scaling */
 .sm-fin-chart {
@@ -4142,6 +4271,29 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-grid-4 { grid-template-columns: 1fr 1fr; }
   .sm-model-grid { --cols: 2 !important; border-radius: 12px; }
   .sm-table-row { padding: 10px 16px; }
+
+  /* Capital tab — compact nav grid on tablet */
+  .sm-cap-nav {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 0;
+    border-radius: 12px;
+    scrollbar-width: none;
+  }
+  .sm-cap-nav::-webkit-scrollbar { display: none; }
+  .sm-cap-nav-item {
+    flex: 0 0 auto;
+    min-width: 140px;
+    padding: 16px 16px;
+  }
+  .sm-cap-nav-value { font-size: 18px; }
+  .sm-cap-nav-label { font-size: 12px; }
+
+  /* Capital table — tighter cells on tablet */
+  .sm-cap-th { padding: 10px 12px; font-size: 9px; }
+  .sm-cap-td-label { padding: 10px 12px; font-size: 12px; }
+  .sm-cap-td { padding: 10px 12px; font-size: 11px; }
 
   /* Financials table — tighter cells on tablet */
   .sm-fin-th { padding: 10px 10px; font-size: 9px; }
