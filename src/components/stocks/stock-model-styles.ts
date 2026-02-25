@@ -1560,6 +1560,547 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--text3);
 }
 
+/* ── EDGAR Tab Components ────────────────────────────────────────────────── */
+
+/* Tiny action button (Ive×Tesla style) — shared by Edgar, AI Agents, etc. */
+.sm-ed-action-btn {
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: inherit;
+  outline: none;
+  text-decoration: none;
+  color: var(--ed-btn-color, var(--text3));
+}
+.sm-ed-action-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Small inline action button variant */
+.sm-ed-action-btn-sm {
+  font-size: 9px;
+  font-weight: 500;
+  font-family: inherit;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  outline: none;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ed-btn-color, var(--text3));
+}
+
+/* Filing row — hover-highlight container */
+.sm-ed-filing-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  transition: background 0.15s;
+}
+.sm-ed-filing-row:hover {
+  background: var(--surface2);
+}
+
+/* Form type badge */
+.sm-ed-form-badge {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  font-weight: 600;
+  padding: 2px 0;
+  border-radius: 5px;
+  flex-shrink: 0;
+  width: 82px;
+  text-align: center;
+  white-space: nowrap;
+  background: var(--badge-bg, var(--surface2));
+  color: var(--badge-text, var(--text3));
+}
+
+/* Status dot */
+.sm-ed-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  opacity: 0.9;
+  transition: opacity 0.2s, background 0.2s;
+  background: var(--dot-color, var(--text3));
+}
+
+/* Status label (fixed-width right-aligned) */
+.sm-ed-status-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  width: 72px;
+  text-align: right;
+  color: var(--status-color, var(--text3));
+}
+
+/* Date column */
+.sm-ed-date {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  flex-shrink: 0;
+  letter-spacing: -0.2px;
+  width: 100px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Description (truncated) */
+.sm-ed-desc {
+  font-size: 13px;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Chevron slot (fixed-width for alignment) */
+.sm-ed-chevron-slot {
+  width: 12px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* NEW/SEEN badge slot (fixed width for alignment) */
+.sm-ed-badge-slot {
+  width: 34px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* NEW badge */
+.sm-ed-new-badge {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--sky);
+  background: var(--sky-dim);
+  border: 1px solid color-mix(in srgb, var(--sky) 20%, transparent);
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.sm-ed-new-badge:hover {
+  background: color-mix(in srgb, var(--sky) 20%, transparent);
+}
+
+/* SEEN badge (dimmed) */
+.sm-ed-seen-badge {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--sky);
+  opacity: 0.3;
+  border: 1px solid transparent;
+}
+
+/* Verdict badge */
+.sm-ed-verdict-badge {
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  color: var(--verdict-color);
+  background: var(--verdict-bg);
+  border: 1px solid color-mix(in srgb, var(--verdict-color) 20%, transparent);
+}
+
+/* DB tooltip */
+.sm-ed-db-tooltip {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  z-index: 100;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  min-width: 280px;
+  max-width: 380px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+  line-height: 1.8;
+  pointer-events: none;
+}
+
+/* DB button */
+.sm-ed-db-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 8px;
+  font-family: 'Space Mono', monospace;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s;
+  color: var(--db-color, var(--text3));
+  opacity: var(--db-opacity, 0.25);
+  border: 1px solid color-mix(in srgb, var(--db-color, var(--text3)) 20%, transparent);
+}
+
+/* Cross-ref lines */
+.sm-ed-crossref {
+  margin: 0 0 4px 19px;
+  padding: 4px 0;
+}
+.sm-ed-crossref-line {
+  font-family: 'Space Mono', monospace;
+  font-size: 10.5px;
+  line-height: 1.7;
+  color: var(--text3);
+  opacity: 0.45;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Analysis panel container */
+.sm-ed-analysis {
+  margin: 6px 0 2px 19px;
+  padding-top: 16px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+/* Analysis result pre block */
+.sm-ed-analysis-pre {
+  font-size: 12px;
+  font-family: var(--font-mono, monospace);
+  color: var(--text2);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+/* Filter pill */
+.sm-ed-filter-pill {
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  outline: none;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--pill-color, var(--text3));
+  background: var(--pill-bg, rgba(255,255,255,0.04));
+  border: 1px solid var(--pill-border, var(--border));
+}
+
+/* Year section toggle */
+.sm-ed-year-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 12px 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Hidden filing row (ghosted) */
+.sm-ed-hidden-row {
+  opacity: 0.15;
+  transition: opacity 0.2s;
+}
+.sm-ed-hidden-row:hover {
+  opacity: 0.35;
+}
+
+/* Methodology flowchart box */
+.sm-ed-flowbox {
+  padding: 6px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+  text-align: center;
+}
+
+/* Methodology flowchart accent box */
+.sm-ed-flowbox-accent {
+  padding: 6px 14px;
+  background: var(--sky-dim);
+  border: 1px solid var(--sky);
+  border-radius: 8px;
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  color: var(--sky);
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Methodology vertical connector */
+.sm-ed-flowline {
+  width: 2px;
+  background: var(--border);
+}
+
+/* Methodology section header */
+.sm-ed-method-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+
+/* Methodology mono description text */
+.sm-ed-method-text {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text3);
+  line-height: 2;
+}
+
+/* Methodology info card */
+.sm-ed-info-card {
+  flex: 1 1 160px;
+  padding: 8px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.sm-ed-info-card-lg {
+  flex: 1 1 180px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.sm-ed-info-card-xl {
+  flex: 1 1 220px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+/* Methodology separator */
+.sm-ed-separator {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+/* Diff preview panel */
+.sm-ed-diff-panel {
+  margin-top: 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(234,179,8,0.2);
+  background: rgba(234,179,8,0.03);
+  overflow: hidden;
+}
+
+/* Diff preview pre block */
+.sm-ed-diff-pre {
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  margin: 0;
+  color: var(--text3);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Diff line coloring */
+.sm-ed-diff-add {
+  display: block;
+  color: rgba(130,200,130,0.7);
+  background: rgba(130,200,130,0.04);
+}
+.sm-ed-diff-del {
+  display: block;
+  color: rgba(255,100,100,0.5);
+  background: rgba(255,100,100,0.04);
+}
+.sm-ed-diff-hunk {
+  display: block;
+  color: rgba(130,170,255,0.5);
+}
+
+/* Status bar container */
+.sm-ed-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  margin-top: 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Legend */
+.sm-ed-legend {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 16px 4px 12px;
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.3px;
+  flex-wrap: wrap;
+}
+
+/* Error alert */
+.sm-ed-error {
+  font-size: 12px;
+  color: var(--coral);
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--coral-dim);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Loading spinner area */
+.sm-ed-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 0;
+  color: var(--text3);
+}
+
+/* AI disabled banner */
+.sm-ed-ai-banner {
+  font-size: 12px;
+  color: var(--gold);
+  padding: 10px 14px;
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid color-mix(in srgb, var(--gold) 15%, transparent);
+}
+
+/* Copy button */
+.sm-ed-copy-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.sm-ed-copy-btn[data-copied="true"] {
+  background: color-mix(in srgb, var(--mint) 15%, transparent);
+  color: var(--mint);
+}
+
+/* ── Shared Tab Components (Sources, Investment, AI Agents) ──────────────── */
+
+/* Article / content card */
+.sm-tab-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: border-color 0.15s;
+}
+.sm-tab-card:hover {
+  border-color: color-mix(in srgb, var(--border) 150%, transparent);
+}
+
+/* Compact status indicator row */
+.sm-tab-status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* Toggle button (compact) */
+.sm-tab-toggle {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  outline: none;
+}
+.sm-tab-toggle:hover {
+  background: var(--surface3);
+  color: var(--text);
+}
+.sm-tab-toggle[data-active="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
 /* ── Dynamic Value Support (data attributes) ─────────────────────────────── */
 
 /* Sentiment-based text colors */
