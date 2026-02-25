@@ -1,71 +1,153 @@
 /**
- * UNIFIED STOCK MODEL STYLES
+ * ╔══════════════════════════════════════════════════════════════════════════════╗
+ * ║  UNIFIED STOCK MODEL STYLES — stock-model-styles.ts                        ║
+ * ╚══════════════════════════════════════════════════════════════════════════════╝
  *
- * Golden Standard: ASTS
+ * Single source of truth for all stock component styling.
+ * Golden Standard: ASTS.tsx — all other models (BMNR, CRCL) mirror its structure.
  *
- * This is the single source of truth for all stock component styles.
- * All three models (ASTS, BMNR, CRCL) share these styles.
+ * ┌──────────────────────────────────────────────────────────────────────────────┐
+ * │  ARCHITECTURE                                                               │
+ * │                                                                             │
+ * │  1. DESIGN TOKENS (:root)       — Colors, surfaces, borders, typography     │
+ * │  2. BASE COMPONENTS             — Hero, stats, nav, cards, tables, charts   │
+ * │  3. INTERACTION PATTERNS        — Filters, dropdowns, sliders, pills        │
+ * │  4. DISCLAIMER                  — Legal banner                              │
+ * │  5. MOBILE RESPONSIVE           — Touch targets, scroll indicators          │
+ * │  6. SM-* UTILITY CLASSES        — Layout, typography, color utilities       │
+ * │  7. SM-* COMPONENT PATTERNS     — Grid-sep, panels, badges, data rows      │
+ * │  8. SHARED PRIMITIVES           — StockModelUI components (Card, Row, etc.) │
+ * │  9. WALL STREET TAB (sm-ws-*)   — Analyst research components              │
+ * │  10. EDGAR TAB (sm-ed-*)        — SEC filing browser components            │
+ * │  11. SHARED TAB COMPONENTS      — Sources, Investment, AI Agents           │
+ * │  12. DATA ATTRIBUTE SELECTORS   — Sentiment, active state                  │
+ * │  13. RESPONSIVE BREAKPOINTS     — 1200 → 900 → 768 → 480 → 360px         │
+ * │  14. ACCESSIBILITY              — Reduced motion, dark mode, retina        │
+ * │  15. TIMELINE SYSTEM            — Expandable event timeline                │
+ * │  16. UPDATE INDICATORS          — Data freshness dots                      │
+ * │  17. COMPETITOR CARDS           — Unified company comparison cards          │
+ * │  18. DISCLOSURE PANELS          — Expandable company info sections         │
+ * └──────────────────────────────────────────────────────────────────────────────┘
  *
- * Usage in component:
+ * USAGE:
  *   import { getStockModelCSS } from './stock-model-styles';
- *   const css = getStockModelCSS('cyan');  // ASTS
- *   const css = getStockModelCSS('violet'); // BMNR
- *   const css = getStockModelCSS('mint');   // CRCL
+ *   const css = getStockModelCSS('cyan');   // ASTS  → --accent: var(--cyan)
+ *   const css = getStockModelCSS('violet'); // BMNR  → --accent: var(--violet)
+ *   const css = getStockModelCSS('mint');   // CRCL  → --accent: var(--mint)
+ *
+ * DYNAMIC VALUES:
+ *   CSS custom properties (--var) are used for dynamic values instead of inline styles.
+ *   Set via: style={{ '--badge-color': 'var(--mint)' } as React.CSSProperties}
+ *   The CSS class reads the variable for background, color, or border.
+ *
+ * DATA ATTRIBUTES:
+ *   State-driven styling via data-* attributes on elements.
+ *   Example: data-sentiment="positive" → color: var(--mint)
+ *   Example: data-active="true" → full opacity, accent border
+ *
+ * HOVER EFFECTS:
+ *   All hover effects use CSS :hover on classes — never JS event handlers.
+ *   Removed patterns: onMouseEnter/onMouseLeave for style manipulation.
+ *
+ * FONTS:
+ *   Outfit — UI text (headings, labels, body, buttons)
+ *   Space Mono — Data display (prices, percentages, KPIs, tickers, dates)
+ *
+ * RESPONSIVE:
+ *   Desktop-first with breakpoints at 1200, 900, 768, 480, 360px.
+ *   Touch targets minimum 44px on coarse pointer devices.
+ *   Fade-mask scroll indicators on horizontal-scroll sections.
+ *
+ * DOCUMENTATION:
+ *   Full class reference available at /docs in the application.
+ *   See also: src/app/docs/page.tsx for the live documentation page.
  */
 
 export type AccentColor = 'cyan' | 'violet' | 'mint';
 
 /**
- * Returns the complete CSS for a stock model component with the specified accent color.
+ * Returns the complete CSS for a stock model component.
+ * The accent parameter sets --accent and --accent-dim CSS variables,
+ * which cascade through all component styles automatically.
+ *
+ * @param accent - 'cyan' (ASTS) | 'violet' (BMNR) | 'mint' (CRCL)
+ * @returns Complete CSS string to be injected via <style> tag
  */
 export const getStockModelCSS = (accent: AccentColor): string => `
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 
 :root {
-  /* ═══ UNIFIED DESIGN TOKENS (shared across ASTS/BMNR/CRCL) ═══ */
-  /* Background & Surfaces */
-  --bg: #05070A;
-  --surface: #0D1117;
-  --surface2: #161B22;
-  --surface3: #21262D;
-  --border: rgba(240,246,252,0.1);
+  /* ═══ UNIFIED DESIGN TOKENS (shared across ASTS/BMNR/CRCL) ═══
+   *
+   * These tokens define the entire color system. They are also mirrored
+   * in globals.css for pages outside the stock-model-app scope.
+   *
+   * Naming convention:
+   *   --bg/surface/surface2/surface3  → layered backgrounds (darkest → lightest)
+   *   --text/text2/text3              → text hierarchy (brightest → dimmest)
+   *   --{color}                       → full-strength semantic color
+   *   --{color}-dim                   → 15% opacity tint for backgrounds
+   * ═══════════════════════════════════════════════════════════════════════════ */
 
-  /* Typography */
-  --text: #F0F6FC;
-  --text2: #8B949E;
-  --text3: #6E7681;
+  /* Background & Surfaces — 4-level depth system */
+  --bg: #05070A;           /* Page background — near-black */
+  --surface: #0D1117;      /* Card / panel background */
+  --surface2: #161B22;     /* Hover state, secondary containers */
+  --surface3: #21262D;     /* Tertiary (inputs, legends, deeply nested) */
+  --border: rgba(240,246,252,0.1); /* Glass-edge border — subtle white at 10% */
 
-  /* Semantic Colors */
-  --cyan: #22D3EE;
+  /* Typography — 3-level hierarchy */
+  --text: #F0F6FC;         /* Primary — high contrast headings & values */
+  --text2: #8B949E;        /* Secondary — descriptions, body text */
+  --text3: #6E7681;        /* Tertiary — labels, muted helpers, timestamps */
+
+  /* Semantic Colors — each has a full and -dim (15% opacity) variant */
+  --cyan: #22D3EE;         /* ASTS accent — space/tech feel */
   --cyan-dim: rgba(34,211,238,0.15);
-  --mint: #7EE787;
+  --mint: #7EE787;         /* CRCL accent — positive / growth */
   --mint-dim: rgba(126,231,135,0.15);
-  --coral: #FF7B72;
+  --coral: #FF7B72;        /* Negative sentiment / errors / bearish */
   --coral-dim: rgba(255,123,114,0.15);
-  --sky: #79C0FF;
+  --sky: #79C0FF;          /* Info / links / neutral data */
   --sky-dim: rgba(121,192,255,0.15);
-  --gold: #D29922;
+  --gold: #D29922;         /* Neutral sentiment / warnings */
   --gold-dim: rgba(210,153,34,0.15);
-  --violet: #A78BFA;
+  --violet: #A78BFA;       /* BMNR accent — Wall Street / research */
   --violet-dim: rgba(167,139,250,0.15);
 
-  /* ═══ STOCK-SPECIFIC ACCENT ═══ */
+  /* ═══ STOCK-SPECIFIC ACCENT ═══
+   * Dynamically resolved by the accent parameter:
+   *   getStockModelCSS('cyan')   → --accent: var(--cyan)    (ASTS)
+   *   getStockModelCSS('violet') → --accent: var(--violet)  (BMNR)
+   *   getStockModelCSS('mint')   → --accent: var(--mint)    (CRCL)
+   *
+   * Used by: .nav-btn.active, .sm-accent, .highlight, .price-badge,
+   *          .sm-preset-btn[data-active], and many more.
+   * ═══════════════════════════════════════════════════════════════════════════ */
   --accent: var(--${accent});
   --accent-dim: var(--${accent}-dim);
 }
 
-/* Scoped reset — only applies inside model app to avoid overriding Tailwind :where() selectors */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 2. SCOPED RESET & ROOT CONTAINER
+   Scoped to .stock-model-app to avoid overriding Tailwind :where() selectors
+   used by the rest of the Next.js app (nav, hooks page, docs page, etc.).
+   ═══════════════════════════════════════════════════════════════════════════ */
 .stock-model-app, .stock-model-app * { box-sizing: border-box; margin: 0; padding: 0; }
 
 .stock-model-app {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Outfit', sans-serif;  /* Primary UI font — all non-data text */
   background: var(--bg);
   min-height: 100vh;
   color: var(--text);
   overflow-x: hidden;
 }
 
-/* Hero Header */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 3. HERO HEADER
+   Top section of each stock page: company name, ticker badge, price display.
+   Uses a radial gradient glow (::before pseudo) for depth.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .hero {
   position: relative;
   padding: 48px 64px 48px;
@@ -150,7 +232,11 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 .price-badge.up { background: var(--mint-dim); color: var(--mint); }
 .price-badge.down { background: var(--coral-dim); color: var(--coral); }
 
-/* Stats Row */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 4. STATS ROW
+   Horizontal strip below hero showing key metrics (price, market cap, etc.).
+   Horizontally scrollable on mobile with fade-mask indicators.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .stats-row {
   display: flex;
   gap: 32px;
@@ -185,7 +271,13 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 .stat-item .val.coral { color: var(--coral); }
 .stat-item .val.violet { color: var(--violet); }
 
-/* Navigation */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 5. NAVIGATION
+   Sticky tab bar for switching between model tabs (Overview, Chart, etc.).
+   Supports both flat buttons (.nav-btn) and dropdown groups (.nav-dropdown).
+   Tab type indicators: .tab-tracking (mint/data) vs .tab-projection (accent/model).
+   Keyboard-navigable with :focus-visible outlines.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .nav {
   display: flex;
   align-items: center;
@@ -283,7 +375,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   opacity: 0.8;
 }
 
-/* Filter Buttons - For inline filtering (competitor filters, peer group selectors) */
+/* ── Filter Buttons — For inline filtering (competitor filters, peer group selectors) ── */
 .filter-btn {
   padding: 4px 12px;
   font-size: 11px;
@@ -308,7 +400,10 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   font-weight: 600;
 }
 
-/* Dropdown Navigation - Stock-specific tabs in expandable menu */
+/* ── Dropdown Navigation — Stock-specific tabs in expandable menu ──
+   The dropdown trigger sits in the main nav; when open, a secondary bar
+   (.nav-dropdown-space) slides open below the nav to show sub-tabs.
+   Animation: fadeSlideIn keyframe for smooth appearance. */
 .nav-dropdown {
   display: inline-flex;
 }
@@ -401,7 +496,12 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   background: var(--surface2);
 }
 
-/* Main Content */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 6. MAIN CONTENT & CARDS
+   Primary content area for each tab. Cards (.card) are the fundamental
+   container unit. Highlight boxes use accent gradient backgrounds.
+   Grid layouts: .g2–.g5 for responsive column grids.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .main {
   padding: 48px 64px;
   max-width: 1400px;
@@ -471,7 +571,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   font-size: 15px;
 }
 
-/* Thesis Cards */
+/* ── Thesis Cards — Bull/bear investment thesis with sentiment-colored borders ── */
 .thesis {
   padding: 24px;
   border-radius: 16px;
@@ -509,7 +609,11 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   color: var(--text3);
 }
 
-/* Bar Charts — Ive×Tesla */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 7. CHARTS & DATA VISUALIZATION
+   Bar charts, Monte Carlo simulation, progress bars, big stats.
+   Bar charts use hover effects for interactive feedback.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .bars {
   display: flex;
   align-items: flex-end;
@@ -597,7 +701,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   color: var(--text3);
 }
 
-/* Tables */
+/* ── Tables — Standard data table with rounded header and hover rows ── */
 .tbl {
   width: 100%;
   border-collapse: collapse;
@@ -638,7 +742,11 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 .tbl .sky { color: var(--sky); }
 .tbl .violet { color: var(--violet); }
 
-/* Pills */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 8. INTERACTIVE CONTROLS
+   Pills (filter toggles), range sliders, and input controls.
+   All use accent color for active/selected states.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .pills {
   display: flex;
   gap: 8px;
@@ -723,7 +831,11 @@ input[type="range"]::-webkit-slider-thumb {
 .mc-bar:hover { opacity: 1; }
 .mc-bar.hl { background: var(--gold); opacity: 1; }
 
-/* Legal Disclaimer Banner */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 9. LEGAL DISCLAIMER
+   Red/gold gradient banner shown at top of stock pages.
+   Responsive: single-line on desktop, stacked on mobile.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .disclaimer-banner {
   background: linear-gradient(135deg, rgba(255,123,114,0.08) 0%, rgba(210,153,34,0.08) 100%);
   border-bottom: 1px solid rgba(255,123,114,0.2);
@@ -794,9 +906,1525 @@ input[type="range"]::-webkit-slider-thumb {
   button, .btn { min-height: 44px; }
   .pill { min-height: 44px; padding: 10px 16px; }
   .nav-dropdown-item { min-height: 44px; padding: 12px 16px; }
+  /* Nav badges — expand touch target while keeping visual size */
+  .nav-ai-badge,
+  .nav-pin-badge {
+    min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
+  }
+  .sm-ed-action-btn,
+  .sm-ed-action-btn-sm {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+  .sm-ed-filter-pill {
+    min-height: 44px;
+  }
+  .sm-expand-btn {
+    min-height: 44px;
+  }
 }
 
-/* ═══ RESPONSIVE - DESKTOP (1200px) ═══ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 11. STOCK MODEL UTILITY CLASSES (sm-*)
+
+   These classes replace inline styles across all stock components.
+   Prefixed with "sm-" (stock-model) to avoid collisions with Tailwind.
+
+   Categories:
+     - Layout:     sm-flex, sm-flex-between, sm-flex-col, sm-gap-*, sm-mt-*
+     - Typography:  sm-section-label, sm-param-label, sm-mono-*, sm-subtle, sm-body
+     - Color:       sm-accent, sm-mint, sm-coral, sm-sky, sm-gold, sm-violet, sm-text*
+     - Components:  sm-panel, sm-grid-sep, sm-data-row, sm-badge, sm-tab-hero, etc.
+     - Dynamic:     CSS custom properties (--badge-color, --kpi-color, etc.)
+
+   Usage pattern:
+     <div className="sm-section-label">SECTION TITLE</div>
+     <div className="sm-badge" style={{ '--badge-color': 'var(--mint)' } as React.CSSProperties}>
+
+   See /docs page for the complete class reference.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Layout Utilities ─────────────────────────────────────────────────────
+   Composable flex/grid helpers. Combine for complex layouts:
+   className="sm-flex sm-gap-16"  → flex row, align-center, 16px gap
+   className="sm-flex-between"    → space-between row
+   ──────────────────────────────────────────────────────────────────────── */
+.sm-flex { display: flex; align-items: center; gap: 8px; }
+.sm-flex-between { display: flex; justify-content: space-between; align-items: center; }
+.sm-flex-col { display: flex; flex-direction: column; }
+.sm-flex-col-gap { display: flex; flex-direction: column; gap: 12px; }
+.sm-flex-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+.sm-gap-4 { gap: 4px; }
+.sm-gap-6 { gap: 6px; }
+.sm-gap-8 { gap: 8px; }
+.sm-gap-12 { gap: 12px; }
+.sm-gap-16 { gap: 16px; }
+.sm-gap-24 { gap: 24px; }
+.sm-text-center { text-align: center; }
+.sm-text-right { text-align: right; }
+.sm-shrink-0 { flex-shrink: 0; }
+.sm-mt-8 { margin-top: 8px; }
+.sm-mt-12 { margin-top: 12px; }
+.sm-mt-16 { margin-top: 16px; }
+.sm-mt-24 { margin-top: 24px; }
+.sm-mt-32 { margin-top: 32px; }
+.sm-mb-8 { margin-bottom: 8px; }
+.sm-mb-12 { margin-bottom: 12px; }
+.sm-mb-16 { margin-bottom: 16px; }
+.sm-w-full { width: 100%; }
+
+/* ── Typography ──────────────────────────────────────────────────────────
+   Text styling hierarchy. Two font families:
+   - Outfit (sans-serif): All UI text — inherited from .stock-model-app
+   - Space Mono (monospace): Numbers, data, KPIs — via sm-mono-* classes
+
+   Label hierarchy (largest → smallest):
+   sm-panel-title (13px, 600) → sm-param-label (13px, 600, uppercase)
+   → sm-section-label (11px, 600, uppercase, 2.5px spacing)
+   → sm-micro-label (10px, 600, uppercase)
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Section header — the single most repeated pattern across the codebase (~577 instances) */
+.sm-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Parameter / subsection label */
+.sm-param-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* Micro label (table headers, tiny tags) */
+.sm-micro-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* Panel title */
+.sm-panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+}
+
+/* Monospace number display */
+.sm-mono { font-family: 'Space Mono', monospace; font-weight: 700; }
+.sm-mono-sm { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 600; }
+.sm-mono-md { font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 600; }
+.sm-mono-lg { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; }
+.sm-mono-xl { font-family: 'Space Mono', monospace; font-size: 28px; font-weight: 700; }
+.sm-mono-2xl { font-family: 'Space Mono', monospace; font-size: 32px; font-weight: 700; }
+.sm-mono-3xl { font-family: 'Space Mono', monospace; font-size: 42px; font-weight: 700; }
+
+/* Text styles */
+.sm-subtle { font-size: 12px; color: var(--text3); }
+.sm-subtle-sm { font-size: 11px; color: var(--text3); }
+.sm-body { font-size: 14px; color: var(--text2); }
+.sm-body-sm { font-size: 13px; color: var(--text2); line-height: 1.5; }
+.sm-body-lg { font-size: 15px; color: var(--text2); line-height: 1.7; }
+
+/* Color utilities */
+.sm-accent { color: var(--accent); }
+.sm-mint { color: var(--mint); }
+.sm-coral { color: var(--coral); }
+.sm-sky { color: var(--sky); }
+.sm-gold { color: var(--gold); }
+.sm-violet { color: var(--violet); }
+.sm-cyan { color: var(--cyan); }
+.sm-text { color: var(--text); }
+.sm-text2 { color: var(--text2); }
+.sm-text3 { color: var(--text3); }
+
+/* ── Component Patterns ──────────────────────────────────────────────────
+   Pre-built UI patterns covering 90% of the stock component layouts.
+   Dynamic values are injected via CSS custom properties, not inline styles.
+
+   Key pattern: "1px gap grid" (.sm-grid-sep)
+   The background color shows through the 1px gap between cells,
+   creating the appearance of thin borders without actual border properties.
+   Set column count via: style={{ '--cols': 4 } as React.CSSProperties}
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Grid separator — glass-card pattern with 1px gap borders */
+.sm-grid-sep {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 3), 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+/* Inner cells of grid-sep */
+.sm-grid-cell {
+  background: var(--surface);
+  padding: 16px 24px;
+}
+.sm-grid-cell-center {
+  background: var(--surface);
+  padding: 16px;
+  text-align: center;
+}
+
+/* KPI metric cell (used inside grid-sep) */
+.sm-kpi-cell {
+  background: var(--surface);
+  padding: 24px 16px;
+  text-align: center;
+}
+.sm-kpi-label {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.sm-kpi-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+  margin: 6px 0 4px;
+}
+.sm-kpi-sub {
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* Panel card — surface card with border */
+.sm-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 12px;
+}
+.sm-panel-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.sm-panel-body {
+  padding: 24px;
+}
+
+/* Data row with CSS :hover — replaces all JS onMouseEnter/onMouseLeave handlers.
+   Uses display: grid; the specific gridTemplateColumns is set inline since it
+   varies per usage context (e.g., '1fr 120px 1fr' vs '200px 1fr 80px'). */
+.sm-data-row {
+  display: grid;
+  padding: 12px 24px;
+  align-items: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-data-row:hover {
+  background: var(--surface2);
+}
+.sm-data-row:last-child {
+  border-bottom: none;
+}
+
+/* Badge / chip — dynamic color via --badge-color CSS custom property.
+   The background is auto-generated as 10% opacity of the badge color
+   using CSS color-mix(). No need to compute RGBA in JavaScript. */
+.sm-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 100px;
+  color: var(--badge-color, var(--text3));
+  background: color-mix(in srgb, var(--badge-color, var(--text3)) 10%, transparent);
+}
+.sm-badge-impact {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 100px;
+  min-width: 60px;
+  text-align: center;
+  color: var(--badge-color, var(--text3));
+  background: color-mix(in srgb, var(--badge-color, var(--text3)) 12%, transparent);
+}
+
+/* Tab hero section (used in each tab's header) */
+.sm-tab-hero {
+  padding: 48px 0 32px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+.sm-tab-hero h2 {
+  font-size: 32px;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+.sm-tab-hero p {
+  font-size: 15px;
+  color: var(--text3);
+  max-width: 640px;
+  line-height: 1.7;
+  margin-top: 12px;
+  font-weight: 300;
+}
+
+/* Section divider with trailing line */
+.sm-divider {
+  padding: 32px 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sm-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* Bullet list item (bull/bear case items) */
+.sm-bullet-item {
+  display: flex;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+/* Small dot indicator */
+.sm-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--dot-color, var(--text3));
+}
+
+/* Expand/collapse toggle button */
+.sm-expand-btn {
+  width: 100%;
+  padding: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  color: var(--text2);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Outfit', sans-serif;
+}
+.sm-expand-btn:hover {
+  background: var(--surface3);
+  color: var(--text);
+}
+
+/* Compact action button (Expand All / Collapse All) */
+.sm-action-btn {
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--surface2);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Outfit', sans-serif;
+}
+.sm-action-btn:hover {
+  background: var(--surface3);
+  color: var(--text);
+}
+
+/* Progress bar */
+.sm-progress-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface3);
+  overflow: hidden;
+}
+.sm-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--progress-color, var(--accent));
+  transition: width 0.6s ease;
+}
+
+/* Bar chart column (vertical) */
+.sm-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  background: var(--bar-color, var(--accent));
+  transition: height 0.3s;
+  min-height: 2px;
+}
+
+/* ── Shared Primitives (StockModelUI.tsx components) ─────────────────────
+   These classes power the reusable primitives exported from StockModelUI:
+   Card, Row, Input, Panel, Guide, CFANotes, Stat.
+   Each uses CSS custom properties for dynamic color theming.
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Card with dynamic color — set --card-bg, --card-border, --card-text inline */
+.sm-card-colored {
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(8px);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+}
+.sm-card-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text3);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+.sm-card-value {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: 'Space Mono', monospace;
+  color: var(--card-text);
+}
+
+/* Row component */
+.sm-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.sm-row[data-highlight="true"] {
+  background: var(--accent-dim);
+  padding: 12px;
+  margin: 0 -12px;
+  border-radius: 8px;
+}
+.sm-row-label {
+  font-size: 14px;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+}
+.sm-row-value {
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+}
+.sm-row[data-highlight="true"] .sm-row-value {
+  color: var(--accent);
+}
+
+/* Input component */
+.sm-input-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text3);
+  font-weight: 600;
+}
+.sm-input-field {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+  outline: none;
+}
+
+/* CFA Notes */
+.sm-cfa-notes {
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  opacity: 0.75;
+}
+.sm-cfa-title {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.sm-cfa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text3);
+}
+.sm-cfa-list p { margin: 0; }
+.sm-cfa-list strong { color: var(--text2); }
+
+/* Guide content */
+.sm-guide-content {
+  color: var(--text2);
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+/* Preset toggle buttons (model parameter selection) */
+.sm-preset-btn {
+  padding: 12px 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text3);
+  font-family: 'Outfit', sans-serif;
+}
+.sm-preset-btn[data-active="true"] {
+  border: 2px solid var(--preset-color);
+  background: color-mix(in srgb, var(--preset-color) 15%, transparent);
+  color: var(--preset-color);
+  font-weight: 600;
+}
+
+/* Tinted background using dynamic CSS custom property */
+.sm-tinted-bg {
+  background: color-mix(in srgb, var(--tint) 10%, transparent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 12. WALL STREET TAB COMPONENTS (sm-ws-*)
+
+   SharedWallStreetTab.tsx — analyst research, ratings, price targets.
+   Components: panels, firm headers, reports, estimates, rating badges.
+   Prefixed with "sm-ws-" to scope and avoid collision.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Update indicator dot (inline portability component) */
+.sm-update-dots {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+}
+.sm-update-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  background: var(--dot-bg);
+}
+
+/* Panel with round-16 styling used in Wall Street cards */
+.sm-ws-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.sm-ws-panel[data-active="true"] {
+  border-color: var(--violet);
+}
+
+/* Panel header row (padded, bottom-bordered) */
+.sm-ws-panel-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sm-ws-panel-header[data-open="false"] {
+  border-bottom: none;
+}
+
+/* Panel body (padded) */
+.sm-ws-panel-body {
+  padding: 24px;
+}
+
+/* Grid 2-col layout for consensus */
+.sm-ws-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* KPI grid with 1px gap border pattern */
+.sm-ws-kpi-grid {
+  display: grid;
+  gap: 1px;
+  background: var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Rating distribution bar */
+.sm-ws-rating-bar {
+  display: flex;
+  height: 24px;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+/* Firm header (clickable expand trigger) */
+.sm-ws-firm-header {
+  padding: 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Firm name */
+.sm-ws-firm-name {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+/* Collapsed metrics grid (auto-fit) */
+.sm-ws-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+  padding: 12px;
+  background: var(--surface2);
+  border-radius: 10px;
+}
+.sm-ws-metric-cell {
+  text-align: center;
+  padding: 4px 0;
+}
+.sm-ws-metric-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+.sm-ws-metric-label {
+  font-size: 9px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* Report entry row (with left border) */
+.sm-ws-report {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 3px solid transparent;
+  transition: background 0.15s;
+}
+.sm-ws-report:hover {
+  background: var(--surface2);
+}
+.sm-ws-report[data-full="true"] {
+  background: var(--surface2);
+  border-left-color: var(--violet);
+}
+.sm-ws-report[data-full="true"]:hover {
+  background: var(--surface2);
+}
+
+/* Report detail expand button */
+.sm-ws-detail-btn {
+  background: none;
+  border: none;
+  color: var(--violet);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 4px 0;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Report expanded details container */
+.sm-ws-details {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
+
+/* Report summary block */
+.sm-ws-summary {
+  background: var(--surface);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* Assumption chip */
+.sm-ws-assumption {
+  padding: 3px 8px;
+  background: var(--surface);
+  border-radius: 99px;
+  font-size: 11px;
+  color: var(--text2);
+}
+
+/* Report section label (catalysts, risks, etc.) */
+.sm-ws-section-label {
+  font-size: 10px;
+  margin-bottom: 6px;
+}
+
+/* Report list (catalysts/risks) */
+.sm-ws-list {
+  margin: 0;
+  padding-left: 16px;
+  color: var(--text2);
+  font-size: 11px;
+}
+
+/* Estimates table */
+.sm-ws-estimate-grid {
+  display: grid;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-ws-estimate-grid:hover {
+  background: var(--surface2);
+}
+.sm-ws-estimate-grid:last-child {
+  border-bottom: none;
+}
+
+/* Estimate table header row */
+.sm-ws-estimate-header {
+  display: grid;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Estimate cell */
+.sm-ws-estimate-cell {
+  padding: 12px;
+  font-size: 12px;
+  color: var(--text);
+}
+.sm-ws-estimate-cell[data-align="right"] {
+  font-family: 'Space Mono', monospace;
+  color: var(--text2);
+  text-align: right;
+}
+
+/* Table header cell */
+.sm-ws-th {
+  padding: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+  background: var(--surface2);
+}
+.sm-ws-th[data-align="right"] {
+  text-align: right;
+}
+
+/* Table container */
+.sm-ws-table {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+/* KPI grid — 4 column default */
+.sm-ws-kpi-4col {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Estimates columns — 1fr + 5x80px default */
+.sm-ws-est-cols {
+  grid-template-columns: 1fr repeat(5, 80px);
+}
+
+/* Inline notes markdown-like block headers */
+.sm-ws-block-header {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* Firm notes italic */
+.sm-ws-firm-notes {
+  font-size: 11px;
+  color: var(--text3);
+  font-style: italic;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  line-height: 1.5;
+}
+
+/* Badge used for rating with dynamic color */
+.sm-ws-rating-badge {
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--badge-color) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--badge-color) 27%, transparent);
+}
+.sm-ws-rating-badge span {
+  color: var(--badge-color);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+/* Report count badges */
+.sm-ws-count-badge {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+}
+.sm-ws-count-badge[data-type="report"] {
+  background: color-mix(in srgb, var(--violet) 15%, transparent);
+  color: var(--violet);
+}
+.sm-ws-count-badge[data-type="update"] {
+  background: color-mix(in srgb, var(--border) 60%, transparent);
+  color: var(--text3);
+}
+
+/* Source link */
+.sm-ws-source-link {
+  font-size: 10px;
+  color: var(--violet);
+  text-decoration: none;
+}
+
+/* Report title italic */
+.sm-ws-report-title {
+  color: var(--text2);
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* PT display mono */
+.sm-ws-pt {
+  font-family: 'Space Mono', monospace;
+  text-align: right;
+  min-width: 60px;
+}
+
+/* Range text */
+.sm-ws-range {
+  font-size: 12px;
+  color: var(--text3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 13. EDGAR TAB COMPONENTS (sm-ed-*)
+
+   SharedEdgarTab.tsx + SharedSourcesTab.tsx — SEC filing browser and
+   research sources tab with filtering, analysis, diffs, methodology.
+   Components: filing rows, form badges, status dots, verdict badges,
+   analysis panels, diff previews, methodology flowcharts, info cards.
+   Prefixed with "sm-ed-" to scope and avoid collision.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Tiny action button (Ive×Tesla style) — shared by Edgar, AI Agents, etc. */
+.sm-ed-action-btn {
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: inherit;
+  outline: none;
+  text-decoration: none;
+  color: var(--ed-btn-color, var(--text3));
+}
+.sm-ed-action-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Small inline action button variant */
+.sm-ed-action-btn-sm {
+  font-size: 9px;
+  font-weight: 500;
+  font-family: inherit;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  outline: none;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ed-btn-color, var(--text3));
+}
+
+/* Filing row — hover-highlight container */
+.sm-ed-filing-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  transition: background 0.15s;
+}
+.sm-ed-filing-row:hover {
+  background: var(--surface2);
+}
+
+/* Form type badge */
+.sm-ed-form-badge {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  font-weight: 600;
+  padding: 2px 0;
+  border-radius: 5px;
+  flex-shrink: 0;
+  width: 82px;
+  text-align: center;
+  white-space: nowrap;
+  background: var(--badge-bg, var(--surface2));
+  color: var(--badge-text, var(--text3));
+}
+
+/* Status dot */
+.sm-ed-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  opacity: 0.9;
+  transition: opacity 0.2s, background 0.2s;
+  background: var(--dot-color, var(--text3));
+}
+
+/* Status label (fixed-width right-aligned) */
+.sm-ed-status-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  width: 72px;
+  text-align: right;
+  color: var(--status-color, var(--text3));
+}
+
+/* Date column */
+.sm-ed-date {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  flex-shrink: 0;
+  letter-spacing: -0.2px;
+  width: 100px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Description (truncated) */
+.sm-ed-desc {
+  font-size: 13px;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Chevron slot (fixed-width for alignment) */
+.sm-ed-chevron-slot {
+  width: 12px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* NEW/SEEN badge slot (fixed width for alignment) */
+.sm-ed-badge-slot {
+  width: 34px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* NEW badge */
+.sm-ed-new-badge {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--sky);
+  background: var(--sky-dim);
+  border: 1px solid color-mix(in srgb, var(--sky) 20%, transparent);
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.sm-ed-new-badge:hover {
+  background: color-mix(in srgb, var(--sky) 20%, transparent);
+}
+
+/* SEEN badge (dimmed) */
+.sm-ed-seen-badge {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--sky);
+  opacity: 0.3;
+  border: 1px solid transparent;
+}
+
+/* Verdict badge */
+.sm-ed-verdict-badge {
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  color: var(--verdict-color);
+  background: var(--verdict-bg);
+  border: 1px solid color-mix(in srgb, var(--verdict-color) 20%, transparent);
+}
+
+/* DB tooltip */
+.sm-ed-db-tooltip {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  z-index: 100;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  min-width: min(280px, calc(100vw - 3rem));
+  max-width: min(380px, calc(100vw - 2rem));
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+  line-height: 1.8;
+  pointer-events: none;
+}
+
+/* DB button */
+.sm-ed-db-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 8px;
+  font-family: 'Space Mono', monospace;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s;
+  color: var(--db-color, var(--text3));
+  opacity: var(--db-opacity, 0.25);
+  border: 1px solid color-mix(in srgb, var(--db-color, var(--text3)) 20%, transparent);
+}
+
+/* Cross-ref lines */
+.sm-ed-crossref {
+  margin: 0 0 4px 19px;
+  padding: 4px 0;
+}
+.sm-ed-crossref-line {
+  font-family: 'Space Mono', monospace;
+  font-size: 10.5px;
+  line-height: 1.7;
+  color: var(--text3);
+  opacity: 0.45;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Analysis panel container */
+.sm-ed-analysis {
+  margin: 6px 0 2px 19px;
+  padding-top: 16px;
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+/* Analysis result pre block */
+.sm-ed-analysis-pre {
+  font-size: 12px;
+  font-family: var(--font-mono, monospace);
+  color: var(--text2);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+/* Filter pill */
+.sm-ed-filter-pill {
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  outline: none;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--pill-color, var(--text3));
+  background: var(--pill-bg, rgba(255,255,255,0.04));
+  border: 1px solid var(--pill-border, var(--border));
+}
+
+/* Year section toggle */
+.sm-ed-year-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 12px 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Hidden filing row (ghosted) */
+.sm-ed-hidden-row {
+  opacity: 0.15;
+  transition: opacity 0.2s;
+}
+.sm-ed-hidden-row:hover {
+  opacity: 0.35;
+}
+
+/* Methodology flowchart box */
+.sm-ed-flowbox {
+  padding: 6px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+  text-align: center;
+}
+
+/* Methodology flowchart accent box */
+.sm-ed-flowbox-accent {
+  padding: 6px 14px;
+  background: var(--sky-dim);
+  border: 1px solid var(--sky);
+  border-radius: 8px;
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  color: var(--sky);
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Methodology vertical connector */
+.sm-ed-flowline {
+  width: 2px;
+  background: var(--border);
+}
+
+/* Vertical line connector (generic) */
+.sm-ed-vline {
+  width: 2px;
+  background: var(--border);
+}
+
+/* Horizontal divider */
+.sm-ed-hdivider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+/* Methodology section header */
+.sm-ed-method-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+
+/* Methodology mono description text */
+.sm-ed-method-text {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text3);
+  line-height: 2;
+}
+
+/* Methodology info card */
+.sm-ed-info-card {
+  flex: 1 1 160px;
+  padding: 8px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.sm-ed-info-card-lg {
+  flex: 1 1 180px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.sm-ed-info-card-xl {
+  flex: 1 1 220px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+/* Methodology separator */
+.sm-ed-separator {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
+/* Diff preview panel */
+.sm-ed-diff-panel {
+  margin-top: 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(234,179,8,0.2);
+  background: rgba(234,179,8,0.03);
+  overflow: hidden;
+}
+
+/* Diff preview pre block */
+.sm-ed-diff-pre {
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  margin: 0;
+  color: var(--text3);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Diff line coloring */
+.sm-ed-diff-add {
+  display: block;
+  color: rgba(130,200,130,0.7);
+  background: rgba(130,200,130,0.04);
+}
+.sm-ed-diff-del {
+  display: block;
+  color: rgba(255,100,100,0.5);
+  background: rgba(255,100,100,0.04);
+}
+.sm-ed-diff-hunk {
+  display: block;
+  color: rgba(130,170,255,0.5);
+}
+
+/* Status bar container */
+.sm-ed-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  margin-top: 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Legend */
+.sm-ed-legend {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 16px 4px 12px;
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.3px;
+  flex-wrap: wrap;
+}
+
+/* Error alert */
+.sm-ed-error {
+  font-size: 12px;
+  color: var(--coral);
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: var(--coral-dim);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Loading spinner area */
+.sm-ed-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 0;
+  color: var(--text3);
+}
+
+/* AI disabled banner */
+.sm-ed-ai-banner {
+  font-size: 12px;
+  color: var(--gold);
+  padding: 10px 14px;
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid color-mix(in srgb, var(--gold) 15%, transparent);
+}
+
+/* Copy button */
+.sm-ed-copy-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.sm-ed-copy-btn[data-copied="true"] {
+  background: color-mix(in srgb, var(--mint) 15%, transparent);
+  color: var(--mint);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 14. SHARED TAB COMPONENTS (Sources, Investment, AI Agents)
+   Reusable patterns shared across multiple tab views.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Article / content card */
+.sm-tab-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: border-color 0.15s;
+}
+.sm-tab-card:hover {
+  border-color: color-mix(in srgb, var(--border) 150%, transparent);
+}
+
+/* Compact status indicator row */
+.sm-tab-status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* Toggle button (compact) */
+.sm-tab-toggle {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  outline: none;
+}
+.sm-tab-toggle:hover {
+  background: var(--surface3);
+  color: var(--text);
+}
+.sm-tab-toggle[data-active="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 15. DATA ATTRIBUTE SELECTORS
+
+   State-driven styling via HTML data-* attributes.
+   Replaces conditional inline styles like:
+     style={{ color: val >= 0 ? 'var(--mint)' : 'var(--coral)' }}
+   With:
+     data-sentiment={val >= 0 ? 'positive' : 'negative'}
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Sentiment-based text colors — used on values, badges, indicators */
+[data-sentiment="positive"] { color: var(--mint); }
+[data-sentiment="negative"] { color: var(--coral); }
+[data-sentiment="neutral"] { color: var(--gold); }
+[data-sentiment="info"] { color: var(--sky); }
+
+/* Active/inactive state */
+[data-active="true"] { opacity: 1; }
+[data-active="false"] { opacity: 0.5; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 16. RESPONSIVE SCROLL CONTAINERS & SIZING UTILITIES
+
+   CSS-class replacements for inline fixed dimensions.
+   Media queries override these at each breakpoint — impossible with inline styles.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Scrollable containers — tall variant (analysis results, filing lists) */
+.sm-scrollbox-tall {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+/* Scrollable containers — medium variant (diff previews, patch panels) */
+.sm-scrollbox-med {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Scrollable containers — short variant (prompts, previews) */
+.sm-scrollbox-short {
+  max-height: 256px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+/* Agent textarea (user data input) */
+.sm-agent-textarea {
+  width: 100%;
+  height: 192px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 12px;
+  font-family: var(--font-mono, monospace);
+  padding: 16px;
+  resize: vertical;
+  outline: none;
+  line-height: 1.6;
+}
+
+/* Responsive grid variants — used by Investment tab and any future multi-column layouts.
+   Inline gridTemplateColumns blocks media query overrides, so these CSS classes
+   provide the default columns while allowing responsive breakpoints to stack them. */
+
+/* 2-column grid (e.g., Moat Sources vs Threats) */
+.sm-grid-2col-responsive {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* 3-column grid (e.g., Perspectives) */
+.sm-grid-3col-responsive {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* 4-column grid (e.g., Position Sizing) */
+.sm-grid-4col-responsive {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* DB tooltip — clamped width for mobile safety */
+.sm-db-tooltip-responsive {
+  min-width: min(260px, calc(100vw - 3rem));
+  max-width: min(340px, calc(100vw - 2rem));
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 16. RESPONSIVE BREAKPOINTS
+
+   Desktop-first approach. Each breakpoint progressively simplifies the layout:
+   1200px → tighter padding, fewer grid columns
+    900px → tablet, 2-col grids
+    768px → mobile, single column, touch targets, scroll masks
+    480px → small mobile, minimal spacing
+    360px → extra small (narrow phones)
+
+   Special media queries:
+   - (pointer: coarse) → touch targets 44px min
+   - (orientation: landscape) → landscape mobile grid adjustments
+   - (-webkit-min-device-pixel-ratio: 2) → retina border thinning
+   - (prefers-reduced-motion: reduce) → kill all animation
+   - (prefers-color-scheme: dark) → subtle card shadows
+   ═══════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 1200px) {
   .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 32px; padding-right: 32px; }
   .g4 { grid-template-columns: repeat(2, 1fr); }
@@ -1063,6 +2691,112 @@ input[type="range"]::-webkit-slider-thumb {
     width: 6px;
     height: 6px;
   }
+
+  /* sm-* utility responsive overrides */
+  .sm-tab-hero { padding: 20px 0 16px; }
+  .sm-tab-hero h2 { font-size: 24px; }
+  .sm-tab-hero p { font-size: 14px; }
+  .sm-section-label { font-size: 10px; letter-spacing: 2px; }
+  .sm-data-row { padding: 10px 16px; }
+  .sm-grid-cell { padding: 12px 16px; }
+  .sm-grid-cell-center { padding: 12px; }
+  .sm-kpi-cell { padding: 16px 12px; }
+  .sm-kpi-value { font-size: 16px; }
+  .sm-panel { padding: 16px; }
+  .sm-panel-header { padding: 16px; }
+  .sm-panel-body { padding: 16px; }
+  .sm-mono-xl { font-size: 22px; }
+  .sm-mono-2xl { font-size: 26px; }
+  .sm-mono-3xl { font-size: 32px; }
+  .sm-grid-sep { border-radius: 12px; }
+
+  /* ── Wall Street Tab — Mobile ── */
+  .sm-ws-grid-2col {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .sm-ws-kpi-4col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sm-ws-est-cols {
+    grid-template-columns: 1fr repeat(5, 56px);
+  }
+  .sm-ws-estimate-cell {
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+  .sm-ws-th {
+    padding: 8px 6px;
+    font-size: 9px;
+    letter-spacing: 0.5px;
+  }
+  .sm-ws-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .sm-ws-firm-header {
+    padding: 16px;
+  }
+  .sm-ws-panel-header,
+  .sm-ws-panel-body {
+    padding: 16px;
+  }
+  .sm-flex.sm-gap-16 {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  /* ── AI Agents Tab — Mobile ── */
+  .sm-ed-filing-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* ── Responsive Grids — Mobile ── */
+  .sm-grid-2col-responsive { grid-template-columns: 1fr; }
+  .sm-grid-3col-responsive { grid-template-columns: 1fr; }
+  .sm-grid-4col-responsive { grid-template-columns: repeat(2, 1fr); }
+
+  /* ── Scrollbox & Textarea — Mobile ── */
+  .sm-scrollbox-tall { max-height: 400px; }
+  .sm-scrollbox-med { max-height: 280px; }
+  .sm-scrollbox-short { max-height: 180px; }
+  .sm-agent-textarea { height: 150px; font-size: 13px; }
+
+  /* ── Shared Tab Overrides — Mobile ── */
+  .sm-ed-info-card-lg,
+  .sm-ed-info-card-xl {
+    flex-basis: 100%;
+    min-width: 0;
+  }
+  .sm-badge,
+  .sm-badge-impact {
+    padding: 3px 8px;
+    font-size: 9px;
+  }
+  .sm-expand-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  .sm-card-colored {
+    padding: 16px;
+  }
+
+  /* ── Edgar / Sources Analysis Results — Mobile ── */
+  .sm-ed-analysis {
+    padding: 16px;
+  }
+  .sm-ed-analysis-pre {
+    font-size: 11px;
+  }
+  .sm-ed-diff-panel {
+    border-radius: 8px;
+  }
+
+  /* ── Typography Scaling — Mobile ── */
+  .sm-mono-lg { font-size: 16px; }
+  .sm-body-lg { font-size: 14px; }
+  .sm-param-label { font-size: 12px; }
 }
 
 /* ═══ RESPONSIVE - SMALL MOBILE (480px) ═══ */
@@ -1173,6 +2907,69 @@ input[type="range"]::-webkit-slider-thumb {
     padding: 8px 14px;
     font-size: 11px;
   }
+
+  /* ── Wall Street Tab — Small Mobile ── */
+  .sm-ws-kpi-4col {
+    grid-template-columns: 1fr;
+  }
+  .sm-ws-est-cols {
+    grid-template-columns: 1fr repeat(3, 48px);
+  }
+  .sm-ws-est-cols > :nth-child(n+5) {
+    display: none;
+  }
+  .sm-ws-estimate-cell {
+    padding: 6px 4px;
+    font-size: 10px;
+  }
+  .sm-ws-th {
+    padding: 6px 4px;
+    font-size: 8px;
+  }
+
+  /* ── Responsive Grids — Small Mobile ── */
+  .sm-grid-4col-responsive { grid-template-columns: 1fr; }
+
+  /* ── Scrollbox & Textarea — Small Mobile ── */
+  .sm-scrollbox-tall { max-height: 300px; }
+  .sm-scrollbox-med { max-height: 200px; }
+  .sm-scrollbox-short { max-height: 140px; }
+  .sm-agent-textarea { height: 120px; padding: 12px; font-size: 12px; }
+
+  /* ── sm-* Shared Overrides — Small Mobile ── */
+  .sm-tab-hero { padding: 16px 0 12px; }
+  .sm-tab-hero h2 { font-size: 20px; }
+  .sm-tab-hero p { font-size: 13px; }
+  .sm-section-label { font-size: 9px; letter-spacing: 1.5px; }
+  .sm-data-row { padding: 8px 12px; }
+  .sm-grid-cell { padding: 10px 12px; }
+  .sm-kpi-cell { padding: 12px 10px; }
+  .sm-kpi-value { font-size: 14px; }
+  .sm-model-grid { --cols: 1 !important; border-radius: 8px; }
+  .sm-panel { padding: 12px; }
+  .sm-panel-header { padding: 12px; }
+  .sm-panel-body { padding: 12px; }
+  .sm-mono-xl { font-size: 18px; }
+  .sm-mono-2xl { font-size: 22px; }
+  .sm-mono-3xl { font-size: 28px; }
+  .sm-mono-lg { font-size: 14px; }
+
+  /* ── Action buttons — Small Mobile ── */
+  .sm-ed-action-btn { font-size: 10px; padding: 4px 8px; }
+  .sm-ed-action-btn-sm { font-size: 8px; padding: 2px 6px; }
+  .sm-ed-filter-pill { font-size: 10px; padding: 4px 10px; }
+
+  /* ── Gap/Spacing — Small Mobile ── */
+  .sm-gap-16 { gap: 8px; }
+  .sm-gap-12 { gap: 6px; }
+  .sm-mb-16 { margin-bottom: 8px; }
+  .sm-mb-12 { margin-bottom: 6px; }
+  .sm-mt-16 { margin-top: 8px; }
+
+  /* ── Edgar Tab — Small Mobile ── */
+  .sm-ed-analysis { padding: 12px; }
+  .sm-ed-analysis-pre { font-size: 10px; line-height: 1.6; }
+  .sm-ed-diff-panel { margin: 0 -12px; border-radius: 0; }
 }
 
 /* ═══ RESPONSIVE - EXTRA SMALL (360px) ═══ */
@@ -1193,6 +2990,21 @@ input[type="range"]::-webkit-slider-thumb {
   .section-head { font-size: 18px; }
 
   .tbl th, .tbl td { padding: 6px 8px; font-size: 10px; }
+
+  /* ── Scrollbox — Extra Small ── */
+  .sm-scrollbox-tall { max-height: 250px; }
+  .sm-scrollbox-med { max-height: 180px; }
+  .sm-scrollbox-short { max-height: 120px; }
+  .sm-agent-textarea { height: 100px; padding: 10px; }
+
+  /* ── sm-* Overrides — Extra Small ── */
+  .sm-tab-hero h2 { font-size: 18px; }
+  .sm-tab-hero p { font-size: 12px; }
+  .sm-panel, .sm-panel-header, .sm-panel-body { padding: 10px; }
+  .sm-kpi-cell { padding: 10px 8px; }
+  .sm-kpi-value { font-size: 12px; }
+  .sm-section-label { font-size: 8px; }
+  .sm-ed-action-btn { font-size: 9px; padding: 3px 6px; }
 }
 
 /* ═══ LANDSCAPE MOBILE ADJUSTMENTS ═══ */
@@ -1235,7 +3047,12 @@ input[type="range"]::-webkit-slider-thumb {
   }
 }
 
-/* Timeline - Unified Style */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 17. TIMELINE SYSTEM
+   Expandable event timeline with categories (guidance, data, event, launch).
+   Each item has a header grid, verdict badge, and collapsible detail section.
+   Responsive: collapses columns at 900px and 600px breakpoints.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .timeline-item {
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -1411,8 +3228,13 @@ input[type="range"]::-webkit-slider-thumb {
   .t-details-meta { flex-direction: row; flex-wrap: wrap; min-width: auto; }
 }
 
-/* ═══ UPDATE INDICATOR SYSTEM (Ive-inspired minimal design) ═══ */
-/* Tiny, subtle dots - visible but never distracting */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 18. UPDATE INDICATOR SYSTEM
+   Tiny colored dots showing data freshness. Categories:
+   .pr (press/news — gold), .sec (SEC filings — cyan),
+   .ws (Wall Street — violet), .market (market data — green).
+   Tooltip appears on hover via ::after pseudo-element with data-tooltip attr.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .update-indicator-wrap {
   display: inline-flex;
   align-items: center;
@@ -1498,7 +3320,13 @@ input[type="range"]::-webkit-slider-thumb {
   to { transform: rotate(360deg); }
 }
 
-/* ═══ UNIFIED COMP CARDS - One card per company ═══ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 19. COMPETITOR CARDS
+   Unified company comparison cards with threat-level indicators.
+   Cards show metrics, capabilities, and optional notes.
+   Threat levels: high (coral), medium (gold), low (mint).
+   Self-card variant uses accent gradient background.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .comp-cards-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1673,7 +3501,11 @@ input[type="range"]::-webkit-slider-thumb {
   .comp-card-badge { font-size: 9px; padding: 2px 6px; }
 }
 
-/* ═══ COMPANY DISCLOSURE PANELS ═══ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 20. COMPANY DISCLOSURE PANELS
+   Expandable <details>/<summary> panels for company information.
+   Uses native HTML disclosure widget with custom styling.
+   ═══════════════════════════════════════════════════════════════════════════ */
 .comp-panel {
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -1751,5 +3583,773 @@ input[type="range"]::-webkit-slider-thumb {
 @media (max-width: 480px) {
   .comp-panel-bar { padding: 10px 14px; }
   .comp-panel-dates { display: none; }
+}
+
+/* ── Stock Model Card System (ASTS / BMNR / CRCL) ─────────────────────── */
+/* Round-16 card (most common container in model files) */
+.sm-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.sm-card-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sm-card-body {
+  padding: 24px;
+}
+.sm-card-footer {
+  padding: 12px 24px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text3);
+}
+.sm-card-section {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.sm-card-section:last-child {
+  border-bottom: none;
+}
+
+/* Table header row (surface2 background) */
+.sm-table-header {
+  padding: 12px 16px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+  background: var(--surface2);
+}
+
+/* Mono text alignment helpers */
+.sm-mono-right {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  text-align: right;
+}
+
+/* Divider line element (used inside sm-divider) */
+.sm-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* Grid layouts commonly used in model files */
+.sm-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.sm-grid-2-lg { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.sm-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.sm-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+/* Micro label (10px uppercase) */
+.sm-micro-text {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* Standard text sizes reused across model */
+.sm-text-11 { font-size: 11px; color: var(--text3); }
+.sm-text-12 { font-size: 12px; color: var(--text2); }
+.sm-text-13 { font-size: 13px; color: var(--text2); }
+.sm-text-13t { font-size: 13px; color: var(--text); }
+
+/* Empty style placeholder (intentional no-op) */
+.sm-p0 { padding: 0; }
+
+/* Collapsed toggle row (clickable header in collapsible sections) */
+.sm-toggle-header {
+  padding: 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.15s;
+}
+.sm-toggle-header:hover {
+  background: var(--surface2);
+}
+
+/* Model overview grid (1px gap borders)
+   Set column count: style={{ '--cols': 4 } as React.CSSProperties} */
+.sm-model-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 3), 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+/* ── Background utilities ── */
+.sm-bg-surface { background: var(--surface); }
+.sm-bg-surface2 { background: var(--surface2); }
+.sm-bg-surface3 { background: var(--surface3); }
+
+/* ── Additional layout utilities ── */
+.sm-inline-flex { display: inline-flex; align-items: center; gap: 6px; }
+.sm-overflow-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.sm-p-16 { padding: 16px; }
+.sm-p-24 { padding: 24px; }
+.sm-px-24 { padding-left: 24px; padding-right: 24px; }
+.sm-py-12 { padding-top: 12px; padding-bottom: 12px; }
+
+/* ── Additional border radius utilities ── */
+.sm-rounded-4 { border-radius: 4px; }
+.sm-rounded-8 { border-radius: 8px; }
+.sm-rounded-12 { border-radius: 12px; }
+.sm-rounded-16 { border-radius: 16px; }
+.sm-rounded-full { border-radius: 9999px; }
+
+/* ── Additional typography ── */
+.sm-text-14 { font-size: 14px; }
+.sm-text-15 { font-size: 15px; }
+.sm-text-16 { font-size: 16px; }
+.sm-fw-300 { font-weight: 300; }
+.sm-fw-400 { font-weight: 400; }
+.sm-fw-500 { font-weight: 500; }
+.sm-fw-600 { font-weight: 600; }
+.sm-fw-700 { font-weight: 700; }
+.sm-lh-16 { line-height: 1.6; }
+.sm-lh-17 { line-height: 1.7; }
+.sm-ls-wide { letter-spacing: 0.12em; }
+.sm-uppercase { text-transform: uppercase; }
+
+/* ── Cursor / Transition ── */
+.sm-pointer { cursor: pointer; }
+.sm-transition { transition: all 0.2s; }
+.sm-transition-fast { transition: all 0.15s; }
+
+/* ── Border utilities ── */
+.sm-border { border: 1px solid var(--border); }
+.sm-border-b { border-bottom: 1px solid var(--border); }
+.sm-border-t { border-top: 1px solid var(--border); }
+
+/* ── Overflow hidden / scroll containers ── */
+.sm-overflow-hidden { overflow: hidden; }
+
+/* Data table row (grid with hover) - used in model tab tables */
+.sm-table-row {
+  display: grid;
+  padding: 12px 24px;
+  align-items: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-table-row:hover {
+  background: var(--surface2);
+}
+.sm-table-row:last-child {
+  border-bottom: none;
+}
+
+/* Bullet list (used in analysis/notes sections) */
+.sm-note-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.5;
+}
+
+/* Model responsive overrides */
+@media (max-width: 768px) {
+  .sm-card-header { padding: 16px; }
+  .sm-card-body { padding: 16px; }
+  .sm-card-section { padding: 16px; }
+  .sm-card-footer { padding: 10px 16px; }
+  .sm-grid-2, .sm-grid-2-lg { grid-template-columns: 1fr; }
+  .sm-grid-3 { grid-template-columns: 1fr; }
+  .sm-grid-4 { grid-template-columns: 1fr 1fr; }
+  .sm-model-grid { --cols: 2 !important; border-radius: 12px; }
+  .sm-table-row { padding: 10px 16px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STOCK CHART COMPONENT CLASSES (sm-chart-*)
+   Replaces inline styles in StockChart.tsx
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Main chart container */
+.sm-chart-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  padding-bottom: 16px;
+}
+
+/* Chart Guide card (separate panel below chart) */
+.sm-chart-guide-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Header area */
+.sm-chart-header {
+  margin-bottom: 12px;
+  padding: 0 24px;
+}
+
+/* Symbol header with border-bottom */
+.sm-chart-symbol-row {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+/* Price display row */
+.sm-chart-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Big price number */
+.sm-chart-price {
+  font-size: 24px;
+  font-weight: 600;
+  font-family: 'Space Mono', monospace;
+}
+
+/* Price change text */
+.sm-chart-price-change {
+  font-size: 14px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* Controls row */
+.sm-chart-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* Range button group container */
+.sm-chart-range-group {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 2px;
+  flex: 1;
+}
+.sm-chart-range-group::-webkit-scrollbar { display: none; }
+
+/* Individual range button */
+.sm-chart-range-btn {
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text3);
+  transition: all 0.15s;
+  min-height: 30px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  touch-action: manipulation;
+  font-family: 'Space Mono', monospace;
+}
+.sm-chart-range-btn[data-active="true"] {
+  font-weight: 600;
+  background: var(--accent);
+  color: white;
+}
+
+/* Refresh button */
+.sm-chart-refresh-btn {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 400;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text3);
+  transition: all 0.15s;
+  opacity: 0.6;
+  min-height: 30px;
+  flex-shrink: 0;
+  touch-action: manipulation;
+}
+.sm-chart-refresh-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+/* Chart type toggle group */
+.sm-chart-type-group {
+  display: flex;
+  gap: 0;
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+/* Chart type button */
+.sm-chart-type-btn {
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text3);
+  transition: all 0.15s;
+  min-height: 30px;
+  touch-action: manipulation;
+  font-family: inherit;
+}
+.sm-chart-type-btn[data-active="true"] {
+  font-weight: 600;
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* Indicator controls area */
+.sm-chart-indicator-bar {
+  border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  padding: 6px 28px 0;
+}
+
+/* Indicator toggle button */
+.sm-chart-indicator-btn {
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: var(--surface2);
+  color: var(--text3);
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+  touch-action: manipulation;
+}
+.sm-chart-indicator-btn[data-active="true"] {
+  font-weight: 600;
+  background: color-mix(in srgb, var(--indicator-color, var(--accent)) 10%, transparent);
+  color: var(--indicator-color, var(--accent));
+}
+
+/* Indicator color swatch line */
+.sm-chart-indicator-swatch {
+  width: 8px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--text3);
+  transition: all 0.15s;
+  opacity: 0.3;
+}
+.sm-chart-indicator-btn[data-active="true"] .sm-chart-indicator-swatch {
+  background: var(--indicator-color, var(--accent));
+  opacity: 1;
+}
+
+/* Toggle section wrapper */
+.sm-chart-toggle-section {
+  margin-bottom: 4px;
+}
+
+/* Toggle section header button */
+.sm-chart-toggle-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  touch-action: manipulation;
+}
+
+/* Toggle section chevron */
+.sm-chart-toggle-chevron {
+  font-size: 8px;
+  transition: transform 0.2s;
+  opacity: 0.5;
+}
+.sm-chart-toggle-chevron[data-open="true"] {
+  transform: rotate(90deg);
+}
+
+/* Toggle section active count badge */
+.sm-chart-toggle-count {
+  font-size: 9px;
+  font-family: 'Space Mono', monospace;
+  padding: 1px 5px;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Toggle section content */
+.sm-chart-toggle-content {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-bottom: 6px;
+}
+
+/* Vertical separator between indicator groups */
+.sm-chart-separator {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+/* Loading state */
+.sm-chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text3);
+}
+
+/* Error state */
+.sm-chart-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--coral);
+}
+
+/* Sub-panel wrapper (position: relative for overlay labels) */
+.sm-chart-panel-wrap {
+  position: relative;
+}
+
+/* Overlay label for sub-panels (RSI, MACD, ATR, Comparison) */
+.sm-chart-overlay-label {
+  position: absolute;
+  top: 2px;
+  left: 65px;
+  font-size: 9px;
+  color: var(--text3);
+  z-index: 1;
+}
+
+/* Overlay label with flex layout (comparison panel) */
+.sm-chart-overlay-label-flex {
+  position: absolute;
+  top: 2px;
+  left: 65px;
+  font-size: 9px;
+  color: var(--text3);
+  z-index: 1;
+  display: flex;
+  gap: 8px;
+}
+
+/* OHLC tooltip container */
+.sm-chart-ohlc-tooltip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 12px;
+}
+
+/* Tooltip date header */
+.sm-chart-tooltip-date {
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+
+/* Tooltip OHLC grid */
+.sm-chart-tooltip-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 2px 12px;
+}
+
+/* Range high/low bar section */
+.sm-chart-range-bar {
+  margin: 12px 28px 0;
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+/* Range bar label */
+.sm-chart-range-label {
+  color: var(--text3);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+/* Range bar track */
+.sm-chart-range-track {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  position: relative;
+}
+
+/* Range bar position dot (needs inline style for dynamic left%) */
+.sm-chart-range-dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+}
+
+/* Metrics/Correlation/VolumeProfile panel */
+.sm-chart-info-panel {
+  margin: 12px 28px 0;
+  padding: 12px 14px;
+  background: var(--surface2);
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+/* Info panel title */
+.sm-chart-info-title {
+  color: var(--text);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+/* Metrics grid (auto-fit) */
+.sm-chart-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+/* Individual metric card */
+.sm-chart-metric-card {
+  padding: 8px 12px;
+  background: var(--surface);
+  border-radius: 6px;
+}
+
+/* Metric card label */
+.sm-chart-metric-label {
+  color: var(--text3);
+  font-size: 9px;
+  margin-bottom: 2px;
+}
+
+/* Metric card value */
+.sm-chart-metric-value {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Metric card sublabel */
+.sm-chart-metric-sub {
+  color: var(--text3);
+  font-size: 9px;
+}
+
+/* Correlation chips flex wrap */
+.sm-chart-corr-chips {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Single correlation chip */
+.sm-chart-corr-chip {
+  padding: 8px 12px;
+  background: var(--surface);
+  border-radius: 6px;
+  min-width: 80px;
+}
+
+/* Correlation chip label */
+.sm-chart-corr-label {
+  font-size: 10px;
+  margin-bottom: 2px;
+}
+
+/* Correlation chip value */
+.sm-chart-corr-value {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Info panel footnote */
+.sm-chart-footnote {
+  color: var(--text3);
+  font-size: 9px;
+  margin-top: 8px;
+}
+
+/* Volume profile row */
+.sm-chart-vol-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Volume profile price label */
+.sm-chart-vol-price {
+  width: 60px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* Volume profile bar track */
+.sm-chart-vol-track {
+  flex: 1;
+  height: 12px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* Volume profile percent label */
+.sm-chart-vol-pct {
+  width: 40px;
+  color: var(--text3);
+  text-align: right;
+}
+
+/* Chart Guide header (clickable toggle) */
+.sm-chart-guide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Chart Guide toggle icon */
+.sm-chart-guide-icon {
+  color: var(--text3);
+  font-size: 18px;
+}
+
+/* Chart Guide content grid */
+.sm-chart-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
+  padding: 24px;
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--text3);
+}
+
+/* Guide section title */
+.sm-chart-guide-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Guide section title with margin-bottom (first in column) */
+.sm-chart-guide-section-title-mb {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Guide indicator entry title row */
+.sm-chart-guide-entry-title {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Guide indicator entry title (no flex, text only) */
+.sm-chart-guide-entry-title-text {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+/* Guide indicator color swatch */
+.sm-chart-guide-swatch {
+  width: 12px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+/* Guide entries grid */
+.sm-chart-guide-entries {
+  display: grid;
+  gap: 24px;
+}
+
+/* Guide entries grid (narrower gap) */
+.sm-chart-guide-entries-sm {
+  display: grid;
+  gap: 16px;
+}
+
+/* Guide compare intro text */
+.sm-chart-guide-intro {
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+
+/* Volume profile column container */
+.sm-chart-vol-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 `;

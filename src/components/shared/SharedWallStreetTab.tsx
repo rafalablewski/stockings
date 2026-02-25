@@ -3,6 +3,7 @@
  *
  * Shared component for ASTS, BMNR, CRCL Wall Street tabs.
  * Displays analyst coverage, consensus metrics, and research reports.
+ * Uses sm-ws-* CSS classes from stock-model-styles.ts for styling.
  *
  * @version 1.0.0
  * @created 2026-01-31
@@ -20,21 +21,11 @@ const UpdateIndicators = ({ sources }: { sources: string | string[] }) => {
     WS: { tooltip: 'Updated from Wall Street Research', color: '#8b5cf6' },
   };
   return (
-    <span style={{ display: 'inline-flex', gap: 4, marginLeft: 8 }}>
+    <span className="sm-update-dots">
       {sourceArray.map((source) => {
         const c = config[source];
         return c ? (
-          <span
-            key={source}
-            title={c.tooltip}
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: '50%',
-              background: c.color,
-              display: 'inline-block',
-            }}
-          />
+          <span key={source} title={c.tooltip} className="sm-update-dot" style={{ '--dot-bg': c.color } as React.CSSProperties} />
         ) : null;
       })}
     </span>
@@ -105,49 +96,47 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
   const totalAnalysts = coverage.length;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-header</div>
-      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>Analyst Research<UpdateIndicators sources="WS" /></div>
-        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Wall Street Coverage<span style={{ color: 'var(--accent)' }}>.</span></h2>
-        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Consensus price targets, analyst ratings, and detailed research reports from covering firms. Track rating changes and methodology over time.</p>
+    <div className="sm-flex-col">
+      <div className="sm-tab-hero">
+        <div className="sm-section-label">Analyst Research<UpdateIndicators sources="WS" /></div>
+        <h2>Wall Street Coverage<span className="sm-accent">.</span></h2>
+        <p>Consensus price targets, analyst ratings, and detailed research reports from covering firms. Track rating changes and methodology over time.</p>
       </div>
 
       {/* Consensus Snapshot */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-consensus</div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>Consensus Snapshot<UpdateIndicators sources="WS" /></span>
+      <div className="sm-ws-panel">
+        <div className="sm-ws-panel-header">
+          <span className="sm-section-label" style={{ marginBottom: 0 }}>Consensus Snapshot<UpdateIndicators sources="WS" /></span>
         </div>
-        <div style={{ padding: '24px 24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+        <div className="sm-ws-panel-body sm-ws-grid-2col">
           {/* Price Target Summary */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div className="sm-flex-col sm-gap-16">
+            <div className="sm-ws-kpi-grid sm-ws-kpi-4col">
               {[
                 { label: 'AVG PT', value: avgPT ? `$${avgPT.toFixed(0)}` : '—', color: 'var(--violet)' },
                 { label: 'MEDIAN PT', value: medianPT ? `$${medianPT.toFixed(0)}` : '—', color: 'var(--sky)' },
                 { label: 'HIGH PT', value: highPT ? `$${highPT}` : '—', color: 'var(--mint)' },
                 { label: 'ANALYSTS', value: `${totalAnalysts}`, color: 'var(--text)' },
               ].map(kpi => (
-                <div key={kpi.label} style={{ background: 'var(--surface)', padding: '24px 16px', textAlign: 'center' }}>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500 }}>{kpi.label}</div>
-                  <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 24, fontWeight: 700, color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+                <div key={kpi.label} className="sm-kpi-cell">
+                  <div className="sm-kpi-label">{kpi.label}</div>
+                  <div className="sm-kpi-value" style={{ '--kpi-color': kpi.color, fontSize: 24 } as React.CSSProperties}>{kpi.value}</div>
                 </div>
               ))}
             </div>
             {lowPT && highPT && (
-              <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 8 }}>
-                Range: <span style={{ fontFamily: 'Space Mono, monospace', color: 'var(--coral)' }}>${lowPT}</span> — <span style={{ fontFamily: 'Space Mono, monospace', color: 'var(--mint)' }}>${highPT}</span>
+              <div className="sm-ws-range sm-mt-8">
+                Range: <span className="sm-mono sm-coral sm-fw-400">${lowPT}</span> — <span className="sm-mono sm-mint sm-fw-400">${highPT}</span>
               </div>
             )}
           </div>
 
           {/* Ratings Distribution */}
           <div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>RATINGS DISTRIBUTION</div>
+            <div className="sm-subtle-sm sm-mb-8">RATINGS DISTRIBUTION</div>
             {totalAnalysts > 0 ? (
               <>
-                <div style={{ display: 'flex', height: 24, borderRadius: 99, overflow: 'hidden', marginBottom: 8 }}>
+                <div className="sm-ws-rating-bar sm-mb-8">
                   {ratingCounts.bullish > 0 && (
                     <div style={{ width: `${(ratingCounts.bullish / totalAnalysts) * 100}%`, background: 'var(--mint)' }} />
                   )}
@@ -158,122 +147,98 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                     <div style={{ width: `${(ratingCounts.bearish / totalAnalysts) * 100}%`, background: 'var(--coral)' }} />
                   )}
                 </div>
-                <div style={{ display: 'flex', gap: 16, fontSize: 12 }}>
-                  <span style={{ color: 'var(--mint)' }}>● Buy/OW: {ratingCounts.bullish}</span>
-                  <span style={{ color: 'var(--gold)' }}>● Hold/Neutral: {ratingCounts.neutral}</span>
-                  <span style={{ color: 'var(--coral)' }}>● Sell/UW: {ratingCounts.bearish}</span>
+                <div className="sm-flex sm-gap-16 sm-text-12">
+                  <span className="sm-mint">● Buy/OW: {ratingCounts.bullish}</span>
+                  <span className="sm-gold">● Hold/Neutral: {ratingCounts.neutral}</span>
+                  <span className="sm-coral">● Sell/UW: {ratingCounts.bearish}</span>
                 </div>
               </>
             ) : (
-              <div style={{ color: 'var(--text3)', fontSize: 13 }}>No analyst coverage data yet</div>
+              <div className="sm-body-sm sm-text3">No analyst coverage data yet</div>
             )}
           </div>
         </div>
       </div>
 
       {/* Coverage by Firm - Grouped Cards */}
-      <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#wall-street-coverage</div>
-      <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Coverage by Firm</span>
-        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+      <div className="sm-divider">
+        <span className="sm-section-label" style={{ marginBottom: 0 }}>Coverage by Firm</span>
       </div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
-        <div style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>{totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''} Covering<UpdateIndicators sources="WS" /></span>
+      <div className="sm-ws-panel">
+        <div className="sm-ws-panel-header">
+          <span className="sm-section-label" style={{ marginBottom: 0 }}>{totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''} Covering<UpdateIndicators sources="WS" /></span>
         </div>
-        <div style={{ padding: '24px 24px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className="sm-ws-panel-body sm-flex-col sm-gap-12">
           {coverage.map((cov) => {
             const isExpanded = expandedFirm === cov.firm;
             const fullReportCount = cov.reports.filter(r => r.isFullReport).length;
             const updateCount = cov.reports.filter(r => !r.isFullReport).length;
 
             return (
-              <div
-                key={cov.firm}
-                style={{
-                  background: 'var(--surface)',
-                  border: isExpanded ? '1px solid var(--violet)' : '1px solid var(--border)',
-                  borderRadius: 16,
-                  overflow: 'hidden'
-                }}
-              >
+              <div key={cov.firm} className="sm-ws-panel" data-active={isExpanded ? 'true' : undefined}>
                 {/* Firm Header - Always Visible */}
                 <div
                   onClick={() => setExpandedFirm(isExpanded ? null : cov.firm)}
-                  style={{
-                    padding: '24px 24px',
-                    borderBottom: isExpanded ? '1px solid var(--border)' : 'none',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
+                  className="sm-ws-firm-header"
+                  data-open={isExpanded ? 'true' : 'false'}
+                  style={{ borderBottom: isExpanded ? '1px solid var(--border)' : 'none' }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <div className="sm-flex sm-gap-16">
                     <div>
-                      <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: 15, lineHeight: 1.2 }}>{cov.firm}</div>
-                      <div style={{ color: 'var(--text3)', fontSize: 12 }}>{cov.analyst} · Since {cov.coverageSince}</div>
+                      <div className="sm-ws-firm-name">{cov.firm}</div>
+                      <div className="sm-subtle">{cov.analyst} · Since {cov.coverageSince}</div>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <div className="sm-flex sm-gap-16">
                     {/* Current Rating Badge */}
-                    <div style={{
-                      padding: '4px 12px',
-                      borderRadius: 99,
-                      background: `${getRatingColor(cov.currentRating, cov.currentRatingNormalized)}22`,
-                      border: `1px solid ${getRatingColor(cov.currentRating, cov.currentRatingNormalized)}44`,
-                    }}>
-                      <span style={{ color: getRatingColor(cov.currentRating, cov.currentRatingNormalized), fontWeight: 600, fontSize: 11 }}>
-                        {cov.currentRating.toUpperCase()}
-                      </span>
+                    <div className="sm-ws-rating-badge" style={{ '--badge-color': getRatingColor(cov.currentRating, cov.currentRatingNormalized) } as React.CSSProperties}>
+                      <span>{cov.currentRating.toUpperCase()}</span>
                     </div>
 
                     {/* Current PT */}
-                    <div style={{ fontFamily: 'Space Mono, monospace', textAlign: 'right', minWidth: 60 }}>
-                      <span style={{ color: 'var(--text)', fontSize: 16, fontWeight: 600 }}>
+                    <div className="sm-ws-pt">
+                      <span className="sm-text sm-text-16 sm-fw-600">
                         {cov.currentPT ? `$${cov.currentPT}` : '—'}
                       </span>
                     </div>
 
                     {/* Report counts */}
-                    <div style={{ display: 'flex', gap: 8, fontSize: 11 }}>
-                      <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--violet) 15%, transparent)', color: 'var(--violet)' }}>
+                    <div className="sm-flex sm-gap-8 sm-text-11">
+                      <span className="sm-ws-count-badge" data-type="report">
                         {fullReportCount} Report{fullReportCount !== 1 ? 's' : ''}
                       </span>
                       {updateCount > 0 && (
-                        <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--border) 60%, transparent)', color: 'var(--text3)' }}>
+                        <span className="sm-ws-count-badge" data-type="update">
                           {updateCount} Update{updateCount !== 1 ? 's' : ''}
                         </span>
                       )}
                     </div>
 
                     {/* Expand indicator */}
-                    <span style={{ color: 'var(--text3)', fontSize: 12 }}>
-                      {isExpanded ? '▼' : '▶'}
-                    </span>
+                    <span className="sm-subtle">{isExpanded ? '▼' : '▶'}</span>
                   </div>
                 </div>
 
                 {/* Metrics Grid Summary */}
                 {!isExpanded && (
                   <div style={{ padding: '0 24px 16px' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 8, padding: 12, background: 'var(--surface2)', borderRadius: 10 }}>
-                      <div style={{ textAlign: 'center', padding: '4px 0' }}>
-                        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{cov.currentPT ? `$${cov.currentPT}` : '\u2014'}</div>
-                        <div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Price Target</div>
+                    <div className="sm-ws-metrics-grid">
+                      <div className="sm-ws-metric-cell">
+                        <div className="sm-ws-metric-val">{cov.currentPT ? `$${cov.currentPT}` : '\u2014'}</div>
+                        <div className="sm-ws-metric-label">Price Target</div>
                       </div>
-                      <div style={{ textAlign: 'center', padding: '4px 0' }}>
-                        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: getRatingColor(cov.currentRating, cov.currentRatingNormalized), lineHeight: 1.2 }}>{cov.currentRating}</div>
-                        <div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Rating</div>
+                      <div className="sm-ws-metric-cell">
+                        <div className="sm-ws-metric-val" style={{ color: getRatingColor(cov.currentRating, cov.currentRatingNormalized) }}>{cov.currentRating}</div>
+                        <div className="sm-ws-metric-label">Rating</div>
                       </div>
-                      <div style={{ textAlign: 'center', padding: '4px 0' }}>
-                        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{cov.reports.length}</div>
-                        <div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Reports</div>
+                      <div className="sm-ws-metric-cell">
+                        <div className="sm-ws-metric-val">{cov.reports.length}</div>
+                        <div className="sm-ws-metric-label">Reports</div>
                       </div>
-                      <div style={{ textAlign: 'center', padding: '4px 0' }}>
-                        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{cov.coverageSince}</div>
-                        <div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Since</div>
+                      <div className="sm-ws-metric-cell">
+                        <div className="sm-ws-metric-val">{cov.coverageSince}</div>
+                        <div className="sm-ws-metric-label">Since</div>
                       </div>
                     </div>
                   </div>
@@ -282,19 +247,17 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                 {/* Firm Notes */}
                 {cov.notes && (
                   <div style={{ padding: '0 24px 16px' }}>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>
-                      {cov.notes}
-                    </div>
+                    <div className="sm-ws-firm-notes">{cov.notes}</div>
                   </div>
                 )}
 
                 {/* Expanded History */}
                 {isExpanded && (
-                  <div style={{ padding: '24px 24px', background: 'var(--surface)' }}>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 12 }}>
+                  <div className="sm-ws-panel-body">
+                    <div className="sm-subtle-sm sm-mb-12">
                       COVERAGE HISTORY ({cov.reports.length} entr{cov.reports.length !== 1 ? 'ies' : 'y'})
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <div className="sm-flex-col sm-gap-8">
                       {cov.reports.map((report, idx) => {
                         const reportKey = `${cov.firm}-${idx}`;
                         const isReportExpanded = expandedReportIdx === reportKey;
@@ -302,42 +265,28 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                         return (
                           <div
                             key={idx}
-                            style={{
-                              padding: '12px 16px',
-                              background: report.isFullReport ? 'var(--surface2)' : 'transparent',
-                              borderRadius: 8,
-                              borderLeft: (report.isFullReport && (report.reportSummary || report.assumptions)) ? '3px solid var(--violet)' : '3px solid transparent',
-                              transition: 'background 0.15s',
-                              cursor: (report.isFullReport && (report.reportSummary || report.assumptions || report.estimates)) ? 'pointer' : 'default'
-                            }}
-                            onMouseEnter={ev => { if (!report.isFullReport) ev.currentTarget.style.background = 'var(--surface2)'; }}
-                            onMouseLeave={ev => { if (!report.isFullReport) ev.currentTarget.style.background = 'transparent'; }}
+                            className="sm-ws-report"
+                            data-full={report.isFullReport && (report.reportSummary || report.assumptions) ? 'true' : undefined}
+                            style={{ cursor: (report.isFullReport && (report.reportSummary || report.assumptions || report.estimates)) ? 'pointer' : 'default' }}
                           >
                             {/* Report Header */}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <span style={{ color: 'var(--text3)', fontSize: 12, minWidth: 90 }}>
+                            <div className="sm-flex-between sm-mb-8">
+                              <div className="sm-flex sm-gap-12">
+                                <span className="sm-subtle" style={{ minWidth: 90 }}>
                                   {new Date(report.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                 </span>
-                                <span style={{
-                                  color: getActionColor(report.action),
-                                  fontSize: 10,
-                                  fontWeight: 600,
-                                  padding: '2px 8px',
-                                  background: `${getActionColor(report.action)}22`,
-                                  borderRadius: 99
-                                }}>
+                                <span className="sm-badge" style={{ '--badge-color': getActionColor(report.action) } as React.CSSProperties}>
                                   {report.action}
                                 </span>
-                                <span style={{ color: getRatingColor(report.rating, report.ratingNormalized), fontSize: 12, fontWeight: 500 }}>
+                                <span className="sm-text-12 sm-fw-500" style={{ color: getRatingColor(report.rating, report.ratingNormalized) }}>
                                   {report.rating}
                                 </span>
                               </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                                <span style={{ fontFamily: 'Space Mono, monospace', color: 'var(--text)', fontSize: 14 }}>
+                              <div className="sm-flex sm-gap-12">
+                                <span className="sm-mono-md sm-text">
                                   {report.priceTarget ? `$${report.priceTarget}` : '—'}
                                   {report.previousTarget && (
-                                    <span style={{ color: 'var(--text3)', fontSize: 11 }}> ← ${report.previousTarget}</span>
+                                    <span className="sm-subtle-sm"> ← ${report.previousTarget}</span>
                                   )}
                                 </span>
                                 {report.source && (
@@ -345,7 +294,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                     href={report.sourceUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    style={{ fontSize: 10, color: 'var(--violet)', textDecoration: 'none' }}
+                                    className="sm-ws-source-link"
                                     onClick={(e) => e.stopPropagation()}
                                   >
                                     {report.source}
@@ -356,7 +305,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
 
                             {/* Report Title if exists */}
                             {report.reportTitle && (
-                              <div style={{ color: 'var(--text2)', fontSize: 12, fontStyle: 'italic', marginBottom: 8 }}>
+                              <div className="sm-ws-report-title sm-mb-8">
                                 "{report.reportTitle}"
                               </div>
                             )}
@@ -364,7 +313,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                             {/* Full report content (expandable) */}
                             {report.isFullReport && report.thesis && (
                               <>
-                                <div style={{ color: 'var(--text2)', fontSize: 12, lineHeight: 1.5, marginBottom: 8 }}>
+                                <div className="sm-body-sm sm-mb-8">
                                   {report.thesis}
                                 </div>
 
@@ -374,56 +323,40 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                       e.stopPropagation();
                                       setExpandedReportIdx(isReportExpanded ? null : reportKey);
                                     }}
-                                    style={{
-                                      background: 'none',
-                                      border: 'none',
-                                      color: 'var(--violet)',
-                                      fontSize: 11,
-                                      cursor: 'pointer',
-                                      padding: '4px 0'
-                                    }}
+                                    className="sm-ws-detail-btn"
                                   >
                                     {isReportExpanded ? '▼ Less details' : '▶ Full report details'}
                                   </button>
                                 )}
 
                                 {isReportExpanded && (
-                                  <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)', marginTop: 8 }}>
+                                  <div className="sm-ws-details">
                                     {report.reportSummary && (
-                                      <div style={{
-                                        background: 'var(--surface)',
-                                        padding: 12,
-                                        borderRadius: 8,
-                                        fontSize: 12,
-                                        color: 'var(--text2)',
-                                        lineHeight: 1.6,
-                                        whiteSpace: 'pre-wrap',
-                                        marginBottom: 12
-                                      }}>
+                                      <div className="sm-ws-summary sm-mb-12">
                                         {report.reportSummary.split('\n\n').map((paragraph, pIdx) => {
                                           const headerMatch = paragraph.match(/^\*\*(.+?)\*\*/);
                                           if (headerMatch) {
                                             const header = headerMatch[1];
                                             const rest = paragraph.replace(/^\*\*.+?\*\*\s*/, '');
                                             return (
-                                              <div key={pIdx} style={{ marginBottom: 12 }}>
-                                                <div style={{ color: 'var(--text)', fontWeight: 600, fontSize: 11 }}>{header}</div>
+                                              <div key={pIdx} className="sm-mb-12">
+                                                <div className="sm-text sm-fw-600 sm-text-11">{header}</div>
                                                 <div>{rest}</div>
                                               </div>
                                             );
                                           }
-                                          return <div key={pIdx} style={{ marginBottom: 8 }}>{paragraph}</div>;
+                                          return <div key={pIdx} className="sm-mb-8">{paragraph}</div>;
                                         })}
                                       </div>
                                     )}
 
                                     {report.assumptions && report.assumptions.length > 0 && (
-                                      <div style={{ marginBottom: 12 }}>
-                                        <div style={{ fontSize: 10, color: 'var(--text3)', marginBottom: 6 }}>KEY ASSUMPTIONS</div>
-                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                                      <div className="sm-mb-12">
+                                        <div className="sm-ws-section-label sm-text3">KEY ASSUMPTIONS</div>
+                                        <div className="sm-flex-wrap sm-gap-6">
                                           {report.assumptions.map((a, i) => (
-                                            <span key={i} style={{ padding: '3px 8px', background: 'var(--surface)', borderRadius: 99, fontSize: 11, color: 'var(--text2)' }}>
-                                              {a.label}: <span style={{ color: 'var(--violet)' }}>{a.value}</span>
+                                            <span key={i} className="sm-ws-assumption">
+                                              {a.label}: <span className="sm-violet">{a.value}</span>
                                             </span>
                                           ))}
                                         </div>
@@ -431,42 +364,40 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                     )}
 
                                     {report.catalysts && report.catalysts.length > 0 && (
-                                      <div style={{ marginBottom: 12 }}>
-                                        <div style={{ fontSize: 10, color: 'var(--mint)', marginBottom: 6 }}>CATALYSTS</div>
-                                        <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 11 }}>
+                                      <div className="sm-mb-12">
+                                        <div className="sm-ws-section-label sm-mint">CATALYSTS</div>
+                                        <ul className="sm-ws-list">
                                           {report.catalysts.map((c, i) => <li key={i}>{c}</li>)}
                                         </ul>
                                       </div>
                                     )}
 
                                     {report.risks && report.risks.length > 0 && (
-                                      <div style={{ marginBottom: 12 }}>
-                                        <div style={{ fontSize: 10, color: 'var(--coral)', marginBottom: 6 }}>RISKS</div>
-                                        <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 11 }}>
+                                      <div className="sm-mb-12">
+                                        <div className="sm-ws-section-label sm-coral">RISKS</div>
+                                        <ul className="sm-ws-list">
                                           {report.risks.map((r, i) => <li key={i}>{r}</li>)}
                                         </ul>
                                       </div>
                                     )}
 
                                     {report.estimates && report.estimates.length > 0 && (
-                                      <div style={{ marginBottom: 12 }}>
-                                        <div style={{ fontSize: 10, color: 'var(--sky)', marginBottom: 6 }}>ESTIMATES</div>
-                                        <div style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)' }}>
-                                          <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 80px)', borderBottom: '1px solid var(--border)' }}>
+                                      <div className="sm-mb-12">
+                                        <div className="sm-ws-section-label sm-sky">ESTIMATES</div>
+                                        <div className="sm-ws-table">
+                                          <div className="sm-ws-estimate-header sm-ws-est-cols">
                                             {['Metric', 'FY24', 'FY25', 'FY26', 'FY27', 'FY28'].map(h => (
-                                              <span key={h} style={{ padding: '12px 12px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: h === 'Metric' ? 'left' : 'right' }}>{h}</span>
+                                              <span key={h} className="sm-ws-th" data-align={h === 'Metric' ? undefined : 'right'}>{h}</span>
                                             ))}
                                           </div>
                                           {report.estimates.map((e, i) => (
-                                            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 80px)', borderBottom: i < report.estimates.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-                                              onMouseEnter={ev => (ev.currentTarget.style.background = 'var(--surface2)')}
-                                              onMouseLeave={ev => (ev.currentTarget.style.background = 'transparent')}>
-                                              <span style={{ padding: '12px 12px', fontSize: 12, color: 'var(--text)' }}>{e.metric}</span>
-                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy24 || '—'}</span>
-                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy25 || '—'}</span>
-                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy26 || '—'}</span>
-                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy27 || '—'}</span>
-                                              <span style={{ padding: '12px 12px', fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right' }}>{e.fy28 || '—'}</span>
+                                            <div key={i} className="sm-ws-estimate-grid sm-ws-est-cols">
+                                              <span className="sm-ws-estimate-cell">{e.metric}</span>
+                                              <span className="sm-ws-estimate-cell" data-align="right">{e.fy24 || '—'}</span>
+                                              <span className="sm-ws-estimate-cell" data-align="right">{e.fy25 || '—'}</span>
+                                              <span className="sm-ws-estimate-cell" data-align="right">{e.fy26 || '—'}</span>
+                                              <span className="sm-ws-estimate-cell" data-align="right">{e.fy27 || '—'}</span>
+                                              <span className="sm-ws-estimate-cell" data-align="right">{e.fy28 || '—'}</span>
                                             </div>
                                           ))}
                                         </div>
@@ -474,14 +405,14 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                     )}
 
                                     {report.methodology && (
-                                      <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 8 }}>
+                                      <div className="sm-subtle-sm sm-mb-8">
                                         <span>Methodology: </span>
-                                        <span style={{ color: 'var(--text2)' }}>{report.methodology}</span>
+                                        <span className="sm-text2">{report.methodology}</span>
                                       </div>
                                     )}
 
                                     {report.fullNotes && (
-                                      <div style={{ fontSize: 11, color: 'var(--text3)', lineHeight: 1.5 }}>
+                                      <div className="sm-subtle-sm" style={{ lineHeight: 1.5 }}>
                                         {(() => {
                                           const lines = report.fullNotes.split('\n');
                                           const blocks: { type: 'text' | 'table'; content: string; rows?: string[][] }[] = [];
@@ -508,18 +439,16 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                               const colCount = headers.length;
                                               const cols = colCount <= 2 ? '1fr 120px' : `1fr ${Array(colCount - 1).fill('100px').join(' ')}`;
                                               return (
-                                                <div key={bIdx} style={{ borderRadius: 8, overflow: 'hidden', border: '1px solid var(--border)', marginBottom: 8 }}>
-                                                  <div style={{ display: 'grid', gridTemplateColumns: cols, borderBottom: '1px solid var(--border)' }}>
+                                                <div key={bIdx} className="sm-ws-table sm-mb-8">
+                                                  <div className="sm-ws-estimate-header" style={{ gridTemplateColumns: cols }}>
                                                     {headers.map((h, hIdx) => (
-                                                      <span key={hIdx} style={{ padding: '8px 12px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: hIdx === 0 ? 'left' : 'right' }}>{h}</span>
+                                                      <span key={hIdx} className="sm-ws-th" data-align={hIdx === 0 ? undefined : 'right'}>{h}</span>
                                                     ))}
                                                   </div>
                                                   {dataRows.map((row, rIdx) => (
-                                                    <div key={rIdx} style={{ display: 'grid', gridTemplateColumns: cols, borderBottom: rIdx < dataRows.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
-                                                      onMouseEnter={ev => (ev.currentTarget.style.background = 'var(--surface2)')}
-                                                      onMouseLeave={ev => (ev.currentTarget.style.background = 'transparent')}>
+                                                    <div key={rIdx} className="sm-ws-estimate-grid" style={{ gridTemplateColumns: cols }}>
                                                       {row.map((cell, cIdx) => (
-                                                        <span key={cIdx} style={{ padding: '8px 12px', fontSize: 12, fontFamily: cIdx > 0 ? "'Space Mono', monospace" : 'inherit', color: cIdx > 0 ? 'var(--text2)' : 'var(--text)', textAlign: cIdx === 0 ? 'left' : 'right' }}>{cell}</span>
+                                                        <span key={cIdx} className="sm-ws-estimate-cell" data-align={cIdx === 0 ? undefined : 'right'}>{cell}</span>
                                                       ))}
                                                     </div>
                                                   ))}
@@ -529,9 +458,9 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                             if (block.content.trim() === '') return null;
                                             const isHeader = block.content.trim().endsWith(':') && block.content.trim() === block.content.trim().toUpperCase();
                                             if (isHeader) {
-                                              return <div key={bIdx} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--text3)', marginTop: bIdx > 0 ? 12 : 0, marginBottom: 4 }}>{block.content.replace(/:$/, '')}</div>;
+                                              return <div key={bIdx} className="sm-ws-block-header" style={{ marginTop: bIdx > 0 ? 12 : 0, marginBottom: 4 }}>{block.content.replace(/:$/, '')}</div>;
                                             }
-                                            return <div key={bIdx} style={{ color: 'var(--text3)', fontSize: 11 }}>{block.content}</div>;
+                                            return <div key={bIdx} className="sm-text3 sm-subtle-sm">{block.content}</div>;
                                           });
                                         })()}
                                       </div>
@@ -553,16 +482,16 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
       </div>
 
       {/* CFA Notes */}
-      <div style={{ paddingTop: 16, borderTop: '1px solid var(--border)', opacity: 0.75 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <span style={{ fontSize: 12, opacity: 0.7 }}>📚</span>
-          <h4 style={{ margin: 0, fontSize: 11, fontWeight: 500, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>CFA Level III — Sell-Side Research</h4>
+      <div className="sm-cfa-notes">
+        <div className="sm-flex sm-gap-6">
+          <span className="sm-subtle" style={{ opacity: 0.7 }}>📚</span>
+          <h4 className="sm-cfa-title">CFA Level III — Sell-Side Research</h4>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 11, lineHeight: 1.5, color: 'var(--text3)' }}>
-          <p style={{ margin: 0 }}><strong style={{ color: 'var(--text2)' }}>Consensus Price Target:</strong> Average of all covering analysts' PTs. Useful as a reference point but not a forecast — PTs are backward-looking and often anchored to current price. Median PT is more robust to outliers.</p>
-          <p style={{ margin: 0 }}><strong style={{ color: 'var(--text2)' }}>Initiation vs Reiterate:</strong> Initiations carry more weight — the analyst performed full due diligence. Reiterations often just update the model after earnings. Watch for rating changes (upgrades/downgrades) as stronger signals.</p>
-          <p style={{ margin: 0 }}><strong style={{ color: 'var(--text2)' }}>Buy/Hold/Sell Distribution:</strong> Sell-side has structural bullish bias (~50% Buy, ~45% Hold, ~5% Sell industry-wide). A "Hold" often means "Sell" in practice. Heavy Buy consensus can indicate crowding risk.</p>
-          <p style={{ margin: 0 }}><strong style={{ color: 'var(--text2)' }}>Price Target Methodology:</strong> Most analysts use DCF, comparable multiples, or sum-of-parts. Understanding the methodology reveals which assumptions drive the PT — useful for assessing whether you agree with inputs.</p>
+        <div className="sm-cfa-list">
+          <p><strong>Consensus Price Target:</strong> Average of all covering analysts' PTs. Useful as a reference point but not a forecast — PTs are backward-looking and often anchored to current price. Median PT is more robust to outliers.</p>
+          <p><strong>Initiation vs Reiterate:</strong> Initiations carry more weight — the analyst performed full due diligence. Reiterations often just update the model after earnings. Watch for rating changes (upgrades/downgrades) as stronger signals.</p>
+          <p><strong>Buy/Hold/Sell Distribution:</strong> Sell-side has structural bullish bias (~50% Buy, ~45% Hold, ~5% Sell industry-wide). A "Hold" often means "Sell" in practice. Heavy Buy consensus can indicate crowding risk.</p>
+          <p><strong>Price Target Methodology:</strong> Most analysts use DCF, comparable multiples, or sum-of-parts. Understanding the methodology reveals which assumptions drive the PT — useful for assessing whether you agree with inputs.</p>
         </div>
       </div>
     </div>

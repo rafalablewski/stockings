@@ -732,25 +732,11 @@ const IndicatorToggle = ({
     onClick={onClick}
     aria-pressed={active}
     aria-label={`${label} indicator ${active ? 'enabled' : 'disabled'}`}
-    style={{
-      padding: '4px 12px',
-      fontSize: 10,
-      fontWeight: active ? 600 : 400,
-      letterSpacing: '0.3px',
-      borderRadius: 6,
-      border: 'none',
-      cursor: 'pointer',
-      background: active ? (color ? `${color}18` : 'color-mix(in srgb, var(--accent) 10%, transparent)') : 'var(--surface2)',
-      color: active ? color || 'var(--accent)' : 'var(--text3)',
-      transition: 'all 0.15s',
-      display: 'flex',
-      alignItems: 'center',
-      gap: 4,
-      minHeight: 28,
-      touchAction: 'manipulation',
-    }}
+    className="sm-chart-indicator-btn"
+    data-active={active}
+    style={color ? { '--indicator-color': color } as React.CSSProperties : undefined}
   >
-    {color && <span style={{ width: 8, height: 2, background: active ? color : 'var(--text3)', borderRadius: 1, opacity: active ? 1 : 0.3, transition: 'all 0.15s' }} />}
+    {color && <span className="sm-chart-indicator-swatch" style={{ '--indicator-color': color } as React.CSSProperties} />}
     {label}
   </button>
 );
@@ -769,60 +755,25 @@ const ToggleSection = ({
   children: React.ReactNode;
   count?: number;
 }) => (
-  <div style={{ marginBottom: 4 }}>
+  <div className="sm-chart-toggle-section">
     <button
       onClick={onToggle}
       aria-expanded={isOpen}
       aria-label={`${label} section ${isOpen ? 'expanded' : 'collapsed'}`}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 6,
-        padding: '6px 0',
-        fontSize: 10,
-        fontWeight: 600,
-        letterSpacing: '0.8px',
-        textTransform: 'uppercase',
-        color: 'var(--text3)',
-        background: 'none',
-        border: 'none',
-        cursor: 'pointer',
-        width: '100%',
-        textAlign: 'left',
-        touchAction: 'manipulation',
-      }}
+      className="sm-chart-toggle-header"
     >
-      <span style={{
-        fontSize: 8,
-        transition: 'transform 0.2s',
-        transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-        opacity: 0.5,
-      }}>
+      <span className="sm-chart-toggle-chevron" data-open={isOpen}>
         ▶
       </span>
       {label}
       {count !== undefined && count > 0 && (
-        <span style={{
-          fontSize: 9,
-          fontFamily: 'Space Mono, monospace',
-          padding: '1px 5px',
-          background: 'color-mix(in srgb, var(--accent) 15%, transparent)',
-          color: 'var(--accent)',
-          borderRadius: 4,
-          fontWeight: 600,
-        }}>
+        <span className="sm-chart-toggle-count">
           {count}
         </span>
       )}
     </button>
     {isOpen && (
-      <div style={{
-        display: 'flex',
-        gap: 4,
-        flexWrap: 'wrap',
-        alignItems: 'center',
-        paddingBottom: 6,
-      }}>
+      <div className="sm-chart-toggle-content">
         {children}
       </div>
     )}
@@ -1141,23 +1092,22 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
     ? latestRSI > 70 ? 'Overbought' : latestRSI < 30 ? 'Oversold' : 'Neutral'
     : '';
 
+  // Shared Recharts tooltip contentStyle (Recharts requires style objects, not classNames)
+  const tooltipStyle = { background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 };
+
   return (
     <>
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', paddingBottom: 16 }}>
+    <div className="sm-chart-container">
       {/* Header - responsive stacking */}
-      <div style={{ marginBottom: 12, padding: '0 24px' }}>
+      <div className="sm-chart-header">
         <div>
-          <div style={{ padding: '24px 0', borderBottom: '1px solid var(--border)', marginBottom: 4 }}><span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>{symbol}</span></div>
+          <div className="sm-chart-symbol-row"><span className="sm-section-label">{symbol}</span></div>
           {data && (
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-              <span style={{ fontSize: 24, fontWeight: 600, fontFamily: 'Space Mono' }}>
+            <div className="sm-chart-price-row">
+              <span className="sm-chart-price">
                 ${data.regularMarketPrice?.toFixed(2) || lastPrice.toFixed(2)}
               </span>
-              <span style={{
-                fontSize: 14,
-                color: isPositive ? 'var(--mint)' : 'var(--red)',
-                fontFamily: 'Space Mono',
-              }}>
+              <span className="sm-chart-price-change" style={{ color: isPositive ? 'var(--mint)' : 'var(--coral)' }}>
                 {isPositive ? '+' : ''}{priceChange.toFixed(2)} ({isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%)
               </span>
             </div>
@@ -1165,22 +1115,11 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
         </div>
 
         {/* Controls row: time range + chart type */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12 }}>
+        <div className="sm-chart-controls">
           <div
             role="group"
             aria-label="Time range"
-            style={{
-              display: 'flex',
-              gap: 2,
-              overflowX: 'auto',
-              WebkitOverflowScrolling: 'touch',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-              background: 'var(--surface2)',
-              borderRadius: 8,
-              padding: 2,
-              flex: 1,
-            }}
+            className="sm-chart-range-group"
           >
           {RANGES.map(r => (
             <button
@@ -1188,23 +1127,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
               onClick={() => setRange(r.value)}
               aria-pressed={range === r.value}
               aria-label={`${r.label} time range`}
-              style={{
-                padding: '6px 12px',
-                fontSize: 11,
-                fontWeight: range === r.value ? 600 : 400,
-                letterSpacing: '0.3px',
-                borderRadius: 6,
-                border: 'none',
-                cursor: 'pointer',
-                background: range === r.value ? 'var(--accent)' : 'transparent',
-                color: range === r.value ? 'white' : 'var(--text3)',
-                transition: 'all 0.15s',
-                minHeight: 30,
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
-                touchAction: 'manipulation',
-                fontFamily: 'Space Mono, monospace',
-              }}
+              className="sm-chart-range-btn"
+              data-active={range === r.value}
             >
               {r.label}
             </button>
@@ -1213,21 +1137,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
             onClick={handleRefresh}
             disabled={loading}
             aria-label="Refresh chart data"
-            style={{
-              padding: '8px 12px',
-              fontSize: 12,
-              fontWeight: 400,
-              borderRadius: 6,
-              border: 'none',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              background: 'transparent',
-              color: 'var(--text3)',
-              transition: 'all 0.15s',
-              opacity: loading ? 0.3 : 0.6,
-              minHeight: 30,
-              flexShrink: 0,
-              touchAction: 'manipulation',
-            }}
+            className="sm-chart-refresh-btn"
           >
             ↻
           </button>
@@ -1236,7 +1146,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
           <div
             role="group"
             aria-label="Chart type"
-            style={{ display: 'flex', gap: 0, background: 'var(--surface2)', borderRadius: 8, padding: 2, flexShrink: 0 }}
+            className="sm-chart-type-group"
           >
             {([['line', 'Line'], ['candle', 'OHLC']] as const).map(([type, label]) => (
               <button
@@ -1244,21 +1154,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                 onClick={() => setChartType(type as 'line' | 'candle')}
                 aria-pressed={chartType === type}
                 aria-label={`${label} chart`}
-                style={{
-                  padding: '6px 14px',
-                  fontSize: 11,
-                  fontWeight: chartType === type ? 600 : 400,
-                  letterSpacing: '0.5px',
-                  borderRadius: 6,
-                  border: 'none',
-                  cursor: 'pointer',
-                  background: chartType === type ? 'var(--surface)' : 'transparent',
-                  color: chartType === type ? 'var(--text)' : 'var(--text3)',
-                  transition: 'all 0.15s',
-                  minHeight: 30,
-                  touchAction: 'manipulation',
-                  fontFamily: 'inherit',
-                }}
+                className="sm-chart-type-btn"
+                data-active={chartType === type}
               >
                 {label}
               </button>
@@ -1268,7 +1165,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       </div>
 
       {/* Indicator Controls */}
-      <div style={{ borderTop: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', paddingTop: 6, padding: '6px 28px 0' }}>
+      <div className="sm-chart-indicator-bar">
         {/* Indicators Section */}
         <ToggleSection
           label="Indicators"
@@ -1285,7 +1182,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
           <IndicatorToggle label="RSI" active={showRSI} onClick={() => setShowRSI(!showRSI)} color={COLORS.rsi} />
           <IndicatorToggle label="MACD" active={showMACD} onClick={() => setShowMACD(!showMACD)} color={COLORS.macd} />
           <IndicatorToggle label="ATR" active={showATR} onClick={() => setShowATR(!showATR)} color={COLORS.atr} />
-          <span style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 4px' }} />
+          <span className="sm-chart-separator" />
           <IndicatorToggle label="Arithmetic" active={!logScale} onClick={() => setLogScale(false)} />
           <IndicatorToggle label="Log" active={logScale} onClick={() => setLogScale(true)} />
         </ToggleSection>
@@ -1314,20 +1211,20 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
           <IndicatorToggle label="VWAP Bands" active={showVWAPBands} onClick={() => setShowVWAPBands(!showVWAPBands)} color={COLORS.vwapBand1} />
           <IndicatorToggle label="Support/Resistance" active={showSupportResistance} onClick={() => setShowSupportResistance(!showSupportResistance)} color={COLORS.support} />
           <IndicatorToggle label="Volume Profile" active={showVolumeProfile} onClick={() => setShowVolumeProfile(!showVolumeProfile)} color={COLORS.volumeProfile} />
-          <span style={{ width: 1, height: 20, background: 'var(--border)', margin: '0 4px' }} />
+          <span className="sm-chart-separator" />
           <IndicatorToggle label="Risk Metrics" active={showRiskMetrics} onClick={() => setShowRiskMetrics(!showRiskMetrics)} />
           <IndicatorToggle label="Correlation" active={showCorrelation} onClick={() => setShowCorrelation(!showCorrelation)} />
         </ToggleSection>
       </div>
 
       {loading && (
-        <div style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text3)' }}>
+        <div className="sm-chart-loading" style={{ height }}>
           Loading...
         </div>
       )}
 
       {error && (
-        <div style={{ height, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--red)' }}>
+        <div className="sm-chart-error" style={{ height }}>
           {error}
         </div>
       )}
@@ -1364,12 +1261,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                 width={60}
               />
               <Tooltip
-                contentStyle={{
-                  background: 'var(--surface)',
-                  border: '1px solid var(--border)',
-                  borderRadius: 8,
-                  fontSize: 12,
-                }}
+                contentStyle={tooltipStyle}
                 labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', {
                   weekday: 'short',
                   month: 'short',
@@ -1481,7 +1373,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                 <XAxis dataKey="date" hide />
                 <YAxis tickFormatter={formatVolume} tick={{ fontSize: 9, fill: 'var(--text3)' }} axisLine={false} tickLine={false} width={60} />
                 <Tooltip
-                  contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
+                  contentStyle={tooltipStyle}
                   labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   formatter={(value: number) => [formatVolume(value), 'Volume']}
                 />
@@ -1492,8 +1384,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
           {/* RSI Panel */}
           {showRSI && (
-            <div style={{ position: 'relative' }}>
-              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1 }}>
+            <div className="sm-chart-panel-wrap">
+              <div className="sm-chart-overlay-label">
                 RSI(14): <span style={{ color: latestRSI !== null && latestRSI > 70 ? '#f87171' : latestRSI !== null && latestRSI < 30 ? '#34d399' : 'var(--text2)' }}>
                   {latestRSI?.toFixed(1)} {rsiStatus}
                 </span>
@@ -1505,7 +1397,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   <ReferenceLine y={70} stroke="#f87171" strokeDasharray="3 3" strokeOpacity={0.5} />
                   <ReferenceLine y={30} stroke="#34d399" strokeDasharray="3 3" strokeOpacity={0.5} />
                   <Tooltip
-                    contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
+                    contentStyle={tooltipStyle}
                     labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     formatter={(value: number) => [value?.toFixed(1), 'RSI']}
                   />
@@ -1517,8 +1409,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
           {/* MACD Panel */}
           {showMACD && (
-            <div style={{ position: 'relative' }}>
-              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1 }}>
+            <div className="sm-chart-panel-wrap">
+              <div className="sm-chart-overlay-label">
                 MACD(12,26,9)
               </div>
               <ResponsiveContainer width="100%" height={subChartHeight}>
@@ -1527,7 +1419,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9, fill: 'var(--text3)' }} axisLine={false} tickLine={false} width={60} />
                   <ReferenceLine y={0} stroke="var(--border)" />
                   <Tooltip
-                    contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
+                    contentStyle={tooltipStyle}
                     labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     formatter={(value: number, name: string) => {
                       if (value === null) return ['-', name];
@@ -1551,8 +1443,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
           {/* ATR Panel */}
           {showATR && (
-            <div style={{ position: 'relative' }}>
-              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1 }}>
+            <div className="sm-chart-panel-wrap">
+              <div className="sm-chart-overlay-label">
                 ATR(14): <span style={{ color: COLORS.atr }}>
                   {atr[atr.length - 1]?.toFixed(2) || '-'}
                 </span>
@@ -1562,7 +1454,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   <XAxis dataKey="date" hide />
                   <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9, fill: 'var(--text3)' }} axisLine={false} tickLine={false} width={60} tickFormatter={(v) => v.toFixed(1)} />
                   <Tooltip
-                    contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
+                    contentStyle={tooltipStyle}
                     labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     formatter={(value: number) => [value?.toFixed(2), 'ATR']}
                   />
@@ -1574,8 +1466,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
           {/* Comparison Panel */}
           {showAnyComparison && (
-            <div style={{ position: 'relative' }}>
-              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1, display: 'flex', gap: 8 }}>
+            <div className="sm-chart-panel-wrap">
+              <div className="sm-chart-overlay-label-flex">
                 <span>Relative Performance:</span>
                 <span style={{ color: chartColor }}>{symbol}</span>
                 {showSPY && <span style={{ color: COLORS.spy }}>vs. SPY</span>}
@@ -1589,7 +1481,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9, fill: 'var(--text3)' }} axisLine={false} tickLine={false} width={60} tickFormatter={(v) => `${v.toFixed(0)}%`} />
                   <ReferenceLine y={0} stroke="var(--border)" />
                   <Tooltip
-                    contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
+                    contentStyle={tooltipStyle}
                     labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     formatter={(value: number, name: string) => {
                       if (value === null || value === undefined) return ['-', name];
@@ -1646,20 +1538,20 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   const d = payload[0]?.payload;
                   if (!d) return null;
                   return (
-                    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, padding: 8, fontSize: 12 }}>
-                      <div style={{ color: 'var(--text3)', marginBottom: 4 }}>
+                    <div className="sm-chart-ohlc-tooltip">
+                      <div className="sm-chart-tooltip-date">
                         {new Date(label).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'auto auto', gap: '2px 12px' }}>
-                        <span style={{ color: 'var(--text3)' }}>Open:</span>
-                        <span style={{ fontFamily: 'Space Mono' }}>${d.open?.toFixed(2)}</span>
-                        <span style={{ color: 'var(--text3)' }}>High:</span>
-                        <span style={{ fontFamily: 'Space Mono' }}>${d.high?.toFixed(2)}</span>
-                        <span style={{ color: 'var(--text3)' }}>Low:</span>
-                        <span style={{ fontFamily: 'Space Mono' }}>${d.low?.toFixed(2)}</span>
-                        <span style={{ color: 'var(--text3)' }}>Close:</span>
-                        <span style={{ fontFamily: 'Space Mono', color: d.close >= d.open ? '#34d399' : '#f87171' }}>${d.close?.toFixed(2)}</span>
-                        {showVWAP && d.vwap && (<><span style={{ color: COLORS.vwap }}>VWAP:</span><span style={{ fontFamily: 'Space Mono' }}>${d.vwap?.toFixed(2)}</span></>)}
+                      <div className="sm-chart-tooltip-grid">
+                        <span className="sm-text3">Open:</span>
+                        <span className="sm-mono">${d.open?.toFixed(2)}</span>
+                        <span className="sm-text3">High:</span>
+                        <span className="sm-mono">${d.high?.toFixed(2)}</span>
+                        <span className="sm-text3">Low:</span>
+                        <span className="sm-mono">${d.low?.toFixed(2)}</span>
+                        <span className="sm-text3">Close:</span>
+                        <span className="sm-mono" style={{ color: d.close >= d.open ? '#34d399' : '#f87171' }}>${d.close?.toFixed(2)}</span>
+                        {showVWAP && d.vwap && (<><span style={{ color: COLORS.vwap }}>VWAP:</span><span className="sm-mono">${d.vwap?.toFixed(2)}</span></>)}
                       </div>
                     </div>
                   );
@@ -1782,8 +1674,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
           {/* RSI Panel */}
           {showRSI && (
-            <div style={{ position: 'relative' }}>
-              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1 }}>
+            <div className="sm-chart-panel-wrap">
+              <div className="sm-chart-overlay-label">
                 RSI(14): <span style={{ color: latestRSI !== null && latestRSI > 70 ? '#f87171' : latestRSI !== null && latestRSI < 30 ? '#34d399' : 'var(--text2)' }}>
                   {latestRSI?.toFixed(1)} {rsiStatus}
                 </span>
@@ -1802,8 +1694,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
           {/* MACD Panel */}
           {showMACD && (
-            <div style={{ position: 'relative' }}>
-              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1 }}>MACD(12,26,9)</div>
+            <div className="sm-chart-panel-wrap">
+              <div className="sm-chart-overlay-label">MACD(12,26,9)</div>
               <ResponsiveContainer width="100%" height={subChartHeight}>
                 <ComposedChart data={enrichedData} margin={{ top: 5, right: 5, left: 0, bottom: 5 }}>
                   <XAxis dataKey="date" hide />
@@ -1823,8 +1715,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
           {/* ATR Panel */}
           {showATR && (
-            <div style={{ position: 'relative' }}>
-              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1 }}>
+            <div className="sm-chart-panel-wrap">
+              <div className="sm-chart-overlay-label">
                 ATR(14): <span style={{ color: COLORS.atr }}>
                   {atr[atr.length - 1]?.toFixed(2) || '-'}
                 </span>
@@ -1834,7 +1726,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   <XAxis dataKey="date" hide />
                   <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9, fill: 'var(--text3)' }} axisLine={false} tickLine={false} width={60} tickFormatter={(v) => v.toFixed(1)} />
                   <Tooltip
-                    contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
+                    contentStyle={tooltipStyle}
                     labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     formatter={(value: number) => [value?.toFixed(2), 'ATR']}
                   />
@@ -1846,8 +1738,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
           {/* Comparison Panel */}
           {showAnyComparison && (
-            <div style={{ position: 'relative' }}>
-              <div style={{ position: 'absolute', top: 2, left: 65, fontSize: 9, color: 'var(--text3)', zIndex: 1, display: 'flex', gap: 8 }}>
+            <div className="sm-chart-panel-wrap">
+              <div className="sm-chart-overlay-label-flex">
                 <span>Relative Performance:</span>
                 <span style={{ color: chartColor }}>{symbol}</span>
                 {showSPY && <span style={{ color: COLORS.spy }}>vs. SPY</span>}
@@ -1861,7 +1753,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   <YAxis domain={['auto', 'auto']} tick={{ fontSize: 9, fill: 'var(--text3)' }} axisLine={false} tickLine={false} width={60} tickFormatter={(v) => `${v.toFixed(0)}%`} />
                   <ReferenceLine y={0} stroke="var(--border)" />
                   <Tooltip
-                    contentStyle={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 12 }}
+                    contentStyle={tooltipStyle}
                     labelFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     formatter={(value: number, name: string) => {
                       if (value === null || value === undefined) return ['-', name];
@@ -1887,34 +1779,12 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
       {/* Range High/Low */}
       {!loading && !error && chartData.length > 0 && rangeHigh && rangeLow && (
-        <div style={{
-          margin: '12px 28px 0',
-          padding: '12px 16px',
-          background: 'var(--surface2)',
-          borderRadius: 8,
-          fontSize: 11,
-        }}>
-          <div style={{ color: 'var(--text3)', marginBottom: 6, fontWeight: 500 }}>{rangeLabel} Range</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="sm-chart-range-bar">
+          <div className="sm-chart-range-label">{rangeLabel} Range</div>
+          <div className="sm-flex">
             <span style={{ color: COLORS.rangeLow, fontWeight: 600 }}>${rangeLow.toFixed(2)}</span>
-            <div style={{
-              flex: 1,
-              height: 4,
-              background: 'var(--border)',
-              borderRadius: 2,
-              position: 'relative',
-            }}>
-              <div style={{
-                position: 'absolute',
-                left: `${((lastPrice - rangeLow) / (rangeHigh - rangeLow)) * 100}%`,
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 8,
-                height: 8,
-                background: chartColor,
-                borderRadius: '50%',
-                border: '2px solid var(--surface)',
-              }} />
+            <div className="sm-chart-range-track">
+              <div className="sm-chart-range-dot" style={{ left: `${((lastPrice - rangeLow) / (rangeHigh - rangeLow)) * 100}%`, background: chartColor }} />
             </div>
             <span style={{ color: COLORS.rangeHigh, fontWeight: 600 }}>${rangeHigh.toFixed(2)}</span>
           </div>
@@ -1923,66 +1793,60 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
       {/* Risk Metrics Panel */}
       {!loading && !error && chartData.length > 0 && showRiskMetrics && (
-        <div style={{
-          margin: '12px 28px 0',
-          padding: '12px 14px',
-          background: 'var(--surface2)',
-          borderRadius: 8,
-          fontSize: 11,
-        }}>
-          <div style={{ color: 'var(--text)', marginBottom: 12, fontWeight: 600 }}>Risk & Performance Metrics</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
+        <div className="sm-chart-info-panel">
+          <div className="sm-chart-info-title">Risk & Performance Metrics</div>
+          <div className="sm-chart-metrics-grid">
             {/* Sharpe Ratio */}
-            <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6 }}>
-              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Sharpe Ratio (Ann.)</div>
-              <div style={{ color: sharpeRatio !== null && sharpeRatio > 1 ? '#22c55e' : sharpeRatio !== null && sharpeRatio < 0 ? '#ef4444' : 'var(--text)', fontWeight: 600, fontSize: 14 }}>
+            <div className="sm-chart-metric-card">
+              <div className="sm-chart-metric-label">Sharpe Ratio (Ann.)</div>
+              <div className="sm-chart-metric-value" style={{ color: sharpeRatio !== null && sharpeRatio > 1 ? '#22c55e' : sharpeRatio !== null && sharpeRatio < 0 ? '#ef4444' : 'var(--text)' }}>
                 {sharpeRatio !== null ? sharpeRatio.toFixed(2) : '—'}
               </div>
-              <div style={{ color: 'var(--text3)', fontSize: 9 }}>{sharpeRatio !== null && sharpeRatio > 1 ? 'Good' : sharpeRatio !== null && sharpeRatio > 0 ? 'Moderate' : sharpeRatio !== null ? 'Negative' : ''}</div>
+              <div className="sm-chart-metric-sub">{sharpeRatio !== null && sharpeRatio > 1 ? 'Good' : sharpeRatio !== null && sharpeRatio > 0 ? 'Moderate' : sharpeRatio !== null ? 'Negative' : ''}</div>
             </div>
             {/* Sortino Ratio */}
-            <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6 }}>
-              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Sortino Ratio (Ann.)</div>
-              <div style={{ color: sortinoRatio !== null && sortinoRatio > 1.5 ? '#22c55e' : sortinoRatio !== null && sortinoRatio < 0 ? '#ef4444' : 'var(--text)', fontWeight: 600, fontSize: 14 }}>
+            <div className="sm-chart-metric-card">
+              <div className="sm-chart-metric-label">Sortino Ratio (Ann.)</div>
+              <div className="sm-chart-metric-value" style={{ color: sortinoRatio !== null && sortinoRatio > 1.5 ? '#22c55e' : sortinoRatio !== null && sortinoRatio < 0 ? '#ef4444' : 'var(--text)' }}>
                 {sortinoRatio !== null ? sortinoRatio.toFixed(2) : '—'}
               </div>
-              <div style={{ color: 'var(--text3)', fontSize: 9 }}>Downside risk-adjusted</div>
+              <div className="sm-chart-metric-sub">Downside risk-adjusted</div>
             </div>
             {/* Max Drawdown */}
-            <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6 }}>
-              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Max Drawdown</div>
-              <div style={{ color: '#ef4444', fontWeight: 600, fontSize: 14 }}>
+            <div className="sm-chart-metric-card">
+              <div className="sm-chart-metric-label">Max Drawdown</div>
+              <div className="sm-chart-metric-value" style={{ color: '#ef4444' }}>
                 {maxDrawdown ? `-${(maxDrawdown.maxDrawdown * 100).toFixed(1)}%` : '—'}
               </div>
-              <div style={{ color: 'var(--text3)', fontSize: 9 }}>
+              <div className="sm-chart-metric-sub">
                 {maxDrawdown?.recoveryDays ? `Recovered in ${maxDrawdown.recoveryDays}d` : maxDrawdown ? 'Not recovered' : ''}
               </div>
             </div>
             {/* VaR */}
-            <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6 }}>
-              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Value at Risk (95%)</div>
-              <div style={{ color: '#ef4444', fontWeight: 600, fontSize: 14 }}>
+            <div className="sm-chart-metric-card">
+              <div className="sm-chart-metric-label">Value at Risk (95%)</div>
+              <div className="sm-chart-metric-value" style={{ color: '#ef4444' }}>
                 {valueAtRisk !== null ? `${valueAtRisk.toFixed(2)}%` : '—'}
               </div>
-              <div style={{ color: 'var(--text3)', fontSize: 9 }}>Daily worst case</div>
+              <div className="sm-chart-metric-sub">Daily worst case</div>
             </div>
             {/* Beta */}
-            <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6 }}>
-              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Beta vs SPY</div>
-              <div style={{ color: betaVsSPY !== null && Math.abs(betaVsSPY) > 1.5 ? '#f59e0b' : 'var(--text)', fontWeight: 600, fontSize: 14 }}>
+            <div className="sm-chart-metric-card">
+              <div className="sm-chart-metric-label">Beta vs SPY</div>
+              <div className="sm-chart-metric-value" style={{ color: betaVsSPY !== null && Math.abs(betaVsSPY) > 1.5 ? '#f59e0b' : 'var(--text)' }}>
                 {betaVsSPY !== null ? betaVsSPY.toFixed(2) : '—'}
               </div>
-              <div style={{ color: 'var(--text3)', fontSize: 9 }}>
+              <div className="sm-chart-metric-sub">
                 {betaVsSPY !== null ? (betaVsSPY > 1 ? 'More volatile than market' : betaVsSPY < 1 ? 'Less volatile' : 'Market-like') : ''}
               </div>
             </div>
             {/* Rolling Volatility */}
-            <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6 }}>
-              <div style={{ color: 'var(--text3)', fontSize: 9, marginBottom: 2 }}>Volatility (Ann.)</div>
-              <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text)' }}>
+            <div className="sm-chart-metric-card">
+              <div className="sm-chart-metric-label">Volatility (Ann.)</div>
+              <div className="sm-chart-metric-value">
                 {volatility30d[volatility30d.length - 1] !== null ? `${volatility30d[volatility30d.length - 1]!.toFixed(1)}%` : '—'}
               </div>
-              <div style={{ color: 'var(--text3)', fontSize: 9 }}>30-day rolling</div>
+              <div className="sm-chart-metric-sub">30-day rolling</div>
             </div>
           </div>
         </div>
@@ -1990,65 +1854,43 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
       {/* Correlation Matrix */}
       {!loading && !error && chartData.length > 0 && showCorrelation && (
-        <div style={{
-          margin: '12px 28px 0',
-          padding: '12px 14px',
-          background: 'var(--surface2)',
-          borderRadius: 8,
-          fontSize: 11,
-        }}>
-          <div style={{ color: 'var(--text)', marginBottom: 12, fontWeight: 600 }}>Correlation Matrix</div>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        <div className="sm-chart-info-panel">
+          <div className="sm-chart-info-title">Correlation Matrix</div>
+          <div className="sm-chart-corr-chips">
             {correlations.spy !== null && (
-              <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
-                <div style={{ color: COLORS.spy, fontSize: 10, marginBottom: 2 }}>vs SPY</div>
-                <div style={{
-                  fontWeight: 600,
-                  fontSize: 16,
-                  color: Math.abs(correlations.spy) > 0.7 ? '#22c55e' : Math.abs(correlations.spy) < 0.3 ? '#ef4444' : 'var(--text)'
-                }}>
+              <div className="sm-chart-corr-chip">
+                <div className="sm-chart-corr-label" style={{ color: COLORS.spy }}>vs SPY</div>
+                <div className="sm-chart-corr-value" style={{ color: Math.abs(correlations.spy) > 0.7 ? '#22c55e' : Math.abs(correlations.spy) < 0.3 ? '#ef4444' : 'var(--text)' }}>
                   {correlations.spy.toFixed(2)}
                 </div>
               </div>
             )}
             {correlations.qqq !== null && (
-              <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
-                <div style={{ color: COLORS.qqq, fontSize: 10, marginBottom: 2 }}>vs QQQ</div>
-                <div style={{
-                  fontWeight: 600,
-                  fontSize: 16,
-                  color: Math.abs(correlations.qqq) > 0.7 ? '#22c55e' : Math.abs(correlations.qqq) < 0.3 ? '#ef4444' : 'var(--text)'
-                }}>
+              <div className="sm-chart-corr-chip">
+                <div className="sm-chart-corr-label" style={{ color: COLORS.qqq }}>vs QQQ</div>
+                <div className="sm-chart-corr-value" style={{ color: Math.abs(correlations.qqq) > 0.7 ? '#22c55e' : Math.abs(correlations.qqq) < 0.3 ? '#ef4444' : 'var(--text)' }}>
                   {correlations.qqq.toFixed(2)}
                 </div>
               </div>
             )}
             {correlations.gold !== null && (
-              <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
-                <div style={{ color: COLORS.gold, fontSize: 10, marginBottom: 2 }}>vs Gold</div>
-                <div style={{
-                  fontWeight: 600,
-                  fontSize: 16,
-                  color: Math.abs(correlations.gold) > 0.7 ? '#22c55e' : Math.abs(correlations.gold) < 0.3 ? '#ef4444' : 'var(--text)'
-                }}>
+              <div className="sm-chart-corr-chip">
+                <div className="sm-chart-corr-label" style={{ color: COLORS.gold }}>vs Gold</div>
+                <div className="sm-chart-corr-value" style={{ color: Math.abs(correlations.gold) > 0.7 ? '#22c55e' : Math.abs(correlations.gold) < 0.3 ? '#ef4444' : 'var(--text)' }}>
                   {correlations.gold.toFixed(2)}
                 </div>
               </div>
             )}
             {correlations.btc !== null && (
-              <div style={{ padding: '8px 12px', background: 'var(--surface)', borderRadius: 6, minWidth: 80 }}>
-                <div style={{ color: COLORS.btc, fontSize: 10, marginBottom: 2 }}>vs BTC</div>
-                <div style={{
-                  fontWeight: 600,
-                  fontSize: 16,
-                  color: Math.abs(correlations.btc) > 0.7 ? '#22c55e' : Math.abs(correlations.btc) < 0.3 ? '#ef4444' : 'var(--text)'
-                }}>
+              <div className="sm-chart-corr-chip">
+                <div className="sm-chart-corr-label" style={{ color: COLORS.btc }}>vs BTC</div>
+                <div className="sm-chart-corr-value" style={{ color: Math.abs(correlations.btc) > 0.7 ? '#22c55e' : Math.abs(correlations.btc) < 0.3 ? '#ef4444' : 'var(--text)' }}>
                   {correlations.btc.toFixed(2)}
                 </div>
               </div>
             )}
           </div>
-          <div style={{ color: 'var(--text3)', fontSize: 9, marginTop: 8 }}>
+          <div className="sm-chart-footnote">
             Green = highly correlated (&gt;0.7), Red = low correlation (&lt;0.3)
           </div>
         </div>
@@ -2056,19 +1898,13 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
       {/* Volume Profile */}
       {!loading && !error && chartData.length > 0 && showVolumeProfile && volumeProfile.length > 0 && (
-        <div style={{
-          margin: '12px 28px 0',
-          padding: '12px 14px',
-          background: 'var(--surface2)',
-          borderRadius: 8,
-          fontSize: 11,
-        }}>
-          <div style={{ color: 'var(--text)', marginBottom: 12, fontWeight: 600 }}>Volume Profile (Top Price Levels)</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div className="sm-chart-info-panel">
+          <div className="sm-chart-info-title">Volume Profile (Top Price Levels)</div>
+          <div className="sm-chart-vol-col">
             {volumeProfile.slice(0, 5).map((level, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ width: 60, color: 'var(--text)', fontWeight: 500 }}>${level.priceLevel.toFixed(2)}</span>
-                <div style={{ flex: 1, height: 12, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
+              <div key={i} className="sm-chart-vol-row">
+                <span className="sm-chart-vol-price">${level.priceLevel.toFixed(2)}</span>
+                <div className="sm-chart-vol-track">
                   <div style={{
                     width: `${level.percentage}%`,
                     height: '100%',
@@ -2076,11 +1912,11 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                     opacity: 0.7,
                   }} />
                 </div>
-                <span style={{ width: 40, color: 'var(--text3)', textAlign: 'right' }}>{level.percentage.toFixed(1)}%</span>
+                <span className="sm-chart-vol-pct">{level.percentage.toFixed(1)}%</span>
               </div>
             ))}
           </div>
-          <div style={{ color: 'var(--text3)', fontSize: 9, marginTop: 8 }}>
+          <div className="sm-chart-footnote">
             High volume price levels often act as support/resistance
           </div>
         </div>
@@ -2090,59 +1926,41 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
       {/* Chart Guide - Separate Card */}
       {!loading && !error && chartData.length > 0 && (
         <>
-        <div style={{ fontSize: 10, color: 'var(--text3)', opacity: 0.5, fontFamily: 'monospace' }}>#chart-guide</div>
-        <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+        <div className="sm-chart-guide-card">
           <div
             onClick={() => setShowChartGuide(!showChartGuide)}
-            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
+            className="sm-chart-guide-header"
             role="button"
             tabIndex={0}
             aria-expanded={showChartGuide}
             aria-label="Toggle Chart Guide"
             onKeyDown={(e) => e.key === 'Enter' && setShowChartGuide(!showChartGuide)}
           >
-            <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Chart Guide</span>
-            <span style={{ color: 'var(--text3)', fontSize: 18 }}>{showChartGuide ? '−' : '+'}</span>
+            <span className="sm-section-label">Chart Guide</span>
+            <span className="sm-chart-guide-icon">{showChartGuide ? '−' : '+'}</span>
           </div>
           {showChartGuide && (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: 32,
-              padding: '24px 24px',
-              fontSize: 11,
-              lineHeight: 1.8,
-              color: 'var(--text3)',
-            }}>
+            <div className="sm-chart-guide-grid">
 
               {/* LEFT COLUMN */}
               <div>
 
               {/* INDICATORS */}
               <div>
-                <div style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: 'var(--text)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: 16,
-                  paddingBottom: 8,
-                  borderBottom: '1px solid var(--border)',
-                }}>
+                <div className="sm-chart-guide-section-title-mb">
                   Indicators
                 </div>
-                <div style={{ display: 'grid', gap: 24 }}>
+                <div className="sm-chart-guide-entries">
 
                   {/* SMA 20/50/200 */}
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 12, height: 2, background: COLORS.sma20, borderRadius: 1 }} />
-                      <span style={{ width: 12, height: 2, background: COLORS.sma50, borderRadius: 1 }} />
-                      <span style={{ width: 12, height: 2, background: COLORS.sma200, borderRadius: 1 }} />
+                    <div className="sm-chart-guide-entry-title">
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.sma20 }} />
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.sma50 }} />
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.sma200 }} />
                       SMA 20 / SMA 50 / SMA 200
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       <strong>Simple Moving Averages</strong> smooth price action to reveal underlying trend direction. The 20-day SMA captures short-term momentum and is favored by swing traders for mean-reversion setups. The 50-day SMA serves as the institutional benchmark for intermediate-term trend—mutual funds and pension managers commonly use this as a tactical allocation trigger. The 200-day SMA defines the secular trend: price consistently above indicates a bull market regime, below signals bear market conditions.
                       <br /><br />
                       <strong>Key signals:</strong> The <em>Golden Cross</em> (50-day crossing above 200-day) historically precedes sustained rallies and triggers systematic buying from trend-following CTAs. The <em>Death Cross</em> (50 below 200) signals regime change to bearish and activates risk-off protocols. <strong>Price relationship to SMAs</strong> determines position bias: above all three = strong uptrend, increasing position; below all three = downtrend, reduce exposure or short.
@@ -2153,11 +1971,11 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
                   {/* Bollinger */}
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 12, height: 2, background: COLORS.bbUpper, borderRadius: 1 }} />
+                    <div className="sm-chart-guide-entry-title">
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.bbUpper }} />
                       Bollinger Bands
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       <strong>Volatility-based envelope</strong> consisting of 20-period SMA (middle band) with upper and lower bands at ±2 standard deviations. Bands dynamically expand during high volatility and contract during consolidation.
                       <br /><br />
                       <strong>The Squeeze:</strong> When bands narrow significantly (low volatility), it signals accumulation of energy before a breakout. This is the highest-probability setup—breakout direction is determined by fundamentals or price action, but the move's magnitude is often proportional to the squeeze duration. Volatility compression periods of 20+ days often precede major moves.
@@ -2170,11 +1988,11 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
                   {/* VWAP */}
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 12, height: 2, background: COLORS.vwap, borderRadius: 1 }} />
+                    <div className="sm-chart-guide-entry-title">
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.vwap }} />
                       VWAP
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       <strong>Volume Weighted Average Price</strong> represents the true average price paid by all market participants, weighted by volume. This is the benchmark institutional traders use to evaluate execution quality—buying below VWAP or selling above indicates favorable fills.
                       <br /><br />
                       <strong>Institutional mechanics:</strong> Large orders are often executed via VWAP algorithms that slice orders throughout the day to minimize market impact. This creates natural support/resistance at VWAP as institutions defend their average entry prices. Prop desks and market makers use VWAP deviation for mean-reversion strategies.
@@ -2187,10 +2005,10 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
                   {/* Volume */}
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>
+                    <div className="sm-chart-guide-entry-title-text">
                       Volume
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       <strong>Volume confirms price action</strong>—it reveals the conviction behind moves and distinguishes sustainable trends from false breakouts. Richard Wyckoff's century-old principle remains valid: "Volume is the fuel that drives the market."
                       <br /><br />
                       <strong>Volume-price relationships:</strong>
@@ -2207,11 +2025,11 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
                   {/* RSI */}
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 12, height: 2, background: COLORS.rsi, borderRadius: 1 }} />
+                    <div className="sm-chart-guide-entry-title">
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.rsi }} />
                       RSI
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       <strong>Relative Strength Index</strong> (14-period) measures momentum as a ratio of average gains to average losses, normalized to 0-100 scale. Created by J. Welles Wilder, it remains one of the most widely-used oscillators among professional traders.
                       <br /><br />
                       <strong>Level interpretation:</strong>
@@ -2229,12 +2047,12 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
                   {/* MACD */}
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 12, height: 2, background: COLORS.macd, borderRadius: 1 }} />
-                      <span style={{ width: 12, height: 2, background: COLORS.macdSignal, borderRadius: 1 }} />
+                    <div className="sm-chart-guide-entry-title">
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.macd }} />
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.macdSignal }} />
                       MACD
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       <strong>Moving Average Convergence Divergence</strong> (12, 26, 9) is a trend-following momentum indicator that shows the relationship between two EMAs. MACD Line = 12-day EMA − 26-day EMA; Signal Line = 9-day EMA of MACD; Histogram = MACD − Signal.
                       <br /><br />
                       <strong>Signal hierarchy (by reliability):</strong>
@@ -2250,11 +2068,11 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
                   {/* ATR */}
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 12, height: 2, background: COLORS.atr, borderRadius: 1 }} />
+                    <div className="sm-chart-guide-entry-title">
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.atr }} />
                       ATR
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       <strong>Average True Range</strong> (14-period) measures volatility by averaging the "true range" (greatest of: current high-low, |high-previous close|, |low-previous close|). Unlike standard deviation, ATR accounts for gaps.
                       <br /><br />
                       <strong>Position sizing (Kelly-adjacent):</strong> ATR enables volatility-normalized position sizing. Formula: Position Size = (Account Risk %) / (ATR × Multiplier). Example: 1% account risk, $2 ATR, 2× multiplier = risk $4 per share, so position = (0.01 × Account) / $4. This equalizes risk across volatile and stable positions.
@@ -2273,21 +2091,13 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
               {/* SCALE */}
               <div>
-                <div style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: 'var(--text)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  paddingBottom: 8,
-                  borderBottom: '1px solid var(--border)',
-                }}>
+                <div className="sm-chart-guide-section-title">
                   Scale
                 </div>
-                <div style={{ display: 'grid', gap: 16 }}>
+                <div className="sm-chart-guide-entries-sm">
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Arithmetic (Linear) Scale</div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div className="sm-chart-guide-entry-title-text">Arithmetic (Linear) Scale</div>
+                    <div>
                       <strong>Default scale</strong> where equal vertical distances represent equal dollar amounts. A $10 move always appears the same size regardless of price level.
                       <br /><br />
                       <strong>When to use Arithmetic:</strong>
@@ -2298,8 +2108,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                     </div>
                   </div>
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Logarithmic Scale</div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div className="sm-chart-guide-entry-title-text">Logarithmic Scale</div>
+                    <div>
                       <strong>Percentage-based scale</strong> where equal vertical distances represent equal percentage changes. A 50% move always appears the same size.
                       <br /><br />
                       <strong>When to use Log:</strong>
@@ -2316,28 +2126,20 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
               {/* COMPARE */}
               <div>
-                <div style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: 'var(--text)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  paddingBottom: 8,
-                  borderBottom: '1px solid var(--border)',
-                }}>
+                <div className="sm-chart-guide-section-title">
                   Compare
                 </div>
-                <div style={{ display: 'grid', gap: 24 }}>
-                  <div style={{ color: 'var(--text3)', marginBottom: 4 }}>
+                <div className="sm-chart-guide-entries">
+                  <div className="sm-chart-guide-intro">
                     <strong>Relative performance analysis</strong> overlays benchmark returns (normalized to 0% at period start) against the stock. This reveals alpha generation, correlation patterns, and relative strength regimes. Outperformance vs. relevant benchmark is the fundamental measure of active management value.
                   </div>
 
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 12, height: 2, background: COLORS.spy, borderRadius: 1 }} />
+                    <div className="sm-chart-guide-entry-title">
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.spy }} />
                       vs. SPY (S&P 500)
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       The definitive benchmark for U.S. equities and most hedge fund performance reporting. Consistent outperformance indicates genuine alpha; underperformance suggests negative stock selection or sector headwinds.
                       <br /><br />
                       <strong>Interpretation:</strong> Stock rising while SPY falling = relative strength, potential defensive play or idiosyncratic catalyst. Both falling but stock less = relative outperformance. Calculate rolling alpha (excess return) and information ratio for quantitative assessment.
@@ -2345,11 +2147,11 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   </div>
 
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 12, height: 2, background: COLORS.qqq, borderRadius: 1 }} />
+                    <div className="sm-chart-guide-entry-title">
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.qqq }} />
                       vs. QQQ (NASDAQ-100)
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       Tech-heavy, growth-oriented benchmark. Essential comparison for growth stocks, SaaS, and technology names. QQQ has higher beta than SPY—underperformance during rallies but outperformance in selloffs may indicate defensive characteristics.
                       <br /><br />
                       <strong>Sector rotation signal:</strong> When a tech stock underperforms QQQ while outperforming SPY, it suggests sector rotation out of growth. Monitor for regime change signals.
@@ -2357,11 +2159,11 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   </div>
 
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 12, height: 2, background: COLORS.gold, borderRadius: 1 }} />
+                    <div className="sm-chart-guide-entry-title">
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.gold }} />
                       vs. Gold (GLD)
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       Traditional safe-haven and inflation hedge. Gold typically has negative or low correlation to equities. Strong positive correlation with gold may indicate the stock is perceived as a defensive asset or has commodity exposure.
                       <br /><br />
                       <strong>Risk regime indicator:</strong> When stock correlates inversely with gold during stress, it's a pure risk asset. When both rise together, possible inflation trade or flight-to-quality in the stock.
@@ -2369,11 +2171,11 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   </div>
 
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 12, height: 2, background: COLORS.btc, borderRadius: 1 }} />
+                    <div className="sm-chart-guide-entry-title">
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.btc }} />
                       vs. BTC (Bitcoin)
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       Digital asset benchmark and crypto market proxy. Highly relevant for crypto-adjacent equities (miners, treasury companies, exchanges) and increasingly for high-beta tech names that correlate with risk appetite.
                       <br /><br />
                       <strong>Beta to BTC:</strong> For crypto treasury companies, the key metric is leveraged vs. direct BTC exposure. Underperformance during BTC rallies indicates NAV discount or operational issues; outperformance suggests premium valuation or yield advantage.
@@ -2389,25 +2191,17 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
               {/* PRO */}
               <div>
-                <div style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: 'var(--text)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  paddingBottom: 8,
-                  borderBottom: '1px solid var(--border)',
-                }}>
+                <div className="sm-chart-guide-section-title">
                   Professional Tools
                 </div>
-                <div style={{ display: 'grid', gap: 24 }}>
+                <div className="sm-chart-guide-entries">
 
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 12, height: 2, background: COLORS.fibonacci, borderRadius: 1 }} />
+                    <div className="sm-chart-guide-entry-title">
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.fibonacci }} />
                       Fibonacci Retracements
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       <strong>Mathematical price levels</strong> derived from Fibonacci sequence ratios (23.6%, 38.2%, 50%, 61.8%, 78.6%). These levels represent potential support/resistance zones where retracements often pause or reverse.
                       <br /><br />
                       <strong>Level significance:</strong>
@@ -2423,11 +2217,11 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   </div>
 
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 12, height: 2, background: COLORS.vwapBand1, borderRadius: 1 }} />
+                    <div className="sm-chart-guide-entry-title">
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.vwapBand1 }} />
                       VWAP Standard Deviation Bands
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       <strong>Statistical price zones</strong> showing 1σ, 2σ, and 3σ deviations from VWAP. Based on normal distribution properties, these bands define probability zones for price reversion.
                       <br /><br />
                       <strong>Statistical interpretation:</strong>
@@ -2442,12 +2236,12 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   </div>
 
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 12, height: 2, background: COLORS.support, borderRadius: 1 }} />
-                      <span style={{ width: 12, height: 2, background: COLORS.resistance, borderRadius: 1 }} />
+                    <div className="sm-chart-guide-entry-title">
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.support }} />
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.resistance }} />
                       Support / Resistance (S/R)
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       <strong>Auto-detected price levels</strong> where historical buying (support) or selling (resistance) pressure emerged. Algorithm identifies local minima/maxima and clusters nearby levels to find significant zones.
                       <br /><br />
                       <strong>Why S/R works:</strong> Market memory—traders remember previous decision points. Those who bought at support defend positions; those who missed the move wait to buy pullbacks to the level. This creates self-fulfilling supply/demand zones.
@@ -2465,11 +2259,11 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   </div>
 
                   <div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 12, height: 2, background: COLORS.volumeProfile, borderRadius: 1 }} />
+                    <div className="sm-chart-guide-entry-title">
+                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.volumeProfile }} />
                       Volume Profile
                     </div>
-                    <div style={{ color: 'var(--text3)' }}>
+                    <div>
                       <strong>Horizontal volume histogram</strong> showing cumulative volume traded at each price level. Unlike time-based volume (vertical bars), this reveals where market participants have positioned—the "auction profile" of the instrument.
                       <br /><br />
                       <strong>Key concepts:</strong>
@@ -2491,15 +2285,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
               {/* RISK METRICS */}
               <div>
-                <div style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: 'var(--text)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  paddingBottom: 8,
-                  borderBottom: '1px solid var(--border)',
-                }}>
+                <div className="sm-chart-guide-section-title">
                   Risk Metrics
                 </div>
                 <div>
@@ -2521,16 +2307,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
               {/* CORRELATION */}
               <div>
-                <div style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: 'var(--text)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  marginBottom: 16,
-                  paddingBottom: 8,
-                  borderBottom: '1px solid var(--border)',
-                }}>
+                <div className="sm-chart-guide-section-title-mb">
                   Correlation
                 </div>
                 <div>

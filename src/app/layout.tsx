@@ -3,6 +3,7 @@ import Link from "next/link";
 import { stockList } from "@/lib/stocks";
 import PinStatus from "@/components/shared/PinStatus";
 import AiToggle from "@/components/shared/AiToggle";
+import MobileNav from "@/components/shared/MobileNav";
 import PinGate from "@/components/PinGate";
 import "./globals.css";
 
@@ -52,6 +53,27 @@ const hooks = [
   },
 ];
 
+// Build mobile nav items from the same data sources — stock-agnostic.
+// When stockList or hooks or audits change, mobile nav updates automatically.
+const mobileNavItems = [
+  { label: 'Docs', href: '/docs' },
+  {
+    label: 'Hooks',
+    children: [
+      ...hooks.map((h) => ({ label: h.label, href: `/hooks#${h.slug}`, meta: h.severity })),
+      { label: 'View all hooks', href: '/hooks' },
+    ],
+  },
+  {
+    label: 'Research',
+    children: stockList.map((s) => ({ label: `${s.ticker} — ${s.name}`, href: `/stocks/${s.ticker}` })),
+  },
+  {
+    label: 'Audit',
+    children: audits.map((a) => ({ label: a.label, href: `/audit/${a.slug}` })),
+  },
+];
+
 function Navigation() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-xl">
@@ -67,7 +89,17 @@ function Navigation() {
             <PinStatus />
             <AiToggle />
           </div>
-          <div className="flex items-center gap-8">
+
+          {/* Desktop navigation — hidden on mobile */}
+          <div className="hidden md:flex items-center gap-8">
+            {/* Docs link */}
+            <Link
+              href="/docs"
+              className="text-[13px] text-white/60 hover:text-white transition-colors"
+            >
+              Docs
+            </Link>
+
             {/* Hooks dropdown */}
             <div className="relative group/hooks">
               <span className="text-[13px] text-white/60 group-hover/hooks:text-white transition-colors cursor-default select-none">
@@ -149,6 +181,11 @@ function Navigation() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Mobile navigation — hamburger drawer, hidden on desktop */}
+          <div className="md:hidden">
+            <MobileNav items={mobileNavItems} />
           </div>
         </div>
       </div>

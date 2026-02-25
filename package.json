@@ -10,7 +10,8 @@
     "validate": "npx tsx scripts/validate-data.ts",
     "seed": "npx tsx scripts/seed-database.ts",
     "db:push": "npx drizzle-kit push",
-    "db:studio": "npx drizzle-kit studio"
+    "db:studio": "npx drizzle-kit studio",
+    "install-hooks": "cp scripts/check-docs.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit && echo 'Pre-commit hook installed.'"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
