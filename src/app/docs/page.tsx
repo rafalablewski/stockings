@@ -132,6 +132,9 @@ const dataAttributes: DataAttr[] = [
   { attribute: "data-full",       values: "true",                                  effect: "On .sm-ws-report: expanded state with left border" },
   { attribute: "data-type",       values: "report | update",                       effect: "On .sm-ws-count-badge: violet or muted style" },
   { attribute: "data-align",      values: "right",                                 effect: "On .sm-ws-estimate-cell / .sm-ws-th: right-align" },
+  { attribute: "data-latest",    values: "present",                               effect: "On .sm-fin-th / .sm-fin-td: accent-dim background for latest quarter" },
+  { attribute: "data-sticky",    values: "present",                               effect: "On .sm-fin-th: sticky left position with z-index for horizontal scroll" },
+  { attribute: "data-overflow",  values: "true",                                  effect: "On .sm-fin-bar: switches to fixed-width (flex: 0 0 auto) for >8 bars" },
 ];
 
 interface CSSVarDynamic {
@@ -595,6 +598,25 @@ export default function DocsPage() {
             [".sm-ed-method-label", "Methodology section header (10px uppercase)."],
             [".sm-ed-method-text", "Methodology mono description text."],
             [".sm-ed-info-card / -lg / -xl", "Methodology info cards (flex: 1 1 160/180/220px)."],
+          ]}
+        />
+
+        {/* ── Financials Tab Classes ─────────────────────────────────────── */}
+        <SectionHeader id="financials-classes" title="Financials Tab Classes (sm-fin-*)" count={10} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Quarterly metrics tables, bar charts, and scroll containers — responsive from 360px to desktop.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".sm-fin-table-header", "Grid header row for quarterly data tables. Bottom border."],
+            [".sm-fin-table-row", "Grid data row with subtle bottom border and hover transition."],
+            [".sm-fin-th", "Table header cell (10px uppercase). data-sticky for left-pinned, data-latest for accent bg."],
+            [".sm-fin-td-label", "Metric name cell — sticky left with bg1 background. 13px/500."],
+            [".sm-fin-td", "Data cell — Space Mono monospace, right-aligned. data-latest for accent bg."],
+            [".sm-fin-chart", "Flex container for bar charts. Height scales: 220→160→140→120px across breakpoints."],
+            [".sm-fin-bar", "Individual bar column (flex: 1). data-overflow='true' for fixed-width mode (>8 bars)."],
+            [".sm-scroll-hint", "Adds right-edge gradient fade (::after) to signal scrollable content."],
           ]}
         />
 
