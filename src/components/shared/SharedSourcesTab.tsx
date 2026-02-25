@@ -422,7 +422,7 @@ const SourceArticleRow: React.FC<{
           {showAnalysis && statusLabel ? statusLabel : '\u00A0'}
         </span>
         {/* DB status button — hover fetches live data from database */}
-        <span style={{ position: 'relative', flexShrink: 0 }} onMouseEnter={handleDbHoverEnter} onMouseLeave={handleDbHoverLeave}>
+        <span style={{ position: 'relative', flexShrink: 0 }}>
           <button
             type="button"
             aria-label="Show database record"
@@ -1507,7 +1507,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         padding: '16px 20px', marginTop: 8,
         borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div className="sm-flex sm-gap-16">
           {/* Progress ring */}
           <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
             <circle cx="14" cy="14" r="12" fill="none" stroke="color-mix(in srgb, var(--border) 60%, transparent)" strokeWidth="2" />
@@ -1751,16 +1751,16 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         {methodologyOpen && (
           <div style={{ padding: '24px 24px', fontSize: 13, color: 'var(--text2)' }}>
             {/* ── DB-FIRST ARCHITECTURE ────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>DB-First Architecture</div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>DB-First Architecture</div>
+            <div className="sm-flex-col" style={{ alignItems: 'center' }}>
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Page loads</div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>GET /api/seen-articles?ticker=X</div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>ensureTable() &mdash; auto-creates seen_articles if missing</div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Load saved articles from Neon PostgreSQL</div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>Render from DB &mdash; no external API calls on mount</div>
             </div>
             <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
@@ -1770,27 +1770,27 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div><span className="sm-text">Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites url, source, headline, date, articleType</div>
             </div>
 
-            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+            <div className="sm-ed-hdivider" />
 
             {/* ── TWO DATA PIPELINES ──────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Data Pipelines: Press Releases vs News</div>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Data Pipelines: Press Releases vs News</div>
             <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
               <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>Fetch PRs</div>
                 <div style={{ width: 2, height: 10, background: 'var(--sky)' }} />
                 <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>GET /api/press-releases/[ticker]</div>
-                <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div className="sm-ed-vline" style={{ height: 8 }} />
                 <div style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.6 }}>Google News RSS filtered to wire services<br />(PRN, BusinessWire, GlobeNewsWire) + IR pages</div>
-                <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div className="sm-ed-vline" style={{ height: 8 }} />
                 <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>articleType: &quot;pr&quot;</div>
               </div>
               <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <div style={{ padding: '6px 14px', background: 'var(--mint-dim)', border: '1px solid var(--mint)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', textAlign: 'center', fontWeight: 600 }}>Fetch News</div>
                 <div style={{ width: 2, height: 10, background: 'var(--mint)' }} />
                 <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>GET /api/news/[ticker]</div>
-                <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div className="sm-ed-vline" style={{ height: 8 }} />
                 <div style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.6 }}>Google News RSS by company name + ticker<br />filtered for relevance (Yahoo, Reuters, etc.)</div>
-                <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div className="sm-ed-vline" style={{ height: 8 }} />
                 <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>articleType: &quot;news&quot;</div>
               </div>
             </div>
@@ -1801,65 +1801,65 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div><span className="sm-text">AI Fetch All:</span> fires both pipelines in parallel via Promise.allSettled</div>
             </div>
 
-            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+            <div className="sm-ed-hdivider" />
 
             {/* ── ANALYSIS ROUTING FLOW ──────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Analysis Routing</div>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Analysis Routing</div>
             <div style={{ display: 'flex', gap: 24 }}>
               {/* Left column: vertical flow */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180 }}>
                 {/* Node: Article */}
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Article arrives</div>
-                <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+                <div className="sm-ed-vline" style={{ height: 12 }} />
                 {/* Node: API Key? */}
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>API key?</div>
-                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
-                <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>Yes</div>
-                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                <div className="sm-ed-vline" style={{ height: 6 }} />
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>Yes</div>
+                <div className="sm-ed-vline" style={{ height: 6 }} />
                 {/* Node: AI Disabled? */}
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>AI disabled?</div>
-                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
-                <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No</div>
-                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                <div className="sm-ed-vline" style={{ height: 6 }} />
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No</div>
+                <div className="sm-ed-vline" style={{ height: 6 }} />
                 {/* Node: Token limit? */}
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Prompt &gt; limit?</div>
-                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
-                <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No</div>
-                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                <div className="sm-ed-vline" style={{ height: 6 }} />
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No</div>
+                <div className="sm-ed-vline" style={{ height: 6 }} />
                 {/* Node: Claude AI */}
                 <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>Claude AI</div>
-                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
-                <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>OK</div>
-                <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+                <div className="sm-ed-vline" style={{ height: 6 }} />
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>OK</div>
+                <div className="sm-ed-vline" style={{ height: 6 }} />
                 {/* Result */}
                 <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>AI Result</div>
               </div>
               {/* Right column: fallback labels */}
               <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 4, paddingTop: 28 }}>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
-                  <span style={{ color: 'var(--coral)', fontSize: 11 }}>&larr;</span> No
+                  <span className="sm-coral" style={{ fontSize: 11 }}>&larr;</span> No
                 </div>
                 <div style={{ height: 22 }} />
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
-                  <span style={{ color: 'var(--coral)', fontSize: 11 }}>&larr;</span> Yes
+                  <span className="sm-coral" style={{ fontSize: 11 }}>&larr;</span> Yes
                 </div>
                 <div style={{ height: 22 }} />
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
-                  <span style={{ color: 'var(--coral)', fontSize: 11 }}>&larr;</span> Yes
+                  <span className="sm-coral" style={{ fontSize: 11 }}>&larr;</span> Yes
                 </div>
                 <div style={{ height: 22 }} />
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
-                  <span style={{ color: 'var(--coral)', fontSize: 11 }}>&larr;</span> Fail
+                  <span className="sm-coral" style={{ fontSize: 11 }}>&larr;</span> Fail
                 </div>
                 <div style={{ marginTop: 4, padding: '6px 14px', background: 'var(--gold-dim)', border: '1px solid var(--gold)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--gold)', textAlign: 'center', fontWeight: 600 }}>Local Matching</div>
               </div>
             </div>
 
             {/* Divider */}
-            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+            <div className="sm-ed-hdivider" />
 
             {/* ── DATA EXTRACTION ─────────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Data Extraction</div>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Data Extraction</div>
             <div style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', lineHeight: 2 }}>
               <div>Queries Neon PostgreSQL via Drizzle ORM — 4 tables in parallel.</div>
               <div style={{ marginTop: 4 }}>
@@ -1880,58 +1880,58 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             </div>
 
             {/* Divider */}
-            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+            <div className="sm-ed-hdivider" />
 
             {/* ── LOCAL MATCHING FLOW ──────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Local Matching</div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Local Matching</div>
+            <div className="sm-flex-col" style={{ alignItems: 'center' }}>
               {/* Node: Extract */}
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Extract keywords (stop words removed, stemmed, &gt;2 chars)</div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               {/* Stemming note */}
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Normalize: Q1-Q4 &rarr; quarter, FY &rarr; fiscal year</div>
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Stemmer: -s, -ed, -ing, -tion, -ment, -ies, -ly, -er, -or</div>
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Overlap: max(article→DB, DB→article) — bidirectional</div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               {/* Dollar-amount guard */}
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--gold)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
                 <div style={{ color: 'var(--gold)', fontWeight: 600 }}>Dollar-amount guard</div>
-                <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>Article has $ figure? &rarr; DB entry must also have $</div>
-                <div style={{ fontSize: 10, color: 'var(--text3)' }}>Both have $? &rarr; numbers must overlap ($30M &ne; $50M)</div>
+                <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>Article has $ figure? &rarr; DB entry must also have $</div>
+                <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>Both have $? &rarr; numbers must overlap ($30M &ne; $50M)</div>
                 <div style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic' }}>Prevents matching different awards/contracts from same entity</div>
               </div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               {/* Tier 1 row */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div className="sm-flex sm-gap-16">
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
                   <div>Tier 1: Headline only</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&le;30 days: &ge;40%, &ge;3 kw</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>&gt;30 days: &ge;60%, &ge;3 kw</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>short: &ge;60%, &ge;2 kw, &le;30d</div>
+                  <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>&le;30 days: &ge;40%, &ge;3 kw</div>
+                  <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>&gt;30 days: &ge;60%, &ge;3 kw</div>
+                  <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>short: &ge;60%, &ge;2 kw, &le;30d</div>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
+                  Match &rarr; <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
                 </div>
               </div>
-              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
-              <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No match</div>
-              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 6 }} />
+              <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No match</div>
+              <div className="sm-ed-vline" style={{ height: 6 }} />
               {/* Tier 2 row */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div className="sm-flex sm-gap-16">
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
                   <div>Tier 2: Headline + detail</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>&le;30 days: &ge;50%, &ge;3 kw</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)' }}>&gt;30 days: &ge;70%, &ge;3 kw</div>
+                  <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>&le;30 days: &ge;50%, &ge;3 kw</div>
+                  <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>&gt;30 days: &ge;70%, &ge;3 kw</div>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
+                  Match &rarr; <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
                 </div>
               </div>
-              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
-              <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No match</div>
-              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 6 }} />
+              <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No match</div>
+              <div className="sm-ed-vline" style={{ height: 6 }} />
               {/* Result: UNTRACKED */}
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <div className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} />
                 <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>UNTRACKED</span>
               </div>
@@ -1940,35 +1940,35 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             </div>
 
             {/* Divider */}
-            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+            <div className="sm-ed-hdivider" />
 
             {/* ── NEW ARTICLE DETECTION ──────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>New Article Detection</div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>New Article Detection</div>
+            <div className="sm-flex-col" style={{ alignItems: 'center' }}>
               <div style={{ display: 'flex', gap: 16 }}>
                 <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center' }}>Fetch PRs</div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', alignSelf: 'center' }}>or</div>
                 <div style={{ padding: '6px 14px', background: 'var(--mint-dim)', border: '1px solid var(--mint)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', textAlign: 'center' }}>Fetch News</div>
               </div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Compare cacheKey against DB records</div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Already in DB?</div>
               <div style={{ display: 'flex', gap: 32, marginTop: 8 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>Yes</div>
-                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div className="sm-flex-col" style={{ alignItems: 'center' }}>
+                  <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>Yes</div>
+                  <div className="sm-ed-vline" style={{ height: 8 }} />
                   <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>Upsert (update metadata)</div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No</div>
-                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div className="sm-flex-col" style={{ alignItems: 'center' }}>
+                  <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No</div>
+                  <div className="sm-ed-vline" style={{ height: 8 }} />
                   <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Save to DB (dismissed=false)</div>
-                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div className="sm-ed-vline" style={{ height: 8 }} />
                   <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>NEW badge</div>
-                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
-                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>User clicks NEW</div>
-                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div className="sm-ed-vline" style={{ height: 8 }} />
+                  <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>User clicks NEW</div>
+                  <div className="sm-ed-vline" style={{ height: 8 }} />
                   <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600, opacity: 0.3 }}>SEEN badge</div>
                 </div>
               </div>
@@ -1983,14 +1983,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             </div>
 
             {/* Divider */}
-            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+            <div className="sm-ed-hdivider" />
 
             {/* ── BUTTON DISTINCTION ────────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Button Distinction: RE-CHECK DB vs DB</div>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Button Distinction: RE-CHECK DB vs DB</div>
             <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
               <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,180,220,0.7)', marginBottom: 6 }}>RE-CHECK DB</div>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   <div><span className="sm-text">Purpose:</span> checks tracked / untracked</div>
                   <div><span className="sm-text">API:</span> POST /api/check-analyzed</div>
                   <div><span className="sm-text">Checks:</span> timeline_events, sec_filings, catalysts, partner_news</div>
@@ -1999,7 +1999,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               </div>
               <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', marginBottom: 6 }}>DB (per article)</div>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   <div><span className="sm-text">Purpose:</span> is this article saved in the database?</div>
                   <div><span className="sm-text">API:</span> GET /api/seen-articles?cacheKey=X</div>
                   <div><span className="sm-text">Shows:</span> status, category, heading, source, date, seen</div>
@@ -2009,26 +2009,26 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             </div>
             <div style={{ marginTop: 10, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
               <div style={{ display: 'flex', gap: 16 }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> In DB (all fields)</span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} /> In DB (partial data)</span>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4, display: 'inline-block' }} /> Not in DB</span>
+                <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> In DB (all fields)</span>
+                <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} /> In DB (partial data)</span>
+                <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', opacity: 0.4, display: 'inline-block' }} /> Not in DB</span>
               </div>
             </div>
 
-            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+            <div className="sm-ed-hdivider" />
 
             {/* ── Legend & config ──────────────────────────── */}
             <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 11, lineHeight: 2 }}>
               <div>
-                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Analysis Status</span>
+                <span className="sm-micro-text" style={{ letterSpacing: '2px' }}>Analysis Status</span>
                 <div style={{ display: 'flex', gap: 16, marginTop: 4 }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> Tracked</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} /> Untracked</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', display: 'inline-block' }} /> Pending</span>
+                  <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /> Tracked</span>
+                  <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} /> Untracked</span>
+                  <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', display: 'inline-block' }} /> Pending</span>
                 </div>
               </div>
               <div>
-                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Controls</span>
+                <span className="sm-micro-text" style={{ letterSpacing: '2px' }}>Controls</span>
                 <div style={{ marginTop: 4 }}>
                   <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace' }}>UI toggle</span>
                   <span style={{ margin: '0 8px', color: 'var(--text3)' }}>|</span>
@@ -2040,7 +2040,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             </div>
             {matchMethod && (
               <div style={{ marginTop: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)' }}>Active</span>
+                <span className="sm-micro-text" style={{ letterSpacing: '2px' }}>Active</span>
                 <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, padding: '2px 8px', borderRadius: 5, background: matchMethod === 'local' ? 'var(--gold-dim)' : 'var(--sky-dim)', color: matchMethod === 'local' ? 'var(--gold)' : 'var(--sky)' }}>{matchMethod === 'ai' ? 'AI semantic matching' : matchMethod === 'hybrid' ? 'hybrid (local + AI)' : 'local keyword matching'}</span>
               </div>
             )}

@@ -509,8 +509,6 @@ const FilingRow: React.FC<{
   if (isHidden) {
     return (
       <div style={{ opacity: 0.15, transition: 'opacity 0.2s' }}
-        onMouseEnter={e => (e.currentTarget.style.opacity = '0.35')}
-        onMouseLeave={e => (e.currentTarget.style.opacity = '0.15')}
       >
         <div style={{
           display: 'flex', alignItems: 'center', gap: 8,
@@ -842,7 +840,7 @@ const FilingRow: React.FC<{
           const dbColor = !dbRecord ? 'var(--text3)' : STATUS_CONFIG[r.status].color;
           const dbOpacity = !dbRecord ? 0.25 : 0.8;
           return (
-            <span style={{ position: 'relative', flexShrink: 0 }} onMouseEnter={handleDbHoverEnter} onMouseLeave={handleDbHoverLeave}>
+            <span style={{ position: 'relative', flexShrink: 0 }}>
               <button
                 type="button"
                 aria-label="Show database record"
@@ -1387,8 +1385,6 @@ const YearSection: React.FC<{
                 background: 'transparent', border: 'none', cursor: 'pointer',
                 opacity: 0.25, textAlign: 'left', transition: 'opacity 0.15s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.5')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '0.25')}
             >
               + {remainingHidden} more hidden
             </button>
@@ -1402,8 +1398,6 @@ const YearSection: React.FC<{
                 background: 'transparent', border: 'none', cursor: 'pointer',
                 opacity: 0.25, textAlign: 'left', transition: 'opacity 0.15s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.opacity = '0.5')}
-              onMouseLeave={e => (e.currentTarget.style.opacity = '0.25')}
             >
               collapse hidden
             </button>
@@ -1827,7 +1821,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
         padding: '16px 20px', marginTop: 8,
         borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div className="sm-flex sm-gap-16">
           {/* Progress ring */}
           <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
             <circle cx="14" cy="14" r="12" fill="none" stroke="color-mix(in srgb, var(--border) 60%, transparent)" strokeWidth="2" />
@@ -2039,16 +2033,16 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
         {methodologyOpen && (
           <div style={{ padding: '24px 24px', fontSize: 13, color: 'var(--text2)' }}>
             {/* ── DB-FIRST ARCHITECTURE ────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>DB-First Architecture</div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>DB-First Architecture</div>
+            <div className="sm-flex-col" style={{ alignItems: 'center' }}>
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Page loads</div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>GET /api/seen-filings?ticker=X</div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>ensureTable() &mdash; auto-creates seen_filings if missing</div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Load saved filings from Neon PostgreSQL</div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>Render from DB &mdash; no SEC API calls on mount</div>
             </div>
             <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
@@ -2058,21 +2052,21 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div><span className="sm-text">Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites form, filingDate, description, reportDate, fileUrl, status, crossRefs</div>
             </div>
 
-            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+            <div className="sm-ed-hdivider" />
 
             {/* ── FILING DATA PIPELINE ──────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Filing Data Pipeline</div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Filing Data Pipeline</div>
+            <div className="sm-flex-col" style={{ alignItems: 'center' }}>
               <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>Fetch Filings</div>
               <div style={{ width: 2, height: 10, background: 'var(--sky)' }} />
               <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>GET /api/edgar/[ticker]</div>
-              <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 8 }} />
               <div style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.6 }}>SEC EDGAR submissions API<br />(CIK-based, paginated, 15s timeout)</div>
-              <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 8 }} />
               <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Match against sec_filings + filing_cross_refs</div>
-              <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 8 }} />
               <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>POST /api/seen-filings &mdash; upsert all with status + crossRefs</div>
-              <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 8 }} />
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>New filings get NEW badge (dismissed=false)</div>
             </div>
             <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
@@ -2081,63 +2075,63 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div><span className="sm-text">Analysis:</span> POST /api/edgar/analyze &rarr; Claude Haiku (15K chars) &rarr; persisted to analysis_cache table</div>
             </div>
 
-            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+            <div className="sm-ed-hdivider" />
 
             {/* ── THREE-TIER MATCHING ──────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Three-Tier Filing Matcher</div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Three-Tier Filing Matcher</div>
+            <div className="sm-flex-col" style={{ alignItems: 'center' }}>
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>SEC filing arrives (accessionNumber, form, filingDate)</div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               {/* Tier 1a */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div className="sm-flex sm-gap-16">
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
                   <div>Tier 1a: Accession number exact match</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>O(1) hash lookup, strip dashes</div>
+                  <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>O(1) hash lookup, strip dashes</div>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
+                  Match &rarr; <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
                 </div>
               </div>
-              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
-              <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No match</div>
-              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 6 }} />
+              <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No match</div>
+              <div className="sm-ed-vline" style={{ height: 6 }} />
               {/* Tier 1b */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div className="sm-flex sm-gap-16">
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
                   <div>Tier 1b: Closest form+date match</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>nearest date within 14 days, form type normalized (PRNEWS &rarr; 8-K)</div>
+                  <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>nearest date within 14 days, form type normalized (PRNEWS &rarr; 8-K)</div>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
+                  Match &rarr; <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)', display: 'inline-block' }} /><span style={{ color: 'var(--mint)', fontWeight: 600 }}>TRACKED</span></span>
                 </div>
               </div>
-              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
-              <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No match</div>
-              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 6 }} />
+              <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No match</div>
+              <div className="sm-ed-vline" style={{ height: 6 }} />
               {/* Tier 2 */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div className="sm-flex sm-gap-16">
                 <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
                   <div>Tier 2: Cross-reference key lookup</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>accession or FORM|YYYY-MM-DD in cross-ref index (with aliases)</div>
+                  <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>accession or FORM|YYYY-MM-DD in cross-ref index (with aliases)</div>
                 </div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  Match &rarr; <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} /><span style={{ color: 'var(--gold)', fontWeight: 600 }}>DATA ONLY</span></span>
+                  Match &rarr; <span className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}><span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)', display: 'inline-block' }} /><span style={{ color: 'var(--gold)', fontWeight: 600 }}>DATA ONLY</span></span>
                 </div>
               </div>
-              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
-              <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No match</div>
-              <div style={{ width: 2, height: 6, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 6 }} />
+              <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No match</div>
+              <div className="sm-ed-vline" style={{ height: 6 }} />
               {/* Result: Untracked */}
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <div className="sm-flex sm-gap-4" style={{ display: 'inline-flex' }}>
                 <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)', display: 'inline-block' }} />
                 <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--coral)', fontWeight: 600 }}>UNTRACKED</span>
               </div>
             </div>
 
-            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+            <div className="sm-ed-hdivider" />
 
             {/* ── CROSS-REFERENCE SOURCES ──────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Cross-Reference Sources</div>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Cross-Reference Sources</div>
             <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.6, marginBottom: 12 }}>
               Each filing can carry one or more cross-refs &mdash; extracted data lines written to other parts of the research database. Displayed as dimmed <span style={{ opacity: 0.7 }}>{'// source → data'}</span> lines below each filing.
             </div>
@@ -2179,31 +2173,31 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div><span className="sm-text">Display:</span> shown as <span style={{ opacity: 0.5 }}>{'// source → extracted data'}</span> lines below the filing row</div>
             </div>
 
-            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+            <div className="sm-ed-hdivider" />
 
             {/* ── NEW FILING DETECTION ──────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>New Filing Detection</div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>New Filing Detection</div>
+            <div className="sm-flex-col" style={{ alignItems: 'center' }}>
               <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center' }}>Fetch Filings</div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Compare accessionNumber against DB records</div>
-              <div style={{ width: 2, height: 12, background: 'var(--border)' }} />
+              <div className="sm-ed-vline" style={{ height: 12 }} />
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Already in DB?</div>
               <div style={{ display: 'flex', gap: 32, marginTop: 8 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>Yes</div>
-                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div className="sm-flex-col" style={{ alignItems: 'center' }}>
+                  <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>Yes</div>
+                  <div className="sm-ed-vline" style={{ height: 8 }} />
                   <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>Upsert (update metadata + status)</div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>No</div>
-                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                <div className="sm-flex-col" style={{ alignItems: 'center' }}>
+                  <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No</div>
+                  <div className="sm-ed-vline" style={{ height: 8 }} />
                   <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Save to DB (dismissed=false)</div>
-                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div className="sm-ed-vline" style={{ height: 8 }} />
                   <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>NEW badge</div>
-                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
-                  <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: 'Space Mono, monospace' }}>User clicks NEW</div>
-                  <div style={{ width: 2, height: 8, background: 'var(--border)' }} />
+                  <div className="sm-ed-vline" style={{ height: 8 }} />
+                  <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>User clicks NEW</div>
+                  <div className="sm-ed-vline" style={{ height: 8 }} />
                   <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600, opacity: 0.3 }}>SEEN badge</div>
                 </div>
               </div>
@@ -2216,64 +2210,64 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div><span className="sm-text">Persistence:</span> both NEW and SEEN survive page reloads &amp; work cross-device</div>
             </div>
 
-            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+            <div className="sm-ed-hdivider" />
 
             {/* ── DB STATUS INDICATORS ──────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>DB Status Indicators</div>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>DB Status Indicators</div>
             <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
               <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                <div className="sm-flex sm-gap-6 sm-mb-8" style={{ marginBottom: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)' }} />
                   <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--mint)' }}>MINT DB</span>
                 </div>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   Filing is in DB and current status is TRACKED (matched in sec-filings.ts).
                 </div>
               </div>
               <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                <div className="sm-flex sm-gap-6 sm-mb-8" style={{ marginBottom: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)' }} />
                   <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--gold)' }}>GOLD DB</span>
                 </div>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   Filing is in DB and current status is DATA ONLY (cross-refs exist but not in sec-filings.ts).
                 </div>
               </div>
               <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                <div className="sm-flex sm-gap-6 sm-mb-8" style={{ marginBottom: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)' }} />
                   <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--coral)' }}>CORAL DB</span>
                 </div>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   Filing is in DB but current status is UNTRACKED (no index entry, no cross-refs).
                 </div>
               </div>
               <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                <div className="sm-flex sm-gap-6 sm-mb-8" style={{ marginBottom: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', opacity: 0.3 }} />
                   <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', opacity: 0.5 }}>GRAY DB</span>
                 </div>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   Not in seen_filings table. Click Fetch Filings to populate.
                 </div>
               </div>
             </div>
 
-            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+            <div className="sm-ed-hdivider" />
 
             {/* ── BUTTON DISTINCTION ──────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>Button Distinction: Fetch Filings vs Re-check DB</div>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Button Distinction: Fetch Filings vs Re-check DB</div>
             <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
               <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,200,130,0.7)', marginBottom: 6 }}>FETCH FILINGS</div>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   Calls SEC EDGAR API. Fetches latest filings, matches against local DB,
                   saves all to seen_filings with full metadata. New filings get NEW badge.
                 </div>
               </div>
               <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,180,220,0.7)', marginBottom: 6 }}>RE-CHECK DB</div>
-                <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
+                <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   Re-reads sec_filings + filing_cross_refs from Postgres.
                   Picks up new tracked entries or cross-refs added by AI Agent patches.
                   Does not call SEC EDGAR API. Changes filing status dots.
@@ -2281,10 +2275,10 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               </div>
             </div>
 
-            <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
+            <div className="sm-ed-hdivider" />
 
             {/* ── PERSISTED DATA ──────────────────────── */}
-            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>What Gets Persisted to DB</div>
+            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>What Gets Persisted to DB</div>
             <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2.2 }}>
               <div><span className="sm-text">seen_filings:</span> accession_number, form, filing_date, description, report_date, file_url, status, cross_refs (JSON), dismissed</div>
               <div><span className="sm-text">analysis_cache:</span> ticker + &quot;edgar&quot; + accession_number &rarr; analysis text (successful only)</div>

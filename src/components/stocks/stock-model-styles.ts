@@ -1893,6 +1893,19 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--border);
 }
 
+/* Vertical line connector (generic) */
+.sm-ed-vline {
+  width: 2px;
+  background: var(--border);
+}
+
+/* Horizontal divider */
+.sm-ed-hdivider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
+}
+
 /* Methodology section header */
 .sm-ed-method-label {
   font-size: 10px;
