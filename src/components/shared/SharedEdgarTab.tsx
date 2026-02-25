@@ -733,8 +733,6 @@ const FilingRow: React.FC<{
           transition: 'background 0.15s',
           cursor: analysis ? 'pointer' : undefined,
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         {/* Chevron (fixed-width slot so rows align whether analysis exists or not) */}
         <span style={{ width: 12, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -1370,7 +1368,7 @@ const YearSection: React.FC<{
           fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)',
           display: 'flex', alignItems: 'center', gap: 8,
         }}>
-          <span style={{ color: 'var(--mint)' }}>{trackedInYear}</span>
+          <span className="sm-mint">{trackedInYear}</span>
           <span style={{ opacity: 0.5 }}>/</span>
           <span>{visible.length}{hidden.length > 0 ? ` + ${hidden.length} hidden` : ''}</span>
           <span style={{ fontSize: 9, opacity: 0.5 }}>{open ? '\u25B2' : '\u25BC'}</span>
@@ -1813,12 +1811,12 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   const edgarBrowseUrl = `https://www.sec.gov/edgar/browse/?CIK=${cik}&owner=exclude`;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="sm-flex-col">
       {/* Hero — matches Sources tab */}
-      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>SEC Filings</div>
-        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>EDGAR<span style={{ color: 'var(--accent)' }}>.</span></h2>
-        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>
+      <div className="sm-tab-hero">
+        <div className="sm-section-label">SEC Filings</div>
+        <h2>EDGAR<span className="sm-accent">.</span></h2>
+        <p>
           SEC EDGAR filings for {companyName}. Loaded from database on mount — click <b>Fetch Filings</b> to check SEC for new ones, or <b>AI</b> to analyze.
         </p>
       </div>
@@ -1853,11 +1851,11 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               </>
             )}
           </svg>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="sm-flex-col">
             <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>
               {!loaded ? 'EDGAR Monitor' : `${trackedCount} of ${results.length} in database`}
             </span>
-            <span style={{ fontSize: 11, color: 'var(--text3)' }}>
+            <span className="sm-text-11">
               {!loaded
                 ? `CIK ${cik}`
                 : newCount > 0 || dataOnlyCount > 0
@@ -1870,7 +1868,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             </span>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div className="sm-flex">
           <a
             href={edgarBrowseUrl}
             target="_blank"
@@ -2021,7 +2019,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       )}
 
       {/* ── Methodology ────────────────────────────────────────────────────── */}
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+      <div className="sm-card sm-mt-8">
         <div
           onClick={() => setMethodologyOpen(prev => !prev)}
           style={{
@@ -2035,7 +2033,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
           aria-label="Toggle EDGAR Methodology"
           onKeyDown={(e) => e.key === 'Enter' && setMethodologyOpen(prev => !prev)}
         >
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Methodology</span>
+          <span className="sm-section-label">Methodology</span>
           <span style={{ color: 'var(--text3)', fontSize: 18 }}>{methodologyOpen ? '\u2212' : '+'}</span>
         </div>
         {methodologyOpen && (
@@ -2054,10 +2052,10 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>Render from DB &mdash; no SEC API calls on mount</div>
             </div>
             <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
-              <div><span style={{ color: 'var(--text)' }}>Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_filings table</div>
-              <div><span style={{ color: 'var(--text)' }}>Self-healing:</span> ensureTable() creates table + indexes on first request</div>
-              <div><span style={{ color: 'var(--text)' }}>Graceful fallback:</span> returns empty array if table cannot be created</div>
-              <div><span style={{ color: 'var(--text)' }}>Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites form, filingDate, description, reportDate, fileUrl, status, crossRefs</div>
+              <div><span className="sm-text">Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_filings table</div>
+              <div><span className="sm-text">Self-healing:</span> ensureTable() creates table + indexes on first request</div>
+              <div><span className="sm-text">Graceful fallback:</span> returns empty array if table cannot be created</div>
+              <div><span className="sm-text">Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites form, filingDate, description, reportDate, fileUrl, status, crossRefs</div>
             </div>
 
             <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
@@ -2078,9 +2076,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>New filings get NEW badge (dismissed=false)</div>
             </div>
             <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
-              <div><span style={{ color: 'var(--text)' }}>Save path:</span> POST /api/seen-filings &rarr; upsert with status, crossRefs, form, filingDate, description, reportDate, fileUrl</div>
-              <div><span style={{ color: 'var(--text)' }}>Re-check DB:</span> re-reads sec_filings + filing_cross_refs from Postgres to pick up new patches</div>
-              <div><span style={{ color: 'var(--text)' }}>Analysis:</span> POST /api/edgar/analyze &rarr; Claude Haiku (15K chars) &rarr; persisted to analysis_cache table</div>
+              <div><span className="sm-text">Save path:</span> POST /api/seen-filings &rarr; upsert with status, crossRefs, form, filingDate, description, reportDate, fileUrl</div>
+              <div><span className="sm-text">Re-check DB:</span> re-reads sec_filings + filing_cross_refs from Postgres to pick up new patches</div>
+              <div><span className="sm-text">Analysis:</span> POST /api/edgar/analyze &rarr; Claude Haiku (15K chars) &rarr; persisted to analysis_cache table</div>
             </div>
 
             <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
@@ -2176,9 +2174,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               </div>
             </div>
             <div style={{ marginTop: 10, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
-              <div><span style={{ color: 'var(--text)' }}>Storage:</span> filing_cross_refs table &mdash; keyed by ticker + filing_key (accession or FORM|DATE)</div>
-              <div><span style={{ color: 'var(--text)' }}>Lookup:</span> accession number first, then closest FORM|YYYY-MM-DD (within 14 days, with aliases e.g. PRNEWS &rarr; 8-K)</div>
-              <div><span style={{ color: 'var(--text)' }}>Display:</span> shown as <span style={{ opacity: 0.5 }}>{'// source → extracted data'}</span> lines below the filing row</div>
+              <div><span className="sm-text">Storage:</span> filing_cross_refs table &mdash; keyed by ticker + filing_key (accession or FORM|DATE)</div>
+              <div><span className="sm-text">Lookup:</span> accession number first, then closest FORM|YYYY-MM-DD (within 14 days, with aliases e.g. PRNEWS &rarr; 8-K)</div>
+              <div><span className="sm-text">Display:</span> shown as <span style={{ opacity: 0.5 }}>{'// source → extracted data'}</span> lines below the filing row</div>
             </div>
 
             <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
@@ -2211,11 +2209,11 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               </div>
             </div>
             <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
-              <div><span style={{ color: 'var(--text)' }}>On mount:</span> loads filings from DB only &mdash; no SEC API calls</div>
-              <div><span style={{ color: 'var(--text)' }}>Fetch Filings:</span> fetches from SEC EDGAR, matches, saves all to DB</div>
-              <div><span style={{ color: 'var(--text)' }}>NEW badge:</span> bright clickable badge &mdash; filing not yet acknowledged</div>
-              <div><span style={{ color: 'var(--text)' }}>SEEN badge:</span> dimmed label after user clicks NEW &rarr; sets dismissed=true in DB</div>
-              <div><span style={{ color: 'var(--text)' }}>Persistence:</span> both NEW and SEEN survive page reloads &amp; work cross-device</div>
+              <div><span className="sm-text">On mount:</span> loads filings from DB only &mdash; no SEC API calls</div>
+              <div><span className="sm-text">Fetch Filings:</span> fetches from SEC EDGAR, matches, saves all to DB</div>
+              <div><span className="sm-text">NEW badge:</span> bright clickable badge &mdash; filing not yet acknowledged</div>
+              <div><span className="sm-text">SEEN badge:</span> dimmed label after user clicks NEW &rarr; sets dismissed=true in DB</div>
+              <div><span className="sm-text">Persistence:</span> both NEW and SEEN survive page reloads &amp; work cross-device</div>
             </div>
 
             <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
@@ -2288,10 +2286,10 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             {/* ── PERSISTED DATA ──────────────────────── */}
             <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 12 }}>What Gets Persisted to DB</div>
             <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2.2 }}>
-              <div><span style={{ color: 'var(--text)' }}>seen_filings:</span> accession_number, form, filing_date, description, report_date, file_url, status, cross_refs (JSON), dismissed</div>
-              <div><span style={{ color: 'var(--text)' }}>analysis_cache:</span> ticker + &quot;edgar&quot; + accession_number &rarr; analysis text (successful only)</div>
-              <div><span style={{ color: 'var(--text)' }}>sec_filings:</span> tracked filings from research database (populated by AI Agent / db/setup)</div>
-              <div><span style={{ color: 'var(--text)' }}>filing_cross_refs:</span> cross-reference data linking filings to capital, timeline, financials, catalysts</div>
+              <div><span className="sm-text">seen_filings:</span> accession_number, form, filing_date, description, report_date, file_url, status, cross_refs (JSON), dismissed</div>
+              <div><span className="sm-text">analysis_cache:</span> ticker + &quot;edgar&quot; + accession_number &rarr; analysis text (successful only)</div>
+              <div><span className="sm-text">sec_filings:</span> tracked filings from research database (populated by AI Agent / db/setup)</div>
+              <div><span className="sm-text">filing_cross_refs:</span> cross-reference data linking filings to capital, timeline, financials, catalysts</div>
               <div style={{ marginTop: 4, color: 'var(--coral)', opacity: 0.7 }}>No sessionStorage. No in-memory caches. Everything in Postgres.</div>
             </div>
           </div>

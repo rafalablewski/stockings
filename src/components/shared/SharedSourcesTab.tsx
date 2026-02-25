@@ -259,10 +259,7 @@ const SourceArticleRow: React.FC<{
   // Hidden articles: collapsed single-line with low opacity and unhide button
   if (isHidden) {
     return (
-      <div style={{ opacity: 0.15, transition: 'opacity 0.2s' }}
-        onMouseEnter={e => (e.currentTarget.style.opacity = '0.35')}
-        onMouseLeave={e => (e.currentTarget.style.opacity = '0.15')}
-      >
+      <div style={{ opacity: 0.15 }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '3px 12px', borderRadius: 6,
@@ -322,11 +319,8 @@ const SourceArticleRow: React.FC<{
         style={{
           display: 'flex', alignItems: 'center', gap: 10,
           padding: '8px 12px', borderRadius: 10,
-          transition: 'background 0.15s',
           cursor: aiAnalysis ? 'pointer' : undefined,
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = 'var(--surface2)')}
-        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         {/* Chevron (fixed-width slot so rows align whether analysis exists or not) */}
         <span style={{ width: 12, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -336,7 +330,6 @@ const SourceArticleRow: React.FC<{
             stroke="rgba(255,255,255,0.3)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
             aria-hidden="true"
             style={{
-              transition: 'transform 0.2s',
               transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
             }}
           >
@@ -352,7 +345,6 @@ const SourceArticleRow: React.FC<{
               width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
               background: statusColor,
               opacity: localAnalyzed === null || localAnalyzed === undefined ? 0.4 : 0.9,
-              transition: 'opacity 0.2s, background 0.2s',
             }}
           />
         )}
@@ -377,10 +369,7 @@ const SourceArticleRow: React.FC<{
                 color: 'var(--sky)', background: 'var(--sky-dim)',
                 border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
                 cursor: 'pointer', outline: 'none', fontFamily: 'inherit',
-                transition: 'all 0.15s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'color-mix(in srgb, var(--sky) 20%, transparent)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--sky-dim)'; }}
             >
               NEW
             </button>
@@ -443,7 +432,6 @@ const SourceArticleRow: React.FC<{
               padding: '1px 4px', borderRadius: 3,
               border: `1px solid color-mix(in srgb, ${dbColor} 20%, transparent)`,
               background: 'transparent', cursor: 'pointer', outline: 'none',
-              transition: 'all 0.15s',
             }}
             onFocus={handleDbHoverEnter}
             onBlur={handleDbHoverLeave}
@@ -495,7 +483,7 @@ const SourceArticleRow: React.FC<{
               padding: '2px 5px', borderRadius: 4,
               color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
               border: '1px solid var(--border)',
-              cursor: 'pointer', transition: 'all 0.15s', outline: 'none', textDecoration: 'none',
+              cursor: 'pointer', outline: 'none', textDecoration: 'none',
               display: 'inline-flex', alignItems: 'center',
             }}
           >
@@ -514,8 +502,7 @@ const SourceArticleRow: React.FC<{
               color: aiAnalysis ? 'var(--accent)' : 'rgba(130,200,130,0.5)',
               background: 'rgba(255,255,255,0.04)',
               border: `1px solid ${aiAnalysis ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(130,200,130,0.15)'}`,
-              cursor: analyzing ? 'wait' : 'pointer',
-              transition: 'all 0.15s', outline: 'none',
+              cursor: analyzing ? 'wait' : 'pointer', outline: 'none',
               display: 'inline-flex', alignItems: 'center', gap: 4,
               opacity: analyzing ? 0.5 : 1,
             }}
@@ -533,8 +520,7 @@ const SourceArticleRow: React.FC<{
                 color: recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
                 background: 'rgba(255,255,255,0.04)',
                 border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
-                cursor: recheckLoading ? 'wait' : 'pointer',
-                transition: 'all 0.15s', outline: 'none',
+                cursor: recheckLoading ? 'wait' : 'pointer', outline: 'none',
                 display: 'inline-flex', alignItems: 'center',
                 opacity: recheckLoading ? 0.5 : 1,
               }}
@@ -552,7 +538,7 @@ const SourceArticleRow: React.FC<{
               fontSize: 9, fontFamily: 'inherit', padding: '2px 5px', borderRadius: 4,
               color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
               border: '1px solid var(--border)', cursor: 'pointer', outline: 'none',
-              display: 'inline-flex', alignItems: 'center', transition: 'all 0.15s',
+              display: 'inline-flex', alignItems: 'center',
               opacity: 0.5,
             }}
           >
@@ -678,10 +664,8 @@ const SourceArticleSection: React.FC<{
             display: 'block', width: '100%', padding: '4px 12px', margin: '2px 0',
             fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)',
             background: 'transparent', border: 'none', cursor: 'pointer',
-            opacity: 0.25, textAlign: 'left', transition: 'opacity 0.15s',
+            opacity: 0.25, textAlign: 'left',
           }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = '0.5')}
-          onMouseLeave={e => (e.currentTarget.style.opacity = '0.25')}
         >
           + {remainingHidden} more hidden
         </button>
@@ -693,10 +677,8 @@ const SourceArticleSection: React.FC<{
             display: 'block', width: '100%', padding: '4px 12px', margin: '2px 0',
             fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)',
             background: 'transparent', border: 'none', cursor: 'pointer',
-            opacity: 0.25, textAlign: 'left', transition: 'opacity 0.15s',
+            opacity: 0.25, textAlign: 'left',
           }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = '0.5')}
-          onMouseLeave={e => (e.currentTarget.style.opacity = '0.25')}
         >
           collapse hidden
         </button>
@@ -771,7 +753,6 @@ const CompanyFeedCard: React.FC<{
         border: '1px solid rgba(255,255,255,0.06)',
         borderRadius: 12,
         overflow: 'hidden',
-        transition: 'border-color 0.2s',
       }}
     >
       {/* Header */}
@@ -794,7 +775,6 @@ const CompanyFeedCard: React.FC<{
                 boxShadow: isActive
                   ? '0 0 8px var(--gold-dim)'
                   : '0 0 8px var(--mint-dim)',
-                transition: 'all 0.3s',
               }}
             />
           )}
@@ -813,10 +793,7 @@ const CompanyFeedCard: React.FC<{
               style={{
                 fontSize: 10, color: 'var(--text3)', textDecoration: 'none', flexShrink: 0,
                 padding: '2px 6px', borderRadius: 4,
-                transition: 'color 0.15s',
               }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'var(--text3)')}
             >
               ↗
             </a>
@@ -844,8 +821,7 @@ const CompanyFeedCard: React.FC<{
                 border: `1px solid ${data.loadingPR ? 'var(--border)' : 'color-mix(in srgb, var(--sky) 25%, transparent)'}`,
                 cursor: data.loadingPR ? 'wait' : 'pointer',
                 display: 'flex', alignItems: 'center', gap: 5,
-                opacity: data.loadingPR ? 0.5 : 0.6,
-                transition: 'all 0.15s', outline: 'none',
+                opacity: data.loadingPR ? 0.5 : 0.6, outline: 'none',
               }}
             >
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: data.loadingPR ? 'spin 1s linear infinite' : 'none' }}>
@@ -870,8 +846,7 @@ const CompanyFeedCard: React.FC<{
                 border: `1px solid ${data.loadingNews ? 'var(--border)' : 'color-mix(in srgb, var(--mint) 25%, transparent)'}`,
                 cursor: data.loadingNews ? 'wait' : 'pointer',
                 display: 'flex', alignItems: 'center', gap: 5,
-                opacity: data.loadingNews ? 0.5 : 0.6,
-                transition: 'all 0.15s', outline: 'none',
+                opacity: data.loadingNews ? 0.5 : 0.6, outline: 'none',
               }}
             >
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: data.loadingNews ? 'spin 1s linear infinite' : 'none' }}>
@@ -896,11 +871,10 @@ const CompanyFeedCard: React.FC<{
                 border: `1px solid ${data.loading ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
                 cursor: data.loading ? 'wait' : 'pointer',
                 display: 'flex', alignItems: 'center', gap: 6,
-                opacity: data.loading ? 0.5 : 1,
-                transition: 'all 0.15s', outline: 'none',
+                opacity: data.loading ? 0.5 : 1, outline: 'none',
               }}
             >
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: data.loading ? 'spin 1s linear infinite' : 'none', transition: 'transform 0.2s' }}>
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: data.loading ? 'spin 1s linear infinite' : 'none' }}>
                 <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -922,8 +896,7 @@ const CompanyFeedCard: React.FC<{
                 border: `1px solid ${aiChecking ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
                 cursor: aiChecking ? 'wait' : 'pointer',
                 display: 'flex', alignItems: 'center', gap: 6,
-                opacity: aiChecking ? 0.5 : 1,
-                transition: 'all 0.15s', outline: 'none',
+                opacity: aiChecking ? 0.5 : 1, outline: 'none',
               }}
             >
               <svg
@@ -1521,12 +1494,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const loadedCount = (mainCard.loaded ? 1 : 0) + (competitors?.filter(c => compCards[c.name]?.loaded).length || 0);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="sm-flex-col">
       {/* Hero — Ive×Tesla */}
-      <div style={{ padding: '48px 0 32px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
-        <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 8 }}>Intelligence</div>
-        <h2 style={{ fontSize: 32, fontWeight: 300, color: 'var(--text)', lineHeight: 1.15, margin: 0, letterSpacing: '-0.5px' }}>Sources<span style={{ color: 'var(--accent)' }}>.</span></h2>
-        <p style={{ fontSize: 15, color: 'var(--text3)', maxWidth: 640, lineHeight: 1.7, marginTop: 12, fontWeight: 300 }}>Live press releases, news coverage, and competitor intelligence for {companyName}.</p>
+      <div className="sm-tab-hero">
+        <div className="sm-section-label">Intelligence</div>
+        <h2>Sources<span className="sm-accent">.</span></h2>
+        <p>Live press releases, news coverage, and competitor intelligence for {companyName}.</p>
       </div>
 
       <div style={{
@@ -1542,14 +1515,13 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               strokeDasharray={`${(loadedCount / totalCompanies) * 75.4} 75.4`}
               strokeLinecap="round"
               transform="rotate(-90 14 14)"
-              style={{ transition: 'stroke-dasharray 0.4s ease' }}
             />
           </svg>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="sm-flex-col">
             <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600 }}>
               {loadedCount === 0 ? 'Intelligence Feeds' : `${loadedCount} of ${totalCompanies} loaded`}
             </span>
-            <span style={{ fontSize: 11, color: 'var(--text3)' }}>
+            <span className="sm-text-11">
               {totalCompanies} {totalCompanies === 1 ? 'company' : 'companies'} monitored
             </span>
           </div>
@@ -1565,8 +1537,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             background: 'rgba(255,255,255,0.04)',
             border: `1px solid ${loadingAll ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
             cursor: loadingAll ? 'wait' : 'pointer',
-            display: 'flex', alignItems: 'center', gap: 6,
-            transition: 'all 0.15s', outline: 'none',
+            display: 'flex', alignItems: 'center', gap: 6, outline: 'none',
             opacity: loadingAll ? 0.5 : 1,
           }}
         >
@@ -1621,13 +1592,11 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               width: 24, height: 12, borderRadius: 6, position: 'relative',
               background: forceLocal ? 'var(--gold-dim)' : 'var(--sky-dim)',
               border: `1px solid ${forceLocal ? 'var(--gold)' : 'var(--sky)'}`,
-              transition: 'background 0.2s',
             }}>
               <span style={{
                 position: 'absolute', top: 1, width: 8, height: 8, borderRadius: '50%',
                 background: forceLocal ? 'var(--gold)' : 'var(--sky)',
                 left: forceLocal ? 13 : 1,
-                transition: 'left 0.2s',
               }} />
             </span>
             {forceLocal ? 'Local only' : 'AI + Local'}
@@ -1679,7 +1648,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             }}>
               {competitorLabel || 'Competitors'}
             </span>
-            <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+            <span className="sm-divider-line" />
             <span style={{
               fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)',
             }}>
@@ -1716,14 +1685,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         </>
       )}
 
-      <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div className="sm-divider">
         <span style={{
           fontSize: 11, fontWeight: 600, color: 'var(--text3)',
           textTransform: 'uppercase', letterSpacing: '1.2px',
         }}>
           Research Sources
         </span>
-        <span style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        <span className="sm-divider-line" />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 12, overflow: 'hidden' }}>
@@ -1748,10 +1717,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   style={{
                     fontSize: 13, color: 'var(--text2)', textDecoration: 'none',
                     padding: '6px 8px', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 6,
-                    transition: 'all 0.15s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--accent)'; e.currentTarget.style.background = 'var(--surface2)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--text2)'; e.currentTarget.style.background = 'transparent'; }}
                 >
                   {s.name}
                   <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style={{ opacity: 0.3, flexShrink: 0 }}>
@@ -1765,7 +1731,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       </div>
 
       {/* ── Methodology ────────────────────────────────────────────────────── */}
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+      <div className="sm-card sm-mt-8">
         <div
           onClick={() => setMethodologyOpen(prev => !prev)}
           style={{
@@ -1779,7 +1745,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           aria-label="Toggle Sources Methodology"
           onKeyDown={(e) => e.key === 'Enter' && setMethodologyOpen(prev => !prev)}
         >
-          <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>Methodology</span>
+          <span className="sm-section-label">Methodology</span>
           <span style={{ color: 'var(--text3)', fontSize: 18 }}>{methodologyOpen ? '\u2212' : '+'}</span>
         </div>
         {methodologyOpen && (
@@ -1798,10 +1764,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>Render from DB &mdash; no external API calls on mount</div>
             </div>
             <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
-              <div><span style={{ color: 'var(--text)' }}>Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_articles table</div>
-              <div><span style={{ color: 'var(--text)' }}>Self-healing:</span> ensureTable() creates table + indexes on first request</div>
-              <div><span style={{ color: 'var(--text)' }}>Graceful fallback:</span> returns empty array if table cannot be created</div>
-              <div><span style={{ color: 'var(--text)' }}>Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites url, source, headline, date, articleType</div>
+              <div><span className="sm-text">Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_articles table</div>
+              <div><span className="sm-text">Self-healing:</span> ensureTable() creates table + indexes on first request</div>
+              <div><span className="sm-text">Graceful fallback:</span> returns empty array if table cannot be created</div>
+              <div><span className="sm-text">Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites url, source, headline, date, articleType</div>
             </div>
 
             <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
@@ -1829,10 +1795,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               </div>
             </div>
             <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
-              <div><span style={{ color: 'var(--text)' }}>Independent:</span> each button fetches, saves, and checks independently</div>
-              <div><span style={{ color: 'var(--text)' }}>Max per type:</span> 10 articles (SECTION_MAX)</div>
-              <div><span style={{ color: 'var(--text)' }}>Save path:</span> POST /api/seen-articles &rarr; upsert with articleType tag</div>
-              <div><span style={{ color: 'var(--text)' }}>AI Fetch All:</span> fires both pipelines in parallel via Promise.allSettled</div>
+              <div><span className="sm-text">Independent:</span> each button fetches, saves, and checks independently</div>
+              <div><span className="sm-text">Max per type:</span> 10 articles (SECTION_MAX)</div>
+              <div><span className="sm-text">Save path:</span> POST /api/seen-articles &rarr; upsert with articleType tag</div>
+              <div><span className="sm-text">AI Fetch All:</span> fires both pipelines in parallel via Promise.allSettled</div>
             </div>
 
             <div style={{ height: 1, background: 'var(--border)', margin: '20px 0' }} />
@@ -1897,19 +1863,19 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', lineHeight: 2 }}>
               <div>Queries Neon PostgreSQL via Drizzle ORM — 4 tables in parallel.</div>
               <div style={{ marginTop: 4 }}>
-                <span style={{ color: 'var(--text3)' }}>Tables:</span> timeline_events, sec_filings, catalysts, partner_news
+                <span className="sm-text3">Tables:</span> timeline_events, sec_filings, catalysts, partner_news
               </div>
               <div>
-                <span style={{ color: 'var(--text3)' }}>Headline fields:</span> event, description, headline
+                <span className="sm-text3">Headline fields:</span> event, description, headline
               </div>
               <div>
-                <span style={{ color: 'var(--text3)' }}>Detail fields:</span> details, period, category, summary
+                <span className="sm-text3">Detail fields:</span> details, period, category, summary
               </div>
               <div>
-                <span style={{ color: 'var(--text3)' }}>Dedup:</span> normalized headline (first 80 chars)
+                <span className="sm-text3">Dedup:</span> normalized headline (first 80 chars)
               </div>
               <div>
-                <span style={{ color: 'var(--text3)' }}>Auto-reseed:</span> workflow/apply &rarr; triggers /api/db/setup after patches so Postgres stays in sync with .ts files
+                <span className="sm-text3">Auto-reseed:</span> workflow/apply &rarr; triggers /api/db/setup after patches so Postgres stays in sync with .ts files
               </div>
             </div>
 
@@ -2008,12 +1974,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               </div>
             </div>
             <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
-              <div><span style={{ color: 'var(--text)' }}>On mount:</span> loads articles from DB only &mdash; no external API calls</div>
-              <div><span style={{ color: 'var(--text)' }}>Fetch PRs / Fetch News:</span> independent buttons, each searches its own API</div>
-              <div><span style={{ color: 'var(--text)' }}>AI Fetch All:</span> fires both pipelines in parallel</div>
-              <div><span style={{ color: 'var(--text)' }}>NEW badge:</span> bright clickable badge &mdash; article not yet acknowledged</div>
-              <div><span style={{ color: 'var(--text)' }}>SEEN badge:</span> dimmed label after user clicks NEW &rarr; sets dismissed=true in DB</div>
-              <div><span style={{ color: 'var(--text)' }}>Persistence:</span> both NEW and SEEN survive page reloads &amp; work cross-device</div>
+              <div><span className="sm-text">On mount:</span> loads articles from DB only &mdash; no external API calls</div>
+              <div><span className="sm-text">Fetch PRs / Fetch News:</span> independent buttons, each searches its own API</div>
+              <div><span className="sm-text">AI Fetch All:</span> fires both pipelines in parallel</div>
+              <div><span className="sm-text">NEW badge:</span> bright clickable badge &mdash; article not yet acknowledged</div>
+              <div><span className="sm-text">SEEN badge:</span> dimmed label after user clicks NEW &rarr; sets dismissed=true in DB</div>
+              <div><span className="sm-text">Persistence:</span> both NEW and SEEN survive page reloads &amp; work cross-device</div>
             </div>
 
             {/* Divider */}
@@ -2025,19 +1991,19 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,180,220,0.7)', marginBottom: 6 }}>RE-CHECK DB</div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
-                  <div><span style={{ color: 'var(--text)' }}>Purpose:</span> checks tracked / untracked</div>
-                  <div><span style={{ color: 'var(--text)' }}>API:</span> POST /api/check-analyzed</div>
-                  <div><span style={{ color: 'var(--text)' }}>Checks:</span> timeline_events, sec_filings, catalysts, partner_news</div>
-                  <div><span style={{ color: 'var(--text)' }}>Does NOT:</span> query seen_articles table</div>
+                  <div><span className="sm-text">Purpose:</span> checks tracked / untracked</div>
+                  <div><span className="sm-text">API:</span> POST /api/check-analyzed</div>
+                  <div><span className="sm-text">Checks:</span> timeline_events, sec_filings, catalysts, partner_news</div>
+                  <div><span className="sm-text">Does NOT:</span> query seen_articles table</div>
                 </div>
               </div>
               <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', marginBottom: 6 }}>DB (per article)</div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.8 }}>
-                  <div><span style={{ color: 'var(--text)' }}>Purpose:</span> is this article saved in the database?</div>
-                  <div><span style={{ color: 'var(--text)' }}>API:</span> GET /api/seen-articles?cacheKey=X</div>
-                  <div><span style={{ color: 'var(--text)' }}>Shows:</span> status, category, heading, source, date, seen</div>
-                  <div><span style={{ color: 'var(--text)' }}>Trigger:</span> hover &rarr; fetches live from Neon PostgreSQL</div>
+                  <div><span className="sm-text">Purpose:</span> is this article saved in the database?</div>
+                  <div><span className="sm-text">API:</span> GET /api/seen-articles?cacheKey=X</div>
+                  <div><span className="sm-text">Shows:</span> status, category, heading, source, date, seen</div>
+                  <div><span className="sm-text">Trigger:</span> hover &rarr; fetches live from Neon PostgreSQL</div>
                 </div>
               </div>
             </div>

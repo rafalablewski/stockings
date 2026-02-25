@@ -980,7 +980,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         </div>
       ))}
     </div>
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+    <div className="sm-model-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
       {[
         { metric: 'Shares', value: `${currentShares}M`, sub: 'Outstanding', color: 'var(--text)' },
         { metric: 'Price', value: `$${currentStockPrice}`, sub: 'Current', color: 'var(--text)' },
@@ -1251,7 +1251,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
           <ResponsiveContainer width="100%" height={200}><ComposedChart data={schedule}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" fontSize={11} /><YAxis stroke="var(--text3)" /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} formatter={(v, name, props) => [name === 'sats' ? `${v} sats (${props.payload.note})` : `${v} cumulative`, name === 'sats' ? 'Launched' : 'Total']} /><Bar dataKey="sats" fill="var(--cyan)" radius={[4, 4, 0, 0]} /><Line dataKey="cum" stroke="var(--gold)" strokeWidth={2} /></ComposedChart></ResponsiveContainer>
           <div style={{ display: 'flex', gap: 16, marginTop: 12, fontSize: 11, color: 'var(--text3)', flexWrap: 'wrap' }}>
             {['BW3 Sept 2022', 'BB1-5 Sept 2024', 'BB6 Dec 2025', 'BB7 ready'].map((m, i) => (
-              <span key={i} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span key={i} className="sm-flex sm-gap-6">
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: i < 3 ? 'var(--mint)' : 'var(--gold)' }} />
                 {m}
               </span>
@@ -1434,7 +1434,7 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
         <div className="sm-p0">
           {revenueSources.map((r, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', borderBottom: i < revenueSources.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div className="sm-flex sm-gap-12">
                 <span style={{ width: 4, height: 4, borderRadius: '50%', background: r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)', flexShrink: 0 }} />
                 <span className="sm-text-13t" style={{ fontWeight: 500 }}>{r.source}</span>
                 <span className="sm-subtle">{r.description}</span>
@@ -1843,7 +1843,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Revenue Commitments — Glass grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+      <div className="sm-model-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
         {[
           { value: '$1B+', label: 'Total Contracted Revenue', sub: 'Hard commitments, not soft MOUs', color: 'var(--mint)' },
           { value: `$${totalPrepay}M`, label: 'Total Prepayments', sub: 'stc $175M due YE 2025', color: 'var(--cyan)' },
@@ -2165,7 +2165,7 @@ const CompetitorsTab = () => {
       <div style={{ padding: '32px 0 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}><span className="sm-param-label">Competitor Intelligence ({filteredCompetitorNews.length} events)</span></div>
 
       {/* Competitor Filter */}
-      <div style={{ marginBottom: 12 }}>
+      <div className="sm-mb-12">
         <span style={{ fontSize: 11, color: 'var(--text3)', marginRight: 8 }}>Filter by Competitor:</span>
         <div className="sm-flex-wrap sm-gap-6">
           {competitorNames.map(comp => {
@@ -2386,7 +2386,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="sm-card-section">
           <span className="sm-param-label">Key Metrics</span>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)' }}>
+        <div className="sm-model-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
           {[
             { label: 'Class A Shares', value: `${shareClasses[0].shares}M`, color: 'var(--sky)' },
             { label: 'Fully Diluted', value: `${fullyDiluted}M`, color: 'var(--violet)' },
@@ -2486,7 +2486,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: i < shareClasses.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
                 <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600 }}>{sc.classType}</span>
                 <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--sky)' }}>{sc.shares}</span>
-                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right' }}>{(sc.shares / totalBasic * 100).toFixed(1)}%</span>
+                <span className="sm-mono-right" style={{ padding: '12px 16px' }}>{(sc.shares / totalBasic * 100).toFixed(1)}%</span>
                 <span style={{ padding: '12px 16px', fontSize: 13, color: 'var(--text2)' }}>{sc.votingRights}</span>
                 <span style={{ padding: '12px 16px', fontSize: 13, color: 'var(--text2)' }}>{sc.description}</span>
               </div>
@@ -2503,7 +2503,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
               <span style={{ padding: '12px 16px', fontSize: 13 }}>Fully Diluted</span>
               <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--sky)' }}>{fullyDiluted.toFixed(1)}</span>
-              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right' }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</span>
+              <span className="sm-mono-right" style={{ padding: '12px 16px' }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</span>
               <span style={{ padding: '12px 16px', gridColumn: 'span 2', fontSize: 13, color: 'var(--text3)', fontWeight: 400 }}>+{(fullyDiluted - totalBasic).toFixed(1)}M from converts, options, RSUs</span>
             </div>
           </div>
@@ -5155,7 +5155,7 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
-                <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <div className="sm-card-body" style={{ paddingBottom: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
@@ -5288,7 +5288,7 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
-                <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <div className="sm-card-body" style={{ paddingBottom: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
@@ -5318,7 +5318,7 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
-                <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <div className="sm-card-body" style={{ paddingBottom: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
@@ -5351,7 +5351,7 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             return (
               <>
-                <div style={{ padding: '24px 24px 0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <div className="sm-card-body" style={{ paddingBottom: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
                     {data.map((d, i) => (
                       <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
@@ -6248,10 +6248,10 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 8, padding: 12, background: 'var(--surface2)', borderRadius: 10, marginBottom: 12 }}>
-                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${(c.mc / 1000).toFixed(0)}B</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Mkt Cap</div></div>
-                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{c.evRev.toFixed(1)}x</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>EV/Rev</div></div>
-                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${c.pSub.toLocaleString()}</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>$/Sub</div></div>
-                <div style={{ textAlign: 'center', padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{c.subs.toFixed(0)}M</div><div style={{ fontSize: 9, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px', marginTop: 2 }}>Subs</div></div>
+                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${(c.mc / 1000).toFixed(0)}B</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Mkt Cap</div></div>
+                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{c.evRev.toFixed(1)}x</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>EV/Rev</div></div>
+                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${c.pSub.toLocaleString()}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>$/Sub</div></div>
+                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{c.subs.toFixed(0)}M</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Subs</div></div>
               </div>
               {c.highlight && (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
@@ -7032,7 +7032,7 @@ const InvestmentTab = () => {
         <div className="sm-card-body">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div className="sm-flex sm-gap-12">
               <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontWeight: 700, fontSize: 18 }}>CONSTRUCTIVE</span>
               <span style={{ background: 'rgba(126,231,135,0.15)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 99, fontSize: 12, fontWeight: 600 }}>TECHNOLOGY PROVEN</span>
             </div>
