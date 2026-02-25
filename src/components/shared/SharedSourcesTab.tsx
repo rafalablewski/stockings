@@ -1607,27 +1607,25 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       </div>
 
       {/* ── Methodology ────────────────────────────────────────────────────── */}
-      <div className="sm-card sm-mt-8">
+      <div className="sm-ws-panel sm-mt-8">
         <div
           onClick={() => setMethodologyOpen(prev => !prev)}
-          style={{
-            padding: '24px 24px',
-            borderBottom: methodologyOpen ? '1px solid var(--border)' : 'none',
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer',
-          }}
+          className="sm-ws-panel-header"
+          style={{ cursor: 'pointer' }}
+          data-open={methodologyOpen ? 'true' : 'false'}
           role="button"
           tabIndex={0}
           aria-expanded={methodologyOpen}
           aria-label="Toggle Sources Methodology"
           onKeyDown={(e) => e.key === 'Enter' && setMethodologyOpen(prev => !prev)}
         >
-          <span className="sm-section-label">Methodology</span>
-          <span style={{ color: 'var(--text3)', fontSize: 18 }}>{methodologyOpen ? '\u2212' : '+'}</span>
+          <span className="sm-section-label" style={{ marginBottom: 0 }}>Methodology</span>
+          <span className="sm-text3" style={{ fontSize: 18 }}>{methodologyOpen ? '\u2212' : '+'}</span>
         </div>
         {methodologyOpen && (
-          <div style={{ padding: '24px 24px', fontSize: 13, color: 'var(--text2)' }}>
+          <div className="sm-ws-panel-body sm-body-sm">
             {/* ── DB-FIRST ARCHITECTURE ────────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>DB-First Architecture</div>
+            <div className="sm-ed-method-label">DB-First Architecture</div>
             <div className="sm-flex-col" style={{ alignItems: 'center' }}>
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Page loads</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
@@ -1649,7 +1647,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div className="sm-ed-hdivider" />
 
             {/* ── TWO DATA PIPELINES ──────────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Data Pipelines: Press Releases vs News</div>
+            <div className="sm-ed-method-label">Data Pipelines: Press Releases vs News</div>
             <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
               <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>Fetch PRs</div>
@@ -1680,7 +1678,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div className="sm-ed-hdivider" />
 
             {/* ── ANALYSIS ROUTING FLOW ──────────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Analysis Routing</div>
+            <div className="sm-ed-method-label">Analysis Routing</div>
             <div style={{ display: 'flex', gap: 24 }}>
               {/* Left column: vertical flow */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180 }}>
@@ -1735,7 +1733,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div className="sm-ed-hdivider" />
 
             {/* ── DATA EXTRACTION ─────────────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Data Extraction</div>
+            <div className="sm-ed-method-label">Data Extraction</div>
             <div style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', lineHeight: 2 }}>
               <div>Queries Neon PostgreSQL via Drizzle ORM — 4 tables in parallel.</div>
               <div style={{ marginTop: 4 }}>
@@ -1759,7 +1757,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div className="sm-ed-hdivider" />
 
             {/* ── LOCAL MATCHING FLOW ──────────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Local Matching</div>
+            <div className="sm-ed-method-label">Local Matching</div>
             <div className="sm-flex-col" style={{ alignItems: 'center' }}>
               {/* Node: Extract */}
               <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Extract keywords (stop words removed, stemmed, &gt;2 chars)</div>
@@ -1819,7 +1817,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div className="sm-ed-hdivider" />
 
             {/* ── NEW ARTICLE DETECTION ──────────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>New Article Detection</div>
+            <div className="sm-ed-method-label">New Article Detection</div>
             <div className="sm-flex-col" style={{ alignItems: 'center' }}>
               <div style={{ display: 'flex', gap: 16 }}>
                 <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center' }}>Fetch PRs</div>
@@ -1862,7 +1860,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div className="sm-ed-hdivider" />
 
             {/* ── BUTTON DISTINCTION ────────────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Button Distinction: RE-CHECK DB vs DB</div>
+            <div className="sm-ed-method-label">Button Distinction: RE-CHECK DB vs DB</div>
             <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
               <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,180,220,0.7)', marginBottom: 6 }}>RE-CHECK DB</div>
