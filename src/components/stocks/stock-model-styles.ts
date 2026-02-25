@@ -1503,6 +1503,9 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 99px;
   overflow: hidden;
 }
+.sm-ws-rating-bar > [data-sentiment="positive"] { background: var(--mint); }
+.sm-ws-rating-bar > [data-sentiment="neutral"] { background: var(--gold); }
+.sm-ws-rating-bar > [data-sentiment="negative"] { background: var(--coral); }
 
 /* Firm header (clickable expand trigger) */
 .sm-ws-firm-header {
@@ -4029,6 +4032,9 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-text-14 { font-size: 14px; }
 .sm-text-15 { font-size: 15px; }
 .sm-text-16 { font-size: 16px; }
+.sm-text-18 { font-size: 18px; }
+.sm-text-20 { font-size: 20px; }
+.sm-text-24 { font-size: 24px; }
 .sm-fw-300 { font-weight: 300; }
 .sm-fw-400 { font-weight: 400; }
 .sm-fw-500 { font-weight: 500; }
