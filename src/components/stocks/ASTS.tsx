@@ -2434,7 +2434,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <span className="sm-param-label">Navigation</span>
         <span className="sm-divider-line" />
       </div>
-      <div className="sm-model-grid" style={{ '--cols': 7 } as React.CSSProperties}>
+      <div className="sm-cap-nav" style={{ '--cap-cols': 7 } as React.CSSProperties}>
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Class A, B, C' },
           { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Strategic + founder' },
@@ -2446,18 +2446,13 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         ].map(nav => (
           <div
             key={nav.id}
+            className="sm-cap-nav-item"
+            data-active={capitalView === nav.id ? 'true' : undefined}
             onClick={() => setCapitalView(nav.id)}
-            style={{
-              background: 'var(--surface)',
-              padding: '24px 24px',
-              cursor: 'pointer',
-              borderLeft: capitalView === nav.id ? '4px solid var(--sky)' : '4px solid transparent',
-              transition: 'border-color 0.2s',
-            }}
           >
-            <div style={{ fontSize: 24, fontWeight: 600, color: capitalView === nav.id ? 'var(--sky)' : 'var(--text)' }}>{nav.value}</div>
-            <div style={{ fontSize: 14, fontWeight: 500 }}>{nav.label}</div>
-            <div className="sm-subtle">{nav.sub}</div>
+            <div className="sm-cap-nav-value">{nav.value}</div>
+            <div className="sm-cap-nav-label">{nav.label}</div>
+            <div className="sm-cap-nav-sub">{nav.sub}</div>
           </div>
         ))}
       </div>
@@ -2469,41 +2464,43 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="sm-card-header">
           <span className="sm-section-label">Share Class Structure</span>
         </div>
-        <div className="sm-card-body">
-          <div>
+        <div className="sm-cap-table-scroll">
+          <div style={{ minWidth: 520 }}>
             {/* Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: '1px solid var(--border)' }}>
+            <div className="sm-cap-table-header" style={{ gridTemplateColumns: '1fr 100px 100px 120px 1fr' }}>
               {['Class', 'Shares (M)', '% of Basic', 'Voting', 'Description'].map((h, idx) => (
-                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: [1, 2].includes(idx) ? 'right' : 'left' }}>{h}</span>
+                <span key={h} className="sm-cap-th" data-align={[1, 2].includes(idx) ? 'right' : undefined}>{h}</span>
               ))}
             </div>
             {/* Rows */}
             {shareClasses.map((sc, i) => (
-              <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderBottom: i < shareClasses.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
-                <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600 }}>{sc.classType}</span>
-                <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--sky)' }}>{sc.shares}</span>
-                <span className="sm-mono-right" style={{ padding: '12px 16px' }}>{(sc.shares / totalBasic * 100).toFixed(1)}%</span>
-                <span style={{ padding: '12px 16px', fontSize: 13, color: 'var(--text2)' }}>{sc.votingRights}</span>
-                <span style={{ padding: '12px 16px', fontSize: 13, color: 'var(--text2)' }}>{sc.description}</span>
+              <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 100px 100px 120px 1fr' }}>
+                <span className="sm-cap-td-label">{sc.classType}</span>
+                <span className="sm-cap-td" data-align="right" data-highlight>{sc.shares}</span>
+                <span className="sm-cap-td" data-align="right">{(sc.shares / totalBasic * 100).toFixed(1)}%</span>
+                <span className="sm-cap-td">{sc.votingRights}</span>
+                <span className="sm-cap-td">{sc.description}</span>
               </div>
             ))}
             {/* Total Basic */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', background: 'var(--accent-dim)' }}>
-              <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600 }}>Total Basic</span>
-              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', fontWeight: 600 }}>{totalBasic.toFixed(1)}</span>
-              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', fontWeight: 600 }}>100%</span>
-              <span style={{ padding: '12px 16px' }}></span>
-              <span style={{ padding: '12px 16px' }}></span>
+            <div className="sm-cap-table-total" style={{ gridTemplateColumns: '1fr 100px 100px 120px 1fr' }}>
+              <span className="sm-cap-td-label">Total Basic</span>
+              <span className="sm-cap-td" data-align="right">{totalBasic.toFixed(1)}</span>
+              <span className="sm-cap-td" data-align="right">100%</span>
+              <span className="sm-cap-td"></span>
+              <span className="sm-cap-td"></span>
             </div>
             {/* FD Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
-              <span style={{ padding: '12px 16px', fontSize: 13 }}>Fully Diluted</span>
-              <span style={{ padding: '12px 16px', fontSize: 12, fontFamily: 'Space Mono, monospace', textAlign: 'right', color: 'var(--sky)' }}>{fullyDiluted.toFixed(1)}</span>
-              <span className="sm-mono-right" style={{ padding: '12px 16px' }}>{(fullyDiluted / totalBasic * 100).toFixed(1)}%</span>
-              <span style={{ padding: '12px 16px', gridColumn: 'span 2', fontSize: 13, color: 'var(--text3)', fontWeight: 400 }}>+{(fullyDiluted - totalBasic).toFixed(1)}M from converts, options, RSUs</span>
+            <div className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
+              <span className="sm-cap-td-label">Fully Diluted</span>
+              <span className="sm-cap-td" data-align="right" data-highlight>{fullyDiluted.toFixed(1)}</span>
+              <span className="sm-cap-td" data-align="right">{(fullyDiluted / totalBasic * 100).toFixed(1)}%</span>
+              <span className="sm-cap-td" style={{ gridColumn: 'span 2', color: 'var(--text3)', fontWeight: 400 }}>+{(fullyDiluted - totalBasic).toFixed(1)}M from converts, options, RSUs</span>
             </div>
           </div>
-          <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 12 }}>
+        </div>
+        <div className="sm-card-body">
+          <div style={{ fontSize: 13, color: 'var(--text3)' }}>
             Multi-class structure with 10x super-voting Class C shares. NASDAQ: ASTS.
           </div>
         </div>
@@ -2551,29 +2548,31 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="sm-card-header">
           <span className="sm-section-label">Major Shareholders (Known from SEC Filings)<UpdateIndicators sources="SEC" /></span>
         </div>
-        <div className="sm-card-body">
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr', borderBottom: '1px solid var(--border)' }}>
-            <span className="sm-table-header">Shareholder</span>
-            <span className="sm-table-header">Role</span>
-            <span className="sm-table-header sm-text-right">Shares (M)</span>
-            <span className="sm-table-header">Class</span>
-            <span className="sm-table-header sm-text-right">% Own</span>
-            <span className="sm-table-header sm-text-right">% Vote</span>
-            <span className="sm-table-header">Notes</span>
+        <div className="sm-cap-table-scroll">
+        <div style={{ minWidth: 620 }}>
+          <div className="sm-cap-table-header" style={{ gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr' }}>
+            <span className="sm-cap-th">Shareholder</span>
+            <span className="sm-cap-th">Role</span>
+            <span className="sm-cap-th" data-align="right">Shares (M)</span>
+            <span className="sm-cap-th">Class</span>
+            <span className="sm-cap-th" data-align="right">% Own</span>
+            <span className="sm-cap-th" data-align="right">% Vote</span>
+            <span className="sm-cap-th">Notes</span>
           </div>
           {majorShareholders.map((sh, i) => (
-            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr', padding: '12px 16px', borderBottom: i < majorShareholders.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
-              <span className="sm-text-13t">{sh.name}</span>
-              <span className="sm-text-13">{sh.role}</span>
-              <span className="sm-mono-right">{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</span>
-              <span className="sm-text-13">{sh.shareClass}</span>
-              <span className="sm-mono-right">{sh.pct}%</span>
-              <span className="sm-mono-right">{sh.votingPct}%</span>
-              <span className="sm-text-13">{sh.notes}</span>
+            <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr' }}>
+              <span className="sm-cap-td-label">{sh.name}</span>
+              <span className="sm-cap-td">{sh.role}</span>
+              <span className="sm-cap-td" data-align="right">{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</span>
+              <span className="sm-cap-td">{sh.shareClass}</span>
+              <span className="sm-cap-td" data-align="right">{sh.pct}%</span>
+              <span className="sm-cap-td" data-align="right">{sh.votingPct}%</span>
+              <span className="sm-cap-td">{sh.notes}</span>
             </div>
           ))}
         </div>
+        </div>
+        <div className="sm-card-body">
         <div className="sm-text-13 sm-text3">
           Data from 13F (institutional) and DEF 14A (insiders). Strategic shares based on converts and PIPE disclosures.
         </div>
@@ -2589,32 +2588,34 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="sm-card-header">
           <span className="sm-section-label">Equity Offerings Timeline<UpdateIndicators sources="SEC" /></span>
         </div>
-        <div className="sm-card-body">
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 100px 80px 90px', borderBottom: '1px solid var(--border)' }}>
-            <span className="sm-table-header">Date</span>
-            <span className="sm-table-header">Event</span>
-            <span className="sm-table-header">Type</span>
-            <span className="sm-table-header sm-text-right">Amount</span>
-            <span className="sm-table-header sm-text-right">Price</span>
-            <span className="sm-table-header sm-text-right">Shares (M)</span>
+        <div className="sm-cap-table-scroll">
+        <div style={{ minWidth: 560 }}>
+          <div className="sm-cap-table-header" style={{ gridTemplateColumns: '100px 1fr 100px 100px 80px 90px' }}>
+            <span className="sm-cap-th">Date</span>
+            <span className="sm-cap-th">Event</span>
+            <span className="sm-cap-th">Type</span>
+            <span className="sm-cap-th" data-align="right">Amount</span>
+            <span className="sm-cap-th" data-align="right">Price</span>
+            <span className="sm-cap-th" data-align="right">Shares (M)</span>
           </div>
           {equityOfferings.map((offering, i) => (
-            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 100px 80px 90px', padding: '12px 16px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
-              <span className="sm-text-13">{offering.date}</span>
-              <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{offering.event}</span>
-              <span className="sm-text-13">{offering.type}</span>
-              <span className="sm-mono-right">${offering.amount}M</span>
-              <span className="sm-mono-right">{offering.price ? `$${offering.price.toFixed(2)}` : '\u2014'}</span>
-              <span className="sm-mono-right">{offering.shares ? offering.shares.toFixed(1) : '\u2014'}</span>
+            <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '100px 1fr 100px 100px 80px 90px' }}>
+              <span className="sm-cap-td-label">{offering.date}</span>
+              <span className="sm-cap-td" style={{ fontWeight: 500 }}>{offering.event}</span>
+              <span className="sm-cap-td">{offering.type}</span>
+              <span className="sm-cap-td" data-align="right">${offering.amount}M</span>
+              <span className="sm-cap-td" data-align="right">{offering.price ? `$${offering.price.toFixed(2)}` : '\u2014'}</span>
+              <span className="sm-cap-td" data-align="right">{offering.shares ? offering.shares.toFixed(1) : '\u2014'}</span>
             </div>
           ))}
-          <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr 100px 100px 80px 90px', padding: '12px 16px', background: 'var(--accent-dim)' }}>
-            <span style={{ fontSize: 13, color: 'var(--text)', fontWeight: 600, gridColumn: 'span 3' }}>Total Capital Raised (2019-2026)</span>
-            <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>~$6.3B</span>
-            <span style={{ gridColumn: 'span 2' }}></span>
+          <div className="sm-cap-table-total" style={{ gridTemplateColumns: '100px 1fr 100px 100px 80px 90px' }}>
+            <span className="sm-cap-td-label" style={{ gridColumn: 'span 3' }}>Total Capital Raised (2019-2026)</span>
+            <span className="sm-cap-td" data-align="right">~$6.3B</span>
+            <span className="sm-cap-td" style={{ gridColumn: 'span 2' }}></span>
           </div>
         </div>
+        </div>
+        <div className="sm-card-body">
         <div className="sm-text-13 sm-text3">
           Equity + Convertibles + ATM + Registered Directs. Feb 2026: $1B converts + ~$614M RDs. Fully funded for 100+ satellites.
         </div>
@@ -5018,37 +5019,37 @@ const QuarterlyMetricsPanel = () => {
       </div>
       <div className="sm-card-body">
       {/* Dynamic Summary Badges */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid var(--cyan)', fontSize: 11, fontWeight: 500, background: 'rgba(34,211,238,0.15)', color: 'var(--cyan)' }}>
+      <div className="sm-flex-wrap">
+        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--cyan) 15%, transparent)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
           {summaryStats.quarterCount} quarters of data ({summaryStats.firstQuarter} - {summaryStats.lastQuarter})
         </span>
-        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid var(--mint)', fontSize: 11, fontWeight: 500, background: 'rgba(34,197,94,0.15)', color: 'var(--mint)' }}>
+        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--mint) 15%, transparent)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
           Cash: {summaryStats.cashRange.first !== null ? `$${summaryStats.cashRange.first.toFixed(0)}M` : 'N/A'} → {summaryStats.cashRange.last !== null ? `$${summaryStats.cashRange.last.toFixed(0)}M` : 'N/A'}
         </span>
-        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid var(--gold)', fontSize: 11, fontWeight: 500, background: 'rgba(251,146,60,0.15)', color: 'var(--gold)' }}>
+        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--gold) 15%, transparent)', borderColor: 'var(--gold)', color: 'var(--gold)' }}>
           Shares: {summaryStats.sharesRange.first !== null ? `${summaryStats.sharesRange.first.toFixed(0)}M` : 'N/A'} → {summaryStats.sharesRange.last !== null ? `${summaryStats.sharesRange.last.toFixed(0)}M` : 'N/A'}
         </span>
-        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid var(--violet)', fontSize: 11, fontWeight: 500, background: 'rgba(168,85,247,0.15)', color: 'var(--violet)' }}>
+        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--violet) 15%, transparent)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
           Satellites: {summaryStats.satellitesRange.first ?? 'N/A'} → {summaryStats.satellitesRange.last ?? 'N/A'}
         </span>
       </div>
 
       {/* All Quarters Table */}
-      <div style={{ overflowX: 'auto' }}>
+      <div className="sm-overflow-x sm-scroll-hint">
         <div style={{ minWidth: `${130 + displayQuarters.length * 90}px` }}>
           {/* Header row */}
-          <div style={{ display: 'grid', gridTemplateColumns: `minmax(130px, 1fr) ${displayQuarters.map(() => '90px').join(' ')}`, borderBottom: '1px solid var(--border)' }}>
-            <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', position: 'sticky', left: 0 }}>Metric</span>
+          <div className="sm-fin-table-header" style={{ gridTemplateColumns: `minmax(130px, 1fr) ${displayQuarters.map(() => '90px').join(' ')}` }}>
+            <span className="sm-fin-th" data-sticky="">Metric</span>
             {displayQuarters.map((q, idx) => (
-              <span key={q} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: idx === 0 ? 'var(--accent-dim)' : 'var(--surface2)', textAlign: 'right', whiteSpace: 'nowrap' }}>
+              <span key={q} className="sm-fin-th" data-latest={idx === 0 ? '' : undefined} style={{ textAlign: 'right' }}>
                 {q.replace('Q', '').replace(' ', "'")}
               </span>
             ))}
           </div>
           {/* Data rows */}
           {metrics.map((metric, mi) => (
-            <div key={metric.label} style={{ display: 'grid', gridTemplateColumns: `minmax(130px, 1fr) ${displayQuarters.map(() => '90px').join(' ')}`, borderBottom: mi < metrics.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
-              <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 500, position: 'sticky', left: 0, background: 'var(--bg1)' }}>
+            <div key={metric.label} className="sm-fin-table-row" style={{ gridTemplateColumns: `minmax(130px, 1fr) ${displayQuarters.map(() => '90px').join(' ')}`, borderBottom: mi < metrics.length - 1 ? undefined : 'none' }}>
+              <span className="sm-fin-td-label">
                 {metric.label}
               </span>
               {displayQuarters.map(q => {
@@ -5062,15 +5063,10 @@ const QuarterlyMetricsPanel = () => {
                 return (
                   <span
                     key={q}
+                    className="sm-fin-td"
                     title={tooltip ?? undefined}
-                    style={{
-                      padding: '12px 16px',
-                      fontSize: 12,
-                      fontFamily: 'Space Mono, monospace',
-                      textAlign: 'right',
-                      ...(isLatestQuarter ? { background: 'var(--accent-dim)' } : {}),
-                      ...(cellColor ? { color: cellColor } : {})
-                    }}
+                    data-latest={isLatestQuarter ? '' : undefined}
+                    style={cellColor ? { color: cellColor } : undefined}
                   >
                     {metric.format(val)}
                   </span>
@@ -5147,14 +5143,15 @@ const QuarterlyMetricsPanel = () => {
               display: `$${q.cashAndEquiv}M`
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
               <>
-                <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+                <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                  <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                      <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                         <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                        <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
                     ))}
@@ -5178,13 +5175,14 @@ const QuarterlyMetricsPanel = () => {
               display: `$${q.opEx}M`
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
-              <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+              <div className="sm-overflow-x sm-scroll-hint">
+                <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                   {data.map((d, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                    <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                       <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                      <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                      <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                       <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                     </div>
                   ))}
@@ -5195,12 +5193,12 @@ const QuarterlyMetricsPanel = () => {
           {/* OpEx Breakdown with quarter selector */}
           {opExQuarters.length > 0 && (
             <div className="sm-border-t" style={{ paddingTop: 12 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div className="sm-flex-between">
                 <span className="sm-text-11">OpEx Breakdown</span>
                 <select
                   value={opExQuarter}
                   onChange={(e) => setOpExQuarter(e.target.value)}
-                  style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 4, padding: '2px 8px', fontSize: 11, color: 'var(--text1)' }}
+                  style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 99, padding: '2px 8px', fontSize: 11, color: 'var(--text1)' }}
                 >
                   {opExQuarters.map(q => (
                     <option key={q} value={q}>{q}</option>
@@ -5280,14 +5278,15 @@ const QuarterlyMetricsPanel = () => {
               display: `${d.sharesOutstanding}M`
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
               <>
-                <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+                <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                  <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                      <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                         <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                        <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
                     ))}
@@ -5310,14 +5309,15 @@ const QuarterlyMetricsPanel = () => {
               display: (d.sharesOutstanding * d.stockPrice) >= 1000 ? `$${((d.sharesOutstanding * d.stockPrice) / 1000).toFixed(1)}B` : `$${(d.sharesOutstanding * d.stockPrice).toFixed(0)}M`
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
               <>
-                <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+                <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                  <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                      <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                         <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                        <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
                     ))}
@@ -5343,14 +5343,15 @@ const QuarterlyMetricsPanel = () => {
               display: `${d.satellites}`
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
               <>
-                <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+                <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                  <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                      <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                         <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                        <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
                     ))}
@@ -5375,33 +5376,36 @@ const QuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             const hasPositive = data.some(d => d.value >= 0);
             const hasNegative = data.some(d => d.value < 0);
+            const overflow = data.length > 8;
             return (
-              <div style={{ padding: '24px 24px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+              <div className="sm-card-body sm-overflow-x sm-scroll-hint">
+                <div style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                 {hasPositive && (
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: hasNegative ? 110 : 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+                  <div className="sm-fin-chart" style={{ height: hasNegative ? '50%' : undefined }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                      <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                         {d.value >= 0 && <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>}
-                        <div style={{ width: '100%', background: d.value >= 0 ? 'var(--mint)' : 'transparent', borderRadius: '4px 4px 0 0', height: d.value >= 0 && maxVal > 0 ? Math.round((d.value / maxVal) * (hasNegative ? 90 : 160)) : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div style={{ width: '100%', background: d.value >= 0 ? 'var(--mint)' : 'transparent', borderRadius: '4px 4px 0 0', height: d.value >= 0 && maxVal > 0 ? `${Math.round((d.value / maxVal) * 72)}%` : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
                       </div>
                     ))}
                   </div>
                 )}
-                <div style={{ display: 'flex', gap: 12, borderTop: '1px solid var(--border)', paddingTop: 8, overflowX: 'auto', minWidth: Math.max(data.length * 72, '100%' as any) }}>
+                <div style={{ display: 'flex', gap: overflow ? 4 : 12, borderTop: '1px solid var(--border)', paddingTop: 8 }}>
                   {data.map((d, i) => (
-                    <div key={i} style={{ flex: data.length > 8 ? '0 0 auto' : 1, textAlign: 'center', fontSize: 10, color: 'var(--text3)', padding: '4px 0', minWidth: data.length > 8 ? 64 : 'auto', whiteSpace: 'nowrap' }}>{d.label}</div>
+                    <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined} style={{ textAlign: 'center', fontSize: 10, color: 'var(--text3)', padding: '4px 0' }}>{d.label}</div>
                   ))}
                 </div>
                 {hasNegative && (
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, height: hasPositive ? 110 : 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: overflow ? 4 : 12, height: hasPositive ? 110 : 220 }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
-                        <div style={{ width: '100%', background: d.value < 0 ? 'var(--coral)' : 'transparent', borderRadius: '0 0 4px 4px', height: d.value < 0 && maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * (hasPositive ? 90 : 160)) : 0, minHeight: d.value < 0 ? 2 : 0, transition: 'height 0.3s' }} />
+                      <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
+                        <div style={{ width: '100%', background: d.value < 0 ? 'var(--coral)' : 'transparent', borderRadius: '0 0 4px 4px', height: d.value < 0 && maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value < 0 ? 2 : 0, transition: 'height 0.3s' }} />
                         {d.value < 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginTop: 6, whiteSpace: 'nowrap' }}>{d.display}</div>}
                       </div>
                     ))}
                   </div>
                 )}
+                </div>
               </div>
             );
           })()}
@@ -5421,9 +5425,9 @@ const TimelineTab = () => {
   const pressReleases = [
     { date: 'Feb 23, 2026', category: 'Government', color: 'var(--gold)', title: 'SDA $30M HALO Europa Prime Contract — AST SpaceMobile USA Defense Subsidiary' },
     { date: 'Feb 19, 2026', category: 'Event', color: 'var(--text3)', title: 'Q4 2025 Quarterly Business Update Scheduled for March 2, 2026' },
-    { date: 'Jan 22, 2026', category: 'Launch', color: '#4ade80', title: 'BlueBird 7 Launch Timing — Late Feb on New Glenn' },
+    { date: 'Jan 22, 2026', category: 'Launch', color: 'var(--mint)', title: 'BlueBird 7 Launch Timing — Late Feb on New Glenn' },
     { date: 'Jan 16, 2026', category: 'Government', color: 'var(--gold)', title: 'MDA SHIELD Prime Contract Award — Golden Dome Program' },
-    { date: 'Dec 24, 2025', category: 'Launch', color: '#4ade80', title: 'BlueBird 6 Successfully Deployed — First Block 2 Satellite in Orbit' },
+    { date: 'Dec 24, 2025', category: 'Launch', color: 'var(--mint)', title: 'BlueBird 6 Successfully Deployed — First Block 2 Satellite in Orbit' },
     { date: 'Nov 2025', category: 'Earnings', color: 'var(--gold)', title: 'Q3 2025 Results: $1.22B Cash, 6 Satellites Operational' },
     { date: 'Oct 2025', category: 'Partnership', color: 'var(--cyan)', title: 'Verizon Definitive Agreement — $100M+ Commitment' },
   ];
@@ -5550,7 +5554,7 @@ const TimelineTab = () => {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Newest first
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-flex-col-gap-16">
       <div className="sm-tab-hero">
         <div className="sm-section-label">Corporate Events<UpdateIndicators sources="PR" /></div>
         <h2>Timeline<span className="sm-accent">.</span></h2>
@@ -5574,18 +5578,8 @@ const TimelineTab = () => {
             <button
               key={type}
               onClick={() => { setSecFilter(type); setShowAllFilings(false); }}
-              style={{
-                padding: '4px 12px',
-                borderRadius: 99,
-                fontSize: 11,
-                fontWeight: 500,
-                border: '1px solid',
-                borderColor: secFilter === type ? 'var(--cyan)' : 'var(--border)',
-                cursor: 'pointer',
-                background: secFilter === type ? 'color-mix(in srgb, var(--cyan) 15%, transparent)' : 'transparent',
-                color: secFilter === type ? 'var(--cyan)' : 'var(--text3)',
-                transition: 'all 0.2s'
-              }}
+              className="sm-action-btn"
+              data-active={secFilter === type}
             >
               {type}
             </button>
@@ -5594,7 +5588,7 @@ const TimelineTab = () => {
 
         {/* Filings Table */}
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '120px 80px 1fr 100px 80px', borderBottom: '1px solid var(--border)' }}>
+          <div className="sm-tl-filing-header">
             <span className="sm-table-header">Date</span>
             <span className="sm-table-header">Type</span>
             <span className="sm-table-header">Description</span>
@@ -5602,7 +5596,7 @@ const TimelineTab = () => {
             <span className="sm-table-header sm-text-right">Link</span>
           </div>
           {displayedFilings.map((filing, idx) => (
-            <div key={idx} style={{ display: 'grid', gridTemplateColumns: '120px 80px 1fr 100px 80px', padding: '12px 16px', borderBottom: idx < displayedFilings.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
+            <div key={idx} className="sm-tl-filing-row">
               <span style={{ fontSize: 13, color: 'var(--text2)', whiteSpace: 'nowrap' }}>{filing.date}</span>
               <span style={{ fontSize: 13 }}>
                 <span style={{
@@ -5636,17 +5630,7 @@ const TimelineTab = () => {
         {filteredFilings.length > 15 && (
           <button
             onClick={() => setShowAllFilings(!showAllFilings)}
-            style={{
-              width: '100%',
-              padding: '8px',
-              background: 'var(--surface2)',
-              border: '1px solid var(--border)',
-              borderRadius: 99,
-              color: 'var(--text2)',
-              fontSize: 12,
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
+            className="sm-expand-btn"
           >
             {showAllFilings ? '▲ Show Less' : `▼ Show ${hiddenCount} More Filings`}
           </button>
@@ -5713,7 +5697,7 @@ const TimelineTab = () => {
                 <div className="sm-subtle">Block 2 constellation expansion</div>
               </div>
               <div className="sm-text-right">
-                <div style={{ fontFamily: 'Space Mono', color: '#4ade80' }}>Q1 2026</div>
+                <div style={{ fontFamily: 'Space Mono', color: 'var(--mint)' }}>Q1 2026</div>
                 <div className="sm-text-11">45-60 sats by EOY</div>
               </div>
             </div>
@@ -5763,7 +5747,7 @@ const TimelineTab = () => {
                 <div style={{ textAlign: 'center', paddingTop: 16 }}>
                   <button
                     onClick={() => setShowAllPR(!showAllPR)}
-                    style={{ padding: '8px 24px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer', fontSize: 12, fontWeight: 500, transition: 'all 0.2s' }}
+                    className="sm-expand-btn"
                   >
                     {showAllPR ? '▲ Show Less' : `▼ Show ${hiddenPRCount} More`}
                   </button>
@@ -5781,19 +5765,19 @@ const TimelineTab = () => {
       </div>
 
       {/* Topic Filters (AND logic multi-select) */}
-      <div style={{ padding: 16, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+      <div className="sm-card" style={{ padding: 16 }}>
         <div className="sm-flex-between">
           <span className="sm-text-13t sm-fw-600">Filter by Topic</span>
           {selectedTopics.length > 0 && (
             <button
               onClick={() => setSelectedTopics([])}
-              style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer' }}
+              className="sm-action-btn"
             >
               Clear ({selectedTopics.length})
             </button>
           )}
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+        <div className="sm-flex-wrap" style={{ marginTop: 8 }}>
           {Object.entries(topicTags).map(([topic, topicStyle]) => {
             const isSelected = selectedTopics.includes(topic);
             const count = timelineEvents.filter(p => detectTopics(p).includes(topic)).length;
@@ -5801,17 +5785,8 @@ const TimelineTab = () => {
               <button
                 key={topic}
                 onClick={() => toggleTopic(topic)}
-                style={{
-                  fontSize: 11,
-                  padding: '4px 12px',
-                  borderRadius: 99,
-                  border: '1px solid',
-                  borderColor: isSelected ? 'var(--accent)' : 'var(--border)',
-                  background: isSelected ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
-                  color: isSelected ? 'var(--accent)' : 'var(--text3)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
+                className="sm-action-btn"
+                data-active={isSelected}
               >
                 {topicStyle.label} ({count})
               </button>
@@ -5828,17 +5803,7 @@ const TimelineTab = () => {
       <div className="sm-flex-between">
         <div className="sm-flex-wrap">
           {['ALL', ...Object.keys(categoryColors)].map(cat => (
-            <button key={cat} onClick={() => setFilterCategory(cat)} style={{
-              fontSize: 11,
-              padding: '4px 12px',
-              borderRadius: 99,
-              border: '1px solid',
-              borderColor: filterCategory === cat ? 'var(--accent)' : 'var(--border)',
-              background: filterCategory === cat ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
-              color: filterCategory === cat ? 'var(--accent)' : 'var(--text3)',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}>
+            <button key={cat} onClick={() => setFilterCategory(cat)} className="sm-action-btn" data-active={filterCategory === cat}>
               {cat === 'ALL' ? `All (${timelineEvents.length})` : `${(categoryColors as Record<string, { label: string }>)[cat]?.label || cat} (${timelineEvents.filter(p => p.category === cat).length})`}
             </button>
           ))}
@@ -5851,13 +5816,13 @@ const TimelineTab = () => {
               setExpanded(new Set(filteredEntries.map((_, i) => i)));
             }
           }}
-          style={{ whiteSpace: 'nowrap', fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer' }}
+          className="sm-action-btn"
         >
           {expanded.size === filteredEntries.length ? '⊟ Collapse All' : '⊞ Expand All'}
         </button>
       </div>
 
-      <div>
+      <div className="sm-flex-col-gap">
         {filteredEntries.map((entry, i) => {
           const isExpanded = expanded.has(i);
           const toggleExpand = () => {
@@ -5868,9 +5833,9 @@ const TimelineTab = () => {
           };
 
           return (
-            <div key={i} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', marginBottom: 8 }}>
-              <div onClick={toggleExpand} style={{ display: 'grid', gridTemplateColumns: '100px 90px 1fr 80px 30px', alignItems: 'center', padding: '12px 16px', cursor: 'pointer', transition: 'background 0.15s' }}>
-                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>{entry.date}</span>
+            <div key={i} className="sm-tl-event-card">
+              <div onClick={toggleExpand} className="sm-tl-event-row">
+                <span className="sm-mono-sm sm-text3">{entry.date}</span>
                 <span className="sm-text-11">{entry.category}</span>
                 <span className="sm-text-13t sm-fw-500">{entry.title}</span>
                 <span style={{ fontSize: 11, fontWeight: 600, textAlign: 'right', color: entry.impact === 'Positive' ? 'var(--mint)' : entry.impact === 'Negative' ? 'var(--coral)' : 'var(--text3)' }}>
@@ -5882,8 +5847,8 @@ const TimelineTab = () => {
                 <span style={{ fontSize: 12, color: 'var(--text3)', textAlign: 'center', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▼</span>
               </div>
               {isExpanded && (
-                <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border)' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: 24 }}>
+                <div className="sm-tl-detail-panel">
+                  <div className="sm-tl-details-grid">
                     <div>
                       {/* Summary */}
                       <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 12, fontStyle: 'italic', color: 'var(--text3)', fontSize: 12, lineHeight: 1.6 }}>
@@ -5903,15 +5868,15 @@ const TimelineTab = () => {
                       {/* Change indicator */}
                       {entry.prevValue && (
                         <div style={{ marginTop: 12, fontSize: 13, padding: '8px 12px', background: 'var(--surface2)', borderRadius: 8 }}>
-                          <span style={{ color: '#f87171', textDecoration: 'line-through' }}>{entry.prevValue}</span>
+                          <span style={{ color: 'var(--coral)', textDecoration: 'line-through' }}>{entry.prevValue}</span>
                           <span style={{ color: 'var(--text3)', margin: '0 8px' }}>→</span>
-                          <span style={{ color: '#4ade80' }}>{entry.newValue}</span>
+                          <span style={{ color: 'var(--mint)' }}>{entry.newValue}</span>
                         </div>
                       )}
                     </div>
                     <div className="sm-flex-col-gap">
                       <div>
-                        <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Impact</div>
+                        <div className="sm-micro-label">Impact</div>
                         <div style={{ fontSize: 13, fontWeight: 600, color: entry.impact === 'Positive' ? 'var(--mint)' : entry.impact === 'Negative' ? 'var(--coral)' : 'var(--text3)' }}>
                           {entry.impact === 'Positive' && '● Bullish'}
                           {entry.impact === 'Negative' && '● Bearish'}
@@ -5920,7 +5885,7 @@ const TimelineTab = () => {
                         </div>
                       </div>
                       <div>
-                        <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Source</div>
+                        <div className="sm-micro-label">Source</div>
                         <div style={{ fontSize: 13, color: 'var(--cyan)' }}>{entry.sources.join(', ')}</div>
                       </div>
                     </div>
@@ -5938,7 +5903,7 @@ const TimelineTab = () => {
           <span className="sm-section-label">How to Use This Log</span>
         </div>
         <div className="sm-card-body">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, fontSize: 13 }}>
+        <div className="sm-tl-explain-grid">
           <div>
             <h4 style={{ color: 'var(--cyan)', fontWeight: 500, marginBottom: 8 }}>Categories Explained</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--text2)', listStyle: 'none', padding: 0, margin: 0 }}>
@@ -6208,69 +6173,65 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       {/* Peer Group Selector */}
       <div className="sm-flex-wrap">
-        {compCategories.map(cat => {
-          const isActive = selectedCompCategory === cat.key;
-          return (
+        {compCategories.map(cat => (
           <button
             key={cat.key}
+            className="sm-cmp-filter-btn"
+            data-active={selectedCompCategory === cat.key ? 'true' : undefined}
             onClick={() => setSelectedCompCategory(cat.key)}
-            style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
           >
             {cat.label}
           </button>
-          );
-        })}
+        ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+      <div className="sm-cmp-peer-grid">
         {filteredComps.map((c) => {
           const qual = keyCompMap[c.name];
           const profile = profileMap[c.name];
           const threatLevel = qual ? qual.threat.toLowerCase() : '';
-          const cardBorderLeft = c.highlight ? '4px solid var(--accent)' : threatLevel === 'high' || threatLevel === 'critical' ? '4px solid var(--coral)' : threatLevel === 'medium' ? '4px solid var(--gold)' : threatLevel === 'low' ? '4px solid var(--mint)' : '4px solid var(--surface3)';
-          const cardBg = c.highlight ? 'linear-gradient(135deg, var(--accent-dim) 0%, var(--surface) 100%)' : 'var(--surface)';
           return (
-            <div key={c.ticker} style={{ background: cardBg, border: '1px solid var(--border)', borderRadius: 16, padding: 24, borderLeft: cardBorderLeft }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{c.name}</div>
-                  <div className="sm-mono-sm sm-text3">{c.ticker} · {getCategoryLabel(c.category)}</div>
+            <div key={c.ticker} className="sm-cmp-peer-card" data-threat={threatLevel || undefined} data-self={c.highlight ? 'true' : undefined}>
+              <div className="sm-cmp-card-header">
+                <div>
+                  <div className="sm-cmp-card-name">{c.name}</div>
+                  <div className="sm-cmp-card-ticker">{c.ticker} · {getCategoryLabel(c.category)}</div>
                 </div>
-                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
-                  {qual && <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: threatLevel === 'high' || threatLevel === 'critical' ? 'rgba(255,123,114,0.15)' : threatLevel === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: threatLevel === 'high' || threatLevel === 'critical' ? 'var(--coral)' : threatLevel === 'medium' ? 'var(--gold)' : 'var(--mint)' }}>{qual.threat}</span>}
-                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{getCategoryLabel(c.category)}</span>
+                <div className="sm-cmp-badge-row">
+                  {qual && <span className="sm-cmp-badge" data-level={threatLevel}>{qual.threat}</span>}
+                  <span className="sm-cmp-badge">{getCategoryLabel(c.category)}</span>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 8, padding: 12, background: 'var(--surface2)', borderRadius: 10, marginBottom: 12 }}>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-sm sm-fw-600 sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>${(c.mc / 1000).toFixed(0)}B</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Mkt Cap</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-sm sm-fw-600 sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>{c.evRev.toFixed(1)}x</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>EV/Rev</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-sm sm-fw-600 sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>${c.pSub.toLocaleString()}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>$/Sub</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-sm sm-fw-600 sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>{c.subs.toFixed(0)}M</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Subs</div></div>
+              <div className="sm-cmp-metrics-grid">
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">${(c.mc / 1000).toFixed(0)}B</div><div className="sm-cmp-metric-label">Mkt Cap</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">{c.evRev.toFixed(1)}x</div><div className="sm-cmp-metric-label">EV/Rev</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">${c.pSub.toLocaleString()}</div><div className="sm-cmp-metric-label">$/Sub</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">{c.subs.toFixed(0)}M</div><div className="sm-cmp-metric-label">Subs</div></div>
               </div>
               {c.highlight && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Voice</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Text</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Data</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Video</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Unmod.</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'var(--surface3)', color: 'var(--text3)', opacity: 0.6 }}>Building Global</span>
+                <div className="sm-cmp-cap-row">
+                  <span className="sm-cmp-cap-tag" data-enabled="true">✓ Voice</span>
+                  <span className="sm-cmp-cap-tag" data-enabled="true">✓ Text</span>
+                  <span className="sm-cmp-cap-tag" data-enabled="true">✓ Data</span>
+                  <span className="sm-cmp-cap-tag" data-enabled="true">✓ Video</span>
+                  <span className="sm-cmp-cap-tag" data-enabled="true">✓ Unmod.</span>
+                  <span className="sm-cmp-cap-tag">Building Global</span>
                 </div>
               )}
               {!c.highlight && profile && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.voice ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.voice ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.voice ? undefined : 0.6 }}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.text ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.text ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.text ? undefined : 0.6 }}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.data ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.data ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.data ? undefined : 0.6 }}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.video ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.video ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.video ? undefined : 0.6 }}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.unmodifiedPhones ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.unmodifiedPhones ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.unmodifiedPhones ? undefined : 0.6 }}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.globalCoverage ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.globalCoverage ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.globalCoverage ? undefined : 0.6 }}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
+                <div className="sm-cmp-cap-row">
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.voice ? 'true' : undefined}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.text ? 'true' : undefined}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.data ? 'true' : undefined}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.video ? 'true' : undefined}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.unmodifiedPhones ? 'true' : undefined}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.globalCoverage ? 'true' : undefined}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
                 </div>
               )}
               {qual && (
                 <>
-                  <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {qual.focus}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>{qual.notes}</div>
+                  <div className="sm-subtle sm-text2" style={{ lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {qual.focus}</div>
+                  <div className="sm-subtle-sm sm-mt-8 sm-border-t" style={{ fontStyle: 'italic', paddingTop: 8, lineHeight: 1.5 }}>{qual.notes}</div>
                 </>
               )}
             </div>
@@ -6280,40 +6241,39 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         {selectedCompCategory === 'all' && extraCompetitors.map((kc, i) => {
           const profile = extraProfileMap[kc.name];
           const extraThreat = kc.threat.toLowerCase();
-          const extraBorderLeft = extraThreat === 'high' || extraThreat === 'critical' ? '4px solid var(--coral)' : extraThreat === 'medium' ? '4px solid var(--gold)' : extraThreat === 'low' ? '4px solid var(--mint)' : '4px solid var(--surface3)';
           return (
-            <div key={`extra-${i}`} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 24, borderLeft: extraBorderLeft }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{kc.name}</div>
-                  <div className="sm-mono-sm sm-text3">{kc.type}</div>
+            <div key={`extra-${i}`} className="sm-cmp-peer-card" data-threat={extraThreat || undefined}>
+              <div className="sm-cmp-card-header">
+                <div>
+                  <div className="sm-cmp-card-name">{kc.name}</div>
+                  <div className="sm-cmp-card-ticker">{kc.type}</div>
                 </div>
-                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
-                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: extraThreat === 'high' || extraThreat === 'critical' ? 'rgba(255,123,114,0.15)' : extraThreat === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: extraThreat === 'high' || extraThreat === 'critical' ? 'var(--coral)' : extraThreat === 'medium' ? 'var(--gold)' : 'var(--mint)' }}>{kc.threat}</span>
+                <div className="sm-cmp-badge-row">
+                  <span className="sm-cmp-badge" data-level={extraThreat}>{kc.threat}</span>
                 </div>
               </div>
               {profile && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.voice ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.voice ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.voice ? undefined : 0.6 }}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.text ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.text ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.text ? undefined : 0.6 }}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.data ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.data ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.data ? undefined : 0.6 }}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.video ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.video ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.video ? undefined : 0.6 }}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.unmodifiedPhones ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.unmodifiedPhones ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.unmodifiedPhones ? undefined : 0.6 }}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.globalCoverage ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.globalCoverage ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.globalCoverage ? undefined : 0.6 }}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
+                <div className="sm-cmp-cap-row">
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.voice ? 'true' : undefined}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.text ? 'true' : undefined}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.data ? 'true' : undefined}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.video ? 'true' : undefined}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.unmodifiedPhones ? 'true' : undefined}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.globalCoverage ? 'true' : undefined}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
                 </div>
               )}
-              <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {kc.focus}</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>{kc.notes}</div>
+              <div className="sm-subtle sm-text2" style={{ lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {kc.focus}</div>
+              <div className="sm-subtle-sm sm-mt-8 sm-border-t" style={{ fontStyle: 'italic', paddingTop: 8, lineHeight: 1.5 }}>{kc.notes}</div>
             </div>
           );
         })}
       </div>
 
-      <div className="sm-divider" style={{ borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
-        <div className="sm-section-label">Peer Valuation<UpdateIndicators sources="WS" /></div>
-        <h3 >EV/Revenue & $/Subscriber<span className="sm-accent">.</span></h3>
+      <div className="sm-divider">
+        <span className="sm-param-label">Peer Valuation — EV/Revenue & $/Subscriber</span>
+        <span className="sm-divider-line" />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <div className="sm-card">
           <div className="sm-card-section" style={{ padding: '16px 20px' }}>
             <div className="sm-section-label sm-flex">EV/Rev Comparison</div>
@@ -6391,9 +6351,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Advanced Valuation Matrices */}
-      <div className="sm-divider" style={{ borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
-        <div className="sm-section-label">Analytical Framework</div>
-        <h3 >Valuation Framework<span className="sm-accent">.</span></h3>
+      <div className="sm-divider">
+        <span className="sm-param-label">Analytical Framework — Valuation</span>
+        <span className="sm-divider-line" />
       </div>
 
       {/* Valuation Methodology Matrix */}
@@ -6402,30 +6362,32 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           <div className="sm-param-label sm-flex sm-gap-8">Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
           <p className="sm-text-13" style={{ color: 'var(--text3)', margin: '4px 0 0' }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
         </div>
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
-            {['Method', 'Peer Basis', 'Multiple/Metric', 'Implied Value', 'Premium/(Discount)'].map((label, idx) => (
-              <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx < 2 ? 'left' : 'right' }}>{label}</div>
+        <div className="sm-cmp-table-scroll">
+          <div style={{ minWidth: 560 }}>
+            <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr' }}>
+              {['Method', 'Peer Basis', 'Multiple/Metric', 'Implied Value', 'Premium/(Discount)'].map((label, idx) => (
+                <span key={label} className="sm-cmp-th" data-align={idx >= 2 ? 'right' : undefined}>{label}</span>
+              ))}
+            </div>
+            {[
+              { method: '$/Subscriber', basis: 'Starlink', metric: '$43,750/sub', implied: calc.potentialSubs * 43750, premium: ((calc.potentialSubs * 43750) / calc.marketCap - 1) * 100 },
+              { method: '$/Subscriber', basis: 'T-Mobile', metric: '$2,240/sub', implied: calc.potentialSubs * 2240, premium: ((calc.potentialSubs * 2240) / calc.marketCap - 1) * 100 },
+              { method: '$/Subscriber', basis: 'Verizon', metric: '$1,520/sub', implied: calc.potentialSubs * 1520, premium: ((calc.potentialSubs * 1520) / calc.marketCap - 1) * 100 },
+              { method: 'EV/Rev (Fwd)', basis: 'Starlink', metric: '17x', implied: calc.fwdRevenue * 17, premium: ((calc.fwdRevenue * 17) / calc.marketCap - 1) * 100 },
+              { method: 'EV/Rev (Fwd)', basis: 'High-Growth SaaS', metric: '10x', implied: calc.fwdRevenue * 10, premium: ((calc.fwdRevenue * 10) / calc.marketCap - 1) * 100 },
+              { method: 'EV/Rev (Fwd)', basis: 'Telco Avg', metric: '2x', implied: calc.fwdRevenue * 2, premium: ((calc.fwdRevenue * 2) / calc.marketCap - 1) * 100 },
+            ].map((v, i) => (
+              <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr' }}>
+                <span className="sm-cmp-td-label">{v.method}</span>
+                <span className="sm-cmp-td">{v.basis}</span>
+                <span className="sm-cmp-td" data-align="right">{v.metric}</span>
+                <span className="sm-cmp-td" data-align="right" style={{ color: 'var(--mint)' }}>${(v.implied / 1000).toFixed(1)}B</span>
+                <span className="sm-cmp-td" data-align="right" style={{ color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                  {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
+                </span>
+              </div>
             ))}
           </div>
-          {[
-            { method: '$/Subscriber', basis: 'Starlink', metric: '$43,750/sub', implied: calc.potentialSubs * 43750, premium: ((calc.potentialSubs * 43750) / calc.marketCap - 1) * 100 },
-            { method: '$/Subscriber', basis: 'T-Mobile', metric: '$2,240/sub', implied: calc.potentialSubs * 2240, premium: ((calc.potentialSubs * 2240) / calc.marketCap - 1) * 100 },
-            { method: '$/Subscriber', basis: 'Verizon', metric: '$1,520/sub', implied: calc.potentialSubs * 1520, premium: ((calc.potentialSubs * 1520) / calc.marketCap - 1) * 100 },
-            { method: 'EV/Rev (Fwd)', basis: 'Starlink', metric: '17x', implied: calc.fwdRevenue * 17, premium: ((calc.fwdRevenue * 17) / calc.marketCap - 1) * 100 },
-            { method: 'EV/Rev (Fwd)', basis: 'High-Growth SaaS', metric: '10x', implied: calc.fwdRevenue * 10, premium: ((calc.fwdRevenue * 10) / calc.marketCap - 1) * 100 },
-            { method: 'EV/Rev (Fwd)', basis: 'Telco Avg', metric: '2x', implied: calc.fwdRevenue * 2, premium: ((calc.fwdRevenue * 2) / calc.marketCap - 1) * 100 },
-          ].map((v, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-              <div className="sm-mono-sm sm-fw-500" style={{ padding: '16px 16px', fontSize: 14 }}>{v.method}</div>
-              <div className="sm-mono-sm" style={{ padding: '16px 16px', fontSize: 14 }}>{v.basis}</div>
-              <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>{v.metric}</div>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(v.implied / 1000).toFixed(1)}B</div>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
-              </div>
-            </div>
-          ))}
         </div>
       </div>
 
@@ -6437,32 +6399,31 @@ const CompsTab = ({ calc, currentStockPrice }) => {
             <div className="sm-param-label sm-flex sm-gap-8">Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
             <p className="sm-text-13" style={{ color: 'var(--text3)', margin: '4px 0 0' }}>Value each business segment separately</p>
           </div>
-          <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
-              {['Segment', 'Metric', 'Multiple', 'Value'].map((label, idx) => (
-                <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
-              ))}
-            </div>
-            {[
-              { segment: 'US Commercial', basis: 'AT&T/VZ partnership', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$2,000/sub', value: calc.potentialSubs * 0.4 * 2000 },
-              { segment: 'International', basis: 'Global MNO deals', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$1,500/sub', value: calc.potentialSubs * 0.4 * 1500 },
-              { segment: 'Government/Defense', basis: 'DoD contracts', metric: 'Option value', multiple: '—', value: 2000 },
-              { segment: 'Maritime/Aviation', basis: 'Niche verticals', metric: 'Option value', multiple: '—', value: 1000 },
-              { segment: 'Spectrum Assets', basis: 'Licensed spectrum', metric: 'Strategic value', multiple: '—', value: 3000 },
-            ].map((s, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-                <div className="sm-mono-sm" style={{ padding: '16px 16px', fontSize: 14 }}>
-                  <div style={{ fontWeight: 500 }}>{s.segment}</div>
-                  <div className="sm-text-11">{s.basis}</div>
-                </div>
-                <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>{s.metric}</div>
-                <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>{s.multiple}</div>
-                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value / 1000).toFixed(1)}B</div>
+          <div className="sm-cmp-table-scroll">
+            <div style={{ minWidth: 440 }}>
+              <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                {['Segment', 'Metric', 'Multiple', 'Value'].map((label, idx) => (
+                  <span key={label} className="sm-cmp-th" data-align={idx > 0 ? 'right' : undefined}>{label}</span>
+                ))}
               </div>
-            ))}
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>SOTP Total</div>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</div>
+              {[
+                { segment: 'US Commercial', basis: 'AT&T/VZ partnership', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$2,000/sub', value: calc.potentialSubs * 0.4 * 2000 },
+                { segment: 'International', basis: 'Global MNO deals', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$1,500/sub', value: calc.potentialSubs * 0.4 * 1500 },
+                { segment: 'Government/Defense', basis: 'DoD contracts', metric: 'Option value', multiple: '—', value: 2000 },
+                { segment: 'Maritime/Aviation', basis: 'Niche verticals', metric: 'Option value', multiple: '—', value: 1000 },
+                { segment: 'Spectrum Assets', basis: 'Licensed spectrum', metric: 'Strategic value', multiple: '—', value: 3000 },
+              ].map((s, i) => (
+                <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                  <span className="sm-cmp-td-label"><div>{s.segment}</div><div className="sm-text-11">{s.basis}</div></span>
+                  <span className="sm-cmp-td" data-align="right">{s.metric}</span>
+                  <span className="sm-cmp-td" data-align="right">{s.multiple}</span>
+                  <span className="sm-cmp-td" data-align="right" style={{ color: 'var(--mint)' }}>${(s.value / 1000).toFixed(1)}B</span>
+                </div>
+              ))}
+              <div className="sm-cmp-table-total" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                <span className="sm-cmp-td-label" style={{ gridColumn: '1 / 4' }}>SOTP Total</span>
+                <span className="sm-cmp-td" data-align="right" style={{ color: 'var(--mint)' }}>${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</span>
+              </div>
             </div>
           </div>
           </div>
@@ -6475,31 +6436,30 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <div className="sm-param-label sm-flex sm-gap-8">Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
               <p className="sm-text-13" style={{ color: 'var(--text3)', margin: '4px 0 0' }}>Probability-weighted valuation outcomes</p>
             </div>
-          <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
-              {['Scenario', 'Prob.', 'Value', 'Weighted'].map((label, idx) => (
-                <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
-              ))}
-            </div>
-            {[
-              { scenario: 'Bull Case', desc: 'Full constellation, global coverage', prob: 25, value: calc.marketCap * 3 },
-              { scenario: 'Base Case', desc: 'Partial success, US + select intl', prob: 45, value: calc.marketCap * 1.5 },
-              { scenario: 'Bear Case', desc: 'Delays, limited commercial traction', prob: 20, value: calc.marketCap * 0.5 },
-              { scenario: 'Failure', desc: 'Technology or funding issues', prob: 10, value: calc.marketCap * 0.1 },
-            ].map((s, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-                <div className="sm-mono-sm" style={{ padding: '16px 16px', fontSize: 14 }}>
-                  <div style={{ fontWeight: 500 }}>{s.scenario}</div>
-                  <div className="sm-text-11">{s.desc}</div>
-                </div>
-                <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>{s.prob}%</div>
-                <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>${(s.value / 1000).toFixed(1)}B</div>
-                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value * s.prob / 100 / 1000).toFixed(1)}B</div>
+          <div className="sm-cmp-table-scroll">
+            <div style={{ minWidth: 420 }}>
+              <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                {['Scenario', 'Prob.', 'Value', 'Weighted'].map((label, idx) => (
+                  <span key={label} className="sm-cmp-th" data-align={idx > 0 ? 'right' : undefined}>{label}</span>
+                ))}
               </div>
-            ))}
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>Expected Value</div>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</div>
+              {[
+                { scenario: 'Bull Case', desc: 'Full constellation, global coverage', prob: 25, value: calc.marketCap * 3 },
+                { scenario: 'Base Case', desc: 'Partial success, US + select intl', prob: 45, value: calc.marketCap * 1.5 },
+                { scenario: 'Bear Case', desc: 'Delays, limited commercial traction', prob: 20, value: calc.marketCap * 0.5 },
+                { scenario: 'Failure', desc: 'Technology or funding issues', prob: 10, value: calc.marketCap * 0.1 },
+              ].map((s, i) => (
+                <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                  <span className="sm-cmp-td-label"><div>{s.scenario}</div><div className="sm-text-11">{s.desc}</div></span>
+                  <span className="sm-cmp-td" data-align="right">{s.prob}%</span>
+                  <span className="sm-cmp-td" data-align="right">${(s.value / 1000).toFixed(1)}B</span>
+                  <span className="sm-cmp-td" data-align="right" style={{ color: 'var(--mint)' }}>${(s.value * s.prob / 100 / 1000).toFixed(1)}B</span>
+                </div>
+              ))}
+              <div className="sm-cmp-table-total" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                <span className="sm-cmp-td-label" style={{ gridColumn: '1 / 4' }}>Expected Value</span>
+                <span className="sm-cmp-td" data-align="right" style={{ color: 'var(--mint)' }}>${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</span>
+              </div>
             </div>
           </div>
           </div>
@@ -6507,11 +6467,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Competitor News Intelligence Section */}
-      <div className="sm-divider" style={{ borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
-        <div className="sm-section-label">Competitive Intelligence<UpdateIndicators sources="PR" /></div>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-          <h3 >Competitor News<span className="sm-accent">.</span></h3>
-        </div>
+      <div className="sm-divider">
+        <span className="sm-param-label">Competitive Intelligence — Competitor News</span>
+        <span className="sm-divider-line" />
       </div>
 
       {/* Filter Bar */}
@@ -7587,7 +7545,7 @@ const FinancialsTab = () => {
         <div className="sm-card-body">
         <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
           {config.milestones.map((m, i) => (
-            <div key={i} style={{ padding: 12, background: 'var(--surface)', borderRadius: 0 }}>
+            <div key={i} className="sm-bg-surface2" style={{ padding: 12 }}>
               <div className="sm-text-11">{m.date}</div>
               <div className="sm-text-13">{m.event}</div>
             </div>
