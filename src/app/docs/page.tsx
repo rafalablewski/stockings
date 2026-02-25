@@ -132,6 +132,10 @@ const dataAttributes: DataAttr[] = [
   { attribute: "data-full",       values: "true",                                  effect: "On .sm-ws-report: expanded state with left border" },
   { attribute: "data-type",       values: "report | update",                       effect: "On .sm-ws-count-badge: violet or muted style" },
   { attribute: "data-align",      values: "right",                                 effect: "On .sm-ws-estimate-cell / .sm-ws-th: right-align" },
+  { attribute: "data-latest",    values: "present",                               effect: "On .sm-fin-th / .sm-fin-td: accent-dim background for latest quarter" },
+  { attribute: "data-sticky",    values: "present",                               effect: "On .sm-fin-th: sticky left position with z-index for horizontal scroll" },
+  { attribute: "data-overflow",  values: "true",                                  effect: "On .sm-fin-bar: switches to fixed-width (flex: 0 0 auto) for >8 bars" },
+  { attribute: "data-highlight", values: "present",                               effect: "On .sm-cap-td: accent color + font-weight 600 for key values" },
 ];
 
 interface CSSVarDynamic {
@@ -595,6 +599,80 @@ export default function DocsPage() {
             [".sm-ed-method-label", "Methodology section header (10px uppercase)."],
             [".sm-ed-method-text", "Methodology mono description text."],
             [".sm-ed-info-card / -lg / -xl", "Methodology info cards (flex: 1 1 160/180/220px)."],
+          ]}
+        />
+
+        {/* ── Financials Tab Classes ─────────────────────────────────────── */}
+        <SectionHeader id="financials-classes" title="Financials Tab Classes (sm-fin-*)" count={10} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Quarterly metrics tables, bar charts, and scroll containers — responsive from 360px to desktop.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".sm-fin-table-header", "Grid header row for quarterly data tables. Bottom border."],
+            [".sm-fin-table-row", "Grid data row with subtle bottom border and hover transition."],
+            [".sm-fin-th", "Table header cell (10px uppercase). data-sticky for left-pinned, data-latest for accent bg."],
+            [".sm-fin-td-label", "Metric name cell — sticky left with bg1 background. 13px/500."],
+            [".sm-fin-td", "Data cell — Space Mono monospace, right-aligned. data-latest for accent bg."],
+            [".sm-fin-chart", "Flex container for bar charts. Height scales: 220→160→140→120px across breakpoints."],
+            [".sm-fin-bar", "Individual bar column (flex: 1). data-overflow='true' for fixed-width mode (>8 bars)."],
+            [".sm-scroll-hint", "Adds right-edge gradient fade (::after) to signal scrollable content."],
+          ]}
+        />
+
+        {/* ── Capital Tab Classes ──────────────────────────────────────────── */}
+        <SectionHeader id="capital-classes" title="Capital Tab Classes (sm-cap-*)" count={12} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Share structure, shareholders, offerings, and dilution tables — horizontal scroll nav on mobile, sticky label columns.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".sm-cap-nav", "Navigation grid container. Grid on desktop (--cap-cols), horizontal scroll strip on ≤768px."],
+            [".sm-cap-nav-item", "Individual nav card. data-active='true' sets accent border via --accent."],
+            [".sm-cap-nav-value", "Large metric value (22px→14px across breakpoints)."],
+            [".sm-cap-nav-label", "Nav item label (13px→10px). Below the value."],
+            [".sm-cap-nav-sub", "Subtitle text. Hidden at 360px (display: none)."],
+            [".sm-cap-table-scroll", "Horizontal scroll wrapper (overflow-x: auto) for data tables."],
+            [".sm-cap-table-header", "Grid header row with surface2 background and bottom border."],
+            [".sm-cap-table-row", "Grid data row with hover highlight and bottom border."],
+            [".sm-cap-th", "Header cell (10px uppercase). data-align='right' for numbers."],
+            [".sm-cap-td-label", "Label cell — sticky left on horizontal scroll. 13px/600."],
+            [".sm-cap-td", "Data cell — Space Mono monospace. data-align='right', data-highlight for accent color."],
+            [".sm-cap-table-total", "Summary/total row with accent-dim background."],
+          ]}
+        />
+
+        {/* ── Comps Tab Classes ──────────────────────────────────────────── */}
+        <SectionHeader id="comps-classes" title="Comps Tab Classes (sm-cmp-*)" count={20} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Comparable company analysis — peer group selectors, peer cards with threat-level borders, metrics grids, valuation tables with sticky labels, and capability tags.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".sm-cmp-filter-btn", "Peer group selector button. data-active='true' sets accent highlight."],
+            [".sm-cmp-peer-grid", "2-column card grid for peer cards (1-col at ≤768px)."],
+            [".sm-cmp-peer-card", "Individual peer card with left border. data-threat='high|medium|low' colors border. data-self='true' for self-company gradient."],
+            [".sm-cmp-card-header", "Card header row (flex-between, flex-start alignment)."],
+            [".sm-cmp-card-name", "Company name text (15px, 700 weight)."],
+            [".sm-cmp-card-ticker", "Ticker/type subtitle (Space Mono, 11px, text3)."],
+            [".sm-cmp-badge-row", "Badge container (flex, gap-6, shrink-0)."],
+            [".sm-cmp-badge", "Small badge (10px uppercase). data-level='high|medium|low' for threat colors."],
+            [".sm-cmp-metrics-grid", "Auto-fit metrics grid (minmax 80px). Surface2 background, rounded."],
+            [".sm-cmp-metric", "Individual metric cell (centered, padded)."],
+            [".sm-cmp-metric-value", "Metric number (Space Mono, 13px, 600 weight)."],
+            [".sm-cmp-metric-label", "Metric label (9px micro text)."],
+            [".sm-cmp-cap-tag", "Capability tag (10px). data-enabled='true' for mint highlight."],
+            [".sm-cmp-cap-row", "Capability tag row (flex-wrap, gap-4)."],
+            [".sm-cmp-table-scroll", "Horizontal scroll wrapper for valuation tables."],
+            [".sm-cmp-table-header", "Grid header row — surface2 bg, bottom border. Set gridTemplateColumns via style."],
+            [".sm-cmp-th", "Header cell (11px uppercase, 1px letter-spacing). data-align='right' for numbers."],
+            [".sm-cmp-table-row", "Grid data row with hover highlight. Set gridTemplateColumns via style."],
+            [".sm-cmp-td", "Data cell (Space Mono, 14px). data-align='right' for right-alignment."],
+            [".sm-cmp-td-label", "Sticky label cell — position: sticky, left: 0 for horizontal scroll."],
+            [".sm-cmp-table-total", "Summary/total row with 2px top border and 600 weight."],
           ]}
         />
 

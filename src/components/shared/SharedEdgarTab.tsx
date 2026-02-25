@@ -642,176 +642,182 @@ const FilingRow: React.FC<{
         onKeyDown={analysis ? (e) => { if (e.key === 'Enter') setExpanded(!expanded); } : undefined}
         className={`sm-ed-filing-row${analysis ? ' sm-pointer' : ''}`}
       >
-        {/* Chevron (fixed-width slot so rows align whether analysis exists or not) */}
-        <span className="sm-ed-chevron-slot">
-        {analysis && (
-          <svg
-            width={12}
-            height={12}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="rgba(255,255,255,0.3)"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-            style={{
-              transition: 'transform 0.2s',
-              transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
-            }}
-          >
-            <path d="M9 5l7 7-7 7" />
-          </svg>
-        )}
-        </span>
-        {/* Status dot — always visible */}
-        <span
-          title={statusCfg.title}
-          className="sm-ed-status-dot"
-          style={{ '--dot-color': statusCfg.color } as React.CSSProperties}
-        />
-        {/* Form badge — fixed width so columns align across rows */}
-        <span className="sm-ed-form-badge" style={{
-          '--badge-bg': colors.bg, '--badge-text': colors.text,
-        } as React.CSSProperties}>
-          {formDisplay}
-        </span>
-        {/* NEW / SEEN badge — fixed-width slot so description column aligns */}
-        <span className="sm-ed-badge-slot">
-          {isGenuinelyNew && !isDismissed && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
-              title="Click to acknowledge"
-              className="sm-ed-new-badge"
-            >
-              NEW
-            </button>
-          )}
-          {isGenuinelyNew && isDismissed && (
-            <span className="sm-ed-seen-badge">
-              SEEN
-            </span>
-          )}
-        </span>
-        {/* Description */}
-        <span className="sm-ed-desc">
-          {r.filing.primaryDocDescription || r.filing.form}
-        </span>
-        {/* Verdict badge inline (compact, shown in header when collapsed) */}
-        {analysis && !expanded && (() => {
-          const verdict = parseVerdict(analysis);
-          if (!verdict) return null;
-          const vc = VERDICT_COLORS[verdict.level];
-          return (
-            <span className="sm-ed-verdict-badge" style={{
-              '--verdict-color': vc.color, '--verdict-bg': vc.bg,
-            } as React.CSSProperties}>
-              {verdict.level}
-            </span>
-          );
-        })()}
-        {/* Date — fixed width for column alignment */}
-        <span className="sm-ed-date">
-          {formatEdgarDate(r.filing.filingDate)}
-        </span>
-        {/* Status label — fixed width so DB column aligns */}
-        <span className="sm-ed-status-label" style={{ '--status-color': statusCfg.color } as React.CSSProperties}>
-          {statusCfg.label}
-        </span>
-        {/* DB status button — hover fetches live data from database */}
-        {(() => {
-          const dbColor = !dbRecord ? 'var(--text3)' : STATUS_CONFIG[r.status].color;
-          const dbOpacity = !dbRecord ? 0.25 : 0.8;
-          return (
-            <span style={{ position: 'relative' }} className="sm-shrink-0">
-              <button
-                type="button"
-                aria-label="Show database record"
-                className="sm-ed-db-btn"
-                style={{ '--db-color': dbColor, '--db-opacity': dbOpacity } as React.CSSProperties}
-                onFocus={handleDbHoverEnter}
-                onBlur={handleDbHoverLeave}
-              >
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: dbColor }} />
-                DB
-              </button>
-              {/* Tooltip — shows live DB data */}
-              {dbTooltipVisible && (
-                <div ref={dbTooltipRef} className="sm-ed-db-tooltip">
-                  <div className="sm-micro-label" style={{ marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
-                    Saved in seen_filings DB?
-                  </div>
-                  {dbTooltipLoading ? (
-                    <div className="sm-text3" style={{ fontStyle: 'italic' }}>Fetching from database...</div>
-                  ) : dbTooltip ? (
-                    <>
-                      <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>status:</span> <span style={{ color: statusCfg.color }} className="sm-fw-600">{dbTooltip.status}</span></div>
-                      <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>form:</span> {dbTooltip.form}</div>
-                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>desc:</span> {dbTooltip.description}</div>
-                      <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>filed:</span> {dbTooltip.filingDate}</div>
-                      <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>cross-refs:</span> {dbTooltip.crossRefs ? [...new Set(dbTooltip.crossRefs.map(r => r.source))].join(', ') : 'none'}</div>
-                      <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>seen:</span> <span className="sm-fw-600" style={{ color: dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)' }}>{dbTooltip.seen}</span></div>
-                    </>
-                  ) : (
-                    <div className="sm-coral sm-fw-600">NOT IN DATABASE</div>
-                  )}
-                </div>
-              )}
-            </span>
-          );
-        })()}
-        {/* Action buttons — stop propagation so clicks don't toggle expand */}
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-        <div className="sm-flex sm-gap-4 sm-shrink-0" onClick={e => e.stopPropagation()}>
-          <a
-            href={r.filing.fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Open filing on SEC EDGAR"
-            className="sm-ed-action-btn-sm"
-          >
-            <svg width={11} height={11} viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" />
-            </svg>
-          </a>
-          <ActionBtn
-            label="AI"
-            title={analysis ? 'Close AI analysis' : 'Analyze with AI'}
-            onClick={handleAnalyze}
-            loading={analyzing}
-            active={!!analysis}
-            variant="accent"
-          />
-          {onRecheck && (
-            <button
-              onClick={onRecheck}
-              disabled={recheckLoading}
-              title="Re-check if this filing is in the local database"
-              className="sm-ed-action-btn-sm"
+        {/* Main row: chevron + status + badge + headline */}
+        <div className="sm-ed-row-main">
+          {/* Chevron (fixed-width slot so rows align whether analysis exists or not) */}
+          <span className="sm-ed-chevron-slot">
+          {analysis && (
+            <svg
+              width={12}
+              height={12}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="rgba(255,255,255,0.3)"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
               style={{
-                '--ed-btn-color': recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
-                borderColor: recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)',
-                cursor: recheckLoading ? 'wait' : undefined,
-                opacity: recheckLoading ? 0.5 : 1,
-              } as React.CSSProperties}
+                transition: 'transform 0.2s',
+                transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+              }}
             >
-              <svg width={11} height={11} viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 0.8s linear infinite' : 'none' }}>
-                <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-                <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M9 5l7 7-7 7" />
+            </svg>
+          )}
+          </span>
+          {/* Status dot — always visible */}
+          <span
+            title={statusCfg.title}
+            className="sm-ed-status-dot"
+            style={{ '--dot-color': statusCfg.color } as React.CSSProperties}
+          />
+          {/* Form badge — fixed width so columns align across rows */}
+          <span className="sm-ed-form-badge" style={{
+            '--badge-bg': colors.bg, '--badge-text': colors.text,
+          } as React.CSSProperties}>
+            {formDisplay}
+          </span>
+          {/* NEW / SEEN badge — fixed-width slot so description column aligns */}
+          <span className="sm-ed-badge-slot">
+            {isGenuinelyNew && !isDismissed && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
+                title="Click to acknowledge"
+                className="sm-ed-new-badge"
+              >
+                NEW
+              </button>
+            )}
+            {isGenuinelyNew && isDismissed && (
+              <span className="sm-ed-seen-badge">
+                SEEN
+              </span>
+            )}
+          </span>
+          {/* Description */}
+          <span className="sm-ed-desc">
+            {r.filing.primaryDocDescription || r.filing.form}
+          </span>
+        </div>
+        {/* Meta row: verdict + date + status + DB + actions */}
+        <div className="sm-ed-row-meta">
+          {/* Verdict badge inline (compact, shown in header when collapsed) */}
+          {analysis && !expanded && (() => {
+            const verdict = parseVerdict(analysis);
+            if (!verdict) return null;
+            const vc = VERDICT_COLORS[verdict.level];
+            return (
+              <span className="sm-ed-verdict-badge" style={{
+                '--verdict-color': vc.color, '--verdict-bg': vc.bg,
+              } as React.CSSProperties}>
+                {verdict.level}
+              </span>
+            );
+          })()}
+          {/* Date */}
+          <span className="sm-ed-date">
+            {formatEdgarDate(r.filing.filingDate)}
+          </span>
+          {/* Status label */}
+          <span className="sm-ed-status-label" style={{ '--status-color': statusCfg.color } as React.CSSProperties}>
+            {statusCfg.label}
+          </span>
+          {/* DB status button — hover fetches live data from database */}
+          {(() => {
+            const dbColor = !dbRecord ? 'var(--text3)' : STATUS_CONFIG[r.status].color;
+            const dbOpacity = !dbRecord ? 0.25 : 0.8;
+            return (
+              <span style={{ position: 'relative' }} className="sm-shrink-0">
+                <button
+                  type="button"
+                  aria-label="Show database record"
+                  className="sm-ed-db-btn"
+                  style={{ '--db-color': dbColor, '--db-opacity': dbOpacity } as React.CSSProperties}
+                  onFocus={handleDbHoverEnter}
+                  onBlur={handleDbHoverLeave}
+                >
+                  <span style={{ width: 5, height: 5, borderRadius: '50%', background: dbColor }} />
+                  DB
+                </button>
+                {/* Tooltip — shows live DB data */}
+                {dbTooltipVisible && (
+                  <div ref={dbTooltipRef} className="sm-ed-db-tooltip">
+                    <div className="sm-micro-label" style={{ marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
+                      Saved in seen_filings DB?
+                    </div>
+                    {dbTooltipLoading ? (
+                      <div className="sm-text3" style={{ fontStyle: 'italic' }}>Fetching from database...</div>
+                    ) : dbTooltip ? (
+                      <>
+                        <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>status:</span> <span style={{ color: statusCfg.color }} className="sm-fw-600">{dbTooltip.status}</span></div>
+                        <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>form:</span> {dbTooltip.form}</div>
+                        <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>desc:</span> {dbTooltip.description}</div>
+                        <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>filed:</span> {dbTooltip.filingDate}</div>
+                        <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>cross-refs:</span> {dbTooltip.crossRefs ? [...new Set(dbTooltip.crossRefs.map(r => r.source))].join(', ') : 'none'}</div>
+                        <div><span className="sm-text3" style={{ minWidth: 80, display: 'inline-block' }}>seen:</span> <span className="sm-fw-600" style={{ color: dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)' }}>{dbTooltip.seen}</span></div>
+                      </>
+                    ) : (
+                      <div className="sm-coral sm-fw-600">NOT IN DATABASE</div>
+                    )}
+                  </div>
+                )}
+              </span>
+            );
+          })()}
+          {/* Action buttons — stop propagation so clicks don't toggle expand */}
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+          <div className="sm-flex sm-gap-4 sm-shrink-0" onClick={e => e.stopPropagation()}>
+            <a
+              href={r.filing.fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open filing on SEC EDGAR"
+              className="sm-ed-action-btn-sm"
+            >
+              <svg width={11} height={11} viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" />
+              </svg>
+            </a>
+            <ActionBtn
+              label="AI"
+              title={analysis ? 'Close AI analysis' : 'Analyze with AI'}
+              onClick={handleAnalyze}
+              loading={analyzing}
+              active={!!analysis}
+              variant="accent"
+            />
+            {onRecheck && (
+              <button
+                onClick={onRecheck}
+                disabled={recheckLoading}
+                title="Re-check if this filing is in the local database"
+                className="sm-ed-action-btn-sm"
+                style={{
+                  '--ed-btn-color': recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
+                  borderColor: recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)',
+                  cursor: recheckLoading ? 'wait' : undefined,
+                  opacity: recheckLoading ? 0.5 : 1,
+                } as React.CSSProperties}
+              >
+                <svg width={11} height={11} viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 0.8s linear infinite' : 'none' }}>
+                  <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                  <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            )}
+            <button
+              onClick={() => onToggleHide?.()}
+              title="Hide filing"
+              className="sm-ed-action-btn-sm"
+              style={{ opacity: 0.5 }}
+            >
+              <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z"/>
+                <line x1="2" y1="14" x2="14" y2="2"/>
               </svg>
             </button>
-          )}
-          <button
-            onClick={() => onToggleHide?.()}
-            title="Hide filing"
-            className="sm-ed-action-btn-sm"
-            style={{ opacity: 0.5 }}
-          >
-            <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z"/>
-              <line x1="2" y1="14" x2="14" y2="2"/>
-            </svg>
-          </button>
+          </div>
         </div>
       </div>
 

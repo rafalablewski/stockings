@@ -2947,7 +2947,7 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
       </div>
 
       {/* Navigation Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+      <div className="sm-cap-nav" style={{ '--cap-cols': 7 } as React.CSSProperties}>
         {[
           { id: 'structure', value: `${shareClasses.length}`, label: 'Share Classes', sub: 'Common + converted preferred' },
           { id: 'shareholders', value: `${majorShareholders.length}`, label: 'Major Holders', sub: 'Bill Miller + institutions' },
@@ -2959,18 +2959,13 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
         ].map(nav => (
           <div
             key={nav.id}
+            className="sm-cap-nav-item"
+            data-active={capitalView === nav.id ? 'true' : undefined}
             onClick={() => setCapitalView(nav.id)}
-            style={{
-              background: 'var(--surface)',
-              padding: '24px 24px',
-              cursor: 'pointer',
-              borderLeft: capitalView === nav.id ? '4px solid var(--violet)' : '4px solid transparent',
-              transition: 'border-color 0.2s',
-            }}
           >
-            <div style={{ fontSize: 24, fontWeight: 600, color: capitalView === nav.id ? 'var(--violet)' : 'var(--text)' }}>{nav.value}</div>
-            <div className="sm-fw-500" style={{ fontSize: 14 }}>{nav.label}</div>
-            <div className="sm-subtle">{nav.sub}</div>
+            <div className="sm-cap-nav-value">{nav.value}</div>
+            <div className="sm-cap-nav-label">{nav.label}</div>
+            <div className="sm-cap-nav-sub">{nav.sub}</div>
           </div>
         ))}
       </div>
@@ -2982,26 +2977,26 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
         <div className="sm-card-header">
           <span className="sm-section-label">Share Class Structure</span>
         </div>
-        <div className="sm-card-body">
-          <div>
-            {/* Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 1fr 100px', borderBottom: '1px solid var(--border)' }}>
+        <div className="sm-cap-table-scroll">
+          <div style={{ minWidth: 480 }}>
+            <div className="sm-cap-table-header" style={{ gridTemplateColumns: '1fr 100px 100px 1fr 100px' }}>
               {['Class', 'Authorized', 'Outstanding', 'Voting', 'Status'].map((h, idx) => (
-                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: [1, 2].includes(idx) ? 'right' : 'left' }}>{h}</span>
+                <span key={h} className="sm-cap-th" data-align={[1, 2].includes(idx) ? 'right' : undefined}>{h}</span>
               ))}
             </div>
-            {/* Rows */}
             {shareClasses.map((sc, i) => (
-              <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 1fr 100px', borderBottom: i < shareClasses.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
-                <span className="sm-fw-600" style={{ padding: '12px 16px', fontSize: 13 }}>{sc.class}</span>
-                <span className="sm-mono-right" style={{ padding: '12px 16px' }}>{(sc.authorized / 1e6).toFixed(0)}M</span>
-                <span className="sm-mono-right sm-violet" style={{ padding: '12px 16px' }}>{(sc.outstanding / 1e6).toFixed(1)}M</span>
-                <span className="sm-body-sm" style={{ padding: '12px 16px' }}>{sc.voting}</span>
-                <span className="sm-text-13" style={{ padding: '12px 16px' }}><span style={{ color: statusColor(sc.status) }}>{sc.status}</span></span>
+              <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 100px 100px 1fr 100px' }}>
+                <span className="sm-cap-td-label">{sc.class}</span>
+                <span className="sm-cap-td" data-align="right">{(sc.authorized / 1e6).toFixed(0)}M</span>
+                <span className="sm-cap-td" data-align="right" data-highlight>{(sc.outstanding / 1e6).toFixed(1)}M</span>
+                <span className="sm-cap-td">{sc.voting}</span>
+                <span className="sm-cap-td"><span style={{ color: statusColor(sc.status) }}>{sc.status}</span></span>
               </div>
             ))}
           </div>
-          <div className="sm-body-sm sm-text3 sm-mt-12">
+        </div>
+        <div className="sm-card-body">
+          <div className="sm-body-sm sm-text3">
             Par value: $0.0001. Preferred shares converted to common. NYSE American: BMNR.
           </div>
         </div>
@@ -3016,26 +3011,26 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
         <div className="sm-card-header">
           <span className="sm-section-label">Major Shareholders</span>
         </div>
-        <div className="sm-card-body">
-          <div>
-            {/* Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px 1fr 1fr', borderBottom: '1px solid var(--border)' }}>
+        <div className="sm-cap-table-scroll">
+          <div style={{ minWidth: 460 }}>
+            <div className="sm-cap-table-header" style={{ gridTemplateColumns: '1fr 100px 80px 1fr 1fr' }}>
               {['Shareholder', 'Shares (M)', '%', 'Type', 'Source'].map((h, idx) => (
-                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: [1, 2].includes(idx) ? 'right' : 'left' }}>{h}</span>
+                <span key={h} className="sm-cap-th" data-align={[1, 2].includes(idx) ? 'right' : undefined}>{h}</span>
               ))}
             </div>
-            {/* Rows */}
             {majorShareholders.map((sh, i) => (
-              <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px 1fr 1fr', borderBottom: i < majorShareholders.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
-                <span className="sm-fw-500" style={{ padding: '12px 16px', fontSize: 13 }}>{sh.name}</span>
-                <span className="sm-mono-right" style={{ padding: '12px 16px' }}>{sh.shares ? (sh.shares / 1e6).toFixed(2) : '—'}</span>
-                <span className="sm-mono-right sm-violet" style={{ padding: '12px 16px' }}>{sh.percent ? `${sh.percent.toFixed(2)}%` : '—'}</span>
-                <span className="sm-body-sm" style={{ padding: '12px 16px' }}>{sh.type}</span>
-                <span className="sm-text-13" style={{ padding: '12px 16px' }}><span className="sm-gold">{sh.source}</span></span>
+              <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 100px 80px 1fr 1fr' }}>
+                <span className="sm-cap-td-label">{sh.name}</span>
+                <span className="sm-cap-td" data-align="right">{sh.shares ? (sh.shares / 1e6).toFixed(2) : '—'}</span>
+                <span className="sm-cap-td" data-align="right" data-highlight>{sh.percent ? `${sh.percent.toFixed(2)}%` : '—'}</span>
+                <span className="sm-cap-td">{sh.type}</span>
+                <span className="sm-cap-td"><span className="sm-gold">{sh.source}</span></span>
               </div>
             ))}
           </div>
-          <div className="sm-body-sm sm-text3 sm-mt-12">
+        </div>
+        <div className="sm-card-body">
+          <div className="sm-body-sm sm-text3">
             Update from 13F (institutional) and DEF 14A (insiders) when available.
           </div>
         </div>
@@ -3050,28 +3045,25 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
         <div className="sm-card-header">
           <span className="sm-section-label">Equity Offerings</span>
         </div>
-        <div className="sm-card-body">
-          <div>
-            {/* Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 100px 100px', borderBottom: '1px solid var(--border)' }}>
+        <div className="sm-cap-table-scroll">
+          <div style={{ minWidth: 400 }}>
+            <div className="sm-cap-table-header" style={{ gridTemplateColumns: '1fr 1fr 100px 100px' }}>
               {['Date', 'Type', 'Amount', 'Status'].map((h, idx) => (
-                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: idx === 2 ? 'right' : 'left' }}>{h}</span>
+                <span key={h} className="sm-cap-th" data-align={idx === 2 ? 'right' : undefined}>{h}</span>
               ))}
             </div>
-            {/* Rows */}
             {equityOfferings.map((off, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 100px 100px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}>
-                <span className="sm-text-13" style={{ padding: '12px 16px' }}>{off.date}</span>
-                <span className="sm-fw-600" style={{ padding: '12px 16px', fontSize: 13 }}>{off.type}</span>
-                <span className="sm-mono-sm sm-text-right sm-mint" style={{ padding: '12px 16px' }}>${off.amount}B</span>
-                <span className="sm-text-13" style={{ padding: '12px 16px' }}><span style={{ color: statusColor(off.status) }}>{off.status}</span></span>
+              <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 1fr 100px 100px' }}>
+                <span className="sm-cap-td-label">{off.date}</span>
+                <span className="sm-cap-td" style={{ fontWeight: 600 }}>{off.type}</span>
+                <span className="sm-cap-td" data-align="right" data-highlight>${off.amount}B</span>
+                <span className="sm-cap-td"><span style={{ color: statusColor(off.status) }}>{off.status}</span></span>
               </div>
             ))}
-            {/* Total Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 100px 100px', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
-              <span style={{ padding: '12px 16px', fontSize: 13, gridColumn: 'span 2' }}>Total Shelf Capacity</span>
-              <span className="sm-mono-sm sm-text-right sm-mint" style={{ padding: '12px 16px' }}>$31.4B</span>
-              <span style={{ padding: '12px 16px' }}></span>
+            <div className="sm-cap-table-total" style={{ gridTemplateColumns: '1fr 1fr 100px 100px' }}>
+              <span className="sm-cap-td-label" style={{ gridColumn: 'span 2' }}>Total Shelf Capacity</span>
+              <span className="sm-cap-td" data-align="right" data-highlight>$31.4B</span>
+              <span className="sm-cap-td"></span>
             </div>
           </div>
         </div>
@@ -3081,28 +3073,25 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
         <div className="sm-card-header">
           <span className="sm-section-label">Warrants Outstanding</span>
         </div>
-        <div className="sm-card-body">
-          <div>
-            {/* Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 1fr', borderBottom: '1px solid var(--border)' }}>
+        <div className="sm-cap-table-scroll">
+          <div style={{ minWidth: 400 }}>
+            <div className="sm-cap-table-header" style={{ gridTemplateColumns: '1fr 100px 100px 1fr' }}>
               {['Type', 'Shares', 'Strike', 'Source'].map((h, idx) => (
-                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: [1, 2].includes(idx) ? 'right' : 'left' }}>{h}</span>
+                <span key={h} className="sm-cap-th" data-align={[1, 2].includes(idx) ? 'right' : undefined}>{h}</span>
               ))}
             </div>
-            {/* Rows */}
             {warrants.map((w, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 1fr', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}>
-                <span className="sm-fw-500" style={{ padding: '12px 16px', fontSize: 13 }}>{w.type}</span>
-                <span className="sm-mono-right" style={{ padding: '12px 16px' }}>{(w.shares / 1e6).toFixed(2)}M</span>
-                <span className="sm-mono-right sm-violet" style={{ padding: '12px 16px' }}>${w.strike < 1 ? w.strike.toFixed(4) : w.strike.toFixed(2)}</span>
-                <span className="sm-body-sm" style={{ padding: '12px 16px' }}>{w.source}</span>
+              <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 100px 100px 1fr' }}>
+                <span className="sm-cap-td-label">{w.type}</span>
+                <span className="sm-cap-td" data-align="right">{(w.shares / 1e6).toFixed(2)}M</span>
+                <span className="sm-cap-td" data-align="right" data-highlight>${w.strike < 1 ? w.strike.toFixed(4) : w.strike.toFixed(2)}</span>
+                <span className="sm-cap-td">{w.source}</span>
               </div>
             ))}
-            {/* Total Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
-              <span className="sm-text-13" style={{ padding: '12px 16px' }}>Total</span>
-              <span className="sm-mono-right" style={{ padding: '12px 16px' }}>{((warrants[0].shares + warrants[1].shares) / 1e6).toFixed(2)}M</span>
-              <span style={{ padding: '12px 16px', gridColumn: 'span 2' }}></span>
+            <div className="sm-cap-table-total" style={{ gridTemplateColumns: '1fr 100px 100px 1fr' }}>
+              <span className="sm-cap-td-label">Total</span>
+              <span className="sm-cap-td" data-align="right">{((warrants[0].shares + warrants[1].shares) / 1e6).toFixed(2)}M</span>
+              <span className="sm-cap-td" style={{ gridColumn: 'span 2' }}></span>
             </div>
           </div>
         </div>
@@ -3117,27 +3106,27 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
         <div className="sm-card-header">
           <span className="sm-section-label">Equity Incentive Plans</span>
         </div>
-        <div className="sm-card-body">
-          <div>
-            {/* Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 1fr', borderBottom: '1px solid var(--border)' }}>
+        <div className="sm-cap-table-scroll">
+          <div style={{ minWidth: 320 }}>
+            <div className="sm-cap-table-header" style={{ gridTemplateColumns: '1fr 100px 1fr' }}>
               {['Plan', 'Reserved', 'Status'].map((h, idx) => (
-                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: idx === 1 ? 'right' : 'left' }}>{h}</span>
+                <span key={h} className="sm-cap-th" data-align={idx === 1 ? 'right' : undefined}>{h}</span>
               ))}
             </div>
-            {/* Rows */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 1fr', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}>
-              <span className="sm-text-13" style={{ padding: '12px 16px' }}>2024 Equity Incentive Plan</span>
-              <span className="sm-mono-sm sm-text-right sm-gold" style={{ padding: '12px 16px' }}>TBD</span>
-              <span className="sm-text-13" style={{ padding: '12px 16px' }}><span className="sm-gold">Pending 10-K</span></span>
+            <div className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 100px 1fr' }}>
+              <span className="sm-cap-td-label">2024 Equity Incentive Plan</span>
+              <span className="sm-cap-td" data-align="right"><span className="sm-gold">TBD</span></span>
+              <span className="sm-cap-td"><span className="sm-gold">Pending 10-K</span></span>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 1fr', transition: 'background 0.15s' }}>
-              <span className="sm-text-13" style={{ padding: '12px 16px' }}>Employee Stock Purchase Plan</span>
-              <span className="sm-mono-sm sm-text-right sm-gold" style={{ padding: '12px 16px' }}>TBD</span>
-              <span className="sm-text-13" style={{ padding: '12px 16px' }}><span className="sm-gold">Pending 10-K</span></span>
+            <div className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 100px 1fr' }}>
+              <span className="sm-cap-td-label">Employee Stock Purchase Plan</span>
+              <span className="sm-cap-td" data-align="right"><span className="sm-gold">TBD</span></span>
+              <span className="sm-cap-td"><span className="sm-gold">Pending 10-K</span></span>
             </div>
           </div>
-          <div className="sm-body-sm sm-text3 sm-mt-12">
+        </div>
+        <div className="sm-card-body">
+          <div className="sm-body-sm sm-text3">
             Data pending from 10-K or DEF 14A proxy filing.
           </div>
         </div>
@@ -3696,43 +3685,42 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
       {/* Peer Group Selector */}
       <div className="sm-flex-wrap">
-        {categories.map(cat => {
-          const isActive = selectedCategory === cat.key;
-          return (
+        {categories.map(cat => (
           <button
             key={cat.key}
+            className="sm-cmp-filter-btn"
+            data-active={selectedCategory === cat.key ? 'true' : undefined}
             onClick={() => setSelectedCategory(cat.key)}
-            style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
           >
             {cat.label}
           </button>
-          );
-        })}
+        ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+      <div className="sm-cmp-peer-grid">
         {filteredComps.map(c => {
           const qual = keyCompLookup[c.name];
           const isSelf = c.name === 'BMNR';
+          const threatLevel = qual ? qual.threat.toLowerCase() : '';
           return (
-            <div key={c.name} style={getCardStyle(isSelf, qual?.threat)}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <div className="sm-text sm-fw-700" style={{ fontSize: 15, lineHeight: 1.2 }}>{c.fullName || c.name}</div>
-                  <div className="sm-mono-sm sm-text3" style={{ fontSize: 11 }}>{c.name} · {c.crypto}</div>
+            <div key={c.name} className="sm-cmp-peer-card" data-threat={threatLevel || undefined} data-self={isSelf ? 'true' : undefined}>
+              <div className="sm-cmp-card-header">
+                <div>
+                  <div className="sm-cmp-card-name">{c.fullName || c.name}</div>
+                  <div className="sm-cmp-card-ticker">{c.name} · {c.crypto}</div>
                 </div>
-                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
-                  {qual && <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: qual.threat === 'High' ? 'rgba(255,123,114,0.15)' : qual.threat === 'Medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: qual.threat === 'High' ? 'var(--coral)' : qual.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{qual.threat}</span>}
-                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{qual?.type || c.category}</span>
+                <div className="sm-cmp-badge-row">
+                  {qual && <span className="sm-cmp-badge" data-level={threatLevel}>{qual.threat}</span>}
+                  <span className="sm-cmp-badge">{qual?.type || c.category}</span>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 8, padding: 12, background: 'var(--surface2)', borderRadius: 10, marginBottom: 12 }}>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-md sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>{typeof c.holdings === 'number' ? c.holdings.toLocaleString() : c.holdings}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Holdings</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-md sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>{c.navPerShare > 0 ? `$${c.navPerShare.toFixed(2)}` : '—'}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>NAV/Share</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-md sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>${c.price}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Price</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: c.premium >= 0 ? 'var(--mint)' : 'var(--coral)', lineHeight: 1.2 }}>{c.navPerShare > 0 ? `${c.premium >= 0 ? '+' : ''}${c.premium.toFixed(0)}%` : '—'}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Premium</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: c.yield > 0 ? 'var(--mint)' : 'var(--text)', lineHeight: 1.2 }}>{c.yield > 0 ? `${c.yield}%` : '—'}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Yield</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-md sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>${(c.marketCap / 1e9).toFixed(1)}B</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Mkt Cap</div></div>
+              <div className="sm-cmp-metrics-grid">
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">{typeof c.holdings === 'number' ? c.holdings.toLocaleString() : c.holdings}</div><div className="sm-cmp-metric-label">Holdings</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">{c.navPerShare > 0 ? `$${c.navPerShare.toFixed(2)}` : '—'}</div><div className="sm-cmp-metric-label">NAV/Share</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">${c.price}</div><div className="sm-cmp-metric-label">Price</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value" style={{ color: c.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{c.navPerShare > 0 ? `${c.premium >= 0 ? '+' : ''}${c.premium.toFixed(0)}%` : '—'}</div><div className="sm-cmp-metric-label">Premium</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value" style={{ color: c.yield > 0 ? 'var(--mint)' : 'var(--text)' }}>{c.yield > 0 ? `${c.yield}%` : '—'}</div><div className="sm-cmp-metric-label">Yield</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">${(c.marketCap / 1e9).toFixed(1)}B</div><div className="sm-cmp-metric-label">Mkt Cap</div></div>
               </div>
               {qual && (
                 <>
@@ -3748,15 +3736,15 @@ const CompsTab = ({ comparables, ethPrice }) => {
           const ticker = k.name.match(/\(([A-Z]+)\)/)?.[1];
           return ticker && !compsData.find(c => c.name === ticker);
         }).filter(() => selectedCategory === 'all').map((k, i) => (
-          <div key={`qual-${i}`} style={getCardStyle(false, k.threat)}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <div className="sm-text sm-fw-700" style={{ fontSize: 15, lineHeight: 1.2 }}>{k.name}</div>
-                <div className="sm-mono-sm sm-text3" style={{ fontSize: 11 }}>{k.name.match(/\(([A-Z]+)\)/)?.[1] || ''}</div>
+          <div key={`qual-${i}`} className="sm-cmp-peer-card" data-threat={k.threat.toLowerCase()}>
+            <div className="sm-cmp-card-header">
+              <div>
+                <div className="sm-cmp-card-name">{k.name}</div>
+                <div className="sm-cmp-card-ticker">{k.name.match(/\(([A-Z]+)\)/)?.[1] || ''}</div>
               </div>
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
-                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: k.threat === 'High' ? 'rgba(255,123,114,0.15)' : k.threat === 'Medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: k.threat === 'High' ? 'var(--coral)' : k.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{k.threat}</span>
-                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{k.type}</span>
+              <div className="sm-cmp-badge-row">
+                <span className="sm-cmp-badge" data-level={k.threat.toLowerCase()}>{k.threat}</span>
+                <span className="sm-cmp-badge">{k.type}</span>
               </div>
             </div>
             <div className="sm-subtle sm-text2" style={{ lineHeight: 1.5, marginBottom: 4 }}><strong>Status:</strong> {k.status}</div>
@@ -3787,10 +3775,10 @@ const CompsTab = ({ comparables, ethPrice }) => {
       <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
         <div className="sm-section-label" style={{ marginBottom: 4 }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
         <p className="sm-body-sm">BMNR value under different NAV multiples (current: ${(compsData[0]?.marketCap / 1e9).toFixed(2)}B)</p>
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)', borderRadius: '10px 10px 0 0' }}>
+        <div className="sm-cmp-table-scroll">
+          <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', borderRadius: '10px 10px 0 0' }}>
             {['Method', 'Peer Basis', 'Multiple', 'Implied Value', 'vs Current'].map((label, idx) => (
-              <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx < 2 ? 'left' : 'right' }}>{label}</div>
+              <div key={label} className="sm-cmp-th" data-align={idx < 2 ? 'left' : 'right'}>{label}</div>
             ))}
           </div>
           {(() => {
@@ -3805,12 +3793,12 @@ const CompsTab = ({ comparables, ethPrice }) => {
               { method: 'Yield-Adjusted', basis: 'ETH Yield Premium', multiple: '1.3x', implied: nav * 1.3, vs: ((nav * 1.3) / currentMC - 1) * 100 },
               { method: 'Yield-Adjusted', basis: '5yr Compound', multiple: '1.15x', implied: nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5), vs: ((nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5)) / currentMC - 1) * 100 },
             ].map((v, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</div>
-                <div className="sm-mono-md" style={{ padding: '16px 16px' }}>{v.basis}</div>
-                <div className="sm-mono-md sm-text-right" style={{ padding: '16px 16px' }}>{v.multiple}</div>
-                <div className="sm-mono-md sm-text-right sm-mint" style={{ padding: '16px 16px' }}>${(v.implied / 1e9).toFixed(2)}B</div>
-                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: v.vs >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+              <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr' }}>
+                <div className="sm-cmp-td-label">{v.method}</div>
+                <div className="sm-cmp-td">{v.basis}</div>
+                <div className="sm-cmp-td" data-align="right">{v.multiple}</div>
+                <div className="sm-cmp-td sm-mint" data-align="right">${(v.implied / 1e9).toFixed(2)}B</div>
+                <div className="sm-cmp-td" data-align="right" style={{ color: v.vs >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                   {v.vs >= 0 ? '+' : ''}{v.vs.toFixed(0)}%
                 </div>
               </div>
@@ -3827,10 +3815,10 @@ const CompsTab = ({ comparables, ethPrice }) => {
             <div className="sm-section-label" style={{ marginBottom: 4 }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
             <p style={{ color: 'var(--text3)', fontSize: 13, margin: 0 }}>Value each component separately</p>
           </div>
-          <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
+          <div className="sm-cmp-table-scroll">
+            <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
               {['Component', 'Metric', 'Multiple', 'Value'].map((label, idx) => (
-                <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
+                <div key={label} className="sm-cmp-th" data-align={idx === 0 ? 'left' : 'right'}>{label}</div>
               ))}
             </div>
             {(() => {
@@ -3842,20 +3830,20 @@ const CompsTab = ({ comparables, ethPrice }) => {
                 { segment: 'Operational Premium', basis: 'Management + infrastructure', metric: 'Strategic', multiple: '—', value: ethValue * 0.05 },
                 { segment: 'Growth Optionality', basis: 'Acquisition capacity', metric: 'Option value', multiple: '—', value: ethValue * 0.03 },
               ].map((s, i) => (
-                <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-                  <div className="sm-mono-md" style={{ padding: '16px 16px' }}>
+                <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                  <div className="sm-cmp-td-label">
                     <div className="sm-fw-500">{s.segment}</div>
                     <div className="sm-text-11">{s.basis}</div>
                   </div>
-                  <div className="sm-mono-md sm-text-right" style={{ padding: '16px 16px' }}>{s.metric}</div>
-                  <div className="sm-mono-md sm-text-right" style={{ padding: '16px 16px' }}>{s.multiple}</div>
-                  <div className="sm-mono-md sm-text-right sm-mint" style={{ padding: '16px 16px' }}>${(s.value / 1e9).toFixed(2)}B</div>
+                  <div className="sm-cmp-td" data-align="right">{s.metric}</div>
+                  <div className="sm-cmp-td" data-align="right">{s.multiple}</div>
+                  <div className="sm-cmp-td sm-mint" data-align="right">${(s.value / 1e9).toFixed(2)}B</div>
                 </div>
               ));
             })()}
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>SOTP Total</div>
-              <div className="sm-mono-md sm-text-right sm-mint" style={{ padding: '16px 16px' }}>${((() => {
+            <div className="sm-cmp-table-total" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+              <div className="sm-cmp-td-label" style={{ gridColumn: '1 / 4' }}>SOTP Total</div>
+              <div className="sm-cmp-td sm-mint" data-align="right">${((() => {
                 const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
                 const ethValue = ethHoldings * ethPrice;
                 const yieldNPV = ethValue * (comparables[0]?.yield || 0) / 100 * 3.79;
@@ -3872,11 +3860,11 @@ const CompsTab = ({ comparables, ethPrice }) => {
           <div className="sm-section-label" style={{ marginBottom: 4 }}>NAV Premium Sensitivity<UpdateIndicators sources={['WS']} /></div>
           <p className="sm-body-sm">Stock price at different ETH prices × NAV multiples</p>
           <div className="sm-overflow-x">
-            <div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 1fr)', background: 'var(--surface2)', borderBottom: '1px solid var(--border)', borderRadius: '10px 10px 0 0' }}>
-                <div style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600 }}>ETH / NAV</div>
+            <div className="sm-cmp-table-scroll">
+              <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '1fr repeat(5, 1fr)', borderRadius: '10px 10px 0 0' }}>
+                <div className="sm-cmp-th">ETH / NAV</div>
                 {[0.75, 1.0, 1.25, 1.5, 2.0].map(m => (
-                  <div key={m} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: 'right' }}>{m}x</div>
+                  <div key={m} className="sm-cmp-th" data-align="right">{m}x</div>
                 ))}
               </div>
               {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(ethMult => {
@@ -3885,17 +3873,17 @@ const CompsTab = ({ comparables, ethPrice }) => {
                 const baseNAV = (ethHoldings * ethPrice) / shares;
                 const currentPrice = comparables[0]?.price || 0;
                 return (
-                  <div key={ethMult} style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 1fr)', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-                    <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 600 }}>${(ethPrice * ethMult).toLocaleString()}</div>
+                  <div key={ethMult} className="sm-cmp-table-row" style={{ gridTemplateColumns: '1fr repeat(5, 1fr)' }}>
+                    <div className="sm-cmp-td-label" style={{ fontWeight: 600 }}>${(ethPrice * ethMult).toLocaleString()}</div>
                     {[0.75, 1.0, 1.25, 1.5, 2.0].map(navMult => {
                       const price = baseNAV * ethMult * navMult;
                       const isNear = ethMult === 1.0 && navMult === 1.0;
                       return (
-                        <div key={navMult} style={{ padding: '16px 16px', textAlign: 'right', fontFamily: "'Space Mono', monospace", fontSize: 14, ...(isNear ? {
+                        <div key={navMult} className="sm-cmp-td" data-align="right" style={isNear ? {
                           background: 'var(--accent-dim)',
                           fontWeight: 600,
                           color: 'var(--accent)'
-                        } : { color: price >= currentPrice ? 'var(--mint)' : 'var(--coral)' }) }}>
+                        } : { color: price >= currentPrice ? 'var(--mint)' : 'var(--coral)' }}>
                           ${price.toFixed(2)}
                         </div>
                       );
@@ -3910,12 +3898,11 @@ const CompsTab = ({ comparables, ethPrice }) => {
       </div>
 
       {/* Competitor News Intelligence Section */}
-      <div className="sm-divider" style={{ borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+      <div className="sm-divider">
         <div className="sm-section-label">Competitive Intelligence<UpdateIndicators sources="PR" /></div>
-        <div className="sm-flex sm-gap-12" style={{ alignItems: 'baseline' }}>
-          <h3 >Competitor News<span className="sm-mint">.</span></h3>
-          <span className="sm-mono-sm sm-text3">{filteredCompNews.length} events</span>
-        </div>
+        <span className="sm-param-label">Competitor News</span>
+        <span className="sm-mono-sm sm-text3" style={{ marginLeft: 12 }}>{filteredCompNews.length} events</span>
+        <span className="sm-divider-line" />
       </div>
 
       {/* Competitor Filter */}
@@ -4071,12 +4058,11 @@ const CompsTab = ({ comparables, ethPrice }) => {
       </div>
 
       {/* Competitor Profiles */}
-      <div className="sm-divider" style={{ borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+      <div className="sm-divider">
         <div className="sm-section-label">Peer Analysis</div>
-        <div className="sm-flex sm-gap-12" style={{ alignItems: 'baseline' }}>
-          <h3 >Competitor Profiles<span className="sm-mint">.</span></h3>
-          <span className="sm-mono-sm sm-text3">{COMPETITOR_PROFILES.length} companies</span>
-        </div>
+        <span className="sm-param-label">Competitor Profiles</span>
+        <span className="sm-mono-sm sm-text3" style={{ marginLeft: 12 }}>{COMPETITOR_PROFILES.length} companies</span>
+        <span className="sm-divider-line" />
       </div>
       <div className="sm-mt-8">
         <div className="sm-flex-col-gap" style={{ gap: 16 }}>
@@ -6437,21 +6423,21 @@ const BMNRQuarterlyMetricsPanel = () => {
         </div>
 
         {/* Quarterly Table - grid-based pattern */}
-        <div className="sm-overflow-x">
-          <div>
+        <div className="sm-overflow-x sm-scroll-hint">
+          <div style={{ minWidth: `${130 + quarterlyData.length * 90}px` }}>
             {/* Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: `minmax(130px, 1fr) ${quarterlyData.map(() => '90px').join(' ')}`, borderBottom: '1px solid var(--border)' }}>
-              <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', position: 'sticky', left: 0 }}>Metric</span>
+            <div className="sm-fin-table-header" style={{ gridTemplateColumns: `minmax(130px, 1fr) ${quarterlyData.map(() => '90px').join(' ')}` }}>
+              <span className="sm-fin-th" data-sticky="">Metric</span>
               {quarterlyData.map((q, idx) => (
-                <span key={q.quarter} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: idx === 0 ? 'var(--accent-dim)' : 'var(--surface2)', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                <span key={q.quarter} className="sm-fin-th" data-latest={idx === 0 ? '' : undefined} style={{ textAlign: 'right' }}>
                   {q.quarter.replace('Q', '').replace(' ', "'")}
                 </span>
               ))}
             </div>
             {/* Rows */}
             {metrics.map((metric, mi) => (
-              <div key={metric.label} style={{ display: 'grid', gridTemplateColumns: `minmax(130px, 1fr) ${quarterlyData.map(() => '90px').join(' ')}`, borderBottom: mi < metrics.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
-                <span style={{ padding: '12px 16px', fontSize: 13, fontWeight: 500, position: 'sticky', left: 0, background: 'var(--bg1)' }}>
+              <div key={metric.label} className="sm-fin-table-row" style={{ gridTemplateColumns: `minmax(130px, 1fr) ${quarterlyData.map(() => '90px').join(' ')}`, borderBottom: mi < metrics.length - 1 ? undefined : 'none' }}>
+                <span className="sm-fin-td-label">
                   {metric.label}
                 </span>
                 {quarterlyData.map((q, idx) => {
@@ -6461,14 +6447,9 @@ const BMNRQuarterlyMetricsPanel = () => {
                   return (
                     <span
                       key={q.quarter}
-                      style={{
-                        padding: '12px 16px',
-                        fontSize: 12,
-                        fontFamily: 'Space Mono, monospace',
-                        textAlign: 'right',
-                        ...(isLatestQuarter ? { background: 'var(--accent-dim)' } : {}),
-                        ...(cellColor ? { color: cellColor } : {})
-                      }}
+                      className="sm-fin-td"
+                      data-latest={isLatestQuarter ? '' : undefined}
+                      style={cellColor ? { color: cellColor } : undefined}
                     >
                       {metric.format(val as never, q as never)}
                     </span>
@@ -6493,7 +6474,7 @@ const BMNRQuarterlyMetricsPanel = () => {
               <span className="sm-section-label">Latest Quarter Summary ({latestQuarter.quarter})<UpdateIndicators sources="SEC" /></span>
             </div>
             <div className="sm-card-body">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+            <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
               <div className="sm-bg-surface2" style={{ padding: 12 }}>
                 <div className="sm-micro-text">Filing Source</div>
                 <div className="sm-text-13">{latestQuarter.filing}</div>
@@ -6542,14 +6523,15 @@ const BMNRQuarterlyMetricsPanel = () => {
               display: q.cash >= 1000 ? `$${(q.cash / 1000).toFixed(1)}B` : q.cash >= 100 ? `$${q.cash}M` : `$${(q.cash * 1000).toFixed(0)}K`
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
               <>
-                <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+                <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                  <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                   {data.map((d, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                    <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                       <div className="sm-mono-sm sm-text" style={{ fontSize: 11, marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                      <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                      <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                       <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                     </div>
                   ))}
@@ -6573,13 +6555,14 @@ const BMNRQuarterlyMetricsPanel = () => {
               display: `$${q.opEx}M`
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
-              <div className="sm-overflow-x">
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+              <div className="sm-overflow-x sm-scroll-hint">
+                <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                  <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                     <div className="sm-mono-sm sm-text" style={{ fontSize: 11, marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                   </div>
                 ))}
@@ -6649,13 +6632,14 @@ const BMNRQuarterlyMetricsPanel = () => {
               display: `${q.shares.toFixed(0)}M`
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
-              <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+              <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                  <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                     <div className="sm-mono-sm sm-text" style={{ fontSize: 11, marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                   </div>
                 ))}
@@ -6672,13 +6656,14 @@ const BMNRQuarterlyMetricsPanel = () => {
           {(() => {
             const data = BMNR_MARKET_CAP_DATA;
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
-              <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+              <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                  <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                     <div className="sm-mono-sm sm-text" style={{ fontSize: 11, marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                   </div>
                 ))}
@@ -6702,13 +6687,14 @@ const BMNRQuarterlyMetricsPanel = () => {
               display: q.crypto >= 1000 ? `$${(q.crypto / 1000).toFixed(1)}B` : `$${q.crypto}M`
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
-              <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+              <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                  <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                     <div className="sm-mono-sm sm-text" style={{ fontSize: 11, marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                   </div>
                 ))}
@@ -6731,29 +6717,30 @@ const BMNRQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             const hasPositive = data.some(d => d.value >= 0);
             const hasNegative = data.some(d => d.value < 0);
+            const overflow = data.length > 8;
             return (
-              <div style={{ padding: '24px 24px 24px', overflowX: 'auto' }}>
-                <div style={{ minWidth: data.length * 64 }}>
+              <div className="sm-card-body sm-overflow-x sm-scroll-hint">
+                <div style={{ minWidth: overflow ? data.length * 64 : undefined }}>
                 {hasPositive && (
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: hasNegative ? 100 : 200 }}>
+                  <div className="sm-fin-chart" style={{ height: hasNegative ? '45%' : undefined }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
+                      <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                         {d.value >= 0 && <div className="sm-mono-sm sm-text" style={{ fontSize: 11, marginBottom: 4 }}>{d.display}</div>}
-                        <div style={{ width: '100%', background: d.value >= 0 ? 'var(--mint)' : 'transparent', borderRadius: '4px 4px 0 0', height: d.value >= 0 && maxVal > 0 ? Math.round((d.value / maxVal) * 80) : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div style={{ width: '100%', background: d.value >= 0 ? 'var(--mint)' : 'transparent', borderRadius: '4px 4px 0 0', height: d.value >= 0 && maxVal > 0 ? `${Math.round((d.value / maxVal) * 72)}%` : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
                       </div>
                     ))}
                   </div>
                 )}
-                <div style={{ display: 'flex', gap: 8, borderTop: '1px solid var(--text3)' }}>
+                <div style={{ display: 'flex', gap: overflow ? 4 : 8, borderTop: '1px solid var(--border)' }}>
                   {data.map((d, i) => (
-                    <div key={i} style={{ flex: 1, textAlign: 'center', fontSize: 10, color: 'var(--text3)', padding: '4px 0', minWidth: 56 }}>{d.label}</div>
+                    <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined} style={{ textAlign: 'center', fontSize: 10, color: 'var(--text3)', padding: '4px 0' }}>{d.label}</div>
                   ))}
                 </div>
                 {hasNegative && (
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, height: hasPositive ? 100 : 200 }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: overflow ? 4 : 8, height: hasPositive ? 100 : 200 }}>
                     {data.map((d, i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
-                        <div style={{ width: '100%', background: d.value < 0 ? 'var(--coral)' : 'transparent', borderRadius: '0 0 4px 4px', height: d.value < 0 && maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 80) : 0, minHeight: d.value < 0 ? 2 : 0, transition: 'height 0.3s' }} />
+                      <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
+                        <div style={{ width: '100%', background: d.value < 0 ? 'var(--coral)' : 'transparent', borderRadius: '0 0 4px 4px', height: d.value < 0 && maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value < 0 ? 2 : 0, transition: 'height 0.3s' }} />
                         {d.value < 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginTop: 4 }}>{d.display}</div>}
                       </div>
                     ))}
@@ -6845,9 +6832,9 @@ const FinancialsTab = () => {
           <span className="sm-section-label sm-gold">Key Financial Milestones<UpdateIndicators sources="SEC" /></span>
         </div>
         <div className="sm-card-body">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+          <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
             {config.milestones.map((m, i) => (
-              <div key={i} style={{ padding: 12, background: 'var(--surface2)' }}>
+              <div key={i} className="sm-bg-surface2" style={{ padding: 12 }}>
                 <div className="sm-text-11">{m.date}</div>
                 <div className="sm-text-13">{m.event}</div>
               </div>
@@ -7476,20 +7463,20 @@ const TimelineTab = () => {
   const [showAllPR, setShowAllPR] = useState(false);
 
   const pressReleases = [
-    { date: 'Feb 23, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,422,659 — 3.66% of Supply, $9.6B, 73% to Alchemy of 5%' },
-    { date: 'Feb 17, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,371,497 — 3.62% of Supply, $9.6B, Staking 3.04M (69.5%)' },
+    { date: 'Feb 23, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,422,659 — 3.66% of Supply, $9.6B, 73% to Alchemy of 5%' },
+    { date: 'Feb 17, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,371,497 — 3.62% of Supply, $9.6B, Staking 3.04M (69.5%)' },
     { date: 'Feb 11, 2026', category: 'Conference', color: 'var(--violet)', title: 'Tom Lee Presents at CoinDesk Consensus 2026 (Hong Kong)' },
     { date: 'Feb 10, 2026', category: 'Strategic', color: 'var(--sky)', title: 'Beast Industries Acquires Step Banking App (7M+ Users, ~$500M Raised)' },
-    { date: 'Feb 9, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,325,738 — 3.58% of Supply, $10.0B, ETH -62% V-Recovery' },
+    { date: 'Feb 9, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,325,738 — 3.58% of Supply, $10.0B, ETH -62% V-Recovery' },
     { date: 'Feb 9, 2026', category: 'SEC Filing', color: 'var(--cyan)', title: 'S-8: 2025 Omnibus Incentive Plan Registration' },
-    { date: 'Feb 2, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,285,125 — 3.55% of Supply, $10.7B, Staking 67.6%' },
+    { date: 'Feb 2, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,285,125 — 3.55% of Supply, $10.7B, Staking 67.6%' },
     { date: 'Jan 28, 2026', category: 'Corporate', color: 'var(--gold)', title: 'Nelson Separation: President Terminated Without Cause ($605K Severance)' },
-    { date: 'Jan 26, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,243,338 — 3.52% of Supply, $12.8B, Davos 2026' },
-    { date: 'Jan 20, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,203,036 — 3.48% of Supply, $14.5B, 81% YES Vote' },
-    { date: 'Jan 12, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,167,768 — 3.45% of Total Supply, $14.0B' },
+    { date: 'Jan 26, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,243,338 — 3.52% of Supply, $12.8B, Davos 2026' },
+    { date: 'Jan 20, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,203,036 — 3.48% of Supply, $14.5B, 81% YES Vote' },
+    { date: 'Jan 12, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,167,768 — 3.45% of Total Supply, $14.0B' },
     { date: 'Jan 9, 2026', category: 'Leadership', color: 'var(--mint)', title: 'CFO/COO Appointed: Young Kim (MIT/HBS, Columbia Threadneedle)' },
     { date: 'Jan 2, 2026', category: 'Proxy', color: 'var(--gold)', title: "Chairman's Message: Vote YES on Auth Shares (500M→50B)" },
-    { date: 'Dec 29, 2025', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,110,525 — 3.41% of Total Supply' },
+    { date: 'Dec 29, 2025', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,110,525 — 3.41% of Total Supply' },
     { date: 'Nov 21, 2025', category: 'SEC Filing', color: 'var(--violet)', title: '10-K Annual Report: $805M Unrealized Gain, $349M Net Income' },
   ];
   const displayedPR = showAllPR ? pressReleases : pressReleases.slice(0, 5);
@@ -7620,7 +7607,7 @@ const TimelineTab = () => {
   };
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-flex-col-gap-16">
       <div className="sm-tab-hero">
         <div className="sm-section-label">Corporate Events<UpdateIndicators sources="PR" /></div>
         <h2>Timeline<span className="sm-accent">.</span></h2>
@@ -7646,18 +7633,8 @@ const TimelineTab = () => {
             <button
               key={type}
               onClick={() => { setSecFilter(type); setShowAllFilings(false); }}
-              style={{
-                padding: '4px 12px',
-                borderRadius: 99,
-                fontSize: 11,
-                fontWeight: 500,
-                border: '1px solid',
-                borderColor: secFilter === type ? 'var(--cyan)' : 'var(--border)',
-                cursor: 'pointer',
-                background: secFilter === type ? 'color-mix(in srgb, var(--cyan) 15%, transparent)' : 'transparent',
-                color: secFilter === type ? 'var(--cyan)' : 'var(--text3)',
-                transition: 'all 0.2s'
-              }}
+              className="sm-action-btn"
+              data-active={secFilter === type}
             >
               {type}
             </button>
@@ -7668,16 +7645,16 @@ const TimelineTab = () => {
         <div className="sm-overflow-x">
           <div>
             {/* Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '100px 80px 1fr 80px 60px', borderBottom: '1px solid var(--border)' }}>
+            <div className="sm-tl-filing-header">
               {['Date', 'Type', 'Description', 'Period', 'Link'].map((h, idx) => (
-                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: idx === 4 ? 'right' : 'left' }}>{h}</span>
+                <span key={h} style={{ textAlign: idx === 4 ? 'right' : 'left' }}>{h}</span>
               ))}
             </div>
             {/* Rows */}
             {displayedFilings.map((filing, idx) => (
-              <div key={idx} style={{ display: 'grid', gridTemplateColumns: '100px 80px 1fr 80px 60px', borderBottom: idx < displayedFilings.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
-                <span style={{ padding: '12px 16px', fontSize: 13, whiteSpace: 'nowrap' }}>{filing.date}</span>
-                <span className="sm-text-13" style={{ padding: '12px 16px' }}>
+              <div key={idx} className="sm-tl-filing-row">
+                <span style={{ fontSize: 13, whiteSpace: 'nowrap' }}>{filing.date}</span>
+                <span className="sm-text-13">
                   <span style={{
                     background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)',
                     color: secTypeColors[filing.type]?.text || 'var(--text2)',
@@ -7689,9 +7666,9 @@ const TimelineTab = () => {
                     {/^\d+$/.test(filing.type) ? `Form ${filing.type}` : filing.type}
                   </span>
                 </span>
-                <span className="sm-text-13" style={{ padding: '12px 16px' }}>{filing.description}</span>
-                <span className="sm-text-13" style={{ padding: '12px 16px' }}>{filing.period}</span>
-                <span style={{ padding: '12px 16px', fontSize: 13, textAlign: 'right' }}>
+                <span className="sm-text-13">{filing.description}</span>
+                <span className="sm-text-13">{filing.period}</span>
+                <span style={{ fontSize: 13, textAlign: 'right' }}>
                   <a
                     href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type.replace('S-3', 'S-3').replace('S-1', 'S-1').replace('S-8', 'S-8')}`}
                     target="_blank"
@@ -7710,17 +7687,7 @@ const TimelineTab = () => {
         {filteredFilings.length > 6 && (
           <button
             onClick={() => setShowAllFilings(!showAllFilings)}
-            style={{
-              width: '100%',
-              padding: '8px',
-              background: 'var(--surface2)',
-              border: '1px solid var(--border)',
-              borderRadius: 99,
-              color: 'var(--text2)',
-              fontSize: 12,
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
+            className="sm-expand-btn"
           >
             {showAllFilings ? '▲ Show Less' : `▼ Show ${hiddenCount} More Filings`}
           </button>
@@ -7773,14 +7740,14 @@ const TimelineTab = () => {
             </div>
             <div className="sm-card-body">
           <div className="sm-flex-col-gap">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(74,222,128,0.1)', borderRadius: 12, border: '1px solid rgba(74,222,128,0.4)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'color-mix(in srgb, var(--mint) 10%, transparent)', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 40%, transparent)' }}>
               <div>
                 <div className="sm-text sm-fw-600">✓ Annual Stockholder Meeting</div>
                 <div className="sm-subtle">Wynn Las Vegas · Prop 2 passed</div>
               </div>
               <div className="sm-text-right">
-                <div style={{ fontFamily: 'Space Mono', color: '#4ade80' }}>Jan 15, 2026</div>
-                <div style={{ fontSize: 11, color: '#4ade80' }}>Completed</div>
+                <div style={{ fontFamily: 'Space Mono', color: 'var(--mint)' }}>Jan 15, 2026</div>
+                <div style={{ fontSize: 11, color: 'var(--mint)' }}>Completed</div>
               </div>
             </div>
             <div className="sm-flex-between sm-bg-surface2" style={{ padding: '12px 16px', borderRadius: 12 }}>
@@ -7799,7 +7766,7 @@ const TimelineTab = () => {
                 <div className="sm-subtle">$0.01/share quarterly</div>
               </div>
               <div className="sm-text-right">
-                <div style={{ fontFamily: 'Space Mono', color: '#4ade80' }}>Q1 2026</div>
+                <div style={{ fontFamily: 'Space Mono', color: 'var(--mint)' }}>Q1 2026</div>
                 <div className="sm-text-11">First payout</div>
               </div>
             </div>
@@ -7840,7 +7807,7 @@ const TimelineTab = () => {
             <div style={{ textAlign: 'center', paddingTop: 16 }}>
               <button
                 onClick={() => setShowAllPR(!showAllPR)}
-                style={{ padding: '8px 24px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer', fontSize: 12, fontWeight: 500, transition: 'all 0.2s' }}
+                className="sm-expand-btn"
               >
                 {showAllPR ? '▲ Show Less' : `▼ Show ${hiddenPRCount} More`}
               </button>
@@ -7864,19 +7831,19 @@ const TimelineTab = () => {
       </h3>
 
       {/* Topic Filters (AND logic multi-select) */}
-      <div style={{ padding: 16, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+      <div className="sm-card" style={{ padding: 16 }}>
         <div className="sm-flex-between">
           <span className="sm-text-13t sm-fw-600">Filter by Topic</span>
           {selectedTopics.length > 0 && (
             <button
               onClick={() => setSelectedTopics([])}
-              style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer' }}
+              className="sm-action-btn"
             >
               Clear ({selectedTopics.length})
             </button>
           )}
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+        <div className="sm-flex-wrap" style={{ marginTop: 8 }}>
           {Object.entries(topicTags).map(([topic, topicStyle]) => {
             const isSelected = selectedTopics.includes(topic);
             const count = timelineEvents.filter(p => detectTopics(p).includes(topic)).length;
@@ -7884,17 +7851,8 @@ const TimelineTab = () => {
               <button
                 key={topic}
                 onClick={() => toggleTopic(topic)}
-                style={{
-                  fontSize: 11,
-                  padding: '4px 12px',
-                  borderRadius: 99,
-                  border: '1px solid',
-                  borderColor: isSelected ? 'var(--accent)' : 'var(--border)',
-                  background: isSelected ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
-                  color: isSelected ? 'var(--accent)' : 'var(--text3)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
+                className="sm-action-btn"
+                data-active={isSelected}
               >
                 {topicStyle.label} ({count})
               </button>
@@ -7911,17 +7869,7 @@ const TimelineTab = () => {
       <div className="sm-flex-between">
         <div className="sm-flex-wrap">
           {categories.map(cat => (
-            <button key={cat} onClick={() => setFilterCategory(cat)} style={{
-              fontSize: 11,
-              padding: '4px 12px',
-              borderRadius: 99,
-              border: '1px solid',
-              borderColor: filterCategory === cat ? 'var(--accent)' : 'var(--border)',
-              background: filterCategory === cat ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
-              color: filterCategory === cat ? 'var(--accent)' : 'var(--text3)',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}>
+            <button key={cat} onClick={() => setFilterCategory(cat)} className="sm-action-btn" data-active={filterCategory === cat}>
               {cat === 'all' ? `All (${timelineEvents.length})` : `${cat} (${timelineEvents.filter(p => p.category === cat).length})`}
             </button>
           ))}
@@ -7934,13 +7882,13 @@ const TimelineTab = () => {
               setExpanded(new Set(filteredEntries.map((_, i) => i)));
             }
           }}
-          style={{ whiteSpace: 'nowrap', fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer' }}
+          className="sm-action-btn"
         >
           {expanded.size === filteredEntries.length ? '⊟ Collapse All' : '⊞ Expand All'}
         </button>
       </div>
 
-      <div>
+      <div className="sm-flex-col-gap">
         {filteredEntries.map((entry, i) => {
           const isExpanded = expanded.has(i);
           const toggleExpand = () => {
@@ -7951,9 +7899,9 @@ const TimelineTab = () => {
           };
 
           return (
-            <div key={i} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', marginBottom: 8 }}>
-              <div onClick={toggleExpand} style={{ display: 'grid', gridTemplateColumns: '100px 90px 1fr 80px 30px', alignItems: 'center', padding: '12px 16px', cursor: 'pointer', transition: 'background 0.15s' }}>
-                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>{entry.date}</span>
+            <div key={i} className="sm-tl-event-card">
+              <div onClick={toggleExpand} className="sm-tl-event-row">
+                <span className="sm-mono-sm sm-text3">{entry.date}</span>
                 <span className="sm-text-11">{entry.category}</span>
                 <span className="sm-text-13t sm-fw-500">{entry.title}</span>
                 <span style={{ fontSize: 11, fontWeight: 600, textAlign: 'right', color: entry.impact === 'positive' ? 'var(--mint)' : entry.impact === 'negative' ? 'var(--coral)' : 'var(--text3)' }}>
@@ -7965,8 +7913,8 @@ const TimelineTab = () => {
                 <span style={{ fontSize: 12, color: 'var(--text3)', textAlign: 'center', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▼</span>
               </div>
               {isExpanded && (
-                <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border)' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: 24 }}>
+                <div className="sm-tl-detail-panel">
+                  <div className="sm-tl-details-grid">
                     <div>
                       {/* Changes Grid */}
                       <div>
@@ -7993,7 +7941,7 @@ const TimelineTab = () => {
                     </div>
                     <div className="sm-flex-col-gap">
                       <div>
-                        <div className="sm-micro-label" style={{ letterSpacing: '0.5px' }}>Impact</div>
+                        <div className="sm-micro-label">Impact</div>
                         <div style={{ fontSize: 13, fontWeight: 600, color: entry.impact === 'positive' ? 'var(--mint)' : entry.impact === 'negative' ? 'var(--coral)' : 'var(--text3)' }}>
                           {entry.impact === 'positive' && '● Bullish'}
                           {entry.impact === 'negative' && '● Bearish'}
@@ -8001,7 +7949,7 @@ const TimelineTab = () => {
                         </div>
                       </div>
                       <div>
-                        <div className="sm-micro-label" style={{ letterSpacing: '0.5px' }}>Source</div>
+                        <div className="sm-micro-label">Source</div>
                         <div className="sm-body-sm sm-violet">{entry.source}</div>
                       </div>
                     </div>
@@ -8019,15 +7967,15 @@ const TimelineTab = () => {
           <span className="sm-section-label">How to Use This Log</span>
         </div>
         <div className="sm-card-body">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, fontSize: 13 }}>
+        <div className="sm-tl-explain-grid">
           <div>
             <h4 style={{ color: 'var(--violet)', fontWeight: 500, marginBottom: 8 }}>Categories Explained</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--text2)', listStyle: 'none', padding: 0, margin: 0 }}>
-              <li><span style={{ color: '#60a5fa' }}>Holdings:</span> ETH accumulation updates, supply %</li>
+              <li><span className="sm-sky">Holdings:</span> ETH accumulation updates, supply %</li>
               <li><span className="sm-cyan">SEC Filing:</span> 10-K, 10-Q, 8-K filings</li>
-              <li><span style={{ color: '#34d399' }}>Capital:</span> Offerings, ATM, debt financing</li>
+              <li><span className="sm-mint">Capital:</span> Offerings, ATM, debt financing</li>
               <li><span className="sm-text2">Corporate:</span> Strategy, management, governance</li>
-              <li><span style={{ color: '#4ade80' }}>Product:</span> Staking, yield, infrastructure</li>
+              <li><span className="sm-mint">Product:</span> Staking, yield, infrastructure</li>
             </ul>
           </div>
           <div>
