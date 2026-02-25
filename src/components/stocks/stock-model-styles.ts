@@ -1526,11 +1526,11 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .sm-ws-metric-cell {
   text-align: center;
-  padding: 4px 0;
+  padding: 8px 4px;
 }
 .sm-ws-metric-val {
   font-family: 'Space Mono', monospace;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text);
   line-height: 1.2;
@@ -1546,7 +1546,7 @@ input[type="range"]::-webkit-slider-thumb {
 /* Report entry row (with left border) */
 .sm-ws-report {
   padding: 12px 16px;
-  border-radius: 8px;
+  border-radius: 10px;
   border-left: 3px solid transparent;
   transition: background 0.15s;
 }
@@ -1695,31 +1695,42 @@ input[type="range"]::-webkit-slider-thumb {
   line-height: 1.5;
 }
 
-/* Badge used for rating with dynamic color */
+/* Badge used for rating with dynamic color — unified 6px radius */
 .sm-ws-rating-badge {
-  padding: 4px 12px;
-  border-radius: 99px;
-  background: color-mix(in srgb, var(--badge-color) 13%, transparent);
-  border: 1px solid color-mix(in srgb, var(--badge-color) 27%, transparent);
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--badge-color) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--badge-color) 25%, transparent);
+  display: inline-flex;
+  align-items: center;
 }
 .sm-ws-rating-badge span {
   color: var(--badge-color);
   font-weight: 600;
-  font-size: 11px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
-/* Report count badges */
+/* Report count badges — unified 6px radius */
 .sm-ws-count-badge {
-  padding: 2px 8px;
-  border-radius: 99px;
+  padding: 4px 10px;
+  border-radius: 6px;
   font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border: 1px solid transparent;
+  transition: all 0.15s;
 }
 .sm-ws-count-badge[data-type="report"] {
-  background: color-mix(in srgb, var(--violet) 15%, transparent);
+  background: color-mix(in srgb, var(--violet) 12%, transparent);
+  border-color: color-mix(in srgb, var(--violet) 22%, transparent);
   color: var(--violet);
 }
 .sm-ws-count-badge[data-type="update"] {
-  background: color-mix(in srgb, var(--border) 60%, transparent);
+  background: rgba(255,255,255,0.04);
+  border-color: var(--border);
   color: var(--text3);
 }
 
@@ -1737,17 +1748,28 @@ input[type="range"]::-webkit-slider-thumb {
   font-style: italic;
 }
 
-/* PT display mono */
+/* PT display mono — unified badge treatment */
 .sm-ws-pt {
   font-family: 'Space Mono', monospace;
   text-align: right;
   min-width: 60px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
 }
 
 /* Range text */
 .sm-ws-range {
   font-size: 12px;
   color: var(--text3);
+}
+
+/* Firm meta container — right-side elements in firm header */
+.sm-ws-firm-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1943,6 +1965,33 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--verdict-color);
   background: var(--verdict-bg);
   border: 1px solid color-mix(in srgb, var(--verdict-color) 20%, transparent);
+}
+
+/* Row groups for mobile two-sub-row stacking (Sources & Edgar) */
+.sm-ed-row-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+.sm-ed-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Source name column (desktop: fixed width, mobile: auto) */
+.sm-ed-source-name {
+  font-size: 10px;
+  color: var(--text3);
+  flex-shrink: 0;
+  text-align: right;
+  width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* DB tooltip */
@@ -2736,20 +2785,64 @@ input[type="range"]::-webkit-slider-thumb {
   }
   .sm-ws-firm-header {
     padding: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .sm-ws-firm-meta {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
   }
   .sm-ws-panel-header,
   .sm-ws-panel-body {
     padding: 16px;
+  }
+  .sm-ws-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sm-ws-report .sm-flex-between {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
   .sm-flex.sm-gap-16 {
     gap: 10px;
     flex-wrap: wrap;
   }
 
-  /* ── AI Agents Tab — Mobile ── */
+  /* ── Sources & Edgar — Mobile Two Sub-Rows ── */
   .sm-ed-filing-row {
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    padding: 10px 12px;
+  }
+  .sm-ed-row-main {
+    width: 100%;
+  }
+  .sm-ed-row-meta {
+    width: 100%;
+    flex-wrap: wrap;
+    padding-left: 20px;
+  }
+  .sm-ed-desc {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    line-height: 1.5;
+  }
+  .sm-ed-date {
+    width: auto;
+    text-align: left;
+    font-size: 10px;
+  }
+  .sm-ed-status-label {
+    width: auto;
+    text-align: left;
+  }
+  .sm-ed-source-name {
+    width: auto;
+    text-align: left;
   }
 
   /* ── Responsive Grids — Mobile ── */
@@ -2925,6 +3018,38 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-ws-th {
     padding: 6px 4px;
     font-size: 8px;
+  }
+  .sm-ws-firm-header {
+    padding: 12px;
+    gap: 10px;
+  }
+  .sm-ws-firm-name {
+    font-size: 14px;
+  }
+  .sm-ws-metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 10px;
+  }
+  .sm-ws-firm-meta {
+    gap: 6px;
+  }
+
+  /* ── Sources & Edgar — Small Mobile ── */
+  .sm-ed-row-meta {
+    padding-left: 0;
+    gap: 6px;
+  }
+  .sm-ed-filing-row {
+    padding: 8px 10px;
+  }
+  .sm-ed-desc {
+    font-size: 12px;
+  }
+  .sm-ed-form-badge {
+    width: auto;
+    min-width: 40px;
+    font-size: 9px;
   }
 
   /* ── Responsive Grids — Small Mobile ── */

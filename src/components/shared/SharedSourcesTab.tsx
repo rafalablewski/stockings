@@ -311,186 +311,192 @@ const SourceArticleRow: React.FC<{
         className="sm-ed-filing-row"
         style={{ cursor: aiAnalysis ? 'pointer' : undefined }}
       >
-        {/* Chevron (fixed-width slot so rows align whether analysis exists or not) */}
-        <span className="sm-ed-chevron-slot">
-        {aiAnalysis && (
-          <svg
-            width={12} height={12} viewBox="0 0 24 24" fill="none"
-            stroke="rgba(255,255,255,0.3)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
-            aria-hidden="true"
-            style={{
-              transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
-            }}
-          >
-            <path d="M9 5l7 7-7 7" />
-          </svg>
-        )}
-        </span>
-        {/* Status dot */}
-        {showAnalysis && (
-          <span
-            title={statusTitle}
-            className="sm-ed-status-dot"
-            style={{
-              '--dot-color': statusColor,
-              opacity: localAnalyzed === null || localAnalyzed === undefined ? 0.4 : 0.9,
-            } as React.CSSProperties}
-          />
-        )}
-        {/* Source type badge — fixed width so columns align */}
-        <span className="sm-ed-form-badge" style={{
-          width: 48,
-          '--badge-bg': tc.bg, '--badge-text': tc.text,
-        } as React.CSSProperties}>
-          {type === 'pr' ? 'PR' : 'NEWS'}
-        </span>
-        {/* NEW / SEEN badge — fixed-width slot so headline column aligns */}
-        <span className="sm-ed-badge-slot">
-          {isGenuinelyNew && !isDismissed && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
-              title="Click to acknowledge"
-              className="sm-ed-new-badge"
+        {/* Main row: chevron + status + badge + headline */}
+        <div className="sm-ed-row-main">
+          {/* Chevron (fixed-width slot so rows align whether analysis exists or not) */}
+          <span className="sm-ed-chevron-slot">
+          {aiAnalysis && (
+            <svg
+              width={12} height={12} viewBox="0 0 24 24" fill="none"
+              stroke="rgba(255,255,255,0.3)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
+              aria-hidden="true"
+              style={{
+                transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+              }}
             >
-              NEW
-            </button>
-          )}
-          {isGenuinelyNew && isDismissed && (
-            <span className="sm-ed-seen-badge">
-              SEEN
-            </span>
-          )}
-        </span>
-        {/* Headline */}
-        <span className="sm-ed-desc">
-          {article.headline}
-        </span>
-        {/* Verdict badge inline (compact, shown in header when collapsed) */}
-        {aiAnalysis && !expanded && (() => {
-          const verdict = parseVerdict(aiAnalysis);
-          if (!verdict) return null;
-          const vc = VERDICT_COLORS[verdict.level];
-          return (
-            <span className="sm-ed-verdict-badge" style={{
-              '--verdict-color': vc.color, '--verdict-bg': vc.bg,
-            } as React.CSSProperties}>
-              {verdict.level}
-            </span>
-          );
-        })()}
-        {/* Source name — fixed width for column alignment */}
-        <span className="sm-subtle-sm sm-shrink-0 sm-text-right" style={{ width: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {article.source || ''}
-        </span>
-        {/* Date — fixed width for column alignment */}
-        <span className="sm-ed-date">
-          {article.date || ''}
-        </span>
-        {/* Status label — fixed width so DB column aligns */}
-        <span className="sm-ed-status-label" style={{
-          '--status-color': showAnalysis && statusLabel ? statusColor : 'transparent',
-        } as React.CSSProperties}>
-          {showAnalysis && statusLabel ? statusLabel : '\u00A0'}
-        </span>
-        {/* DB status button — hover fetches live data from database */}
-        <span className="sm-shrink-0" style={{ position: 'relative' }}>
-          <button
-            type="button"
-            aria-label="Show database record"
-            className="sm-ed-db-btn"
-            style={{
-              '--db-color': dbColor,
-              '--db-opacity': dbOpacity,
-            } as React.CSSProperties}
-            onFocus={handleDbHoverEnter}
-            onBlur={handleDbHoverLeave}
-          >
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: dbColor }} />
-            DB
-          </button>
-          {/* Tooltip — shows live DB data */}
-          {dbTooltipVisible && (
-            <div ref={dbTooltipRef} className="sm-ed-db-tooltip sm-db-tooltip-responsive">
-              {/* Header — explains what this tooltip checks */}
-              <div className="sm-text3" style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
-                Saved in seen_articles DB?
-              </div>
-              {dbTooltipLoading ? (
-                <div className="sm-text3" style={{ fontStyle: 'italic' }}>Fetching from database...</div>
-              ) : dbTooltip ? (
-                <>
-                  <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>status:</span> <span style={{ color: dbTooltip.status === 'TRACKED' ? 'var(--mint)' : dbTooltip.status === 'UNTRACKED' ? 'var(--coral)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.status}</span></div>
-                  <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>category:</span> <span style={{ color: dbTooltip.category === 'PRESS RELEASE' ? 'var(--sky)' : dbTooltip.category === 'NEWS' ? 'var(--mint)' : 'var(--text3)' }}>{dbTooltip.category}</span></div>
-                  <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>heading:</span> {dbTooltip.heading}</div>
-                  <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>source:</span> {dbTooltip.source}</div>
-                  <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>date:</span> {dbTooltip.date}</div>
-                  <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>seen:</span> <span style={{ color: dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.seen}</span></div>
-                </>
-              ) : (
-                <div className="sm-coral" style={{ fontWeight: 600 }}>NOT IN DATABASE</div>
-              )}
-            </div>
-          )}
-        </span>
-        {/* Action buttons — stop propagation so clicks don't toggle expand */}
-        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-        <div className="sm-flex sm-gap-4 sm-shrink-0" onClick={e => e.stopPropagation()}>
-          <a
-            href={article.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Open article"
-            className="sm-ed-action-btn-sm"
-          >
-            <svg width={11} height={11} viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" />
+              <path d="M9 5l7 7-7 7" />
             </svg>
-          </a>
-          <button
-            onClick={handleAnalyze}
-            disabled={analyzing}
-            title={aiAnalysis ? 'Close AI analysis' : 'Analyze with AI'}
-            className="sm-ed-action-btn-sm"
-            style={{
-              '--ed-btn-color': aiAnalysis ? 'var(--accent)' : 'rgba(130,200,130,0.5)',
-              textTransform: 'uppercase', letterSpacing: '0.08em',
-              border: `1px solid ${aiAnalysis ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(130,200,130,0.15)'}`,
-              cursor: analyzing ? 'wait' : 'pointer',
-              opacity: analyzing ? 0.5 : 1,
-            } as React.CSSProperties}
-          >
-            {analyzing ? '...' : 'AI'}
-          </button>
+          )}
+          </span>
+          {/* Status dot */}
           {showAnalysis && (
+            <span
+              title={statusTitle}
+              className="sm-ed-status-dot"
+              style={{
+                '--dot-color': statusColor,
+                opacity: localAnalyzed === null || localAnalyzed === undefined ? 0.4 : 0.9,
+              } as React.CSSProperties}
+            />
+          )}
+          {/* Source type badge — fixed width so columns align */}
+          <span className="sm-ed-form-badge" style={{
+            width: 48,
+            '--badge-bg': tc.bg, '--badge-text': tc.text,
+          } as React.CSSProperties}>
+            {type === 'pr' ? 'PR' : 'NEWS'}
+          </span>
+          {/* NEW / SEEN badge — fixed-width slot so headline column aligns */}
+          <span className="sm-ed-badge-slot">
+            {isGenuinelyNew && !isDismissed && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
+                title="Click to acknowledge"
+                className="sm-ed-new-badge"
+              >
+                NEW
+              </button>
+            )}
+            {isGenuinelyNew && isDismissed && (
+              <span className="sm-ed-seen-badge">
+                SEEN
+              </span>
+            )}
+          </span>
+          {/* Headline */}
+          <span className="sm-ed-desc">
+            {article.headline}
+          </span>
+        </div>
+        {/* Meta row: verdict + source + date + status + DB + actions */}
+        <div className="sm-ed-row-meta">
+          {/* Verdict badge inline (compact, shown in header when collapsed) */}
+          {aiAnalysis && !expanded && (() => {
+            const verdict = parseVerdict(aiAnalysis);
+            if (!verdict) return null;
+            const vc = VERDICT_COLORS[verdict.level];
+            return (
+              <span className="sm-ed-verdict-badge" style={{
+                '--verdict-color': vc.color, '--verdict-bg': vc.bg,
+              } as React.CSSProperties}>
+                {verdict.level}
+              </span>
+            );
+          })()}
+          {/* Source name */}
+          <span className="sm-ed-source-name">
+            {article.source || ''}
+          </span>
+          {/* Date */}
+          <span className="sm-ed-date">
+            {article.date || ''}
+          </span>
+          {/* Status label */}
+          <span className="sm-ed-status-label" style={{
+            '--status-color': showAnalysis && statusLabel ? statusColor : 'transparent',
+          } as React.CSSProperties}>
+            {showAnalysis && statusLabel ? statusLabel : '\u00A0'}
+          </span>
+          {/* DB status button — hover fetches live data from database */}
+          <span className="sm-shrink-0" style={{ position: 'relative' }}>
             <button
-              onClick={handleRecheck}
-              disabled={recheckLoading}
-              title="Re-check tracked/untracked status"
+              type="button"
+              aria-label="Show database record"
+              className="sm-ed-db-btn"
+              style={{
+                '--db-color': dbColor,
+                '--db-opacity': dbOpacity,
+              } as React.CSSProperties}
+              onFocus={handleDbHoverEnter}
+              onBlur={handleDbHoverLeave}
+            >
+              <span style={{ width: 5, height: 5, borderRadius: '50%', background: dbColor }} />
+              DB
+            </button>
+            {/* Tooltip — shows live DB data */}
+            {dbTooltipVisible && (
+              <div ref={dbTooltipRef} className="sm-ed-db-tooltip sm-db-tooltip-responsive">
+                {/* Header — explains what this tooltip checks */}
+                <div className="sm-text3" style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
+                  Saved in seen_articles DB?
+                </div>
+                {dbTooltipLoading ? (
+                  <div className="sm-text3" style={{ fontStyle: 'italic' }}>Fetching from database...</div>
+                ) : dbTooltip ? (
+                  <>
+                    <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>status:</span> <span style={{ color: dbTooltip.status === 'TRACKED' ? 'var(--mint)' : dbTooltip.status === 'UNTRACKED' ? 'var(--coral)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.status}</span></div>
+                    <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>category:</span> <span style={{ color: dbTooltip.category === 'PRESS RELEASE' ? 'var(--sky)' : dbTooltip.category === 'NEWS' ? 'var(--mint)' : 'var(--text3)' }}>{dbTooltip.category}</span></div>
+                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>heading:</span> {dbTooltip.heading}</div>
+                    <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>source:</span> {dbTooltip.source}</div>
+                    <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>date:</span> {dbTooltip.date}</div>
+                    <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>seen:</span> <span style={{ color: dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.seen}</span></div>
+                  </>
+                ) : (
+                  <div className="sm-coral" style={{ fontWeight: 600 }}>NOT IN DATABASE</div>
+                )}
+              </div>
+            )}
+          </span>
+          {/* Action buttons — stop propagation so clicks don't toggle expand */}
+          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+          <div className="sm-flex sm-gap-4 sm-shrink-0" onClick={e => e.stopPropagation()}>
+            <a
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open article"
+              className="sm-ed-action-btn-sm"
+            >
+              <svg width={11} height={11} viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" />
+              </svg>
+            </a>
+            <button
+              onClick={handleAnalyze}
+              disabled={analyzing}
+              title={aiAnalysis ? 'Close AI analysis' : 'Analyze with AI'}
               className="sm-ed-action-btn-sm"
               style={{
-                '--ed-btn-color': recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
-                border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
-                cursor: recheckLoading ? 'wait' : 'pointer',
-                opacity: recheckLoading ? 0.5 : 1,
+                '--ed-btn-color': aiAnalysis ? 'var(--accent)' : 'rgba(130,200,130,0.5)',
+                textTransform: 'uppercase', letterSpacing: '0.08em',
+                border: `1px solid ${aiAnalysis ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(130,200,130,0.15)'}`,
+                cursor: analyzing ? 'wait' : 'pointer',
+                opacity: analyzing ? 0.5 : 1,
               } as React.CSSProperties}
             >
-              <svg width={11} height={11} viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 0.8s linear infinite' : 'none' }}>
-                <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-                <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+              {analyzing ? '...' : 'AI'}
+            </button>
+            {showAnalysis && (
+              <button
+                onClick={handleRecheck}
+                disabled={recheckLoading}
+                title="Re-check tracked/untracked status"
+                className="sm-ed-action-btn-sm"
+                style={{
+                  '--ed-btn-color': recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
+                  border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
+                  cursor: recheckLoading ? 'wait' : 'pointer',
+                  opacity: recheckLoading ? 0.5 : 1,
+                } as React.CSSProperties}
+              >
+                <svg width={11} height={11} viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 0.8s linear infinite' : 'none' }}>
+                  <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                  <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            )}
+            <button
+              onClick={() => onToggleHide?.()}
+              title="Hide article"
+              className="sm-ed-action-btn-sm"
+              style={{ opacity: 0.5 }}
+            >
+              <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" />
+                <line x1="2" y1="14" x2="14" y2="2" />
               </svg>
             </button>
-          )}
-          <button
-            onClick={() => onToggleHide?.()}
-            title="Hide article"
-            className="sm-ed-action-btn-sm"
-            style={{ opacity: 0.5 }}
-          >
-            <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" />
-              <line x1="2" y1="14" x2="14" y2="2" />
-            </svg>
-          </button>
+          </div>
         </div>
       </div>
 

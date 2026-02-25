@@ -190,7 +190,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                     </div>
                   </div>
 
-                  <div className="sm-flex sm-gap-16">
+                  <div className="sm-ws-firm-meta">
                     {/* Current Rating Badge */}
                     <div className="sm-ws-rating-badge" style={{ '--badge-color': getRatingColor(cov.currentRating, cov.currentRatingNormalized) } as React.CSSProperties}>
                       <span>{cov.currentRating.toUpperCase()}</span>
@@ -204,7 +204,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                     </div>
 
                     {/* Report counts */}
-                    <div className="sm-flex sm-gap-8 sm-text-11">
+                    <div className="sm-flex sm-gap-8">
                       <span className="sm-ws-count-badge" data-type="report">
                         {fullReportCount} Report{fullReportCount !== 1 ? 's' : ''}
                       </span>
