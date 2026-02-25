@@ -950,7 +950,7 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 24px;
   margin-bottom: 12px;
 }
@@ -3086,5 +3086,723 @@ input[type="range"]::-webkit-slider-thumb {
 @media (max-width: 480px) {
   .comp-panel-bar { padding: 10px 14px; }
   .comp-panel-dates { display: none; }
+}
+
+/* ── Stock Model Card System (ASTS / BMNR / CRCL) ─────────────────────── */
+/* Round-16 card (most common container in model files) */
+.sm-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.sm-card-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sm-card-body {
+  padding: 24px;
+}
+.sm-card-footer {
+  padding: 12px 24px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text3);
+}
+.sm-card-section {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.sm-card-section:last-child {
+  border-bottom: none;
+}
+
+/* Table header row (surface2 background) */
+.sm-table-header {
+  padding: 12px 16px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+  background: var(--surface2);
+}
+
+/* Mono text alignment helpers */
+.sm-mono-right {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  text-align: right;
+}
+
+/* Divider line element (used inside sm-divider) */
+.sm-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* Grid layouts commonly used in model files */
+.sm-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.sm-grid-2-lg { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.sm-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.sm-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+/* Micro label (10px uppercase) */
+.sm-micro-text {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* Standard text sizes reused across model */
+.sm-text-11 { font-size: 11px; color: var(--text3); }
+.sm-text-12 { font-size: 12px; color: var(--text2); }
+.sm-text-13 { font-size: 13px; color: var(--text2); }
+.sm-text-13t { font-size: 13px; color: var(--text); }
+
+/* Empty style placeholder (intentional no-op) */
+.sm-p0 { padding: 0; }
+
+/* Collapsed toggle row (clickable header in collapsible sections) */
+.sm-toggle-header {
+  padding: 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.15s;
+}
+.sm-toggle-header:hover {
+  background: var(--surface2);
+}
+
+/* Model overview grid (1px gap borders) */
+.sm-model-grid {
+  display: grid;
+  gap: 1px;
+  background: var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+/* Data table row (grid with hover) - used in model tab tables */
+.sm-table-row {
+  display: grid;
+  padding: 12px 24px;
+  align-items: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-table-row:hover {
+  background: var(--surface2);
+}
+.sm-table-row:last-child {
+  border-bottom: none;
+}
+
+/* Bullet list (used in analysis/notes sections) */
+.sm-note-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.5;
+}
+
+/* Model responsive overrides */
+@media (max-width: 768px) {
+  .sm-card-header { padding: 16px; }
+  .sm-card-body { padding: 16px; }
+  .sm-card-section { padding: 16px; }
+  .sm-card-footer { padding: 10px 16px; }
+  .sm-grid-2, .sm-grid-2-lg { grid-template-columns: 1fr; }
+  .sm-grid-3 { grid-template-columns: 1fr; }
+  .sm-grid-4 { grid-template-columns: 1fr 1fr; }
+  .sm-table-row { padding: 10px 16px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STOCK CHART COMPONENT CLASSES (sm-chart-*)
+   Replaces inline styles in StockChart.tsx
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Main chart container */
+.sm-chart-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  padding-bottom: 16px;
+}
+
+/* Chart Guide card (separate panel below chart) */
+.sm-chart-guide-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Header area */
+.sm-chart-header {
+  margin-bottom: 12px;
+  padding: 0 24px;
+}
+
+/* Symbol header with border-bottom */
+.sm-chart-symbol-row {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+/* Price display row */
+.sm-chart-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Big price number */
+.sm-chart-price {
+  font-size: 24px;
+  font-weight: 600;
+  font-family: 'Space Mono', monospace;
+}
+
+/* Price change text */
+.sm-chart-price-change {
+  font-size: 14px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* Controls row */
+.sm-chart-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+/* Range button group container */
+.sm-chart-range-group {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 2px;
+  flex: 1;
+}
+.sm-chart-range-group::-webkit-scrollbar { display: none; }
+
+/* Individual range button */
+.sm-chart-range-btn {
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text3);
+  transition: all 0.15s;
+  min-height: 30px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  touch-action: manipulation;
+  font-family: 'Space Mono', monospace;
+}
+.sm-chart-range-btn[data-active="true"] {
+  font-weight: 600;
+  background: var(--accent);
+  color: white;
+}
+
+/* Refresh button */
+.sm-chart-refresh-btn {
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 400;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text3);
+  transition: all 0.15s;
+  opacity: 0.6;
+  min-height: 30px;
+  flex-shrink: 0;
+  touch-action: manipulation;
+}
+.sm-chart-refresh-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+/* Chart type toggle group */
+.sm-chart-type-group {
+  display: flex;
+  gap: 0;
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+/* Chart type button */
+.sm-chart-type-btn {
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text3);
+  transition: all 0.15s;
+  min-height: 30px;
+  touch-action: manipulation;
+  font-family: inherit;
+}
+.sm-chart-type-btn[data-active="true"] {
+  font-weight: 600;
+  background: var(--surface);
+  color: var(--text);
+}
+
+/* Indicator controls area */
+.sm-chart-indicator-bar {
+  border-top: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  padding: 6px 28px 0;
+}
+
+/* Indicator toggle button */
+.sm-chart-indicator-btn {
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: var(--surface2);
+  color: var(--text3);
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+  touch-action: manipulation;
+}
+.sm-chart-indicator-btn[data-active="true"] {
+  font-weight: 600;
+  background: color-mix(in srgb, var(--indicator-color, var(--accent)) 10%, transparent);
+  color: var(--indicator-color, var(--accent));
+}
+
+/* Indicator color swatch line */
+.sm-chart-indicator-swatch {
+  width: 8px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--text3);
+  transition: all 0.15s;
+  opacity: 0.3;
+}
+.sm-chart-indicator-btn[data-active="true"] .sm-chart-indicator-swatch {
+  background: var(--indicator-color, var(--accent));
+  opacity: 1;
+}
+
+/* Toggle section wrapper */
+.sm-chart-toggle-section {
+  margin-bottom: 4px;
+}
+
+/* Toggle section header button */
+.sm-chart-toggle-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  touch-action: manipulation;
+}
+
+/* Toggle section chevron */
+.sm-chart-toggle-chevron {
+  font-size: 8px;
+  transition: transform 0.2s;
+  opacity: 0.5;
+}
+.sm-chart-toggle-chevron[data-open="true"] {
+  transform: rotate(90deg);
+}
+
+/* Toggle section active count badge */
+.sm-chart-toggle-count {
+  font-size: 9px;
+  font-family: 'Space Mono', monospace;
+  padding: 1px 5px;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* Toggle section content */
+.sm-chart-toggle-content {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-bottom: 6px;
+}
+
+/* Vertical separator between indicator groups */
+.sm-chart-separator {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+/* Loading state */
+.sm-chart-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text3);
+}
+
+/* Error state */
+.sm-chart-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--coral);
+}
+
+/* Sub-panel wrapper (position: relative for overlay labels) */
+.sm-chart-panel-wrap {
+  position: relative;
+}
+
+/* Overlay label for sub-panels (RSI, MACD, ATR, Comparison) */
+.sm-chart-overlay-label {
+  position: absolute;
+  top: 2px;
+  left: 65px;
+  font-size: 9px;
+  color: var(--text3);
+  z-index: 1;
+}
+
+/* Overlay label with flex layout (comparison panel) */
+.sm-chart-overlay-label-flex {
+  position: absolute;
+  top: 2px;
+  left: 65px;
+  font-size: 9px;
+  color: var(--text3);
+  z-index: 1;
+  display: flex;
+  gap: 8px;
+}
+
+/* OHLC tooltip container */
+.sm-chart-ohlc-tooltip {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 12px;
+}
+
+/* Tooltip date header */
+.sm-chart-tooltip-date {
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+
+/* Tooltip OHLC grid */
+.sm-chart-tooltip-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 2px 12px;
+}
+
+/* Range high/low bar section */
+.sm-chart-range-bar {
+  margin: 12px 28px 0;
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+/* Range bar label */
+.sm-chart-range-label {
+  color: var(--text3);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+/* Range bar track */
+.sm-chart-range-track {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  position: relative;
+}
+
+/* Range bar position dot (needs inline style for dynamic left%) */
+.sm-chart-range-dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+}
+
+/* Metrics/Correlation/VolumeProfile panel */
+.sm-chart-info-panel {
+  margin: 12px 28px 0;
+  padding: 12px 14px;
+  background: var(--surface2);
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+/* Info panel title */
+.sm-chart-info-title {
+  color: var(--text);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+/* Metrics grid (auto-fit) */
+.sm-chart-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+/* Individual metric card */
+.sm-chart-metric-card {
+  padding: 8px 12px;
+  background: var(--surface);
+  border-radius: 6px;
+}
+
+/* Metric card label */
+.sm-chart-metric-label {
+  color: var(--text3);
+  font-size: 9px;
+  margin-bottom: 2px;
+}
+
+/* Metric card value */
+.sm-chart-metric-value {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Metric card sublabel */
+.sm-chart-metric-sub {
+  color: var(--text3);
+  font-size: 9px;
+}
+
+/* Correlation chips flex wrap */
+.sm-chart-corr-chips {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Single correlation chip */
+.sm-chart-corr-chip {
+  padding: 8px 12px;
+  background: var(--surface);
+  border-radius: 6px;
+  min-width: 80px;
+}
+
+/* Correlation chip label */
+.sm-chart-corr-label {
+  font-size: 10px;
+  margin-bottom: 2px;
+}
+
+/* Correlation chip value */
+.sm-chart-corr-value {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Info panel footnote */
+.sm-chart-footnote {
+  color: var(--text3);
+  font-size: 9px;
+  margin-top: 8px;
+}
+
+/* Volume profile row */
+.sm-chart-vol-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Volume profile price label */
+.sm-chart-vol-price {
+  width: 60px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* Volume profile bar track */
+.sm-chart-vol-track {
+  flex: 1;
+  height: 12px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* Volume profile percent label */
+.sm-chart-vol-pct {
+  width: 40px;
+  color: var(--text3);
+  text-align: right;
+}
+
+/* Chart Guide header (clickable toggle) */
+.sm-chart-guide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Chart Guide toggle icon */
+.sm-chart-guide-icon {
+  color: var(--text3);
+  font-size: 18px;
+}
+
+/* Chart Guide content grid */
+.sm-chart-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
+  padding: 24px;
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--text3);
+}
+
+/* Guide section title */
+.sm-chart-guide-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Guide section title with margin-bottom (first in column) */
+.sm-chart-guide-section-title-mb {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Guide indicator entry title row */
+.sm-chart-guide-entry-title {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Guide indicator entry title (no flex, text only) */
+.sm-chart-guide-entry-title-text {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+/* Guide indicator color swatch */
+.sm-chart-guide-swatch {
+  width: 12px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+/* Guide entries grid */
+.sm-chart-guide-entries {
+  display: grid;
+  gap: 24px;
+}
+
+/* Guide entries grid (narrower gap) */
+.sm-chart-guide-entries-sm {
+  display: grid;
+  gap: 16px;
+}
+
+/* Guide compare intro text */
+.sm-chart-guide-intro {
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+
+/* Volume profile column container */
+.sm-chart-vol-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 `;
