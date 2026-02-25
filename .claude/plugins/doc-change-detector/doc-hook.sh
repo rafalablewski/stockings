@@ -109,8 +109,17 @@ fi
 # ── Extract added/removed lines ──────────────────────────────────
 ADDED=$(echo "$DIFF_OUTPUT" | grep '^+[^+]' | sed 's/^+//' || true)
 REMOVED=$(echo "$DIFF_OUTPUT" | grep '^-[^-]' | sed 's/^-//' || true)
-ADDED_COUNT=$(echo "$ADDED" | grep -c '.' || echo 0)
-REMOVED_COUNT=$(echo "$REMOVED" | grep -c '.' || echo 0)
+# Count non-empty lines. grep -c exits 1 when count is 0 — use arithmetic to sanitize.
+ADDED_COUNT=0
+if [[ -n "$ADDED" ]]; then
+  ADDED_COUNT=$(echo "$ADDED" | wc -l)
+fi
+ADDED_COUNT=$((ADDED_COUNT + 0))
+REMOVED_COUNT=0
+if [[ -n "$REMOVED" ]]; then
+  REMOVED_COUNT=$(echo "$REMOVED" | wc -l)
+fi
+REMOVED_COUNT=$((REMOVED_COUNT + 0))
 
 # ── Match against watch patterns ─────────────────────────────────
 # Uses python3 to parse plugin.json and check if this file + changes
