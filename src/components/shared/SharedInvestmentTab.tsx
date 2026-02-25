@@ -104,7 +104,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
   const collapseAll = () => setInvestmentSections(new Set(['summary']));
 
   return (
-    <>
+    <div className="sm-flex-col-gap-16">
       {/* Header Controls */}
       <div className="sm-flex-between sm-mb-16">
         <h2 className="sm-param-label sm-flex sm-text sm-fw-700 sm-text-15" style={{ margin: 0 }}>
@@ -240,7 +240,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
           {/* Moat Sources */}
           <div>
             <div className="sm-mb-12 sm-mint sm-fw-600 sm-text-13">Moat Sources</div>
-            <div className="sm-flex-col sm-gap-8">
+            <div className="sm-flex-col sm-gap-12">
               {current.moatSources.map((m, i) => (
                 <div key={i} style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
                   <div className="sm-flex-between">
@@ -255,7 +255,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
           {/* Moat Threats */}
           <div>
             <div className="sm-mb-12 sm-coral sm-fw-600 sm-text-13">Competitive Threats</div>
-            <div className="sm-flex-col sm-gap-8">
+            <div className="sm-flex-col sm-gap-12">
               {current.moatThreats.map((t, i) => (
                 <div key={i} style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
                   <div className="sm-flex-between">
@@ -403,7 +403,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         isOpen={investmentSections.has('archive')}
         onToggle={() => toggleSection('archive')}
       >
-        <div className="sm-flex-col sm-gap-8">
+        <div className="sm-flex-col sm-gap-12">
           {archive.map((entry, i) => (
             <div key={i} className="sm-bg-surface2 sm-rounded-8 sm-overflow-hidden">
               <div
@@ -452,7 +452,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
           ))}
         </div>
       </CollapsibleSection>
-    </>
+    </div>
   );
 };
 

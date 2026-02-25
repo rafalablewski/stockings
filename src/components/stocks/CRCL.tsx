@@ -5406,7 +5406,7 @@ function CRCLModel() {
           </TabPanel>)}
 
           {activeTab === 'timeline' && (<TabPanel id="timeline">
-            <>
+            <div className="sm-flex-col-gap-16">
               <div className="sm-tab-hero">
                 <div className="sm-section-label">Corporate Events<UpdateIndicators sources="PR" /></div>
                 <h2>Timeline<span className="sm-accent">.</span></h2>
@@ -5425,18 +5425,8 @@ function CRCLModel() {
                       <button
                         key={type}
                         onClick={() => { setSecFilter(type); setShowAllFilings(false); }}
-                        style={{
-                          padding: '4px 12px',
-                          borderRadius: 99,
-                          fontSize: 11,
-                          fontWeight: 500,
-                          border: '1px solid',
-                          borderColor: secFilter === type ? 'var(--cyan)' : 'var(--border)',
-                          cursor: 'pointer',
-                          background: secFilter === type ? 'color-mix(in srgb, var(--cyan) 15%, transparent)' : 'transparent',
-                          color: secFilter === type ? 'var(--cyan)' : 'var(--text3)',
-                          transition: 'all 0.2s'
-                        }}
+                        className="sm-action-btn"
+                        data-active={secFilter === type}
                       >
                         {type}
                       </button>
@@ -5445,13 +5435,13 @@ function CRCLModel() {
 
                   {/* Filings Grid */}
                   <div className="sm-overflow-x">
-                    <div style={{ display: 'grid', gridTemplateColumns: '100px 80px 2fr 1fr 60px', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+                    <div className="sm-tl-filing-header">
                       {['Date', 'Type', 'Description', 'Period', 'Link'].map((h, i) => (
-                        <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i === 4 ? 'right' : 'left' }}>{h}</span>
+                        <span key={h} style={{ textAlign: i === 4 ? 'right' : 'left' }}>{h}</span>
                       ))}
                     </div>
                     {displayedFilings.map((filing, idx) => (
-                      <div key={idx} style={{ display: 'grid', gridTemplateColumns: '100px 80px 2fr 1fr 60px', padding: '12px 24px', borderBottom: idx < displayedFilings.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', alignItems: 'center' }}>
+                      <div key={idx} className="sm-tl-filing-row">
                         <span className="sm-text" style={{ fontSize: 12, whiteSpace: 'nowrap' }}>{filing.date}</span>
                         <span>
                           <span style={{
@@ -5485,17 +5475,7 @@ function CRCLModel() {
                   {filteredFilings.length > 6 && (
                     <button
                       onClick={() => setShowAllFilings(!showAllFilings)}
-                      style={{
-                        width: '100%',
-                        padding: '8px',
-                        background: 'var(--surface2)',
-                        border: '1px solid var(--border)',
-                        borderRadius: 99,
-                        color: 'var(--text2)',
-                        fontSize: 12,
-                        cursor: 'pointer',
-                        transition: 'all 0.15s ease'
-                      }}
+                      className="sm-expand-btn"
                     >
                       {showAllFilings ? '▲ Show Less' : `▼ Show ${hiddenCount} More Filings`}
                     </button>
@@ -5538,7 +5518,7 @@ function CRCLModel() {
                 <span className="sm-param-label">Upcoming & Press Releases</span>
                 <span className="sm-divider-line" />
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+              <div className="sm-grid-2-lg">
                 <div>
                   <div className="sm-card">
                     <div className="sm-card-header">
@@ -5602,7 +5582,7 @@ function CRCLModel() {
                         <div className="sm-text-center" style={{ paddingTop: 16 }}>
                           <button
                             onClick={() => setShowAllPR(!showAllPR)}
-                            style={{ padding: '8px 24px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer', fontSize: 12, fontWeight: 500, transition: 'all 0.2s' }}
+                            className="sm-expand-btn"
                           >
                             {showAllPR ? '▲ Show Less' : `▼ Show ${hiddenPRCount} More`}
                           </button>
@@ -5625,19 +5605,19 @@ function CRCLModel() {
               </h3>
 
               {/* Topic Filters (AND logic multi-select) */}
-              <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, var(--surface)) 0%, var(--surface) 100%)', border: '1px solid var(--border)', borderRadius: 16, padding: 16 }}>
+              <div className="sm-card" style={{ padding: 16 }}>
                 <div className="sm-flex-between">
                   <span className="sm-text-13t sm-fw-600">Filter by Topic</span>
                   {selectedTopics.length > 0 && (
                     <button
                       onClick={() => setSelectedTopics([])}
-                      style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text2)', cursor: 'pointer' }}
+                      className="sm-action-btn"
                     >
                       Clear ({selectedTopics.length})
                     </button>
                   )}
                 </div>
-                <div className="sm-flex-wrap sm-gap-6 sm-mt-8">
+                <div className="sm-flex-wrap sm-mt-8">
                   {Object.entries(topicTags).map(([topic, style]) => {
                     const isSelected = selectedTopics.includes(topic);
                     const count = TIMELINE.filter(p => detectTopics(p).includes(topic)).length;
@@ -5645,17 +5625,8 @@ function CRCLModel() {
                       <button
                         key={topic}
                         onClick={() => toggleTopic(topic)}
-                        style={{
-                          fontSize: 11,
-                          padding: '4px 12px',
-                          borderRadius: 99,
-                          border: '1px solid',
-                          borderColor: isSelected ? style.color : 'var(--border)',
-                          background: isSelected ? style.color : 'transparent',
-                          color: isSelected ? 'white' : 'var(--text2)',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s'
-                        }}
+                        className="sm-action-btn"
+                        data-active={isSelected}
                       >
                         {style.label} ({count})
                       </button>
@@ -5670,25 +5641,12 @@ function CRCLModel() {
               </div>
               
               <div className="sm-flex-between">
-                <div className="sm-flex-wrap sm-gap-6">
-                  {cats.map(c => {
-                    const isActive = timelineCat === c;
-                    return (
-                      <button key={c} onClick={() => setTimelineCat(c)} style={{
-                        fontSize: 11,
-                        padding: '4px 12px',
-                        borderRadius: 99,
-                        border: '1px solid',
-                        borderColor: isActive ? 'var(--accent)' : 'var(--border)',
-                        background: isActive ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
-                        color: isActive ? 'var(--accent)' : 'var(--text2)',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s'
-                      }}>
-                        {c === 'All' ? `All (${TIMELINE.length})` : `${c} (${TIMELINE.filter(p => p.category === c).length})`}
-                      </button>
-                    );
-                  })}
+                <div className="sm-flex-wrap">
+                  {cats.map(c => (
+                    <button key={c} onClick={() => setTimelineCat(c)} className="sm-action-btn" data-active={timelineCat === c}>
+                      {c === 'All' ? `All (${TIMELINE.length})` : `${c} (${TIMELINE.filter(p => p.category === c).length})`}
+                    </button>
+                  ))}
                 </div>
                 <button
                   onClick={() => {
@@ -5698,13 +5656,13 @@ function CRCLModel() {
                       setExpanded(new Set(filteredEvents.map(p => TIMELINE.indexOf(p))));
                     }
                   }}
-                  style={{ whiteSpace: 'nowrap', fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text2)', cursor: 'pointer' }}
+                  className="sm-action-btn"
                 >
                   {expanded.size === filteredEvents.length ? '⊟ Collapse All' : '⊞ Expand All'}
                 </button>
               </div>
 
-              <div>
+              <div className="sm-flex-col-gap">
                 {filteredEvents.map((p, i) => {
                   const idx = TIMELINE.indexOf(p);
                   const isExpanded = expanded.has(idx);
@@ -5717,10 +5675,10 @@ function CRCLModel() {
                   const verdictColor = p.verdict === 'positive' ? 'var(--mint)' : p.verdict === 'negative' ? 'var(--coral)' : 'var(--sky)';
 
                   return (
-                    <div key={idx} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, marginBottom: 4, overflow: 'hidden' }}>
-                      <div onClick={toggleExpand} style={{ display: 'grid', gridTemplateColumns: '90px 100px 1fr auto 24px', padding: '12px 20px', alignItems: 'center', gap: 12, cursor: 'pointer', transition: 'background 0.15s' }}>
+                    <div key={idx} className="sm-tl-event-card">
+                      <div onClick={toggleExpand} className="sm-tl-event-row">
                         <span className="sm-mono-sm sm-text3">{p.date}</span>
-                        <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--text2)' }}>{p.category}</span>
+                        <span className="sm-text-11">{p.category}</span>
                         <span className="sm-text-13t sm-fw-500">{p.event}</span>
                         <span style={{ fontSize: 11, fontWeight: 600, color: verdictColor, textTransform: 'capitalize' }}>
                           {p.verdict === 'positive' && '↑ '}
@@ -5731,7 +5689,7 @@ function CRCLModel() {
                         <span style={{ fontSize: 11, color: 'var(--text3)', transition: 'transform 0.2s', transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
                       </div>
                       {isExpanded && (
-                        <div style={{ padding: '0 20px 16px', borderTop: '1px solid var(--border)' }}>
+                        <div className="sm-tl-detail-panel">
                           <div style={{ padding: '12px 0' }}>
                             <div className="sm-text-13" style={{ lineHeight: 1.6 }}>{p.details}</div>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 12 }}>
@@ -5794,7 +5752,7 @@ function CRCLModel() {
                 { term: 'S-1 Registration', def: 'IPO registration statement filed with SEC. Contains comprehensive company information, financials, and risk factors.' },
                 { term: 'MiCA Compliance', def: 'Markets in Crypto-Assets regulation in EU. Circle obtained MiCA license, allowing USDC/EURC operations across EU member states.' },
               ]} />
-            </>
+            </div>
           </TabPanel>)}
 
           {activeTab === 'comps' && <TabPanel id="comps"><CompsTab /></TabPanel>}

@@ -5421,9 +5421,9 @@ const TimelineTab = () => {
   const pressReleases = [
     { date: 'Feb 23, 2026', category: 'Government', color: 'var(--gold)', title: 'SDA $30M HALO Europa Prime Contract — AST SpaceMobile USA Defense Subsidiary' },
     { date: 'Feb 19, 2026', category: 'Event', color: 'var(--text3)', title: 'Q4 2025 Quarterly Business Update Scheduled for March 2, 2026' },
-    { date: 'Jan 22, 2026', category: 'Launch', color: '#4ade80', title: 'BlueBird 7 Launch Timing — Late Feb on New Glenn' },
+    { date: 'Jan 22, 2026', category: 'Launch', color: 'var(--mint)', title: 'BlueBird 7 Launch Timing — Late Feb on New Glenn' },
     { date: 'Jan 16, 2026', category: 'Government', color: 'var(--gold)', title: 'MDA SHIELD Prime Contract Award — Golden Dome Program' },
-    { date: 'Dec 24, 2025', category: 'Launch', color: '#4ade80', title: 'BlueBird 6 Successfully Deployed — First Block 2 Satellite in Orbit' },
+    { date: 'Dec 24, 2025', category: 'Launch', color: 'var(--mint)', title: 'BlueBird 6 Successfully Deployed — First Block 2 Satellite in Orbit' },
     { date: 'Nov 2025', category: 'Earnings', color: 'var(--gold)', title: 'Q3 2025 Results: $1.22B Cash, 6 Satellites Operational' },
     { date: 'Oct 2025', category: 'Partnership', color: 'var(--cyan)', title: 'Verizon Definitive Agreement — $100M+ Commitment' },
   ];
@@ -5550,7 +5550,7 @@ const TimelineTab = () => {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Newest first
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-flex-col-gap-16">
       <div className="sm-tab-hero">
         <div className="sm-section-label">Corporate Events<UpdateIndicators sources="PR" /></div>
         <h2>Timeline<span className="sm-accent">.</span></h2>
@@ -5574,18 +5574,8 @@ const TimelineTab = () => {
             <button
               key={type}
               onClick={() => { setSecFilter(type); setShowAllFilings(false); }}
-              style={{
-                padding: '4px 12px',
-                borderRadius: 99,
-                fontSize: 11,
-                fontWeight: 500,
-                border: '1px solid',
-                borderColor: secFilter === type ? 'var(--cyan)' : 'var(--border)',
-                cursor: 'pointer',
-                background: secFilter === type ? 'color-mix(in srgb, var(--cyan) 15%, transparent)' : 'transparent',
-                color: secFilter === type ? 'var(--cyan)' : 'var(--text3)',
-                transition: 'all 0.2s'
-              }}
+              className="sm-action-btn"
+              data-active={secFilter === type}
             >
               {type}
             </button>
@@ -5594,7 +5584,7 @@ const TimelineTab = () => {
 
         {/* Filings Table */}
         <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '120px 80px 1fr 100px 80px', borderBottom: '1px solid var(--border)' }}>
+          <div className="sm-tl-filing-header">
             <span className="sm-table-header">Date</span>
             <span className="sm-table-header">Type</span>
             <span className="sm-table-header">Description</span>
@@ -5602,7 +5592,7 @@ const TimelineTab = () => {
             <span className="sm-table-header sm-text-right">Link</span>
           </div>
           {displayedFilings.map((filing, idx) => (
-            <div key={idx} style={{ display: 'grid', gridTemplateColumns: '120px 80px 1fr 100px 80px', padding: '12px 16px', borderBottom: idx < displayedFilings.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
+            <div key={idx} className="sm-tl-filing-row">
               <span style={{ fontSize: 13, color: 'var(--text2)', whiteSpace: 'nowrap' }}>{filing.date}</span>
               <span style={{ fontSize: 13 }}>
                 <span style={{
@@ -5636,17 +5626,7 @@ const TimelineTab = () => {
         {filteredFilings.length > 15 && (
           <button
             onClick={() => setShowAllFilings(!showAllFilings)}
-            style={{
-              width: '100%',
-              padding: '8px',
-              background: 'var(--surface2)',
-              border: '1px solid var(--border)',
-              borderRadius: 99,
-              color: 'var(--text2)',
-              fontSize: 12,
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
+            className="sm-expand-btn"
           >
             {showAllFilings ? '▲ Show Less' : `▼ Show ${hiddenCount} More Filings`}
           </button>
@@ -5713,7 +5693,7 @@ const TimelineTab = () => {
                 <div className="sm-subtle">Block 2 constellation expansion</div>
               </div>
               <div className="sm-text-right">
-                <div style={{ fontFamily: 'Space Mono', color: '#4ade80' }}>Q1 2026</div>
+                <div style={{ fontFamily: 'Space Mono', color: 'var(--mint)' }}>Q1 2026</div>
                 <div className="sm-text-11">45-60 sats by EOY</div>
               </div>
             </div>
@@ -5763,7 +5743,7 @@ const TimelineTab = () => {
                 <div style={{ textAlign: 'center', paddingTop: 16 }}>
                   <button
                     onClick={() => setShowAllPR(!showAllPR)}
-                    style={{ padding: '8px 24px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer', fontSize: 12, fontWeight: 500, transition: 'all 0.2s' }}
+                    className="sm-expand-btn"
                   >
                     {showAllPR ? '▲ Show Less' : `▼ Show ${hiddenPRCount} More`}
                   </button>
@@ -5781,19 +5761,19 @@ const TimelineTab = () => {
       </div>
 
       {/* Topic Filters (AND logic multi-select) */}
-      <div style={{ padding: 16, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+      <div className="sm-card" style={{ padding: 16 }}>
         <div className="sm-flex-between">
           <span className="sm-text-13t sm-fw-600">Filter by Topic</span>
           {selectedTopics.length > 0 && (
             <button
               onClick={() => setSelectedTopics([])}
-              style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer' }}
+              className="sm-action-btn"
             >
               Clear ({selectedTopics.length})
             </button>
           )}
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+        <div className="sm-flex-wrap" style={{ marginTop: 8 }}>
           {Object.entries(topicTags).map(([topic, topicStyle]) => {
             const isSelected = selectedTopics.includes(topic);
             const count = timelineEvents.filter(p => detectTopics(p).includes(topic)).length;
@@ -5801,17 +5781,8 @@ const TimelineTab = () => {
               <button
                 key={topic}
                 onClick={() => toggleTopic(topic)}
-                style={{
-                  fontSize: 11,
-                  padding: '4px 12px',
-                  borderRadius: 99,
-                  border: '1px solid',
-                  borderColor: isSelected ? 'var(--accent)' : 'var(--border)',
-                  background: isSelected ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
-                  color: isSelected ? 'var(--accent)' : 'var(--text3)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
+                className="sm-action-btn"
+                data-active={isSelected}
               >
                 {topicStyle.label} ({count})
               </button>
@@ -5828,17 +5799,7 @@ const TimelineTab = () => {
       <div className="sm-flex-between">
         <div className="sm-flex-wrap">
           {['ALL', ...Object.keys(categoryColors)].map(cat => (
-            <button key={cat} onClick={() => setFilterCategory(cat)} style={{
-              fontSize: 11,
-              padding: '4px 12px',
-              borderRadius: 99,
-              border: '1px solid',
-              borderColor: filterCategory === cat ? 'var(--accent)' : 'var(--border)',
-              background: filterCategory === cat ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
-              color: filterCategory === cat ? 'var(--accent)' : 'var(--text3)',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}>
+            <button key={cat} onClick={() => setFilterCategory(cat)} className="sm-action-btn" data-active={filterCategory === cat}>
               {cat === 'ALL' ? `All (${timelineEvents.length})` : `${(categoryColors as Record<string, { label: string }>)[cat]?.label || cat} (${timelineEvents.filter(p => p.category === cat).length})`}
             </button>
           ))}
@@ -5851,13 +5812,13 @@ const TimelineTab = () => {
               setExpanded(new Set(filteredEntries.map((_, i) => i)));
             }
           }}
-          style={{ whiteSpace: 'nowrap', fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer' }}
+          className="sm-action-btn"
         >
           {expanded.size === filteredEntries.length ? '⊟ Collapse All' : '⊞ Expand All'}
         </button>
       </div>
 
-      <div>
+      <div className="sm-flex-col-gap">
         {filteredEntries.map((entry, i) => {
           const isExpanded = expanded.has(i);
           const toggleExpand = () => {
@@ -5868,9 +5829,9 @@ const TimelineTab = () => {
           };
 
           return (
-            <div key={i} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', marginBottom: 8 }}>
-              <div onClick={toggleExpand} style={{ display: 'grid', gridTemplateColumns: '100px 90px 1fr 80px 30px', alignItems: 'center', padding: '12px 16px', cursor: 'pointer', transition: 'background 0.15s' }}>
-                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>{entry.date}</span>
+            <div key={i} className="sm-tl-event-card">
+              <div onClick={toggleExpand} className="sm-tl-event-row">
+                <span className="sm-mono-sm sm-text3">{entry.date}</span>
                 <span className="sm-text-11">{entry.category}</span>
                 <span className="sm-text-13t sm-fw-500">{entry.title}</span>
                 <span style={{ fontSize: 11, fontWeight: 600, textAlign: 'right', color: entry.impact === 'Positive' ? 'var(--mint)' : entry.impact === 'Negative' ? 'var(--coral)' : 'var(--text3)' }}>
@@ -5882,8 +5843,8 @@ const TimelineTab = () => {
                 <span style={{ fontSize: 12, color: 'var(--text3)', textAlign: 'center', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▼</span>
               </div>
               {isExpanded && (
-                <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border)' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: 24 }}>
+                <div className="sm-tl-detail-panel">
+                  <div className="sm-tl-details-grid">
                     <div>
                       {/* Summary */}
                       <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 12, fontStyle: 'italic', color: 'var(--text3)', fontSize: 12, lineHeight: 1.6 }}>
@@ -5903,15 +5864,15 @@ const TimelineTab = () => {
                       {/* Change indicator */}
                       {entry.prevValue && (
                         <div style={{ marginTop: 12, fontSize: 13, padding: '8px 12px', background: 'var(--surface2)', borderRadius: 8 }}>
-                          <span style={{ color: '#f87171', textDecoration: 'line-through' }}>{entry.prevValue}</span>
+                          <span style={{ color: 'var(--coral)', textDecoration: 'line-through' }}>{entry.prevValue}</span>
                           <span style={{ color: 'var(--text3)', margin: '0 8px' }}>→</span>
-                          <span style={{ color: '#4ade80' }}>{entry.newValue}</span>
+                          <span style={{ color: 'var(--mint)' }}>{entry.newValue}</span>
                         </div>
                       )}
                     </div>
                     <div className="sm-flex-col-gap">
                       <div>
-                        <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Impact</div>
+                        <div className="sm-micro-label">Impact</div>
                         <div style={{ fontSize: 13, fontWeight: 600, color: entry.impact === 'Positive' ? 'var(--mint)' : entry.impact === 'Negative' ? 'var(--coral)' : 'var(--text3)' }}>
                           {entry.impact === 'Positive' && '● Bullish'}
                           {entry.impact === 'Negative' && '● Bearish'}
@@ -5920,7 +5881,7 @@ const TimelineTab = () => {
                         </div>
                       </div>
                       <div>
-                        <div style={{ fontSize: 10, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Source</div>
+                        <div className="sm-micro-label">Source</div>
                         <div style={{ fontSize: 13, color: 'var(--cyan)' }}>{entry.sources.join(', ')}</div>
                       </div>
                     </div>
@@ -5938,7 +5899,7 @@ const TimelineTab = () => {
           <span className="sm-section-label">How to Use This Log</span>
         </div>
         <div className="sm-card-body">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, fontSize: 13 }}>
+        <div className="sm-tl-explain-grid">
           <div>
             <h4 style={{ color: 'var(--cyan)', fontWeight: 500, marginBottom: 8 }}>Categories Explained</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--text2)', listStyle: 'none', padding: 0, margin: 0 }}>

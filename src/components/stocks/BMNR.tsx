@@ -7476,20 +7476,20 @@ const TimelineTab = () => {
   const [showAllPR, setShowAllPR] = useState(false);
 
   const pressReleases = [
-    { date: 'Feb 23, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,422,659 — 3.66% of Supply, $9.6B, 73% to Alchemy of 5%' },
-    { date: 'Feb 17, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,371,497 — 3.62% of Supply, $9.6B, Staking 3.04M (69.5%)' },
+    { date: 'Feb 23, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,422,659 — 3.66% of Supply, $9.6B, 73% to Alchemy of 5%' },
+    { date: 'Feb 17, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,371,497 — 3.62% of Supply, $9.6B, Staking 3.04M (69.5%)' },
     { date: 'Feb 11, 2026', category: 'Conference', color: 'var(--violet)', title: 'Tom Lee Presents at CoinDesk Consensus 2026 (Hong Kong)' },
     { date: 'Feb 10, 2026', category: 'Strategic', color: 'var(--sky)', title: 'Beast Industries Acquires Step Banking App (7M+ Users, ~$500M Raised)' },
-    { date: 'Feb 9, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,325,738 — 3.58% of Supply, $10.0B, ETH -62% V-Recovery' },
+    { date: 'Feb 9, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,325,738 — 3.58% of Supply, $10.0B, ETH -62% V-Recovery' },
     { date: 'Feb 9, 2026', category: 'SEC Filing', color: 'var(--cyan)', title: 'S-8: 2025 Omnibus Incentive Plan Registration' },
-    { date: 'Feb 2, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,285,125 — 3.55% of Supply, $10.7B, Staking 67.6%' },
+    { date: 'Feb 2, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,285,125 — 3.55% of Supply, $10.7B, Staking 67.6%' },
     { date: 'Jan 28, 2026', category: 'Corporate', color: 'var(--gold)', title: 'Nelson Separation: President Terminated Without Cause ($605K Severance)' },
-    { date: 'Jan 26, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,243,338 — 3.52% of Supply, $12.8B, Davos 2026' },
-    { date: 'Jan 20, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,203,036 — 3.48% of Supply, $14.5B, 81% YES Vote' },
-    { date: 'Jan 12, 2026', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,167,768 — 3.45% of Total Supply, $14.0B' },
+    { date: 'Jan 26, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,243,338 — 3.52% of Supply, $12.8B, Davos 2026' },
+    { date: 'Jan 20, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,203,036 — 3.48% of Supply, $14.5B, 81% YES Vote' },
+    { date: 'Jan 12, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,167,768 — 3.45% of Total Supply, $14.0B' },
     { date: 'Jan 9, 2026', category: 'Leadership', color: 'var(--mint)', title: 'CFO/COO Appointed: Young Kim (MIT/HBS, Columbia Threadneedle)' },
     { date: 'Jan 2, 2026', category: 'Proxy', color: 'var(--gold)', title: "Chairman's Message: Vote YES on Auth Shares (500M→50B)" },
-    { date: 'Dec 29, 2025', category: 'Holdings', color: '#4ade80', title: 'ETH Holdings Reach 4,110,525 — 3.41% of Total Supply' },
+    { date: 'Dec 29, 2025', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,110,525 — 3.41% of Total Supply' },
     { date: 'Nov 21, 2025', category: 'SEC Filing', color: 'var(--violet)', title: '10-K Annual Report: $805M Unrealized Gain, $349M Net Income' },
   ];
   const displayedPR = showAllPR ? pressReleases : pressReleases.slice(0, 5);
@@ -7620,7 +7620,7 @@ const TimelineTab = () => {
   };
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-flex-col-gap-16">
       <div className="sm-tab-hero">
         <div className="sm-section-label">Corporate Events<UpdateIndicators sources="PR" /></div>
         <h2>Timeline<span className="sm-accent">.</span></h2>
@@ -7646,18 +7646,8 @@ const TimelineTab = () => {
             <button
               key={type}
               onClick={() => { setSecFilter(type); setShowAllFilings(false); }}
-              style={{
-                padding: '4px 12px',
-                borderRadius: 99,
-                fontSize: 11,
-                fontWeight: 500,
-                border: '1px solid',
-                borderColor: secFilter === type ? 'var(--cyan)' : 'var(--border)',
-                cursor: 'pointer',
-                background: secFilter === type ? 'color-mix(in srgb, var(--cyan) 15%, transparent)' : 'transparent',
-                color: secFilter === type ? 'var(--cyan)' : 'var(--text3)',
-                transition: 'all 0.2s'
-              }}
+              className="sm-action-btn"
+              data-active={secFilter === type}
             >
               {type}
             </button>
@@ -7668,16 +7658,16 @@ const TimelineTab = () => {
         <div className="sm-overflow-x">
           <div>
             {/* Header */}
-            <div style={{ display: 'grid', gridTemplateColumns: '100px 80px 1fr 80px 60px', borderBottom: '1px solid var(--border)' }}>
+            <div className="sm-tl-filing-header">
               {['Date', 'Type', 'Description', 'Period', 'Link'].map((h, idx) => (
-                <span key={h} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', textAlign: idx === 4 ? 'right' : 'left' }}>{h}</span>
+                <span key={h} style={{ textAlign: idx === 4 ? 'right' : 'left' }}>{h}</span>
               ))}
             </div>
             {/* Rows */}
             {displayedFilings.map((filing, idx) => (
-              <div key={idx} style={{ display: 'grid', gridTemplateColumns: '100px 80px 1fr 80px 60px', borderBottom: idx < displayedFilings.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
-                <span style={{ padding: '12px 16px', fontSize: 13, whiteSpace: 'nowrap' }}>{filing.date}</span>
-                <span className="sm-text-13" style={{ padding: '12px 16px' }}>
+              <div key={idx} className="sm-tl-filing-row">
+                <span style={{ fontSize: 13, whiteSpace: 'nowrap' }}>{filing.date}</span>
+                <span className="sm-text-13">
                   <span style={{
                     background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)',
                     color: secTypeColors[filing.type]?.text || 'var(--text2)',
@@ -7689,9 +7679,9 @@ const TimelineTab = () => {
                     {/^\d+$/.test(filing.type) ? `Form ${filing.type}` : filing.type}
                   </span>
                 </span>
-                <span className="sm-text-13" style={{ padding: '12px 16px' }}>{filing.description}</span>
-                <span className="sm-text-13" style={{ padding: '12px 16px' }}>{filing.period}</span>
-                <span style={{ padding: '12px 16px', fontSize: 13, textAlign: 'right' }}>
+                <span className="sm-text-13">{filing.description}</span>
+                <span className="sm-text-13">{filing.period}</span>
+                <span style={{ fontSize: 13, textAlign: 'right' }}>
                   <a
                     href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type.replace('S-3', 'S-3').replace('S-1', 'S-1').replace('S-8', 'S-8')}`}
                     target="_blank"
@@ -7710,17 +7700,7 @@ const TimelineTab = () => {
         {filteredFilings.length > 6 && (
           <button
             onClick={() => setShowAllFilings(!showAllFilings)}
-            style={{
-              width: '100%',
-              padding: '8px',
-              background: 'var(--surface2)',
-              border: '1px solid var(--border)',
-              borderRadius: 99,
-              color: 'var(--text2)',
-              fontSize: 12,
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
+            className="sm-expand-btn"
           >
             {showAllFilings ? '▲ Show Less' : `▼ Show ${hiddenCount} More Filings`}
           </button>
@@ -7773,14 +7753,14 @@ const TimelineTab = () => {
             </div>
             <div className="sm-card-body">
           <div className="sm-flex-col-gap">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(74,222,128,0.1)', borderRadius: 12, border: '1px solid rgba(74,222,128,0.4)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'color-mix(in srgb, var(--mint) 10%, transparent)', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 40%, transparent)' }}>
               <div>
                 <div className="sm-text sm-fw-600">✓ Annual Stockholder Meeting</div>
                 <div className="sm-subtle">Wynn Las Vegas · Prop 2 passed</div>
               </div>
               <div className="sm-text-right">
-                <div style={{ fontFamily: 'Space Mono', color: '#4ade80' }}>Jan 15, 2026</div>
-                <div style={{ fontSize: 11, color: '#4ade80' }}>Completed</div>
+                <div style={{ fontFamily: 'Space Mono', color: 'var(--mint)' }}>Jan 15, 2026</div>
+                <div style={{ fontSize: 11, color: 'var(--mint)' }}>Completed</div>
               </div>
             </div>
             <div className="sm-flex-between sm-bg-surface2" style={{ padding: '12px 16px', borderRadius: 12 }}>
@@ -7799,7 +7779,7 @@ const TimelineTab = () => {
                 <div className="sm-subtle">$0.01/share quarterly</div>
               </div>
               <div className="sm-text-right">
-                <div style={{ fontFamily: 'Space Mono', color: '#4ade80' }}>Q1 2026</div>
+                <div style={{ fontFamily: 'Space Mono', color: 'var(--mint)' }}>Q1 2026</div>
                 <div className="sm-text-11">First payout</div>
               </div>
             </div>
@@ -7840,7 +7820,7 @@ const TimelineTab = () => {
             <div style={{ textAlign: 'center', paddingTop: 16 }}>
               <button
                 onClick={() => setShowAllPR(!showAllPR)}
-                style={{ padding: '8px 24px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer', fontSize: 12, fontWeight: 500, transition: 'all 0.2s' }}
+                className="sm-expand-btn"
               >
                 {showAllPR ? '▲ Show Less' : `▼ Show ${hiddenPRCount} More`}
               </button>
@@ -7864,19 +7844,19 @@ const TimelineTab = () => {
       </h3>
 
       {/* Topic Filters (AND logic multi-select) */}
-      <div style={{ padding: 16, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden' }}>
+      <div className="sm-card" style={{ padding: 16 }}>
         <div className="sm-flex-between">
           <span className="sm-text-13t sm-fw-600">Filter by Topic</span>
           {selectedTopics.length > 0 && (
             <button
               onClick={() => setSelectedTopics([])}
-              style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer' }}
+              className="sm-action-btn"
             >
               Clear ({selectedTopics.length})
             </button>
           )}
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+        <div className="sm-flex-wrap" style={{ marginTop: 8 }}>
           {Object.entries(topicTags).map(([topic, topicStyle]) => {
             const isSelected = selectedTopics.includes(topic);
             const count = timelineEvents.filter(p => detectTopics(p).includes(topic)).length;
@@ -7884,17 +7864,8 @@ const TimelineTab = () => {
               <button
                 key={topic}
                 onClick={() => toggleTopic(topic)}
-                style={{
-                  fontSize: 11,
-                  padding: '4px 12px',
-                  borderRadius: 99,
-                  border: '1px solid',
-                  borderColor: isSelected ? 'var(--accent)' : 'var(--border)',
-                  background: isSelected ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
-                  color: isSelected ? 'var(--accent)' : 'var(--text3)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                }}
+                className="sm-action-btn"
+                data-active={isSelected}
               >
                 {topicStyle.label} ({count})
               </button>
@@ -7911,17 +7882,7 @@ const TimelineTab = () => {
       <div className="sm-flex-between">
         <div className="sm-flex-wrap">
           {categories.map(cat => (
-            <button key={cat} onClick={() => setFilterCategory(cat)} style={{
-              fontSize: 11,
-              padding: '4px 12px',
-              borderRadius: 99,
-              border: '1px solid',
-              borderColor: filterCategory === cat ? 'var(--accent)' : 'var(--border)',
-              background: filterCategory === cat ? 'color-mix(in srgb, var(--accent) 15%, transparent)' : 'transparent',
-              color: filterCategory === cat ? 'var(--accent)' : 'var(--text3)',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}>
+            <button key={cat} onClick={() => setFilterCategory(cat)} className="sm-action-btn" data-active={filterCategory === cat}>
               {cat === 'all' ? `All (${timelineEvents.length})` : `${cat} (${timelineEvents.filter(p => p.category === cat).length})`}
             </button>
           ))}
@@ -7934,13 +7895,13 @@ const TimelineTab = () => {
               setExpanded(new Set(filteredEntries.map((_, i) => i)));
             }
           }}
-          style={{ whiteSpace: 'nowrap', fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text3)', cursor: 'pointer' }}
+          className="sm-action-btn"
         >
           {expanded.size === filteredEntries.length ? '⊟ Collapse All' : '⊞ Expand All'}
         </button>
       </div>
 
-      <div>
+      <div className="sm-flex-col-gap">
         {filteredEntries.map((entry, i) => {
           const isExpanded = expanded.has(i);
           const toggleExpand = () => {
@@ -7951,9 +7912,9 @@ const TimelineTab = () => {
           };
 
           return (
-            <div key={i} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 12, overflow: 'hidden', marginBottom: 8 }}>
-              <div onClick={toggleExpand} style={{ display: 'grid', gridTemplateColumns: '100px 90px 1fr 80px 30px', alignItems: 'center', padding: '12px 16px', cursor: 'pointer', transition: 'background 0.15s' }}>
-                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: 'var(--text3)' }}>{entry.date}</span>
+            <div key={i} className="sm-tl-event-card">
+              <div onClick={toggleExpand} className="sm-tl-event-row">
+                <span className="sm-mono-sm sm-text3">{entry.date}</span>
                 <span className="sm-text-11">{entry.category}</span>
                 <span className="sm-text-13t sm-fw-500">{entry.title}</span>
                 <span style={{ fontSize: 11, fontWeight: 600, textAlign: 'right', color: entry.impact === 'positive' ? 'var(--mint)' : entry.impact === 'negative' ? 'var(--coral)' : 'var(--text3)' }}>
@@ -7965,8 +7926,8 @@ const TimelineTab = () => {
                 <span style={{ fontSize: 12, color: 'var(--text3)', textAlign: 'center', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▼</span>
               </div>
               {isExpanded && (
-                <div style={{ padding: '16px 24px', borderTop: '1px solid var(--border)' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 200px', gap: 24 }}>
+                <div className="sm-tl-detail-panel">
+                  <div className="sm-tl-details-grid">
                     <div>
                       {/* Changes Grid */}
                       <div>
@@ -7993,7 +7954,7 @@ const TimelineTab = () => {
                     </div>
                     <div className="sm-flex-col-gap">
                       <div>
-                        <div className="sm-micro-label" style={{ letterSpacing: '0.5px' }}>Impact</div>
+                        <div className="sm-micro-label">Impact</div>
                         <div style={{ fontSize: 13, fontWeight: 600, color: entry.impact === 'positive' ? 'var(--mint)' : entry.impact === 'negative' ? 'var(--coral)' : 'var(--text3)' }}>
                           {entry.impact === 'positive' && '● Bullish'}
                           {entry.impact === 'negative' && '● Bearish'}
@@ -8001,7 +7962,7 @@ const TimelineTab = () => {
                         </div>
                       </div>
                       <div>
-                        <div className="sm-micro-label" style={{ letterSpacing: '0.5px' }}>Source</div>
+                        <div className="sm-micro-label">Source</div>
                         <div className="sm-body-sm sm-violet">{entry.source}</div>
                       </div>
                     </div>
@@ -8019,15 +7980,15 @@ const TimelineTab = () => {
           <span className="sm-section-label">How to Use This Log</span>
         </div>
         <div className="sm-card-body">
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, fontSize: 13 }}>
+        <div className="sm-tl-explain-grid">
           <div>
             <h4 style={{ color: 'var(--violet)', fontWeight: 500, marginBottom: 8 }}>Categories Explained</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--text2)', listStyle: 'none', padding: 0, margin: 0 }}>
-              <li><span style={{ color: '#60a5fa' }}>Holdings:</span> ETH accumulation updates, supply %</li>
+              <li><span className="sm-sky">Holdings:</span> ETH accumulation updates, supply %</li>
               <li><span className="sm-cyan">SEC Filing:</span> 10-K, 10-Q, 8-K filings</li>
-              <li><span style={{ color: '#34d399' }}>Capital:</span> Offerings, ATM, debt financing</li>
+              <li><span className="sm-mint">Capital:</span> Offerings, ATM, debt financing</li>
               <li><span className="sm-text2">Corporate:</span> Strategy, management, governance</li>
-              <li><span style={{ color: '#4ade80' }}>Product:</span> Staking, yield, infrastructure</li>
+              <li><span className="sm-mint">Product:</span> Staking, yield, infrastructure</li>
             </ul>
           </div>
           <div>

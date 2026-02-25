@@ -955,6 +955,7 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-flex-between { display: flex; justify-content: space-between; align-items: center; }
 .sm-flex-col { display: flex; flex-direction: column; }
 .sm-flex-col-gap { display: flex; flex-direction: column; gap: 12px; }
+.sm-flex-col-gap-16 { display: flex; flex-direction: column; gap: 16px; }
 .sm-flex-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
 .sm-gap-4 { gap: 4px; }
 .sm-gap-6 { gap: 6px; }
@@ -1118,7 +1119,7 @@ input[type="range"]::-webkit-slider-thumb {
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 24px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 .sm-panel-header {
   padding: 24px;
@@ -1260,6 +1261,11 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-action-btn:hover {
   background: var(--surface3);
   color: var(--text);
+}
+.sm-action-btn[data-active="true"] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
 }
 
 /* Progress bar */
@@ -3324,8 +3330,8 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .t-meta-value.accent { color: var(--accent); }
 .t-meta-value.cyan { color: var(--cyan); }
-.t-meta-value.green { color: #4ade80; }
-.t-meta-value.red { color: #f87171; }
+.t-meta-value.green { color: var(--mint); }
+.t-meta-value.red { color: var(--coral); }
 .t-topic-tags {
   display: flex;
   flex-wrap: wrap;
@@ -3351,6 +3357,132 @@ input[type="range"]::-webkit-slider-thumb {
   .t-toggle { width: 28px; height: 28px; font-size: 14px; }
   .t-details-content { grid-template-columns: 1fr; }
   .t-details-meta { flex-direction: row; flex-wrap: wrap; min-width: auto; }
+}
+
+/* ── Stock-Model Timeline (sm-tl-*) ─────────────────────────────────────── */
+/* Used by SEC Filings + Event Timeline sections in ASTS / BMNR / CRCL      */
+
+/* Filing grid header */
+.sm-tl-filing-header {
+  display: grid;
+  grid-template-columns: 120px 80px 1fr 100px 80px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text3);
+}
+/* Filing grid row */
+.sm-tl-filing-row {
+  display: grid;
+  grid-template-columns: 120px 80px 1fr 100px 80px;
+  padding: 12px 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text2);
+}
+.sm-tl-filing-row:last-child { border-bottom: none; }
+.sm-tl-filing-row:hover { background: var(--surface2); }
+
+/* Event timeline row — expandable */
+.sm-tl-event-row {
+  display: grid;
+  grid-template-columns: 100px 90px 1fr 80px 30px;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 13px;
+}
+.sm-tl-event-row:hover { background: var(--surface2); }
+
+/* Expanded details — 2-col (text + sidebar) */
+.sm-tl-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 24px;
+}
+
+/* 2-column explanation grid (How to Use) */
+.sm-tl-explain-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  font-size: 13px;
+}
+
+/* Event card wrapper */
+.sm-tl-event-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.sm-tl-event-card:hover { border-color: var(--accent-dim); }
+
+/* Expanded detail panel inside event card */
+.sm-tl-detail-panel {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── sm-tl responsive: 768px ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sm-tl-filing-header,
+  .sm-tl-filing-row {
+    grid-template-columns: 80px 60px 1fr;
+  }
+  .sm-tl-filing-header > :nth-child(4),
+  .sm-tl-filing-header > :nth-child(5),
+  .sm-tl-filing-row > :nth-child(4),
+  .sm-tl-filing-row > :nth-child(5) {
+    display: none;
+  }
+  .sm-tl-event-row {
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
+    padding: 12px;
+  }
+  .sm-tl-event-row > :nth-child(1),
+  .sm-tl-event-row > :nth-child(2) {
+    display: none;
+  }
+  .sm-tl-details-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .sm-tl-explain-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .sm-tl-detail-panel {
+    padding: 12px 16px;
+  }
+}
+
+/* ── sm-tl responsive: 480px ──────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .sm-tl-event-row {
+    grid-template-columns: 1fr auto;
+    padding: 10px;
+  }
+  .sm-tl-event-row > :nth-child(4) {
+    display: none;
+  }
+  .sm-tl-filing-header,
+  .sm-tl-filing-row {
+    grid-template-columns: 60px 1fr;
+  }
+  .sm-tl-filing-header > :nth-child(2),
+  .sm-tl-filing-row > :nth-child(2) {
+    display: none;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
