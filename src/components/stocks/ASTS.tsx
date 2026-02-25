@@ -6173,69 +6173,65 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       {/* Peer Group Selector */}
       <div className="sm-flex-wrap">
-        {compCategories.map(cat => {
-          const isActive = selectedCompCategory === cat.key;
-          return (
+        {compCategories.map(cat => (
           <button
             key={cat.key}
+            className="sm-cmp-filter-btn"
+            data-active={selectedCompCategory === cat.key ? 'true' : undefined}
             onClick={() => setSelectedCompCategory(cat.key)}
-            style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
           >
             {cat.label}
           </button>
-          );
-        })}
+        ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+      <div className="sm-cmp-peer-grid">
         {filteredComps.map((c) => {
           const qual = keyCompMap[c.name];
           const profile = profileMap[c.name];
           const threatLevel = qual ? qual.threat.toLowerCase() : '';
-          const cardBorderLeft = c.highlight ? '4px solid var(--accent)' : threatLevel === 'high' || threatLevel === 'critical' ? '4px solid var(--coral)' : threatLevel === 'medium' ? '4px solid var(--gold)' : threatLevel === 'low' ? '4px solid var(--mint)' : '4px solid var(--surface3)';
-          const cardBg = c.highlight ? 'linear-gradient(135deg, var(--accent-dim) 0%, var(--surface) 100%)' : 'var(--surface)';
           return (
-            <div key={c.ticker} style={{ background: cardBg, border: '1px solid var(--border)', borderRadius: 16, padding: 24, borderLeft: cardBorderLeft }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{c.name}</div>
-                  <div className="sm-mono-sm sm-text3">{c.ticker} · {getCategoryLabel(c.category)}</div>
+            <div key={c.ticker} className="sm-cmp-peer-card" data-threat={threatLevel || undefined} data-self={c.highlight ? 'true' : undefined}>
+              <div className="sm-cmp-card-header">
+                <div>
+                  <div className="sm-cmp-card-name">{c.name}</div>
+                  <div className="sm-cmp-card-ticker">{c.ticker} · {getCategoryLabel(c.category)}</div>
                 </div>
-                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
-                  {qual && <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: threatLevel === 'high' || threatLevel === 'critical' ? 'rgba(255,123,114,0.15)' : threatLevel === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: threatLevel === 'high' || threatLevel === 'critical' ? 'var(--coral)' : threatLevel === 'medium' ? 'var(--gold)' : 'var(--mint)' }}>{qual.threat}</span>}
-                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{getCategoryLabel(c.category)}</span>
+                <div className="sm-cmp-badge-row">
+                  {qual && <span className="sm-cmp-badge" data-level={threatLevel}>{qual.threat}</span>}
+                  <span className="sm-cmp-badge">{getCategoryLabel(c.category)}</span>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 8, padding: 12, background: 'var(--surface2)', borderRadius: 10, marginBottom: 12 }}>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-sm sm-fw-600 sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>${(c.mc / 1000).toFixed(0)}B</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Mkt Cap</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-sm sm-fw-600 sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>{c.evRev.toFixed(1)}x</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>EV/Rev</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-sm sm-fw-600 sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>${c.pSub.toLocaleString()}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>$/Sub</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-sm sm-fw-600 sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>{c.subs.toFixed(0)}M</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Subs</div></div>
+              <div className="sm-cmp-metrics-grid">
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">${(c.mc / 1000).toFixed(0)}B</div><div className="sm-cmp-metric-label">Mkt Cap</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">{c.evRev.toFixed(1)}x</div><div className="sm-cmp-metric-label">EV/Rev</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">${c.pSub.toLocaleString()}</div><div className="sm-cmp-metric-label">$/Sub</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">{c.subs.toFixed(0)}M</div><div className="sm-cmp-metric-label">Subs</div></div>
               </div>
               {c.highlight && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Voice</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Text</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Data</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Video</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'rgba(126,231,135,0.15)', color: 'var(--mint)' }}>✓ Unmod.</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: 'var(--surface3)', color: 'var(--text3)', opacity: 0.6 }}>Building Global</span>
+                <div className="sm-cmp-cap-row">
+                  <span className="sm-cmp-cap-tag" data-enabled="true">✓ Voice</span>
+                  <span className="sm-cmp-cap-tag" data-enabled="true">✓ Text</span>
+                  <span className="sm-cmp-cap-tag" data-enabled="true">✓ Data</span>
+                  <span className="sm-cmp-cap-tag" data-enabled="true">✓ Video</span>
+                  <span className="sm-cmp-cap-tag" data-enabled="true">✓ Unmod.</span>
+                  <span className="sm-cmp-cap-tag">Building Global</span>
                 </div>
               )}
               {!c.highlight && profile && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.voice ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.voice ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.voice ? undefined : 0.6 }}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.text ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.text ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.text ? undefined : 0.6 }}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.data ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.data ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.data ? undefined : 0.6 }}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.video ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.video ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.video ? undefined : 0.6 }}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.unmodifiedPhones ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.unmodifiedPhones ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.unmodifiedPhones ? undefined : 0.6 }}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.globalCoverage ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.globalCoverage ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.globalCoverage ? undefined : 0.6 }}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
+                <div className="sm-cmp-cap-row">
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.voice ? 'true' : undefined}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.text ? 'true' : undefined}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.data ? 'true' : undefined}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.video ? 'true' : undefined}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.unmodifiedPhones ? 'true' : undefined}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.globalCoverage ? 'true' : undefined}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
                 </div>
               )}
               {qual && (
                 <>
-                  <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {qual.focus}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>{qual.notes}</div>
+                  <div className="sm-subtle sm-text2" style={{ lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {qual.focus}</div>
+                  <div className="sm-subtle-sm sm-mt-8 sm-border-t" style={{ fontStyle: 'italic', paddingTop: 8, lineHeight: 1.5 }}>{qual.notes}</div>
                 </>
               )}
             </div>
@@ -6245,40 +6241,39 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         {selectedCompCategory === 'all' && extraCompetitors.map((kc, i) => {
           const profile = extraProfileMap[kc.name];
           const extraThreat = kc.threat.toLowerCase();
-          const extraBorderLeft = extraThreat === 'high' || extraThreat === 'critical' ? '4px solid var(--coral)' : extraThreat === 'medium' ? '4px solid var(--gold)' : extraThreat === 'low' ? '4px solid var(--mint)' : '4px solid var(--surface3)';
           return (
-            <div key={`extra-${i}`} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 24, borderLeft: extraBorderLeft }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.2 }}>{kc.name}</div>
-                  <div className="sm-mono-sm sm-text3">{kc.type}</div>
+            <div key={`extra-${i}`} className="sm-cmp-peer-card" data-threat={extraThreat || undefined}>
+              <div className="sm-cmp-card-header">
+                <div>
+                  <div className="sm-cmp-card-name">{kc.name}</div>
+                  <div className="sm-cmp-card-ticker">{kc.type}</div>
                 </div>
-                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
-                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: extraThreat === 'high' || extraThreat === 'critical' ? 'rgba(255,123,114,0.15)' : extraThreat === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: extraThreat === 'high' || extraThreat === 'critical' ? 'var(--coral)' : extraThreat === 'medium' ? 'var(--gold)' : 'var(--mint)' }}>{kc.threat}</span>
+                <div className="sm-cmp-badge-row">
+                  <span className="sm-cmp-badge" data-level={extraThreat}>{kc.threat}</span>
                 </div>
               </div>
               {profile && (
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.voice ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.voice ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.voice ? undefined : 0.6 }}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.text ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.text ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.text ? undefined : 0.6 }}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.data ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.data ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.data ? undefined : 0.6 }}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.video ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.video ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.video ? undefined : 0.6 }}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.unmodifiedPhones ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.unmodifiedPhones ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.unmodifiedPhones ? undefined : 0.6 }}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
-                  <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 4, fontWeight: 500, background: profile.capabilities.globalCoverage ? 'rgba(126,231,135,0.15)' : 'var(--surface3)', color: profile.capabilities.globalCoverage ? 'var(--mint)' : 'var(--text3)', opacity: profile.capabilities.globalCoverage ? undefined : 0.6 }}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
+                <div className="sm-cmp-cap-row">
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.voice ? 'true' : undefined}>{profile.capabilities.voice ? '✓' : '✗'} Voice</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.text ? 'true' : undefined}>{profile.capabilities.text ? '✓' : '✗'} Text</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.data ? 'true' : undefined}>{profile.capabilities.data ? '✓' : '✗'} Data</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.video ? 'true' : undefined}>{profile.capabilities.video ? '✓' : '✗'} Video</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.unmodifiedPhones ? 'true' : undefined}>{profile.capabilities.unmodifiedPhones ? '✓' : '✗'} Unmod.</span>
+                  <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.globalCoverage ? 'true' : undefined}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
                 </div>
               )}
-              <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {kc.focus}</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>{kc.notes}</div>
+              <div className="sm-subtle sm-text2" style={{ lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {kc.focus}</div>
+              <div className="sm-subtle-sm sm-mt-8 sm-border-t" style={{ fontStyle: 'italic', paddingTop: 8, lineHeight: 1.5 }}>{kc.notes}</div>
             </div>
           );
         })}
       </div>
 
-      <div className="sm-divider" style={{ borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
-        <div className="sm-section-label">Peer Valuation<UpdateIndicators sources="WS" /></div>
-        <h3 >EV/Revenue & $/Subscriber<span className="sm-accent">.</span></h3>
+      <div className="sm-divider">
+        <span className="sm-param-label">Peer Valuation — EV/Revenue & $/Subscriber</span>
+        <span className="sm-divider-line" />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <div className="sm-card">
           <div className="sm-card-section" style={{ padding: '16px 20px' }}>
             <div className="sm-section-label sm-flex">EV/Rev Comparison</div>
@@ -6356,9 +6351,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Advanced Valuation Matrices */}
-      <div className="sm-divider" style={{ borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
-        <div className="sm-section-label">Analytical Framework</div>
-        <h3 >Valuation Framework<span className="sm-accent">.</span></h3>
+      <div className="sm-divider">
+        <span className="sm-param-label">Analytical Framework — Valuation</span>
+        <span className="sm-divider-line" />
       </div>
 
       {/* Valuation Methodology Matrix */}
@@ -6367,30 +6362,32 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           <div className="sm-param-label sm-flex sm-gap-8">Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
           <p className="sm-text-13" style={{ color: 'var(--text3)', margin: '4px 0 0' }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
         </div>
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
-            {['Method', 'Peer Basis', 'Multiple/Metric', 'Implied Value', 'Premium/(Discount)'].map((label, idx) => (
-              <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx < 2 ? 'left' : 'right' }}>{label}</div>
+        <div className="sm-cmp-table-scroll">
+          <div style={{ minWidth: 560 }}>
+            <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr' }}>
+              {['Method', 'Peer Basis', 'Multiple/Metric', 'Implied Value', 'Premium/(Discount)'].map((label, idx) => (
+                <span key={label} className="sm-cmp-th" data-align={idx >= 2 ? 'right' : undefined}>{label}</span>
+              ))}
+            </div>
+            {[
+              { method: '$/Subscriber', basis: 'Starlink', metric: '$43,750/sub', implied: calc.potentialSubs * 43750, premium: ((calc.potentialSubs * 43750) / calc.marketCap - 1) * 100 },
+              { method: '$/Subscriber', basis: 'T-Mobile', metric: '$2,240/sub', implied: calc.potentialSubs * 2240, premium: ((calc.potentialSubs * 2240) / calc.marketCap - 1) * 100 },
+              { method: '$/Subscriber', basis: 'Verizon', metric: '$1,520/sub', implied: calc.potentialSubs * 1520, premium: ((calc.potentialSubs * 1520) / calc.marketCap - 1) * 100 },
+              { method: 'EV/Rev (Fwd)', basis: 'Starlink', metric: '17x', implied: calc.fwdRevenue * 17, premium: ((calc.fwdRevenue * 17) / calc.marketCap - 1) * 100 },
+              { method: 'EV/Rev (Fwd)', basis: 'High-Growth SaaS', metric: '10x', implied: calc.fwdRevenue * 10, premium: ((calc.fwdRevenue * 10) / calc.marketCap - 1) * 100 },
+              { method: 'EV/Rev (Fwd)', basis: 'Telco Avg', metric: '2x', implied: calc.fwdRevenue * 2, premium: ((calc.fwdRevenue * 2) / calc.marketCap - 1) * 100 },
+            ].map((v, i) => (
+              <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr' }}>
+                <span className="sm-cmp-td-label">{v.method}</span>
+                <span className="sm-cmp-td">{v.basis}</span>
+                <span className="sm-cmp-td" data-align="right">{v.metric}</span>
+                <span className="sm-cmp-td" data-align="right" style={{ color: 'var(--mint)' }}>${(v.implied / 1000).toFixed(1)}B</span>
+                <span className="sm-cmp-td" data-align="right" style={{ color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                  {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
+                </span>
+              </div>
             ))}
           </div>
-          {[
-            { method: '$/Subscriber', basis: 'Starlink', metric: '$43,750/sub', implied: calc.potentialSubs * 43750, premium: ((calc.potentialSubs * 43750) / calc.marketCap - 1) * 100 },
-            { method: '$/Subscriber', basis: 'T-Mobile', metric: '$2,240/sub', implied: calc.potentialSubs * 2240, premium: ((calc.potentialSubs * 2240) / calc.marketCap - 1) * 100 },
-            { method: '$/Subscriber', basis: 'Verizon', metric: '$1,520/sub', implied: calc.potentialSubs * 1520, premium: ((calc.potentialSubs * 1520) / calc.marketCap - 1) * 100 },
-            { method: 'EV/Rev (Fwd)', basis: 'Starlink', metric: '17x', implied: calc.fwdRevenue * 17, premium: ((calc.fwdRevenue * 17) / calc.marketCap - 1) * 100 },
-            { method: 'EV/Rev (Fwd)', basis: 'High-Growth SaaS', metric: '10x', implied: calc.fwdRevenue * 10, premium: ((calc.fwdRevenue * 10) / calc.marketCap - 1) * 100 },
-            { method: 'EV/Rev (Fwd)', basis: 'Telco Avg', metric: '2x', implied: calc.fwdRevenue * 2, premium: ((calc.fwdRevenue * 2) / calc.marketCap - 1) * 100 },
-          ].map((v, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-              <div className="sm-mono-sm sm-fw-500" style={{ padding: '16px 16px', fontSize: 14 }}>{v.method}</div>
-              <div className="sm-mono-sm" style={{ padding: '16px 16px', fontSize: 14 }}>{v.basis}</div>
-              <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>{v.metric}</div>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(v.implied / 1000).toFixed(1)}B</div>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
-              </div>
-            </div>
-          ))}
         </div>
       </div>
 
@@ -6402,32 +6399,31 @@ const CompsTab = ({ calc, currentStockPrice }) => {
             <div className="sm-param-label sm-flex sm-gap-8">Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
             <p className="sm-text-13" style={{ color: 'var(--text3)', margin: '4px 0 0' }}>Value each business segment separately</p>
           </div>
-          <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
-              {['Segment', 'Metric', 'Multiple', 'Value'].map((label, idx) => (
-                <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
-              ))}
-            </div>
-            {[
-              { segment: 'US Commercial', basis: 'AT&T/VZ partnership', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$2,000/sub', value: calc.potentialSubs * 0.4 * 2000 },
-              { segment: 'International', basis: 'Global MNO deals', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$1,500/sub', value: calc.potentialSubs * 0.4 * 1500 },
-              { segment: 'Government/Defense', basis: 'DoD contracts', metric: 'Option value', multiple: '—', value: 2000 },
-              { segment: 'Maritime/Aviation', basis: 'Niche verticals', metric: 'Option value', multiple: '—', value: 1000 },
-              { segment: 'Spectrum Assets', basis: 'Licensed spectrum', metric: 'Strategic value', multiple: '—', value: 3000 },
-            ].map((s, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-                <div className="sm-mono-sm" style={{ padding: '16px 16px', fontSize: 14 }}>
-                  <div style={{ fontWeight: 500 }}>{s.segment}</div>
-                  <div className="sm-text-11">{s.basis}</div>
-                </div>
-                <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>{s.metric}</div>
-                <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>{s.multiple}</div>
-                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value / 1000).toFixed(1)}B</div>
+          <div className="sm-cmp-table-scroll">
+            <div style={{ minWidth: 440 }}>
+              <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                {['Segment', 'Metric', 'Multiple', 'Value'].map((label, idx) => (
+                  <span key={label} className="sm-cmp-th" data-align={idx > 0 ? 'right' : undefined}>{label}</span>
+                ))}
               </div>
-            ))}
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>SOTP Total</div>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</div>
+              {[
+                { segment: 'US Commercial', basis: 'AT&T/VZ partnership', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$2,000/sub', value: calc.potentialSubs * 0.4 * 2000 },
+                { segment: 'International', basis: 'Global MNO deals', metric: `${(calc.potentialSubs * 0.4).toFixed(0)}M subs`, multiple: '$1,500/sub', value: calc.potentialSubs * 0.4 * 1500 },
+                { segment: 'Government/Defense', basis: 'DoD contracts', metric: 'Option value', multiple: '—', value: 2000 },
+                { segment: 'Maritime/Aviation', basis: 'Niche verticals', metric: 'Option value', multiple: '—', value: 1000 },
+                { segment: 'Spectrum Assets', basis: 'Licensed spectrum', metric: 'Strategic value', multiple: '—', value: 3000 },
+              ].map((s, i) => (
+                <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                  <span className="sm-cmp-td-label"><div>{s.segment}</div><div className="sm-text-11">{s.basis}</div></span>
+                  <span className="sm-cmp-td" data-align="right">{s.metric}</span>
+                  <span className="sm-cmp-td" data-align="right">{s.multiple}</span>
+                  <span className="sm-cmp-td" data-align="right" style={{ color: 'var(--mint)' }}>${(s.value / 1000).toFixed(1)}B</span>
+                </div>
+              ))}
+              <div className="sm-cmp-table-total" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                <span className="sm-cmp-td-label" style={{ gridColumn: '1 / 4' }}>SOTP Total</span>
+                <span className="sm-cmp-td" data-align="right" style={{ color: 'var(--mint)' }}>${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</span>
+              </div>
             </div>
           </div>
           </div>
@@ -6440,31 +6436,30 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <div className="sm-param-label sm-flex sm-gap-8">Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
               <p className="sm-text-13" style={{ color: 'var(--text3)', margin: '4px 0 0' }}>Probability-weighted valuation outcomes</p>
             </div>
-          <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
-              {['Scenario', 'Prob.', 'Value', 'Weighted'].map((label, idx) => (
-                <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
-              ))}
-            </div>
-            {[
-              { scenario: 'Bull Case', desc: 'Full constellation, global coverage', prob: 25, value: calc.marketCap * 3 },
-              { scenario: 'Base Case', desc: 'Partial success, US + select intl', prob: 45, value: calc.marketCap * 1.5 },
-              { scenario: 'Bear Case', desc: 'Delays, limited commercial traction', prob: 20, value: calc.marketCap * 0.5 },
-              { scenario: 'Failure', desc: 'Technology or funding issues', prob: 10, value: calc.marketCap * 0.1 },
-            ].map((s, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-                <div className="sm-mono-sm" style={{ padding: '16px 16px', fontSize: 14 }}>
-                  <div style={{ fontWeight: 500 }}>{s.scenario}</div>
-                  <div className="sm-text-11">{s.desc}</div>
-                </div>
-                <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>{s.prob}%</div>
-                <div className="sm-mono-sm sm-text-right" style={{ padding: '16px 16px', fontSize: 14 }}>${(s.value / 1000).toFixed(1)}B</div>
-                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${(s.value * s.prob / 100 / 1000).toFixed(1)}B</div>
+          <div className="sm-cmp-table-scroll">
+            <div style={{ minWidth: 420 }}>
+              <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                {['Scenario', 'Prob.', 'Value', 'Weighted'].map((label, idx) => (
+                  <span key={label} className="sm-cmp-th" data-align={idx > 0 ? 'right' : undefined}>{label}</span>
+                ))}
               </div>
-            ))}
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>Expected Value</div>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: 'var(--mint)' }}>${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</div>
+              {[
+                { scenario: 'Bull Case', desc: 'Full constellation, global coverage', prob: 25, value: calc.marketCap * 3 },
+                { scenario: 'Base Case', desc: 'Partial success, US + select intl', prob: 45, value: calc.marketCap * 1.5 },
+                { scenario: 'Bear Case', desc: 'Delays, limited commercial traction', prob: 20, value: calc.marketCap * 0.5 },
+                { scenario: 'Failure', desc: 'Technology or funding issues', prob: 10, value: calc.marketCap * 0.1 },
+              ].map((s, i) => (
+                <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                  <span className="sm-cmp-td-label"><div>{s.scenario}</div><div className="sm-text-11">{s.desc}</div></span>
+                  <span className="sm-cmp-td" data-align="right">{s.prob}%</span>
+                  <span className="sm-cmp-td" data-align="right">${(s.value / 1000).toFixed(1)}B</span>
+                  <span className="sm-cmp-td" data-align="right" style={{ color: 'var(--mint)' }}>${(s.value * s.prob / 100 / 1000).toFixed(1)}B</span>
+                </div>
+              ))}
+              <div className="sm-cmp-table-total" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                <span className="sm-cmp-td-label" style={{ gridColumn: '1 / 4' }}>Expected Value</span>
+                <span className="sm-cmp-td" data-align="right" style={{ color: 'var(--mint)' }}>${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</span>
+              </div>
             </div>
           </div>
           </div>
@@ -6472,11 +6467,9 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Competitor News Intelligence Section */}
-      <div className="sm-divider" style={{ borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
-        <div className="sm-section-label">Competitive Intelligence<UpdateIndicators sources="PR" /></div>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-          <h3 >Competitor News<span className="sm-accent">.</span></h3>
-        </div>
+      <div className="sm-divider">
+        <span className="sm-param-label">Competitive Intelligence — Competitor News</span>
+        <span className="sm-divider-line" />
       </div>
 
       {/* Filter Bar */}

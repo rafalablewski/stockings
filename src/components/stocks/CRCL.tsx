@@ -6042,48 +6042,42 @@ const CompsTab = () => {
 
       {/* Peer Group Selector */}
       <div className="sm-flex-wrap">
-        {Object.entries(PEER_GROUPS).map(([key, group]) => {
-          const isActive = selectedPeerGroup === key;
-          return (
-            <button
-              key={key}
-              onClick={() => setSelectedPeerGroup(key)}
-              style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
-            >
-              {group.name}
-            </button>
-          );
-        })}
+        {Object.entries(PEER_GROUPS).map(([key, group]) => (
+          <button
+            key={key}
+            className="sm-cmp-filter-btn"
+            data-active={selectedPeerGroup === key}
+            onClick={() => setSelectedPeerGroup(key)}
+          >
+            {group.name}
+          </button>
+        ))}
       </div>
 
       {/* Unified Peer Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+      <div className="sm-cmp-peer-grid">
         {currentPeers.peers.map((p, i) => {
           const qual = keyCompLookup[p.name.split(' (')[0]] || keyCompLookup[p.name];
           const isSelf = p.highlight;
-          const cardBorderLeft = isSelf ? '4px solid var(--accent)' : qual ? `4px solid ${qual.threat.toLowerCase() === 'high' || qual.threat.toLowerCase() === 'critical' ? 'var(--coral)' : qual.threat.toLowerCase() === 'medium' ? 'var(--gold)' : 'var(--mint)'}` : '4px solid var(--surface3)';
-          const cardBg = isSelf ? 'linear-gradient(135deg, var(--accent-dim) 0%, var(--surface) 100%)' : 'var(--surface)';
-          const threatBadgeBg = qual ? (qual.threat.toLowerCase() === 'high' ? 'rgba(255,123,114,0.15)' : qual.threat.toLowerCase() === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)') : '';
-          const threatBadgeColor = qual ? (qual.threat.toLowerCase() === 'high' ? 'var(--coral)' : qual.threat.toLowerCase() === 'medium' ? 'var(--gold)' : 'var(--mint)') : '';
           return (
-            <div key={i} style={{ background: cardBg, border: '1px solid var(--border)', borderRadius: 16, padding: 24, borderLeft: cardBorderLeft }}>
-              <div className="sm-flex-between sm-mb-12" style={{ alignItems: 'flex-start', gap: 8 }}>
+            <div key={i} className="sm-cmp-peer-card" data-self={isSelf || undefined} data-threat={qual ? qual.threat.toLowerCase() : undefined}>
+              <div className="sm-cmp-card-header">
                 <div className="sm-flex-col" style={{ gap: 2 }}>
-                  <div className="sm-text sm-fw-700" style={{ fontSize: 15, lineHeight: 1.2 }}>{p.name}</div>
-                  <div className="sm-text3" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>{p.ticker}</div>
+                  <div className="sm-cmp-card-name">{p.name}</div>
+                  <div className="sm-cmp-card-ticker">{p.ticker}</div>
                 </div>
-                <div className="sm-flex sm-gap-6 sm-shrink-0">
-                  {qual && <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: threatBadgeBg, color: threatBadgeColor }}>{qual.threat}</span>}
-                  <span className="sm-micro-label sm-bg-surface2" style={{ padding: '3px 8px', borderRadius: 4, whiteSpace: 'nowrap', background: 'var(--surface3)' }}>{currentPeers.name}</span>
+                <div className="sm-cmp-badge-row">
+                  {qual && <span className="sm-cmp-badge" data-level={qual.threat.toLowerCase()}>{qual.threat}</span>}
+                  <span className="sm-cmp-badge">{currentPeers.name}</span>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 8, padding: 12, background: 'var(--surface2)', borderRadius: 10, marginBottom: 12 }}>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{p.cap ? `$${p.cap}B` : 'Private'}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Mkt Cap</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>${p.rev}B</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Revenue</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--text)', lineHeight: 1.2 }}>{p.ebitda > 0 ? `$${p.ebitda}B` : p.ebitda < 0 ? `($${Math.abs(p.ebitda)}B)` : '—'}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>EBITDA</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: p.margin >= 30 ? 'var(--mint)' : p.margin < 0 ? 'var(--coral)' : 'var(--text)', lineHeight: 1.2 }}>{p.margin}%</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Margin</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: p.growth >= 30 ? 'var(--mint)' : 'var(--text)', lineHeight: 1.2 }}>{p.growth}%</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Growth</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: 'var(--accent)', lineHeight: 1.2 }}>{p.cap ? `${(p.cap / p.rev).toFixed(1)}x` : '—'}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>P/S</div></div>
+              <div className="sm-cmp-metrics-grid">
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">{p.cap ? `$${p.cap}B` : 'Private'}</div><div className="sm-cmp-metric-label">Mkt Cap</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">${p.rev}B</div><div className="sm-cmp-metric-label">Revenue</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">{p.ebitda > 0 ? `$${p.ebitda}B` : p.ebitda < 0 ? `($${Math.abs(p.ebitda)}B)` : '—'}</div><div className="sm-cmp-metric-label">EBITDA</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value" style={{ color: p.margin >= 30 ? 'var(--mint)' : p.margin < 0 ? 'var(--coral)' : undefined }}>{p.margin}%</div><div className="sm-cmp-metric-label">Margin</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value" style={{ color: p.growth >= 30 ? 'var(--mint)' : undefined }}>{p.growth}%</div><div className="sm-cmp-metric-label">Growth</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value" style={{ color: 'var(--accent)' }}>{p.cap ? `${(p.cap / p.rev).toFixed(1)}x` : '—'}</div><div className="sm-cmp-metric-label">P/S</div></div>
               </div>
               {qual && (
                 <>
@@ -6097,29 +6091,23 @@ const CompsTab = () => {
         {/* Show keyCompetitors not in current peer group when viewing crypto */}
         {selectedPeerGroup === 'crypto' && keyCompetitors
           .filter(k => !currentPeers.peers.find(p => p.name.includes(k.name.split(' (')[0])))
-          .map((k, i) => {
-            const threatLevel = k.threat.toLowerCase();
-            const borderLeftColor = threatLevel === 'high' || threatLevel === 'critical' ? 'var(--coral)' : threatLevel === 'medium' ? 'var(--gold)' : 'var(--mint)';
-            const tBadgeBg = threatLevel === 'high' ? 'rgba(255,123,114,0.15)' : threatLevel === 'medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)';
-            const tBadgeColor = threatLevel === 'high' ? 'var(--coral)' : threatLevel === 'medium' ? 'var(--gold)' : 'var(--mint)';
-            return (
-            <div key={`extra-${i}`} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: 24, borderLeft: `4px solid ${borderLeftColor}` }}>
-              <div className="sm-flex-between sm-mb-12" style={{ alignItems: 'flex-start', gap: 8 }}>
+          .map((k, i) => (
+            <div key={`extra-${i}`} className="sm-cmp-peer-card" data-threat={k.threat.toLowerCase()}>
+              <div className="sm-cmp-card-header">
                 <div className="sm-flex-col" style={{ gap: 2 }}>
-                  <div className="sm-text sm-fw-700" style={{ fontSize: 15, lineHeight: 1.2 }}>{k.name}</div>
-                  <div className="sm-text3" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11 }}>{k.type}</div>
+                  <div className="sm-cmp-card-name">{k.name}</div>
+                  <div className="sm-cmp-card-ticker">{k.type}</div>
                 </div>
-                <div className="sm-flex sm-gap-6 sm-shrink-0">
-                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: tBadgeBg, color: tBadgeColor }}>{k.threat}</span>
-                  <span className="sm-micro-label sm-bg-surface2" style={{ padding: '3px 8px', borderRadius: 4, whiteSpace: 'nowrap', background: 'var(--surface3)' }}>{k.type}</span>
+                <div className="sm-cmp-badge-row">
+                  <span className="sm-cmp-badge" data-level={k.threat.toLowerCase()}>{k.threat}</span>
+                  <span className="sm-cmp-badge">{k.type}</span>
                 </div>
               </div>
               <div className="sm-subtle sm-text2" style={{ lineHeight: 1.5, marginBottom: 4 }}><strong>Status:</strong> {k.status}</div>
               <div className="sm-subtle sm-text2" style={{ lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {k.focus}</div>
               <div className="sm-subtle-sm" style={{ fontStyle: 'italic', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', lineHeight: 1.5 }}>{k.notes}</div>
             </div>
-            );
-          })
+          ))
         }
       </div>
 
@@ -6171,30 +6159,24 @@ const CompsTab = () => {
       <div className="sm-panel" style={{ borderRadius: 14 }}>
         <div className="sm-flex sm-fw-600 sm-text" style={{ fontSize: 13, marginBottom: 4 }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
         <p className="sm-body-sm sm-text3">Circle's value under different peer multiples (current: $18.9B)</p>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr>
-              <th style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>Method</th>
-              <th className="sm-section-label sm-bg-surface2" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>Peer Basis</th>
-              <th className="sm-section-label sm-bg-surface2 sm-text-right" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>Multiple</th>
-              <th className="sm-section-label sm-bg-surface2 sm-text-right" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>Implied Value</th>
-              <th style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '0 10px 0 0' }}>Premium/(Discount)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {VALUATION_MATRIX.map((v, i) => (
-              <tr key={i}>
-                <td style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</td>
-                <td className="sm-mono-md" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>{v.basis}</td>
-                <td className="sm-mono-md sm-text-right" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>{v.multiple}x</td>
-                <td className="sm-mono-md sm-text-right sm-mint" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>${v.implied.toFixed(1)}B</td>
-                <td style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
-                  {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
-                </td>
-              </tr>
+        <div className="sm-cmp-table-scroll">
+          <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1.2fr', borderRadius: '10px 10px 0 0' }}>
+            {['Method', 'Peer Basis', 'Multiple', 'Implied Value', 'Premium/(Discount)'].map((label, idx) => (
+              <div key={label} className="sm-cmp-th" data-align={idx < 2 ? 'left' : 'right'}>{label}</div>
             ))}
-          </tbody>
-        </table>
+          </div>
+          {VALUATION_MATRIX.map((v, i) => (
+            <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1.2fr' }}>
+              <div className="sm-cmp-td-label">{v.method}</div>
+              <div className="sm-cmp-td">{v.basis}</div>
+              <div className="sm-cmp-td" data-align="right">{v.multiple}x</div>
+              <div className="sm-cmp-td sm-mint" data-align="right">${v.implied.toFixed(1)}B</div>
+              <div className="sm-cmp-td" data-align="right" style={{ color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Growth vs P/S Scatter Plot */}
@@ -6264,35 +6246,30 @@ const CompsTab = () => {
               <div className="sm-param-label sm-flex sm-gap-8">Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
               <p className="sm-body-sm sm-text3" style={{ margin: '4px 0 0' }}>Value each business segment separately</p>
             </div>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th className="sm-section-label sm-bg-surface2" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>Segment</th>
-                  <th className="sm-section-label sm-bg-surface2 sm-text-right" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>Metric</th>
-                  <th className="sm-section-label sm-bg-surface2 sm-text-right" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>Multiple</th>
-                  <th className="sm-section-label sm-bg-surface2 sm-text-right" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {SOTP.map((s, i) => (
-                  <tr key={i}>
-                    <td className="sm-mono-md" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>
-                      <div className="sm-fw-500">{s.segment}</div>
-                      <div className="sm-text-11">{s.basis}</div>
-                    </td>
-                    <td className="sm-mono-md sm-text-right" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>{s.metric}</td>
-                    <td className="sm-mono-md sm-text-right" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>{s.multiple}</td>
-                    <td className="sm-mono-md sm-text-right sm-mint" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>
-                      {s.value ? `$${s.value}B` : s.valueLow && s.valueHigh ? `$${s.valueLow}-${s.valueHigh}B` : '—'}
-                    </td>
-                  </tr>
+            <div className="sm-cmp-table-scroll">
+              <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                {['Segment', 'Metric', 'Multiple', 'Value'].map((label, idx) => (
+                  <div key={label} className="sm-cmp-th" data-align={idx === 0 ? 'left' : 'right'}>{label}</div>
                 ))}
-                <tr className="sm-fw-600">
-                  <td colSpan={3} className="sm-mono-md" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>SOTP Range</td>
-                  <td className="sm-mono-md sm-text-right sm-mint" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>$15.5-17.5B</td>
-                </tr>
-              </tbody>
-            </table>
+              </div>
+              {SOTP.map((s, i) => (
+                <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                  <div className="sm-cmp-td-label">
+                    <div className="sm-fw-500">{s.segment}</div>
+                    <div className="sm-text-11">{s.basis}</div>
+                  </div>
+                  <div className="sm-cmp-td" data-align="right">{s.metric}</div>
+                  <div className="sm-cmp-td" data-align="right">{s.multiple}</div>
+                  <div className="sm-cmp-td sm-mint" data-align="right">
+                    {s.value ? `$${s.value}B` : s.valueLow && s.valueHigh ? `$${s.valueLow}-${s.valueHigh}B` : '—'}
+                  </div>
+                </div>
+              ))}
+              <div className="sm-cmp-table-total" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                <div className="sm-cmp-td-label" style={{ gridColumn: '1 / 4' }}>SOTP Range</div>
+                <div className="sm-cmp-td sm-mint" data-align="right">$15.5-17.5B</div>
+              </div>
+            </div>
             <div style={{ padding: '12px 20px', fontSize: 12, color: 'var(--text3)' }}>
               Current market cap: $18.9B ({((18.9 / 16.5 - 1) * 100).toFixed(0)}% premium to midpoint)
             </div>
@@ -6306,38 +6283,27 @@ const CompsTab = () => {
               <div className="sm-param-label sm-flex sm-gap-8">Transaction Comps<UpdateIndicators sources={['WS']} /></div>
               <p className="sm-body-sm sm-text3" style={{ margin: '4px 0 0' }}>Recent M&A and funding deals in the space</p>
             </div>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr>
-                  <th className="sm-section-label sm-bg-surface2" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>Date</th>
-                  <th className="sm-section-label sm-bg-surface2" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>Target</th>
-                  <th className="sm-section-label sm-bg-surface2 sm-text-right" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>Value</th>
-                  <th className="sm-section-label sm-bg-surface2" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>Type</th>
-                </tr>
-              </thead>
-              <tbody>
-                {TRANSACTIONS.map((t, i) => (
-                  <tr key={i}>
-                    <td className="sm-mono-md" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>{t.date}</td>
-                    <td className="sm-mono-md" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>
-                      <div className="sm-fw-500">{t.target}</div>
-                      {t.notes && <div className="sm-text-11">{t.notes}</div>}
-                    </td>
-                    <td className="sm-mono-md sm-text-right" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}>{t.value ? `$${t.value}B` : '—'}</td>
-                    <td className="sm-mono-md" style={{ padding: '16px 16px', borderBottom: '1px solid var(--border)' }}><span style={{
-                      fontSize: 10,
-                      padding: '3px 8px',
-                      borderRadius: 4,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px',
-                      fontWeight: 600,
-                      background: t.type === 'M&A' ? 'var(--mint-dim)' : t.type === 'Funding' ? 'var(--sky-dim)' : 'var(--gold-dim)',
-                      color: t.type === 'M&A' ? 'var(--mint)' : t.type === 'Funding' ? 'var(--sky)' : 'var(--gold)'
-                    }}>{t.type}</span></td>
-                  </tr>
+            <div className="sm-cmp-table-scroll">
+              <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '100px 2fr 1fr 100px' }}>
+                {['Date', 'Target', 'Value', 'Type'].map((label, idx) => (
+                  <div key={label} className="sm-cmp-th" data-align={idx === 2 ? 'right' : 'left'}>{label}</div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+              {TRANSACTIONS.map((t, i) => (
+                <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '100px 2fr 1fr 100px' }}>
+                  <div className="sm-cmp-td-label">{t.date}</div>
+                  <div className="sm-cmp-td">
+                    <div className="sm-fw-500">{t.target}</div>
+                    {t.notes && <div className="sm-text-11">{t.notes}</div>}
+                  </div>
+                  <div className="sm-cmp-td" data-align="right">{t.value ? `$${t.value}B` : '—'}</div>
+                  <div className="sm-cmp-td"><span className="sm-cmp-badge" style={{
+                    background: t.type === 'M&A' ? 'var(--mint-dim)' : t.type === 'Funding' ? 'var(--sky-dim)' : 'var(--gold-dim)',
+                    color: t.type === 'M&A' ? 'var(--mint)' : t.type === 'Funding' ? 'var(--sky)' : 'var(--gold)'
+                  }}>{t.type}</span></div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -6346,31 +6312,27 @@ const CompsTab = () => {
       <div className="sm-panel" style={{ borderRadius: 14 }}>
         <div className="sm-flex sm-fw-600 sm-text" style={{ fontSize: 13, marginBottom: 4 }}>Valuation Sensitivity: USDC × Interest Rates<UpdateIndicators sources={['WS']} /></div>
         <p className="sm-body-sm sm-text3">Implied enterprise value at Coinbase P/S multiple (13x net revenue)</p>
-        <div className="sm-overflow-x">
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', borderRadius: '10px 0 0 0' }}>USDC ($B) ↓ / Rate → </th>
-                {SENSITIVITY_RATES.map((r, idx) => <th key={r} style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, background: 'var(--surface2)', ...(idx === SENSITIVITY_RATES.length - 1 ? { borderRadius: '0 10px 0 0' } : {}) }}>{r}%</th>)}
-              </tr>
-            </thead>
-            <tbody>
-              {SENSITIVITY_USDC.map(usdc => (
-                <tr key={usdc}>
-                  <td style={{ padding: '16px 16px', textAlign: 'left', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 600 }}>${usdc}B</td>
-                  {SENSITIVITY_RATES.map(rate => {
-                    const val = calcSensitivity(usdc, rate, 13);
-                    const isNear = Math.abs(usdc - 73.7) < 15 && Math.abs(rate - 4.0) < 0.5;
-                    return (
-                      <td key={rate} style={{ padding: '16px 16px', textAlign: 'right', borderBottom: '1px solid var(--border)', fontFamily: "'Space Mono', monospace", fontSize: 14, ...(isNear ? { background: 'var(--accent-dim)', fontWeight: 600, color: 'var(--accent)' } : {}) }}>
-                        ${val.toFixed(1)}B
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="sm-cmp-table-scroll">
+          <div className="sm-cmp-table-header" style={{ gridTemplateColumns: `1fr repeat(${SENSITIVITY_RATES.length}, 1fr)`, borderRadius: '10px 10px 0 0' }}>
+            <div className="sm-cmp-th">USDC ($B) ↓ / Rate →</div>
+            {SENSITIVITY_RATES.map(r => (
+              <div key={r} className="sm-cmp-th" data-align="right">{r}%</div>
+            ))}
+          </div>
+          {SENSITIVITY_USDC.map(usdc => (
+            <div key={usdc} className="sm-cmp-table-row" style={{ gridTemplateColumns: `1fr repeat(${SENSITIVITY_RATES.length}, 1fr)` }}>
+              <div className="sm-cmp-td-label" style={{ fontWeight: 600 }}>${usdc}B</div>
+              {SENSITIVITY_RATES.map(rate => {
+                const val = calcSensitivity(usdc, rate, 13);
+                const isNear = Math.abs(usdc - 73.7) < 15 && Math.abs(rate - 4.0) < 0.5;
+                return (
+                  <div key={rate} className="sm-cmp-td" data-align="right" style={isNear ? { background: 'var(--accent-dim)', fontWeight: 600, color: 'var(--accent)' } : undefined}>
+                    ${val.toFixed(1)}B
+                  </div>
+                );
+              })}
+            </div>
+          ))}
         </div>
         <div className="sm-subtle">
           Highlighted: Current USDC (~$74B) × Current rate (~4%). Assumes 45% net revenue margin after Coinbase distribution costs.
@@ -6428,11 +6390,10 @@ const CompsTab = () => {
       </div>
 
       {/* Competitor News Intelligence Section - Eyebrow + Title + Dot Header */}
-      <div className="sm-divider" style={{ borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+      <div className="sm-divider">
         <div className="sm-section-label">Competitive Intelligence<UpdateIndicators sources="PR" /></div>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-          <h3 >Competitor News<span className="sm-accent">.</span></h3>
-        </div>
+        <span className="sm-param-label">Competitor News</span>
+        <span className="sm-divider-line" />
       </div>
 
       {/* Competitor Filter - Card container + pill buttons */}

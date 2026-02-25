@@ -3685,43 +3685,42 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
       {/* Peer Group Selector */}
       <div className="sm-flex-wrap">
-        {categories.map(cat => {
-          const isActive = selectedCategory === cat.key;
-          return (
+        {categories.map(cat => (
           <button
             key={cat.key}
+            className="sm-cmp-filter-btn"
+            data-active={selectedCategory === cat.key ? 'true' : undefined}
             onClick={() => setSelectedCategory(cat.key)}
-            style={{ padding: '8px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500, borderRadius: 8, background: isActive ? 'var(--accent-dim)' : 'var(--surface2)', border: `1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}`, color: isActive ? 'var(--accent)' : 'var(--text2)', cursor: 'pointer', transition: 'all 0.2s', fontFamily: "'Outfit', sans-serif", whiteSpace: 'nowrap' }}
           >
             {cat.label}
           </button>
-          );
-        })}
+        ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+      <div className="sm-cmp-peer-grid">
         {filteredComps.map(c => {
           const qual = keyCompLookup[c.name];
           const isSelf = c.name === 'BMNR';
+          const threatLevel = qual ? qual.threat.toLowerCase() : '';
           return (
-            <div key={c.name} style={getCardStyle(isSelf, qual?.threat)}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <div className="sm-text sm-fw-700" style={{ fontSize: 15, lineHeight: 1.2 }}>{c.fullName || c.name}</div>
-                  <div className="sm-mono-sm sm-text3" style={{ fontSize: 11 }}>{c.name} · {c.crypto}</div>
+            <div key={c.name} className="sm-cmp-peer-card" data-threat={threatLevel || undefined} data-self={isSelf ? 'true' : undefined}>
+              <div className="sm-cmp-card-header">
+                <div>
+                  <div className="sm-cmp-card-name">{c.fullName || c.name}</div>
+                  <div className="sm-cmp-card-ticker">{c.name} · {c.crypto}</div>
                 </div>
-                <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
-                  {qual && <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: qual.threat === 'High' ? 'rgba(255,123,114,0.15)' : qual.threat === 'Medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: qual.threat === 'High' ? 'var(--coral)' : qual.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{qual.threat}</span>}
-                  <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{qual?.type || c.category}</span>
+                <div className="sm-cmp-badge-row">
+                  {qual && <span className="sm-cmp-badge" data-level={threatLevel}>{qual.threat}</span>}
+                  <span className="sm-cmp-badge">{qual?.type || c.category}</span>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: 8, padding: 12, background: 'var(--surface2)', borderRadius: 10, marginBottom: 12 }}>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-md sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>{typeof c.holdings === 'number' ? c.holdings.toLocaleString() : c.holdings}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Holdings</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-md sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>{c.navPerShare > 0 ? `$${c.navPerShare.toFixed(2)}` : '—'}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>NAV/Share</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-md sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>${c.price}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Price</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: c.premium >= 0 ? 'var(--mint)' : 'var(--coral)', lineHeight: 1.2 }}>{c.navPerShare > 0 ? `${c.premium >= 0 ? '+' : ''}${c.premium.toFixed(0)}%` : '—'}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Premium</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, fontWeight: 600, color: c.yield > 0 ? 'var(--mint)' : 'var(--text)', lineHeight: 1.2 }}>{c.yield > 0 ? `${c.yield}%` : '—'}</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Yield</div></div>
-                <div className="sm-text-center" style={{ padding: '4px 0' }}><div className="sm-mono-md sm-text" style={{ fontSize: 13, lineHeight: 1.2 }}>${(c.marketCap / 1e9).toFixed(1)}B</div><div className="sm-micro-text" style={{ fontSize: 9, marginTop: 2 }}>Mkt Cap</div></div>
+              <div className="sm-cmp-metrics-grid">
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">{typeof c.holdings === 'number' ? c.holdings.toLocaleString() : c.holdings}</div><div className="sm-cmp-metric-label">Holdings</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">{c.navPerShare > 0 ? `$${c.navPerShare.toFixed(2)}` : '—'}</div><div className="sm-cmp-metric-label">NAV/Share</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">${c.price}</div><div className="sm-cmp-metric-label">Price</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value" style={{ color: c.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{c.navPerShare > 0 ? `${c.premium >= 0 ? '+' : ''}${c.premium.toFixed(0)}%` : '—'}</div><div className="sm-cmp-metric-label">Premium</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value" style={{ color: c.yield > 0 ? 'var(--mint)' : 'var(--text)' }}>{c.yield > 0 ? `${c.yield}%` : '—'}</div><div className="sm-cmp-metric-label">Yield</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">${(c.marketCap / 1e9).toFixed(1)}B</div><div className="sm-cmp-metric-label">Mkt Cap</div></div>
               </div>
               {qual && (
                 <>
@@ -3737,15 +3736,15 @@ const CompsTab = ({ comparables, ethPrice }) => {
           const ticker = k.name.match(/\(([A-Z]+)\)/)?.[1];
           return ticker && !compsData.find(c => c.name === ticker);
         }).filter(() => selectedCategory === 'all').map((k, i) => (
-          <div key={`qual-${i}`} style={getCardStyle(false, k.threat)}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, gap: 8 }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <div className="sm-text sm-fw-700" style={{ fontSize: 15, lineHeight: 1.2 }}>{k.name}</div>
-                <div className="sm-mono-sm sm-text3" style={{ fontSize: 11 }}>{k.name.match(/\(([A-Z]+)\)/)?.[1] || ''}</div>
+          <div key={`qual-${i}`} className="sm-cmp-peer-card" data-threat={k.threat.toLowerCase()}>
+            <div className="sm-cmp-card-header">
+              <div>
+                <div className="sm-cmp-card-name">{k.name}</div>
+                <div className="sm-cmp-card-ticker">{k.name.match(/\(([A-Z]+)\)/)?.[1] || ''}</div>
               </div>
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
-                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: k.threat === 'High' ? 'rgba(255,123,114,0.15)' : k.threat === 'Medium' ? 'rgba(210,153,34,0.15)' : 'rgba(126,231,135,0.15)', color: k.threat === 'High' ? 'var(--coral)' : k.threat === 'Medium' ? 'var(--gold)' : 'var(--mint)' }}>{k.threat}</span>
-                <span style={{ fontSize: 10, padding: '3px 8px', borderRadius: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', whiteSpace: 'nowrap', background: 'var(--surface3)', color: 'var(--text3)' }}>{k.type}</span>
+              <div className="sm-cmp-badge-row">
+                <span className="sm-cmp-badge" data-level={k.threat.toLowerCase()}>{k.threat}</span>
+                <span className="sm-cmp-badge">{k.type}</span>
               </div>
             </div>
             <div className="sm-subtle sm-text2" style={{ lineHeight: 1.5, marginBottom: 4 }}><strong>Status:</strong> {k.status}</div>
@@ -3776,10 +3775,10 @@ const CompsTab = ({ comparables, ethPrice }) => {
       <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
         <div className="sm-section-label" style={{ marginBottom: 4 }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
         <p className="sm-body-sm">BMNR value under different NAV multiples (current: ${(compsData[0]?.marketCap / 1e9).toFixed(2)}B)</p>
-        <div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)', borderRadius: '10px 10px 0 0' }}>
+        <div className="sm-cmp-table-scroll">
+          <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', borderRadius: '10px 10px 0 0' }}>
             {['Method', 'Peer Basis', 'Multiple', 'Implied Value', 'vs Current'].map((label, idx) => (
-              <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx < 2 ? 'left' : 'right' }}>{label}</div>
+              <div key={label} className="sm-cmp-th" data-align={idx < 2 ? 'left' : 'right'}>{label}</div>
             ))}
           </div>
           {(() => {
@@ -3794,12 +3793,12 @@ const CompsTab = ({ comparables, ethPrice }) => {
               { method: 'Yield-Adjusted', basis: 'ETH Yield Premium', multiple: '1.3x', implied: nav * 1.3, vs: ((nav * 1.3) / currentMC - 1) * 100 },
               { method: 'Yield-Adjusted', basis: '5yr Compound', multiple: '1.15x', implied: nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5), vs: ((nav * Math.pow(1 + (comparables[0]?.yield || 0) / 100, 5)) / currentMC - 1) * 100 },
             ].map((v, i) => (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 500 }}>{v.method}</div>
-                <div className="sm-mono-md" style={{ padding: '16px 16px' }}>{v.basis}</div>
-                <div className="sm-mono-md sm-text-right" style={{ padding: '16px 16px' }}>{v.multiple}</div>
-                <div className="sm-mono-md sm-text-right sm-mint" style={{ padding: '16px 16px' }}>${(v.implied / 1e9).toFixed(2)}B</div>
-                <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, textAlign: 'right', color: v.vs >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+              <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr' }}>
+                <div className="sm-cmp-td-label">{v.method}</div>
+                <div className="sm-cmp-td">{v.basis}</div>
+                <div className="sm-cmp-td" data-align="right">{v.multiple}</div>
+                <div className="sm-cmp-td sm-mint" data-align="right">${(v.implied / 1e9).toFixed(2)}B</div>
+                <div className="sm-cmp-td" data-align="right" style={{ color: v.vs >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                   {v.vs >= 0 ? '+' : ''}{v.vs.toFixed(0)}%
                 </div>
               </div>
@@ -3816,10 +3815,10 @@ const CompsTab = ({ comparables, ethPrice }) => {
             <div className="sm-section-label" style={{ marginBottom: 4 }}>Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
             <p style={{ color: 'var(--text3)', fontSize: 13, margin: 0 }}>Value each component separately</p>
           </div>
-          <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', background: 'var(--surface2)', borderBottom: '1px solid var(--border)' }}>
+          <div className="sm-cmp-table-scroll">
+            <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
               {['Component', 'Metric', 'Multiple', 'Value'].map((label, idx) => (
-                <div key={label} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: idx === 0 ? 'left' : 'right' }}>{label}</div>
+                <div key={label} className="sm-cmp-th" data-align={idx === 0 ? 'left' : 'right'}>{label}</div>
               ))}
             </div>
             {(() => {
@@ -3831,20 +3830,20 @@ const CompsTab = ({ comparables, ethPrice }) => {
                 { segment: 'Operational Premium', basis: 'Management + infrastructure', metric: 'Strategic', multiple: '—', value: ethValue * 0.05 },
                 { segment: 'Growth Optionality', basis: 'Acquisition capacity', metric: 'Option value', multiple: '—', value: ethValue * 0.03 },
               ].map((s, i) => (
-                <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-                  <div className="sm-mono-md" style={{ padding: '16px 16px' }}>
+                <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                  <div className="sm-cmp-td-label">
                     <div className="sm-fw-500">{s.segment}</div>
                     <div className="sm-text-11">{s.basis}</div>
                   </div>
-                  <div className="sm-mono-md sm-text-right" style={{ padding: '16px 16px' }}>{s.metric}</div>
-                  <div className="sm-mono-md sm-text-right" style={{ padding: '16px 16px' }}>{s.multiple}</div>
-                  <div className="sm-mono-md sm-text-right sm-mint" style={{ padding: '16px 16px' }}>${(s.value / 1e9).toFixed(2)}B</div>
+                  <div className="sm-cmp-td" data-align="right">{s.metric}</div>
+                  <div className="sm-cmp-td" data-align="right">{s.multiple}</div>
+                  <div className="sm-cmp-td sm-mint" data-align="right">${(s.value / 1e9).toFixed(2)}B</div>
                 </div>
               ));
             })()}
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
-              <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, gridColumn: '1 / 4' }}>SOTP Total</div>
-              <div className="sm-mono-md sm-text-right sm-mint" style={{ padding: '16px 16px' }}>${((() => {
+            <div className="sm-cmp-table-total" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+              <div className="sm-cmp-td-label" style={{ gridColumn: '1 / 4' }}>SOTP Total</div>
+              <div className="sm-cmp-td sm-mint" data-align="right">${((() => {
                 const ethHoldings = typeof comparables[0]?.holdings === 'number' ? comparables[0].holdings : 0;
                 const ethValue = ethHoldings * ethPrice;
                 const yieldNPV = ethValue * (comparables[0]?.yield || 0) / 100 * 3.79;
@@ -3861,11 +3860,11 @@ const CompsTab = ({ comparables, ethPrice }) => {
           <div className="sm-section-label" style={{ marginBottom: 4 }}>NAV Premium Sensitivity<UpdateIndicators sources={['WS']} /></div>
           <p className="sm-body-sm">Stock price at different ETH prices × NAV multiples</p>
           <div className="sm-overflow-x">
-            <div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 1fr)', background: 'var(--surface2)', borderBottom: '1px solid var(--border)', borderRadius: '10px 10px 0 0' }}>
-                <div style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600 }}>ETH / NAV</div>
+            <div className="sm-cmp-table-scroll">
+              <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '1fr repeat(5, 1fr)', borderRadius: '10px 10px 0 0' }}>
+                <div className="sm-cmp-th">ETH / NAV</div>
                 {[0.75, 1.0, 1.25, 1.5, 2.0].map(m => (
-                  <div key={m} style={{ padding: '16px 16px', fontSize: 11, textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text3)', fontWeight: 600, textAlign: 'right' }}>{m}x</div>
+                  <div key={m} className="sm-cmp-th" data-align="right">{m}x</div>
                 ))}
               </div>
               {[0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(ethMult => {
@@ -3874,17 +3873,17 @@ const CompsTab = ({ comparables, ethPrice }) => {
                 const baseNAV = (ethHoldings * ethPrice) / shares;
                 const currentPrice = comparables[0]?.price || 0;
                 return (
-                  <div key={ethMult} style={{ display: 'grid', gridTemplateColumns: '1fr repeat(5, 1fr)', borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-                    <div style={{ padding: '16px 16px', fontFamily: "'Space Mono', monospace", fontSize: 14, fontWeight: 600 }}>${(ethPrice * ethMult).toLocaleString()}</div>
+                  <div key={ethMult} className="sm-cmp-table-row" style={{ gridTemplateColumns: '1fr repeat(5, 1fr)' }}>
+                    <div className="sm-cmp-td-label" style={{ fontWeight: 600 }}>${(ethPrice * ethMult).toLocaleString()}</div>
                     {[0.75, 1.0, 1.25, 1.5, 2.0].map(navMult => {
                       const price = baseNAV * ethMult * navMult;
                       const isNear = ethMult === 1.0 && navMult === 1.0;
                       return (
-                        <div key={navMult} style={{ padding: '16px 16px', textAlign: 'right', fontFamily: "'Space Mono', monospace", fontSize: 14, ...(isNear ? {
+                        <div key={navMult} className="sm-cmp-td" data-align="right" style={isNear ? {
                           background: 'var(--accent-dim)',
                           fontWeight: 600,
                           color: 'var(--accent)'
-                        } : { color: price >= currentPrice ? 'var(--mint)' : 'var(--coral)' }) }}>
+                        } : { color: price >= currentPrice ? 'var(--mint)' : 'var(--coral)' }}>
                           ${price.toFixed(2)}
                         </div>
                       );
@@ -3899,12 +3898,11 @@ const CompsTab = ({ comparables, ethPrice }) => {
       </div>
 
       {/* Competitor News Intelligence Section */}
-      <div className="sm-divider" style={{ borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+      <div className="sm-divider">
         <div className="sm-section-label">Competitive Intelligence<UpdateIndicators sources="PR" /></div>
-        <div className="sm-flex sm-gap-12" style={{ alignItems: 'baseline' }}>
-          <h3 >Competitor News<span className="sm-mint">.</span></h3>
-          <span className="sm-mono-sm sm-text3">{filteredCompNews.length} events</span>
-        </div>
+        <span className="sm-param-label">Competitor News</span>
+        <span className="sm-mono-sm sm-text3" style={{ marginLeft: 12 }}>{filteredCompNews.length} events</span>
+        <span className="sm-divider-line" />
       </div>
 
       {/* Competitor Filter */}
@@ -4060,12 +4058,11 @@ const CompsTab = ({ comparables, ethPrice }) => {
       </div>
 
       {/* Competitor Profiles */}
-      <div className="sm-divider" style={{ borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)' }}>
+      <div className="sm-divider">
         <div className="sm-section-label">Peer Analysis</div>
-        <div className="sm-flex sm-gap-12" style={{ alignItems: 'baseline' }}>
-          <h3 >Competitor Profiles<span className="sm-mint">.</span></h3>
-          <span className="sm-mono-sm sm-text3">{COMPETITOR_PROFILES.length} companies</span>
-        </div>
+        <span className="sm-param-label">Competitor Profiles</span>
+        <span className="sm-mono-sm sm-text3" style={{ marginLeft: 12 }}>{COMPETITOR_PROFILES.length} companies</span>
+        <span className="sm-divider-line" />
       </div>
       <div className="sm-mt-8">
         <div className="sm-flex-col-gap" style={{ gap: 16 }}>

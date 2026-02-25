@@ -3102,6 +3102,19 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-ed-analysis-pre { font-size: 10px; line-height: 1.6; }
   .sm-ed-diff-panel { margin: 0 -12px; border-radius: 0; }
 
+  /* ── Comps Tab — Small Mobile ── */
+  .sm-cmp-filter-btn { padding: 6px 10px; font-size: 12px; }
+  .sm-cmp-peer-card { padding: 14px; border-radius: 12px; }
+  .sm-cmp-card-name { font-size: 14px; }
+  .sm-cmp-metrics-grid { grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 4px; padding: 8px; }
+  .sm-cmp-metric-value { font-size: 11px; }
+  .sm-cmp-metric-label { font-size: 8px; }
+  .sm-cmp-badge { font-size: 9px; padding: 2px 6px; }
+  .sm-cmp-cap-tag { font-size: 9px; padding: 2px 6px; }
+  .sm-cmp-th { padding: 8px 8px; font-size: 9px; letter-spacing: 0.5px; }
+  .sm-cmp-td { padding: 8px 8px; font-size: 12px; }
+  .sm-cmp-td-label { padding: 8px 8px; font-size: 12px; }
+
   /* ── Capital Tab — Small Mobile ── */
   .sm-cap-nav-item { min-width: 120px; padding: 12px 12px; }
   .sm-cap-nav-value { font-size: 16px; }
@@ -3153,6 +3166,15 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-kpi-value { font-size: 12px; }
   .sm-section-label { font-size: 8px; }
   .sm-ed-action-btn { font-size: 9px; padding: 3px 6px; }
+
+  /* ── Comps Tab — Extra Small ── */
+  .sm-cmp-filter-btn { padding: 5px 8px; font-size: 11px; border-radius: 6px; }
+  .sm-cmp-peer-card { padding: 12px; border-radius: 10px; }
+  .sm-cmp-card-name { font-size: 13px; }
+  .sm-cmp-metrics-grid { grid-template-columns: repeat(3, 1fr); }
+  .sm-cmp-th { padding: 6px 6px; font-size: 8px; }
+  .sm-cmp-td { padding: 6px 6px; font-size: 11px; }
+  .sm-cmp-td-label { padding: 6px 6px; font-size: 11px; }
 
   /* ── Capital Tab — Extra Small ── */
   .sm-cap-nav-item { min-width: 100px; padding: 10px 10px; }
@@ -4166,6 +4188,218 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-overflow-scrolling: touch;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPS TAB CLASSES (sm-cmp-*)
+   Peer cards, filter buttons, metrics grids, valuation tables, badges
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Peer group filter button — replaces 12-property inline style */
+.sm-cmp-filter-btn {
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+  white-space: nowrap;
+}
+.sm-cmp-filter-btn[data-active="true"] {
+  font-weight: 600;
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* 2-column peer card grid — stacks to 1-col on mobile */
+.sm-cmp-peer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* Individual peer card — threat level via data-threat */
+.sm-cmp-peer-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  border-left: 4px solid var(--surface3);
+}
+.sm-cmp-peer-card[data-threat="critical"],
+.sm-cmp-peer-card[data-threat="high"] { border-left-color: var(--coral); }
+.sm-cmp-peer-card[data-threat="medium"] { border-left-color: var(--gold); }
+.sm-cmp-peer-card[data-threat="low"] { border-left-color: var(--mint); }
+.sm-cmp-peer-card[data-self="true"] {
+  background: linear-gradient(135deg, var(--accent-dim) 0%, var(--surface) 100%);
+  border-left-color: var(--accent);
+}
+
+/* Card header row — name + badges */
+.sm-cmp-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 8px;
+}
+.sm-cmp-card-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+.sm-cmp-card-ticker {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+/* Badge row — threat + category */
+.sm-cmp-badge-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Threat/category badge */
+.sm-cmp-badge {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  background: var(--surface3);
+  color: var(--text3);
+}
+.sm-cmp-badge[data-level="critical"],
+.sm-cmp-badge[data-level="high"] { background: rgba(255,123,114,0.15); color: var(--coral); }
+.sm-cmp-badge[data-level="medium"] { background: rgba(210,153,34,0.15); color: var(--gold); }
+.sm-cmp-badge[data-level="low"] { background: rgba(126,231,135,0.15); color: var(--mint); }
+
+/* Metrics grid inside peer cards */
+.sm-cmp-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+  padding: 12px;
+  background: var(--surface2);
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+/* Individual metric cell */
+.sm-cmp-metric {
+  text-align: center;
+  padding: 4px 0;
+}
+.sm-cmp-metric-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+.sm-cmp-metric-label {
+  font-size: 9px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* Capability tag — voice, text, data etc. */
+.sm-cmp-cap-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  background: var(--surface3);
+  color: var(--text3);
+  opacity: 0.6;
+}
+.sm-cmp-cap-tag[data-enabled="true"] {
+  background: rgba(126,231,135,0.15);
+  color: var(--mint);
+  opacity: 1;
+}
+
+/* Capability tag row */
+.sm-cmp-cap-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* Valuation table — scroll wrapper */
+.sm-cmp-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Valuation table — header row */
+.sm-cmp-table-header {
+  display: grid;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Valuation table — header cell */
+.sm-cmp-th {
+  padding: 12px 16px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text3);
+  font-weight: 600;
+}
+.sm-cmp-th[data-align="right"] { text-align: right; }
+
+/* Valuation table — data row */
+.sm-cmp-table-row {
+  display: grid;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.sm-cmp-table-row:hover { background: color-mix(in srgb, var(--accent) 3%, transparent); }
+
+/* Valuation table — data cell */
+.sm-cmp-td {
+  padding: 12px 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+}
+.sm-cmp-td[data-align="right"] { text-align: right; }
+
+/* Valuation table — label cell (first column, sticky on mobile) */
+.sm-cmp-td-label {
+  padding: 12px 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  position: sticky;
+  left: 0;
+  background: var(--bg1);
+  z-index: 1;
+}
+
+/* Valuation table — total/summary row */
+.sm-cmp-table-total {
+  display: grid;
+  border-top: 2px solid var(--border);
+  font-weight: 600;
+}
+
 /* ── Financials bar chart container ──
    Wraps each bar chart section for consistent mobile scaling */
 .sm-fin-chart {
@@ -4289,6 +4523,15 @@ input[type="range"]::-webkit-slider-thumb {
   }
   .sm-cap-nav-value { font-size: 18px; }
   .sm-cap-nav-label { font-size: 12px; }
+
+  /* Comps tab — tablet */
+  .sm-cmp-peer-grid { grid-template-columns: 1fr; }
+  .sm-cmp-peer-card { padding: 16px; }
+  .sm-cmp-metrics-grid { gap: 6px; padding: 10px; }
+  .sm-cmp-metric-value { font-size: 12px; }
+  .sm-cmp-th { padding: 10px 12px; font-size: 10px; }
+  .sm-cmp-td { padding: 10px 12px; font-size: 13px; }
+  .sm-cmp-td-label { padding: 10px 12px; font-size: 13px; }
 
   /* Capital table — tighter cells on tablet */
   .sm-cap-th { padding: 10px 12px; font-size: 9px; }

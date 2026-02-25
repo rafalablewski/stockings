@@ -644,6 +644,38 @@ export default function DocsPage() {
           ]}
         />
 
+        {/* ── Comps Tab Classes ──────────────────────────────────────────── */}
+        <SectionHeader id="comps-classes" title="Comps Tab Classes (sm-cmp-*)" count={20} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Comparable company analysis — peer group selectors, peer cards with threat-level borders, metrics grids, valuation tables with sticky labels, and capability tags.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".sm-cmp-filter-btn", "Peer group selector button. data-active='true' sets accent highlight."],
+            [".sm-cmp-peer-grid", "2-column card grid for peer cards (1-col at ≤768px)."],
+            [".sm-cmp-peer-card", "Individual peer card with left border. data-threat='high|medium|low' colors border. data-self='true' for self-company gradient."],
+            [".sm-cmp-card-header", "Card header row (flex-between, flex-start alignment)."],
+            [".sm-cmp-card-name", "Company name text (15px, 700 weight)."],
+            [".sm-cmp-card-ticker", "Ticker/type subtitle (Space Mono, 11px, text3)."],
+            [".sm-cmp-badge-row", "Badge container (flex, gap-6, shrink-0)."],
+            [".sm-cmp-badge", "Small badge (10px uppercase). data-level='high|medium|low' for threat colors."],
+            [".sm-cmp-metrics-grid", "Auto-fit metrics grid (minmax 80px). Surface2 background, rounded."],
+            [".sm-cmp-metric", "Individual metric cell (centered, padded)."],
+            [".sm-cmp-metric-value", "Metric number (Space Mono, 13px, 600 weight)."],
+            [".sm-cmp-metric-label", "Metric label (9px micro text)."],
+            [".sm-cmp-cap-tag", "Capability tag (10px). data-enabled='true' for mint highlight."],
+            [".sm-cmp-cap-row", "Capability tag row (flex-wrap, gap-4)."],
+            [".sm-cmp-table-scroll", "Horizontal scroll wrapper for valuation tables."],
+            [".sm-cmp-table-header", "Grid header row — surface2 bg, bottom border. Set gridTemplateColumns via style."],
+            [".sm-cmp-th", "Header cell (11px uppercase, 1px letter-spacing). data-align='right' for numbers."],
+            [".sm-cmp-table-row", "Grid data row with hover highlight. Set gridTemplateColumns via style."],
+            [".sm-cmp-td", "Data cell (Space Mono, 14px). data-align='right' for right-alignment."],
+            [".sm-cmp-td-label", "Sticky label cell — position: sticky, left: 0 for horizontal scroll."],
+            [".sm-cmp-table-total", "Summary/total row with 2px top border and 600 weight."],
+          ]}
+        />
+
         {/* ── Legacy / Base Classes ───────────────────────────────────────── */}
         <SectionHeader id="base-classes" title="Base Component Classes" count={16} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
