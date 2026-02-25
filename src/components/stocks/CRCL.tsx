@@ -2147,21 +2147,21 @@ const CRCLQuarterlyMetricsPanel = () => {
         </div>
 
         {/* Quarterly Table - ASTS dynamic pattern */}
-        <div className="sm-overflow-x">
-          <div>
+        <div className="sm-overflow-x sm-scroll-hint">
+          <div style={{ minWidth: `${100 + quarterlyData.length * 80}px` }}>
             {/* Header row */}
-            <div style={{ display: 'grid', gridTemplateColumns: `minmax(100px, 1.5fr) repeat(${quarterlyData.length}, minmax(70px, 1fr))`, borderBottom: '1px solid var(--border)' }}>
-              <span style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: 'var(--surface2)', position: 'sticky', left: 0 }}>Metric</span>
+            <div className="sm-fin-table-header" style={{ gridTemplateColumns: `minmax(100px, 1.5fr) repeat(${quarterlyData.length}, minmax(70px, 1fr))` }}>
+              <span className="sm-fin-th" data-sticky="">Metric</span>
               {quarterlyData.map((d, idx) => (
-                <span key={d.quarter} style={{ padding: '12px 16px', fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', background: idx === 0 ? 'var(--accent-dim)' : 'var(--surface2)', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                <span key={d.quarter} className="sm-fin-th" data-latest={idx === 0 ? '' : undefined} style={{ textAlign: 'right' }}>
                   {d.quarter.replace('Q', '').replace(' ', "'")}
                 </span>
               ))}
             </div>
             {/* Data rows */}
-            {metrics.map(metric => (
-              <div key={metric.label} style={{ display: 'grid', gridTemplateColumns: `minmax(100px, 1.5fr) repeat(${quarterlyData.length}, minmax(70px, 1fr))`, borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
-                <span style={{ padding: '12px 16px', fontWeight: 500, position: 'sticky', left: 0, background: 'var(--bg1)' }}>
+            {metrics.map((metric, mi) => (
+              <div key={metric.label} className="sm-fin-table-row" style={{ gridTemplateColumns: `minmax(100px, 1.5fr) repeat(${quarterlyData.length}, minmax(70px, 1fr))`, borderBottom: mi < metrics.length - 1 ? undefined : 'none' }}>
+                <span className="sm-fin-td-label">
                   {metric.label}
                 </span>
                 {quarterlyData.map((d, idx) => {
@@ -2171,12 +2171,9 @@ const CRCLQuarterlyMetricsPanel = () => {
                   return (
                     <span
                       key={d.quarter}
-                      style={{
-                        padding: '12px 16px',
-                        textAlign: 'right',
-                        ...(isLatestQuarter ? { background: 'var(--accent-dim)' } : {}),
-                        ...(cellColor ? { color: cellColor } : {})
-                      }}
+                      className="sm-fin-td"
+                      data-latest={isLatestQuarter ? '' : undefined}
+                      style={cellColor ? { color: cellColor } : undefined}
                     >
                       {metric.format(val)}
                     </span>
@@ -2250,14 +2247,15 @@ const CRCLQuarterlyMetricsPanel = () => {
               display: `$${(d.cashPosition/1000).toFixed(1)}B`
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
               <>
-                <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+                <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                  <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                   {data.map((d, i) => (
-                    <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                    <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                       <div className="sm-mono-sm sm-text sm-fw-600" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                      <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                      <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                       <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                     </div>
                   ))}
@@ -2281,13 +2279,14 @@ const CRCLQuarterlyMetricsPanel = () => {
               display: `$${d.opex}M`
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
-              <div className="sm-overflow-x" style={{ WebkitOverflowScrolling: 'touch' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+              <div className="sm-overflow-x sm-scroll-hint">
+                <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                  <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                     <div className="sm-mono-sm sm-text sm-fw-600" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                   </div>
                 ))}
@@ -2296,13 +2295,13 @@ const CRCLQuarterlyMetricsPanel = () => {
             );
           })()}
           {/* OpEx Breakdown with quarter selector - ASTS pattern */}
-          <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
+          <div className="sm-border-t" style={{ paddingTop: 12 }}>
             <div className="sm-flex-between">
               <span className="sm-text-11">OpEx Breakdown</span>
               <select
                 value={opExQuarter}
                 onChange={(e) => setOpExQuarter(e.target.value)}
-                style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 4, padding: '2px 8px', fontSize: 11, color: 'var(--text1)' }}
+                style={{ background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 99, padding: '2px 8px', fontSize: 11, color: 'var(--text1)' }}
               >
                 {opExQuarters.map(q => (
                   <option key={q} value={q}>{q}</option>
@@ -2363,13 +2362,14 @@ const CRCLQuarterlyMetricsPanel = () => {
               { label: 'Q3 2025', value: 230, display: '230M' },
             ];
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
-              <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+              <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                  <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                     <div className="sm-mono-sm sm-text sm-fw-600" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                   </div>
                 ))}
@@ -2394,13 +2394,14 @@ const CRCLQuarterlyMetricsPanel = () => {
               { label: 'Q3 2025', value: 18.8, display: '$18.8B' },
             ];
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
-              <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+              <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                  <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                     <div className="sm-mono-sm sm-text sm-fw-600" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                   </div>
                 ))}
@@ -2424,13 +2425,14 @@ const CRCLQuarterlyMetricsPanel = () => {
               display: `$${d.usdcCirculation}B`
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
-              <div className="sm-card-body sm-overflow-x" style={{ paddingBottom: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, height: 220, minWidth: Math.max(data.length * 72, '100%' as any) }}>
+              <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: data.length > 8 ? '0 0 auto' : 1, minWidth: data.length > 8 ? 64 : 56, maxWidth: data.length > 8 ? 80 : 'none' }}>
+                  <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                     <div className="sm-mono-sm sm-text sm-fw-600" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 160) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                     <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                   </div>
                 ))}
@@ -2451,14 +2453,15 @@ const CRCLQuarterlyMetricsPanel = () => {
               display: `$${d.adjustedEbitda}M`
             }));
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
+            const overflow = data.length > 8;
             return (
-              <div style={{ padding: '24px 24px 0', overflowX: 'auto' }}>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200, minWidth: data.length * 64 }}>
+              <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                 {data.map((d, i) => (
-                  <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, minWidth: 56 }}>
+                  <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                     <div className="sm-mono-sm sm-text sm-fw-600" style={{ marginBottom: 4 }}>{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? Math.round((Math.abs(d.value) / maxVal) * 150) : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                    <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4, textAlign: 'center' }}>{d.label}</div>
+                    <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div className="sm-micro-text sm-text-center" style={{ marginTop: 4 }}>{d.label}</div>
                   </div>
                 ))}
                 </div>

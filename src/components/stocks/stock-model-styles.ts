@@ -3101,6 +3101,14 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-ed-analysis { padding: 12px; }
   .sm-ed-analysis-pre { font-size: 10px; line-height: 1.6; }
   .sm-ed-diff-panel { margin: 0 -12px; border-radius: 0; }
+
+  /* ── Financials Tab — Small Mobile ── */
+  .sm-fin-th { padding: 8px 6px; font-size: 8px; letter-spacing: 0.5px; }
+  .sm-fin-td-label { padding: 8px 6px; font-size: 11px; }
+  .sm-fin-td { padding: 8px 6px; font-size: 10px; }
+  .sm-fin-chart { height: 140px; gap: 4px; }
+  .sm-fin-bar { min-width: 36px; }
+  .sm-fin-bar[data-overflow="true"] { min-width: 40px; max-width: 56px; }
 }
 
 /* ═══ RESPONSIVE - EXTRA SMALL (360px) ═══ */
@@ -3136,6 +3144,13 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-kpi-value { font-size: 12px; }
   .sm-section-label { font-size: 8px; }
   .sm-ed-action-btn { font-size: 9px; padding: 3px 6px; }
+
+  /* ── Financials Tab — Extra Small ── */
+  .sm-fin-th { padding: 6px 4px; font-size: 8px; }
+  .sm-fin-td-label { padding: 6px 4px; font-size: 10px; }
+  .sm-fin-td { padding: 6px 4px; font-size: 9px; }
+  .sm-fin-chart { height: 120px; gap: 3px; }
+  .sm-fin-bar { min-width: 32px; }
 }
 
 /* ═══ LANDSCAPE MOBILE ADJUSTMENTS ═══ */
@@ -4022,6 +4037,100 @@ input[type="range"]::-webkit-slider-thumb {
   line-height: 1.5;
 }
 
+/* ── Financials bar chart container ──
+   Wraps each bar chart section for consistent mobile scaling */
+.sm-fin-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 220px;
+}
+
+/* Individual bar column in financials charts */
+.sm-fin-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 56px;
+}
+.sm-fin-bar[data-overflow="true"] {
+  flex: 0 0 auto;
+  min-width: 64px;
+  max-width: 80px;
+}
+
+/* Scroll hint indicator for horizontally-scrollable containers */
+.sm-scroll-hint {
+  position: relative;
+}
+.sm-scroll-hint::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--surface));
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.3s;
+  border-radius: 0 16px 16px 0;
+}
+
+/* ── Financials data table ──
+   Replaces inline grid styles for quarterly metric tables */
+.sm-fin-table-header,
+.sm-fin-table-row {
+  display: grid;
+  transition: background 0.15s;
+}
+.sm-fin-table-header {
+  border-bottom: 1px solid var(--border);
+}
+.sm-fin-table-row {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+.sm-fin-table-row:last-child {
+  border-bottom: none;
+}
+.sm-fin-th {
+  padding: 12px 16px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+  background: var(--surface2);
+  white-space: nowrap;
+}
+.sm-fin-th[data-sticky] {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+.sm-fin-th[data-latest] {
+  background: var(--accent-dim);
+}
+.sm-fin-td-label {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  position: sticky;
+  left: 0;
+  background: var(--bg1);
+  z-index: 1;
+}
+.sm-fin-td {
+  padding: 12px 16px;
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+  text-align: right;
+}
+.sm-fin-td[data-latest] {
+  background: var(--accent-dim);
+}
+
 /* Model responsive overrides */
 @media (max-width: 768px) {
   .sm-card-header { padding: 16px; }
@@ -4033,6 +4142,16 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-grid-4 { grid-template-columns: 1fr 1fr; }
   .sm-model-grid { --cols: 2 !important; border-radius: 12px; }
   .sm-table-row { padding: 10px 16px; }
+
+  /* Financials table — tighter cells on tablet */
+  .sm-fin-th { padding: 10px 10px; font-size: 9px; }
+  .sm-fin-td-label { padding: 10px 10px; font-size: 12px; }
+  .sm-fin-td { padding: 10px 10px; font-size: 11px; }
+
+  /* Financials bar chart — reduce height */
+  .sm-fin-chart { height: 160px; gap: 6px; }
+  .sm-fin-bar { min-width: 44px; }
+  .sm-fin-bar[data-overflow="true"] { min-width: 48px; max-width: 64px; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
