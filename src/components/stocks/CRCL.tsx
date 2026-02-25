@@ -3014,8 +3014,6 @@ function CRCLModel() {
                     transition: 'all 0.2s',
                     opacity: priceLoading ? 0.5 : 0.6,
                   }}
-                  onMouseEnter={(e) => { if (!priceLoading) e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = 'var(--surface2)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.opacity = priceLoading ? '0.5' : '0.6'; e.currentTarget.style.background = 'transparent'; }}
                 >
                   <svg
                     width="18"
@@ -4132,9 +4130,7 @@ function CRCLModel() {
                         <div className="sm-subtle">Full record of all investment thesis updates. Never deleted.</div>
                         <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 500, overflowY: 'auto' }}>
                           {/* Current */}
-                          <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}
-                            onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--mint) 5%, transparent)')}
-                            onMouseLeave={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--mint) 5%, transparent)')}>
+                          <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
                             <div className="sm-flex-between">
                               <div className="sm-flex">
                                 <span className="sm-text" style={{ fontWeight: 600 }}>Dec 31, 2025</span>
@@ -4502,9 +4498,7 @@ function CRCLModel() {
                       ))}
                     </div>
                     {[50, 75, 100, 125, 150].map((c, ri) => (
-                      <div key={c} style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', padding: '12px 24px', borderBottom: ri < 4 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: c === 75 ? 'color-mix(in srgb, var(--cyan) 3%, transparent)' : 'transparent', transition: 'background 0.15s' }}
-                        onMouseEnter={e => { if (c !== 75) e.currentTarget.style.background = 'var(--surface2)'; }}
-                        onMouseLeave={e => { if (c !== 75) e.currentTarget.style.background = 'transparent'; }}>
+                      <div key={c} style={{ display: 'grid', gridTemplateColumns: '80px repeat(5, 1fr)', padding: '12px 24px', borderBottom: ri < 4 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: c === 75 ? 'color-mix(in srgb, var(--cyan) 3%, transparent)' : 'transparent', transition: 'background 0.15s' }}>
                         <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: c === 75 ? 'var(--cyan)' : 'var(--text)', fontWeight: 500 }}>${c}B</span>
                         {[3, 3.5, 4, 4.5, 5].map(r => (
                           <span key={r} style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'center', color: c === 75 && r === 4 ? 'var(--cyan)' : 'var(--text2)', fontWeight: c === 75 && r === 4 ? 700 : 400, background: c === 75 && r === 4 ? 'color-mix(in srgb, var(--cyan) 10%, transparent)' : 'transparent', borderRadius: 4, padding: '2px 0' }}>

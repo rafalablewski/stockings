@@ -588,8 +588,6 @@ const ASTSAnalysis = () => {
                     transition: 'all 0.2s',
                     opacity: priceLoading ? 0.5 : 0.6,
                   }}
-                  onMouseEnter={(e) => { if (!priceLoading) e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = 'var(--surface2)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.opacity = priceLoading ? '0.5' : '0.6'; e.currentTarget.style.background = 'transparent'; }}
                 >
                   <svg
                     width="18"
@@ -1362,9 +1360,7 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
             ))}
           </div>
           {scenarios.map((s, i) => (
-            <div key={s.p} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', alignItems: 'center', padding: '12px 24px', borderBottom: i < scenarios.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: s.p === penetrationRate ? 'color-mix(in srgb, var(--cyan) 8%, transparent)' : 'transparent', transition: 'background 0.15s' }}
-              onMouseEnter={e => { if (s.p !== penetrationRate) e.currentTarget.style.background = 'var(--surface2)'; }}
-              onMouseLeave={e => { if (s.p !== penetrationRate) e.currentTarget.style.background = 'transparent'; }}>
+            <div key={s.p} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', alignItems: 'center', padding: '12px 24px', borderBottom: i < scenarios.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: s.p === penetrationRate ? 'color-mix(in srgb, var(--cyan) 8%, transparent)' : 'transparent', transition: 'background 0.15s' }}>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: s.p === penetrationRate ? 'var(--cyan)' : 'var(--text)', fontWeight: s.p === penetrationRate ? 600 : 400 }}>{s.p}%</span>
               <span className="sm-mono-right">{s.subs.toFixed(0)}M</span>
               <span className="sm-mono-right sm-mint">${s.rev.toFixed(1)}B</span>
@@ -2755,9 +2751,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ))}
           </div>
           {dilutionScenarios.map((s, i) => (
-            <div key={s.label} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 120px 100px 100px', padding: '12px 24px', borderBottom: i < dilutionScenarios.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: s.type === 'stress' ? 'color-mix(in srgb, var(--coral) 3%, transparent)' : 'transparent', transition: 'background 0.15s' }}
-              onMouseEnter={e => { if (s.type !== 'stress') e.currentTarget.style.background = 'var(--surface2)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = s.type === 'stress' ? 'color-mix(in srgb, var(--coral) 3%, transparent)' : 'transparent'; }}>
+            <div key={s.label} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 120px 100px 100px', padding: '12px 24px', borderBottom: i < dilutionScenarios.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: s.type === 'stress' ? 'color-mix(in srgb, var(--coral) 3%, transparent)' : 'transparent', transition: 'background 0.15s' }}>
               <span style={{ fontSize: 12, color: 'var(--text)', fontWeight: s.type === 'current' ? 600 : 400 }}>{s.label}</span>
               <span className="sm-text-11">{s.source}</span>
               <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: s.newShares > 0 ? 'var(--coral)' : 'var(--text2)', textAlign: 'right' }}>{s.newShares > 0 ? `+${s.newShares.toFixed(1)}M` : '—'}</span>

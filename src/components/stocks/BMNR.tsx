@@ -657,8 +657,6 @@ const BMNRDilutionAnalysis = () => {
                     transition: 'all 0.2s',
                     opacity: priceLoading ? 0.5 : 0.6,
                   }}
-                  onMouseEnter={(e) => { if (!priceLoading) e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = 'var(--surface2)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.opacity = priceLoading ? '0.5' : '0.6'; e.currentTarget.style.background = 'transparent'; }}
                 >
                   <svg
                     width="18"
@@ -2061,7 +2059,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* ETH Price row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
                 <span className="sm-text-13" style={{ padding: '12px 16px' }}>ETH Price</span>
                 <span className="sm-text-right" style={{ padding: '12px 16px' }}>${ethPrice.toLocaleString()}</span>
                 {selected.projections.map(p => (
@@ -2071,7 +2069,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* ETH Holdings row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
                 <span className="sm-text-13" style={{ padding: '12px 16px' }}>ETH Holdings (M)</span>
                 <span className="sm-text-right" style={{ padding: '12px 16px' }}>{(currentETH / 1e6).toFixed(3)}</span>
                 {selected.projections.map(p => (
@@ -2081,7 +2079,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* Shares row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
                 <span className="sm-text-13" style={{ padding: '12px 16px' }}>Shares (M)</span>
                 <span className="sm-text-right" style={{ padding: '12px 16px' }}>{currentShares.toFixed(0)}</span>
                 {selected.projections.map(p => (
@@ -2091,7 +2089,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* NAV/Share row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderTop: '1px solid var(--border)', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderTop: '1px solid var(--border)', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
                 <span className="sm-text-13" style={{ padding: '12px 16px' }}>NAV/Share</span>
                 <span className="sm-text-right" style={{ padding: '12px 16px' }}>${calc.currentNAV.toFixed(2)}</span>
                 {selected.projections.map(p => (
@@ -2101,7 +2099,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* Stock Price row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
                 <span className="sm-text-13" style={{ padding: '12px 16px' }}>Stock Price</span>
                 <span className="sm-text-right" style={{ padding: '12px 16px' }}>${currentStockPrice.toFixed(2)}</span>
                 {selected.projections.map(p => (
@@ -2111,7 +2109,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* Cum. Dividends row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
                 <span className="sm-text-13" style={{ padding: '12px 16px' }}>Cum. Dividends</span>
                 <span className="sm-text-right" style={{ padding: '12px 16px' }}>$0.00</span>
                 {selected.projections.map(p => (
@@ -2121,7 +2119,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* Price Return row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderTop: '1px solid var(--border)', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderTop: '1px solid var(--border)', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
                 <span className="sm-text-13" style={{ padding: '12px 16px' }}>Price Return</span>
                 <span className="sm-text-right" style={{ padding: '12px 16px' }}>—</span>
                 {selected.projections.map(p => (
@@ -2131,7 +2129,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* Total Return row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)` }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)` }}>
                 <span className="sm-text-13" style={{ padding: '12px 16px' }}>Total Return</span>
                 <span className="sm-text-right" style={{ padding: '12px 16px' }}>—</span>
                 {selected.projections.map(p => (
@@ -2227,7 +2225,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
               {scenarios.map(s => {
                 const contribution = s.finalStockPrice * (s.prob / 100);
                 return (
-                  <div key={s.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1.5fr', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: selectedScenario === s.id ? `${s.color}11` : 'transparent' }} onMouseEnter={e => e.currentTarget.style.background = selectedScenario === s.id ? `${s.color}11` : 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = selectedScenario === s.id ? `${s.color}11` : 'transparent'}>
+                  <div key={s.id} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 1.5fr', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', background: selectedScenario === s.id ? `${s.color}11` : 'transparent' }}>
                     <span style={{ padding: '12px 16px', display: 'flex', alignItems: 'center' }}>
                       <span style={{ display: 'inline-block', width: 12, height: 12, borderRadius: '50%', background: s.color, marginRight: 8 }}></span>
                       {s.name}
@@ -2264,35 +2262,35 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
               <span key={s.id} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: s.color, background: 'var(--surface2)', padding: '12px 16px', textAlign: 'right' }}>{s.name}</span>
             ))}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
             <span className="sm-text-13" style={{ padding: '12px 16px' }}>ETH Price ($)</span>
             {scenarios.map(s => <span key={s.id} className="sm-text-right" style={{ padding: '12px 16px' }}>${s.ethPrice.toLocaleString()}</span>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
             <span className="sm-text-13" style={{ padding: '12px 16px' }}>ETH Holdings (M)</span>
             {scenarios.map(s => <span key={s.id} className="sm-text-right" style={{ padding: '12px 16px' }}>{(s.futureETH / 1e6).toFixed(2)}</span>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
             <span className="sm-text-13" style={{ padding: '12px 16px' }}>NAV/Share ($)</span>
             {scenarios.map(s => <span key={s.id} className="sm-text-right" style={{ padding: '12px 16px' }}>${s.finalNAV.toFixed(2)}</span>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 700 }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 700 }}>
             <span className="sm-text-13" style={{ padding: '12px 16px' }}>Stock Price ($)</span>
             {scenarios.map(s => <span key={s.id} style={{ padding: '12px 16px', textAlign: 'right', color: s.color }}>${s.finalStockPrice.toFixed(2)}</span>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
             <span className="sm-text-13" style={{ padding: '12px 16px' }}>Cum. Dividends ($)</span>
             {scenarios.map(s => <span key={s.id} style={{ padding: '12px 16px', textAlign: 'right', color: 'var(--mint)' }}>${s.totalDividends.toFixed(2)}</span>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
             <span className="sm-text-13" style={{ padding: '12px 16px' }}>Price Return (%)</span>
             {scenarios.map(s => <span key={s.id} style={{ padding: '12px 16px', textAlign: 'right', color: s.stockReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%</span>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 700 }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 700 }}>
             <span className="sm-text-13" style={{ padding: '12px 16px' }}>Total Return (%)</span>
             {scenarios.map(s => <span key={s.id} style={{ padding: '12px 16px', textAlign: 'right', color: s.totalReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.totalReturn >= 0 ? '+' : ''}{s.totalReturn.toFixed(0)}%</span>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)` }} onMouseEnter={e => e.currentTarget.style.background = 'var(--surface2)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)` }}>
             <span className="sm-text-13" style={{ padding: '12px 16px' }}>Total IRR (%)</span>
             {scenarios.map(s => <span key={s.id} style={{ padding: '12px 16px', textAlign: 'right', color: s.totalIRR >= 0 ? 'var(--mint)' : 'var(--coral)' }}>{s.totalIRR >= 0 ? '+' : ''}{s.totalIRR.toFixed(1)}%</span>)}
           </div>
@@ -4162,9 +4160,7 @@ const SensitivityTab = ({ calc, currentETH, currentShares, ethPrice }) => {
             ))}
           </div>
           {matrix.map((row, ri) => (
-            <div key={row.ethMult} style={{ display: 'grid', gridTemplateColumns: '180px repeat(6, 1fr)', borderBottom: ri < matrix.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: row.ethMult === 1.0 ? 'color-mix(in srgb, var(--cyan) 5%, transparent)' : 'transparent', minWidth: 700 }}
-              onMouseEnter={e => { if (row.ethMult !== 1.0) e.currentTarget.style.background = 'var(--surface2)'; }}
-              onMouseLeave={e => { if (row.ethMult !== 1.0) e.currentTarget.style.background = 'transparent'; }}>
+            <div key={row.ethMult} style={{ display: 'grid', gridTemplateColumns: '180px repeat(6, 1fr)', borderBottom: ri < matrix.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: row.ethMult === 1.0 ? 'color-mix(in srgb, var(--cyan) 5%, transparent)' : 'transparent', minWidth: 700 }}>
               <div style={{ padding: '12px 24px', fontSize: 12, fontWeight: 500, color: row.ethMult === 1.0 ? 'var(--cyan)' : 'var(--text)' }}>${row.ethPrice.toLocaleString()} ({row.ethMult}x)</div>
               {row.scenarios.map(s => (
                 <div key={s.navMult} style={{ padding: '12px 8px', textAlign: 'center', fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: row.ethMult === 1.0 && s.navMult === 1.0 ? 700 : 400, color: s.price >= calc.currentNAV ? 'var(--mint)' : 'var(--coral)', background: row.ethMult === 1.0 && s.navMult === 1.0 ? 'color-mix(in srgb, var(--cyan) 10%, transparent)' : 'transparent' }}>
@@ -6219,9 +6215,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
         
         {/* Ecosystem-Based Triggers */}
-        <div style={{ background: 'color-mix(in srgb, var(--violet) 8%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}
-          onMouseEnter={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--violet) 8%, transparent)')}
-          onMouseLeave={e => (e.currentTarget.style.background = 'color-mix(in srgb, var(--violet) 8%, transparent)')}>
+        <div style={{ background: 'color-mix(in srgb, var(--violet) 8%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
           <div style={{ fontWeight: 600, color: 'var(--violet)', fontSize: 15 }}>Ecosystem-Based Triggers</div>
           <div className="sm-subtle" style={{ fontStyle: 'italic' }}>Monitor these Ethereum ecosystem signals (see Ethereum tab) alongside BMNR-specific metrics</div>
 
