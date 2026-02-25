@@ -261,45 +261,17 @@ const STATUS_CONFIG: Record<FilingStatus, { color: string; label: string; title:
 
 // ── Cross-ref display ───────────────────────────────────────────────────────
 const CrossRefLines: React.FC<{ refs: { source: string; data: string }[] }> = ({ refs }) => (
-  <div style={{
-    margin: '0 0 4px 19px', padding: '4px 0',
-  }}>
+  <div className="sm-ed-crossref">
     {refs.map((ref, i) => (
-      <div key={i} style={{
-        fontFamily: 'Space Mono, monospace',
-        fontSize: 10.5,
-        lineHeight: 1.7,
-        color: 'var(--text3)',
-        opacity: 0.45,
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-      }}>
+      <div key={i} className="sm-ed-crossref-line">
         <span style={{ opacity: 0.7 }}>{'// '}</span>
-        <span style={{ color: 'var(--text3)', opacity: 0.7 }}>{ref.source}</span>
+        <span style={{ opacity: 0.7 }}>{ref.source}</span>
         <span style={{ opacity: 0.5 }}>{' \u2192 '}</span>
         {ref.data}
       </div>
     ))}
   </div>
 );
-
-// ── Shared action button base style (matches SharedAIAgentsTab) ──────────────
-const actionBtnBase: React.CSSProperties = {
-  fontSize: 9,
-  fontWeight: 500,
-  textTransform: "uppercase",
-  letterSpacing: "0.08em",
-  padding: "4px 10px",
-  borderRadius: 4,
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid var(--border)",
-  cursor: "pointer",
-  transition: "all 0.15s",
-  display: "inline-flex",
-  alignItems: "center",
-  gap: 5,
-};
 
 // ── Tiny action button (Ive×Tesla style) ────────────────────────────────────
 const ActionBtn: React.FC<{
@@ -312,36 +284,22 @@ const ActionBtn: React.FC<{
   variant?: 'default' | 'accent';
 }> = ({ label, title, onClick, href, active, loading, variant = 'default' }) => {
   const isAccent = variant === 'accent' || active;
-  const style: React.CSSProperties = {
-    fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
-    textTransform: 'uppercase', letterSpacing: '0.08em',
-    padding: '2px 6px', borderRadius: 4,
-    color: active ? 'var(--accent)' : isAccent ? 'rgba(130,200,130,0.5)' : 'var(--text3)',
-    background: 'rgba(255,255,255,0.04)',
-    border: `1px solid ${active ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : isAccent ? 'rgba(130,200,130,0.15)' : 'var(--border)'}`,
-    cursor: loading ? 'wait' : 'pointer',
-    transition: 'all 0.15s', outline: 'none', textDecoration: 'none',
-    display: 'inline-flex', alignItems: 'center', gap: 4,
+  const dynamicStyle: React.CSSProperties = {
+    '--ed-btn-color': active ? 'var(--accent)' : isAccent ? 'rgba(130,200,130,0.5)' : undefined,
+    borderColor: active ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : isAccent ? 'rgba(130,200,130,0.15)' : undefined,
+    cursor: loading ? 'wait' : undefined,
     opacity: loading ? 0.5 : 1,
-  };
+  } as React.CSSProperties;
   if (href) {
-    return <a href={href} target="_blank" rel="noopener noreferrer" title={title} style={style}>{label}</a>;
+    return <a href={href} target="_blank" rel="noopener noreferrer" title={title} className="sm-ed-action-btn-sm" style={dynamicStyle}>{label}</a>;
   }
-  return <button onClick={onClick} disabled={loading} title={title} style={style}>{loading ? '...' : label}</button>;
+  return <button onClick={onClick} disabled={loading} title={title} className="sm-ed-action-btn-sm" style={dynamicStyle}>{loading ? '...' : label}</button>;
 };
 
 // ── Analysis panel ──────────────────────────────────────────────────────────
 const AiDisabledBanner: React.FC<{ message: string }> = ({ message }) => (
-  <div style={{
-    margin: '6px 0 2px 19px', paddingTop: 16, marginTop: 8,
-    borderTop: '1px solid var(--border)',
-  }}>
-    <div style={{
-      fontSize: 12, color: 'var(--gold)', padding: '10px 14px',
-      background: 'color-mix(in srgb, var(--gold) 8%, transparent)',
-      borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8,
-      border: '1px solid color-mix(in srgb, var(--gold) 15%, transparent)',
-    }}>
+  <div className="sm-ed-analysis">
+    <div className="sm-ed-ai-banner">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
       {message}
     </div>
@@ -360,55 +318,22 @@ const AnalysisPanel: React.FC<{ text: string }> = ({ text }) => {
     });
   };
   return (
-  <div style={{ margin: '6px 0 2px 19px', paddingTop: 16, marginTop: 8, borderTop: '1px solid var(--border)' }}>
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 12,
-      }}
-    >
-      <span
-        style={{
-          fontSize: 11,
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          letterSpacing: '2.5px',
-          color: 'var(--text3)',
-        }}
-      >
+  <div className="sm-ed-analysis">
+    <div className="sm-flex-between sm-mb-12">
+      <span className="sm-micro-label">
         Analysis Result
       </span>
       <button
         onClick={handleCopy}
         title="Copy analysis text"
-        style={{
-          background: copied ? 'color-mix(in srgb, var(--mint) 15%, transparent)' : 'var(--surface2)',
-          border: '1px solid var(--border)',
-          borderRadius: 6,
-          padding: '3px 10px',
-          fontSize: 11,
-          color: copied ? 'var(--mint)' : 'var(--text3)',
-          cursor: 'pointer',
-          transition: 'all 0.15s',
-          fontFamily: 'inherit',
-        }}
+        className="sm-ed-copy-btn"
+        data-copied={copied ? 'true' : undefined}
       >
         {copied ? 'Copied' : 'Copy'}
       </button>
     </div>
     <div style={{ maxHeight: 600, overflowY: 'auto' }}>
-      <pre
-        style={{
-          fontSize: 12,
-          fontFamily: 'var(--font-mono, monospace)',
-          color: 'var(--text2)',
-          lineHeight: 1.8,
-          whiteSpace: 'pre-wrap',
-          margin: 0,
-        }}
-      >
+      <pre className="sm-ed-analysis-pre">
         {text}
       </pre>
     </div>
@@ -508,43 +433,33 @@ const FilingRow: React.FC<{
   // Hidden filings: collapsed single-line with low opacity and unhide button
   if (isHidden) {
     return (
-      <div style={{ opacity: 0.15, transition: 'opacity 0.2s' }}
-      >
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          padding: '3px 12px', borderRadius: 6,
-        }}>
-          <span style={{
-            fontSize: 9, fontFamily: 'Space Mono, monospace', fontWeight: 600,
-            padding: '1px 6px', borderRadius: 4, flexShrink: 0,
-            background: colors.bg, color: colors.text,
-          }}>
+      <div className="sm-ed-hidden-row">
+        <div className="sm-flex sm-gap-8" style={{ padding: '3px 12px', borderRadius: 6 }}>
+          <span className="sm-ed-form-badge" style={{
+            fontSize: 9, padding: '1px 6px', borderRadius: 4, width: 'auto',
+            '--badge-bg': colors.bg, '--badge-text': colors.text,
+          } as React.CSSProperties}>
             {formDisplay}
           </span>
-          <span style={{
-            fontSize: 11, color: 'var(--text3)', flex: 1, minWidth: 0,
+          <span className="sm-subtle-sm" style={{
+            flex: 1, minWidth: 0,
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             textDecoration: 'line-through',
           }}>
             {r.filing.primaryDocDescription || r.filing.form}
           </span>
           {r.filing.filingDate && (
-            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)', flexShrink: 0 }}>
+            <span className="sm-subtle-sm sm-shrink-0" style={{ fontFamily: 'Space Mono, monospace', fontSize: 10 }}>
               {formatEdgarDate(r.filing.filingDate)}
             </span>
           )}
-          <span style={{ fontSize: 8, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', flexShrink: 0, textTransform: 'uppercase' }}>hidden</span>
+          <span className="sm-text3 sm-shrink-0" style={{ fontSize: 8, fontFamily: 'Space Mono, monospace', textTransform: 'uppercase' }}>hidden</span>
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-          <div style={{ flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+          <div className="sm-shrink-0" onClick={e => e.stopPropagation()}>
             <button
               onClick={() => onToggleHide?.()}
               title="Unhide filing"
-              style={{
-                fontSize: 9, fontFamily: 'inherit', padding: '1px 5px', borderRadius: 4,
-                color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
-                border: '1px solid var(--border)', cursor: 'pointer', outline: 'none',
-                display: 'inline-flex', alignItems: 'center',
-              }}
+              className="sm-ed-action-btn-sm"
             >
               <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" />
@@ -725,15 +640,11 @@ const FilingRow: React.FC<{
         aria-expanded={analysis ? expanded : undefined}
         onClick={analysis ? () => setExpanded(!expanded) : undefined}
         onKeyDown={analysis ? (e) => { if (e.key === 'Enter') setExpanded(!expanded); } : undefined}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 10,
-          padding: '8px 12px', borderRadius: 10,
-          transition: 'background 0.15s',
-          cursor: analysis ? 'pointer' : undefined,
-        }}
+        className="sm-ed-filing-row"
+        style={analysis ? { cursor: 'pointer' } : undefined}
       >
         {/* Chevron (fixed-width slot so rows align whether analysis exists or not) */}
-        <span style={{ width: 12, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span className="sm-ed-chevron-slot">
         {analysis && (
           <svg
             width={12}
@@ -757,54 +668,34 @@ const FilingRow: React.FC<{
         {/* Status dot — always visible */}
         <span
           title={statusCfg.title}
-          style={{
-            width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
-            background: statusCfg.color,
-            opacity: 0.9, transition: 'opacity 0.2s, background 0.2s',
-          }}
+          className="sm-ed-status-dot"
+          style={{ '--dot-color': statusCfg.color } as React.CSSProperties}
         />
         {/* Form badge — fixed width so columns align across rows */}
-        <span style={{
-          fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600,
-          padding: '2px 0', borderRadius: 5, flexShrink: 0,
-          width: 82, textAlign: 'center',
-          background: colors.bg, color: colors.text, whiteSpace: 'nowrap',
-        }}>
+        <span className="sm-ed-form-badge" style={{
+          '--badge-bg': colors.bg, '--badge-text': colors.text,
+        } as React.CSSProperties}>
           {formDisplay}
         </span>
         {/* NEW / SEEN badge — fixed-width slot so description column aligns */}
-        <span style={{ width: 34, flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span className="sm-ed-badge-slot">
           {isGenuinelyNew && !isDismissed && (
             <button
               onClick={(e) => { e.stopPropagation(); onDismissNew?.(); }}
               title="Click to acknowledge"
-              style={{
-                fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-                padding: '1px 5px', borderRadius: 3,
-                color: 'var(--sky)', background: 'var(--sky-dim)',
-                border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)',
-                cursor: 'pointer', outline: 'none', fontFamily: 'inherit',
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'color-mix(in srgb, var(--sky) 20%, transparent)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'var(--sky-dim)'; }}
+              className="sm-ed-new-badge"
             >
               NEW
             </button>
           )}
           {isGenuinelyNew && isDismissed && (
-            <span style={{
-              fontSize: 8, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em',
-              padding: '1px 5px', borderRadius: 3,
-              color: 'var(--sky)', opacity: 0.3,
-              border: '1px solid transparent',
-            }}>
+            <span className="sm-ed-seen-badge">
               SEEN
             </span>
           )}
         </span>
         {/* Description */}
-        <span style={{ fontSize: 13, color: 'var(--text)', flex: 1, minWidth: 0, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <span className="sm-ed-desc">
           {r.filing.primaryDocDescription || r.filing.form}
         </span>
         {/* Verdict badge inline (compact, shown in header when collapsed) */}
@@ -813,26 +704,19 @@ const FilingRow: React.FC<{
           if (!verdict) return null;
           const vc = VERDICT_COLORS[verdict.level];
           return (
-            <span style={{
-              fontSize: 8, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em',
-              padding: '2px 6px', borderRadius: 3, flexShrink: 0,
-              color: vc.color, background: vc.bg,
-              border: `1px solid color-mix(in srgb, ${vc.color} 20%, transparent)`,
-            }}>
+            <span className="sm-ed-verdict-badge" style={{
+              '--verdict-color': vc.color, '--verdict-bg': vc.bg,
+            } as React.CSSProperties}>
               {verdict.level}
             </span>
           );
         })()}
         {/* Date — fixed width for column alignment */}
-        <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', flexShrink: 0, letterSpacing: '-0.2px', width: 100, textAlign: 'right', whiteSpace: 'nowrap' }}>
+        <span className="sm-ed-date">
           {formatEdgarDate(r.filing.filingDate)}
         </span>
         {/* Status label — fixed width so DB column aligns */}
-        <span style={{
-          fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px',
-          color: statusCfg.color, flexShrink: 0, whiteSpace: 'nowrap',
-          width: 72, textAlign: 'right',
-        }}>
+        <span className="sm-ed-status-label" style={{ '--status-color': statusCfg.color } as React.CSSProperties}>
           {statusCfg.label}
         </span>
         {/* DB status button — hover fetches live data from database */}
@@ -840,18 +724,12 @@ const FilingRow: React.FC<{
           const dbColor = !dbRecord ? 'var(--text3)' : STATUS_CONFIG[r.status].color;
           const dbOpacity = !dbRecord ? 0.25 : 0.8;
           return (
-            <span style={{ position: 'relative', flexShrink: 0 }}>
+            <span style={{ position: 'relative' }} className="sm-shrink-0">
               <button
                 type="button"
                 aria-label="Show database record"
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 3,
-                  fontSize: 8, fontFamily: 'Space Mono, monospace', color: dbColor, opacity: dbOpacity,
-                  padding: '1px 4px', borderRadius: 3,
-                  border: `1px solid color-mix(in srgb, ${dbColor} 20%, transparent)`,
-                  background: 'transparent', cursor: 'pointer', outline: 'none',
-                  transition: 'all 0.15s',
-                }}
+                className="sm-ed-db-btn"
+                style={{ '--db-color': dbColor, '--db-opacity': dbOpacity } as React.CSSProperties}
                 onFocus={handleDbHoverEnter}
                 onBlur={handleDbHoverLeave}
               >
@@ -860,14 +738,7 @@ const FilingRow: React.FC<{
               </button>
               {/* Tooltip — shows live DB data */}
               {dbTooltipVisible && (
-                <div ref={dbTooltipRef} style={{
-                  position: 'absolute', top: '100%', right: 0, marginTop: 6, zIndex: 100,
-                  background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 8,
-                  padding: '10px 14px', minWidth: 280, maxWidth: 380,
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
-                  fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)',
-                  lineHeight: 1.8, pointerEvents: 'none',
-                }}>
+                <div ref={dbTooltipRef} className="sm-ed-db-tooltip">
                   <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text3)', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
                     Saved in seen_filings DB?
                   </div>
@@ -892,20 +763,13 @@ const FilingRow: React.FC<{
         })()}
         {/* Action buttons — stop propagation so clicks don't toggle expand */}
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-        <div style={{ display: 'flex', gap: 4, flexShrink: 0 }} onClick={e => e.stopPropagation()}>
+        <div className="sm-flex sm-gap-4 sm-shrink-0" onClick={e => e.stopPropagation()}>
           <a
             href={r.filing.fileUrl}
             target="_blank"
             rel="noopener noreferrer"
             title="Open filing on SEC EDGAR"
-            style={{
-              fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
-              padding: '2px 5px', borderRadius: 4,
-              color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
-              border: '1px solid var(--border)',
-              cursor: 'pointer', transition: 'all 0.15s', outline: 'none', textDecoration: 'none',
-              display: 'inline-flex', alignItems: 'center',
-            }}
+            className="sm-ed-action-btn-sm"
           >
             <svg width={11} height={11} viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" />
@@ -924,17 +788,13 @@ const FilingRow: React.FC<{
               onClick={onRecheck}
               disabled={recheckLoading}
               title="Re-check if this filing is in the local database"
+              className="sm-ed-action-btn-sm"
               style={{
-                fontSize: 9, fontWeight: 500, fontFamily: 'inherit',
-                padding: '2px 5px', borderRadius: 4,
-                color: recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
-                background: 'rgba(255,255,255,0.04)',
-                border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
-                cursor: recheckLoading ? 'wait' : 'pointer',
-                transition: 'all 0.15s', outline: 'none',
-                display: 'inline-flex', alignItems: 'center',
+                '--ed-btn-color': recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
+                borderColor: recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)',
+                cursor: recheckLoading ? 'wait' : undefined,
                 opacity: recheckLoading ? 0.5 : 1,
-              }}
+              } as React.CSSProperties}
             >
               <svg width={11} height={11} viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 0.8s linear infinite' : 'none' }}>
                 <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
@@ -945,13 +805,8 @@ const FilingRow: React.FC<{
           <button
             onClick={() => onToggleHide?.()}
             title="Hide filing"
-            style={{
-              fontSize: 9, fontFamily: 'inherit', padding: '2px 5px', borderRadius: 4,
-              color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
-              border: '1px solid var(--border)', cursor: 'pointer', outline: 'none',
-              display: 'inline-flex', alignItems: 'center', transition: 'all 0.15s',
-              opacity: 0.5,
-            }}
+            className="sm-ed-action-btn-sm"
+            style={{ opacity: 0.5 }}
           >
             <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" />
@@ -973,13 +828,11 @@ const FilingRow: React.FC<{
             if (!verdict) return null;
             const vc = VERDICT_COLORS[verdict.level];
             return (
-              <div style={{
+              <div className="sm-ed-verdict-badge" style={{
                 margin: '12px 0 0 7px', display: 'inline-flex', alignItems: 'center', gap: 6,
-                fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em',
-                padding: '3px 8px', borderRadius: 4,
-                color: vc.color, background: vc.bg,
-                border: `1px solid color-mix(in srgb, ${vc.color} 20%, transparent)`,
-              }}>
+                fontSize: 9, letterSpacing: '0.08em', padding: '3px 8px', borderRadius: 4,
+                '--verdict-color': vc.color, '--verdict-bg': vc.bg,
+              } as React.CSSProperties}>
                 {verdict.level}
                 <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, opacity: 0.7, fontSize: 10 }}>
                   {verdict.explanation}
@@ -994,7 +847,7 @@ const FilingRow: React.FC<{
             <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)' }}>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
                 {/* 1. Export PDF */}
-                <button type="button" onClick={handleExportPDF} style={{ ...actionBtnBase, color: 'var(--text3)' }}>
+                <button type="button" onClick={handleExportPDF} className="sm-ed-action-btn">
                   <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
                     <polyline points="14 2 14 8 20 8" />
@@ -1006,11 +859,11 @@ const FilingRow: React.FC<{
                 <button
                   type="button"
                   onClick={handleCopy}
+                  className="sm-ed-action-btn"
                   style={{
-                    ...actionBtnBase,
-                    color: copied ? 'var(--mint)' : 'var(--text3)',
+                    '--ed-btn-color': copied ? 'var(--mint)' : undefined,
                     borderColor: copied ? 'rgba(130,200,130,0.15)' : undefined,
-                  }}
+                  } as React.CSSProperties}
                 >
                   <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                     <rect x={9} y={9} width={13} height={13} rx={2} ry={2} />
@@ -1021,7 +874,7 @@ const FilingRow: React.FC<{
 
                 {/* 3. Preview Changes / Applied indicator */}
                 {applyStep === 'applied' ? (
-                  <span style={{ ...actionBtnBase, color: 'var(--mint)', borderColor: 'rgba(130,200,130,0.15)', cursor: 'default' }}>
+                  <span className="sm-ed-action-btn" style={{ '--ed-btn-color': 'var(--mint)', borderColor: 'rgba(130,200,130,0.15)', cursor: 'default' } as React.CSSProperties}>
                     <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
@@ -1032,9 +885,9 @@ const FilingRow: React.FC<{
                     type="button"
                     onClick={handlePreview}
                     disabled={applyStep === 'previewing' || applyStep === 'previewed' || applyStep === 'applying'}
+                    className="sm-ed-action-btn"
                     style={{
-                      ...actionBtnBase,
-                      color: applyStep === 'previewing'
+                      '--ed-btn-color': applyStep === 'previewing'
                         ? 'var(--text3)'
                         : applyStep === 'error'
                           ? 'var(--coral)'
@@ -1043,8 +896,7 @@ const FilingRow: React.FC<{
                         ? 'color-mix(in srgb, var(--coral) 25%, transparent)'
                         : 'rgba(130,200,130,0.15)',
                       opacity: applyStep === 'previewing' ? 0.6 : 1,
-                      cursor: applyStep === 'previewing' || applyStep === 'previewed' || applyStep === 'applying' ? 'not-allowed' : 'pointer',
-                    }}
+                    } as React.CSSProperties}
                   >
                     <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -1063,9 +915,9 @@ const FilingRow: React.FC<{
                   type="button"
                   onClick={handleCommit}
                   disabled={commitStatus === 'committing' || commitStatus === 'done' || applyStep !== 'applied'}
+                  className="sm-ed-action-btn"
                   style={{
-                    ...actionBtnBase,
-                    color: commitStatus === 'done'
+                    '--ed-btn-color': commitStatus === 'done'
                       ? 'var(--mint)'
                       : commitStatus === 'error'
                         ? 'var(--coral)'
@@ -1078,8 +930,7 @@ const FilingRow: React.FC<{
                         ? undefined
                         : 'rgba(168,130,230,0.15)',
                     opacity: applyStep !== 'applied' ? 0.3 : commitStatus === 'committing' ? 0.6 : 1,
-                    cursor: commitStatus === 'committing' || commitStatus === 'done' || applyStep !== 'applied' ? 'not-allowed' : 'pointer',
-                  }}
+                  } as React.CSSProperties}
                 >
                   <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                     <circle cx={12} cy={12} r={4} />
@@ -1113,15 +964,8 @@ const FilingRow: React.FC<{
 
               {/* ── Diff Preview Panel ── */}
               {applyStep === 'previewed' && patchPreview && (
-                <div
-                  style={{
-                    marginTop: 16,
-                    borderRadius: 8,
-                    border: '1px solid rgba(234,179,8,0.2)',
-                    background: 'rgba(234,179,8,0.03)',
-                    overflow: 'hidden',
-                  }}
-                >
+                <div className="sm-ed-diff-panel">
+
                   {/* Header */}
                   <div
                     style={{
@@ -1173,36 +1017,19 @@ const FilingRow: React.FC<{
                           </span>
                         </div>
                         {p.valid && p.diff ? (
-                          <pre
-                            style={{
-                              fontSize: 10,
-                              fontFamily: 'var(--font-mono, monospace)',
-                              lineHeight: 1.6,
-                              whiteSpace: 'pre-wrap',
-                              margin: 0,
-                              color: 'var(--text3)',
-                              maxHeight: 200,
-                              overflowY: 'auto',
-                            }}
-                          >
+                          <pre className="sm-ed-diff-pre">
                             {p.diff.split('\n').map((line: string, li: number) => (
                               <span
                                 key={li}
-                                style={{
-                                  display: 'block',
-                                  color: line.startsWith('+') && !line.startsWith('+++')
-                                    ? 'rgba(130,200,130,0.7)'
+                                className={
+                                  line.startsWith('+') && !line.startsWith('+++')
+                                    ? 'sm-ed-diff-add'
                                     : line.startsWith('-') && !line.startsWith('---')
-                                      ? 'rgba(255,100,100,0.5)'
+                                      ? 'sm-ed-diff-del'
                                       : line.startsWith('@@')
-                                        ? 'rgba(130,170,255,0.5)'
-                                        : undefined,
-                                  background: line.startsWith('+') && !line.startsWith('+++')
-                                    ? 'rgba(130,200,130,0.04)'
-                                    : line.startsWith('-') && !line.startsWith('---')
-                                      ? 'rgba(255,100,100,0.04)'
-                                      : undefined,
-                                }}
+                                        ? 'sm-ed-diff-hunk'
+                                        : undefined
+                                }
                               >
                                 {line}
                               </span>
@@ -1232,10 +1059,7 @@ const FilingRow: React.FC<{
                       <button
                         type="button"
                         onClick={handleCancelPreview}
-                        style={{
-                          ...actionBtnBase,
-                          color: 'var(--text3)',
-                        }}
+                        className="sm-ed-action-btn"
                       >
                         Cancel
                       </button>
@@ -1243,14 +1067,13 @@ const FilingRow: React.FC<{
                         type="button"
                         onClick={handleConfirmApply}
                         disabled={!patchPreview.validCount}
+                        className="sm-ed-action-btn"
                         style={{
-                          ...actionBtnBase,
-                          color: patchPreview.validCount ? 'rgba(234,179,8,0.8)' : 'var(--text3)',
+                          '--ed-btn-color': patchPreview.validCount ? 'rgba(234,179,8,0.8)' : 'var(--text3)',
                           borderColor: patchPreview.validCount ? 'rgba(234,179,8,0.3)' : undefined,
                           fontWeight: 600,
-                          cursor: patchPreview.validCount ? 'pointer' : 'not-allowed',
                           opacity: patchPreview.validCount ? 1 : 0.4,
-                        }}
+                        } as React.CSSProperties}
                       >
                         <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 5v14M5 12h14" />
@@ -1349,16 +1172,9 @@ const YearSection: React.FC<{
     <div>
       <button
         onClick={() => setOpen(!open)}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 10, width: '100%',
-          padding: '12px 12px 8px', background: 'transparent', border: 'none',
-          cursor: 'pointer', outline: 'none',
-        }}
+        className="sm-ed-year-btn"
       >
-        <span style={{
-          fontFamily: 'Space Mono, monospace', fontSize: 14, fontWeight: 700,
-          color: 'var(--text)', letterSpacing: '-0.5px',
-        }}>
+        <span className="sm-mono-md sm-text" style={{ letterSpacing: '-0.5px', fontWeight: 700 }}>
           {year}
         </span>
         <span style={{ flex: 1, height: 1, background: 'color-mix(in srgb, var(--border) 50%, transparent)' }} />
@@ -1480,16 +1296,12 @@ const FilterPill: React.FC<{
 }> = ({ label, active, count, onClick }) => (
   <button
     onClick={onClick}
+    className="sm-ed-filter-pill"
     style={{
-      fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-      padding: '3px 8px', borderRadius: 4,
-      color: active ? 'var(--accent)' : 'var(--text3)',
-      background: active ? 'color-mix(in srgb, var(--accent) 8%, rgba(255,255,255,0.04))' : 'rgba(255,255,255,0.04)',
-      border: `1px solid ${active ? 'color-mix(in srgb, var(--accent) 25%, transparent)' : 'var(--border)'}`,
-      cursor: 'pointer', transition: 'all 0.15s',
-      outline: 'none', fontFamily: 'inherit',
-      display: 'inline-flex', alignItems: 'center', gap: 5,
-    }}
+      '--pill-color': active ? 'var(--accent)' : undefined,
+      '--pill-bg': active ? 'color-mix(in srgb, var(--accent) 8%, rgba(255,255,255,0.04))' : undefined,
+      '--pill-border': active ? 'color-mix(in srgb, var(--accent) 25%, transparent)' : undefined,
+    } as React.CSSProperties}
   >
     {label}
     {count !== undefined && (
@@ -1816,11 +1628,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       </div>
 
       {/* Status bar */}
-      <div style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '16px 20px', marginTop: 8,
-        borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)',
-      }}>
+      <div className="sm-ed-status-bar">
         <div className="sm-flex sm-gap-16">
           {/* Progress ring */}
           <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
@@ -1867,16 +1675,8 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             href={edgarBrowseUrl}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-              padding: '5px 14px', borderRadius: 4,
-              color: 'var(--text3)', background: 'rgba(255,255,255,0.04)',
-              border: '1px solid var(--border)',
-              textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6,
-              transition: 'all 0.15s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--accent)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text3)'; }}
+            className="sm-ed-action-btn"
+            style={{ padding: '5px 14px', gap: 6 }}
           >
             <svg width="8" height="8" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0 }}>
               <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
@@ -1889,17 +1689,14 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             disabled={loading}
             aria-label="Fetch EDGAR filings"
             title="Fetch filings from SEC EDGAR"
+            className="sm-ed-action-btn"
             style={{
-              fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-              padding: '5px 14px', borderRadius: 4,
-              color: loading ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
-              background: 'rgba(255,255,255,0.04)',
-              border: `1px solid ${loading ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
-              cursor: loading ? 'wait' : 'pointer',
-              display: 'flex', alignItems: 'center', gap: 6,
-              transition: 'all 0.15s', outline: 'none',
+              padding: '5px 14px', gap: 6,
+              '--ed-btn-color': loading ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
+              borderColor: loading ? 'var(--border)' : 'rgba(130,200,130,0.15)',
+              cursor: loading ? 'wait' : undefined,
               opacity: loading ? 0.5 : 1,
-            }}
+            } as React.CSSProperties}
           >
             <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }}>
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -1914,17 +1711,14 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               disabled={recheckLoading}
               aria-label="Re-check local database"
               title="Re-check if filings have been added to local database"
+              className="sm-ed-action-btn"
               style={{
-                fontSize: 9, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em',
-                padding: '5px 14px', borderRadius: 4,
-                color: recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
-                background: 'rgba(255,255,255,0.04)',
-                border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
-                cursor: recheckLoading ? 'wait' : 'pointer',
-                display: 'flex', alignItems: 'center', gap: 6,
-                transition: 'all 0.15s', outline: 'none',
+                padding: '5px 14px', gap: 6,
+                '--ed-btn-color': recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
+                borderColor: recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)',
+                cursor: recheckLoading ? 'wait' : undefined,
                 opacity: recheckLoading ? 0.5 : 1,
-              }}
+              } as React.CSSProperties}
             >
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 1s linear infinite' : 'none' }}>
                 <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -1941,10 +1735,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
         <div
           role="note"
           aria-label="Filing status legend"
-          style={{
-            display: 'flex', alignItems: 'flex-start', gap: 24, padding: '16px 4px 12px',
-            fontSize: 10, color: 'var(--text3)', letterSpacing: '0.3px', flexWrap: 'wrap',
-          }}
+          className="sm-ed-legend"
         >
           {(['tracked', 'data_only', 'new'] as FilingStatus[]).map(status => (
             <span key={status} title={STATUS_CONFIG[status].desc} style={{ display: 'flex', alignItems: 'flex-start', gap: 6, maxWidth: 260 }}>
@@ -1970,11 +1761,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
 
       {/* Error */}
       {error && (
-        <div role="alert" style={{
-          fontSize: 12, color: 'var(--coral)', marginTop: 12,
-          padding: '12px 16px', background: 'var(--coral-dim)', borderRadius: 10,
-          display: 'flex', alignItems: 'center', gap: 8,
-        }}>
+        <div role="alert" className="sm-ed-error">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
           {error}
         </div>
@@ -1982,10 +1769,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
 
       {/* Loading */}
       {loading && !loaded && (
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
-          padding: '48px 0', color: 'var(--text3)',
-        }}>
+        <div className="sm-ed-loading">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ animation: 'spin 1s linear infinite' }}>
             <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
           </svg>
@@ -2013,39 +1797,37 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       )}
 
       {/* ── Methodology ────────────────────────────────────────────────────── */}
-      <div className="sm-card sm-mt-8">
+      <div className="sm-ws-panel sm-mt-8">
         <div
           onClick={() => setMethodologyOpen(prev => !prev)}
-          style={{
-            padding: '24px 24px',
-            borderBottom: methodologyOpen ? '1px solid var(--border)' : 'none',
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer',
-          }}
+          className="sm-ws-panel-header"
+          style={{ cursor: 'pointer' }}
+          data-open={methodologyOpen ? 'true' : 'false'}
           role="button"
           tabIndex={0}
           aria-expanded={methodologyOpen}
           aria-label="Toggle EDGAR Methodology"
           onKeyDown={(e) => e.key === 'Enter' && setMethodologyOpen(prev => !prev)}
         >
-          <span className="sm-section-label">Methodology</span>
-          <span style={{ color: 'var(--text3)', fontSize: 18 }}>{methodologyOpen ? '\u2212' : '+'}</span>
+          <span className="sm-section-label" style={{ marginBottom: 0 }}>Methodology</span>
+          <span className="sm-text3" style={{ fontSize: 18 }}>{methodologyOpen ? '\u2212' : '+'}</span>
         </div>
         {methodologyOpen && (
-          <div style={{ padding: '24px 24px', fontSize: 13, color: 'var(--text2)' }}>
+          <div className="sm-ws-panel-body sm-body-sm">
             {/* ── DB-FIRST ARCHITECTURE ────────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>DB-First Architecture</div>
+            <div className="sm-ed-method-label">DB-First Architecture</div>
             <div className="sm-flex-col" style={{ alignItems: 'center' }}>
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Page loads</div>
+              <div className="sm-ed-flowbox">Page loads</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
-              <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>GET /api/seen-filings?ticker=X</div>
+              <div className="sm-ed-flowbox-accent">GET /api/seen-filings?ticker=X</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>ensureTable() &mdash; auto-creates seen_filings if missing</div>
+              <div className="sm-ed-flowbox">ensureTable() &mdash; auto-creates seen_filings if missing</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Load saved filings from Neon PostgreSQL</div>
+              <div className="sm-ed-flowbox">Load saved filings from Neon PostgreSQL</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>Render from DB &mdash; no SEC API calls on mount</div>
             </div>
-            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+            <div className="sm-ed-method-text sm-mt-12">
               <div><span className="sm-text">Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_filings table</div>
               <div><span className="sm-text">Self-healing:</span> ensureTable() creates table + indexes on first request</div>
               <div><span className="sm-text">Graceful fallback:</span> returns empty array if table cannot be created</div>
@@ -2055,21 +1837,21 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             <div className="sm-ed-hdivider" />
 
             {/* ── FILING DATA PIPELINE ──────────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Filing Data Pipeline</div>
+            <div className="sm-ed-method-label">Filing Data Pipeline</div>
             <div className="sm-flex-col" style={{ alignItems: 'center' }}>
-              <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>Fetch Filings</div>
+              <div className="sm-ed-flowbox-accent">Fetch Filings</div>
               <div style={{ width: 2, height: 10, background: 'var(--sky)' }} />
-              <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>GET /api/edgar/[ticker]</div>
+              <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>GET /api/edgar/[ticker]</div>
               <div className="sm-ed-vline" style={{ height: 8 }} />
               <div style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.6 }}>SEC EDGAR submissions API<br />(CIK-based, paginated, 15s timeout)</div>
               <div className="sm-ed-vline" style={{ height: 8 }} />
-              <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Match against sec_filings + filing_cross_refs</div>
+              <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>Match against sec_filings + filing_cross_refs</div>
               <div className="sm-ed-vline" style={{ height: 8 }} />
-              <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>POST /api/seen-filings &mdash; upsert all with status + crossRefs</div>
+              <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>POST /api/seen-filings &mdash; upsert all with status + crossRefs</div>
               <div className="sm-ed-vline" style={{ height: 8 }} />
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>New filings get NEW badge (dismissed=false)</div>
             </div>
-            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+            <div className="sm-ed-method-text sm-mt-12">
               <div><span className="sm-text">Save path:</span> POST /api/seen-filings &rarr; upsert with status, crossRefs, form, filingDate, description, reportDate, fileUrl</div>
               <div><span className="sm-text">Re-check DB:</span> re-reads sec_filings + filing_cross_refs from Postgres to pick up new patches</div>
               <div><span className="sm-text">Analysis:</span> POST /api/edgar/analyze &rarr; Claude Haiku (15K chars) &rarr; persisted to analysis_cache table</div>
@@ -2078,13 +1860,13 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             <div className="sm-ed-hdivider" />
 
             {/* ── THREE-TIER MATCHING ──────────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Three-Tier Filing Matcher</div>
+            <div className="sm-ed-method-label">Three-Tier Filing Matcher</div>
             <div className="sm-flex-col" style={{ alignItems: 'center' }}>
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>SEC filing arrives (accessionNumber, form, filingDate)</div>
+              <div className="sm-ed-flowbox">SEC filing arrives (accessionNumber, form, filingDate)</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
               {/* Tier 1a */}
               <div className="sm-flex sm-gap-16">
-                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
+                <div className="sm-ed-flowbox">
                   <div>Tier 1a: Accession number exact match</div>
                   <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>O(1) hash lookup, strip dashes</div>
                 </div>
@@ -2097,7 +1879,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div className="sm-ed-vline" style={{ height: 6 }} />
               {/* Tier 1b */}
               <div className="sm-flex sm-gap-16">
-                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
+                <div className="sm-ed-flowbox">
                   <div>Tier 1b: Closest form+date match</div>
                   <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>nearest date within 14 days, form type normalized (PRNEWS &rarr; 8-K)</div>
                 </div>
@@ -2110,7 +1892,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div className="sm-ed-vline" style={{ height: 6 }} />
               {/* Tier 2 */}
               <div className="sm-flex sm-gap-16">
-                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
+                <div className="sm-ed-flowbox">
                   <div>Tier 2: Cross-reference key lookup</div>
                   <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>accession or FORM|YYYY-MM-DD in cross-ref index (with aliases)</div>
                 </div>
@@ -2131,36 +1913,36 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             <div className="sm-ed-hdivider" />
 
             {/* ── CROSS-REFERENCE SOURCES ──────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Cross-Reference Sources</div>
+            <div className="sm-ed-method-label">Cross-Reference Sources</div>
             <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.6, marginBottom: 12 }}>
               Each filing can carry one or more cross-refs &mdash; extracted data lines written to other parts of the research database. Displayed as dimmed <span style={{ opacity: 0.7 }}>{'// source → data'}</span> lines below each filing.
             </div>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+              <div className="sm-ed-info-card">
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>capital</div>
                 <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
                   Share offerings, debt issuances, insider transactions, institutional holdings, conversions
                 </div>
               </div>
-              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+              <div className="sm-ed-info-card">
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>timeline</div>
                 <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
                   Key company events, board changes, material agreements, launches
                 </div>
               </div>
-              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+              <div className="sm-ed-info-card">
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>financials</div>
                 <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
                   Quarterly results: revenue, cash, debt, operating metrics
                 </div>
               </div>
-              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+              <div className="sm-ed-info-card">
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>catalysts</div>
                 <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
                   Milestone completions, contract awards, product launches
                 </div>
               </div>
-              <div style={{ flex: '1 1 160px', padding: '8px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+              <div className="sm-ed-info-card">
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', marginBottom: 4 }}>company</div>
                 <div style={{ fontSize: 9.5, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 1.7 }}>
                   Company-level data updates (satellite counts, operational status)
@@ -2176,13 +1958,13 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             <div className="sm-ed-hdivider" />
 
             {/* ── NEW FILING DETECTION ──────────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>New Filing Detection</div>
+            <div className="sm-ed-method-label">New Filing Detection</div>
             <div className="sm-flex-col" style={{ alignItems: 'center' }}>
-              <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center' }}>Fetch Filings</div>
+              <div className="sm-ed-flowbox-accent">Fetch Filings</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Compare accessionNumber against DB records</div>
+              <div className="sm-ed-flowbox">Compare accessionNumber against DB records</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Already in DB?</div>
+              <div className="sm-ed-flowbox">Already in DB?</div>
               <div style={{ display: 'flex', gap: 32, marginTop: 8 }}>
                 <div className="sm-flex-col" style={{ alignItems: 'center' }}>
                   <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>Yes</div>
@@ -2192,7 +1974,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                 <div className="sm-flex-col" style={{ alignItems: 'center' }}>
                   <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
-                  <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Save to DB (dismissed=false)</div>
+                  <div className="sm-ed-flowbox">Save to DB (dismissed=false)</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
                   <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>NEW badge</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
@@ -2202,7 +1984,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                 </div>
               </div>
             </div>
-            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+            <div className="sm-ed-method-text sm-mt-12">
               <div><span className="sm-text">On mount:</span> loads filings from DB only &mdash; no SEC API calls</div>
               <div><span className="sm-text">Fetch Filings:</span> fetches from SEC EDGAR, matches, saves all to DB</div>
               <div><span className="sm-text">NEW badge:</span> bright clickable badge &mdash; filing not yet acknowledged</div>
@@ -2213,9 +1995,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             <div className="sm-ed-hdivider" />
 
             {/* ── DB STATUS INDICATORS ──────────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>DB Status Indicators</div>
+            <div className="sm-ed-method-label">DB Status Indicators</div>
             <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-              <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+              <div className="sm-ed-info-card-lg">
                 <div className="sm-flex sm-gap-6 sm-mb-8" style={{ marginBottom: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mint)' }} />
                   <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--mint)' }}>MINT DB</span>
@@ -2224,7 +2006,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                   Filing is in DB and current status is TRACKED (matched in sec-filings.ts).
                 </div>
               </div>
-              <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+              <div className="sm-ed-info-card-lg">
                 <div className="sm-flex sm-gap-6 sm-mb-8" style={{ marginBottom: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--gold)' }} />
                   <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--gold)' }}>GOLD DB</span>
@@ -2233,7 +2015,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                   Filing is in DB and current status is DATA ONLY (cross-refs exist but not in sec-filings.ts).
                 </div>
               </div>
-              <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+              <div className="sm-ed-info-card-lg">
                 <div className="sm-flex sm-gap-6 sm-mb-8" style={{ marginBottom: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--coral)' }} />
                   <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--coral)' }}>CORAL DB</span>
@@ -2242,7 +2024,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
                   Filing is in DB but current status is UNTRACKED (no index entry, no cross-refs).
                 </div>
               </div>
-              <div style={{ flex: '1 1 180px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+              <div className="sm-ed-info-card-lg">
                 <div className="sm-flex sm-gap-6 sm-mb-8" style={{ marginBottom: 6 }}>
                   <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text3)', opacity: 0.3 }} />
                   <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', opacity: 0.5 }}>GRAY DB</span>
@@ -2256,16 +2038,16 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             <div className="sm-ed-hdivider" />
 
             {/* ── BUTTON DISTINCTION ──────────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>Button Distinction: Fetch Filings vs Re-check DB</div>
+            <div className="sm-ed-method-label">Button Distinction: Fetch Filings vs Re-check DB</div>
             <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-              <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+              <div className="sm-ed-info-card-xl">
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,200,130,0.7)', marginBottom: 6 }}>FETCH FILINGS</div>
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   Calls SEC EDGAR API. Fetches latest filings, matches against local DB,
                   saves all to seen_filings with full metadata. New filings get NEW badge.
                 </div>
               </div>
-              <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+              <div className="sm-ed-info-card-xl">
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,180,220,0.7)', marginBottom: 6 }}>RE-CHECK DB</div>
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   Re-reads sec_filings + filing_cross_refs from Postgres.
@@ -2278,7 +2060,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             <div className="sm-ed-hdivider" />
 
             {/* ── PERSISTED DATA ──────────────────────── */}
-            <div className="sm-micro-text" style={{ marginBottom: 12, letterSpacing: '2px' }}>What Gets Persisted to DB</div>
+            <div className="sm-ed-method-label">What Gets Persisted to DB</div>
             <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2.2 }}>
               <div><span className="sm-text">seen_filings:</span> accession_number, form, filing_date, description, report_date, file_url, status, cross_refs (JSON), dismissed</div>
               <div><span className="sm-text">analysis_cache:</span> ticker + &quot;edgar&quot; + accession_number &rarr; analysis text (successful only)</div>

@@ -1627,17 +1627,17 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             {/* ── DB-FIRST ARCHITECTURE ────────────────────── */}
             <div className="sm-ed-method-label">DB-First Architecture</div>
             <div className="sm-flex-col" style={{ alignItems: 'center' }}>
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Page loads</div>
+              <div className="sm-ed-flowbox">Page loads</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
-              <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>GET /api/seen-articles?ticker=X</div>
+              <div className="sm-ed-flowbox-accent">GET /api/seen-articles?ticker=X</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>ensureTable() &mdash; auto-creates seen_articles if missing</div>
+              <div className="sm-ed-flowbox">ensureTable() &mdash; auto-creates seen_articles if missing</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Load saved articles from Neon PostgreSQL</div>
+              <div className="sm-ed-flowbox">Load saved articles from Neon PostgreSQL</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>Render from DB &mdash; no external API calls on mount</div>
             </div>
-            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+            <div className="sm-ed-method-text sm-mt-12">
               <div><span className="sm-text">Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_articles table</div>
               <div><span className="sm-text">Self-healing:</span> ensureTable() creates table + indexes on first request</div>
               <div><span className="sm-text">Graceful fallback:</span> returns empty array if table cannot be created</div>
@@ -1650,25 +1650,25 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div className="sm-ed-method-label">Data Pipelines: Press Releases vs News</div>
             <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
               <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>Fetch PRs</div>
+                <div className="sm-ed-flowbox-accent">Fetch PRs</div>
                 <div style={{ width: 2, height: 10, background: 'var(--sky)' }} />
-                <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>GET /api/press-releases/[ticker]</div>
+                <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>GET /api/press-releases/[ticker]</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
                 <div style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.6 }}>Google News RSS filtered to wire services<br />(PRN, BusinessWire, GlobeNewsWire) + IR pages</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
                 <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>articleType: &quot;pr&quot;</div>
               </div>
               <div style={{ flex: '1 1 220px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div style={{ padding: '6px 14px', background: 'var(--mint-dim)', border: '1px solid var(--mint)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', textAlign: 'center', fontWeight: 600 }}>Fetch News</div>
+                <div className="sm-ed-flowbox-accent" style={{ background: 'var(--mint-dim)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>Fetch News</div>
                 <div style={{ width: 2, height: 10, background: 'var(--mint)' }} />
-                <div style={{ padding: '5px 12px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>GET /api/news/[ticker]</div>
+                <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>GET /api/news/[ticker]</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
                 <div style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', lineHeight: 1.6 }}>Google News RSS by company name + ticker<br />filtered for relevance (Yahoo, Reuters, etc.)</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
                 <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', fontWeight: 600 }}>articleType: &quot;news&quot;</div>
               </div>
             </div>
-            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+            <div className="sm-ed-method-text sm-mt-12">
               <div><span className="sm-text">Independent:</span> each button fetches, saves, and checks independently</div>
               <div><span className="sm-text">Max per type:</span> 10 articles (SECTION_MAX)</div>
               <div><span className="sm-text">Save path:</span> POST /api/seen-articles &rarr; upsert with articleType tag</div>
@@ -1683,25 +1683,25 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               {/* Left column: vertical flow */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 180 }}>
                 {/* Node: Article */}
-                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Article arrives</div>
+                <div className="sm-ed-flowbox">Article arrives</div>
                 <div className="sm-ed-vline" style={{ height: 12 }} />
                 {/* Node: API Key? */}
-                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>API key?</div>
+                <div className="sm-ed-flowbox">API key?</div>
                 <div className="sm-ed-vline" style={{ height: 6 }} />
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>Yes</div>
                 <div className="sm-ed-vline" style={{ height: 6 }} />
                 {/* Node: AI Disabled? */}
-                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>AI disabled?</div>
+                <div className="sm-ed-flowbox">AI disabled?</div>
                 <div className="sm-ed-vline" style={{ height: 6 }} />
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No</div>
                 <div className="sm-ed-vline" style={{ height: 6 }} />
                 {/* Node: Token limit? */}
-                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Prompt &gt; limit?</div>
+                <div className="sm-ed-flowbox">Prompt &gt; limit?</div>
                 <div className="sm-ed-vline" style={{ height: 6 }} />
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No</div>
                 <div className="sm-ed-vline" style={{ height: 6 }} />
                 {/* Node: Claude AI */}
-                <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center', fontWeight: 600 }}>Claude AI</div>
+                <div className="sm-ed-flowbox-accent">Claude AI</div>
                 <div className="sm-ed-vline" style={{ height: 6 }} />
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>OK</div>
                 <div className="sm-ed-vline" style={{ height: 6 }} />
@@ -1725,7 +1725,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 6, height: 28 }}>
                   <span className="sm-coral" style={{ fontSize: 11 }}>&larr;</span> Fail
                 </div>
-                <div style={{ marginTop: 4, padding: '6px 14px', background: 'var(--gold-dim)', border: '1px solid var(--gold)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--gold)', textAlign: 'center', fontWeight: 600 }}>Local Matching</div>
+                <div className="sm-ed-flowbox-accent" style={{ marginTop: 4, background: 'var(--gold-dim)', borderColor: 'var(--gold)', color: 'var(--gold)' }}>Local Matching</div>
               </div>
             </div>
 
@@ -1760,7 +1760,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div className="sm-ed-method-label">Local Matching</div>
             <div className="sm-flex-col" style={{ alignItems: 'center' }}>
               {/* Node: Extract */}
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Extract keywords (stop words removed, stemmed, &gt;2 chars)</div>
+              <div className="sm-ed-flowbox">Extract keywords (stop words removed, stemmed, &gt;2 chars)</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
               {/* Stemming note */}
               <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', textAlign: 'center', marginBottom: 4 }}>Normalize: Q1-Q4 &rarr; quarter, FY &rarr; fiscal year</div>
@@ -1777,7 +1777,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div className="sm-ed-vline" style={{ height: 12 }} />
               {/* Tier 1 row */}
               <div className="sm-flex sm-gap-16">
-                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
+                <div className="sm-ed-flowbox">
                   <div>Tier 1: Headline only</div>
                   <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>&le;30 days: &ge;40%, &ge;3 kw</div>
                   <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>&gt;30 days: &ge;60%, &ge;3 kw</div>
@@ -1792,7 +1792,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div className="sm-ed-vline" style={{ height: 6 }} />
               {/* Tier 2 row */}
               <div className="sm-flex sm-gap-16">
-                <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>
+                <div className="sm-ed-flowbox">
                   <div>Tier 2: Headline + detail</div>
                   <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>&le;30 days: &ge;50%, &ge;3 kw</div>
                   <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>&gt;30 days: &ge;70%, &ge;3 kw</div>
@@ -1822,12 +1822,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div style={{ display: 'flex', gap: 16 }}>
                 <div style={{ padding: '6px 14px', background: 'var(--sky-dim)', border: '1px solid var(--sky)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', textAlign: 'center' }}>Fetch PRs</div>
                 <div style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', alignSelf: 'center' }}>or</div>
-                <div style={{ padding: '6px 14px', background: 'var(--mint-dim)', border: '1px solid var(--mint)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', textAlign: 'center' }}>Fetch News</div>
+                <div className="sm-ed-flowbox-accent" style={{ background: 'var(--mint-dim)', borderColor: 'var(--mint)', color: 'var(--mint)', fontWeight: 400 }}>Fetch News</div>
               </div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Compare cacheKey against DB records</div>
+              <div className="sm-ed-flowbox">Compare cacheKey against DB records</div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
-              <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Already in DB?</div>
+              <div className="sm-ed-flowbox">Already in DB?</div>
               <div style={{ display: 'flex', gap: 32, marginTop: 8 }}>
                 <div className="sm-flex-col" style={{ alignItems: 'center' }}>
                   <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>Yes</div>
@@ -1837,7 +1837,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <div className="sm-flex-col" style={{ alignItems: 'center' }}>
                   <div className="sm-mono-sm sm-text3" style={{ fontSize: 9 }}>No</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
-                  <div style={{ padding: '6px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 11, fontFamily: 'Space Mono, monospace', color: 'var(--text)', textAlign: 'center' }}>Save to DB (dismissed=false)</div>
+                  <div className="sm-ed-flowbox">Save to DB (dismissed=false)</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
                   <div style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--sky)', fontWeight: 600 }}>NEW badge</div>
                   <div className="sm-ed-vline" style={{ height: 8 }} />
@@ -1847,7 +1847,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 </div>
               </div>
             </div>
-            <div style={{ marginTop: 12, fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'var(--text3)', lineHeight: 2 }}>
+            <div className="sm-ed-method-text sm-mt-12">
               <div><span className="sm-text">On mount:</span> loads articles from DB only &mdash; no external API calls</div>
               <div><span className="sm-text">Fetch PRs / Fetch News:</span> independent buttons, each searches its own API</div>
               <div><span className="sm-text">AI Fetch All:</span> fires both pipelines in parallel</div>
@@ -1862,7 +1862,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             {/* ── BUTTON DISTINCTION ────────────────────────── */}
             <div className="sm-ed-method-label">Button Distinction: RE-CHECK DB vs DB</div>
             <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-              <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+              <div className="sm-ed-info-card-xl">
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,180,220,0.7)', marginBottom: 6 }}>RE-CHECK DB</div>
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   <div><span className="sm-text">Purpose:</span> checks tracked / untracked</div>
@@ -1871,7 +1871,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   <div><span className="sm-text">Does NOT:</span> query seen_articles table</div>
                 </div>
               </div>
-              <div style={{ flex: '1 1 220px', padding: '10px 14px', background: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}>
+              <div className="sm-ed-info-card-xl">
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'var(--mint)', marginBottom: 6 }}>DB (per article)</div>
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
                   <div><span className="sm-text">Purpose:</span> is this article saved in the database?</div>
