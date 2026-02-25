@@ -1725,9 +1725,10 @@ input[type="range"]::-webkit-slider-thumb {
 /* ═══════════════════════════════════════════════════════════════════════════
    § 13. EDGAR TAB COMPONENTS (sm-ed-*)
 
-   SharedEdgarTab.tsx — SEC filing browser with filtering, analysis, diffs.
+   SharedEdgarTab.tsx + SharedSourcesTab.tsx — SEC filing browser and
+   research sources tab with filtering, analysis, diffs, methodology.
    Components: filing rows, form badges, status dots, verdict badges,
-   analysis panels, diff previews, methodology flowcharts.
+   analysis panels, diff previews, methodology flowcharts, info cards.
    Prefixed with "sm-ed-" to scope and avoid collision.
    ═══════════════════════════════════════════════════════════════════════════ */
 

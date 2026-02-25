@@ -144,7 +144,7 @@ const cssCustomProperties: CSSVarDynamic[] = [
   { variable: "--cols",           usedBy: ".sm-grid-sep",        purpose: "Number of grid columns (default 3)" },
   { variable: "--badge-color",    usedBy: ".sm-badge, .sm-badge-impact, .sm-ws-rating-badge", purpose: "Dynamic badge tint color" },
   { variable: "--kpi-color",      usedBy: ".sm-kpi-value",       purpose: "KPI number color" },
-  { variable: "--dot-color",      usedBy: ".sm-dot",             purpose: "Small dot indicator color" },
+  { variable: "--dot-color",      usedBy: ".sm-dot, .sm-ed-status-dot", purpose: "Small dot indicator color" },
   { variable: "--progress-color", usedBy: ".sm-progress-fill",   purpose: "Progress bar fill color (default: accent)" },
   { variable: "--bar-color",      usedBy: ".sm-bar",             purpose: "Bar chart fill color (default: accent)" },
   { variable: "--preset-color",   usedBy: ".sm-preset-btn",      purpose: "Active preset button border + bg tint" },
@@ -156,6 +156,13 @@ const cssCustomProperties: CSSVarDynamic[] = [
   { variable: "--pill-color",     usedBy: ".sm-ed-filter-pill",  purpose: "EDGAR filter pill text color" },
   { variable: "--pill-bg",        usedBy: ".sm-ed-filter-pill",  purpose: "EDGAR filter pill background" },
   { variable: "--pill-border",    usedBy: ".sm-ed-filter-pill",  purpose: "EDGAR filter pill border" },
+  { variable: "--badge-bg",       usedBy: ".sm-ed-form-badge",   purpose: "EDGAR form badge background color" },
+  { variable: "--badge-text",     usedBy: ".sm-ed-form-badge",   purpose: "EDGAR form badge text color" },
+  { variable: "--status-color",   usedBy: ".sm-ed-status-label", purpose: "EDGAR filing status text color" },
+  { variable: "--verdict-color",  usedBy: ".sm-ed-verdict-badge", purpose: "EDGAR verdict badge text color" },
+  { variable: "--verdict-bg",     usedBy: ".sm-ed-verdict-badge", purpose: "EDGAR verdict badge background" },
+  { variable: "--db-color",       usedBy: ".sm-ed-db-btn",       purpose: "EDGAR DB button color" },
+  { variable: "--db-opacity",     usedBy: ".sm-ed-db-btn",       purpose: "EDGAR DB button opacity" },
 ];
 
 interface FileEntry {
@@ -548,7 +555,7 @@ export default function DocsPage() {
         />
 
         {/* ── EDGAR Tab Classes ───────────────────────────────────────────── */}
-        <SectionHeader id="edgar-classes" title="EDGAR Tab Classes (sm-ed-*)" count={28} />
+        <SectionHeader id="edgar-classes" title="EDGAR Tab Classes (sm-ed-*)" count={33} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
           SEC filing browser components — filing rows, badges, status indicators, analysis panels, diff views.
         </p>
@@ -583,6 +590,11 @@ export default function DocsPage() {
             [".sm-ed-diff-panel / -pre / -add / -del / -hunk", "Diff preview panel with syntax coloring."],
             [".sm-ed-status-bar", "Status bar container."],
             [".sm-ed-legend / .sm-ed-error / .sm-ed-loading", "Legend, error alert, and loading spinner."],
+            [".sm-ed-ai-banner", "AI disabled warning banner (gold)."],
+            [".sm-ed-copy-btn", "Copy button with data-copied state."],
+            [".sm-ed-method-label", "Methodology section header (10px uppercase)."],
+            [".sm-ed-method-text", "Methodology mono description text."],
+            [".sm-ed-info-card / -lg / -xl", "Methodology info cards (flex: 1 1 160/180/220px)."],
           ]}
         />
 
