@@ -796,6 +796,782 @@ input[type="range"]::-webkit-slider-thumb {
   .nav-dropdown-item { min-height: 44px; padding: 12px 16px; }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   STOCK MODEL UTILITY CLASSES (sm-*)
+   Replaces inline styles across all stock components.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Layout Utilities ────────────────────────────────────────────────────── */
+.sm-flex { display: flex; align-items: center; gap: 8px; }
+.sm-flex-between { display: flex; justify-content: space-between; align-items: center; }
+.sm-flex-col { display: flex; flex-direction: column; }
+.sm-flex-col-gap { display: flex; flex-direction: column; gap: 12px; }
+.sm-flex-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+.sm-gap-4 { gap: 4px; }
+.sm-gap-6 { gap: 6px; }
+.sm-gap-8 { gap: 8px; }
+.sm-gap-12 { gap: 12px; }
+.sm-gap-16 { gap: 16px; }
+.sm-gap-24 { gap: 24px; }
+.sm-text-center { text-align: center; }
+.sm-text-right { text-align: right; }
+.sm-shrink-0 { flex-shrink: 0; }
+.sm-mt-8 { margin-top: 8px; }
+.sm-mt-12 { margin-top: 12px; }
+.sm-mt-16 { margin-top: 16px; }
+.sm-mt-24 { margin-top: 24px; }
+.sm-mt-32 { margin-top: 32px; }
+.sm-mb-8 { margin-bottom: 8px; }
+.sm-mb-12 { margin-bottom: 12px; }
+.sm-mb-16 { margin-bottom: 16px; }
+.sm-w-full { width: 100%; }
+
+/* ── Typography ──────────────────────────────────────────────────────────── */
+
+/* Section header — the single most repeated pattern across the codebase */
+.sm-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Parameter / subsection label */
+.sm-param-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* Micro label (table headers, tiny tags) */
+.sm-micro-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* Panel title */
+.sm-panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+}
+
+/* Monospace number display */
+.sm-mono { font-family: 'Space Mono', monospace; font-weight: 700; }
+.sm-mono-sm { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 600; }
+.sm-mono-md { font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 600; }
+.sm-mono-lg { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; }
+.sm-mono-xl { font-family: 'Space Mono', monospace; font-size: 28px; font-weight: 700; }
+.sm-mono-2xl { font-family: 'Space Mono', monospace; font-size: 32px; font-weight: 700; }
+.sm-mono-3xl { font-family: 'Space Mono', monospace; font-size: 42px; font-weight: 700; }
+
+/* Text styles */
+.sm-subtle { font-size: 12px; color: var(--text3); }
+.sm-subtle-sm { font-size: 11px; color: var(--text3); }
+.sm-body { font-size: 14px; color: var(--text2); }
+.sm-body-sm { font-size: 13px; color: var(--text2); line-height: 1.5; }
+.sm-body-lg { font-size: 15px; color: var(--text2); line-height: 1.7; }
+
+/* Color utilities */
+.sm-accent { color: var(--accent); }
+.sm-mint { color: var(--mint); }
+.sm-coral { color: var(--coral); }
+.sm-sky { color: var(--sky); }
+.sm-gold { color: var(--gold); }
+.sm-violet { color: var(--violet); }
+.sm-cyan { color: var(--cyan); }
+.sm-text { color: var(--text); }
+.sm-text2 { color: var(--text2); }
+.sm-text3 { color: var(--text3); }
+
+/* ── Component Patterns ──────────────────────────────────────────────────── */
+
+/* Grid separator — glass-card pattern with 1px gap borders */
+.sm-grid-sep {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 3), 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+/* Inner cells of grid-sep */
+.sm-grid-cell {
+  background: var(--surface);
+  padding: 16px 24px;
+}
+.sm-grid-cell-center {
+  background: var(--surface);
+  padding: 16px;
+  text-align: center;
+}
+
+/* KPI metric cell (used inside grid-sep) */
+.sm-kpi-cell {
+  background: var(--surface);
+  padding: 24px 16px;
+  text-align: center;
+}
+.sm-kpi-label {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.sm-kpi-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+  margin: 6px 0 4px;
+}
+.sm-kpi-sub {
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* Panel card — surface card with border */
+.sm-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 12px;
+}
+.sm-panel-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.sm-panel-body {
+  padding: 24px;
+}
+
+/* Data row with CSS :hover (replaces onMouseEnter/onMouseLeave) */
+.sm-data-row {
+  display: grid;
+  padding: 12px 24px;
+  align-items: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-data-row:hover {
+  background: var(--surface2);
+}
+.sm-data-row:last-child {
+  border-bottom: none;
+}
+
+/* Badge / chip with dynamic color via CSS custom property */
+.sm-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 100px;
+  color: var(--badge-color, var(--text3));
+  background: color-mix(in srgb, var(--badge-color, var(--text3)) 10%, transparent);
+}
+.sm-badge-impact {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 100px;
+  min-width: 60px;
+  text-align: center;
+  color: var(--badge-color, var(--text3));
+  background: color-mix(in srgb, var(--badge-color, var(--text3)) 12%, transparent);
+}
+
+/* Tab hero section (used in each tab's header) */
+.sm-tab-hero {
+  padding: 48px 0 32px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+.sm-tab-hero h2 {
+  font-size: 32px;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+.sm-tab-hero p {
+  font-size: 15px;
+  color: var(--text3);
+  max-width: 640px;
+  line-height: 1.7;
+  margin-top: 12px;
+  font-weight: 300;
+}
+
+/* Section divider with trailing line */
+.sm-divider {
+  padding: 32px 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sm-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* Bullet list item (bull/bear case items) */
+.sm-bullet-item {
+  display: flex;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+/* Small dot indicator */
+.sm-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--dot-color, var(--text3));
+}
+
+/* Expand/collapse toggle button */
+.sm-expand-btn {
+  width: 100%;
+  padding: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  color: var(--text2);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Outfit', sans-serif;
+}
+.sm-expand-btn:hover {
+  background: var(--surface3);
+  color: var(--text);
+}
+
+/* Compact action button (Expand All / Collapse All) */
+.sm-action-btn {
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--surface2);
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Outfit', sans-serif;
+}
+.sm-action-btn:hover {
+  background: var(--surface3);
+  color: var(--text);
+}
+
+/* Progress bar */
+.sm-progress-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--surface3);
+  overflow: hidden;
+}
+.sm-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--progress-color, var(--accent));
+  transition: width 0.6s ease;
+}
+
+/* Bar chart column (vertical) */
+.sm-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  background: var(--bar-color, var(--accent));
+  transition: height 0.3s;
+  min-height: 2px;
+}
+
+/* ── Shared Primitives (StockModelUI components) ─────────────────────────── */
+
+/* Card with dynamic color via CSS custom properties */
+.sm-card-colored {
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(8px);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+}
+.sm-card-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text3);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+.sm-card-value {
+  font-size: 28px;
+  font-weight: 700;
+  font-family: 'Space Mono', monospace;
+  color: var(--card-text);
+}
+
+/* Row component */
+.sm-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.sm-row[data-highlight="true"] {
+  background: var(--accent-dim);
+  padding: 12px;
+  margin: 0 -12px;
+  border-radius: 8px;
+}
+.sm-row-label {
+  font-size: 14px;
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+}
+.sm-row-value {
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+}
+.sm-row[data-highlight="true"] .sm-row-value {
+  color: var(--accent);
+}
+
+/* Input component */
+.sm-input-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text3);
+  font-weight: 600;
+}
+.sm-input-field {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+  outline: none;
+}
+
+/* CFA Notes */
+.sm-cfa-notes {
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  opacity: 0.75;
+}
+.sm-cfa-title {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.sm-cfa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text3);
+}
+.sm-cfa-list p { margin: 0; }
+.sm-cfa-list strong { color: var(--text2); }
+
+/* Guide content */
+.sm-guide-content {
+  color: var(--text2);
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+/* Preset toggle buttons (model parameter selection) */
+.sm-preset-btn {
+  padding: 12px 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text3);
+  font-family: 'Outfit', sans-serif;
+}
+.sm-preset-btn[data-active="true"] {
+  border: 2px solid var(--preset-color);
+  background: color-mix(in srgb, var(--preset-color) 15%, transparent);
+  color: var(--preset-color);
+  font-weight: 600;
+}
+
+/* Tinted background using dynamic CSS custom property */
+.sm-tinted-bg {
+  background: color-mix(in srgb, var(--tint) 10%, transparent);
+}
+
+/* ── Wall Street Tab Components ──────────────────────────────────────────── */
+
+/* Update indicator dot (inline portability component) */
+.sm-update-dots {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: 8px;
+}
+.sm-update-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  background: var(--dot-bg);
+}
+
+/* Panel with round-16 styling used in Wall Street cards */
+.sm-ws-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.sm-ws-panel[data-active="true"] {
+  border-color: var(--violet);
+}
+
+/* Panel header row (padded, bottom-bordered) */
+.sm-ws-panel-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sm-ws-panel-header[data-open="false"] {
+  border-bottom: none;
+}
+
+/* Panel body (padded) */
+.sm-ws-panel-body {
+  padding: 24px;
+}
+
+/* Grid 2-col layout for consensus */
+.sm-ws-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* KPI grid with 1px gap border pattern */
+.sm-ws-kpi-grid {
+  display: grid;
+  gap: 1px;
+  background: var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Rating distribution bar */
+.sm-ws-rating-bar {
+  display: flex;
+  height: 24px;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+/* Firm header (clickable expand trigger) */
+.sm-ws-firm-header {
+  padding: 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Firm name */
+.sm-ws-firm-name {
+  font-weight: 700;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+/* Collapsed metrics grid (auto-fit) */
+.sm-ws-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 8px;
+  padding: 12px;
+  background: var(--surface2);
+  border-radius: 10px;
+}
+.sm-ws-metric-cell {
+  text-align: center;
+  padding: 4px 0;
+}
+.sm-ws-metric-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+.sm-ws-metric-label {
+  font-size: 9px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* Report entry row (with left border) */
+.sm-ws-report {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 3px solid transparent;
+  transition: background 0.15s;
+}
+.sm-ws-report:hover {
+  background: var(--surface2);
+}
+.sm-ws-report[data-full="true"] {
+  background: var(--surface2);
+  border-left-color: var(--violet);
+}
+.sm-ws-report[data-full="true"]:hover {
+  background: var(--surface2);
+}
+
+/* Report detail expand button */
+.sm-ws-detail-btn {
+  background: none;
+  border: none;
+  color: var(--violet);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 4px 0;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Report expanded details container */
+.sm-ws-details {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  margin-top: 8px;
+}
+
+/* Report summary block */
+.sm-ws-summary {
+  background: var(--surface);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* Assumption chip */
+.sm-ws-assumption {
+  padding: 3px 8px;
+  background: var(--surface);
+  border-radius: 99px;
+  font-size: 11px;
+  color: var(--text2);
+}
+
+/* Report section label (catalysts, risks, etc.) */
+.sm-ws-section-label {
+  font-size: 10px;
+  margin-bottom: 6px;
+}
+
+/* Report list (catalysts/risks) */
+.sm-ws-list {
+  margin: 0;
+  padding-left: 16px;
+  color: var(--text2);
+  font-size: 11px;
+}
+
+/* Estimates table */
+.sm-ws-estimate-grid {
+  display: grid;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-ws-estimate-grid:hover {
+  background: var(--surface2);
+}
+.sm-ws-estimate-grid:last-child {
+  border-bottom: none;
+}
+
+/* Estimate table header row */
+.sm-ws-estimate-header {
+  display: grid;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Estimate cell */
+.sm-ws-estimate-cell {
+  padding: 12px;
+  font-size: 12px;
+  color: var(--text);
+}
+.sm-ws-estimate-cell[data-align="right"] {
+  font-family: 'Space Mono', monospace;
+  color: var(--text2);
+  text-align: right;
+}
+
+/* Table header cell */
+.sm-ws-th {
+  padding: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+  background: var(--surface2);
+}
+.sm-ws-th[data-align="right"] {
+  text-align: right;
+}
+
+/* Table container */
+.sm-ws-table {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+/* Inline notes markdown-like block headers */
+.sm-ws-block-header {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* Firm notes italic */
+.sm-ws-firm-notes {
+  font-size: 11px;
+  color: var(--text3);
+  font-style: italic;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  line-height: 1.5;
+}
+
+/* Badge used for rating with dynamic color */
+.sm-ws-rating-badge {
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--badge-color) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--badge-color) 27%, transparent);
+}
+.sm-ws-rating-badge span {
+  color: var(--badge-color);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+/* Report count badges */
+.sm-ws-count-badge {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+}
+.sm-ws-count-badge[data-type="report"] {
+  background: color-mix(in srgb, var(--violet) 15%, transparent);
+  color: var(--violet);
+}
+.sm-ws-count-badge[data-type="update"] {
+  background: color-mix(in srgb, var(--border) 60%, transparent);
+  color: var(--text3);
+}
+
+/* Source link */
+.sm-ws-source-link {
+  font-size: 10px;
+  color: var(--violet);
+  text-decoration: none;
+}
+
+/* Report title italic */
+.sm-ws-report-title {
+  color: var(--text2);
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* PT display mono */
+.sm-ws-pt {
+  font-family: 'Space Mono', monospace;
+  text-align: right;
+  min-width: 60px;
+}
+
+/* Range text */
+.sm-ws-range {
+  font-size: 12px;
+  color: var(--text3);
+}
+
+/* ── Dynamic Value Support (data attributes) ─────────────────────────────── */
+
+/* Sentiment-based text colors */
+[data-sentiment="positive"] { color: var(--mint); }
+[data-sentiment="negative"] { color: var(--coral); }
+[data-sentiment="neutral"] { color: var(--gold); }
+[data-sentiment="info"] { color: var(--sky); }
+
+/* Active/inactive state */
+[data-active="true"] { opacity: 1; }
+[data-active="false"] { opacity: 0.5; }
+
 /* ═══ RESPONSIVE - DESKTOP (1200px) ═══ */
 @media (max-width: 1200px) {
   .hero, .stats-row, .nav, .main, .nav-dropdown-space { padding-left: 32px; padding-right: 32px; }
@@ -1063,6 +1839,24 @@ input[type="range"]::-webkit-slider-thumb {
     width: 6px;
     height: 6px;
   }
+
+  /* sm-* utility responsive overrides */
+  .sm-tab-hero { padding: 20px 0 16px; }
+  .sm-tab-hero h2 { font-size: 24px; }
+  .sm-tab-hero p { font-size: 14px; }
+  .sm-section-label { font-size: 10px; letter-spacing: 2px; }
+  .sm-data-row { padding: 10px 16px; }
+  .sm-grid-cell { padding: 12px 16px; }
+  .sm-grid-cell-center { padding: 12px; }
+  .sm-kpi-cell { padding: 16px 12px; }
+  .sm-kpi-value { font-size: 16px; }
+  .sm-panel { padding: 16px; }
+  .sm-panel-header { padding: 16px; }
+  .sm-panel-body { padding: 16px; }
+  .sm-mono-xl { font-size: 22px; }
+  .sm-mono-2xl { font-size: 26px; }
+  .sm-mono-3xl { font-size: 32px; }
+  .sm-grid-sep { border-radius: 12px; }
 }
 
 /* ═══ RESPONSIVE - SMALL MOBILE (480px) ═══ */
