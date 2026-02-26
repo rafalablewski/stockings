@@ -5,8 +5,9 @@
  * Displays analyst coverage, consensus metrics, and research reports.
  * Uses sm-ws-* CSS classes from stock-model-styles.ts for styling.
  *
- * @version 1.0.0
+ * @version 1.1.0
  * @created 2026-01-31
+ * @updated 2026-02-25 — Replaced all inline styles with CSS classes
  */
 
 import React, { useState } from 'react';
@@ -106,7 +107,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
       {/* Consensus Snapshot */}
       <div className="sm-ws-panel">
         <div className="sm-ws-panel-header">
-          <span className="sm-section-label" style={{ marginBottom: 0 }}>Consensus Snapshot<UpdateIndicators sources="WS" /></span>
+          <span className="sm-section-label sm-m-0">Consensus Snapshot<UpdateIndicators sources="WS" /></span>
         </div>
         <div className="sm-ws-panel-body sm-ws-grid-2col">
           {/* Price Target Summary */}
@@ -120,7 +121,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
               ].map(kpi => (
                 <div key={kpi.label} className="sm-kpi-cell">
                   <div className="sm-kpi-label">{kpi.label}</div>
-                  <div className="sm-kpi-value" style={{ '--kpi-color': kpi.color, fontSize: 24 } as React.CSSProperties}>{kpi.value}</div>
+                  <div className="sm-kpi-value sm-text-24" style={{ '--kpi-color': kpi.color } as React.CSSProperties}>{kpi.value}</div>
                 </div>
               ))}
             </div>
@@ -138,13 +139,13 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
               <>
                 <div className="sm-ws-rating-bar sm-mb-8">
                   {ratingCounts.bullish > 0 && (
-                    <div style={{ width: `${(ratingCounts.bullish / totalAnalysts) * 100}%`, background: 'var(--mint)' }} />
+                    <div style={{ width: `${(ratingCounts.bullish / totalAnalysts) * 100}%` }} data-sentiment="positive" />
                   )}
                   {ratingCounts.neutral > 0 && (
-                    <div style={{ width: `${(ratingCounts.neutral / totalAnalysts) * 100}%`, background: 'var(--gold)' }} />
+                    <div style={{ width: `${(ratingCounts.neutral / totalAnalysts) * 100}%` }} data-sentiment="neutral" />
                   )}
                   {ratingCounts.bearish > 0 && (
-                    <div style={{ width: `${(ratingCounts.bearish / totalAnalysts) * 100}%`, background: 'var(--coral)' }} />
+                    <div style={{ width: `${(ratingCounts.bearish / totalAnalysts) * 100}%` }} data-sentiment="negative" />
                   )}
                 </div>
                 <div className="sm-flex sm-gap-16 sm-text-12">
@@ -162,11 +163,11 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
 
       {/* Coverage by Firm - Grouped Cards */}
       <div className="sm-divider">
-        <span className="sm-section-label" style={{ marginBottom: 0 }}>Coverage by Firm</span>
+        <span className="sm-section-label sm-m-0">Coverage by Firm</span>
       </div>
       <div className="sm-ws-panel">
         <div className="sm-ws-panel-header">
-          <span className="sm-section-label" style={{ marginBottom: 0 }}>{totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''} Covering<UpdateIndicators sources="WS" /></span>
+          <span className="sm-section-label sm-m-0">{totalAnalysts} Analyst{totalAnalysts !== 1 ? 's' : ''} Covering<UpdateIndicators sources="WS" /></span>
         </div>
         <div className="sm-ws-panel-body sm-flex-col sm-gap-12">
           {coverage.map((cov) => {
@@ -181,7 +182,6 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                   onClick={() => setExpandedFirm(isExpanded ? null : cov.firm)}
                   className="sm-ws-firm-header"
                   data-open={isExpanded ? 'true' : 'false'}
-                  style={{ borderBottom: isExpanded ? '1px solid var(--border)' : 'none' }}
                 >
                   <div className="sm-flex sm-gap-16">
                     <div>
@@ -222,14 +222,14 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
 
                 {/* Metrics Grid Summary */}
                 {!isExpanded && (
-                  <div style={{ padding: '0 24px 16px' }}>
+                  <div className="sm-ws-metrics-wrap">
                     <div className="sm-ws-metrics-grid">
                       <div className="sm-ws-metric-cell">
                         <div className="sm-ws-metric-val">{cov.currentPT ? `$${cov.currentPT}` : '\u2014'}</div>
                         <div className="sm-ws-metric-label">Price Target</div>
                       </div>
                       <div className="sm-ws-metric-cell">
-                        <div className="sm-ws-metric-val" style={{ color: getRatingColor(cov.currentRating, cov.currentRatingNormalized) }}>{cov.currentRating}</div>
+                        <div className="sm-ws-metric-val sm-ws-kpi-dynamic" style={{ '--kpi-color': getRatingColor(cov.currentRating, cov.currentRatingNormalized) } as React.CSSProperties}>{cov.currentRating}</div>
                         <div className="sm-ws-metric-label">Rating</div>
                       </div>
                       <div className="sm-ws-metric-cell">
@@ -246,7 +246,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
 
                 {/* Firm Notes */}
                 {cov.notes && (
-                  <div style={{ padding: '0 24px 16px' }}>
+                  <div className="sm-ws-notes-wrap">
                     <div className="sm-ws-firm-notes">{cov.notes}</div>
                   </div>
                 )}
@@ -261,24 +261,25 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                       {cov.reports.map((report, idx) => {
                         const reportKey = `${cov.firm}-${idx}`;
                         const isReportExpanded = expandedReportIdx === reportKey;
+                        const isExpandable = report.isFullReport && (report.reportSummary || report.assumptions || report.estimates);
 
                         return (
                           <div
                             key={idx}
                             className="sm-ws-report"
                             data-full={report.isFullReport && (report.reportSummary || report.assumptions) ? 'true' : undefined}
-                            style={{ cursor: (report.isFullReport && (report.reportSummary || report.assumptions || report.estimates)) ? 'pointer' : 'default' }}
+                            data-expandable={isExpandable ? 'true' : 'false'}
                           >
                             {/* Report Header */}
                             <div className="sm-flex-between sm-mb-8">
                               <div className="sm-flex sm-gap-12">
-                                <span className="sm-subtle" style={{ minWidth: 90 }}>
+                                <span className="sm-subtle sm-ws-date-cell">
                                   {new Date(report.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                 </span>
                                 <span className="sm-badge" style={{ '--badge-color': getActionColor(report.action) } as React.CSSProperties}>
                                   {report.action}
                                 </span>
-                                <span className="sm-text-12 sm-fw-500" style={{ color: getRatingColor(report.rating, report.ratingNormalized) }}>
+                                <span className="sm-text-12 sm-fw-500 sm-ws-kpi-dynamic" style={{ '--kpi-color': getRatingColor(report.rating, report.ratingNormalized) } as React.CSSProperties}>
                                   {report.rating}
                                 </span>
                               </div>
@@ -412,7 +413,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                     )}
 
                                     {report.fullNotes && (
-                                      <div className="sm-subtle-sm" style={{ lineHeight: 1.5 }}>
+                                      <div className="sm-subtle-sm sm-lh-15">
                                         {(() => {
                                           const lines = report.fullNotes.split('\n');
                                           const blocks: { type: 'text' | 'table'; content: string; rows?: string[][] }[] = [];
@@ -440,13 +441,13 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                               const cols = colCount <= 2 ? '1fr 120px' : `1fr ${Array(colCount - 1).fill('100px').join(' ')}`;
                                               return (
                                                 <div key={bIdx} className="sm-ws-table sm-mb-8">
-                                                  <div className="sm-ws-estimate-header" style={{ gridTemplateColumns: cols }}>
+                                                  <div className="sm-ws-estimate-header sm-ws-dynamic-grid" style={{ '--ws-cols': cols } as React.CSSProperties}>
                                                     {headers.map((h, hIdx) => (
                                                       <span key={hIdx} className="sm-ws-th" data-align={hIdx === 0 ? undefined : 'right'}>{h}</span>
                                                     ))}
                                                   </div>
                                                   {dataRows.map((row, rIdx) => (
-                                                    <div key={rIdx} className="sm-ws-estimate-grid" style={{ gridTemplateColumns: cols }}>
+                                                    <div key={rIdx} className="sm-ws-estimate-grid sm-ws-dynamic-grid" style={{ '--ws-cols': cols } as React.CSSProperties}>
                                                       {row.map((cell, cIdx) => (
                                                         <span key={cIdx} className="sm-ws-estimate-cell" data-align={cIdx === 0 ? undefined : 'right'}>{cell}</span>
                                                       ))}
@@ -458,7 +459,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                             if (block.content.trim() === '') return null;
                                             const isHeader = block.content.trim().endsWith(':') && block.content.trim() === block.content.trim().toUpperCase();
                                             if (isHeader) {
-                                              return <div key={bIdx} className="sm-ws-block-header" style={{ marginTop: bIdx > 0 ? 12 : 0, marginBottom: 4 }}>{block.content.replace(/:$/, '')}</div>;
+                                              return <div key={bIdx} className="sm-ws-block-header-spaced">{block.content.replace(/:$/, '')}</div>;
                                             }
                                             return <div key={bIdx} className="sm-text3 sm-subtle-sm">{block.content}</div>;
                                           });
@@ -484,7 +485,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
       {/* CFA Notes */}
       <div className="sm-cfa-notes">
         <div className="sm-flex sm-gap-6">
-          <span className="sm-subtle" style={{ opacity: 0.7 }}>📚</span>
+          <span className="sm-subtle sm-opacity-70">📚</span>
           <h4 className="sm-cfa-title">CFA Level III — Sell-Side Research</h4>
         </div>
         <div className="sm-cfa-list">

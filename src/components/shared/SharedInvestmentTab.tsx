@@ -3,10 +3,11 @@
  *
  * Shared component for ASTS, BMNR, CRCL Investment tabs.
  * Uses unified 8-category scorecard framework and common data structures.
- * Uses sm-* CSS classes from stock-model-styles.ts for styling.
+ * Uses sm-* / sm-inv-* CSS classes from stock-model-styles.ts for styling.
  *
- * @version 1.0.0
+ * @version 1.1.0
  * @created 2026-01-31
+ * @updated 2026-02-25 — Replaced all inline styles with CSS classes
  */
 
 import React, { useState } from 'react';
@@ -29,6 +30,20 @@ const UpdateIndicators = ({ sources }: { sources: string | string[] }) => {
       })}
     </span>
   );
+};
+
+// Helper: get archive verdict sentiment for data attribute
+const getVerdictSentiment = (verdict: string): string => {
+  if (verdict === 'STRONG BUY' || verdict === 'BUY') return 'positive';
+  if (verdict === 'CONSTRUCTIVE') return 'constructive';
+  return 'neutral';
+};
+
+// Helper: get severity border color
+const getSeverityColor = (severity: string): string => {
+  if (severity === 'Critical') return 'var(--coral)';
+  if (severity === 'High') return 'var(--gold)';
+  return 'var(--sky)';
 };
 
 // Collapsible Section Component
@@ -61,7 +76,7 @@ const CollapsibleSection = ({
         {title}
         {sources && <UpdateIndicators sources={sources} />}
       </div>
-      <span className="sm-text3" style={{ fontSize: 18 }}>{isOpen ? '−' : '+'}</span>
+      <span className="sm-inv-toggle-icon">{isOpen ? '−' : '+'}</span>
     </div>
     {isOpen && <div className="sm-mt-16">{children}</div>}
   </div>
@@ -105,34 +120,35 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
 
   return (
     <div className="sm-flex-col-gap-16">
-      {/* Header Controls */}
-      <div className="sm-flex-between sm-mb-16">
-        <h2 className="sm-param-label sm-flex sm-text sm-fw-700 sm-text-15" style={{ margin: 0 }}>
-          Investment Analysis
-          <UpdateIndicators sources={['PR', 'SEC']} />
-        </h2>
+      {/* Tab Hero — Unified pattern */}
+      <div className="sm-tab-hero">
+        <div className="sm-section-label">Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <h2>Investment Analysis<span className="sm-accent">.</span></h2>
+        <p>Unified 8-category scorecard framework with growth drivers, competitive moat analysis, risk matrix, and multi-perspective assessment.</p>
+      </div>
+
+      {/* Controls */}
+      <div className="sm-flex-between">
+        <div className="sm-subtle-sm sm-flex sm-gap-16 sm-justify-end">
+          <span>Data as of: <strong className="sm-text2">{current.date}</strong></span>
+          <span>•</span>
+          <span>Source: <strong className="sm-text2">{current.source}</strong></span>
+        </div>
         <div className="sm-flex sm-gap-12">
           <button onClick={expandAll} className="sm-action-btn">Expand All</button>
           <button onClick={collapseAll} className="sm-action-btn">Collapse All</button>
         </div>
       </div>
 
-      {/* Data Refresh Indicator */}
-      <div className="sm-subtle-sm sm-mb-16 sm-flex sm-gap-16" style={{ justifyContent: 'flex-end' }}>
-        <span>Data as of: <strong className="sm-text2">{current.date}</strong></span>
-        <span>•</span>
-        <span>Source: <strong className="sm-text2">{current.source}</strong></span>
-      </div>
-
       {/* Rating Header Card */}
-      <div className="sm-panel" style={{ borderLeft: `4px solid var(--${current.verdictColor})`, marginBottom: 16 }}>
-        <div className="sm-flex-between sm-flex-wrap sm-gap-16" style={{ alignItems: 'flex-start' }}>
+      <div className="sm-panel sm-inv-panel-bordered" style={{ '--panel-border-color': `var(--${current.verdictColor})` } as React.CSSProperties}>
+        <div className="sm-flex-between sm-flex-wrap sm-gap-16 sm-items-start">
           <div>
             <div className="sm-flex sm-gap-12 sm-mb-12">
-              <span style={{ background: `var(--${current.verdictColor})`, color: 'var(--bg)', padding: '8px 24px', borderRadius: 6, fontWeight: 700, fontSize: 18 }}>
+              <span className="sm-inv-verdict-badge" style={{ '--badge-bg': `var(--${current.verdictColor})` } as React.CSSProperties}>
                 {current.verdict}
               </span>
-              <span style={{ background: 'rgba(0,212,170,0.15)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 4, fontSize: 12, fontWeight: 600 }}>
+              <span className="sm-inv-ticker-badge">
                 {ticker}
               </span>
             </div>
@@ -156,14 +172,14 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         isOpen={investmentSections.has('scorecard')}
         onToggle={() => toggleSection('scorecard')}
       >
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+        <div className="sm-inv-scorecard-grid">
           {current.scorecard.map((item, i) => (
-            <div key={i} className="sm-flex-between sm-bg-surface2 sm-rounded-8" style={{ padding: 12 }}>
+            <div key={i} className="sm-inv-scorecard-item">
               <div>
                 <div className="sm-text-13t sm-fw-600">{item.category}</div>
                 <div className="sm-subtle-sm">{item.detail}</div>
               </div>
-              <div className="sm-mono sm-fw-700" style={{ fontSize: 20, color: item.color }}>
+              <div className="sm-inv-scorecard-rating" style={{ '--rating-color': item.color } as React.CSSProperties}>
                 {item.rating}
               </div>
             </div>
@@ -182,24 +198,24 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         isOpen={investmentSections.has('summary')}
         onToggle={() => toggleSection('summary')}
       >
-        <div style={{ background: 'rgba(126,231,135,0.05)', padding: 12, borderRadius: 8, border: '1px solid rgba(126,231,135,0.2)', marginBottom: 16 }}>
+        <div className="sm-inv-whats-new">
           <div className="sm-mint sm-fw-600 sm-mb-8">
             What's New ({current.source})
           </div>
-          <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
+          <ul className="sm-inv-whats-new-list">
             {current.executiveSummary.whatsNew.map((item, i) => (
               <li key={i}>{item}</li>
             ))}
           </ul>
         </div>
-        <div className="sm-body sm-text2" style={{ lineHeight: 1.8 }}>
+        <div className="sm-body sm-text2 sm-lh-18">
           <p className="sm-mb-12">
             <strong className="sm-text">Headline:</strong> {current.executiveSummary.headline}
           </p>
-          <p className="sm-mb-12" style={{ whiteSpace: 'pre-line' }}>
+          <p className="sm-mb-12 sm-pre-line">
             <strong className="sm-text">Thesis:</strong> {current.executiveSummary.thesis}
           </p>
-          <p style={{ fontStyle: 'italic', color: 'var(--cyan)', padding: 12, background: 'var(--surface2)', borderRadius: 8 }}>
+          <p className="sm-inv-bottom-line">
             "{current.executiveSummary.bottomLine}"
           </p>
         </div>
@@ -215,10 +231,10 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       >
         <div className="sm-flex-col sm-gap-12">
           {current.growthDrivers.map((d, i) => (
-            <div key={i} style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, borderLeft: `3px solid ${d.color}` }}>
+            <div key={i} className="sm-inv-driver-card" style={{ '--driver-color': d.color } as React.CSSProperties}>
               <div className="sm-flex-between sm-mb-8">
                 <span className="sm-text sm-fw-600 sm-text-14">{d.driver}</span>
-                <span style={{ fontSize: 11, padding: '4px 8px', borderRadius: 4, color: d.color, fontWeight: 600 }} className="sm-tinted-bg" {...{ style: { fontSize: 11, padding: '4px 8px', borderRadius: 4, color: d.color, fontWeight: 600, background: `color-mix(in srgb, ${d.color} 15%, transparent)` } }}>
+                <span className="sm-inv-impact-badge" style={{ '--impact-color': d.color } as React.CSSProperties}>
                   {d.impact}
                 </span>
               </div>
@@ -242,12 +258,12 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
             <div className="sm-mb-12 sm-mint sm-fw-600 sm-text-13">Moat Sources</div>
             <div className="sm-flex-col sm-gap-12">
               {current.moatSources.map((m, i) => (
-                <div key={i} style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
+                <div key={i} className="sm-inv-moat-card">
                   <div className="sm-flex-between">
                     <span className="sm-text-13t sm-fw-600">{m.source}</span>
-                    <span style={{ fontSize: 11, color: m.color }}>{m.strength}</span>
+                    <span className="sm-inv-moat-strength" style={{ '--strength-color': m.color } as React.CSSProperties}>{m.strength}</span>
                   </div>
-                  <div className="sm-subtle" style={{ marginTop: 4 }}>{m.detail}</div>
+                  <div className="sm-subtle sm-mt-8">{m.detail}</div>
                 </div>
               ))}
             </div>
@@ -257,12 +273,12 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
             <div className="sm-mb-12 sm-coral sm-fw-600 sm-text-13">Competitive Threats</div>
             <div className="sm-flex-col sm-gap-12">
               {current.moatThreats.map((t, i) => (
-                <div key={i} style={{ background: 'var(--surface2)', padding: 12, borderRadius: 8 }}>
+                <div key={i} className="sm-inv-moat-card">
                   <div className="sm-flex-between">
                     <span className="sm-text-13t sm-fw-600">{t.threat}</span>
-                    <span style={{ fontSize: 11, color: t.color }}>{t.risk}</span>
+                    <span className="sm-inv-moat-strength" style={{ '--strength-color': t.color } as React.CSSProperties}>{t.risk}</span>
                   </div>
-                  <div className="sm-subtle" style={{ marginTop: 4 }}>{t.detail}</div>
+                  <div className="sm-subtle sm-mt-8">{t.detail}</div>
                 </div>
               ))}
             </div>
@@ -282,18 +298,14 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
           {current.risks.map((r, i) => (
             <div
               key={i}
-              style={{
-                background: 'var(--surface2)',
-                padding: 16,
-                borderRadius: 8,
-                borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}`,
-              }}
+              className="sm-inv-risk-card"
+              style={{ '--severity-color': getSeverityColor(r.severity) } as React.CSSProperties}
             >
               <div className="sm-flex-between sm-mb-8">
                 <span className="sm-text sm-fw-600 sm-text-14">{r.risk}</span>
                 <div className="sm-flex sm-gap-8">
-                  <span style={{ fontSize: 10, padding: '3px 6px', borderRadius: 4, background: 'var(--surface)', color: 'var(--text3)' }}>{r.severity}</span>
-                  <span style={{ fontSize: 10, padding: '3px 6px', borderRadius: 4, background: 'var(--surface)', color: 'var(--text3)' }}>P: {r.likelihood}</span>
+                  <span className="sm-inv-severity-badge">{r.severity}</span>
+                  <span className="sm-inv-severity-badge">P: {r.likelihood}</span>
                 </div>
               </div>
               <div className="sm-body-sm sm-mb-8">{r.detail}</div>
@@ -326,14 +338,14 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       >
         <div className="sm-grid-3col-responsive">
           {Object.entries(current.perspectives).map(([key, p]) => (
-            <div key={key} style={{ background: 'var(--surface2)', padding: 16, borderRadius: 8, borderTop: `3px solid ${p.color}` }}>
-              <div className="sm-text sm-fw-600 sm-text-14" style={{ marginBottom: 4 }}>{p.title}</div>
-              <div style={{ fontSize: 12, color: p.color, fontWeight: 600, marginBottom: 12, padding: '4px 8px', background: `color-mix(in srgb, ${p.color} 10%, transparent)`, borderRadius: 4, display: 'inline-block' }}>
+            <div key={key} className="sm-inv-perspective-card" style={{ '--perspective-color': p.color } as React.CSSProperties}>
+              <div className="sm-text sm-fw-600 sm-text-14 sm-mb-8">{p.title}</div>
+              <div className="sm-inv-assessment-badge" style={{ '--assess-color': p.color } as React.CSSProperties}>
                 {p.assessment}
               </div>
               <div className="sm-body-sm sm-mb-12">{p.summary}</div>
               <div className="sm-subtle sm-mb-8"><strong>Ecosystem:</strong> {p.ecosystemView}</div>
-              <div style={{ fontSize: 12, color: 'var(--mint)', padding: 8, background: 'rgba(0,212,170,0.1)', borderRadius: 4 }}>
+              <div className="sm-inv-recommendation">
                 <strong>Recommendation:</strong> {p.recommendation}
               </div>
             </div>
@@ -350,8 +362,8 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       >
         <div className="sm-grid-4col-responsive">
           {Object.entries(current.positionSizing).map(([key, size]) => (
-            <div key={key} className="sm-text-center sm-bg-surface2 sm-rounded-8" style={{ padding: 12 }}>
-              <div className="sm-subtle-sm" style={{ textTransform: 'capitalize' as const }}>{key}</div>
+            <div key={key} className="sm-text-center sm-bg-surface2 sm-rounded-8 sm-p-12">
+              <div className="sm-subtle-sm sm-capitalize">{key}</div>
               <div className="sm-mono-lg sm-mint">{size.range}</div>
               <div className="sm-subtle-sm">{size.description}</div>
             </div>
@@ -408,29 +420,24 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
             <div key={i} className="sm-bg-surface2 sm-rounded-8 sm-overflow-hidden">
               <div
                 onClick={() => setExpandedArchive(expandedArchive === entry.date ? null : entry.date)}
-                className="sm-flex-between"
-                style={{ padding: 12, cursor: 'pointer' as const }}
+                className="sm-flex-between sm-p-12 sm-pointer"
               >
                 <div className="sm-flex sm-gap-12">
                   <span className="sm-mono-sm sm-text3">{entry.date}</span>
-                  <span style={{
-                    fontSize: 11, padding: '3px 8px', borderRadius: 4, fontWeight: 600,
-                    background: entry.verdict === 'STRONG BUY' || entry.verdict === 'BUY' ? 'rgba(0,212,170,0.15)' : entry.verdict === 'CONSTRUCTIVE' ? 'rgba(100,149,237,0.15)' : 'rgba(234,179,8,0.15)',
-                    color: entry.verdict === 'STRONG BUY' || entry.verdict === 'BUY' ? 'var(--mint)' : entry.verdict === 'CONSTRUCTIVE' ? 'var(--sky)' : 'var(--gold)',
-                  }}>
+                  <span className="sm-inv-archive-verdict" data-sentiment={getVerdictSentiment(entry.verdict)}>
                     {entry.verdict}
                   </span>
                   <span className="sm-body-sm sm-text">{entry.headline || entry.source}</span>
                 </div>
-                <span className="sm-text3" style={{ fontSize: 14 }}>
+                <span className="sm-inv-toggle-icon sm-text-14">
                   {expandedArchive === entry.date ? '−' : '+'}
                 </span>
               </div>
               {expandedArchive === entry.date && (
-                <div style={{ padding: '0 12px 12px', borderTop: '1px solid var(--surface)' }}>
+                <div className="sm-inv-archive-detail">
                   <div className="sm-body-sm sm-mt-12">{entry.summary}</div>
                   {entry.keyDevelopments && (
-                    <ul style={{ margin: '8px 0', paddingLeft: 16, fontSize: 12, color: 'var(--text3)' }}>
+                    <ul className="sm-inv-archive-list">
                       {entry.keyDevelopments.map((d, j) => (
                         <li key={j}>{d}</li>
                       ))}
@@ -439,7 +446,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
                   {entry.fullAnalysis && (
                     <div className="sm-mt-12">
                       <div className="sm-subtle sm-mb-8">{entry.fullAnalysis.context}</div>
-                      <ul style={{ margin: '8px 0', paddingLeft: 16, fontSize: 12, color: 'var(--text3)' }}>
+                      <ul className="sm-inv-archive-list">
                         {entry.fullAnalysis.keyHighlights.slice(0, 5).map((h, j) => (
                           <li key={j}>{h}</li>
                         ))}

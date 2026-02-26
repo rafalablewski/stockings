@@ -53,28 +53,15 @@ export const UpdateLegend = React.memo(() => {
   const { showIndicators, setShowIndicators } = React.useContext(UpdateIndicatorContext);
   return (
     <div className="update-legend">
-      <span style={{ fontWeight: 500, color: 'var(--text3)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Sources</span>
+      <span className="sm-legend-label">Sources</span>
       <div className="update-legend-item"><span className="dot pr" /><span>PR</span></div>
       <div className="update-legend-item"><span className="dot sec" /><span>SEC</span></div>
       <div className="update-legend-item"><span className="dot ws" /><span>WS</span></div>
       <div className="update-legend-item"><span className="dot market" /><span>Live</span></div>
       <button
         onClick={() => setShowIndicators(!showIndicators)}
-        style={{
-          marginLeft: 'auto',
-          padding: '4px 12px',
-          fontSize: '10px',
-          fontWeight: 500,
-          color: showIndicators ? 'var(--text)' : 'var(--text3)',
-          background: 'transparent',
-          border: '1px solid',
-          borderColor: showIndicators ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.06)',
-          borderRadius: '4px',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-          fontFamily: 'inherit',
-          letterSpacing: '0.3px',
-        }}
+        className="sm-legend-toggle"
+        data-active={showIndicators ? 'true' : undefined}
       >
         {showIndicators ? 'On' : 'Off'}
       </button>

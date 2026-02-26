@@ -1506,6 +1506,9 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 99px;
   overflow: hidden;
 }
+.sm-ws-rating-bar > [data-sentiment="positive"] { background: var(--mint); }
+.sm-ws-rating-bar > [data-sentiment="neutral"] { background: var(--gold); }
+.sm-ws-rating-bar > [data-sentiment="negative"] { background: var(--coral); }
 
 /* Firm header (clickable expand trigger) */
 .sm-ws-firm-header {
@@ -1800,7 +1803,7 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 4px 10px;
   border-radius: 4px;
   background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
+  border: 1px solid var(--ed-btn-border, var(--border));
   cursor: pointer;
   transition: all 0.15s;
   display: inline-flex;
@@ -1810,6 +1813,10 @@ input[type="range"]::-webkit-slider-thumb {
   outline: none;
   text-decoration: none;
   color: var(--ed-btn-color, var(--text3));
+}
+.sm-ed-action-btn[data-loading="true"] {
+  cursor: wait;
+  opacity: 0.5;
 }
 .sm-ed-action-btn:disabled {
   cursor: not-allowed;
@@ -1833,7 +1840,7 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 2px 6px;
   border-radius: 4px;
   background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
+  border: 1px solid var(--ed-btn-border, var(--border));
   cursor: pointer;
   transition: all 0.15s;
   outline: none;
@@ -1842,6 +1849,10 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: center;
   gap: 4px;
   color: var(--ed-btn-color, var(--text3));
+}
+.sm-ed-action-btn-sm[data-loading="true"] {
+  cursor: wait;
+  opacity: 0.5;
 }
 .sm-ed-action-btn-sm[data-state="success"] { color: var(--mint); border-color: rgba(130,200,130,0.15); }
 
@@ -2086,7 +2097,7 @@ input[type="range"]::-webkit-slider-thumb {
   margin: 0;
 }
 
-/* Filter pill */
+/* Filter pill — uses data-active for state-driven styling */
 .sm-ed-filter-pill {
   font-size: 9px;
   font-weight: 500;
@@ -2101,9 +2112,22 @@ input[type="range"]::-webkit-slider-thumb {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  color: var(--pill-color, var(--text3));
-  background: var(--pill-bg, rgba(255,255,255,0.04));
-  border: 1px solid var(--pill-border, var(--border));
+  color: var(--text3);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+}
+.sm-ed-filter-pill[data-active="true"] {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, rgba(255,255,255,0.04));
+  border-color: color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.sm-ed-filter-pill .sm-pill-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  opacity: 0.35;
+}
+.sm-ed-filter-pill[data-active="true"] .sm-pill-count {
+  opacity: 0.8;
 }
 
 /* Year section toggle */
@@ -4051,6 +4075,9 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-text-14 { font-size: 14px; }
 .sm-text-15 { font-size: 15px; }
 .sm-text-16 { font-size: 16px; }
+.sm-text-18 { font-size: 18px; }
+.sm-text-20 { font-size: 20px; }
+.sm-text-24 { font-size: 24px; }
 .sm-fw-300 { font-weight: 300; }
 .sm-fw-400 { font-weight: 400; }
 .sm-fw-500 { font-weight: 500; }
@@ -5145,5 +5172,3124 @@ input[type="range"]::-webkit-slider-thumb {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 25. UTILITY CLASSES — Extended
+   Additional utility classes for inline style elimination.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.sm-m-0 { margin: 0; }
+.sm-p-12 { padding: 12px; }
+.sm-p-12-16 { padding: 12px 16px; }
+.sm-p-0-24-16 { padding: 0 24px 16px; }
+.sm-p-0-12-12 { padding: 0 12px 12px; }
+.sm-pl-16 { padding-left: 16px; }
+.sm-pt-12 { padding: 12px 0 0; }
+.sm-justify-end { justify-content: flex-end; }
+.sm-items-start { align-items: flex-start; }
+.sm-items-center { align-items: center; }
+.sm-italic { font-style: italic; }
+.sm-capitalize { text-transform: capitalize; }
+.sm-uppercase { text-transform: uppercase; }
+.sm-line-through { text-decoration: line-through; }
+.sm-lh-15 { line-height: 1.5; }
+.sm-lh-18 { line-height: 1.8; }
+.sm-list-none { list-style: none; }
+.sm-opacity-70 { opacity: 0.7; }
+.sm-opacity-50 { opacity: 0.5; }
+.sm-opacity-60 { opacity: 0.6; }
+.sm-nowrap { white-space: nowrap; }
+.sm-pre-line { white-space: pre-line; }
+.sm-min-w-80 { min-width: 80px; }
+.sm-min-w-90 { min-width: 90px; }
+.sm-min-w-100 { min-width: 100px; }
+.sm-inline-block { display: inline-block; }
+.sm-grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; }
+.sm-pointer { cursor: pointer; }
+.sm-cursor-default { cursor: default; }
+.sm-rounded-4 { border-radius: 4px; }
+.sm-rounded-6 { border-radius: 6px; }
+.sm-rounded-12 { border-radius: 12px; }
+.sm-rounded-full { border-radius: 9999px; }
+.sm-text-ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sm-ls-05 { letter-spacing: 0.5px; }
+.sm-ls-08 { letter-spacing: 0.8px; }
+.sm-ls-neg05 { letter-spacing: -0.5px; }
+.sm-ls-005em { letter-spacing: 0.05em; }
+.sm-ls-008em { letter-spacing: 0.08em; }
+.sm-ls-01em { letter-spacing: 0.1em; }
+.sm-ls-1 { letter-spacing: 1px; }
+.sm-opacity-25 { opacity: 0.25; }
+.sm-opacity-30 { opacity: 0.3; }
+.sm-opacity-40 { opacity: 0.4; }
+.sm-opacity-80 { opacity: 0.8; }
+.sm-opacity-90 { opacity: 0.9; }
+.sm-text-8 { font-size: 8px; }
+.sm-text-9 { font-size: 9px; }
+.sm-text-10 { font-size: 10px; }
+.sm-lh-14 { line-height: 1.4; }
+.sm-lh-20 { line-height: 2; }
+.sm-lh-22 { line-height: 2.2; }
+.sm-mb-4 { margin-bottom: 4px; }
+.sm-mb-6 { margin-bottom: 6px; }
+.sm-ml-4 { margin-left: 4px; }
+.sm-ml-12 { margin-left: 12px; }
+.sm-mt-2 { margin-top: 2px; }
+.sm-mt-4 { margin-top: 4px; }
+.sm-mt-10 { margin-top: 10px; }
+.sm-pt-8 { padding-top: 8px; }
+.sm-gap-1 { gap: 1px; }
+.sm-gap-20 { gap: 20px; }
+.sm-gap-32 { gap: 32px; }
+.sm-text-left { text-align: left; }
+.sm-block { display: block; }
+.sm-flex-1 { flex: 1; }
+.sm-relative { position: relative; }
+.sm-bg-transparent { background: transparent; }
+.sm-border-none { border: none; }
+.sm-text-none { text-transform: none; }
+.sm-ls-0 { letter-spacing: 0; }
+.sm-min-w-0 { min-width: 0; }
+.sm-p-3-12 { padding: 3px 12px; }
+.sm-p-4-10 { padding: 4px 10px; }
+.sm-p-4-12 { padding: 4px 12px; }
+.sm-p-5-12 { padding: 5px 12px; }
+.sm-p-5-14 { padding: 5px 14px; }
+.sm-p-10-16 { padding: 10px 16px; }
+.sm-p-1-5 { padding: 1px 5px; }
+.sm-p-1-6 { padding: 1px 6px; }
+.sm-p-2-6 { padding: 2px 6px; }
+.sm-p-3-8 { padding: 3px 8px; }
+.sm-rounded-3 { border-radius: 3px; }
+.sm-rounded-5 { border-radius: 5px; }
+
+/* Edgar methodology — small colored dot */
+.sm-ed-color-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--dot-color, var(--text3));
+}
+.sm-ed-color-dot-sm {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--dot-color, var(--text3));
+}
+
+/* Edgar methodology — vertical line */
+.sm-ed-vline-short { width: 1px; height: 6px; background: color-mix(in srgb, var(--text3) 25%, transparent); }
+.sm-ed-vline-med { width: 1px; height: 8px; background: color-mix(in srgb, var(--text3) 25%, transparent); }
+
+/* Edgar methodology — accent connector */
+.sm-ed-connector { width: 2px; height: 10px; background: var(--sky); }
+
+/* Edgar diff preview — file path action badge */
+.sm-ed-patch-badge {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--patch-bg, rgba(130,200,130,0.1));
+  color: var(--patch-color, rgba(130,200,130,0.6));
+  border: 1px solid var(--patch-border, rgba(130,200,130,0.15));
+}
+
+/* Edgar diff preview — file path */
+.sm-ed-patch-file {
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  font-weight: 500;
+  color: var(--file-color, var(--text2));
+}
+
+/* Edgar methodology — patch preview header label */
+/* Error boundary */
+.sm-error-boundary {
+  padding: 48px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--coral) 10%, transparent) 0%, color-mix(in srgb, var(--coral) 5%, transparent) 100%);
+  border: 1px solid color-mix(in srgb, var(--coral) 30%, transparent);
+  border-radius: 16px;
+  text-align: center;
+  margin: 24px;
+}
+.sm-error-boundary h2 {
+  color: var(--coral);
+  font-family: Outfit, sans-serif;
+}
+.sm-error-boundary p {
+  color: var(--text2);
+  font-family: Outfit, sans-serif;
+}
+.sm-error-boundary .sm-error-detail {
+  font-size: 14px;
+  font-family: 'Space Mono', monospace;
+}
+.sm-error-boundary .sm-error-reload {
+  padding: 12px 24px;
+  background: var(--cyan);
+  color: var(--bg);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: Outfit, sans-serif;
+}
+
+.sm-ed-patch-header-label {
+  font-size: 11px;
+  color: rgba(234,179,8,0.7);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Edgar methodology — patch preview footer warning */
+.sm-ed-patch-footer-warning {
+  font-size: 9px;
+  color: rgba(234,179,8,0.5);
+  letter-spacing: 0.05em;
+}
+
+/* Edgar methodology — status message */
+.sm-ed-status-msg {
+  font-size: 10px;
+  margin-left: 4px;
+  color: var(--msg-color, var(--text3));
+}
+
+/* Edgar methodology — applying spinner dot */
+.sm-ed-pulse-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(234,179,8,0.5);
+  animation: pulse 2s infinite;
+}
+
+/* Edgar methodology — applying spinner text */
+.sm-ed-spinner-text {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Edgar filter pill count */
+.sm-ed-pill-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+}
+
+/* Edgar year section — divider line */
+.sm-ed-year-divider {
+  flex: 1;
+  height: 1px;
+  background: color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+/* Edgar show-more/collapse hidden button */
+.sm-ed-hidden-toggle {
+  display: block;
+  padding: 4px 12px;
+  margin: 2px 0;
+  font-size: 9px;
+  background: transparent;
+  border: none;
+  opacity: 0.25;
+  text-align: left;
+}
+
+/* Edgar no-filings message */
+.sm-ed-empty-msg {
+  font-size: 13px;
+  padding: 24px 0;
+  line-height: 1.6;
+}
+
+/* Edgar cross-ref info note */
+.sm-ed-crossref-note {
+  font-size: 9px;
+  opacity: 0.4;
+  padding: 0 4px 8px;
+  font-family: 'Space Mono', monospace;
+  line-height: 1.6;
+}
+
+/* Edgar info card title */
+.sm-ed-card-title {
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+
+/* Edgar info card body text */
+.sm-ed-card-body {
+  font-size: 9.5px;
+  line-height: 1.7;
+}
+
+/* Edgar method info text */
+.sm-ed-method-info {
+  font-size: 10px;
+  line-height: 1.8;
+}
+
+/* Edgar method detail text */
+.sm-ed-method-detail {
+  font-size: 10px;
+  line-height: 2;
+}
+
+/* Edgar method small flowbox */
+.sm-ed-flowbox-sm {
+  padding: 5px 12px;
+  font-size: 10px;
+}
+
+/* Edgar method persisted data text */
+.sm-ed-persisted-text {
+  font-size: 10px;
+  line-height: 2.2;
+}
+
+/* Edgar diff border top (amber-tinted) */
+.sm-ed-border-amber {
+  border-top: 1px solid rgba(234,179,8,0.1);
+}
+.sm-ed-border-amber-bottom {
+  border-bottom: 1px solid rgba(234,179,8,0.1);
+}
+
+/* Edgar section — margin top for methodology header */
+.sm-mb-0 { margin-bottom: 0; }
+
+/* SVG spin animation for loading states - applied via data attribute */
+[data-spin="true"] { animation: spin 1s linear infinite; }
+[data-spin-fast="true"] { animation: spin 0.8s linear infinite; }
+
+/* Edgar chevron rotation via data attribute */
+.sm-ed-chevron {
+  transition: transform 0.2s;
+}
+.sm-ed-chevron[data-expanded="true"] {
+  transform: rotate(90deg);
+}
+.sm-ed-chevron[data-expanded="false"] {
+  transform: rotate(0deg);
+}
+
+/* Stroke-dasharray transition for SVG arcs */
+.sm-ed-arc-transition { transition: stroke-dasharray 0.4s ease; }
+
+/* Fixed width utilities */
+.sm-w-48 { width: 48px; }
+
+/* Padding utilities */
+.sm-p-8-12-4 { padding: 8px 12px 4px; }
+
+/* Letter-spacing — wide small (1.5px) */
+.sm-ls-wide-sm { letter-spacing: 1.5px; }
+
+/* Spin animation utility class */
+.sm-spin-fast { animation: spin 0.8s linear infinite; }
+
+/* DB tooltip header */
+.sm-ed-db-tooltip-header {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* DB tooltip field label */
+.sm-ed-db-field-label {
+  min-width: 70px;
+  display: inline-block;
+}
+
+/* DB tooltip field value — uses --field-color CSS variable */
+.sm-ed-db-field-value {
+  color: var(--field-color, var(--text3));
+  font-weight: 600;
+}
+
+/* DB tooltip category value — uses --field-color CSS variable */
+.sm-ed-db-category-value {
+  color: var(--field-color, var(--text3));
+}
+
+/* DB status dot — uses --dot-color CSS variable */
+.sm-ed-db-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--dot-color, var(--text3));
+}
+
+/* Sources verdict badge (expanded) — uses --verdict-color and --verdict-bg */
+.sm-ed-verdict-badge-expanded {
+  margin: 12px 0 0 7px;
+  display: inline-flex;
+  gap: 6px;
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--verdict-bg, rgba(255,255,255,0.04));
+  color: var(--verdict-color, var(--text2));
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Sources verdict explanation text */
+.sm-ed-verdict-explanation {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.7;
+  font-size: 10px;
+}
+
+/* Action button variants — AI and recheck */
+.sm-ed-action-btn-ai,
+.sm-ed-action-btn-recheck {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: var(--ed-btn-border, 1px solid var(--border));
+  cursor: var(--ed-btn-cursor, pointer);
+  opacity: var(--ed-btn-opacity, 1);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 26. INVESTMENT TAB (sm-inv-*)
+   Shared Investment tab component classes — scorecard, drivers, moat, risks,
+   perspectives, position sizing, archive.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Toggle expand/collapse icon */
+.sm-inv-toggle-icon {
+  font-size: 18px;
+  color: var(--text3);
+}
+
+/* Verdict badge — uses --badge-bg and --badge-color CSS vars */
+.sm-inv-verdict-badge {
+  background: var(--badge-bg);
+  color: var(--bg);
+  padding: 8px 24px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* Ticker badge — small mint-tinted pill */
+.sm-inv-ticker-badge {
+  background: rgba(0,212,170,0.15);
+  color: var(--mint);
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Scorecard grid — auto-fit responsive */
+.sm-inv-scorecard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+/* Scorecard item — individual card */
+.sm-inv-scorecard-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+/* Scorecard rating — large mono number, uses --rating-color */
+.sm-inv-scorecard-rating {
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--rating-color);
+}
+
+/* What's New highlight box — mint-tinted */
+.sm-inv-whats-new {
+  background: rgba(126,231,135,0.05);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(126,231,135,0.2);
+  margin-bottom: 16px;
+}
+
+/* What's New bullet list */
+.sm-inv-whats-new-list {
+  margin: 0;
+  padding-left: 16px;
+  color: var(--text2);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* Bottom line quote — italic accent */
+.sm-inv-bottom-line {
+  font-style: italic;
+  color: var(--cyan);
+  padding: 12px;
+  background: var(--surface2);
+  border-radius: 8px;
+}
+
+/* Growth driver card — left border uses --driver-color */
+.sm-inv-driver-card {
+  background: var(--surface2);
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 3px solid var(--driver-color);
+}
+
+/* Impact badge — tinted background, uses --impact-color */
+.sm-inv-impact-badge {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: var(--impact-color);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--impact-color) 15%, transparent);
+}
+
+/* Moat source/threat card */
+.sm-inv-moat-card {
+  background: var(--surface2);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+/* Moat strength/risk label */
+.sm-inv-moat-strength {
+  font-size: 11px;
+  color: var(--strength-color);
+}
+
+/* Risk card — severity border uses --severity-color */
+.sm-inv-risk-card {
+  background: var(--surface2);
+  padding: 16px;
+  border-radius: 8px;
+  border-left: 3px solid var(--severity-color);
+}
+
+/* Severity/likelihood pill badges */
+.sm-inv-severity-badge {
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--text3);
+}
+
+/* Perspective card — top border uses --perspective-color */
+.sm-inv-perspective-card {
+  background: var(--surface2);
+  padding: 16px;
+  border-radius: 8px;
+  border-top: 3px solid var(--perspective-color);
+}
+
+/* Assessment badge — tinted inline */
+.sm-inv-assessment-badge {
+  font-size: 12px;
+  color: var(--assess-color);
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding: 4px 8px;
+  background: color-mix(in srgb, var(--assess-color) 10%, transparent);
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* Recommendation box — mint-tinted */
+.sm-inv-recommendation {
+  font-size: 12px;
+  color: var(--mint);
+  padding: 8px;
+  background: rgba(0,212,170,0.1);
+  border-radius: 4px;
+}
+
+/* Archive verdict badge — uses data-sentiment for colors */
+.sm-inv-archive-verdict {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.sm-inv-archive-verdict[data-sentiment="positive"] {
+  background: rgba(0,212,170,0.15);
+  color: var(--mint);
+}
+.sm-inv-archive-verdict[data-sentiment="constructive"] {
+  background: rgba(100,149,237,0.15);
+  color: var(--sky);
+}
+.sm-inv-archive-verdict[data-sentiment="neutral"] {
+  background: rgba(234,179,8,0.15);
+  color: var(--gold);
+}
+
+/* Archive expanded detail area */
+.sm-inv-archive-detail {
+  padding: 0 12px 12px;
+  border-top: 1px solid var(--surface);
+}
+
+/* Archive key developments list */
+.sm-inv-archive-list {
+  margin: 8px 0;
+  padding-left: 16px;
+  font-size: 12px;
+  color: var(--text3);
+}
+
+/* Panel with left-border accent — uses --panel-border-color */
+.sm-inv-panel-bordered {
+  border-left: 4px solid var(--panel-border-color);
+  margin-bottom: 16px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 27. TIMELINE TAB ADDITIONS (sm-tl-*)
+   Additional classes for Timeline tab inline style elimination.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Upcoming event card */
+.sm-tl-upcoming-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-radius: 12px;
+}
+
+/* Date display — uses --date-color CSS var */
+.sm-tl-upcoming-date {
+  font-family: 'Space Mono', monospace;
+  color: var(--date-color);
+}
+
+/* Press release card */
+.sm-tl-pr-card {
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-radius: 12px;
+}
+
+/* PR category label — uses --cat-color */
+.sm-tl-pr-category {
+  font-size: 11px;
+  color: var(--cat-color);
+}
+
+/* PR title */
+.sm-tl-pr-title {
+  font-weight: 500;
+  color: var(--text);
+  font-size: 14px;
+}
+
+/* Filing type badge — pill with --type-bg and --type-text */
+.sm-tl-filing-type-badge {
+  background: var(--type-bg, rgba(100,100,100,0.2));
+  color: var(--type-text, var(--text2));
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Filing link cell */
+.sm-tl-filing-link {
+  font-size: 13px;
+  text-align: right;
+}
+
+/* Filing date cell */
+.sm-tl-filing-date {
+  font-size: 13px;
+  color: var(--text2);
+  white-space: nowrap;
+}
+
+/* SEC footer area */
+.sm-tl-footer {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  padding-top: 12px;
+}
+
+/* Footer metadata value */
+.sm-tl-footer-val {
+  color: var(--text2);
+  margin-left: 6px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* Last PR indicator */
+.sm-tl-last-pr {
+  font-size: 11px;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Impact label — uses data-impact attribute for color */
+.sm-tl-impact-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-align: right;
+}
+.sm-tl-impact-label[data-impact="Positive"] { color: var(--mint); }
+.sm-tl-impact-label[data-impact="Negative"] { color: var(--coral); }
+.sm-tl-impact-label[data-impact="Neutral"] { color: var(--text3); }
+
+/* Expand chevron with rotation */
+.sm-tl-chevron {
+  font-size: 12px;
+  color: var(--text3);
+  text-align: center;
+  transition: transform 0.2s;
+}
+.sm-tl-chevron[data-expanded="true"] {
+  transform: rotate(180deg);
+}
+
+/* Summary box in expanded detail */
+.sm-tl-summary-box {
+  padding: 12px;
+  background: var(--surface2);
+  border-radius: 12px;
+  font-style: italic;
+  color: var(--text3);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* Detail bullet list */
+.sm-tl-detail-list {
+  margin: 12px 0 0;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Detail list item */
+.sm-tl-detail-item {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* Accent-colored bullet */
+.sm-tl-detail-bullet {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* Before/after change indicator */
+.sm-tl-change-indicator {
+  margin-top: 12px;
+  font-size: 13px;
+  padding: 8px 12px;
+  background: var(--surface2);
+  border-radius: 8px;
+}
+
+/* Explain header */
+.sm-tl-explain-header {
+  color: var(--cyan);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+/* Explain list */
+.sm-tl-explain-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Topic filter card wrapper */
+.sm-tl-topic-filter-wrap {
+  padding: 16px;
+}
+
+/* Impact badge color */
+.sm-tl-impact-badge {
+  font-size: 13px;
+  font-weight: 600;
+}
+.sm-tl-impact-badge[data-impact="Positive"] { color: var(--mint); }
+.sm-tl-impact-badge[data-impact="Negative"] { color: var(--coral); }
+.sm-tl-impact-badge[data-impact="Neutral"],
+.sm-tl-impact-badge:not([data-impact]) { color: var(--text3); }
+
+/* Source label in detail */
+.sm-tl-source-val {
+  font-size: 13px;
+  color: var(--cyan);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 28. WALL STREET TAB ADDITIONS (sm-ws-*)
+   Additional classes for Wall Street tab inline style elimination.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Section label without bottom margin */
+.sm-ws-section-flush { margin-bottom: 0; }
+
+/* Metrics wrapper padding */
+.sm-ws-metrics-wrap { padding: 0 24px 16px; }
+
+/* Notes wrapper padding */
+.sm-ws-notes-wrap { padding: 0 24px 16px; }
+
+/* Date cell in report row */
+.sm-ws-date-cell { min-width: 90px; }
+
+/* Firm header border when expanded — driven by data-open */
+.sm-ws-firm-header[data-open="true"] {
+  border-bottom: 1px solid var(--border);
+}
+.sm-ws-firm-header[data-open="false"] {
+  border-bottom: none;
+}
+
+/* Report with expandable cursor */
+.sm-ws-report[data-expandable="true"] { cursor: pointer; }
+.sm-ws-report[data-expandable="false"] { cursor: default; }
+
+/* Block header with conditional spacing */
+.sm-ws-block-header-spaced {
+  margin-bottom: 4px;
+}
+.sm-ws-block-header-spaced:not(:first-child) {
+  margin-top: 12px;
+}
+
+/* Dynamic grid table — uses --ws-cols CSS var */
+.sm-ws-dynamic-grid {
+  display: grid;
+  grid-template-columns: var(--ws-cols);
+}
+
+/* KPI value with dynamic color — uses --kpi-color */
+.sm-ws-kpi-dynamic {
+  color: var(--kpi-color);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 29. STOCK MODEL COMPONENT CLASSES
+   Classes for Overview, Capital, and other stock-specific tab components.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Data freshness badge (hero section) */
+.sm-data-freshness {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34,211,238,0.1);
+  border: 1px solid rgba(34,211,238,0.3);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: #22d3ee;
+}
+.sm-data-freshness-sep {
+  color: rgba(34,211,238,0.5);
+}
+
+/* Price refresh button */
+.sm-refresh-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  opacity: 0.6;
+}
+.sm-refresh-btn[data-loading="true"] {
+  cursor: wait;
+  opacity: 0.5;
+}
+
+/* Bull/bear case list item */
+.sm-bull-bear-item {
+  display: flex;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+/* Bull/bear indicator prefix */
+.sm-bull-prefix { color: var(--mint); flex-shrink: 0; }
+.sm-bear-prefix { color: var(--coral); flex-shrink: 0; }
+
+/* Section label with custom font-size for bull/bear headers */
+.sm-section-label-sm {
+  font-size: 13px;
+}
+
+/* KPI row — flex between with subtle border */
+.sm-kpi-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+/* KPI value — mono, small, uses --kpi-color */
+.sm-kpi-mono-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--kpi-color);
+  font-weight: 600;
+}
+
+/* Model KPI cell with value and label */
+.sm-model-kpi-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--kpi-color);
+}
+.sm-model-kpi-label {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+/* Capital gradient footer (mint → violet) */
+.sm-cap-gradient-footer {
+  padding: 16px 24px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--mint) 8%, var(--surface)), color-mix(in srgb, var(--violet) 8%, var(--surface)));
+  border-top: 1px solid var(--border);
+}
+
+/* Capital note box */
+.sm-cap-note-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 8px;
+  padding: 12px 24px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* Multi-class structure label */
+.sm-cap-structure-label {
+  font-size: 11px;
+  color: var(--mint);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.sm-cap-structure-desc {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+/* Chart toggle button group */
+.sm-chart-toggle-group {
+  display: flex;
+  gap: 6px;
+}
+
+/* Updated timestamp */
+.sm-updated-ts {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+
+/* Footer value styling */
+.sm-tl-footer-ticker {
+  color: var(--cyan);
+  margin-left: 6px;
+  font-weight: 600;
+}
+
+/* Footer auto-margin link */
+.sm-tl-footer-link {
+  color: var(--sky);
+  margin-left: auto;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 30. AI AGENTS TAB (sm-ai-*)
+   Classes for the SharedAIAgentsTab component.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Agent runner container */
+.sm-ai-runner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Agent header */
+.sm-ai-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Agent status indicator */
+.sm-ai-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+/* Agent body */
+.sm-ai-body {
+  padding: 16px 20px;
+}
+
+/* Diff panel */
+.sm-ai-diff-panel {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  overflow-x: auto;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Streaming output container */
+.sm-ai-stream {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  min-height: 200px;
+  max-height: 600px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text2);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 31. RESPONSIVE ADDITIONS
+   Responsive breakpoints for new classes.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .sm-inv-scorecard-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  .sm-tl-footer { flex-direction: column; gap: 8px; }
+  .sm-tl-upcoming-card { flex-direction: column; gap: 8px; align-items: flex-start; }
+  .sm-ws-metrics-wrap { padding: 0 16px 12px; }
+  .sm-ws-notes-wrap { padding: 0 16px 12px; }
+}
+
+@media (max-width: 480px) {
+  .sm-inv-verdict-badge { font-size: 14px; padding: 6px 16px; }
+  .sm-inv-scorecard-grid { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 32. LIVE PRICE & UPDATE LEGEND
+   Classes for LivePrice refresh button and UpdateLegend toggle.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Price change display */
+.sm-price-change {
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+  margin-top: 4px;
+}
+.sm-price-change[data-direction="up"] { color: var(--mint); }
+.sm-price-change[data-direction="down"] { color: var(--coral); }
+
+/* Price change timestamp */
+.sm-price-change-ts {
+  color: var(--text3);
+  margin-left: 8px;
+  font-size: 10px;
+}
+
+/* Price error */
+.sm-price-error {
+  font-size: 11px;
+  color: var(--coral);
+  margin-top: 4px;
+}
+
+/* Update legend sources label */
+.sm-legend-label {
+  font-weight: 500;
+  color: var(--text3);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Update legend toggle button */
+.sm-legend-toggle {
+  margin-left: auto;
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 500;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  color: var(--text3);
+}
+.sm-legend-toggle[data-active="true"] {
+  color: var(--text);
+  border-color: rgba(255,255,255,0.15);
+}
+
+/* SVG refresh icon spin */
+.sm-refresh-icon {
+  color: var(--text3);
+}
+.sm-refresh-icon[data-loading="true"] {
+  animation: spin 1s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 33. STOCK-SPECIFIC COMPONENT CLASSES
+
+   Reusable patterns extracted from inline styles in ASTS/BMNR/CRCL .tsx files.
+   These classes replace the highest-frequency inline style patterns:
+   table headers, data grid rows, badges, filter pills, KPI values,
+   key-value pair rows, bullet items, legend items, accent-bar panels,
+   and chart containers.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Table header cell (micro-label in grid header rows) ──────────────── */
+.sm-th {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.sm-th[data-align="right"] { text-align: right; }
+.sm-th[data-align="center"] { text-align: center; }
+
+/* ── Generic grid header row ──────────────────────────────────────────── */
+.sm-grid-header {
+  display: grid;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Generic grid data row (hoverable, bottom-bordered) ───────────────── */
+.sm-grid-row {
+  display: grid;
+  padding: 12px 24px;
+  align-items: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-grid-row:hover { background: var(--surface2); }
+.sm-grid-row:last-child { border-bottom: none; }
+.sm-grid-row[data-highlight="true"] {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+/* ── Padded grid data row (16px vertical padding) ─────────────────────── */
+.sm-grid-row-lg {
+  display: grid;
+  padding: 16px 24px;
+  align-items: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-grid-row-lg:hover { background: var(--surface2); }
+.sm-grid-row-lg:last-child { border-bottom: none; }
+
+/* ── Dynamic badge (uses --badge-color CSS var for color) ─────────────── */
+/* Already have .sm-badge — this adds .sm-badge-dynamic for inline color */
+.sm-badge-dynamic {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 100px;
+  color: var(--badge-color, var(--text3));
+  background: color-mix(in srgb, var(--badge-color, var(--text3)) 10%, transparent);
+}
+.sm-badge-dynamic[data-bold="true"] {
+  font-weight: 700;
+  min-width: 60px;
+  text-align: center;
+  background: color-mix(in srgb, var(--badge-color, var(--text3)) 12%, transparent);
+}
+
+/* ── Filter pill button (partner/category/competitor filters) ─────────── */
+/* Unified across ASTS, BMNR, and shared components.
+   Use --pill-accent to set active color (defaults to --accent). */
+.sm-filter-pill {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+  color: var(--text3);
+  outline: none;
+  white-space: nowrap;
+}
+.sm-filter-pill[data-active="true"] {
+  border-color: var(--pill-accent, var(--accent));
+  background: color-mix(in srgb, var(--pill-accent, var(--accent)) 15%, transparent);
+  color: var(--pill-accent, var(--accent));
+}
+
+/* ── Pill toggle (chart type selector, scenario selector) ─────────────── */
+.sm-pill-toggle {
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+}
+.sm-pill-toggle[data-active="true"] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+}
+
+/* ── KPI hero value (large monospace number with dynamic color) ────────── */
+.sm-kpi-hero {
+  font-family: 'Space Mono', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+  margin: 8px 0 4px;
+}
+
+/* ── KPI value medium (20px variant) ──────────────────────────────────── */
+.sm-kpi-hero-md {
+  font-family: 'Space Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+}
+
+/* ── Key-value pair row (flex, space-between, light border) ───────────── */
+.sm-kv-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+.sm-kv-row-lg {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+/* ── Monospace value with dynamic color (for kv-rows) ─────────────────── */
+.sm-mono-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--val-color, var(--text));
+}
+.sm-mono-val[data-weight="600"] { font-weight: 600; }
+
+/* ── Bull/bear case bullet item ───────────────────────────────────────── */
+.sm-case-item {
+  display: flex;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+.sm-case-icon {
+  flex-shrink: 0;
+}
+
+/* ── Accent-bar side panel (borderLeft colored bar) ───────────────────── */
+.sm-accent-panel {
+  background: var(--surface);
+  padding: 24px;
+  border-left: 3px solid var(--panel-accent, var(--accent));
+}
+
+/* ── Section title inside accent panel ────────────────────────────────── */
+.sm-accent-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--panel-accent, var(--accent));
+  letter-spacing: -0.2px;
+  margin-bottom: 16px;
+}
+
+/* ── Accent panel note (smaller callout box) ──────────────────────────── */
+.sm-accent-note {
+  background: var(--surface);
+  padding: 24px;
+  border-left: 3px solid var(--panel-accent, var(--accent));
+}
+.sm-accent-note-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--panel-accent, var(--accent));
+  margin-bottom: 8px;
+}
+.sm-accent-note-text {
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* ── Spectrum / status badge (letter-spacing 0.5) ─────────────────────── */
+.sm-status-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  display: inline-block;
+  color: var(--badge-color, var(--sky));
+  background: color-mix(in srgb, var(--badge-color, var(--sky)) 10%, transparent);
+}
+
+/* ── Chart legend row ─────────────────────────────────────────────────── */
+.sm-chart-legend {
+  display: flex;
+  gap: 24px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--text3);
+  flex-wrap: wrap;
+}
+.sm-chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* ── Legend color swatch (small rectangle) ─────────────────────────────── */
+.sm-legend-swatch {
+  width: 8px;
+  height: 3px;
+  border-radius: 1px;
+  background: var(--swatch-color, var(--accent));
+}
+.sm-legend-swatch-sq {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  background: var(--swatch-color, var(--accent));
+}
+
+/* ── Dot indicator (4px circle) ───────────────────────────────────────── */
+.sm-dot-4 {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--dot-color, var(--text3));
+}
+.sm-dot-5 {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--dot-color, var(--text3));
+}
+
+/* ── Data freshness timestamp badge ───────────────────────────────────── */
+.sm-data-freshness {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34,211,238,0.1);
+  border: 1px solid rgba(34,211,238,0.3);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: #22d3ee;
+}
+
+/* ── Grid separator (1px gap) with explicit columns ───────────────────── */
+.sm-grid-sep-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+}
+.sm-grid-sep-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+}
+
+/* ── Grid cell surface (inside 1px gap grids) ─────────────────────────── */
+.sm-cell-surface {
+  background: var(--surface);
+  padding: 16px 24px;
+}
+.sm-cell-surface-center {
+  background: var(--surface);
+  padding: 16px 12px;
+  text-align: center;
+}
+
+/* ── Info note bar (borderTop + padding, subtle background) ───────────── */
+.sm-info-bar {
+  padding: 12px 24px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text2);
+}
+
+/* ── Highlight summary bar (gradient background, accent) ──────────────── */
+.sm-highlight-bar {
+  padding: 16px 24px;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--bar-accent-1, var(--mint)) 8%, var(--surface)),
+    color-mix(in srgb, var(--bar-accent-2, var(--violet)) 8%, var(--surface)));
+  border-top: 1px solid var(--border);
+}
+
+/* ── Partner news event card ──────────────────────────────────────────── */
+.sm-news-card {
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+  cursor: pointer;
+  border-left: 3px solid var(--news-accent, var(--sky));
+  transition: all 0.2s;
+}
+
+/* ── News mini badge (inline tag) ─────────────────────────────────────── */
+.sm-news-tag {
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--tag-color, var(--cyan));
+  background: color-mix(in srgb, var(--tag-color, var(--cyan)) 20%, transparent);
+}
+
+/* ── Empty state (centered message) ───────────────────────────────────── */
+.sm-empty-state {
+  padding: 24px;
+  text-align: center;
+  color: var(--text3);
+}
+
+/* ── Inline note box (rounded, muted background) ─────────────────────── */
+.sm-inline-note {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--border) 30%, transparent);
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.5;
+}
+
+/* ── Callout panel with border-left accent ────────────────────────────── */
+.sm-callout {
+  padding: 16px 24px;
+  border-left: 3px solid var(--callout-color, var(--violet));
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.6;
+}
+
+/* ── Chart bar column (vertical bar chart built with divs) ────────────── */
+.sm-bar-chart {
+  padding: 24px 24px 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.sm-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+.sm-bar-col-label {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.sm-bar-col-foot {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* ── Coverage progress row ────────────────────────────────────────────── */
+.sm-coverage-row {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── KPI category label (below count in catalyst cards) ───────────────── */
+.sm-kpi-category {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 4px;
+  color: var(--kpi-color, var(--text3));
+}
+
+/* ── Overflow auto wrapper (for tables) ───────────────────────────────── */
+.sm-overflow-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Border-left accent on spectrum/filing items ──────────────────────── */
+.sm-border-l-accent {
+  border-left: 3px solid var(--panel-accent, var(--accent));
+  transition: background 0.15s;
+}
+
+/* ── Spectrum detail grid (4-col repeat) ──────────────────────────────── */
+.sm-detail-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+/* ── Detail field label ───────────────────────────────────────────────── */
+.sm-detail-label {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.sm-detail-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: 2px;
+}
+
+/* ── Note panel (background + rounded + fontSize 11) ──────────────────── */
+.sm-note-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 8px;
+  padding: 12px 24px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* ── SBC stat card ────────────────────────────────────────────────────── */
+.sm-stat-card {
+  background: var(--surface2);
+  padding: 12px;
+  border-radius: 12px;
+}
+.sm-stat-card-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--stat-color, var(--accent));
+}
+
+/* ── Responsive overrides for § 33 classes ────────────────────────────── */
+@media (max-width: 768px) {
+  .sm-grid-header { padding: 10px 16px; }
+  .sm-grid-row { padding: 10px 16px; }
+  .sm-grid-row-lg { padding: 12px 16px; }
+  .sm-th { font-size: 9px; letter-spacing: 0.5px; }
+  .sm-kpi-hero { font-size: 20px; }
+  .sm-kpi-hero-md { font-size: 16px; }
+  .sm-accent-panel { padding: 16px; }
+  .sm-cell-surface { padding: 12px 16px; }
+  .sm-bar-chart { padding: 16px 16px 0; }
+  .sm-callout { padding: 12px 16px; }
+  .sm-detail-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .sm-grid-sep-2col { grid-template-columns: 1fr; }
+  .sm-grid-sep-3col { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .sm-grid-header { padding: 8px 12px; }
+  .sm-grid-row { padding: 8px 12px; }
+  .sm-grid-row-lg { padding: 10px 12px; }
+  .sm-kpi-hero { font-size: 18px; }
+  .sm-kpi-hero-md { font-size: 14px; }
+  .sm-accent-panel { padding: 12px; }
+  .sm-filter-pill { font-size: 9px; padding: 3px 10px; }
+  .sm-pill-toggle { font-size: 10px; padding: 3px 10px; }
+  .sm-stat-card-value { font-size: 16px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   § 35. CRCL STOCK-SPECIFIC CLASSES
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Parameter preset button (6-color gradient buttons in model/MC tabs) */
+.sm-param-btn {
+  padding: 12px 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text3);
+}
+.sm-param-btn[data-active="true"] {
+  font-weight: 600;
+  border-width: 2px;
+}
+
+/* Custom value input wrapper (violet-bordered) */
+.sm-custom-input-wrap {
+  display: flex;
+  border-radius: 8px;
+  border: 2px solid var(--violet);
+  background: color-mix(in srgb, var(--violet) 15%, transparent);
+  overflow: hidden;
+}
+.sm-custom-input-field {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  color: var(--violet);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+}
+
+/* 7-column parameter grid (6 presets + 1 custom) */
+.sm-param-grid-7 {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+/* 6-column parameter grid (MC options) */
+.sm-param-grid-6 {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+
+/* Section toggle header (collapsible panels in investment tab) */
+.sm-section-toggle {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Data freshness badge (hero area) */
+.sm-data-freshness {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--mint) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mint) 30%, transparent);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: #34d399;
+}
+
+/* Tinted info box (assessment, moat, risk panels) - set --tint-color */
+.sm-tinted-box {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--tint-color, var(--accent)) 20%, transparent);
+  background: color-mix(in srgb, var(--tint-color, var(--accent)) 10%, transparent);
+}
+
+/* Tinted info box - no border variant */
+.sm-tinted-box-nb {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--tint-color, var(--accent)) 10%, transparent);
+}
+
+/* Surface2 rounded card (events, metrics) */
+.sm-surface2-card {
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-radius: 12px;
+}
+
+/* Surface2 rounded card - padded variant */
+.sm-surface2-card-lg {
+  padding: 24px;
+  background: var(--surface2);
+  border-radius: 12px;
+}
+
+/* KPI separator grid (1px border grid) */
+.sm-kpi-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* KPI separator grid - 3 col */
+.sm-kpi-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* Perspective badge (pill on perspective cards) */
+.sm-perspective-badge {
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--bg);
+}
+
+/* Scenario preset button grid (6 columns) */
+.sm-scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+/* Year/sim toggle button */
+.sm-toggle-btn {
+  padding: 8px 16px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.sm-toggle-btn[data-active="true"] {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* MC run button */
+.sm-run-btn {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--accent);
+  color: var(--bg1);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.15s;
+}
+
+/* Table header row (MC percentile/risk tables) */
+.sm-table-header {
+  display: grid;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* Table data row (MC percentile/risk tables) */
+.sm-table-row {
+  display: grid;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  cursor: default;
+}
+
+/* Panel with surface2 background and border */
+.sm-bordered-panel {
+  background: color-mix(in srgb, var(--surface2) 60%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+/* Comps section panel title (fontSize 13, fw 600) */
+.sm-comps-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+/* Comps metric big number */
+.sm-comps-big-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+/* Competitor filter pill button */
+.sm-pill-btn {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sm-pill-btn[data-active="true"] {
+  border-color: var(--pill-color, var(--violet));
+  background: color-mix(in srgb, var(--pill-color, var(--violet)) 15%, transparent);
+  color: var(--pill-color, var(--violet));
+}
+
+/* Competitor news clear button */
+.sm-pill-clear-btn {
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--coral) 15%, transparent);
+  color: var(--coral);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Competitor news item row */
+.sm-news-item {
+  padding: 16px 24px;
+  cursor: pointer;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-news-item:last-child {
+  border-bottom: none;
+}
+
+/* Competitor profile card */
+.sm-comp-profile-card {
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+/* List with no default styling */
+.sm-list-clean {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Expand/collapse all button (minimal style) */
+.sm-expand-collapse-btn {
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+/* Card section header with border-bottom */
+.sm-card-section-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* SEC filing type badge */
+.sm-sec-type-badge {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Timeline verdict label */
+.sm-verdict-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Timeline detail info cell */
+.sm-tl-info-cell {
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+/* Thesis comparison box */
+.sm-thesis-box {
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--mint) 5%, var(--surface));
+  border-radius: 12px;
+  border-left: 3px solid var(--mint);
+  margin-top: 12px;
+}
+
+/* Thesis comparison label */
+.sm-thesis-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--mint);
+  margin-bottom: 4px;
+}
+
+/* SM mono value with Space Mono */
+.sm-mono-value {
+  font-family: 'Space Mono', monospace;
+  font-weight: 600;
+}
+
+/* Projection table grid rows */
+.sm-proj-grid-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.sm-proj-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* H4-style section heading (no margin top) */
+.sm-h4-heading {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 0;
+}
+
+/* Surface2 padded row (reserve yield, RLDC margin stats) */
+.sm-surface2-row {
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+}
+
+/* Mono large value display */
+.sm-mono-lg-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 18px;
+}
+
+/* Compact news category/competitor micro badge */
+.sm-micro-badge {
+  padding: 1px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+}
+
+/* Footer/metadata section with top border */
+.sm-footer-meta {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 34. BMNR STOCK-SPECIFIC CLASSES
+   Patterns extracted from BMNR.tsx inline styles for reuse.
+   Prefixed with "sm-bmnr-" to avoid collision with existing classes.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Data Freshness Badge (hero header) ─────────────────────────────────── */
+.sm-bmnr-freshness-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(167,139,250,0.1);
+  border: 1px solid rgba(167,139,250,0.3);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: #a78bfa;
+}
+.sm-bmnr-freshness-sep { color: rgba(167,139,250,0.5); }
+
+/* ── Refresh Button (hero price area) ───────────────────────────────────── */
+.sm-bmnr-refresh-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  opacity: 0.6;
+}
+.sm-bmnr-refresh-btn[data-loading="true"] { cursor: wait; opacity: 0.5; }
+
+/* ── Parameter Panel (card wrapper for BMNRParameterCard) ────────────────── */
+.sm-bmnr-param-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 12px;
+}
+.sm-bmnr-param-panel[data-disabled="true"] { opacity: 0.6; }
+
+/* ── Parameter Grid (7-column button row) ────────────────────────────────── */
+.sm-bmnr-param-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.sm-bmnr-param-grid[data-disabled="true"] { pointer-events: none; }
+
+/* ── Parameter Button (preset value selector) ────────────────────────────── */
+.sm-bmnr-param-btn {
+  padding: 12px 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text3);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Outfit', sans-serif;
+}
+.sm-bmnr-param-btn[data-active="true"] {
+  border: 2px solid var(--btn-color, var(--violet));
+  background: color-mix(in srgb, var(--btn-color, var(--violet)) 15%, transparent);
+  color: var(--btn-color, var(--violet));
+  font-weight: 600;
+}
+.sm-bmnr-param-btn[data-disabled="true"] { cursor: default; }
+
+/* ── Custom Input Wrapper ────────────────────────────────────────────────── */
+.sm-bmnr-custom-wrap {
+  display: flex;
+  border-radius: 8px;
+  border: 2px solid var(--violet);
+  background: rgba(167,139,250,0.15);
+  overflow: hidden;
+}
+.sm-bmnr-custom-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  color: var(--violet);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+}
+
+/* ── Scale Label (← Bearish | Bullish →) ─────────────────────────────────── */
+.sm-bmnr-scale-label {
+  font-size: 11px;
+  color: var(--text3);
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* ── Scenario Preset Grid (6-column) ─────────────────────────────────────── */
+.sm-bmnr-scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+/* ── Scenario Preset Cell ────────────────────────────────────────────────── */
+.sm-bmnr-scenario-cell {
+  padding: 16px 8px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  border-bottom: 2px solid transparent;
+}
+.sm-bmnr-scenario-cell[data-active="true"] {
+  background: color-mix(in srgb, var(--scenario-color) 8%, var(--surface));
+  border-bottom-color: var(--scenario-color);
+}
+
+/* ── Custom Scenario Notice ──────────────────────────────────────────────── */
+.sm-bmnr-custom-notice {
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--violet) 8%, transparent);
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--violet);
+  margin-top: 8px;
+}
+
+/* ── Mode Toggle Card (current vs growth) ────────────────────────────────── */
+.sm-bmnr-mode-card {
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.sm-bmnr-mode-card[data-active="true"] {
+  border: 2px solid var(--mode-color, var(--mint));
+  background: color-mix(in srgb, var(--mode-color, var(--mint)) 10%, transparent);
+}
+
+/* ── Mode Icon / Label ───────────────────────────────────────────────────── */
+.sm-bmnr-mode-icon { font-size: 20px; margin-bottom: 4px; }
+.sm-bmnr-mode-label { font-weight: 600; font-size: 13px; }
+
+/* ── Mode Status Banner ──────────────────────────────────────────────────── */
+.sm-bmnr-mode-status {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--text3);
+  border: 1px solid var(--border);
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sm-bmnr-mode-status[data-mode="current"] {
+  background: rgba(52,211,153,0.1);
+  border-color: rgba(52,211,153,0.3);
+}
+.sm-bmnr-mode-status[data-mode="growth"] {
+  background: rgba(34,211,238,0.1);
+  border-color: rgba(34,211,238,0.3);
+}
+
+/* ── KPI Value Sizes (Space Mono) ────────────────────────────────────────── */
+.sm-bmnr-kpi-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+  margin: 6px 0 4px;
+}
+.sm-bmnr-kpi-val-lg {
+  font-family: 'Space Mono', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+  margin: 6px 0 2px;
+}
+.sm-bmnr-kpi-val-xl {
+  font-family: 'Space Mono', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+  margin: 8px 0 4px;
+}
+
+/* ── Accent Hero KPI Grid (2-col) ────────────────────────────────────────── */
+.sm-bmnr-hero-kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: color-mix(in srgb, var(--accent) 30%, var(--border));
+  border-radius: 16px;
+  overflow: hidden;
+}
+.sm-bmnr-hero-kpi-cell {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  padding: 24px 16px;
+  text-align: center;
+}
+
+/* ── Key Assumptions Box ─────────────────────────────────────────────────── */
+.sm-bmnr-assumptions {
+  padding: 16px;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.7;
+  margin-top: 16px;
+  border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+/* ── Step Badge (methodology) ────────────────────────────────────────────── */
+.sm-bmnr-step-badge {
+  color: var(--bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Space Mono', monospace;
+  background: var(--step-color, var(--accent));
+}
+
+/* ── Methodology Result Value ────────────────────────────────────────────── */
+.sm-bmnr-method-result {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--result-color, var(--accent));
+  flex-shrink: 0;
+}
+
+/* ── Method Formula ──────────────────────────────────────────────────────── */
+.sm-bmnr-formula {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── List Reset (margin:0, paddingLeft) ──────────────────────────────────── */
+.sm-bmnr-list-reset { margin: 0; padding-left: 16px; }
+.sm-bmnr-list-reset-20 { margin: 0; padding-left: 20px; }
+
+/* ── Year / Scenario Selector Buttons ────────────────────────────────────── */
+.sm-bmnr-year-btn {
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+  cursor: pointer;
+  font-weight: 400;
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  transition: all 0.15s;
+  outline: none;
+}
+.sm-bmnr-year-btn[data-active="true"] {
+  border: 2px solid var(--btn-color, var(--mint));
+  background: color-mix(in srgb, var(--btn-color, var(--mint)) 15%, transparent);
+  color: var(--btn-color, var(--mint));
+  font-weight: 700;
+}
+.sm-bmnr-scenario-btn {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 14px;
+  transition: all 0.15s;
+  font-family: 'Outfit', sans-serif;
+  outline: none;
+}
+.sm-bmnr-scenario-btn[data-active="true"] {
+  border: 2px solid var(--btn-color);
+  background: color-mix(in srgb, var(--btn-color) 13%, transparent);
+  color: var(--btn-color);
+  font-weight: 700;
+}
+
+/* ── Scenario Detail Card ────────────────────────────────────────────────── */
+.sm-bmnr-scenario-detail {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  border-left: 4px solid var(--scenario-color, var(--accent));
+  padding: 24px;
+}
+
+/* ── Return / Sentiment Text ─────────────────────────────────────────────── */
+.sm-bmnr-return-text { font-size: 12px; }
+.sm-bmnr-return-text[data-sentiment="positive"] { color: var(--mint); }
+.sm-bmnr-return-text[data-sentiment="negative"] { color: var(--coral); }
+
+/* ── Staking Strategy Cell ───────────────────────────────────────────────── */
+.sm-bmnr-staking-cell {
+  background: var(--surface);
+  padding: 24px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 3px solid transparent;
+}
+.sm-bmnr-staking-cell[data-active="true"] {
+  background: color-mix(in srgb, var(--violet) 8%, var(--surface));
+  border-bottom-color: var(--violet);
+}
+
+/* ── Mono APY Display ────────────────────────────────────────────────────── */
+.sm-bmnr-apy-display {
+  font-family: 'Space Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--mint);
+}
+
+/* ── Small Desc Text ─────────────────────────────────────────────────────── */
+.sm-bmnr-desc-sm { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+
+/* ── Multi-Tranche Row ───────────────────────────────────────────────────── */
+.sm-bmnr-tranche-row {
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s;
+  background: var(--surface);
+  opacity: 0.5;
+}
+.sm-bmnr-tranche-row[data-enabled="true"] {
+  background: color-mix(in srgb, var(--violet) 3%, var(--surface));
+  opacity: 1;
+}
+.sm-bmnr-tranche-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  flex: 1;
+}
+
+/* ── Factor Card (left-border accent) ────────────────────────────────────── */
+.sm-bmnr-factor-card {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  border-left: 3px solid var(--factor-color, var(--accent));
+}
+.sm-bmnr-factor-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--factor-color, var(--accent));
+}
+
+/* ── Row Item (flex-between with border-bottom) ──────────────────────────── */
+.sm-bmnr-row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+.sm-bmnr-row-item-sm {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+/* ── Stress Scenario Cell ────────────────────────────────────────────────── */
+.sm-bmnr-stress-cell {
+  padding: 24px 16px;
+  text-align: center;
+  background: var(--surface);
+}
+.sm-bmnr-stress-cell[data-safe="true"] {
+  background: color-mix(in srgb, var(--mint) 3%, var(--surface));
+}
+.sm-bmnr-stress-cell[data-danger="true"] {
+  background: color-mix(in srgb, var(--coral) 3%, var(--surface));
+}
+
+/* ── LTV Cell + Breach ───────────────────────────────────────────────────── */
+.sm-bmnr-ltv-cell {
+  padding: 24px 12px;
+  text-align: center;
+  background: var(--surface);
+}
+.sm-bmnr-ltv-cell[data-breach="true"] {
+  background: color-mix(in srgb, var(--coral) 5%, var(--surface));
+}
+.sm-bmnr-breach-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--coral);
+  text-transform: uppercase;
+}
+
+/* ── Micro Label Override (no uppercase/spacing) ─────────────────────────── */
+.sm-bmnr-micro-plain {
+  letter-spacing: normal;
+  text-transform: none;
+  font-weight: 400;
+}
+
+/* ── Capital Summary Banner ──────────────────────────────────────────────── */
+.sm-bmnr-capital-summary {
+  padding: 16px 24px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--mint) 8%, var(--surface)), color-mix(in srgb, var(--violet) 8%, var(--surface)));
+  border-top: 1px solid var(--border);
+}
+
+/* ── Caveats Box ─────────────────────────────────────────────────────────── */
+.sm-bmnr-caveats { padding: 16px; background: var(--surface2); border-radius: 8px; }
+.sm-bmnr-caveats-list {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text3);
+  line-height: 1.8;
+  font-size: 13px;
+}
+
+/* ── Analyst Card (ETH tab) ──────────────────────────────────────────────── */
+.sm-bmnr-analyst-card {
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+  border-left: 3px solid var(--card-accent, var(--mint));
+}
+.sm-bmnr-analyst-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--badge-accent, var(--mint)) 20%, transparent);
+  color: var(--badge-accent, var(--mint));
+}
+.sm-bmnr-analyst-summary {
+  padding: 12px;
+  background: var(--surface);
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* ── Investment Case Banner ──────────────────────────────────────────────── */
+.sm-bmnr-invest-banner {
+  padding: 12px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--mint) 15%, transparent), color-mix(in srgb, var(--violet) 15%, transparent));
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+/* ── Roadmap Item ────────────────────────────────────────────────────────── */
+.sm-bmnr-roadmap-item {
+  padding: 16px 24px;
+  border-left: 3px solid var(--impact-color, var(--sky));
+  transition: background 0.15s;
+}
+.sm-bmnr-roadmap-item:hover { background: var(--surface2); }
+
+/* ── Status / Date Pills ─────────────────────────────────────────────────── */
+.sm-bmnr-status-pill {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  letter-spacing: 0.3px;
+}
+.sm-bmnr-status-pill[data-status="Complete"] { background: color-mix(in srgb, var(--mint) 15%, transparent); color: var(--mint); }
+.sm-bmnr-status-pill[data-status="Development"] { background: color-mix(in srgb, var(--sky) 15%, transparent); color: var(--sky); }
+.sm-bmnr-status-pill[data-status="Planning"],
+.sm-bmnr-status-pill[data-status="Exploratory"] { background: color-mix(in srgb, var(--violet) 15%, transparent); color: var(--violet); }
+.sm-bmnr-date-pill {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  background: color-mix(in srgb, var(--border) 60%, transparent);
+  color: var(--text3);
+}
+
+/* sm-bmnr-filter-pill: removed — use .sm-filter-pill with --pill-accent instead */
+.sm-bmnr-clear-btn {
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--coral) 15%, transparent);
+  color: var(--coral);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ── News Row ────────────────────────────────────────────────────────────── */
+.sm-bmnr-news-row {
+  padding: 16px 24px;
+  cursor: pointer;
+  border-left: 3px solid var(--news-accent, var(--violet));
+  transition: background 0.15s;
+}
+.sm-bmnr-news-row:hover { background: var(--surface2); }
+
+/* ── Category / Company Badge ────────────────────────────────────────────── */
+.sm-bmnr-cat-badge[data-type="category"] {
+  background: color-mix(in srgb, var(--violet) 12%, transparent);
+  color: var(--violet);
+}
+.sm-bmnr-cat-badge[data-type="company"] {
+  background: color-mix(in srgb, var(--sky) 12%, transparent);
+  color: var(--sky);
+}
+
+/* ── News Impact Value ───────────────────────────────────────────────────── */
+.sm-bmnr-impact-val {
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  margin-left: 12px;
+  white-space: nowrap;
+}
+
+/* ── News Detail Section ─────────────────────────────────────────────────── */
+.sm-bmnr-news-detail {
+  padding-top: 16px;
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Insight Card (significance / implication) ───────────────────────────── */
+.sm-bmnr-insight-card {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border-left: 3px solid var(--insight-color, var(--violet));
+  background: color-mix(in srgb, var(--insight-color, var(--violet)) 5%, var(--surface));
+  margin-top: 8px;
+}
+
+/* ── Source Text ──────────────────────────────────────────────────────────── */
+.sm-bmnr-source-text {
+  font-size: 10px;
+  color: var(--text3);
+  font-family: 'Space Mono', monospace;
+  margin-top: 8px;
+}
+
+/* ── SEC Meta Section ────────────────────────────────────────────────────── */
+.sm-bmnr-sec-meta { padding-top: 12px; border-top: 1px solid var(--border); }
+.sm-bmnr-sec-meta-row { display: flex; gap: 24px; flex-wrap: wrap; font-size: 12px; }
+.sm-bmnr-sec-meta-sub { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 8px; }
+
+/* ── Catalyst Tracker ────────────────────────────────────────────────────── */
+.sm-bmnr-catalyst-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--surface2);
+}
+.sm-bmnr-catalyst-row[data-complete="true"] {
+  background: color-mix(in srgb, var(--mint) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mint) 40%, transparent);
+}
+
+/* ── PR Item ─────────────────────────────────────────────────────────────── */
+.sm-bmnr-pr-item {
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-radius: 12px;
+}
+
+/* ── Event Heading ───────────────────────────────────────────────────────── */
+.sm-bmnr-event-heading {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sm-bmnr-event-count { font-size: 13px; font-weight: 400; color: var(--text3); }
+
+/* ── Changes Table ───────────────────────────────────────────────────────── */
+.sm-bmnr-changes-header {
+  display: grid;
+  grid-template-columns: 1fr 100px 100px 120px;
+  border-bottom: 1px solid var(--border);
+}
+.sm-bmnr-changes-th {
+  padding: 8px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+  background: var(--surface2);
+}
+.sm-bmnr-changes-th[data-align="right"] { text-align: right; }
+.sm-bmnr-changes-row {
+  display: grid;
+  grid-template-columns: 1fr 100px 100px 120px;
+  transition: background 0.15s;
+}
+.sm-bmnr-changes-row:hover { background: var(--surface2); }
+.sm-bmnr-changes-cell { padding: 8px 12px; font-size: 12px; }
+.sm-bmnr-changes-cell[data-type="mono"] {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  text-align: right;
+}
+
+/* ── Event Note Box ──────────────────────────────────────────────────────── */
+.sm-bmnr-event-note {
+  padding: 12px;
+  background: var(--surface2);
+  border-radius: 12px;
+  font-style: italic;
+  color: var(--text3);
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ── Impact Label ────────────────────────────────────────────────────────── */
+.sm-bmnr-impact-label { font-size: 11px; font-weight: 600; text-align: right; }
+.sm-bmnr-impact-label[data-impact="positive"] { color: var(--mint); }
+.sm-bmnr-impact-label[data-impact="negative"] { color: var(--coral); }
+.sm-bmnr-impact-label[data-impact="neutral"] { color: var(--text3); }
+
+/* ── Expand Chevron ──────────────────────────────────────────────────────── */
+.sm-bmnr-chevron {
+  font-size: 12px;
+  color: var(--text3);
+  text-align: center;
+  transition: transform 0.2s;
+}
+.sm-bmnr-chevron[data-expanded="true"] { transform: rotate(180deg); }
+
+/* ── Explain Section ─────────────────────────────────────────────────────── */
+.sm-bmnr-explain-heading { color: var(--violet); font-weight: 500; margin-bottom: 8px; }
+.sm-bmnr-explain-list {
+  display: flex;
+  flex-direction: column;
+  color: var(--text2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sm-bmnr-explain-list[data-gap="8"] { gap: 8px; }
+.sm-bmnr-explain-list[data-gap="4"] { gap: 4px; }
+
+/* ── Bull/Bear Case Item ─────────────────────────────────────────────────── */
+.sm-bmnr-case-item {
+  display: flex;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+.sm-bmnr-case-icon { flex-shrink: 0; }
+
+/* ── Panel Header / Body (overview chart card) ───────────────────────────── */
+.sm-bmnr-panel-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sm-bmnr-panel-body { padding: 24px 24px 0; overflow-x: auto; }
+
+/* ── Bar Chart ───────────────────────────────────────────────────────────── */
+.sm-bmnr-bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 200px; }
+.sm-bmnr-bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 56px; }
+.sm-bmnr-bar { width: 100%; background: var(--accent); border-radius: 4px 4px 0 0; transition: height 0.3s; }
+.sm-bmnr-bar-label { font-size: 10px; color: var(--text3); margin-top: 4px; text-align: center; }
+
+/* ── Disabled Overlay ────────────────────────────────────────────────────── */
+.sm-bmnr-disabled-overlay[data-disabled="true"] { opacity: 0.4; pointer-events: none; }
+
+/* ── Additional Utilities (BMNR batch) ─────────────────────────────────── */
+.sm-fs-11 { font-size: 11px; }
+.sm-fs-13 { font-size: 13px; }
+.sm-fs-14 { font-size: 14px; }
+.sm-fs-15 { font-size: 15px; }
+.sm-mt-6 { margin-top: 6px; }
+.sm-pb-0 { padding-bottom: 0; }
+.sm-ml-6 { margin-left: 6px; }
+.sm-ml-8 { margin-left: 8px; }
+.sm-ls-half { letter-spacing: 0.5px; }
+.sm-p-16-24 { padding: 16px 24px; }
+.sm-p-24-16 { padding: 24px 16px; }
+.sm-items-initial { align-items: initial; }
+
+/* ── Label Reset (undoes section-label formatting inside content) ──────── */
+.sm-bmnr-reset-label {
+  letter-spacing: normal;
+  text-transform: none;
+  font-weight: 400;
+}
+
+/* ── Perspective Card (Risk Evaluation section) ────────────────────────── */
+.sm-bmnr-perspective-card {
+  background: color-mix(in srgb, var(--card-accent, var(--violet)) 5%, transparent);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--card-accent, var(--violet)) 20%, transparent);
+}
+.sm-bmnr-perspective-badge {
+  background: var(--card-accent, var(--violet));
+  color: white;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.sm-bmnr-perspective-badge[data-dark-text] { color: var(--bg); }
+.sm-bmnr-perspective-quote {
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--card-accent, var(--violet)) 10%, transparent);
+  border-radius: 6px;
+  border-left: 3px solid var(--card-accent, var(--violet));
+}
+
+/* ── Signal Card (Ecosystem triggers, time horizon cards) ──────────────── */
+.sm-bmnr-signal-card {
+  background: color-mix(in srgb, var(--card-accent, var(--sky)) 10%, transparent);
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--card-accent, var(--sky)) 20%, transparent);
+}
+.sm-bmnr-signal-title {
+  font-weight: 600;
+  color: var(--card-accent, var(--sky));
+  font-size: 13px;
+}
+
+/* ── Comps Summary Badge ───────────────────────────────────────────────── */
+.sm-bmnr-comps-badge {
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid var(--badge-color, var(--text3));
+  background: color-mix(in srgb, var(--badge-color, var(--text3)) 15%, transparent);
+  color: var(--badge-color, var(--text3));
+}
+
+/* ── Assessment Answer Card ────────────────────────────────────────────── */
+.sm-bmnr-answer-card {
+  padding: 12px 16px;
+  border-radius: 12px;
+}
+.sm-bmnr-answer-badge {
+  padding: 6px 16px;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* ── Section Divider ───────────────────────────────────────────────────── */
+.sm-bmnr-section-divider {
+  padding-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  margin-bottom: 8px;
+}
+
+/* ── Allocation Row ────────────────────────────────────────────────────── */
+.sm-bmnr-alloc-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* ── Analysis History Item ─────────────────────────────────────────────── */
+.sm-bmnr-history-item {
+  padding: 12px 16px;
+  border-radius: 12px;
+}
+.sm-bmnr-history-item[data-latest] {
+  background: color-mix(in srgb, var(--mint) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mint) 20%, transparent);
+}
+.sm-bmnr-history-tag {
+  padding: 4px 8px;
+  background: var(--surface);
+  border-radius: 99px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* ── Chart Bar (dynamic color, height set inline) ──────────────────────── */
+.sm-bmnr-chart-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.3s;
+}
+
+/* ── Grid-3 helper ─────────────────────────────────────────────────────── */
+.sm-grid-3-gap-24 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* ── Missing utility classes (batch 7) ─────────────────────────────────── */
+.sm-fs-10 { font-size: 10px; }
+.sm-fs-12 { font-size: 12px; }
+.sm-ls-15 { letter-spacing: 1.5px; }
+.sm-ls-005em { letter-spacing: 0.05em; }
+.sm-col-span-2 { grid-column: span 2; }
+.sm-justify-between { justify-content: space-between; }
+.sm-items-baseline { align-items: baseline; }
+.sm-p-0-24-24 { padding: 0 24px 24px; }
+.sm-bmnr-pt-16 { padding-top: 16px; }
+.sm-bmnr-pt-24-pb-12 { padding: 24px 0 12px; }
+.sm-bmnr-mb-4-reset { margin: 0 0 4px; }
+.sm-bmnr-mb-16-reset { margin: 0 0 16px; }
+.sm-bmnr-fs-16 { font-size: 16px; }
+.sm-bmnr-max-w-600 { max-width: 600px; }
+.sm-bmnr-min-w-400 { min-width: 400px; }
+
+/* ── Cell / Table utility (BMNR projection tables) ─────────────────────── */
+.sm-bmnr-cell { padding: 12px 16px; }
+.sm-bmnr-cell[data-highlight="true"] { background: rgba(0,212,170,0.1); }
+.sm-bmnr-th {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.sm-bmnr-mono-val {
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+  color: var(--val-color, var(--text));
+  text-align: var(--align, left);
+}
+.sm-bmnr-mono-val[data-align="right"] { text-align: right; }
+.sm-bmnr-desc-cell {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+/* ── Color Dot (inline scenario indicators) ────────────────────────────── */
+.sm-bmnr-color-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+/* ── Card Frosted (semi-transparent surface) ───────────────────────────── */
+.sm-bmnr-card-frosted {
+  background: color-mix(in srgb, var(--surface2) 60%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+/* ── Grid-6 helper ─────────────────────────────────────────────────────── */
+.sm-bmnr-grid-6 {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+
+/* ── Grid-2 with gap-24 ────────────────────────────────────────────────── */
+.sm-bmnr-grid-2-gap-24 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* ── Pill Button ───────────────────────────────────────────────────────── */
+.sm-bmnr-pill-btn {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+}
+
+/* ── Pill Tag ──────────────────────────────────────────────────────────── */
+.sm-bmnr-pill-tag {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--text1);
+}
+
+/* ── Link Button (bare text button) ────────────────────────────────────── */
+.sm-bmnr-link-btn {
+  font-size: 11px;
+  color: var(--text3);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ── History List (scrollable) ─────────────────────────────────────────── */
+.sm-bmnr-history-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* ── Color: red ────────────────────────────────────────────────────────── */
+.sm-red { color: var(--red); }
+
+/* ── Static Grid Column Templates (BMNR tables) ───────────────────────── */
+.sm-bmnr-grid-cols-2-1-1-1 { grid-template-columns: 2fr 1fr 1fr 1fr; }
+.sm-bmnr-grid-cols-1-1-100-100 { grid-template-columns: 1fr 1fr 100px 100px; }
+.sm-bmnr-grid-cols-1-100-1 { grid-template-columns: 1fr 100px 1fr; }
+.sm-bmnr-grid-cols-1-100-100-1 { grid-template-columns: 1fr 100px 100px 1fr; }
+.sm-bmnr-grid-cols-80-1-1-1 { grid-template-columns: 80px 1fr 1fr 1fr; }
+.sm-bmnr-grid-cols-1-80-80 { grid-template-columns: 1fr 80px 80px; }
+.sm-bmnr-grid-cols-1-120-1 { grid-template-columns: 1fr 120px 1fr; }
+.sm-bmnr-grid-cols-1-100-80-1-1 { grid-template-columns: 1fr 100px 80px 1fr 1fr; }
+.sm-bmnr-grid-cols-1-100-100-1-100 { grid-template-columns: 1fr 100px 100px 1fr 100px; }
+.sm-bmnr-grid-cols-1-100x4 { grid-template-columns: 1fr 100px 100px 100px 100px; }
+
+/* ── Grid Row (1fr 120px 100px with border) ────────────────────────────── */
+.sm-bmnr-grid-row-1-120-100 {
+  display: grid;
+  grid-template-columns: 1fr 120px 100px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+
+/* ── Flex Bar (space-between with surface2 bg) ─────────────────────────── */
+.sm-bmnr-flex-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: var(--surface2);
+  border-radius: 4px;
+}
+
+/* ── Panel Wrap ────────────────────────────────────────────────────────── */
+.sm-bmnr-panel-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 16px;
+}
+
+/* ── Card Surface2 ─────────────────────────────────────────────────────── */
+.sm-bmnr-card-surface2 {
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+/* ── § 34 Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sm-bmnr-param-grid { grid-template-columns: repeat(4, 1fr); }
+  .sm-bmnr-scenario-grid { grid-template-columns: repeat(3, 1fr); }
+  .sm-bmnr-hero-kpi-grid { grid-template-columns: 1fr; }
+  .sm-bmnr-bar-chart { height: 160px; }
+  .sm-bmnr-bar-col { min-width: 44px; }
+  .sm-bmnr-panel-header { padding: 16px; }
+  .sm-bmnr-panel-body { padding: 16px 16px 0; }
+  .sm-bmnr-tranche-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .sm-bmnr-changes-header, .sm-bmnr-changes-row { grid-template-columns: 1fr 80px 80px 100px; }
+  .sm-bmnr-kpi-val-xl { font-size: 20px; }
+}
+@media (max-width: 480px) {
+  .sm-bmnr-param-grid { grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .sm-bmnr-scenario-grid { grid-template-columns: repeat(2, 1fr); }
+  .sm-bmnr-kpi-val { font-size: 16px; }
+  .sm-bmnr-kpi-val-lg { font-size: 18px; }
+  .sm-bmnr-kpi-val-xl { font-size: 18px; }
+  .sm-bmnr-param-panel { padding: 16px; }
+  .sm-bmnr-tranche-row { padding: 12px; gap: 10px; flex-direction: column; }
+  .sm-bmnr-tranche-grid { grid-template-columns: 1fr 1fr; }
+  .sm-bmnr-changes-header, .sm-bmnr-changes-row { grid-template-columns: 1fr 60px 60px 80px; }
+  .sm-bmnr-news-row { padding: 12px 16px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 36. UNIFIED BUTTON STYLES
+   Shared button patterns for action buttons, show-more buttons, and filter
+   pills. Replaces per-tab inline styles with data-attribute-driven CSS.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Show More / Load More Button ─────────────────────────────────────────
+   Used in both SharedEdgarTab and SharedSourcesTab for "load more hidden"
+   and "collapse hidden" toggles.
+   ──────────────────────────────────────────────────────────────────────── */
+.sm-show-more-btn {
+  display: block;
+  width: 100%;
+  padding: 4px 12px;
+  margin: 2px 0;
+  font-size: 9px;
+  font-family: 'Space Mono', monospace;
+  font-weight: 500;
+  color: var(--text3);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  opacity: 0.25;
+  transition: opacity 0.15s;
+}
+.sm-show-more-btn:hover {
+  opacity: 0.5;
+}
+
+/* ── Action Button State Variants ─────────────────────────────────────────
+   Replace inline style={{ '--ed-btn-color': ..., border: ..., cursor: ...,
+   opacity: ... }} with data-variant and data-state attributes.
+   Usage: <button className="sm-ed-action-btn" data-variant="mint" data-state="loading">
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Variant colors — defines the accent color for the button */
+.sm-ed-action-btn[data-variant="mint"] {
+  --ed-btn-color: rgba(130,200,130,0.5);
+  border-color: rgba(130,200,130,0.15);
+}
+.sm-ed-action-btn[data-variant="mint-solid"] {
+  --ed-btn-color: var(--mint);
+  border-color: rgba(130,200,130,0.15);
+}
+.sm-ed-action-btn[data-variant="sky"] {
+  --ed-btn-color: var(--sky);
+  border-color: color-mix(in srgb, var(--sky) 25%, transparent);
+  opacity: 0.6;
+}
+.sm-ed-action-btn[data-variant="coral"] {
+  --ed-btn-color: var(--coral);
+  border-color: color-mix(in srgb, var(--coral) 25%, transparent);
+}
+.sm-ed-action-btn[data-variant="blue"] {
+  --ed-btn-color: rgba(130,180,220,0.5);
+  border-color: rgba(130,180,220,0.15);
+}
+
+/* State overrides — loading, success, disabled */
+.sm-ed-action-btn[data-state="loading"] {
+  --ed-btn-color: var(--text3);
+  border-color: var(--border);
+  cursor: wait;
+  opacity: 0.5;
+}
+.sm-ed-action-btn[data-state="success"] {
+  --ed-btn-color: var(--mint);
+  border-color: rgba(130,200,130,0.15);
+  cursor: default;
+}
+.sm-ed-action-btn[data-state="error"] {
+  --ed-btn-color: var(--coral);
+  border-color: color-mix(in srgb, var(--coral) 25%, transparent);
+}
+.sm-ed-action-btn[data-state="disabled"] {
+  --ed-btn-color: var(--text3);
+  border-color: var(--border);
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+/* ── Spin animation for loading icons ─────────────────────────────────── */
+.sm-ed-action-btn[data-state="loading"] svg {
+  animation: spin 1s linear infinite;
+}
+
+/* ── Unified Filter Pill ──────────────────────────────────────────────────
+   Single filter pill class for all tabs (ASTS, BMNR, Edgar).
+   Uses --pill-accent for the active color (defaults to --accent).
+   Usage: <button className="sm-filter-pill" data-active={isActive || undefined}>
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* .sm-filter-pill already exists in §33 — extend with clear variant */
+.sm-filter-pill[data-variant="clear"] {
+  background: color-mix(in srgb, var(--coral) 10%, transparent);
+  color: var(--coral);
+  border-color: transparent;
 }
 `;
