@@ -4043,6 +4043,7 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-rounded-full { border-radius: 9999px; }
 
 /* ── Additional typography ── */
+.sm-fs-13 { font-size: 13px; }
 .sm-text-14 { font-size: 14px; }
 .sm-text-15 { font-size: 15px; }
 .sm-text-16 { font-size: 16px; }

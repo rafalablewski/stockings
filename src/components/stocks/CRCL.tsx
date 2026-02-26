@@ -1903,7 +1903,7 @@ const ScenariosTab = () => {
         </div>
         <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
           <h4 className="sm-gold">Important Caveats</h4>
-          <ul className="sm-text3 sm-m-0 sm-pl-20 sm-lh-18" style={{ fontSize: 13 }}>
+          <ul className="sm-text3 sm-m-0 sm-pl-20 sm-lh-18 sm-fs-13">
             <li>Projections are illustrative scenarios, not forecasts. Actual results may differ materially.</li>
             <li>Probabilities are subjective estimates and do not represent statistical likelihoods.</li>
             <li>Model assumes current share count (~229M); dilution from equity plans not explicitly modeled.</li>
