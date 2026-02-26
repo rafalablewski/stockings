@@ -790,14 +790,9 @@ const CompanyFeedCard: React.FC<{
               disabled={data.loading}
               aria-label={`AI Fetch ${label} feeds`}
               title="Search for new articles via AI"
-              className="sm-ed-action-btn"
-              style={{
-                '--ed-btn-color': data.loading ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
-                padding: '5px 14px',
-                border: `1px solid ${data.loading ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
-                cursor: data.loading ? 'wait' : 'pointer',
-                opacity: data.loading ? 0.5 : 1,
-              } as React.CSSProperties}
+              className="sm-ed-action-btn sm-p-5-14"
+              data-variant="mint"
+              data-state={data.loading ? 'loading' : undefined}
             >
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: data.loading ? 'spin 1s linear infinite' : 'none' }}>
                 <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -813,14 +808,9 @@ const CompanyFeedCard: React.FC<{
               disabled={aiChecking ?? false}
               aria-label={`Re-check ${label} tracked/untracked status`}
               title="Re-check tracked/untracked status for all articles (does NOT query seen_articles DB)"
-              className="sm-ed-action-btn"
-              style={{
-                '--ed-btn-color': aiChecking ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
-                padding: '5px 14px',
-                border: `1px solid ${aiChecking ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
-                cursor: aiChecking ? 'wait' : 'pointer',
-                opacity: aiChecking ? 0.5 : 1,
-              } as React.CSSProperties}
+              className="sm-ed-action-btn sm-p-5-14"
+              data-variant="blue"
+              data-state={aiChecking ? 'loading' : undefined}
             >
               <svg
                 width="10" height="10" viewBox="0 0 16 16" fill="none"
