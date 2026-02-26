@@ -122,6 +122,9 @@ export default function HooksPage() {
             editing sessions. Each hook fires on specific tool calls and
             enforces quality, safety, or structural rules.
           </p>
+          <p className="text-[12px] text-amber-400/80 mt-2">
+            All hooks are currently turned off in .claude/settings.json.
+          </p>
         </div>
 
         {/* Summary bar */}
@@ -131,7 +134,7 @@ export default function HooksPage() {
               {plugins.length}
             </span>
             <span className="text-[11px] text-white/30 ml-2 uppercase tracking-[0.15em]">
-              Active Plugins
+              Plugins (all turned off)
             </span>
           </div>
           <div className="w-px h-6 bg-white/[0.08]" />
@@ -163,13 +166,16 @@ export default function HooksPage() {
               className="relative p-6 rounded-xl bg-white/[0.02] border border-white/[0.06] scroll-mt-20"
             >
               <div className="flex items-start justify-between gap-4 mb-3">
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
                   <span className="text-[14px] font-medium text-white tracking-wide">
                     {plugin.name}
                   </span>
                   <PhaseBadge phase={plugin.phase} />
                   <span className="text-[10px] font-mono text-white/15">
                     v{plugin.version}
+                  </span>
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-amber-400/70 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
+                    Turned off
                   </span>
                 </div>
               </div>

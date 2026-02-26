@@ -254,9 +254,10 @@ case "$PHASE" in
         # Run dynamic pattern-based checks from review-rules.json
         run_dynamic_checks "$FILE_PATH" || true
 
-        # Lint and type checks are heavier - run only in post phase
-        run_lint_check "$FILE_PATH" || true
-        run_type_check "$FILE_PATH" || true
+        # Lint and type checks are heavier (full-project tsc) - run only when opted in
+        # Set CLAUDE_RUN_LINT=1 to run ESLint on each edit; CLAUDE_FULL_TYPECHECK=1 for tsc --noEmit
+        [[ -n "${CLAUDE_RUN_LINT:-}" ]] && run_lint_check "$FILE_PATH" || true
+        [[ -n "${CLAUDE_FULL_TYPECHECK:-}" ]] && run_type_check "$FILE_PATH" || true
 
         log_success "Code review complete for $(basename "$FILE_PATH")"
         ;;
