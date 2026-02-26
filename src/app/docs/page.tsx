@@ -139,6 +139,12 @@ const componentClasses: CSSClass[] = [
   { name: ".sm-card-colored",    description: "Dynamic color card — uses --card-bg, --card-border, --card-text", usage: "style={{ '--card-bg': c.bg }}" },
   { name: ".sm-tab-card",        description: "Article/content card with hover border effect",                   usage: "className=\"sm-tab-card\"" },
   { name: ".sm-tab-toggle",      description: "Compact toggle button with data-active state",                   usage: "data-active=\"true\"" },
+  { name: ".sm-news-tag",        description: "Compact badge/tag (10px, 1×6px pad). Uses --tag-color for border + text", usage: "style={{ '--tag-color': 'var(--mint)' }}" },
+  { name: ".sm-callout",         description: "Left-bordered callout panel (3px accent, 11px). Uses --callout-color",     usage: "style={{ '--callout-color': 'var(--cyan)' }}" },
+  { name: ".sm-highlight-bar",   description: "Gradient accent strip. Uses --bar-accent-1 / --bar-accent-2",              usage: "style={{ '--bar-accent-1': 'var(--cyan)', '--bar-accent-2': 'var(--mint)' }}" },
+  { name: ".sm-note-panel",      description: "Muted info/footnote box — surface bg, border, rounded-16, 14px padding",   usage: "className=\"sm-note-panel sm-text-11\"" },
+  { name: ".sm-model-grid",      description: "Responsive grid with CSS var --cols. Auto-adjusts at breakpoints",          usage: "style={{ '--cols': 3 }}" },
+  { name: ".sm-overflow-x",      description: "Horizontal scroll container (overflow-x: auto)",                            usage: "className=\"sm-overflow-x sm-scroll-hint\"" },
 ];
 
 interface DataAttr {
@@ -198,6 +204,10 @@ const cssCustomProperties: CSSVarDynamic[] = [
   { variable: "--ed-btn-border",  usedBy: ".sm-ed-action-btn-ai, .sm-ed-action-btn-recheck", purpose: "Full border value for action button variants" },
   { variable: "--ed-btn-cursor",  usedBy: ".sm-ed-action-btn-ai, .sm-ed-action-btn-recheck", purpose: "Cursor style (pointer/wait) for action buttons" },
   { variable: "--ed-btn-opacity", usedBy: ".sm-ed-action-btn-ai, .sm-ed-action-btn-recheck", purpose: "Opacity for action buttons (analyzing state)" },
+  { variable: "--tag-color",      usedBy: ".sm-news-tag",          purpose: "Tag border + text color (badges, verdicts, filing types)" },
+  { variable: "--callout-color",  usedBy: ".sm-callout",           purpose: "Left-border accent color for callout panels" },
+  { variable: "--bar-accent-1",   usedBy: ".sm-highlight-bar",     purpose: "First gradient stop for highlight bar" },
+  { variable: "--bar-accent-2",   usedBy: ".sm-highlight-bar",     purpose: "Second gradient stop for highlight bar" },
 ];
 
 interface FileEntry {
@@ -224,7 +234,7 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/shared/StockChart.tsx",        type: "Component", description: "Interactive stock price chart" },
   { path: "src/components/shared/SharedWallStreetTab.tsx",    type: "Component", description: "Wall Street analyst research tab" },
   { path: "src/components/shared/SharedInvestmentTab.tsx",    type: "Component", description: "Investment thesis & scorecard (stock-agnostic; gold-standard sm-card/sm-toggle-header)" },
-  { path: "src/components/shared/SharedFinancialsTab.tsx",   type: "Component", description: "Financials tab shell: hero, milestones, CFA notes; children = quarterly section" },
+  { path: "src/components/shared/SharedFinancialsTab.tsx",   type: "Component", description: "Financials tab shell: hero, sm-fin-table milestones, CFA notes; children = quarterly section" },
   { path: "src/components/shared/SharedTimelineTab.tsx",     type: "Component", description: "Timeline tab shell: hero + children (SEC filings, event list)" },
   { path: "src/components/shared/SharedEdgarTab.tsx",         type: "Component", description: "SEC EDGAR filings browser" },
   { path: "src/components/shared/SharedSourcesTab.tsx",       type: "Component", description: "Research sources / news feed tab" },
@@ -421,6 +431,31 @@ const conventions = [
 
 // Investment: SharedInvestmentTab with current + archive from data
 <SharedInvestmentTab current={investmentCurrent} archive={investmentArchive} ticker="ASTS" />`,
+  },
+  {
+    title: "Gold-Standard Visual Patterns",
+    description: "All tabs use a consistent set of sm-* classes for visual elements. Badges use sm-news-tag with --tag-color. Callout panels use sm-callout with --callout-color. Footnotes and info boxes use sm-note-panel. Data tables (SEC filings, milestones, quarterly metrics) use sm-fin-table-header/row with sm-fin-th/td. KPI metrics use sm-kpi-cell with sm-kpi-label/value/sub. The Capital tab is the golden standard — all other tabs mirror its visual patterns.",
+    code: `// Badge — sm-news-tag
+<span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>CURRENT</span>
+
+// Callout — sm-callout
+<div className="sm-callout" style={{ '--callout-color': 'var(--cyan)' } as React.CSSProperties}>Key insight here</div>
+
+// KPI metric cell
+<div className="sm-kpi-cell">
+  <div className="sm-kpi-label">Revenue</div>
+  <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>$740M</div>
+  <div className="sm-kpi-sub">Q3 2025</div>
+</div>
+
+// Financial table
+<div className="sm-fin-table-header" style={{ gridTemplateColumns: '130px 1fr' }}>
+  <span className="sm-fin-th" data-sticky="">Date</span>
+  <span className="sm-fin-th">Event</span>
+</div>
+
+// Footnote
+<div className="sm-note-panel sm-text-11">Data sourced from SEC filings.</div>`,
   },
   {
     title: "Stock-specific fields and extensibility",
@@ -938,9 +973,9 @@ export default function DocsPage() {
         />
 
         {/* ── Financials Tab Classes ─────────────────────────────────────── */}
-        <SectionHeader id="financials-classes" title="Financials Tab Classes (sm-fin-*)" count={10} />
+        <SectionHeader id="financials-classes" title="Financials Tab Classes (sm-fin-*)" count={9} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
-          Quarterly metrics tables, bar charts, and scroll containers — responsive from 360px to desktop.
+          Quarterly metrics tables, bar charts, milestones, SEC filings, and scroll containers — responsive from 360px to desktop.
         </p>
         <SmallTable
           headers={["Class", "Description"]}
