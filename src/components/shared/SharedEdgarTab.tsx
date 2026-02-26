@@ -865,10 +865,7 @@ const FilingRow: React.FC<{
                   type="button"
                   onClick={handleCopy}
                   className="sm-ed-action-btn"
-                  style={{
-                    '--ed-btn-color': copied ? 'var(--mint)' : undefined,
-                    borderColor: copied ? 'rgba(130,200,130,0.15)' : undefined,
-                  } as React.CSSProperties}
+                  data-state={copied ? 'success' : undefined}
                 >
                   <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                     <rect x={9} y={9} width={13} height={13} rx={2} ry={2} />
@@ -879,7 +876,7 @@ const FilingRow: React.FC<{
 
                 {/* 3. Preview Changes / Applied indicator */}
                 {applyStep === 'applied' ? (
-                  <span className="sm-ed-action-btn" style={{ '--ed-btn-color': 'var(--mint)', borderColor: 'rgba(130,200,130,0.15)', cursor: 'default' } as React.CSSProperties}>
+                  <span className="sm-ed-action-btn" data-state="success">
                     <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
@@ -1191,28 +1188,12 @@ const YearSection: React.FC<{
           {displayed.map(renderRow)}
           {/* Load more / collapse for hidden filings */}
           {remainingHidden > 0 && !showAllHidden && (
-            <button
-              onClick={() => setShowAllHidden(true)}
-              className="sm-mono-sm sm-text3 sm-w-full sm-pointer sm-transition-fast"
-              style={{
-                display: 'block', padding: '4px 12px', margin: '2px 0',
-                fontSize: 9, background: 'transparent', border: 'none',
-                opacity: 0.25, textAlign: 'left',
-              }}
-            >
+            <button onClick={() => setShowAllHidden(true)} className="sm-show-more-btn">
               + {remainingHidden} more hidden
             </button>
           )}
           {showAllHidden && hidden.length > HIDDEN_PREVIEW && (
-            <button
-              onClick={() => setShowAllHidden(false)}
-              className="sm-mono-sm sm-text3 sm-w-full sm-pointer sm-transition-fast"
-              style={{
-                display: 'block', padding: '4px 12px', margin: '2px 0',
-                fontSize: 9, background: 'transparent', border: 'none',
-                opacity: 0.25, textAlign: 'left',
-              }}
-            >
+            <button onClick={() => setShowAllHidden(false)} className="sm-show-more-btn">
               collapse hidden
             </button>
           )}
@@ -1295,15 +1276,11 @@ const FilterPill: React.FC<{
   <button
     onClick={onClick}
     className="sm-ed-filter-pill"
-    style={{
-      '--pill-color': active ? 'var(--accent)' : undefined,
-      '--pill-bg': active ? 'color-mix(in srgb, var(--accent) 8%, rgba(255,255,255,0.04))' : undefined,
-      '--pill-border': active ? 'color-mix(in srgb, var(--accent) 25%, transparent)' : undefined,
-    } as React.CSSProperties}
+    data-active={active ? 'true' : undefined}
   >
     {label}
     {count !== undefined && (
-      <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 9, opacity: active ? 0.8 : 0.35 }}>{count}</span>
+      <span className="sm-pill-count">{count}</span>
     )}
   </button>
 );
@@ -1688,15 +1665,11 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             aria-label="Fetch EDGAR filings"
             title="Fetch filings from SEC EDGAR"
             className="sm-ed-action-btn"
-            style={{
-              padding: '5px 14px', gap: 6,
-              '--ed-btn-color': loading ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
-              borderColor: loading ? 'var(--border)' : 'rgba(130,200,130,0.15)',
-              cursor: loading ? 'wait' : undefined,
-              opacity: loading ? 0.5 : 1,
-            } as React.CSSProperties}
+            data-variant="mint"
+            data-state={loading ? 'loading' : undefined}
+            style={{ padding: '5px 14px', gap: 6 }}
           >
-            <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }}>
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -1710,15 +1683,11 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               aria-label="Re-check local database"
               title="Re-check if filings have been added to local database"
               className="sm-ed-action-btn"
-              style={{
-                padding: '5px 14px', gap: 6,
-                '--ed-btn-color': recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
-                borderColor: recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)',
-                cursor: recheckLoading ? 'wait' : undefined,
-                opacity: recheckLoading ? 0.5 : 1,
-              } as React.CSSProperties}
+              data-variant="blue"
+              data-state={recheckLoading ? 'loading' : undefined}
+              style={{ padding: '5px 14px', gap: 6 }}
             >
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 1s linear infinite' : 'none' }}>
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
                 <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>

@@ -927,7 +927,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         { metric: 'Target', value: targetSats2026, sub: '2026 goal', color: 'var(--text)' },
         { metric: 'Next Launch', value: "BB7-13", sub: "Q1'26", color: 'var(--text)' },
       ].map(row => (
-        <div key={row.metric} className="sm-cell-surface-center" style={{ padding: 16 }}>
+        <div key={row.metric} className="sm-grid-cell-center">
           <div className="sm-micro-text">{row.metric}</div>
           <div className="sm-mono-lg" style={{ color: row.color, margin: '6px 0 4px' }}>{row.value}</div>
           <div className="sm-text-11">{row.sub}</div>
@@ -958,7 +958,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         currentValue={DEFAULTS.currentStockPrice}
       />
     </div>
-    <div className="sm-grid-sep-3col" style={{ gap: 12, background: 'transparent' }} className="sm-mt-12">
+    <div className="sm-grid-sep-3col sm-mt-12" style={{ gap: 12, background: 'transparent' }}>
       <OverviewParameterCard
         title="Cash ($M)"
         explanation="Cash & equivalents. Determines runway = Cash ÷ Burn. Critical for pre-revenue companies."
@@ -1767,10 +1767,10 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
           { value: `$${totalPrepay}M`, label: 'Total Prepayments', sub: 'stc $175M due YE 2025', color: 'var(--cyan)' },
           { value: '50/50', label: 'Revenue Share Model', sub: 'MNOs handle billing/support', color: 'var(--violet)' },
         ].map(c => (
-          <div key={c.label} className="sm-cell-surface-center" style={{ padding: 24 }}>
+          <div key={c.label} className="sm-kpi-cell">
             <div className="sm-mono-xl" style={{ color: c.color }}>{c.value}</div>
-            <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 6 }}>{c.label}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2 }}>{c.sub}</div>
+            <div className="sm-text-12 sm-text2 sm-mt-4">{c.label}</div>
+            <div className="sm-text-11 sm-text3 sm-mt-2">{c.sub}</div>
           </div>
         ))}
       </div>
@@ -2865,7 +2865,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <>
             <div className="sm-grid-sep" style={{ '--cols': debtItems.length } as React.CSSProperties}>
               {debtItems.map(d => (
-                <div key={d.label} className="sm-cell-surface-center" >
+                <div key={d.label} className="sm-grid-cell-center">
                   <div className="sm-mono-lg sm-fw-700" style={{ color: d.color }}>{d.value}</div>
                   <div className="sm-micro-text sm-mt-4">{d.label}</div>
                   <div className="sm-micro-text sm-opacity-60">{d.sub}</div>
@@ -3944,7 +3944,7 @@ const ModelTab = ({
               { label: 'Terminal EV', value: `$${terminalEV.toFixed(1)}B`, sub: 'Before discounting', color: 'var(--text)' },
               { label: 'Discount Factor', value: `${discountFactor.toFixed(3)}x`, sub: `${discountRate}% × ${discountYears}yr`, color: 'var(--text)' },
             ].map(kpi => (
-              <div key={kpi.label} className="sm-cell-surface-center" style={{ padding: 16 }}>
+              <div key={kpi.label} className="sm-grid-cell-center">
                 <div className="sm-micro-text">{kpi.label}</div>
                 <div className="sm-mono-lg" style={{ color: kpi.color, margin: '6px 0 4px' }}>{kpi.value}</div>
                 <div className="sm-text-11">{kpi.sub}</div>
@@ -4393,14 +4393,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                   { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
                 ][idx];
                 return (
-                  <div key={opt} onClick={() => updateParam(setBaseRev)(opt)} style={{
-                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                    background: isActive ? colors.bg : 'var(--surface2)',
-                    fontWeight: isActive ? 600 : 400,
-                    color: isActive ? colors.text : 'var(--text3)',
-                    transition: 'all 0.15s'
-                  }}>${opt}</div>
+                  <div key={opt} onClick={() => updateParam(setBaseRev)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>${opt}</div>
                 );
               })}
             </div>
@@ -4424,14 +4417,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                   { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
                 ][idx];
                 return (
-                  <div key={opt} onClick={() => updateParam(setRevVol)(opt)} style={{
-                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                    background: isActive ? colors.bg : 'var(--surface2)',
-                    fontWeight: isActive ? 600 : 400,
-                    color: isActive ? colors.text : 'var(--text3)',
-                    transition: 'all 0.15s'
-                  }}>{opt}%</div>
+                  <div key={opt} onClick={() => updateParam(setRevVol)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
                 );
               })}
             </div>
@@ -4462,14 +4448,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                   { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
                 ][idx];
                 return (
-                  <div key={opt} onClick={() => updateParam(setMargin)(opt)} style={{
-                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                    background: isActive ? colors.bg : 'var(--surface2)',
-                    fontWeight: isActive ? 600 : 400,
-                    color: isActive ? colors.text : 'var(--text3)',
-                    transition: 'all 0.15s'
-                  }}>{opt}%</div>
+                  <div key={opt} onClick={() => updateParam(setMargin)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
                 );
               })}
             </div>
@@ -4493,14 +4472,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                   { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
                 ][idx];
                 return (
-                  <div key={opt} onClick={() => updateParam(setMult)(opt)} style={{
-                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                    background: isActive ? colors.bg : 'var(--surface2)',
-                    fontWeight: isActive ? 600 : 400,
-                    color: isActive ? colors.text : 'var(--text3)',
-                    transition: 'all 0.15s'
-                  }}>{opt}x</div>
+                  <div key={opt} onClick={() => updateParam(setMult)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}x</div>
                 );
               })}
             </div>
@@ -4531,14 +4503,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                   { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
                 ][idx];
                 return (
-                  <div key={opt} onClick={() => updateParam(setLaunchRisk)(opt)} style={{
-                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                    background: isActive ? colors.bg : 'var(--surface2)',
-                    fontWeight: isActive ? 600 : 400,
-                    color: isActive ? colors.text : 'var(--text3)',
-                    transition: 'all 0.15s'
-                  }}>{opt}%</div>
+                  <div key={opt} onClick={() => updateParam(setLaunchRisk)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
                 );
               })}
             </div>
@@ -4562,14 +4527,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                   { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
                 ][idx];
                 return (
-                  <div key={opt} onClick={() => updateParam(setRegRisk)(opt)} style={{
-                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                    background: isActive ? colors.bg : 'var(--surface2)',
-                    fontWeight: isActive ? 600 : 400,
-                    color: isActive ? colors.text : 'var(--text3)',
-                    transition: 'all 0.15s'
-                  }}>{opt}%</div>
+                  <div key={opt} onClick={() => updateParam(setRegRisk)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
                 );
               })}
             </div>
@@ -4593,14 +4551,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                   { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
                 ][idx];
                 return (
-                  <div key={opt} onClick={() => setDiscountRate(opt)} style={{
-                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                    background: isActive ? colors.bg : 'var(--surface2)',
-                    fontWeight: isActive ? 600 : 400,
-                    color: isActive ? colors.text : 'var(--text3)',
-                    transition: 'all 0.15s'
-                  }}>{opt}%</div>
+                  <div key={opt} onClick={() => setDiscountRate(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
                 );
               })}
             </div>
@@ -4609,10 +4560,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
         </div>
 
         {/* Run Button */}
-        <button onClick={() => setRunKey(k => k + 1)} className="sm-w-full" style={{
-          padding: '12px 16px', background: 'var(--accent)', color: 'var(--bg1)',
-          border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
-        }}>🎲 Run Simulation</button>
+        <button onClick={() => setRunKey(k => k + 1)} className="sm-run-btn">🎲 Run Simulation</button>
       </div>
 
       {/* Percentile Distribution */}
@@ -6244,7 +6192,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 <span className="sm-cmp-td-label">{v.method}</span>
                 <span className="sm-cmp-td">{v.basis}</span>
                 <span className="sm-cmp-td" data-align="right">{v.metric}</span>
-                <span className="sm-cmp-td" data-align="right" className="sm-mint">${(v.implied / 1000).toFixed(1)}B</span>
+                <span className="sm-cmp-td sm-mint" data-align="right">${(v.implied / 1000).toFixed(1)}B</span>
                 <span className="sm-cmp-td" data-align="right" style={{ color: v.premium >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                   {v.premium >= 0 ? '+' : ''}{v.premium.toFixed(0)}%
                 </span>
@@ -6280,12 +6228,12 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                   <span className="sm-cmp-td-label"><div>{s.segment}</div><div className="sm-text-11">{s.basis}</div></span>
                   <span className="sm-cmp-td" data-align="right">{s.metric}</span>
                   <span className="sm-cmp-td" data-align="right">{s.multiple}</span>
-                  <span className="sm-cmp-td" data-align="right" className="sm-mint">${(s.value / 1000).toFixed(1)}B</span>
+                  <span className="sm-cmp-td sm-mint" data-align="right">${(s.value / 1000).toFixed(1)}B</span>
                 </div>
               ))}
               <div className="sm-cmp-table-total" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
                 <span className="sm-cmp-td-label" style={{ gridColumn: '1 / 4' }}>SOTP Total</span>
-                <span className="sm-cmp-td" data-align="right" className="sm-mint">${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</span>
+                <span className="sm-cmp-td sm-mint" data-align="right">${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</span>
               </div>
             </div>
           </div>
@@ -6316,12 +6264,12 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                   <span className="sm-cmp-td-label"><div>{s.scenario}</div><div className="sm-text-11">{s.desc}</div></span>
                   <span className="sm-cmp-td" data-align="right">{s.prob}%</span>
                   <span className="sm-cmp-td" data-align="right">${(s.value / 1000).toFixed(1)}B</span>
-                  <span className="sm-cmp-td" data-align="right" className="sm-mint">${(s.value * s.prob / 100 / 1000).toFixed(1)}B</span>
+                  <span className="sm-cmp-td sm-mint" data-align="right">${(s.value * s.prob / 100 / 1000).toFixed(1)}B</span>
                 </div>
               ))}
               <div className="sm-cmp-table-total" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
                 <span className="sm-cmp-td-label" style={{ gridColumn: '1 / 4' }}>Expected Value</span>
-                <span className="sm-cmp-td" data-align="right" className="sm-mint">${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</span>
+                <span className="sm-cmp-td sm-mint" data-align="right">${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</span>
               </div>
             </div>
           </div>

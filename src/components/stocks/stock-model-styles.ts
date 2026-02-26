@@ -2084,7 +2084,7 @@ input[type="range"]::-webkit-slider-thumb {
   margin: 0;
 }
 
-/* Filter pill */
+/* Filter pill — uses data-active for state-driven styling */
 .sm-ed-filter-pill {
   font-size: 9px;
   font-weight: 500;
@@ -2099,9 +2099,22 @@ input[type="range"]::-webkit-slider-thumb {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  color: var(--pill-color, var(--text3));
-  background: var(--pill-bg, rgba(255,255,255,0.04));
-  border: 1px solid var(--pill-border, var(--border));
+  color: var(--text3);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+}
+.sm-ed-filter-pill[data-active="true"] {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, rgba(255,255,255,0.04));
+  border-color: color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.sm-ed-filter-pill .sm-pill-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  opacity: 0.35;
+}
+.sm-ed-filter-pill[data-active="true"] .sm-pill-count {
+  opacity: 0.8;
 }
 
 /* Year section toggle */
@@ -6338,20 +6351,25 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* ── Filter pill button (partner/category/competitor filters) ─────────── */
+/* Unified across ASTS, BMNR, and shared components.
+   Use --pill-accent to set active color (defaults to --accent). */
 .sm-filter-pill {
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.5px;
   padding: 4px 12px;
   border-radius: 100px;
-  border: none;
+  border: 1px solid var(--border);
+  background: transparent;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.2s;
   font-family: 'Outfit', sans-serif;
-  background: color-mix(in srgb, var(--border) 60%, transparent);
   color: var(--text3);
+  outline: none;
+  white-space: nowrap;
 }
 .sm-filter-pill[data-active="true"] {
+  border-color: var(--pill-accent, var(--accent));
   background: color-mix(in srgb, var(--pill-accent, var(--accent)) 15%, transparent);
   color: var(--pill-accent, var(--accent));
 }
@@ -7638,24 +7656,7 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--text3);
 }
 
-/* ── News Filter Pill ────────────────────────────────────────────────────── */
-.sm-bmnr-filter-pill {
-  font-size: 11px;
-  padding: 4px 12px;
-  border-radius: 99px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text3);
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: 'Outfit', sans-serif;
-  outline: none;
-}
-.sm-bmnr-filter-pill[data-active="true"] {
-  border-color: var(--pill-color, var(--sky));
-  background: color-mix(in srgb, var(--pill-color, var(--sky)) 15%, transparent);
-  color: var(--pill-color, var(--sky));
-}
+/* sm-bmnr-filter-pill: removed — use .sm-filter-pill with --pill-accent instead */
 .sm-bmnr-clear-btn {
   font-size: 10px;
   padding: 4px 12px;
@@ -7855,6 +7856,294 @@ input[type="range"]::-webkit-slider-thumb {
 /* ── Disabled Overlay ────────────────────────────────────────────────────── */
 .sm-bmnr-disabled-overlay[data-disabled="true"] { opacity: 0.4; pointer-events: none; }
 
+/* ── Additional Utilities (BMNR batch) ─────────────────────────────────── */
+.sm-fs-11 { font-size: 11px; }
+.sm-fs-13 { font-size: 13px; }
+.sm-fs-14 { font-size: 14px; }
+.sm-fs-15 { font-size: 15px; }
+.sm-mt-6 { margin-top: 6px; }
+.sm-pb-0 { padding-bottom: 0; }
+.sm-ml-6 { margin-left: 6px; }
+.sm-ml-8 { margin-left: 8px; }
+.sm-ls-half { letter-spacing: 0.5px; }
+.sm-p-16-24 { padding: 16px 24px; }
+.sm-p-24-16 { padding: 24px 16px; }
+.sm-items-initial { align-items: initial; }
+
+/* ── Label Reset (undoes section-label formatting inside content) ──────── */
+.sm-bmnr-reset-label {
+  letter-spacing: normal;
+  text-transform: none;
+  font-weight: 400;
+}
+
+/* ── Perspective Card (Risk Evaluation section) ────────────────────────── */
+.sm-bmnr-perspective-card {
+  background: color-mix(in srgb, var(--card-accent, var(--violet)) 5%, transparent);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--card-accent, var(--violet)) 20%, transparent);
+}
+.sm-bmnr-perspective-badge {
+  background: var(--card-accent, var(--violet));
+  color: white;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.sm-bmnr-perspective-badge[data-dark-text] { color: var(--bg); }
+.sm-bmnr-perspective-quote {
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--card-accent, var(--violet)) 10%, transparent);
+  border-radius: 6px;
+  border-left: 3px solid var(--card-accent, var(--violet));
+}
+
+/* ── Signal Card (Ecosystem triggers, time horizon cards) ──────────────── */
+.sm-bmnr-signal-card {
+  background: color-mix(in srgb, var(--card-accent, var(--sky)) 10%, transparent);
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--card-accent, var(--sky)) 20%, transparent);
+}
+.sm-bmnr-signal-title {
+  font-weight: 600;
+  color: var(--card-accent, var(--sky));
+  font-size: 13px;
+}
+
+/* ── Comps Summary Badge ───────────────────────────────────────────────── */
+.sm-bmnr-comps-badge {
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid var(--badge-color, var(--text3));
+  background: color-mix(in srgb, var(--badge-color, var(--text3)) 15%, transparent);
+  color: var(--badge-color, var(--text3));
+}
+
+/* ── Assessment Answer Card ────────────────────────────────────────────── */
+.sm-bmnr-answer-card {
+  padding: 12px 16px;
+  border-radius: 12px;
+}
+.sm-bmnr-answer-badge {
+  padding: 6px 16px;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* ── Section Divider ───────────────────────────────────────────────────── */
+.sm-bmnr-section-divider {
+  padding-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  margin-bottom: 8px;
+}
+
+/* ── Allocation Row ────────────────────────────────────────────────────── */
+.sm-bmnr-alloc-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* ── Analysis History Item ─────────────────────────────────────────────── */
+.sm-bmnr-history-item {
+  padding: 12px 16px;
+  border-radius: 12px;
+}
+.sm-bmnr-history-item[data-latest] {
+  background: color-mix(in srgb, var(--mint) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mint) 20%, transparent);
+}
+.sm-bmnr-history-tag {
+  padding: 4px 8px;
+  background: var(--surface);
+  border-radius: 99px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* ── Chart Bar (dynamic color, height set inline) ──────────────────────── */
+.sm-bmnr-chart-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.3s;
+}
+
+/* ── Grid-3 helper ─────────────────────────────────────────────────────── */
+.sm-grid-3-gap-24 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* ── Missing utility classes (batch 7) ─────────────────────────────────── */
+.sm-fs-10 { font-size: 10px; }
+.sm-fs-12 { font-size: 12px; }
+.sm-ls-15 { letter-spacing: 1.5px; }
+.sm-ls-005em { letter-spacing: 0.05em; }
+.sm-col-span-2 { grid-column: span 2; }
+.sm-justify-between { justify-content: space-between; }
+.sm-items-baseline { align-items: baseline; }
+.sm-p-0-24-24 { padding: 0 24px 24px; }
+.sm-bmnr-pt-16 { padding-top: 16px; }
+.sm-bmnr-pt-24-pb-12 { padding: 24px 0 12px; }
+.sm-bmnr-mb-4-reset { margin: 0 0 4px; }
+.sm-bmnr-mb-16-reset { margin: 0 0 16px; }
+.sm-bmnr-fs-16 { font-size: 16px; }
+.sm-bmnr-max-w-600 { max-width: 600px; }
+.sm-bmnr-min-w-400 { min-width: 400px; }
+
+/* ── Cell / Table utility (BMNR projection tables) ─────────────────────── */
+.sm-bmnr-cell { padding: 12px 16px; }
+.sm-bmnr-cell[data-highlight="true"] { background: rgba(0,212,170,0.1); }
+.sm-bmnr-th {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.sm-bmnr-mono-val {
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+  color: var(--val-color, var(--text));
+  text-align: var(--align, left);
+}
+.sm-bmnr-mono-val[data-align="right"] { text-align: right; }
+.sm-bmnr-desc-cell {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+/* ── Color Dot (inline scenario indicators) ────────────────────────────── */
+.sm-bmnr-color-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+/* ── Card Frosted (semi-transparent surface) ───────────────────────────── */
+.sm-bmnr-card-frosted {
+  background: color-mix(in srgb, var(--surface2) 60%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+/* ── Grid-6 helper ─────────────────────────────────────────────────────── */
+.sm-bmnr-grid-6 {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+
+/* ── Grid-2 with gap-24 ────────────────────────────────────────────────── */
+.sm-bmnr-grid-2-gap-24 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* ── Pill Button ───────────────────────────────────────────────────────── */
+.sm-bmnr-pill-btn {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+}
+
+/* ── Pill Tag ──────────────────────────────────────────────────────────── */
+.sm-bmnr-pill-tag {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--text1);
+}
+
+/* ── Link Button (bare text button) ────────────────────────────────────── */
+.sm-bmnr-link-btn {
+  font-size: 11px;
+  color: var(--text3);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ── History List (scrollable) ─────────────────────────────────────────── */
+.sm-bmnr-history-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* ── Color: red ────────────────────────────────────────────────────────── */
+.sm-red { color: var(--red); }
+
+/* ── Static Grid Column Templates (BMNR tables) ───────────────────────── */
+.sm-bmnr-grid-cols-2-1-1-1 { grid-template-columns: 2fr 1fr 1fr 1fr; }
+.sm-bmnr-grid-cols-1-1-100-100 { grid-template-columns: 1fr 1fr 100px 100px; }
+.sm-bmnr-grid-cols-1-100-1 { grid-template-columns: 1fr 100px 1fr; }
+.sm-bmnr-grid-cols-1-100-100-1 { grid-template-columns: 1fr 100px 100px 1fr; }
+.sm-bmnr-grid-cols-80-1-1-1 { grid-template-columns: 80px 1fr 1fr 1fr; }
+.sm-bmnr-grid-cols-1-80-80 { grid-template-columns: 1fr 80px 80px; }
+.sm-bmnr-grid-cols-1-120-1 { grid-template-columns: 1fr 120px 1fr; }
+.sm-bmnr-grid-cols-1-100-80-1-1 { grid-template-columns: 1fr 100px 80px 1fr 1fr; }
+.sm-bmnr-grid-cols-1-100-100-1-100 { grid-template-columns: 1fr 100px 100px 1fr 100px; }
+.sm-bmnr-grid-cols-1-100x4 { grid-template-columns: 1fr 100px 100px 100px 100px; }
+
+/* ── Grid Row (1fr 120px 100px with border) ────────────────────────────── */
+.sm-bmnr-grid-row-1-120-100 {
+  display: grid;
+  grid-template-columns: 1fr 120px 100px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+
+/* ── Flex Bar (space-between with surface2 bg) ─────────────────────────── */
+.sm-bmnr-flex-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: var(--surface2);
+  border-radius: 4px;
+}
+
+/* ── Panel Wrap ────────────────────────────────────────────────────────── */
+.sm-bmnr-panel-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 16px;
+}
+
+/* ── Card Surface2 ─────────────────────────────────────────────────────── */
+.sm-bmnr-card-surface2 {
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
 /* ── § 34 Responsive ─────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .sm-bmnr-param-grid { grid-template-columns: repeat(4, 1fr); }
@@ -7879,5 +8168,105 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-bmnr-tranche-grid { grid-template-columns: 1fr 1fr; }
   .sm-bmnr-changes-header, .sm-bmnr-changes-row { grid-template-columns: 1fr 60px 60px 80px; }
   .sm-bmnr-news-row { padding: 12px 16px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 36. UNIFIED BUTTON STYLES
+   Shared button patterns for action buttons, show-more buttons, and filter
+   pills. Replaces per-tab inline styles with data-attribute-driven CSS.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Show More / Load More Button ─────────────────────────────────────────
+   Used in both SharedEdgarTab and SharedSourcesTab for "load more hidden"
+   and "collapse hidden" toggles.
+   ──────────────────────────────────────────────────────────────────────── */
+.sm-show-more-btn {
+  display: block;
+  width: 100%;
+  padding: 4px 12px;
+  margin: 2px 0;
+  font-size: 9px;
+  font-family: 'Space Mono', monospace;
+  font-weight: 500;
+  color: var(--text3);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  opacity: 0.25;
+  transition: opacity 0.15s;
+}
+.sm-show-more-btn:hover {
+  opacity: 0.5;
+}
+
+/* ── Action Button State Variants ─────────────────────────────────────────
+   Replace inline style={{ '--ed-btn-color': ..., border: ..., cursor: ...,
+   opacity: ... }} with data-variant and data-state attributes.
+   Usage: <button className="sm-ed-action-btn" data-variant="mint" data-state="loading">
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Variant colors — defines the accent color for the button */
+.sm-ed-action-btn[data-variant="mint"] {
+  --ed-btn-color: rgba(130,200,130,0.5);
+  border-color: rgba(130,200,130,0.15);
+}
+.sm-ed-action-btn[data-variant="mint-solid"] {
+  --ed-btn-color: var(--mint);
+  border-color: rgba(130,200,130,0.15);
+}
+.sm-ed-action-btn[data-variant="sky"] {
+  --ed-btn-color: var(--sky);
+  border-color: color-mix(in srgb, var(--sky) 25%, transparent);
+  opacity: 0.6;
+}
+.sm-ed-action-btn[data-variant="coral"] {
+  --ed-btn-color: var(--coral);
+  border-color: color-mix(in srgb, var(--coral) 25%, transparent);
+}
+.sm-ed-action-btn[data-variant="blue"] {
+  --ed-btn-color: rgba(130,180,220,0.5);
+  border-color: rgba(130,180,220,0.15);
+}
+
+/* State overrides — loading, success, disabled */
+.sm-ed-action-btn[data-state="loading"] {
+  --ed-btn-color: var(--text3);
+  border-color: var(--border);
+  cursor: wait;
+  opacity: 0.5;
+}
+.sm-ed-action-btn[data-state="success"] {
+  --ed-btn-color: var(--mint);
+  border-color: rgba(130,200,130,0.15);
+  cursor: default;
+}
+.sm-ed-action-btn[data-state="error"] {
+  --ed-btn-color: var(--coral);
+  border-color: color-mix(in srgb, var(--coral) 25%, transparent);
+}
+.sm-ed-action-btn[data-state="disabled"] {
+  --ed-btn-color: var(--text3);
+  border-color: var(--border);
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+/* ── Spin animation for loading icons ─────────────────────────────────── */
+.sm-ed-action-btn[data-state="loading"] svg {
+  animation: spin 1s linear infinite;
+}
+
+/* ── Unified Filter Pill ──────────────────────────────────────────────────
+   Single filter pill class for all tabs (ASTS, BMNR, Edgar).
+   Uses --pill-accent for the active color (defaults to --accent).
+   Usage: <button className="sm-filter-pill" data-active={isActive || undefined}>
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* .sm-filter-pill already exists in §33 — extend with clear variant */
+.sm-filter-pill[data-variant="clear"] {
+  background: color-mix(in srgb, var(--coral) 10%, transparent);
+  color: var(--coral);
+  border-color: transparent;
 }
 `;

@@ -265,7 +265,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
               type="button"
               onClick={async () => { await navigator.clipboard.writeText(workflow.prompt); setCopiedPrompt(true); setTimeout(() => setCopiedPrompt(false), 2000); }}
               className="sm-ed-action-btn-sm"
-              style={{ color: copiedPrompt ? "var(--mint)" : undefined, borderColor: copiedPrompt ? "rgba(130,200,130,0.15)" : undefined }}
+              data-state={copiedPrompt ? "success" : undefined}
+              style={copiedPrompt ? { color: "var(--mint)", borderColor: "rgba(130,200,130,0.15)" } : undefined}
             >
               {copiedPrompt ? "Copied!" : "Copy prompt"}
             </button>
@@ -308,13 +309,9 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                 disabled={!canRun}
                 onClick={handleRun}
                 className="sm-ed-action-btn"
-                style={{
-                  padding: "5px 14px",
-                  '--ed-btn-color': canRun ? "rgba(130,200,130,0.5)" : "var(--text3)",
-                  borderColor: canRun ? "rgba(130,200,130,0.15)" : "var(--border)",
-                  cursor: canRun ? "pointer" : "not-allowed",
-                  opacity: canRun ? 1 : 0.4,
-                } as React.CSSProperties}
+                data-variant="mint"
+                data-state={canRun ? undefined : "disabled"}
+                style={{ padding: "5px 14px" }}
               >
                 Run Analysis
               </button>
@@ -323,7 +320,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                 type="button"
                 onClick={handleStop}
                 className="sm-ed-action-btn"
-                style={{ padding: "5px 14px", '--ed-btn-color': 'var(--coral)', borderColor: "color-mix(in srgb, var(--coral) 25%, transparent)" } as React.CSSProperties}
+                data-variant="coral"
+                style={{ padding: "5px 14px" }}
               >
                 Stop
               </button>
@@ -375,7 +373,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                     </button>
 
                     {/* 2. Copy Markdown */}
-                    <button type="button" onClick={handleCopy} className="sm-ed-action-btn" style={{ '--ed-btn-color': copied ? "var(--mint)" : undefined, borderColor: copied ? "rgba(130,200,130,0.15)" : undefined } as React.CSSProperties}>
+                    <button type="button" onClick={handleCopy} className="sm-ed-action-btn" data-state={copied ? "success" : undefined}>
                       <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                         <rect x={9} y={9} width={13} height={13} rx={2} ry={2} />
                         <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
@@ -385,7 +383,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 
                     {/* 3. Preview Changes / Applied indicator */}
                     {applyStep === "applied" ? (
-                      <span className="sm-ed-action-btn" style={{ '--ed-btn-color': "var(--mint)", borderColor: "rgba(130,200,130,0.15)", cursor: "default" } as React.CSSProperties}>
+                      <span className="sm-ed-action-btn" data-state="success">
                         <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
