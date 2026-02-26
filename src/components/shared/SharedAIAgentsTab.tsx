@@ -229,8 +229,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
         type="button"
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
-        className="sm-w-full sm-pointer sm-gap-16"
-        style={{ padding: "16px 20px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", background: "none", border: "none", textAlign: "left" }}
+        className="sm-w-full sm-pointer sm-gap-16 sm-flex sm-items-start sm-text-left sm-justify-between"
+        style={{ padding: "16px 20px", background: "none", border: "none" }}
       >
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className="sm-flex sm-gap-8" style={{ marginBottom: 4 }}>
@@ -265,7 +265,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
               type="button"
               onClick={async () => { await navigator.clipboard.writeText(workflow.prompt); setCopiedPrompt(true); setTimeout(() => setCopiedPrompt(false), 2000); }}
               className="sm-ed-action-btn-sm"
-              style={{ color: copiedPrompt ? "var(--mint)" : undefined, borderColor: copiedPrompt ? "rgba(130,200,130,0.15)" : undefined }}
+              data-state={copiedPrompt ? "success" : undefined}
             >
               {copiedPrompt ? "Copied!" : "Copy prompt"}
             </button>
@@ -307,14 +307,9 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                 type="button"
                 disabled={!canRun}
                 onClick={handleRun}
-                className="sm-ed-action-btn"
-                style={{
-                  padding: "5px 14px",
-                  '--ed-btn-color': canRun ? "rgba(130,200,130,0.5)" : "var(--text3)",
-                  borderColor: canRun ? "rgba(130,200,130,0.15)" : "var(--border)",
-                  cursor: canRun ? "pointer" : "not-allowed",
-                  opacity: canRun ? 1 : 0.4,
-                } as React.CSSProperties}
+                className="sm-ed-action-btn sm-p-5-14"
+                data-variant="mint"
+                data-state={canRun ? undefined : "disabled"}
               >
                 Run Analysis
               </button>
@@ -322,8 +317,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
               <button
                 type="button"
                 onClick={handleStop}
-                className="sm-ed-action-btn"
-                style={{ padding: "5px 14px", '--ed-btn-color': 'var(--coral)', borderColor: "color-mix(in srgb, var(--coral) 25%, transparent)" } as React.CSSProperties}
+                className="sm-ed-action-btn sm-p-5-14"
+                data-variant="coral"
               >
                 Stop
               </button>

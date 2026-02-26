@@ -1520,7 +1520,7 @@ const ScenariosTab = () => {
             <div className="sm-card">
               <div className="sm-card-section"><span className="sm-section-label">Financial Projections — {selected.name} Scenario</span></div>
               <div className="sm-overflow-x">
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <table className="sm-w-full sm-border-collapse">
                   <thead>
                     <tr>
                       <th>Metric</th>
@@ -1659,7 +1659,7 @@ const ScenariosTab = () => {
             <div className="sm-grid-2-lg">
               <div className="sm-card">
                 <div className="sm-card-section"><span className="sm-section-label">Key Assumptions</span></div>
-                <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
+                <ul className="sm-text2 sm-m-0 sm-pl-20">
                   {selected.assumptions.map((a, i) => (
                     <li key={i} style={{ lineHeight: 1.5 }}>{a}</li>
                   ))}
@@ -1667,7 +1667,7 @@ const ScenariosTab = () => {
               </div>
               <div className="sm-card">
                 <div className="sm-card-section"><span className="sm-section-label">{selected.catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</span></div>
-                <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
+                <ul className="sm-text2 sm-m-0 sm-pl-20">
                   {(selected.catalysts.length > 0 ? selected.catalysts : selected.risks).map((item, i) => (
                     <li key={i} style={{ lineHeight: 1.5 }}>{item}</li>
                   ))}
@@ -1675,7 +1675,7 @@ const ScenariosTab = () => {
                 {selected.catalysts.length > 0 && selected.risks.length > 0 && (
                   <>
                     <div className="sm-card-section"><span className="sm-section-label">Risks</span></div>
-                    <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)' }}>
+                    <ul className="sm-text2 sm-m-0 sm-pl-20">
                       {selected.risks.map((r, i) => (
                         <li key={i} style={{ lineHeight: 1.5 }}>{r}</li>
                       ))}
@@ -1734,7 +1734,7 @@ const ScenariosTab = () => {
 
               {/* Scenario Breakdown */}
               <div>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <table className="sm-w-full sm-border-collapse">
                   <thead>
                     <tr>
                       <th>Scenario</th>
@@ -1785,7 +1785,7 @@ const ScenariosTab = () => {
       <div className="sm-card">
         <div className="sm-card-section"><span className="sm-section-label">All Scenarios — {targetYear} Comparison</span></div>
         <div className="sm-overflow-x">
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table className="sm-w-full sm-border-collapse">
             <thead>
               <tr>
                 <th>Metric</th>
@@ -1881,7 +1881,7 @@ const ScenariosTab = () => {
         <div className="sm-grid-2-lg">
           <div>
             <h4 className="sm-mint">Valuation Framework</h4>
-            <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
+            <ul className="sm-text2 sm-m-0 sm-pl-20 sm-lh-18">
               <li><strong>Revenue Model:</strong> USDC Circulation × Reserve Yield = Gross Reserve Income</li>
               <li><strong>Distribution Costs:</strong> Coinbase revenue share (currently ~54%, varies by scenario)</li>
               <li><strong>Net Revenue:</strong> Gross Revenue − Distribution Costs + Other Revenue</li>
@@ -1892,7 +1892,7 @@ const ScenariosTab = () => {
           </div>
           <div>
             <h4 className="sm-sky">Key Model Inputs</h4>
-            <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
+            <ul className="sm-text2 sm-m-0 sm-pl-20 sm-lh-18">
               <li><strong>Stablecoin TAM:</strong> $250B (2025) → $500B-2T (2030) depending on scenario</li>
               <li><strong>Fed Funds Rate:</strong> 4.0-4.5% (2025) → 1.5-4.0% (2030) depending on scenario</li>
               <li><strong>Market Share:</strong> Current 29% vs Tether 65%; varies 8-48% by scenario</li>
@@ -1903,7 +1903,7 @@ const ScenariosTab = () => {
         </div>
         <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
           <h4 className="sm-gold">Important Caveats</h4>
-          <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text3)', lineHeight: 1.8, fontSize: 13 }}>
+          <ul className="sm-text3 sm-m-0 sm-pl-20 sm-lh-18" style={{ fontSize: 13 }}>
             <li>Projections are illustrative scenarios, not forecasts. Actual results may differ materially.</li>
             <li>Probabilities are subjective estimates and do not represent statistical likelihoods.</li>
             <li>Model assumes current share count (~229M); dilution from equity plans not explicitly modeled.</li>

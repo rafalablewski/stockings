@@ -1687,14 +1687,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             disabled={loading}
             aria-label="Fetch EDGAR filings"
             title="Fetch filings from SEC EDGAR"
-            className="sm-ed-action-btn"
-            style={{
-              padding: '5px 14px', gap: 6,
-              '--ed-btn-color': loading ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
-              borderColor: loading ? 'var(--border)' : 'rgba(130,200,130,0.15)',
-              cursor: loading ? 'wait' : undefined,
-              opacity: loading ? 0.5 : 1,
-            } as React.CSSProperties}
+            className="sm-ed-action-btn sm-p-5-14 sm-gap-6"
+            data-variant="mint"
+            data-state={loading ? 'loading' : undefined}
           >
             <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: loading ? 'spin 1s linear infinite' : 'none' }}>
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -1709,14 +1704,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               disabled={recheckLoading}
               aria-label="Re-check local database"
               title="Re-check if filings have been added to local database"
-              className="sm-ed-action-btn"
-              style={{
-                padding: '5px 14px', gap: 6,
-                '--ed-btn-color': recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
-                borderColor: recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)',
-                cursor: recheckLoading ? 'wait' : undefined,
-                opacity: recheckLoading ? 0.5 : 1,
-              } as React.CSSProperties}
+              className="sm-ed-action-btn sm-p-5-14 sm-gap-6"
+              data-variant="blue"
+              data-state={recheckLoading ? 'loading' : undefined}
             >
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 1s linear infinite' : 'none' }}>
                 <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
