@@ -13,7 +13,7 @@ import type { ReactNode } from 'react';
 export interface SECFilingTypeInfo {
   date: string;
   description: string;
-  color: 'blue' | 'purple' | 'yellow' | 'green' | 'orange' | 'cyan';
+  color: string;
 }
 
 export interface FinancialsSECConfig {
