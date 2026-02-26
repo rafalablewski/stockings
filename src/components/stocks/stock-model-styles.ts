@@ -6261,10 +6261,6 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-refresh-icon {
   color: var(--text3);
 }
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
 .sm-refresh-icon[data-loading="true"] {
   animation: spin 1s linear infinite;
 }
@@ -6533,24 +6529,6 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 4px 12px;
   font-size: 11px;
   color: #22d3ee;
-}
-
-/* ── Refresh button (transparent icon button) ─────────────────────────── */
-.sm-refresh-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  opacity: 0.6;
-}
-.sm-refresh-btn:disabled {
-  cursor: wait;
-  opacity: 0.5;
 }
 
 /* ── Grid separator (1px gap) with explicit columns ───────────────────── */

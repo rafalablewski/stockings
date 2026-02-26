@@ -1039,7 +1039,7 @@ const CRCLModelTab = ({
         {/* Scenario Presets - 6 scenarios from Worst to Moon */}
         <div className="sm-panel" style={{ borderRadius: 14 }}>
           <div className="sm-panel-title sm-mb-12">Scenario Presets</div>
-          <div className="sm-kpi-grid-3" style={{ gridTemplateColumns: 'repeat(6, 1fr)', borderRadius: 10 }}>
+          <div className="sm-scenario-grid" style={{ gap: 1, background: 'var(--border)', borderRadius: 10, overflow: 'hidden' }}>
             {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
               const preset = CRCL_SCENARIO_PRESETS[s];
               const isActive = selectedScenario === s;
@@ -1051,20 +1051,17 @@ const CRCLModelTab = ({
                   tabIndex={0}
                   aria-label={`${preset.label} scenario`}
                   onKeyDown={(e) => e.key === 'Enter' && applyScenario(s)}
+                  className="sm-p-12 sm-bg-surface sm-pointer sm-transition sm-text-center"
                   style={{
-                    padding: 12,
-                    background: isActive ? `${preset.color}15` : 'var(--surface)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    textAlign: 'center',
+                    background: isActive ? `${preset.color}15` : undefined,
                     borderBottom: isActive ? `2px solid ${preset.color}` : '2px solid transparent',
                   }}
                 >
-                  <div style={{ fontSize: 20 }}>{preset.icon}</div>
-                  <div style={{ fontWeight: 600, fontSize: 13, color: isActive ? preset.color : 'var(--text)' }}>
+                  <div className="sm-text-20">{preset.icon}</div>
+                  <div className="sm-fw-600" style={{ fontSize: 13, color: isActive ? preset.color : 'var(--text)' }}>
                     {preset.label}
                   </div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', lineHeight: 1.3 }}>
+                  <div className="sm-text3 sm-text-10" style={{ lineHeight: 1.3 }}>
                     {preset.usdcGrowthRate > 0 ? '+' : ''}{preset.usdcGrowthRate}% · {preset.reserveYield}%
                   </div>
                 </div>
@@ -1186,7 +1183,7 @@ const CRCLModelTab = ({
           Probability of adverse events that could significantly impair value. Combined as: (1-Reg) × (1-Comp) × (1-Rate) = {(riskFactor * 100).toFixed(0)}% success probability.
         </p>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        <div className="sm-proj-grid-3" style={{ gap: 12 }}>
           <CRCLParameterCard
             title="Regulatory Risk (%)"
             explanation="Probability of adverse stablecoin regulation. SEC/banking agency scrutiny, reserve requirements, licensing issues. 5% = favorable legislation. 30%+ = CBDC mandates or stablecoin restrictions."

@@ -647,10 +647,8 @@ const BMNRDilutionAnalysis = () => {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    style={{
-                      color: 'var(--text3)',
-                      animation: priceLoading ? 'spin 1s linear infinite' : 'none',
-                    }}
+                    className="sm-refresh-icon"
+                    data-loading={priceLoading ? 'true' : undefined}
                   >
                     <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                     <path d="M3 3v5h5" />
@@ -855,12 +853,12 @@ const BMNRParameterCard = ({
   };
 
   return (
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '24px 24px', marginBottom: 12, opacity: disabled ? 0.6 : 1 }}>
+    <div className="sm-bmnr-param-panel" data-disabled={disabled}>
       <div className="sm-panel-title sm-mb-12">{title}</div>
       <p className="sm-note-list">
         {explanation}
       </p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6, pointerEvents: disabled ? 'none' : 'auto' }}>
+      <div className="sm-bmnr-param-grid" data-disabled={disabled}>
         {options.slice(0, 6).map((opt, idx) => {
           const isActive = value === opt;
           const colors = getButtonColor(idx);
@@ -868,18 +866,10 @@ const BMNRParameterCard = ({
             <div
               key={opt}
               onClick={() => { if (!disabled) { onChange(opt); setCustomMode(false); } }}
-              style={{
-                padding: '12px 4px',
-                borderRadius: 8,
-                border: isActive ? `2px solid ${disabled ? 'var(--text3)' : colors.border}` : '1px solid var(--border)',
-                background: isActive ? (disabled ? 'var(--surface2)' : colors.bg) : 'var(--surface2)',
-                cursor: disabled ? 'default' : 'pointer',
-                transition: 'all 0.15s',
-                textAlign: 'center',
-                fontSize: 12,
-                fontWeight: isActive ? 600 : 400,
-                color: isActive ? (disabled ? 'var(--text3)' : colors.text) : 'var(--text3)',
-              }}
+              className="sm-bmnr-param-btn"
+              data-active={isActive}
+              data-disabled={disabled}
+              style={isActive && !disabled ? { '--btn-color': colors.border } as React.CSSProperties : undefined}
             >
               {formatValue(opt)}
             </div>
@@ -887,13 +877,7 @@ const BMNRParameterCard = ({
         })}
         {/* Custom input button/field */}
         {customMode && !disabled ? (
-          <div style={{
-            display: 'flex',
-            borderRadius: 8,
-            border: '2px solid var(--violet)',
-            background: 'rgba(167,139,250,0.15)',
-            overflow: 'hidden',
-          }}>
+          <div className="sm-bmnr-custom-wrap">
             <input
               type="text"
               value={customInput}
@@ -901,41 +885,21 @@ const BMNRParameterCard = ({
               onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
               placeholder="..."
               autoFocus
-              style={{
-                flex: 1,
-                minWidth: 0,
-                padding: '8px 4px',
-                border: 'none',
-                background: 'transparent',
-                color: 'var(--violet)',
-                fontSize: 12,
-                fontWeight: 600,
-                textAlign: 'center',
-                outline: 'none',
-              }}
+              className="sm-bmnr-custom-input"
             />
           </div>
         ) : (
           <div
             onClick={() => !disabled && setCustomMode(true)}
-            style={{
-              padding: '12px 4px',
-              borderRadius: 8,
-              border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
-              background: isCustomValue ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
-              cursor: disabled ? 'default' : 'pointer',
-              transition: 'all 0.15s',
-              textAlign: 'center',
-              fontSize: 12,
-              fontWeight: isCustomValue ? 600 : 400,
-              color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
-            }}
+            className="sm-bmnr-param-btn"
+            data-active={isCustomValue}
+            data-disabled={disabled}
           >
             {isCustomValue ? formatValue(value) : '...'}
           </div>
         )}
       </div>
-      <div className="sm-subtle-sm sm-text-center">
+      <div className="sm-bmnr-scale-label">
         ← Bearish | Bullish →
       </div>
     </div>
@@ -1075,7 +1039,7 @@ const ModelTab = ({
 
       {/* ASSUMPTIONS SECTION */}
       <>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 16, overflow: 'hidden', marginTop: 8 }}>
+          <div className="sm-bmnr-scenario-grid">
             {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
               const preset = BMNR_SCENARIO_PRESETS[s];
               const isActive = selectedScenario === s;
@@ -1083,20 +1047,15 @@ const ModelTab = ({
                 <div
                   key={s}
                   onClick={() => applyScenario(s)}
-                  style={{
-                    padding: '16px 8px',
-                    background: isActive ? `${preset.color}15` : 'var(--surface)',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s',
-                    textAlign: 'center',
-                    borderBottom: isActive ? `2px solid ${preset.color}` : '2px solid transparent',
-                  }}
+                  className="sm-bmnr-scenario-cell"
+                  data-active={isActive}
+                  style={{ '--scenario-color': preset.color } as React.CSSProperties}
                 >
                   <div className="sm-micro-text">{preset.label}</div>
-                  <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: isActive ? preset.color : 'var(--text)', margin: '4px 0 2px' }}>
+                  <div className="sm-bmnr-kpi-val" style={{ fontSize: 16, margin: '4px 0 2px', '--kpi-color': isActive ? preset.color : 'var(--text)' } as React.CSSProperties}>
                     {preset.ethGrowthRate > 0 ? '+' : ''}{preset.ethGrowthRate}%
                   </div>
-                  <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>
+                  <div className="sm-micro-text sm-bmnr-micro-plain">
                     {preset.navPremium}x NAV
                   </div>
                 </div>
@@ -1104,7 +1063,7 @@ const ModelTab = ({
             })}
           </div>
           {selectedScenario === 'custom' && (
-            <div style={{ padding: '8px 12px', background: 'color-mix(in srgb, var(--violet) 8%, transparent)', borderRadius: 8, fontSize: 11, color: 'var(--violet)', marginTop: 8 }}>
+            <div className="sm-bmnr-custom-notice">
               Custom scenario — parameters modified from preset
             </div>
           )}
