@@ -1069,7 +1069,7 @@ const CRCLModelTab = ({
             })}
           </div>
           {/* Always show to prevent layout shift */}
-          <div style={{ padding: 12, background: 'color-mix(in srgb, var(--violet) 10%, transparent)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
+          <div className="sm-tinted-box-nb sm-rounded-8" style={{ '--tint-color': 'var(--violet)', padding: 12, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 } as React.CSSProperties}>
             ⚙️ {selectedScenario === 'custom' ? 'Custom scenario - parameters modified from preset' : 'Click any value below to create custom scenario'}
           </div>
         </div>
@@ -1139,7 +1139,7 @@ const CRCLModelTab = ({
             <p className="sm-note-list">
               Live data from Circle financials. Used as starting point for projections.
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, fontSize: 12 }}>
+            <div className="sm-proj-grid-4" style={{ gap: 8, fontSize: 12 }}>
               <div><span className="sm-text3">USDC Circulation:</span> <strong>${currentUSDC}B</strong></div>
               <div><span className="sm-text3">Market Share:</span> <strong>{currentMarketShare}%</strong></div>
               <div><span className="sm-text3">Est. Gross Rev:</span> <strong>${currentGrossRevenue.toFixed(2)}B</strong></div>
@@ -1219,20 +1219,20 @@ const CRCLModelTab = ({
           <span className="sm-divider-line" />
         </div>
         {/* Hero KPI row - 2 column */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 14, overflow: 'hidden', marginBottom: 12 }}>
-          <div style={{ background: 'var(--accent-dim)', padding: 24, textAlign: 'center' }}>
+        <div className="sm-kpi-grid-4 sm-mb-12" style={{ gridTemplateColumns: '1fr 1fr' }}>
+          <div className="sm-bg-accent-dim sm-text-center sm-p-24">
             <div className="sm-section-label sm-accent">Target Stock Price</div>
-            <div style={{ fontFamily: 'Space Mono', fontSize: 36, fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
-            <div className="sm-subtle" style={{ marginTop: 6 }}>vs ${currentStockPrice.toFixed(0)} current</div>
+            <div className="sm-comps-big-num sm-accent" style={{ lineHeight: 1 }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
+            <div className="sm-subtle sm-mt-4">vs ${currentStockPrice.toFixed(0)} current</div>
           </div>
-          <div style={{ background: 'var(--accent-dim)', padding: 24, textAlign: 'center' }}>
+          <div className="sm-bg-accent-dim sm-text-center sm-p-24">
             <div className="sm-section-label sm-accent">Implied Upside</div>
-            <div style={{ fontFamily: 'Space Mono', fontSize: 36, fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)', lineHeight: 1 }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
-            <div className="sm-subtle" style={{ marginTop: 6 }}>{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
+            <div className="sm-comps-big-num" style={{ color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)', lineHeight: 1 }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
+            <div className="sm-subtle sm-mt-4">{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
           </div>
         </div>
         {/* 4-column metrics grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 14, overflow: 'hidden' }}>
+        <div className="sm-kpi-grid-4">
           {[
             { label: 'Present Value', value: `$${riskAdjustedEV.toFixed(1)}B`, detail: `${(riskFactor * 100).toFixed(0)}% prob` },
             { label: 'Market Cap', value: `$${currentMarketCap.toFixed(1)}B`, detail: `${currentPSRatio.toFixed(1)}x Net Rev` },
@@ -1247,10 +1247,10 @@ const CRCLModelTab = ({
             { label: 'Risk Factor', value: `${(riskFactor * 100).toFixed(0)}%`, detail: 'Success prob.' },
             { label: 'Equity Value', value: `$${equityValue.toFixed(1)}B`, detail: 'Risk-adj' },
           ].map((m, i) => (
-            <div key={i} className="sm-bg-surface sm-text-center" style={{ padding: 16 }}>
-              <div className="sm-micro-label" style={{ marginBottom: 4 }}>{m.label}</div>
-              <div className="sm-mono sm-fw-600 sm-text" style={{ fontSize: 16 }}>{m.value}</div>
-              <div className="sm-subtle-sm" style={{ marginTop: 2 }}>{m.detail}</div>
+            <div key={i} className="sm-bg-surface sm-text-center sm-p-16">
+              <div className="sm-micro-label sm-mb-4">{m.label}</div>
+              <div className="sm-mono sm-fw-600 sm-text sm-text-16">{m.value}</div>
+              <div className="sm-subtle-sm sm-mt-2">{m.detail}</div>
             </div>
           ))}
         </div>

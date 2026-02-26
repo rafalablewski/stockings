@@ -718,7 +718,7 @@ const OverviewParameterCard = ({
       <p className="sm-note-list">
         {explanation}
       </p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+      <div className="sm-param-grid-7">
         {options.slice(0, 6).map((opt, idx) => {
           const isActive = value === opt;
           const isCurrent = currentValue !== undefined && opt === currentValue;
@@ -727,20 +727,9 @@ const OverviewParameterCard = ({
             <div
               key={opt}
               onClick={() => { onChange(opt); setCustomMode(false); }}
-              style={{
-                padding: '12px 4px',
-                borderRadius: 8,
-                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                background: isActive ? colors.bg : 'var(--surface2)',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-                textAlign: 'center',
-                fontSize: 12,
-                fontWeight: isActive ? 600 : 400,
-                color: isActive ? colors.text : 'var(--text3)',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
+              className="sm-param-btn"
+              data-active={isActive ? "true" : undefined}
+              style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}
             >
               {formatValue(opt)}
             </div>
@@ -748,13 +737,7 @@ const OverviewParameterCard = ({
         })}
         {/* Custom input button/field */}
         {customMode ? (
-          <div style={{
-            display: 'flex',
-            borderRadius: 8,
-            border: '2px solid var(--violet)',
-            background: 'rgba(167,139,250,0.15)',
-            overflow: 'hidden',
-          }}>
+          <div className="sm-custom-input-wrap">
             <input
               type="text"
               value={customInput}
@@ -762,41 +745,21 @@ const OverviewParameterCard = ({
               onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
               placeholder="..."
               autoFocus
-              style={{
-                flex: 1,
-                minWidth: 0,
-                padding: '8px 4px',
-                border: 'none',
-                background: 'transparent',
-                color: 'var(--violet)',
-                fontSize: 12,
-                fontWeight: 600,
-                textAlign: 'center',
-                outline: 'none',
-              }}
+              className="sm-custom-input-field"
             />
           </div>
         ) : (
           <div
             onClick={() => setCustomMode(true)}
-            style={{
-              padding: '12px 4px',
-              borderRadius: 8,
-              border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
-              background: isCustomValue ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
-              cursor: 'pointer',
-              transition: 'all 0.15s',
-              textAlign: 'center',
-              fontSize: 12,
-              fontWeight: isCustomValue ? 600 : 400,
-              color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
-            }}
+            className="sm-param-btn"
+            data-active={isCustomValue ? "true" : undefined}
+            style={isCustomValue ? { borderColor: 'var(--violet)', background: 'rgba(167,139,250,0.15)', color: 'var(--violet)' } : undefined}
           >
             {isCustomValue ? formatValue(value) : '...'}
           </div>
         )}
       </div>
-      <div className="sm-subtle-sm sm-text-center" style={{ marginTop: 6 }}>
+      <div className="sm-subtle-sm sm-text-center sm-mt-4">
         ← Bearish | Bullish →
       </div>
     </div>
@@ -995,7 +958,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         currentValue={DEFAULTS.currentStockPrice}
       />
     </div>
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }} className="sm-mt-12">
+    <div className="sm-grid-sep-3col" style={{ gap: 12, background: 'transparent' }} className="sm-mt-12">
       <OverviewParameterCard
         title="Cash ($M)"
         explanation="Cash & equivalents. Determines runway = Cash ÷ Burn. Critical for pre-revenue companies."
@@ -1072,7 +1035,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
           <div key={s.level} className="sm-kpi-cell">
             <div className="sm-mono-2xl" style={{ color: s.color }}>{s.count}</div>
             <div className="sm-kpi-category" style={{ '--kpi-color': s.color } as React.CSSProperties}>{s.level}</div>
-            <div className="sm-text-11 sm-mt-8" className="sm-mt-4">{s.desc}</div>
+            <div className="sm-text-11 sm-mt-8 sm-mt-4">{s.desc}</div>
           </div>
         ))}
       </div>
@@ -1086,7 +1049,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
           const impactColor = c.impact === 'Critical' ? '#ef4444' : c.impact === 'High' ? 'var(--gold)' : c.impact === 'Medium' ? 'var(--sky)' : 'var(--text3)';
           const catColor = c.category === 'Constellation' ? 'var(--cyan)' : c.category === 'Regulatory' ? 'var(--violet)' : c.category === 'Commercial' ? 'var(--gold)' : c.category === 'Service' ? 'var(--mint)' : c.category === 'Defense' || c.category === 'Government' ? 'var(--coral)' : c.category === 'Financing' ? 'var(--sky)' : 'var(--text3)';
           return (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '100px 1fr auto auto', alignItems: 'center', gap: 16, padding: '16px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', transition: 'background 0.15s' }}>
+            <div key={i} className="sm-grid-row-lg" style={{ gridTemplateColumns: '100px 1fr auto auto', gap: 16 }}>
               <span className="sm-mono-sm sm-text3" style={{ fontSize: 11 }}>{c.timeline}</span>
               <span className="sm-text-13t">{c.event}</span>
               <span className="sm-badge-dynamic" style={{ '--badge-color': catColor } as React.CSSProperties}>{c.category}</span>
@@ -1100,12 +1063,12 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
       <div className="sm-card sm-mt-8">
         <div className="sm-card-header">
           <span className="sm-param-label">Completed Milestones</span>
-          <span className="sm-mono-sm" className="sm-mint">{completedMilestones.length} achieved</span>
+          <span className="sm-mono-sm sm-mint">{completedMilestones.length} achieved</span>
         </div>
         {(showAllMilestones ? completedMilestones : completedMilestones.slice(0, 20)).map((m, i) => {
           const catColor = m.category === 'Constellation' ? 'var(--cyan)' : m.category === 'Regulatory' ? 'var(--violet)' : m.category === 'Commercial' ? 'var(--gold)' : m.category === 'Service' ? 'var(--mint)' : m.category === 'Capital' ? 'var(--sky)' : m.category === 'Defense' || m.category === 'Government' ? 'var(--coral)' : 'var(--text3)';
           return (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '110px 1fr auto', alignItems: 'center', gap: 16, padding: '16px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 40%, transparent)', transition: 'background 0.15s' }}>
+            <div key={i} className="sm-grid-row-lg" style={{ gridTemplateColumns: '110px 1fr auto', gap: 16 }}>
               <span className="sm-mono-sm sm-text3" style={{ fontSize: 11 }}>{m.date}</span>
               <span className="sm-text-13">{m.event}</span>
               <span className="sm-badge-dynamic" style={{ '--badge-color': catColor } as React.CSSProperties}>{m.category}</span>
@@ -1297,7 +1260,7 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
         </div>
         <div className="sm-p0">
           {partners.map((p, i) => (
-            <div key={p.name} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 80px', alignItems: 'center', padding: '12px 24px', borderBottom: i < partners.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
+            <div key={p.name} className="sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 80px' }}>
               <span className="sm-text-13t">{p.name}</span>
               <span className="sm-mono-val sm-text-right" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{p.subs}M</span>
               <span className="sm-mono-val sm-text-right" style={{ '--val-color': 'var(--text3)' } as React.CSSProperties}>{((p.subs / partnerReach) * 100).toFixed(1)}%</span>
@@ -1319,7 +1282,7 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
             ))}
           </div>
           {scenarios.map((s, i) => (
-            <div key={s.p} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr', alignItems: 'center', padding: '12px 24px', borderBottom: i < scenarios.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: s.p === penetrationRate ? 'color-mix(in srgb, var(--cyan) 8%, transparent)' : 'transparent', transition: 'background 0.15s' }}>
+            <div key={s.p} className="sm-grid-row" style={{ gridTemplateColumns: '80px 1fr 1fr 1fr' }}>
               <span className="sm-mono-val" style={{ '--val-color': s.p === penetrationRate ? 'var(--cyan)' : 'var(--text)', fontWeight: s.p === penetrationRate ? 600 : 400 } as React.CSSProperties}>{s.p}%</span>
               <span className="sm-mono-right">{s.subs.toFixed(0)}M</span>
               <span className="sm-mono-right sm-mint">${s.rev.toFixed(1)}B</span>
@@ -1388,7 +1351,7 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
         </div>
         <div className="sm-p0">
           {revenueSources.map((r, i) => (
-            <div key={i} className="sm-grid-row-lg" style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div key={i} className="sm-grid-row-lg sm-flex-between">
               <div className="sm-flex sm-gap-12">
                 <span className="sm-dot-4" style={{ '--dot-color': r.status.includes('Active') ? 'var(--mint)' : 'var(--text3)' } as React.CSSProperties} />
                 <span className="sm-text-13t sm-fw-500">{r.source}</span>
@@ -1665,11 +1628,11 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
               <span className="sm-text-11">{p.prepayStatus}</span>
             </div>
           ))}
-          <div style={{ display: 'grid', gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', padding: '16px 24px', background: 'color-mix(in srgb, var(--mint) 5%, transparent)', borderTop: '1px solid var(--border)', minWidth: 700 }}>
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)', gridColumn: 'span 2' }}>Total Definitive</span>
-            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 700, color: 'var(--cyan)' }}>{totalDefinitiveSubs}M</span>
+          <div className="sm-grid-row-lg" style={{ gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', background: 'color-mix(in srgb, var(--mint) 5%, transparent)', borderTop: '1px solid var(--border)', minWidth: 700, borderBottom: 'none' }}>
+            <span className="sm-text-12 sm-fw-600 sm-text" style={{ gridColumn: 'span 2' }}>Total Definitive</span>
+            <span className="sm-mono-val sm-fw-700" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{totalDefinitiveSubs}M</span>
             <span /><span />
-            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 700, color: 'var(--mint)' }}>${totalPrepay}M</span>
+            <span className="sm-mono-val sm-fw-700" style={{ '--val-color': 'var(--mint)' } as React.CSSProperties}>${totalPrepay}M</span>
             <span />
           </div>
         </div>
@@ -1680,7 +1643,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         {definitiveAgreements.map(p => (
           <div key={p.partner} className="sm-card-body sm-bg-surface">
             <div className="sm-flex-between sm-items-center sm-mb-16">
-              <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>{p.partner}</span>
+              <span className="sm-fw-600 sm-text" style={{ fontSize: 14 }}>{p.partner}</span>
               <UpdateIndicators sources="PR" />
             </div>
             {[
@@ -1760,7 +1723,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         </div>
         <div className="sm-p0">
           {govContracts.map((g, i) => (
-            <div key={g.agency} style={{ display: 'grid', gridTemplateColumns: '1fr 100px 120px 1fr', alignItems: 'center', padding: '16px 24px', borderBottom: i < govContracts.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
+            <div key={g.agency} className="sm-grid-row-lg" style={{ gridTemplateColumns: '1fr 100px 120px 1fr' }}>
               <span className="sm-text-13t sm-fw-500">{g.agency}</span>
               <span className="sm-mono-val" data-weight="600" style={{ '--val-color': 'var(--mint)' } as React.CSSProperties}>{g.value}</span>
               <span className="sm-status-badge" style={{ '--badge-color': 'var(--sky)' } as React.CSSProperties}>{g.status}</span>
@@ -1786,7 +1749,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             ))}
           </div>
           {otherPartners.map((p, i) => (
-            <div key={p.partner} style={{ display: 'grid', gridTemplateColumns: '130px 140px 80px 100px 1fr', alignItems: 'center', padding: '12px 24px', borderBottom: i < otherPartners.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
+            <div key={p.partner} className="sm-grid-row" style={{ gridTemplateColumns: '130px 140px 80px 100px 1fr' }}>
               <span className="sm-text-13t sm-fw-500">{p.partner}</span>
               <span className="sm-text-12">{p.region}</span>
               <span className="sm-mono-val" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{p.subs}M</span>
@@ -1875,7 +1838,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
                   setExpandedPartnerNews(next);
                 }}
               >
-                <div className="sm-flex-between" className="sm-items-start">
+                <div className="sm-flex-between sm-items-start">
                   <div style={{ flex: 1 }}>
                     <div className="sm-flex-wrap">
                       <span className="sm-text-11">{news.date}</span>
@@ -1889,7 +1852,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
                   </span>
                 </div>
                 {isExpanded && (
-                  <div className="sm-border-t" className="sm-pt-12">
+                  <div className="sm-border-t sm-pt-12">
                     {/* Summary */}
                     <div className="sm-text-13 sm-lh-16">{news.summary}</div>
 
@@ -2756,7 +2719,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
         <div className="sm-card-body">
           <div>
-            <div style={{ display: 'grid', gridTemplateColumns: '100px 100px 100px 120px 1fr', borderBottom: '1px solid var(--border)' }}>
+            <div className="sm-grid-header" style={{ gridTemplateColumns: '100px 100px 100px 120px 1fr' }}>
               <span className="sm-table-header">Quarter</span>
               <span className="sm-table-header sm-text-right">Class A (M)</span>
               <span className="sm-table-header sm-text-right">Implied (M)</span>
@@ -2795,7 +2758,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               </AreaChart>
             </ResponsiveContainer>
           </div>
-          <div className="sm-flex sm-gap-16" className="sm-text-12">
+          <div className="sm-flex sm-gap-16 sm-text-12">
             <div className="sm-flex">
               <div className="sm-legend-swatch-sq" style={{ '--swatch-color': 'var(--sky)' } as React.CSSProperties}></div>
               <span className="sm-text2">Class A (Public)</span>
@@ -2817,12 +2780,12 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <div className="sm-card-body sm-bg-surface">
             <div className="sm-subtle">2025 YTD SBC (Q1-Q3)</div>
             <div className="sm-kpi-hero" style={{ '--kpi-color': 'var(--violet)', marginTop: 4 } as React.CSSProperties}>${sbc2025YTD.toFixed(1)}M</div>
-            <div className="sm-text-11 sm-mt-8" className="sm-mt-4">Engineering ${sbc2025Eng.toFixed(1)}M + G&A ${sbc2025GA.toFixed(1)}M</div>
+            <div className="sm-text-11 sm-mt-8 sm-mt-4">Engineering ${sbc2025Eng.toFixed(1)}M + G&A ${sbc2025GA.toFixed(1)}M</div>
           </div>
           <div className="sm-card-body sm-bg-surface">
             <div className="sm-subtle">FY2024 Total SBC</div>
             <div className="sm-kpi-hero" style={{ '--kpi-color': 'var(--violet)', marginTop: 4 } as React.CSSProperties}>${sbcFY2024.toFixed(1)}M</div>
-            <div className="sm-text-11 sm-mt-8" className="sm-mt-4">Full year from 10-K</div>
+            <div className="sm-text-11 sm-mt-8 sm-mt-4">Full year from 10-K</div>
           </div>
         </div>
         <div className="sm-card-footer">
@@ -3000,7 +2963,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <div><span className="sm-text-11">Units: </span><span className="sm-mono-val" style={{ '--val-color': 'var(--gold)' } as React.CSSProperties}>{(AUG_2025_CEO_RSU_GRANT.units / 1000).toFixed(0)}K</span></div>
             <div><span className="sm-text-11">Vesting: </span><span className="sm-text-12">{AUG_2025_CEO_RSU_GRANT.vestingSchedule} from {AUG_2025_CEO_RSU_GRANT.vestingStart}</span></div>
           </div>
-          <div className="sm-text-11 sm-mt-8" className="sm-mt-4">{AUG_2025_CEO_RSU_GRANT.holdingsNote}</div>
+          <div className="sm-text-11 sm-mt-8 sm-mt-4">{AUG_2025_CEO_RSU_GRANT.holdingsNote}</div>
         </div>
         {/* Dec 2025 C-Suite Grants */}
         <div>
@@ -3013,7 +2976,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <div key={g.name} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 120px 100px 120px 1fr' }}>
               <span className="sm-text-13t">{g.name}</span>
               <span className="sm-text-12">{g.role}</span>
-              <span className="sm-mono-right" className="sm-violet">{(g.units / 1000).toFixed(0)}K</span>
+              <span className="sm-mono-right sm-violet">{(g.units / 1000).toFixed(0)}K</span>
               <span className="sm-text-12">{g.vestingStart}</span>
               <span className="sm-text-11">{g.holdingsNote}</span>
             </div>
@@ -3237,7 +3200,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       <div className="sm-card sm-mt-8">
         <div className="sm-flex-between sm-items-center" style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
           <span className="sm-param-label">S-3ASR Shelf Registration (Mar 17, 2025)</span>
-          <span className="sm-mono-sm" className="sm-gold">~{(MAR_2025_SHELF_REGISTRATION.dilutionPct)}% Dilution Potential</span>
+          <span className="sm-mono-sm sm-gold">~{(MAR_2025_SHELF_REGISTRATION.dilutionPct)}% Dilution Potential</span>
         </div>
         <div className="sm-grid-sep-3col">
           {[
@@ -3260,7 +3223,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       <div className="sm-card sm-mt-8">
         <div className="sm-flex-between sm-items-center" style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
           <span className="sm-param-label">Jan–Feb 2025 Governance & Grants</span>
-          <span className="sm-mono-sm" className="sm-sky">Board + AT&T + RSU</span>
+          <span className="sm-mono-sm sm-sky">Board + AT&T + RSU</span>
         </div>
         {/* Board Changes */}
         <div className="sm-th" style={{ padding: '8px 24px', letterSpacing: '1px', color: 'var(--sky)', background: 'color-mix(in srgb, var(--sky) 5%, transparent)' }}>Board Appointments</div>
@@ -3315,7 +3278,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       <div className="sm-card sm-mt-8">
         <div className="sm-card-header">
           <span className="sm-param-label">Certificate Amendment (Jun 6, 2025)</span>
-          <span className="sm-mono-sm" className="sm-gold">+100M Authorized</span>
+          <span className="sm-mono-sm sm-gold">+100M Authorized</span>
         </div>
         <div className="sm-grid-sep-3col">
           {[
@@ -3549,7 +3512,7 @@ const ParameterCard = ({
       <p className="sm-note-list">
         {explanation}
       </p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+      <div className="sm-param-grid-7">
         {options.slice(0, 6).map((opt, idx) => {
           const isActive = value === opt;
           const colors = getButtonColor(idx);
@@ -3557,18 +3520,9 @@ const ParameterCard = ({
             <div
               key={opt}
               onClick={() => { onChange(opt); setCustomMode(false); }}
-              style={{
-                padding: '12px 4px',
-                borderRadius: 8,
-                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                background: isActive ? colors.bg : 'var(--surface2)',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-                textAlign: 'center',
-                fontSize: 12,
-                fontWeight: isActive ? 600 : 400,
-                color: isActive ? colors.text : 'var(--text3)',
-              }}
+              className="sm-param-btn"
+              data-active={isActive ? "true" : undefined}
+              style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}
             >
               {formatValue(opt)}
             </div>
@@ -3576,13 +3530,7 @@ const ParameterCard = ({
         })}
         {/* Custom input button/field */}
         {customMode ? (
-          <div style={{
-            display: 'flex',
-            borderRadius: 8,
-            border: '2px solid var(--violet)',
-            background: 'rgba(167,139,250,0.15)',
-            overflow: 'hidden',
-          }}>
+          <div className="sm-custom-input-wrap">
             <input
               type="text"
               value={customInput}
@@ -3590,35 +3538,15 @@ const ParameterCard = ({
               onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
               placeholder="..."
               autoFocus
-              style={{
-                flex: 1,
-                minWidth: 0,
-                padding: '8px 4px',
-                border: 'none',
-                background: 'transparent',
-                color: 'var(--violet)',
-                fontSize: 12,
-                fontWeight: 600,
-                textAlign: 'center',
-                outline: 'none',
-              }}
+              className="sm-custom-input-field"
             />
           </div>
         ) : (
           <div
             onClick={() => setCustomMode(true)}
-            style={{
-              padding: '12px 4px',
-              borderRadius: 8,
-              border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
-              background: isCustomValue ? 'rgba(167,139,250,0.15)' : 'var(--surface2)',
-              cursor: 'pointer',
-              transition: 'all 0.15s',
-              textAlign: 'center',
-              fontSize: 12,
-              fontWeight: isCustomValue ? 600 : 400,
-              color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
-            }}
+            className="sm-param-btn"
+            data-active={isCustomValue ? "true" : undefined}
+            style={isCustomValue ? { borderColor: 'var(--violet)', background: 'rgba(167,139,250,0.15)', color: 'var(--violet)' } : undefined}
           >
             {isCustomValue ? formatValue(value) : '...'}
           </div>
@@ -3950,7 +3878,7 @@ const ModelTab = ({
             <span className="sm-mono-sm sm-text3" style={{ fontSize: 11 }}>{(riskFactor * 100).toFixed(0)}% success</span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <div className="sm-grid-sep-3col" style={{ gap: 12, background: 'transparent' }}>
             <ParameterCard
               title="Regulatory Risk (%)"
               explanation="Probability of adverse regulatory action. ASTS has FCC approval but needs country-by-country clearance. 2-5% = most approvals done. 20-30% = major regulatory uncertainty remains."
@@ -4062,7 +3990,7 @@ const ModelTab = ({
                     { label: 'Target Price', formula: `$${equityValue.toFixed(1)}B ÷ ${finalDilutedShares.toFixed(0)}M`, result: `$${targetStockPrice.toFixed(2)}` },
                   ]},
                 ].map((section, si) => (
-                  <div key={si} className="sm-rounded-12 sm-overflow-hidden" className="sm-bg-surface2">
+                  <div key={si} className="sm-rounded-12 sm-overflow-hidden sm-bg-surface2">
                     <div className="sm-flex sm-items-center sm-gap-8" style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
                       <span className="sm-fw-700" style={{ background: section.color, color: 'var(--bg)', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontFamily: 'Space Mono' }}>Step {section.step}</span>
                       <span className="sm-text-12 sm-fw-600 sm-text">{section.title}</span>
@@ -4083,7 +4011,7 @@ const ModelTab = ({
               </div>
 
               <div className="sm-rounded-12 sm-mt-16" style={{ padding: 16, background: 'color-mix(in srgb, var(--accent) 6%, transparent)', fontSize: 12, color: 'var(--text3)', lineHeight: 1.7, border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)' }}>
-                <div className="sm-text2 sm-fw-600" style={{ marginBottom: 4 }}>Key Assumptions</div>
+                <div className="sm-text2 sm-fw-600 sm-mb-4">Key Assumptions</div>
                 <ul style={{ margin: 0, paddingLeft: 16 }}>
                   <li>Terminal year: {2025 + discountYears} ({discountYears} years out)</li>
                   <li>FCF margin = EBITDA margin - CapEx (simplified, ignores taxes/WC)</li>
@@ -4584,7 +4512,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           <span className="sm-param-label">Risk Factors</span>
           <span className="sm-divider-line" />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        <div className="sm-grid-sep-3col" style={{ gap: 12, background: 'transparent' }}>
           <div className="sm-card">
             <div className="sm-card-section"><span className="sm-section-label">LAUNCH RISK (%)</span></div>
             <div className="sm-card-body">
@@ -4690,7 +4618,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Percentile Distribution */}
       <div>
         <div className="sm-card sm-mt-8">
-          <div className="sm-section-label" className="sm-grid-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
+          <div className="sm-section-label sm-grid-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
             <span className="sm-text-left">Percentile</span>
             <span className="sm-text-right">Price Target</span>
             <span className="sm-text-right">vs Current</span>
@@ -4722,7 +4650,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Risk Metrics */}
       <div>
         <div className="sm-card sm-mt-8">
-          <div className="sm-section-label" className="sm-grid-header" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+          <div className="sm-section-label sm-grid-header" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
             <span className="sm-text-left">Risk Metric</span>
             <span className="sm-text-right">Value</span>
             <span className="sm-text-left">Interpretation</span>
@@ -4732,8 +4660,8 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
             { label: 'Expected Value', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${sim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
             { label: 'Sharpe Ratio', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sharpe > 1 ? 'var(--mint)' : sim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sharpe.toFixed(2)}</span>, interp: sim.sharpe > 1 ? 'Excellent risk-adj return' : sim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
             { label: 'Sortino Ratio', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sortino > 1 ? 'var(--mint)' : sim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
-            { label: 'VaR (5%)', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{sim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
-            { label: 'CVaR (5%)', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{sim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
+            { label: 'VaR (5%)', value: <span className="sm-fw-600" style={{ fontFamily: 'Space Mono', color: 'var(--red)' }}>{sim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
+            { label: 'CVaR (5%)', value: <span className="sm-fw-600" style={{ fontFamily: 'Space Mono', color: 'var(--red)' }}>{sim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
           ].map((row, i) => (
             <div key={i} className="sm-grid-row" style={{ gridTemplateColumns: '1fr 1fr 1fr', cursor: 'default' }}
             >
@@ -4837,12 +4765,12 @@ const SECFilingTracker = () => {
     <div className="sm-card"><div className="sm-card-section"><span className="sm-section-label">SEC Filing Tracker</span></div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, padding: '24px 24px' }}>
         <div className="sm-flex-col-gap">
-          <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Filing History</div>
+          <div className="sm-th" style={{ fontSize: 11, letterSpacing: '0.05em' }}>Filing History</div>
           <div className="sm-flex-col sm-gap-8">
             <div style={rowStyle}>
               <span className="sm-text-13 sm-text3">First SEC Filing</span>
               <div className="sm-text-right">
-                <span style={{ fontSize: 13, color: 'var(--cyan)' }}>{filingData.firstFiling}</span>
+                <span className="sm-text-13 sm-cyan">{filingData.firstFiling}</span>
                 <div className="sm-text-11">{filingData.firstFilingNote}</div>
               </div>
             </div>
@@ -4863,7 +4791,7 @@ const SECFilingTracker = () => {
           </div>
         </div>
         <div className="sm-flex-col-gap">
-          <div style={{ fontSize: 11, color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Latest Filings by Type</div>
+          <div className="sm-th" style={{ fontSize: 11, letterSpacing: '0.05em' }}>Latest Filings by Type</div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, fontSize: 13 }}>
             {Object.entries(filingData.filings).map(([type, info]) => {
               const style = colorStyles[info.color] || colorStyles.cyan;
@@ -5085,7 +5013,7 @@ const QuarterlyMetricsPanel = () => {
                   <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
-                        <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6" style={{ whiteSpace: 'nowrap' }}>{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
@@ -5116,7 +5044,7 @@ const QuarterlyMetricsPanel = () => {
                 <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                   {data.map((d, i) => (
                     <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
-                      <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                      <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6" style={{ whiteSpace: 'nowrap' }}>{d.display}</div>
                       <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                       <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                     </div>
@@ -5127,7 +5055,7 @@ const QuarterlyMetricsPanel = () => {
           })()}
           {/* OpEx Breakdown with quarter selector */}
           {opExQuarters.length > 0 && (
-            <div className="sm-border-t" className="sm-pt-12">
+            <div className="sm-border-t sm-pt-12">
               <div className="sm-flex-between">
                 <span className="sm-text-11">OpEx Breakdown</span>
                 <select
@@ -5180,13 +5108,13 @@ const QuarterlyMetricsPanel = () => {
                       <span className="sm-violet">${quarterlyData[opExQuarter].opEx}M</span>
                     </div>
                     {quarterlyData[opExQuarter].adjOpEx && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
+                      <div className="sm-flex-between sm-text-11">
                         <span className="sm-text3">Adj. OpEx (ex D&A, SBC):</span>
                         <span className="sm-cyan">${quarterlyData[opExQuarter].adjOpEx}M</span>
                       </div>
                     )}
                     {(quarterlyData[opExQuarter].capEx || quarterlyData[opExQuarter].capExTotal) && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
+                      <div className="sm-flex-between sm-text-11">
                         <span className="sm-text3">CapEx:</span>
                         <span className="sm-gold">${quarterlyData[opExQuarter].capEx || quarterlyData[opExQuarter].capExTotal}M</span>
                       </div>
@@ -5220,7 +5148,7 @@ const QuarterlyMetricsPanel = () => {
                   <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
-                        <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6" style={{ whiteSpace: 'nowrap' }}>{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
@@ -5251,7 +5179,7 @@ const QuarterlyMetricsPanel = () => {
                   <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
-                        <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6" style={{ whiteSpace: 'nowrap' }}>{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
@@ -5285,7 +5213,7 @@ const QuarterlyMetricsPanel = () => {
                   <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
-                        <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6" style={{ whiteSpace: 'nowrap' }}>{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
                         <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
                       </div>
@@ -5319,7 +5247,7 @@ const QuarterlyMetricsPanel = () => {
                   <div className="sm-fin-chart" style={{ height: hasNegative ? '50%' : undefined }}>
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
-                        {d.value >= 0 && <div className="sm-mono-sm sm-fw-600 sm-text" style={{ marginBottom: 6, whiteSpace: 'nowrap' }}>{d.display}</div>}
+                        {d.value >= 0 && <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6" style={{ whiteSpace: 'nowrap' }}>{d.display}</div>}
                         <div style={{ width: '100%', background: d.value >= 0 ? 'var(--mint)' : 'transparent', borderRadius: '4px 4px 0 0', height: d.value >= 0 && maxVal > 0 ? `${Math.round((d.value / maxVal) * 72)}%` : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
                       </div>
                     ))}
@@ -5572,7 +5500,7 @@ const TimelineTab = () => {
         )}
 
         {/* Footer with metadata and Last PR marker */}
-        <div className="sm-border-t" className="sm-pt-12">
+        <div className="sm-border-t sm-pt-12">
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 12 }}>
             <div>
               <span className="sm-text3">CIK:</span>
@@ -5616,7 +5544,7 @@ const TimelineTab = () => {
             </div>
             <div className="sm-card-body">
           <div className="sm-flex-col-gap">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
+            <div className="sm-flex-between sm-items-center sm-rounded-12" style={{ padding: '12px 16px', background: 'var(--surface2)' }}>
               <div>
                 <div className="sm-text sm-fw-600">Q4 2025 Earnings</div>
                 <div className="sm-subtle">10-K Annual Report</div>
@@ -5626,7 +5554,7 @@ const TimelineTab = () => {
                 <div className="sm-text-11">Est.</div>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
+            <div className="sm-flex-between sm-items-center sm-rounded-12" style={{ padding: '12px 16px', background: 'var(--surface2)' }}>
               <div>
                 <div className="sm-text sm-fw-600">BB7-BB11 Launches</div>
                 <div className="sm-subtle">Block 2 constellation expansion</div>
@@ -5636,7 +5564,7 @@ const TimelineTab = () => {
                 <div className="sm-text-11">45-60 sats by EOY</div>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
+            <div className="sm-flex-between sm-items-center sm-rounded-12" style={{ padding: '12px 16px', background: 'var(--surface2)' }}>
               <div>
                 <div className="sm-text sm-fw-600">Commercial Service Launch</div>
                 <div className="sm-subtle">Initial revenue generation</div>
@@ -5646,7 +5574,7 @@ const TimelineTab = () => {
                 <div className="sm-text-11">Post-constellation</div>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
+            <div className="sm-flex-between sm-items-center sm-rounded-12" style={{ padding: '12px 16px', background: 'var(--surface2)' }}>
               <div>
                 <div className="sm-text sm-fw-600">Convertible Notes Maturity</div>
                 <div className="sm-subtle">$698M converts @ 4.25%</div>
@@ -5712,7 +5640,7 @@ const TimelineTab = () => {
             </button>
           )}
         </div>
-        <div className="sm-flex-wrap" className="sm-mt-8">
+        <div className="sm-flex-wrap sm-mt-8">
           {Object.entries(topicTags).map(([topic, topicStyle]) => {
             const isSelected = selectedTopics.includes(topic);
             const count = timelineEvents.filter(p => detectTopics(p).includes(topic)).length;
@@ -5821,7 +5749,7 @@ const TimelineTab = () => {
                       </div>
                       <div>
                         <div className="sm-micro-label">Source</div>
-                        <div style={{ fontSize: 13, color: 'var(--cyan)' }}>{entry.sources.join(', ')}</div>
+                        <div className="sm-text-13 sm-cyan">{entry.sources.join(', ')}</div>
                       </div>
                     </div>
                   </div>
@@ -5840,7 +5768,7 @@ const TimelineTab = () => {
         <div className="sm-card-body">
         <div className="sm-tl-explain-grid">
           <div>
-            <h4 style={{ color: 'var(--cyan)', fontWeight: 500, marginBottom: 8 }}>Categories Explained</h4>
+            <h4 className="sm-cyan sm-fw-500 sm-mb-8">Categories Explained</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--text2)', listStyle: 'none', padding: 0, margin: 0 }}>
               <li><span className="sm-gold">Partnership:</span> Commercial agreements, MNO deals, government contracts</li>
               <li><span className="sm-mint">Product:</span> Satellite launches, tech milestones, deployments</li>
@@ -5851,7 +5779,7 @@ const TimelineTab = () => {
             </ul>
           </div>
           <div>
-            <h4 style={{ color: 'var(--cyan)', fontWeight: 500, marginBottom: 8 }}>Updating This Log</h4>
+            <h4 className="sm-cyan sm-fw-500 sm-mb-8">Updating This Log</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: 4, color: 'var(--text2)', listStyle: 'none', padding: 0, margin: 0 }}>
               <li>• Add new entries chronologically at the top</li>
               <li>• Include sources for traceability</li>
@@ -6165,7 +6093,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               )}
               {qual && (
                 <>
-                  <div className="sm-subtle sm-text2" style={{ lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {qual.focus}</div>
+                  <div className="sm-subtle sm-text2 sm-mb-4" style={{ lineHeight: 1.5 }}><strong>Focus:</strong> {qual.focus}</div>
                   <div className="sm-subtle-sm sm-mt-8 sm-border-t" style={{ fontStyle: 'italic', paddingTop: 8, lineHeight: 1.5 }}>{qual.notes}</div>
                 </>
               )}
@@ -6197,7 +6125,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                   <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.globalCoverage ? 'true' : undefined}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
                 </div>
               )}
-              <div className="sm-subtle sm-text2" style={{ lineHeight: 1.5, marginBottom: 4 }}><strong>Focus:</strong> {kc.focus}</div>
+              <div className="sm-subtle sm-text2 sm-mb-4" style={{ lineHeight: 1.5 }}><strong>Focus:</strong> {kc.focus}</div>
               <div className="sm-subtle-sm sm-mt-8 sm-border-t" style={{ fontStyle: 'italic', paddingTop: 8, lineHeight: 1.5 }}>{kc.notes}</div>
             </div>
           );
@@ -6295,7 +6223,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       <div className="sm-card sm-mt-8">
         <div className="sm-card-section" style={{ padding: '16px 20px' }}>
           <div className="sm-param-label sm-flex sm-gap-8">Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
-          <p className="sm-text-13" className="sm-text3" style={{ margin: '4px 0 0' }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
+          <p className="sm-text-13 sm-text3" style={{ margin: '4px 0 0' }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
         </div>
         <div className="sm-cmp-table-scroll">
           <div style={{ minWidth: 560 }}>
@@ -6332,7 +6260,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           <div className="sm-card sm-mt-8">
           <div className="sm-card-section" style={{ padding: '16px 20px' }}>
             <div className="sm-param-label sm-flex sm-gap-8">Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
-            <p className="sm-text-13" className="sm-text3" style={{ margin: '4px 0 0' }}>Value each business segment separately</p>
+            <p className="sm-text-13 sm-text3" style={{ margin: '4px 0 0' }}>Value each business segment separately</p>
           </div>
           <div className="sm-cmp-table-scroll">
             <div style={{ minWidth: 440 }}>
@@ -6369,7 +6297,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           <div className="sm-card sm-mt-8">
             <div className="sm-card-section" style={{ padding: '16px 20px' }}>
               <div className="sm-param-label sm-flex sm-gap-8">Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
-              <p className="sm-text-13" className="sm-text3" style={{ margin: '4px 0 0' }}>Probability-weighted valuation outcomes</p>
+              <p className="sm-text-13 sm-text3" style={{ margin: '4px 0 0' }}>Probability-weighted valuation outcomes</p>
             </div>
           <div className="sm-cmp-table-scroll">
             <div style={{ minWidth: 420 }}>
@@ -6492,7 +6420,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 onClick={() => { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); }}
                 onKeyDown={(e) => { if (e.key === 'Enter') { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); } }}
               >
-                <div className="sm-flex-between" className="sm-items-start">
+                <div className="sm-flex-between sm-items-start">
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
                       <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)' }}>{news.date}</span>
@@ -6531,7 +6459,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         <div className="sm-flex-col sm-gap-16">
           {COMPETITOR_PROFILES.map(comp => (
             <div key={comp.id} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
-              <div className="sm-flex-between" className="sm-items-start">
+              <div className="sm-flex-between sm-items-start">
                 <div>
                   <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--text)' }}>{comp.name}</div>
                   <div className="sm-text-13">{comp.description}</div>
@@ -7313,9 +7241,9 @@ const InvestmentTab = () => {
               <div className="sm-text-11">Filing: {a.filing}</div>
               
               {expandedArchive === i && (
-                <div className="sm-border-t" className="sm-pt-12">
+                <div className="sm-border-t sm-pt-12">
                   <div>
-                    <div className="sm-fw-600 sm-sky" className="sm-text-12">Key Developments</div>
+                    <div className="sm-fw-600 sm-sky sm-text-12">Key Developments</div>
                     <div className="sm-flex-wrap sm-gap-8">
                       {a.keyDevelopments.map((d, j) => (
                         <span key={j} className="sm-text-11 sm-text3" style={{ padding: '4px 8px', background: 'var(--surface)', borderRadius: 4 }}>• {d}</span>
