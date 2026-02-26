@@ -5605,27 +5605,29 @@ const TimelineTab = () => {
         </div>
       </div>
 
-      {/* Event Timeline Section - CRCL Style */}
+      {/* Event Timeline — matches Ecosystem Intelligence layout */}
       <div className="sm-divider">
-        <span className="sm-param-label">Event Timeline ({filteredEntries.length} events)</span>
+        <span className="sm-param-label">Event Timeline</span>
         <span className="sm-divider-line" />
       </div>
 
-      {/* Topic Filters (AND logic multi-select) */}
-      <div className="sm-card">
-        <div className="sm-card-header">
-          <span className="sm-param-label">Filter by Topic</span>
+      {/* Topic Filter */}
+      <div className="sm-panel sm-mt-8 sm-p-24 sm-rounded-16">
+        <p className="sm-text2 sm-lh-16 sm-fs-13 sm-bmnr-mb-4-reset">Track <strong>key events</strong> for AST SpaceMobile — partnerships, launches, regulatory milestones, capital raises, earnings, and guidance updates</p>
+        <p className="sm-subtle-sm sm-italic sm-bmnr-mb-16-reset">Company-level catalysts and developments in chronological order</p>
+        <div className="sm-flex-between sm-mb-8">
+          <span className="sm-section-label">Filter by Topic</span>
           {selectedTopics.length > 0 && (
             <button
               onClick={() => setSelectedTopics([])}
-              className="sm-action-btn"
+              className="sm-bmnr-clear-btn"
+              aria-label="Clear topic filter"
             >
               Clear ({selectedTopics.length})
             </button>
           )}
         </div>
-        <div className="sm-card-body">
-        <div className="sm-flex-wrap">
+        <div className="sm-flex-wrap sm-gap-6">
           {Object.entries(topicTags).map(([topic, topicStyle]) => {
             const isSelected = selectedTopics.includes(topic);
             const count = timelineEvents.filter(p => detectTopics(p).includes(topic)).length;
@@ -5633,8 +5635,10 @@ const TimelineTab = () => {
               <button
                 key={topic}
                 onClick={() => toggleTopic(topic)}
-                className="sm-action-btn"
+                className="sm-filter-pill"
                 data-active={isSelected}
+                style={{ '--pill-accent': 'var(--cyan)' } as React.CSSProperties}
+                aria-label={`Filter by ${topicStyle.label}`}
               >
                 {topicStyle.label} ({count})
               </button>
@@ -5642,20 +5646,30 @@ const TimelineTab = () => {
           })}
         </div>
         {selectedTopics.length > 0 && (
-          <div className="sm-subtle sm-mt-8">
+          <div className="sm-mono-sm sm-text3 sm-mt-8 sm-fs-11">
             {selectedTopics.map(t => topicTags[t].label).join(' + ')} → {filteredEntries.length} results
           </div>
         )}
-        </div>
       </div>
-      
-      <div className="sm-flex-between sm-mt-16">
-        <div className="sm-flex-wrap">
-          {['ALL', ...Object.keys(categoryColors)].map(cat => (
-            <button key={cat} onClick={() => setFilterCategory(cat)} className="sm-action-btn" data-active={filterCategory === cat}>
-              {cat === 'ALL' ? `All (${timelineEvents.length})` : `${(categoryColors as Record<string, { label: string }>)[cat]?.label || cat} (${timelineEvents.filter(p => p.category === cat).length})`}
-            </button>
-          ))}
+
+      {/* Category pills row with Expand All button */}
+      <div className="sm-flex-between sm-items-center sm-mt-8">
+        <div className="sm-flex-wrap sm-gap-6">
+          {['ALL', ...Object.keys(categoryColors)].map(cat => {
+            const isActive = filterCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setFilterCategory(cat)}
+                className="sm-filter-pill"
+                data-active={isActive}
+                style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}
+                aria-label={`Filter by category: ${cat}`}
+              >
+                {cat === 'ALL' ? `All (${timelineEvents.length})` : `${(categoryColors as Record<string, { label: string }>)[cat]?.label || cat} (${timelineEvents.filter(p => p.category === cat).length})`}
+              </button>
+            );
+          })}
         </div>
         <button
           onClick={() => {
@@ -5665,93 +5679,89 @@ const TimelineTab = () => {
               setExpanded(new Set(filteredEntries.map((_, i) => i)));
             }
           }}
-          className="sm-action-btn"
+          className="sm-filter-pill sm-nowrap"
+          aria-label={expanded.size === filteredEntries.length ? 'Collapse all events' : 'Expand all events'}
         >
-          {expanded.size === filteredEntries.length ? '⊟ Collapse All' : '⊞ Expand All'}
+          {expanded.size === filteredEntries.length ? '- Collapse All' : '+ Expand All'}
         </button>
       </div>
 
-      <div className="sm-flex-col-gap">
-        {filteredEntries.map((entry, i) => {
-          const isExpanded = expanded.has(i);
-          const toggleExpand = () => {
-            const next = new Set(expanded);
-            if (isExpanded) next.delete(i);
-            else next.add(i);
-            setExpanded(next);
-          };
-
-          return (
-            <div key={i} className="sm-tl-event-card">
+      {/* Timeline Events */}
+      <div className="sm-card sm-mt-8">
+        {filteredEntries.length > 0 ? (
+          filteredEntries.map((entry, i) => {
+            const isExpanded = expanded.has(i);
+            const accentColor = entry.impact === 'Positive' ? 'var(--mint)' : entry.impact === 'Negative' ? 'var(--coral)' : 'var(--sky)';
+            return (
               <div
-                onClick={toggleExpand}
-                className="sm-tl-event-row"
+                key={i}
                 role="button"
                 tabIndex={0}
-                aria-expanded={isExpanded}
-                aria-label={`Toggle details for ${entry.title}`}
-                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleExpand())}
+                aria-label={`${entry.title} — ${entry.impact} — click to ${isExpanded ? 'collapse' : 'expand'}`}
+                className="sm-bmnr-news-row"
+                style={{ '--news-accent': accentColor, borderBottom: i < filteredEntries.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' } as React.CSSProperties}
+                onClick={() => {
+                  const next = new Set(expanded);
+                  if (isExpanded) next.delete(i);
+                  else next.add(i);
+                  setExpanded(next);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const next = new Set(expanded);
+                    if (isExpanded) next.delete(i);
+                    else next.add(i);
+                    setExpanded(next);
+                  }
+                }}
               >
-                <span className="sm-mono-sm sm-text3">{entry.date}</span>
-                <span className="sm-text-11">{entry.category}</span>
-                <span className="sm-text-13t sm-fw-500">{entry.title}</span>
-                <span style={{ fontSize: 11, fontWeight: 600, textAlign: 'right', color: entry.impact === 'Positive' ? 'var(--mint)' : entry.impact === 'Negative' ? 'var(--coral)' : 'var(--text3)' }}>
-                  {entry.impact === 'Positive' && '↑ '}
-                  {entry.impact === 'Negative' && '↓ '}
-                  {entry.impact === 'Neutral' && '→ '}
-                  {entry.impact?.toLowerCase() || 'neutral'}
-                </span>
-                <span aria-hidden="true" style={{ fontSize: 12, color: 'var(--text3)', textAlign: 'center', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▼</span>
-              </div>
-              {isExpanded && (
-                <div className="sm-tl-detail-panel">
-                  <div className="sm-tl-details-grid">
-                    <div>
-                      {/* Summary */}
-                      <div className="sm-inline-note" style={{ fontStyle: 'italic' }}>
-                        {entry.summary}
-                      </div>
-                      {/* Details */}
-                      {entry.details && entry.details.length > 0 && (
-                        <ul className="sm-flex-col sm-mt-12" style={{ paddingLeft: 0, listStyle: 'none', gap: 4 }}>
+                <div className="sm-flex-between sm-items-start">
+                  <div className="sm-flex-1">
+                    <div className="sm-flex-wrap sm-gap-6 sm-mb-4">
+                      <span className="sm-mono-sm sm-text3 sm-fs-10">{entry.date}</span>
+                      <span className="sm-micro-badge sm-bmnr-cat-badge" data-type="category">{entry.category}</span>
+                    </div>
+                    <div className="sm-text sm-fw-600 sm-lh-14 sm-fs-13">{entry.title}</div>
+                  </div>
+                  <span className="sm-bmnr-impact-val" style={{ color: accentColor }}>
+                    {entry.impact === 'Positive' ? '+' : entry.impact === 'Negative' ? '-' : '~'} {entry.impact === 'Positive' ? 'Bullish' : entry.impact === 'Negative' ? 'Bearish' : 'Neutral'}
+                  </span>
+                </div>
+                {isExpanded && (
+                  <div className="sm-bmnr-news-detail">
+                    <div className="sm-text-13 sm-lh-16">{entry.summary}</div>
+
+                    {entry.details && entry.details.length > 0 && (
+                      <div className="sm-bmnr-insight-card" style={{ '--insight-color': 'var(--cyan)' } as React.CSSProperties}>
+                        <div className="sm-micro-label sm-cyan sm-mb-4 sm-ls-1">Key Details</div>
+                        <ul className="sm-subtle sm-text2 sm-lh-15" style={{ paddingLeft: 16, margin: 0 }}>
                           {entry.details.map((detail, j) => (
-                            <li key={j} className="sm-flex sm-text-12 sm-text2" style={{ gap: 8, lineHeight: 1.6 }}>
-                              <span className="sm-accent sm-fw-700">•</span>
-                              {detail}
-                            </li>
+                            <li key={j} style={{ marginBottom: 2 }}>{detail}</li>
                           ))}
                         </ul>
-                      )}
-                      {/* Change indicator */}
-                      {entry.prevValue && (
-                        <div className="sm-callout sm-mt-12" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
-                          <span className="sm-coral" style={{ textDecoration: 'line-through' }}>{entry.prevValue}</span>
-                          <span className="sm-text3" style={{ margin: '0 8px' }}>→</span>
-                          <span className="sm-mint">{entry.newValue}</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="sm-flex-col-gap">
-                      <div>
-                        <div className="sm-micro-label">Impact</div>
-                        <div className="sm-text-13 sm-fw-600" style={{ color: entry.impact === 'Positive' ? 'var(--mint)' : entry.impact === 'Negative' ? 'var(--coral)' : 'var(--text3)' }}>
-                          {entry.impact === 'Positive' && '● Bullish'}
-                          {entry.impact === 'Negative' && '● Bearish'}
-                          {entry.impact === 'Neutral' && '● Neutral'}
-                          {!entry.impact && '● Unknown'}
+                      </div>
+                    )}
+
+                    {entry.prevValue && (
+                      <div className="sm-bmnr-insight-card" style={{ '--insight-color': 'var(--mint)', marginTop: 8 } as React.CSSProperties}>
+                        <div className="sm-micro-label sm-mint sm-mb-4 sm-ls-1">Change Indicator</div>
+                        <div className="sm-subtle sm-text2 sm-lh-15">
+                          <span style={{ textDecoration: 'line-through', color: 'var(--coral)' }}>{entry.prevValue}</span>
+                          <span style={{ margin: '0 8px', color: 'var(--text3)' }}>→</span>
+                          <span style={{ color: 'var(--mint)' }}>{entry.newValue}</span>
                         </div>
                       </div>
-                      <div>
-                        <div className="sm-micro-label">Source</div>
-                        <div className="sm-text-13 sm-cyan">{entry.sources.join(', ')}</div>
-                      </div>
-                    </div>
+                    )}
+
+                    <div className="sm-bmnr-source-text">Source: {entry.sources.join(', ')}</div>
                   </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
+                )}
+              </div>
+            );
+          })
+        ) : (
+          <div className="sm-empty-state">No events matching filters</div>
+        )}
       </div>
 
       {/* How to Use - Unified styling */}
