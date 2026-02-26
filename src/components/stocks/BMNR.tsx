@@ -5662,79 +5662,78 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
   const CollapsibleSection = ({ id, title, children, sources }: { id: string; title: string; children: React.ReactNode; sources?: UpdateSource | UpdateSource[] }) => (
     <div className="sm-card">
       <div
+        className="sm-toggle-header"
+        style={{ borderBottom: investmentSections.has(id) ? '1px solid var(--border)' : 'none' }}
         onClick={() => toggleSection(id)}
-        style={{ padding: '24px 24px', borderBottom: investmentSections.has(id) ? '1px solid var(--border)' : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
         role="button"
         tabIndex={0}
         aria-expanded={investmentSections.has(id)}
         aria-label={`Toggle ${title}`}
         onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection(id))}
       >
-        <span className="sm-section-label">
-          {title}
-          {sources && <UpdateIndicators sources={sources} />}
-        </span>
-        <span aria-hidden="true" style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
+        <span className="sm-section-label">{title}{sources && <UpdateIndicators sources={sources} />}</span>
+        <span className="sm-text3" aria-hidden="true" style={{ fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
       </div>
       {investmentSections.has(id) && <div className="sm-card-body">{children}</div>}
     </div>
   );
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-flex-col sm-flex-col-gap-16">
       {/* Controls */}
-      <div className="sm-flex-between">
-        <div className="sm-tab-hero">
-          <div className="sm-section-label">Due Diligence<UpdateIndicators sources={['PR', 'SEC']} /></div>
-          <h2>Investment Analysis<span className="sm-accent">.</span></h2>
-          <p>Multi-perspective due diligence analysis with CFA, hedge fund, and institutional frameworks. ETH treasury thesis scoring and risk assessment.</p>
-        </div>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <button onClick={expandAll} className="sm-bmnr-pill-btn">⊞ Expand All</button>
-          <button onClick={collapseAll} className="sm-bmnr-pill-btn">⊟ Collapse All</button>
-        </div>
+      <div className="sm-tab-hero">
+        <div className="sm-section-label">Due Diligence<UpdateIndicators sources={['PR', 'SEC']} /></div>
+        <h2>Investment Analysis<span className="sm-accent">.</span></h2>
+        <p>Multi-perspective due diligence analysis with CFA, hedge fund, and institutional frameworks. ETH treasury thesis scoring and risk assessment.</p>
+      </div>
+      <div className="sm-flex sm-items-center sm-gap-12" style={{ justifyContent: 'flex-end' }}>
+        <button onClick={expandAll} className="sm-action-btn">Expand All</button>
+        <button onClick={collapseAll} className="sm-action-btn">Collapse All</button>
       </div>
 
       {/* Data Refresh Indicator */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16, fontSize: 11, color: 'var(--text3)' }}>
+      <div className="sm-flex sm-items-center sm-gap-16 sm-text-11" style={{ justifyContent: 'flex-end', color: 'var(--text3)' }}>
         <span>Data as of: <strong className="sm-text2">{current.date}</strong></span>
         <span>•</span>
         <span>Source: <strong className="sm-text2">{current.source}</strong></span>
       </div>
 
       {/* Rating Header */}
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderLeft: '4px solid var(--mint)', borderRadius: 16, overflow: 'hidden' }}>
+      <div className="sm-divider">
+        <span className="sm-param-label">Current Assessment</span>
+        <span className="sm-divider-line" />
+      </div>
+      <div className="sm-card" style={{ borderLeft: '4px solid var(--mint)' }}>
         <div className="sm-card-body">
-        <div className="sm-flex-between sm-flex-wrap sm-gap-16 sm-items-start">
+        <div className="sm-flex-between sm-items-start sm-flex-wrap sm-gap-16">
           <div>
-            <div className="sm-flex sm-gap-12">
-              <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontWeight: 700, fontSize: 18 }}>BUY</span>
-              <span style={{ background: 'rgba(126,231,135,0.15)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 99, fontSize: 12, fontWeight: 600 }}>HIGH CONVICTION</span>
-              <UpdateIndicators sources={['PR', 'SEC']} />
+            <div className="sm-flex sm-gap-12 sm-mb-12">
+              <span className="sm-fw-700" style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontSize: 18 }}>BUY</span>
+              <span className="sm-fw-600 sm-mint" style={{ background: 'color-mix(in srgb, var(--mint) 15%, transparent)', padding: '6px 12px', borderRadius: 99, fontSize: 12 }}>HIGH CONVICTION</span>
             </div>
-            <div style={{ color: 'var(--text2)', fontSize: 14, maxWidth: 500 }}>
+            <div className="sm-text-13 sm-text2" style={{ maxWidth: 500 }}>
               {current.executiveSummary.headline}
             </div>
-            <div className="sm-text-11">
+            <div className="sm-text-11 sm-mt-8">
               Last Updated: {current.date} • Trigger: {current.source}
             </div>
           </div>
 {/* [PR_CHECKLIST_INVESTMENT_DISPLAY] - Hardcoded metrics, update with every PR! */}
-          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+          <div className="sm-flex sm-gap-24 sm-flex-wrap">
             <div className="sm-text-center">
               <div className="sm-text-11">NAV/Share</div>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$23.04</div>
-              <div className="sm-micro-text sm-bmnr-reset-label">@ $2,125 ETH</div>
+              <div className="sm-mono-lg sm-fw-700 sm-mint">$23.04</div>
+              <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>@ $2,125 ETH</div>
             </div>
             <div className="sm-text-center">
               <div className="sm-text-11">Total Holdings</div>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>$10.0B</div>
-              <div style={{ fontSize: 10, color: 'var(--mint)' }}>4.326M ETH + $595M Cash</div>
+              <div className="sm-mono-lg sm-fw-700 sm-sky">$10.0B</div>
+              <div className="sm-text-11 sm-mint">4.326M ETH + $595M Cash</div>
             </div>
             <div className="sm-text-center">
               <div className="sm-text-11">Staked ETH</div>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, color: 'var(--violet)', fontWeight: 700 }}>2.90M</div>
-              <div className="sm-micro-text sm-bmnr-reset-label">$6.2B Value (67%)</div>
+              <div className="sm-mono-lg sm-fw-700 sm-violet">2.90M</div>
+              <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>$6.2B Value (67%)</div>
             </div>
           </div>
         </div>
@@ -5822,14 +5821,14 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 
       {/* Growth Drivers */}
       <CollapsibleSection id="growth" title="Growth Drivers" sources="PR">
-        <div className="sm-flex-col">
+        <div className="sm-flex-col sm-gap-8">
           {current.growthDrivers.map((d, i) => (
-            <div key={i} className="sm-flex-between sm-bg-surface2 sm-p-12-16 sm-rounded-6">
-              <div className="sm-flex-1">
+            <div key={i} className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
+              <div style={{ flex: 1 }}>
                 <div className="sm-text-13t sm-fw-600">{d.driver}</div>
                 <div className="sm-subtle">{d.description}</div>
               </div>
-              <span style={{ color: d.color, fontWeight: 600, fontSize: 12, marginLeft: 16 }}>{d.impact}</span>
+              <span className="sm-fw-600" style={{ color: d.color, fontSize: 12, marginLeft: 16 }}>{d.impact}</span>
             </div>
           ))}
         </div>
@@ -5849,27 +5848,27 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       {/* Competitive Moat */}
       <CollapsibleSection id="moat" title="Competitive Moat" sources={['PR', 'SEC']}>
         <div className="sm-grid-2-lg">
-          <div>
-            <span className="sm-section-label sm-mint sm-block">Moat Sources</span>
+          <div className="sm-flex-col sm-gap-8">
+            <span className="sm-section-label sm-mint sm-inline-block">Moat Sources</span>
             {current.moatSources.map((m, i) => (
-              <div key={i} className="sm-flex-between sm-bg-surface2 sm-p-12-16 sm-rounded-6">
+              <div key={i} className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
                 <div>
                   <div className="sm-text-13t sm-fw-600">{m.source}</div>
                   <div className="sm-text-11">{m.detail}</div>
                 </div>
-                <span style={{ color: m.color, fontWeight: 600, fontSize: 12 }}>{m.strength}</span>
+                <span className="sm-fw-600" style={{ color: m.color, fontSize: 12 }}>{m.strength}</span>
               </div>
             ))}
           </div>
-          <div>
-            <span className="sm-section-label sm-coral sm-block">Competitive Threats</span>
+          <div className="sm-flex-col sm-gap-8">
+            <span className="sm-section-label sm-coral sm-inline-block">Competitive Threats</span>
             {current.moatThreats.map((t, i) => (
-              <div key={i} className="sm-flex-between sm-bg-surface2 sm-p-12-16 sm-rounded-6">
+              <div key={i} className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
                 <div>
                   <div className="sm-text-13t sm-fw-600">{t.threat}</div>
                   <div className="sm-text-11">{t.detail}</div>
                 </div>
-                <span style={{ color: t.color, fontWeight: 600, fontSize: 12 }}>{t.risk}</span>
+                <span className="sm-fw-600" style={{ color: t.color, fontSize: 12 }}>{t.risk}</span>
               </div>
             ))}
           </div>
@@ -5915,12 +5914,12 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
 
         {/* Part 1: Multi-Perspective Risk Evaluation */}
-        <div className="sm-bmnr-section-divider"><span className="sm-section-label sm-text">Risk Evaluation — Four Perspectives</span></div>
+        <div className="sm-mb-8" style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span className="sm-section-label sm-text">Risk Evaluation — Four Perspectives</span></div>
 
         {/* CFA Level III Perspective */}
-        <div className="sm-bmnr-perspective-card" style={{ '--card-accent': 'var(--violet)' } as React.CSSProperties}>
+        <div className="sm-callout" style={{ '--callout-color': 'var(--violet)' } as React.CSSProperties}>
           <div className="sm-flex">
-            <span className="sm-bmnr-perspective-badge" style={{ '--card-accent': 'var(--violet)' } as React.CSSProperties}>CFA LEVEL III</span>
+            <span className="sm-news-tag" style={{ '--tag-color': 'var(--violet)' } as React.CSSProperties}>CFA LEVEL III</span>
             <span className="sm-subtle">Portfolio Construction & Factor Analysis</span>
           </div>
           <div className="sm-body sm-lh-18">
@@ -5933,16 +5932,16 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             <p>
               <strong>Governance & ESG:</strong> Founder-controlled via Class B shares. Management pivoted successfully from BTC mining — demonstrates adaptability but also thesis drift risk. ESG profile mixed: PoS staking is energy-efficient, but crypto association carries headline risk. No dividend history despite recent announcement — track record TBD.
             </p>
-            <p className="sm-bmnr-perspective-quote" style={{ '--card-accent': 'var(--violet)' } as React.CSSProperties}>
+            <div className="sm-callout" style={{ '--callout-color': 'var(--violet)' } as React.CSSProperties}>
               <strong className="sm-violet">Ecosystem Assessment:</strong> {current.perspectives.cfa.ecosystemView}
-            </p>
+            </div>
           </div>
         </div>
 
         {/* Hedge Fund Manager Perspective */}
-        <div className="sm-bmnr-perspective-card" style={{ '--card-accent': 'var(--gold)' } as React.CSSProperties}>
+        <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
           <div className="sm-flex">
-            <span className="sm-bmnr-perspective-badge" data-dark-text style={{ '--card-accent': 'var(--gold)' } as React.CSSProperties}>HEDGE FUND</span>
+            <span className="sm-news-tag" style={{ '--tag-color': 'var(--gold)' } as React.CSSProperties}>HEDGE FUND</span>
             <span className="sm-subtle">Alpha Generation & Event Catalysts</span>
           </div>
           <div className="sm-body sm-lh-18">
@@ -5955,16 +5954,16 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             <p>
               <strong>Cycle Positioning:</strong> ETH treasury equities are leveraged bets on crypto cycles. In bull markets, NAV premiums expand and stock outperforms ETH. In bear markets, premiums compress and stock underperforms ETH. We're in early-to-mid cycle based on halving timing. Aggressive accumulation phase, but maintain stop-losses for cycle turn protection.
             </p>
-            <p className="sm-bmnr-perspective-quote" style={{ '--card-accent': 'var(--gold)' } as React.CSSProperties}>
+            <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
               <strong className="sm-gold">Ecosystem Assessment:</strong> {current.perspectives.hedgeFund.ecosystemView}
-            </p>
+            </div>
           </div>
         </div>
 
         {/* CIO/CIS Institutional Perspective */}
-        <div className="sm-bmnr-perspective-card" style={{ '--card-accent': 'var(--sky)' } as React.CSSProperties}>
+        <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
           <div className="sm-flex">
-            <span className="sm-bmnr-perspective-badge" style={{ '--card-accent': 'var(--sky)' } as React.CSSProperties}>CIO / CIS</span>
+            <span className="sm-news-tag" style={{ '--tag-color': 'var(--sky)' } as React.CSSProperties}>CIO / CIS</span>
             <span className="sm-subtle">Strategic Allocation & Fiduciary Considerations</span>
           </div>
           <div className="sm-body sm-lh-18">
@@ -5977,16 +5976,16 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             <p>
               <strong>Reputational Risk:</strong> Small-cap crypto equity carries headline risk. However, the pivot from BTC mining to ETH treasury is defensible ("we followed the yield opportunity"). If questioned: "It's a regulated equity providing exposure to Ethereum staking infrastructure, not speculative tokens." The yield narrative differentiates from pure crypto speculation.
             </p>
-            <p className="sm-bmnr-perspective-quote" style={{ '--card-accent': 'var(--sky)' } as React.CSSProperties}>
+            <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
               <strong className="sm-sky">Ecosystem Assessment:</strong> {current.perspectives.cio.ecosystemView}
-            </p>
+            </div>
           </div>
         </div>
 
         {/* Technical Analyst Perspective */}
-        <div className="sm-bmnr-perspective-card" style={{ '--card-accent': 'var(--mint)' } as React.CSSProperties}>
+        <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
           <div className="sm-flex">
-            <span className="sm-bmnr-perspective-badge" data-dark-text style={{ '--card-accent': '#34d399' } as React.CSSProperties}>TECHNICAL ANALYST</span>
+            <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>TECHNICAL ANALYST</span>
             <span className="sm-subtle">Chart Patterns & Price Action</span>
           </div>
           <div className="sm-body sm-lh-18">
@@ -5999,20 +5998,20 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             <p>
               <strong>NAV Premium Cycles:</strong> NAV premium/discount provides tactical entry/exit signals independent of price. Accumulate aggressively below 1.0x NAV (discount = free money). Trim 20-30% above 1.5x NAV. Current Bollinger Band squeeze on weekly suggests imminent volatility expansion — prepare for directional move.
             </p>
-            <p className="sm-bmnr-perspective-quote" style={{ '--card-accent': '#34d399' } as React.CSSProperties}>
-              <strong style={{ color: '#34d399' }}>Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
-            </p>
+            <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+              <strong className="sm-mint">Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
+            </div>
           </div>
         </div>
 
         {/* Part 2: Key Strategic Questions */}
-        <div className="sm-bmnr-section-divider"><span className="sm-section-label sm-text">Key Strategic Questions</span></div>
+        <div className="sm-mb-8" style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span className="sm-section-label sm-text">Key Strategic Questions</span></div>
 
         {/* Would I Buy Now? */}
-        <div className="sm-bg-surface2 sm-p-12-16 sm-rounded-12">
+        <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
           <div className="sm-flex-between">
-            <span className="sm-text sm-fw-600 sm-fs-15">Would I Buy Now?</span>
-            <span className="sm-bmnr-answer-badge" style={{ background: 'var(--mint)', color: 'var(--bg)' }}>YES — ACCUMULATE ON DIPS</span>
+            <span className="sm-text sm-fw-600" style={{ fontSize: 15 }}>Would I Buy Now?</span>
+            <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)', fontWeight: 700, fontSize: 13, padding: '6px 16px' } as React.CSSProperties}>YES — ACCUMULATE ON DIPS</span>
           </div>
           <div className="sm-body sm-lh-18">
             <p>
@@ -6028,23 +6027,23 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
 
         {/* What Can I Expect? */}
-        <div className="sm-bg-surface2 sm-p-12-16 sm-rounded-12">
-          <div className="sm-text sm-fw-600 sm-fs-15">What Can I Expect?</div>
-          <div className="sm-grid-3-gap-24">
-            <div className="sm-bmnr-signal-card" style={{ '--card-accent': 'var(--gold)' } as React.CSSProperties}>
-              <div className="sm-bmnr-signal-title">Short-Term (0-6 months)</div>
+        <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
+          <div className="sm-text sm-fw-600" style={{ fontSize: 15 }}>What Can I Expect?</div>
+          <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
+            <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
+              <div className="sm-fw-600 sm-gold" style={{ fontSize: 13 }}>Short-Term (0-6 months)</div>
               <div className="sm-text-13 sm-lh-16">
                 Expect ETH-correlated volatility ±30-50%. NAV premium will fluctuate with sentiment. Key catalysts: MAVAN progress, ETH accumulation PRs, staking deployment updates. Trading range tied to ETH — if ETH $3-5K, expect BMNR $3-8 range (rough).
               </div>
             </div>
-            <div className="sm-bmnr-signal-card" style={{ '--card-accent': 'var(--sky)' } as React.CSSProperties}>
-              <div className="sm-sky sm-fw-600 sm-fs-13">Mid-Term (6-18 months)</div>
+            <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
+              <div className="sm-fw-600 sm-sky" style={{ fontSize: 13 }}>Mid-Term (6-18 months)</div>
               <div className="sm-text-13 sm-lh-16">
                 If ETH cycle continues upward, NAV premium expansion drives outsized returns. Target: 2-4x from entry if ETH doubles and premium expands. Risk: cycle reversal could mean 60-80% drawdown. MAVAN fully operational should validate yield thesis.
               </div>
             </div>
-            <div className="sm-bmnr-signal-card" style={{ '--card-accent': 'var(--violet)' } as React.CSSProperties}>
-              <div className="sm-violet sm-fw-600 sm-fs-13">Long-Term (3-5 years)</div>
+            <div className="sm-callout" style={{ '--callout-color': 'var(--cyan)' } as React.CSSProperties}>
+              <div className="sm-fw-600 sm-cyan" style={{ fontSize: 13 }}>Long-Term (3-5 years)</div>
               <div className="sm-text-13 sm-lh-16">
                 If ETH reaches $10-20K cycle highs and BMNR executes on accumulation, this could be a 5-10x from current levels. But crypto cycles are brutal — expect at least one 70%+ drawdown along the way. Diamond hands required. Position size must allow holding through drawdowns.
               </div>
@@ -6053,8 +6052,8 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
 
         {/* What's My Strategy? */}
-        <div className="sm-bg-surface2 sm-p-12-16 sm-rounded-12">
-          <div className="sm-text sm-fw-600 sm-fs-15">What's My Strategy?</div>
+        <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
+          <div className="sm-text sm-fw-600" style={{ fontSize: 15 }}>What's My Strategy?</div>
           <div className="sm-body sm-lh-18">
             <p>
               <strong className="sm-violet">Position Sizing:</strong> 1-3% for aggressive crypto-tolerant portfolios, 0.5-1% for growth-oriented, avoid for balanced/conservative. This is your "high-octane ETH exposure" position. Never more than you can watch drop 70% without panic selling.
@@ -6072,14 +6071,14 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
         
         {/* Ecosystem-Based Triggers */}
-        <div className="sm-bmnr-perspective-card" style={{ '--card-accent': 'var(--violet)' } as React.CSSProperties}>
-          <div className="sm-violet sm-fw-600 sm-fs-15">Ecosystem-Based Triggers</div>
+        <div className="sm-callout" style={{ '--callout-color': 'var(--violet)' } as React.CSSProperties}>
+          <div className="sm-text sm-fw-600" style={{ fontSize: 15 }}>Ecosystem-Based Triggers</div>
           <div className="sm-subtle sm-italic">Monitor these Ethereum ecosystem signals (see Ethereum tab) alongside BMNR-specific metrics</div>
 
           <div className="sm-grid-3-gap-24">
             {/* Entry Signals */}
             <div className="sm-bg-surface sm-p-12 sm-rounded-12">
-              <div className="sm-bmnr-signal-title" style={{ '--card-accent': 'var(--mint)' } as React.CSSProperties}>Entry Signals (Consider Adding)</div>
+              <div className="sm-fw-600 sm-mint" style={{ fontSize: 13 }}>Entry Signals (Consider Adding)</div>
               <div className="sm-flex-col-gap sm-gap-6">
                 {[
                   'ETF net flows positive 3+ weeks',
@@ -6097,7 +6096,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             
             {/* Exit Signals */}
             <div className="sm-bg-surface sm-p-12 sm-rounded-12">
-              <div className="sm-bmnr-signal-title" style={{ '--card-accent': 'var(--coral)' } as React.CSSProperties}>Exit Signals (Consider Reducing)</div>
+              <div className="sm-fw-600 sm-coral" style={{ fontSize: 13 }}>Exit Signals (Consider Reducing)</div>
               <div className="sm-flex-col-gap sm-gap-6">
                 {[
                   'ETF outflows >$500M for 2+ weeks',
@@ -6214,19 +6213,20 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
               <div className="sm-text-11 sm-text3">Source: {a.source}</div>
               
               {expandedArchive === i && a.fullAnalysis && (
-                <div className="sm-pt-12 sm-border-t">
+                <div className="sm-border-t sm-pt-12">
                   <div className="sm-text-13">{a.fullAnalysis.context}</div>
-                  <div className="sm-flex-wrap">
+                  <div className="sm-flex-wrap sm-gap-8">
                     {a.fullAnalysis.keyHighlights.map((h, j) => (
-                      <span key={j} className="sm-bmnr-history-tag">• {h}</span>
+                      <span key={j} className="sm-text-11 sm-text3 sm-bg-surface sm-rounded-6" style={{ padding: '4px 8px' }}>• {h}</span>
                     ))}
                   </div>
                 </div>
               )}
-              
+
               <button
                 onClick={() => setExpandedArchive(expandedArchive === i ? null : i)}
-                className="sm-bmnr-link-btn"
+                className="sm-action-btn"
+                data-active={expandedArchive === i}
                 aria-expanded={expandedArchive === i}
                 aria-label={`Toggle details for ${a.date}`}
               >
@@ -7664,14 +7664,10 @@ const TimelineTab = () => {
         <span className="sm-divider-line" />
       </div>
 
-      <h3 className="sm-bmnr-event-heading">
-        <span>Event Timeline</span>
-        <UpdateIndicators sources="PR" />
-        <span className="sm-bmnr-event-count">({filteredEntries.length} events)</span>
-      </h3>
-
-      {/* Topic Filters (AND logic multi-select) */}
+      {/* Topic Filter */}
       <div className="sm-panel sm-mt-8 sm-p-24 sm-rounded-16">
+        <p className="sm-text2 sm-lh-16 sm-fs-13 sm-bmnr-mb-4-reset">Track <strong>key events</strong> for BMNR — ETH accumulation, SEC filings, capital raises, corporate strategy, and product launches</p>
+        <p className="sm-subtle-sm sm-italic sm-bmnr-mb-16-reset">Company-level catalysts and developments in chronological order</p>
         <div className="sm-flex-between sm-mb-8">
           <span className="sm-section-label">Filter by Topic</span>
           {selectedTopics.length > 0 && (
@@ -7680,7 +7676,7 @@ const TimelineTab = () => {
               className="sm-bmnr-clear-btn"
               aria-label="Clear topic filter"
             >
-              Clear
+              Clear ({selectedTopics.length})
             </button>
           )}
         </div>
@@ -7694,7 +7690,7 @@ const TimelineTab = () => {
                 onClick={() => toggleTopic(topic)}
                 className="sm-filter-pill"
                 data-active={isSelected}
-                style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}
+                style={{ '--pill-accent': 'var(--cyan)' } as React.CSSProperties}
                 aria-label={`Filter by ${topicStyle.label}`}
               >
                 {topicStyle.label} ({count})
@@ -7708,14 +7704,25 @@ const TimelineTab = () => {
           </div>
         )}
       </div>
-      
-      <div className="sm-flex-between">
-        <div className="sm-flex-wrap">
-          {categories.map(cat => (
-            <button key={cat} onClick={() => setFilterCategory(cat)} className="sm-action-btn" data-active={filterCategory === cat}>
-              {cat === 'all' ? `All (${timelineEvents.length})` : `${cat} (${timelineEvents.filter(p => p.category === cat).length})`}
-            </button>
-          ))}
+
+      {/* Category pills row with Expand All button */}
+      <div className="sm-flex-between sm-items-center sm-mt-8">
+        <div className="sm-flex-wrap sm-gap-6">
+          {categories.map(cat => {
+            const isActive = filterCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setFilterCategory(cat)}
+                className="sm-filter-pill"
+                data-active={isActive}
+                style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}
+                aria-label={`Filter by category: ${cat}`}
+              >
+                {cat === 'all' ? `All (${timelineEvents.length})` : `${cat} (${timelineEvents.filter(p => p.category === cat).length})`}
+              </button>
+            );
+          })}
         </div>
         <button
           onClick={() => {
@@ -7725,86 +7732,83 @@ const TimelineTab = () => {
               setExpanded(new Set(filteredEntries.map((_, i) => i)));
             }
           }}
-          className="sm-action-btn"
+          className="sm-filter-pill sm-nowrap"
+          aria-label={expanded.size === filteredEntries.length ? 'Collapse all events' : 'Expand all events'}
         >
-          {expanded.size === filteredEntries.length ? '⊟ Collapse All' : '⊞ Expand All'}
+          {expanded.size === filteredEntries.length ? '- Collapse All' : '+ Expand All'}
         </button>
       </div>
 
-      <div className="sm-flex-col-gap">
+      {/* Timeline Events */}
+      <div className="sm-card sm-mt-8">
         {filteredEntries.map((entry, i) => {
           const isExpanded = expanded.has(i);
-          const toggleExpand = () => {
-            const next = new Set(expanded);
-            if (isExpanded) next.delete(i);
-            else next.add(i);
-            setExpanded(next);
-          };
-
+          const accentColor = entry.impact === 'positive' ? 'var(--mint)' : entry.impact === 'negative' ? 'var(--coral)' : 'var(--sky)';
           return (
-            <div key={i} className="sm-tl-event-card">
-              <div
-                onClick={toggleExpand}
-                className="sm-tl-event-row"
-                role="button"
-                tabIndex={0}
-                aria-expanded={isExpanded}
-                aria-label={`Toggle details for ${entry.title}`}
-                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleExpand())}
-              >
-                <span className="sm-mono-sm sm-text3">{entry.date}</span>
-                <span className="sm-text-11">{entry.category}</span>
-                <span className="sm-text-13t sm-fw-500">{entry.title}</span>
-                <span className="sm-bmnr-impact-label" data-impact={entry.impact}>
-                  {entry.impact === 'positive' && '↑ '}
-                  {entry.impact === 'negative' && '↓ '}
-                  {entry.impact === 'neutral' && '→ '}
-                  {entry.impact}
+            <div
+              key={i}
+              role="button"
+              tabIndex={0}
+              aria-label={`${entry.title} — ${entry.impact} — click to ${isExpanded ? 'collapse' : 'expand'}`}
+              className="sm-bmnr-news-row"
+              style={{ '--news-accent': accentColor, borderBottom: i < filteredEntries.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' } as React.CSSProperties}
+              onClick={() => {
+                const next = new Set(expanded);
+                if (isExpanded) next.delete(i);
+                else next.add(i);
+                setExpanded(next);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const next = new Set(expanded);
+                  if (isExpanded) next.delete(i);
+                  else next.add(i);
+                  setExpanded(next);
+                }
+              }}
+            >
+              <div className="sm-flex-between sm-items-start">
+                <div className="sm-flex-1">
+                  <div className="sm-flex-wrap sm-gap-6 sm-mb-4">
+                    <span className="sm-mono-sm sm-text3 sm-fs-10">{entry.date}</span>
+                    <span className="sm-micro-badge sm-bmnr-cat-badge" data-type="category">{entry.category}</span>
+                  </div>
+                  <div className="sm-text sm-fw-600 sm-lh-14 sm-fs-13">{entry.title}</div>
+                </div>
+                <span className="sm-bmnr-impact-val" style={{ color: accentColor }}>
+                  {entry.impact === 'positive' ? '+' : entry.impact === 'negative' ? '-' : '~'} {entry.impact === 'positive' ? 'Bullish' : entry.impact === 'negative' ? 'Bearish' : 'Neutral'}
                 </span>
-                <span aria-hidden="true" className="sm-bmnr-chevron" data-expanded={isExpanded}>▼</span>
               </div>
               {isExpanded && (
-                <div className="sm-tl-detail-panel">
-                  <div className="sm-tl-details-grid">
+                <div className="sm-bmnr-news-detail">
+                  {/* Changes Table */}
+                  <div className="sm-bmnr-insight-card" style={{ '--insight-color': 'var(--cyan)' } as React.CSSProperties}>
+                    <div className="sm-micro-label sm-cyan sm-mb-4 sm-ls-1">Key Changes</div>
                     <div>
-                      {/* Changes Grid */}
-                      <div>
-                        {/* Header */}
-                        <div className="sm-bmnr-changes-header">
-                          {['Metric', 'Previous', 'New', 'Change'].map((h, idx) => (
-                            <span key={h} className="sm-bmnr-changes-th" data-align={idx > 0 ? 'right' : undefined}>{h}</span>
-                          ))}
-                        </div>
-                        {/* Rows */}
-                        {entry.changes.map((c, cidx) => (
-                          <div key={cidx} className="sm-bmnr-changes-row" style={{ borderBottom: cidx < entry.changes.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
-                            <span className="sm-bmnr-changes-cell">{c.metric}</span>
-                            <span className="sm-mono-sm sm-text-right sm-bmnr-changes-cell sm-fs-11">{c.previous}</span>
-                            <span className="sm-mono-sm sm-text-right sm-bmnr-changes-cell sm-fs-11">{c.new}</span>
-                            <span className="sm-bmnr-changes-cell" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, textAlign: 'right', color: c.change.startsWith('+') ? 'var(--mint)' : c.change.startsWith('-') ? 'var(--coral)' : undefined }}>{c.change}</span>
-                          </div>
+                      <div className="sm-bmnr-changes-header">
+                        {['Metric', 'Previous', 'New', 'Change'].map((h, idx) => (
+                          <span key={h} className="sm-bmnr-changes-th" data-align={idx > 0 ? 'right' : undefined}>{h}</span>
                         ))}
                       </div>
-                      {/* Notes */}
-                      <div className="sm-bmnr-event-note">
-                        {entry.notes}
-                      </div>
-                    </div>
-                    <div className="sm-flex-col-gap">
-                      <div>
-                        <div className="sm-micro-label">Impact</div>
-                        <div className="sm-fw-600" style={{ fontSize: 13, color: entry.impact === 'positive' ? 'var(--mint)' : entry.impact === 'negative' ? 'var(--coral)' : 'var(--text3)' }}>
-                          {entry.impact === 'positive' && '● Bullish'}
-                          {entry.impact === 'negative' && '● Bearish'}
-                          {entry.impact === 'neutral' && '● Neutral'}
+                      {entry.changes.map((c, cidx) => (
+                        <div key={cidx} className="sm-bmnr-changes-row" style={{ borderBottom: cidx < entry.changes.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+                          <span className="sm-bmnr-changes-cell">{c.metric}</span>
+                          <span className="sm-mono-sm sm-text-right sm-bmnr-changes-cell sm-fs-11">{c.previous}</span>
+                          <span className="sm-mono-sm sm-text-right sm-bmnr-changes-cell sm-fs-11">{c.new}</span>
+                          <span className="sm-bmnr-changes-cell" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, textAlign: 'right', color: c.change.startsWith('+') ? 'var(--mint)' : c.change.startsWith('-') ? 'var(--coral)' : undefined }}>{c.change}</span>
                         </div>
-                      </div>
-                      <div>
-                        <div className="sm-micro-label">Source</div>
-                        <div className="sm-body-sm sm-violet">{entry.source}</div>
-                      </div>
+                      ))}
                     </div>
                   </div>
+
+                  {entry.notes && (
+                    <div className="sm-bmnr-insight-card" style={{ '--insight-color': 'var(--violet)', marginTop: 8 } as React.CSSProperties}>
+                      <div className="sm-micro-label sm-violet sm-mb-4 sm-ls-1">Notes</div>
+                      <div className="sm-subtle sm-text2 sm-lh-15">{entry.notes}</div>
+                    </div>
+                  )}
+
+                  <div className="sm-bmnr-source-text">Source: {entry.source}</div>
                 </div>
               )}
             </div>
