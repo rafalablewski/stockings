@@ -6886,8 +6886,8 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
 
       {/* Future of Finance Thesis */}
       <div className="sm-divider">
-        <div className="sm-section-label">Thesis Framework</div>
-        <h3 >Is Ethereum the Future of Finance<span className="sm-violet">?</span></h3>
+        <span className="sm-param-label">Thesis Framework</span>
+        <span className="sm-divider-line" />
       </div>
 
       {/* Institutional Adoption Evidence */}
@@ -7136,11 +7136,8 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
       
       {/* Ethereum Adoption Timeline - matches Timeline tab structure */}
       <div className="sm-divider">
-        <div className="sm-section-label">Ecosystem Intelligence</div>
-        <div className="sm-flex sm-gap-12 sm-items-baseline">
-          <h3 >Adoption Timeline<span className="sm-mint">.</span></h3>
-          <span className="sm-mono-sm sm-text3">{filteredNews.length} events</span>
-        </div>
+        <span className="sm-param-label">Ecosystem Intelligence</span>
+        <span className="sm-divider-line" />
       </div>
 
       {/* Company Filter */}
@@ -7674,19 +7671,20 @@ const TimelineTab = () => {
       </h3>
 
       {/* Topic Filters (AND logic multi-select) */}
-      <div className="sm-card sm-p-16">
-        <div className="sm-flex-between">
-          <span className="sm-text-13t sm-fw-600">Filter by Topic</span>
+      <div className="sm-panel sm-mt-8 sm-p-24 sm-rounded-16">
+        <div className="sm-flex-between sm-mb-8">
+          <span className="sm-section-label">Filter by Topic</span>
           {selectedTopics.length > 0 && (
             <button
               onClick={() => setSelectedTopics([])}
-              className="sm-action-btn"
+              className="sm-bmnr-clear-btn"
+              aria-label="Clear topic filter"
             >
-              Clear ({selectedTopics.length})
+              Clear
             </button>
           )}
         </div>
-        <div className="sm-flex-wrap sm-mt-8">
+        <div className="sm-flex-wrap sm-gap-6">
           {Object.entries(topicTags).map(([topic, topicStyle]) => {
             const isSelected = selectedTopics.includes(topic);
             const count = timelineEvents.filter(p => detectTopics(p).includes(topic)).length;
@@ -7694,8 +7692,10 @@ const TimelineTab = () => {
               <button
                 key={topic}
                 onClick={() => toggleTopic(topic)}
-                className="sm-action-btn"
+                className="sm-filter-pill"
                 data-active={isSelected}
+                style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}
+                aria-label={`Filter by ${topicStyle.label}`}
               >
                 {topicStyle.label} ({count})
               </button>
@@ -7703,7 +7703,7 @@ const TimelineTab = () => {
           })}
         </div>
         {selectedTopics.length > 0 && (
-          <div className="sm-subtle sm-mt-8">
+          <div className="sm-mono-sm sm-text3 sm-mt-8 sm-fs-11">
             {selectedTopics.map(t => topicTags[t].label).join(' + ')} → {filteredEntries.length} results
           </div>
         )}
