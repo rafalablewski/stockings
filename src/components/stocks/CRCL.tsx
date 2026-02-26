@@ -116,6 +116,7 @@ import type { UpdateSource } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
+import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
@@ -2508,8 +2509,6 @@ function CRCLModel() {
   const [mcSims, setMcSims] = useState(1000); // Adjustable simulation count
   const [mcYears, setMcYears] = useState(5); // Time horizon (3/5/7 years)
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
-  const [secFilter, setSecFilter] = useState('All');
-  const [showAllFilings, setShowAllFilings] = useState(false);
   const [showAllPR, setShowAllPR] = useState(false);
   const [capitalView, setCapitalView] = useState('structure');
 
@@ -2544,16 +2543,7 @@ function CRCLModel() {
   };
   
   const secFilterTypes = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '424B5'];
-  
-  const filteredFilings = secFilings.filter(f => {
-    if (secFilter === 'All') return true;
-    if (secFilter === 'S-1/S-3') return f.type === 'S-1' || f.type === 'S-3' || f.type === 'S-8';
-    return f.type === secFilter;
-  });
-  
-  const displayedFilings = showAllFilings ? filteredFilings : filteredFilings.slice(0, 6);
-  const hiddenCount = filteredFilings.length - 6;
-  
+
   // Monte Carlo Parameter State
   const [mcRevenueGrowthMin, setMcRevenueGrowthMin] = useState(8);
   const [mcRevenueGrowthMax, setMcRevenueGrowthMax] = useState(25);
@@ -5371,103 +5361,14 @@ function CRCLModel() {
               description="SEC filings, press releases, partnerships, and corporate milestones. Chronological record of Circle's evolution as the USDC issuer."
               sources="PR"
             >
-              {/* Latest SEC Filings - Enhanced with filtering and pagination */}
-              <div className="sm-card">
-                <div className="sm-card-header">
-                  <span className="sm-section-label">SEC Filings<UpdateIndicators sources="SEC" /></span>
-                </div>
-                <div className="sm-card-body">
-                  {/* Filter Buttons */}
-                  <div className="sm-flex-wrap">
-                    {secFilterTypes.map(type => (
-                      <button
-                        key={type}
-                        onClick={() => { setSecFilter(type); setShowAllFilings(false); }}
-                        className="sm-action-btn"
-                        data-active={secFilter === type}
-                      >
-                        {type}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Filings Table */}
-                  <div className="sm-overflow-x sm-scroll-hint">
-                    <div style={{ minWidth: 600 }}>
-                      <div className="sm-fin-table-header" style={{ gridTemplateColumns: '100px 80px 1fr 90px 60px' }}>
-                        <span className="sm-fin-th" data-sticky="">Date</span>
-                        <span className="sm-fin-th">Type</span>
-                        <span className="sm-fin-th">Description</span>
-                        <span className="sm-fin-th">Period</span>
-                        <span className="sm-fin-th" style={{ textAlign: 'right' }}>Link</span>
-                      </div>
-                      {displayedFilings.map((filing, idx) => (
-                        <div key={idx} className="sm-fin-table-row" style={{ gridTemplateColumns: '100px 80px 1fr 90px 60px' }}>
-                          <span className="sm-fin-td-label" style={{ whiteSpace: 'nowrap' }}>{filing.date}</span>
-                          <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>
-                            <span className="sm-news-tag" style={{ '--tag-color': secTypeColors[filing.type]?.text || 'var(--text2)' } as React.CSSProperties}>
-                              {filing.type}
-                            </span>
-                          </span>
-                          <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{filing.description}</span>
-                          <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{filing.period}</span>
-                          <span className="sm-fin-td" style={{ textAlign: 'right' }}>
-                            <a
-                              href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="sm-mint"
-                            >
-                              SEC →
-                            </a>
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Show More/Less Button */}
-                  {filteredFilings.length > 6 && (
-                    <button
-                      onClick={() => setShowAllFilings(!showAllFilings)}
-                      className="sm-expand-btn"
-                      aria-expanded={showAllFilings}
-                    >
-                      {showAllFilings ? '▲ Show Less' : `▼ Show ${hiddenCount} More Filings`}
-                    </button>
-                  )}
-
-                  {/* Footer with metadata and Last PR marker */}
-                  <div style={{ paddingTop: 12, borderTop: '1px solid var(--border)' }}>
-                    <div className="sm-flex-wrap sm-gap-24" style={{ fontSize: 12 }}>
-                      <div>
-                        <span className="sm-text3">CIK:</span>
-                        <span className="sm-text2 sm-mono-sm" style={{ marginLeft: 6 }}>{secMeta.cik}</span>
-                      </div>
-                      <div>
-                        <span className="sm-text3">Ticker:</span>
-                        <span className="sm-mint sm-fw-600" style={{ marginLeft: 6 }}>{secMeta.ticker}</span>
-                      </div>
-                      <div>
-                        <span className="sm-text3">Exchange:</span>
-                        <span className="sm-text2" style={{ marginLeft: 6 }}>{secMeta.exchange}</span>
-                      </div>
-                      <a
-                        href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=&dateb=&owner=include&count=40`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="sm-sky" style={{ marginLeft: 'auto' }}
-                      >
-                        View All SEC Filings →
-                      </a>
-                    </div>
-                    <div className="sm-subtle-sm sm-flex">
-                      <span className="sm-cyan">●</span>
-                      <span className="sm-flex">Last PR Processed: {secMeta.lastPR.date} — {secMeta.lastPR.title}<UpdateIndicators sources="PR" /></span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {/* SEC Filings — Redesigned card layout with KPI strip */}
+              <SharedSecFilingsSection
+                filings={secFilings}
+                secMeta={secMeta}
+                typeColors={secTypeColors}
+                filterTypes={secFilterTypes}
+                initialVisibleCount={6}
+              />
 
               {/* Upcoming Events */}
               <div className="sm-divider">

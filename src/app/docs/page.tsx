@@ -236,6 +236,7 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/shared/SharedInvestmentTab.tsx",    type: "Component", description: "Investment thesis & scorecard (stock-agnostic; gold-standard sm-card/sm-toggle-header)" },
   { path: "src/components/shared/SharedFinancialsTab.tsx",   type: "Component", description: "Financials tab shell: hero, sm-fin-table milestones, CFA notes; children = quarterly section" },
   { path: "src/components/shared/SharedTimelineTab.tsx",     type: "Component", description: "Timeline tab shell: hero + children (SEC filings, event list)" },
+  { path: "src/components/shared/SharedSecFilingsSection.tsx", type: "Component", description: "SEC Filings cards for Timeline tab — KPI strip, filter pills, description-first cards, cross-ref source dots" },
   { path: "src/components/shared/SharedEdgarTab.tsx",         type: "Component", description: "SEC EDGAR filings browser" },
   { path: "src/components/shared/SharedSourcesTab.tsx",       type: "Component", description: "Research sources / news feed tab" },
   { path: "src/components/shared/SharedAIAgentsTab.tsx",      type: "Component", description: "AI analysis agents status tab" },
@@ -319,6 +320,7 @@ const stockPageTree = [
   { depth: 3, name: "Overview / Model / Capital / Comps",  note: "Stock-specific — rendered inline in ASTS/BMNR/CRCL" },
   { depth: 3, name: "SharedFinancialsTab",                 note: "Quarterly metrics, bar charts, CFA notes" },
   { depth: 3, name: "SharedTimelineTab",                   note: "Event timeline with topic filters" },
+  { depth: 4, name: "SharedSecFilingsSection",             note: "SEC filing cards with KPI summary, cross-ref dots" },
   { depth: 3, name: "SharedInvestmentTab",                 note: "Thesis, scorecard, bull/bear, catalysts" },
   { depth: 3, name: "SharedWallStreetTab",                 note: "Analyst coverage, estimates, consensus" },
   { depth: 3, name: "SharedSourcesTab",                    note: "Press releases & news with AI analysis" },
@@ -434,7 +436,7 @@ const conventions = [
   },
   {
     title: "Gold-Standard Visual Patterns",
-    description: "All tabs use a consistent set of sm-* classes for visual elements. Badges use sm-news-tag with --tag-color. Callout panels use sm-callout with --callout-color. Footnotes and info boxes use sm-note-panel. Data tables (SEC filings, milestones, quarterly metrics) use sm-fin-table-header/row with sm-fin-th/td. KPI metrics use sm-kpi-cell with sm-kpi-label/value/sub. The Capital tab is the golden standard — all other tabs mirror its visual patterns.",
+    description: "All tabs use a consistent set of sm-* classes for visual elements. Badges use sm-news-tag with --tag-color. Callout panels use sm-callout with --callout-color. Footnotes and info boxes use sm-note-panel. Data tables (milestones, quarterly metrics) use sm-fin-table-header/row with sm-fin-th/td. SEC filings in Timeline use sm-sec-* card layout (sm-sec-card, sm-sec-badge, sm-sec-desc) with KPI summary and cross-ref source dots. KPI metrics use sm-kpi-cell with sm-kpi-label/value/sub. The Capital tab is the golden standard — all other tabs mirror its visual patterns.",
     code: `// Badge — sm-news-tag
 <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>CURRENT</span>
 
@@ -448,10 +450,23 @@ const conventions = [
   <div className="sm-kpi-sub">Q3 2025</div>
 </div>
 
-// Financial table
+// Financial table (milestones, quarterly)
 <div className="sm-fin-table-header" style={{ gridTemplateColumns: '130px 1fr' }}>
   <span className="sm-fin-th" data-sticky="">Date</span>
   <span className="sm-fin-th">Event</span>
+</div>
+
+// SEC filing card (Timeline tab)
+<div className="sm-sec-card">
+  <div className="sm-sec-card-top">
+    <span className="sm-sec-badge" style={{ '--badge-bg': '...', '--badge-text': '...' }}>8-K</span>
+    <span className="sm-sec-desc">Q4 2025 Revenue Guidance $69M</span>
+  </div>
+  <div className="sm-sec-separator" />
+  <div className="sm-sec-meta">
+    <span className="sm-sec-date">Feb 14, 2026</span>
+    <span className="sm-sec-source-tag"><span className="sm-sec-source-dot" /> financials</span>
+  </div>
 </div>
 
 // Footnote
@@ -972,10 +987,37 @@ export default function DocsPage() {
           ]}
         />
 
+        {/* ── SEC Filings Timeline Classes ────────────────────────────── */}
+        <SectionHeader id="sec-timeline-classes" title="SEC Filings Timeline Classes (sm-sec-*)" count={16} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Description-first filing cards for the Timeline tab — KPI summary, filter pills, cross-reference source dots.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".sm-sec-list", "Vertical stack container for filing cards (8px gap)."],
+            [".sm-sec-card", "Filing card — surface bg, 12px radius, 1px border, hover lift."],
+            [".sm-sec-card-top", "Top row: badge + description (flex, gap 12px)."],
+            [".sm-sec-badge", "Form type badge (9px uppercase). Uses --badge-bg, --badge-text."],
+            [".sm-sec-desc", "Description text — 13px, --text, line-height 1.6."],
+            [".sm-sec-separator", "Dotted line between description and meta row."],
+            [".sm-sec-meta", "Meta row — flex, 10px, --text3, gap 8px."],
+            [".sm-sec-date", "Date in Space Mono (10px, dim)."],
+            [".sm-sec-period", "Period label (e.g. 'Q4 2025') — accent color."],
+            [".sm-sec-dot-sep", "Middle-dot separator between meta items."],
+            [".sm-sec-sources", "Container for cross-ref source tags."],
+            [".sm-sec-source-tag", "Source tag with dot + label. Uses --src-color."],
+            [".sm-sec-source-dot", "5px circle dot. Color from --src-color."],
+            [".sm-sec-pill-count", "Count badge inside filter pills (9px mono)."],
+            [".sm-sec-footer", "Footer with CIK/ticker/exchange + last PR."],
+            [".sm-sec-footer-meta", "Meta line inside footer (flex-wrap, gap 16px)."],
+          ]}
+        />
+
         {/* ── Financials Tab Classes ─────────────────────────────────────── */}
         <SectionHeader id="financials-classes" title="Financials Tab Classes (sm-fin-*)" count={9} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
-          Quarterly metrics tables, bar charts, milestones, SEC filings, and scroll containers — responsive from 360px to desktop.
+          Quarterly metrics tables, bar charts, milestones, and scroll containers — responsive from 360px to desktop.
         </p>
         <SmallTable
           headers={["Class", "Description"]}
