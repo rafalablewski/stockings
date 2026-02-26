@@ -4870,9 +4870,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
           ].map((row, i) => {
             const pctChange = ((row.value / currentNAV - 1) * 100);
             return (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: row.highlight ? 'var(--accent-dim)' : 'transparent', cursor: 'default' }}
-                onMouseEnter={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'var(--surface2)'; }}
-                onMouseLeave={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
+              <div key={i} className="sm-grid-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : 'transparent', cursor: 'default' }}
               >
                 <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
                 <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
@@ -6197,9 +6195,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         <div className="sm-subtle">Full record of all investment thesis updates. Never deleted.</div>
         <div className="sm-bmnr-history-list">
           {archive.map((a, i) => (
-            <div key={i} style={{ background: i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)', padding: '12px 16px', borderRadius: 12, border: i === 0 ? '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' : '1px solid var(--border)' }}
-              onMouseEnter={e => (e.currentTarget.style.background = i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)')}
-              onMouseLeave={e => (e.currentTarget.style.background = i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)')}>
+            <div key={i} style={{ background: i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)', padding: '12px 16px', borderRadius: 12, border: i === 0 ? '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' : '1px solid var(--border)' }}>
               <div className="sm-flex-between">
                 <div className="sm-flex">
                   <span className="sm-text sm-fw-600">{a.date}</span>

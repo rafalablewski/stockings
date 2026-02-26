@@ -7169,9 +7169,7 @@ const InvestmentTab = () => {
         <div className="sm-subtle">Full record of all investment thesis updates. Never deleted. Tracking since Q3 2022.</div>
         <div className="sm-flex-col" style={{ maxHeight: 500, overflowY: 'auto' }}>
           {archive.map((a, i) => (
-            <div key={i} style={{ background: i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)', padding: '12px 16px', borderRadius: 12, border: i === 0 ? '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' : '1px solid var(--border)' }}
-              onMouseEnter={e => (e.currentTarget.style.background = i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)')}
-              onMouseLeave={e => (e.currentTarget.style.background = i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)')}>
+            <div key={i} style={{ background: i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)', padding: '12px 16px', borderRadius: 12, border: i === 0 ? '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' : '1px solid var(--border)' }}>
               <div className="sm-flex-between">
                 <div className="sm-flex">
                   <span className="sm-text sm-fw-600">{a.date}</span>
