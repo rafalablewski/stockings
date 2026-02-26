@@ -5667,13 +5667,14 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         role="button"
         tabIndex={0}
         aria-expanded={investmentSections.has(id)}
-        onKeyDown={(e) => e.key === 'Enter' && toggleSection(id)}
+        aria-label={`Toggle ${title}`}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection(id))}
       >
         <span className="sm-section-label">
           {title}
           {sources && <UpdateIndicators sources={sources} />}
         </span>
-        <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
+        <span aria-hidden="true" style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
       </div>
       {investmentSections.has(id) && <div className="sm-card-body">{children}</div>}
     </div>
@@ -5748,14 +5749,12 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 
       {/* Investment Scorecard */}
       <CollapsibleSection id="scorecard" title="Investment Scorecard" sources={['PR', 'SEC']}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
           {current.scorecard.map((item, i) => (
-            <div key={i} style={{ background: 'var(--surface2)', padding: '12px 16px', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <div className="sm-text-13t sm-fw-600">{item.category}</div>
-                <div className="sm-text-11">{item.detail}</div>
-              </div>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 20, fontWeight: 700, color: item.color }}>{item.rating}</div>
+            <div key={i} className="sm-kpi-cell" style={{ '--kpi-color': item.color } as React.CSSProperties}>
+              <div className="sm-kpi-hero-md">{item.rating}</div>
+              <div className="sm-kpi-label">{item.category}</div>
+              <div className="sm-kpi-sub">{item.detail}</div>
             </div>
           ))}
         </div>
@@ -5792,21 +5791,23 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 
       {/* Summary */}
       <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
-        <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
-          <div className="sm-mint sm-fw-600">What's New ({current.source})</div>
-          <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
+        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--mint)', '--bar-accent-2': 'var(--cyan)' } as React.CSSProperties}>
+          <div style={{ fontSize: 11, color: 'var(--mint)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>What's New ({current.source})</div>
+          <ul className="sm-text-13 sm-text2" style={{ margin: '4px 0 0', paddingLeft: 16, lineHeight: 1.8 }}>
             {current.executiveSummary.whatsNew.map((item, i) => (
               <li key={i}>{item}</li>
             ))}
           </ul>
         </div>
-        <div style={{ color: 'var(--text2)', lineHeight: 1.8, fontSize: 14 }}>
+        <div className="sm-text-13 sm-text2 sm-body" style={{ lineHeight: 1.8 }}>
           <p>
             <strong>Thesis:</strong> {current.executiveSummary.thesis}
           </p>
-          <p style={{ fontStyle: 'italic', color: 'var(--cyan)' }}>
-            "{current.executiveSummary.bottomLine}"
-          </p>
+        </div>
+        <div className="sm-note-panel">
+          <em className="sm-cyan">"{current.executiveSummary.bottomLine}"</em>
+        </div>
+        <div className="sm-text-13 sm-text2 sm-body" style={{ lineHeight: 1.8 }}>
           <p>
             <strong>Position Sizing:</strong> 5-10% for aggressive portfolios • 2-5% for growth • Alternatives allocation for balanced
           </p>
@@ -5873,7 +5874,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             ))}
           </div>
         </div>
-        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 12, fontSize: 13, color: 'var(--text2)' }}>
+        <div className="sm-note-panel">
           <strong>Moat Durability:</strong> A- (Strong). Scale advantage is nearly unassailable — would take years and billions for competitors to catch up. Yield advantage over BTC treasuries is permanent. Key risk is ETH price, not competitive dynamics.
         </div>
       </CollapsibleSection>
@@ -5886,20 +5887,23 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 
       {/* Risk Matrix */}
       <CollapsibleSection id="risks" title="Risk Matrix" sources={['PR', 'SEC']}>
-        <div className="sm-flex-col">
-          {current.risks.map((r, i) => (
-            <div key={i} style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12, borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}>
-              <div className="sm-flex-between">
-                <span className="sm-text sm-fw-600">{r.risk}</span>
-                <div className="sm-flex sm-gap-8 sm-items-initial">
-                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: r.severity === 'Critical' ? 'color-mix(in srgb, var(--coral) 20%, transparent)' : r.severity === 'High' ? 'color-mix(in srgb, var(--gold) 20%, transparent)' : 'color-mix(in srgb, var(--sky) 20%, transparent)', color: r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)' }}>{r.severity}</span>
-                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{r.likelihood} likelihood</span>
+        <div className="sm-flex-col sm-gap-8">
+          {current.risks.map((r, i) => {
+            const severityColor = r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)';
+            return (
+              <div key={i} className="sm-callout" style={{ '--callout-color': severityColor } as React.CSSProperties}>
+                <div className="sm-flex-between">
+                  <span className="sm-text sm-fw-600">{r.risk}</span>
+                  <div className="sm-flex sm-gap-8">
+                    <span className="sm-news-tag" style={{ '--tag-color': severityColor } as React.CSSProperties}>{r.severity}</span>
+                    <span className="sm-news-tag" style={{ '--tag-color': 'var(--text3)' } as React.CSSProperties}>{r.likelihood} likelihood</span>
+                  </div>
                 </div>
+                <div className="sm-text-13" style={{ marginTop: 4 }}>{r.detail}</div>
+                <div className="sm-subtle" style={{ marginTop: 4 }}><strong className="sm-mint">Mitigation:</strong> {r.mitigation}</div>
               </div>
-              <div className="sm-text-13">{r.detail}</div>
-              <div className="sm-subtle"><strong className="sm-mint">Mitigation:</strong> {r.mitigation}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </CollapsibleSection>
 
@@ -6131,26 +6135,29 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       </CollapsibleSection>
 
       {/* Position Sizing */}
-      <CollapsibleSection id="position" title="Position Sizing" sources="WS">
+      <CollapsibleSection id="position" title="Position Sizing & Price Targets" sources="WS">
         <div className="sm-grid-2-lg">
           <div>
-            <span className="sm-section-label sm-text sm-block">Recommended Allocation</span>
+            <span className="sm-section-label sm-text sm-inline-block">Recommended Allocation</span>
             <div className="sm-flex-col">
-              {Object.entries(current.positionSizing).map(([key, val]) => (
-                <div key={key} className="sm-bmnr-alloc-row">
-                  <span className="sm-text2 sm-capitalize">{key}</span>
-                  <span style={{ color: key === 'aggressive' ? 'var(--mint)' : key === 'growth' ? 'var(--sky)' : key === 'balanced' ? 'var(--gold)' : 'var(--coral)', fontWeight: 500 }}>{val.range}</span>
-                </div>
-              ))}
+              {Object.entries(current.positionSizing).map(([key, val]) => {
+                const posColor = key === 'aggressive' ? 'var(--mint)' : key === 'growth' ? 'var(--sky)' : key === 'balanced' ? 'var(--gold)' : 'var(--coral)';
+                return (
+                  <div key={key} className="sm-flex-between sm-card-body sm-bg-surface2 sm-rounded-6 sm-text-13">
+                    <span className="sm-text2 sm-capitalize">{key}</span>
+                    <span className="sm-fw-500" style={{ color: posColor }}>{val.range}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
           <div>
-            <span className="sm-section-label sm-text sm-block">Accumulation Zones</span>
+            <span className="sm-section-label sm-text sm-inline-block">Accumulation Zones</span>
             <div className="sm-flex-col">
               {current.accumulation.map((z, i) => (
-                <div key={i} className="sm-bmnr-alloc-row">
+                <div key={i} className="sm-flex-between sm-card-body sm-bg-surface2 sm-rounded-6 sm-text-13">
                   <span className="sm-text2">{z.zone}</span>
-                  <span style={{ color: z.color, fontWeight: 500 }}>{z.action}</span>
+                  <span className="sm-fw-500" style={{ color: z.color }}>{z.action}</span>
                 </div>
               ))}
             </div>
@@ -6158,29 +6165,29 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         </div>
 
         {/* Portfolio Context — Unified framework for multi-asset allocation */}
-        <div className="sm-bmnr-perspective-card" style={{ '--card-accent': 'var(--violet)', padding: 16 } as React.CSSProperties}>
-          <div className="sm-violet sm-fw-600 sm-fs-14">Portfolio Construction Context</div>
-          <div className="sm-subtle sm-italic">For multi-asset portfolios holding BMNR alongside other positions</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24, marginTop: 12 }}>
-            <div className="sm-bg-surface sm-p-12 sm-rounded-6">
-              <div className="sm-text-11">Asset Class Bucket</div>
-              <div className="sm-text-13t sm-fw-600">Alternatives / Crypto</div>
-              <div className="sm-subtle-sm sm-gold">Limit: 10-20% of portfolio</div>
-            </div>
-            <div className="sm-bg-surface sm-p-12 sm-rounded-6">
-              <div className="sm-text-11">Single-Name Limit</div>
-              <div className="sm-text-13t sm-fw-600">5-10% max</div>
-              <div className="sm-subtle-sm sm-coral">High volatility asset</div>
-            </div>
-            <div className="sm-bg-surface sm-p-12 sm-rounded-6">
-              <div className="sm-text-11">Correlation Note</div>
-              <div className="sm-text-13t sm-fw-600">BMNR + CRCL</div>
-              <div className="sm-subtle-sm sm-sky">Both ETH-correlated; size combined</div>
-            </div>
+        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--violet)', '--bar-accent-2': 'var(--sky)' } as React.CSSProperties}>
+          <div style={{ fontSize: 11, color: 'var(--violet)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>Portfolio Construction Context</div>
+          <div className="sm-subtle" style={{ fontStyle: 'italic', marginTop: 4 }}>For multi-asset portfolios holding BMNR alongside other positions</div>
+        </div>
+        <div className="sm-model-grid sm-mt-12" style={{ '--cols': 3 } as React.CSSProperties}>
+          <div className="sm-kpi-cell">
+            <div className="sm-kpi-label">Asset Class Bucket</div>
+            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>Alternatives / Crypto</div>
+            <div className="sm-kpi-sub sm-gold">Limit: 10-20% of portfolio</div>
           </div>
-          <div className="sm-subtle sm-text2 sm-mt-8">
-            <strong>Combined Crypto Allocation:</strong> If holding both BMNR and CRCL, treat as a single "Ethereum ecosystem" allocation. Combined weight should not exceed alternatives bucket limit. BMNR provides NAV/yield exposure; CRCL provides infrastructure/revenue exposure.
+          <div className="sm-kpi-cell">
+            <div className="sm-kpi-label">Single-Name Limit</div>
+            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>5-10% max</div>
+            <div className="sm-kpi-sub sm-coral">High volatility asset</div>
           </div>
+          <div className="sm-kpi-cell">
+            <div className="sm-kpi-label">Correlation Note</div>
+            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>BMNR + CRCL</div>
+            <div className="sm-kpi-sub sm-sky">Both ETH-correlated; size combined</div>
+          </div>
+        </div>
+        <div className="sm-note-panel">
+          <strong>Combined Crypto Allocation:</strong> If holding both BMNR and CRCL, treat as a single "Ethereum ecosystem" allocation. Combined weight should not exceed alternatives bucket limit. BMNR provides NAV/yield exposure; CRCL provides infrastructure/revenue exposure.
         </div>
       </CollapsibleSection>
 
@@ -6193,18 +6200,18 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       {/* Analysis Archive */}
       <CollapsibleSection id="archive" title="Analysis Archive — Complete History" sources={['PR', 'SEC']}>
         <div className="sm-subtle">Full record of all investment thesis updates. Never deleted.</div>
-        <div className="sm-bmnr-history-list">
+        <div className="sm-flex-col" style={{ maxHeight: 500, overflowY: 'auto' }}>
           {archive.map((a, i) => (
-            <div key={i} style={{ background: i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)', padding: '12px 16px', borderRadius: 12, border: i === 0 ? '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' : '1px solid var(--border)' }}>
+            <div key={i} className={i === 0 ? 'sm-callout' : 'sm-card-body sm-bg-surface2'} style={i === 0 ? { '--callout-color': 'var(--mint)' } as React.CSSProperties : undefined}>
               <div className="sm-flex-between">
                 <div className="sm-flex">
                   <span className="sm-text sm-fw-600">{a.date}</span>
-                  {i === 0 && <span className="sm-bmnr-perspective-badge" data-dark-text style={{ '--card-accent': 'var(--mint)', fontSize: 10, padding: '2px 8px' } as React.CSSProperties}>CURRENT</span>}
+                  {i === 0 && <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>CURRENT</span>}
                 </div>
-                <span style={{ color: a.verdictColor === 'green' ? 'var(--mint)' : a.verdictColor === 'yellow' ? 'var(--gold)' : 'var(--coral)', fontWeight: 600, fontSize: 13 }}>{a.verdict}</span>
+                <span className="sm-news-tag" style={{ '--tag-color': a.verdictColor === 'green' ? 'var(--mint)' : a.verdictColor === 'yellow' ? 'var(--gold)' : 'var(--coral)' } as React.CSSProperties}>{a.verdict}</span>
               </div>
               <div className="sm-text2 sm-fs-13">{a.summary}</div>
-              <div className="sm-text-11">Source: {a.source}</div>
+              <div className="sm-text-11 sm-text3">Source: {a.source}</div>
               
               {expandedArchive === i && a.fullAnalysis && (
                 <div className="sm-pt-12 sm-border-t">
@@ -6217,9 +6224,11 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
                 </div>
               )}
               
-              <button 
+              <button
                 onClick={() => setExpandedArchive(expandedArchive === i ? null : i)}
                 className="sm-bmnr-link-btn"
+                aria-expanded={expandedArchive === i}
+                aria-label={`Toggle details for ${a.date}`}
               >
                 {expandedArchive === i ? '▼ Less' : '▶ More details'}
               </button>
@@ -6271,19 +6280,19 @@ const BMNRQuarterlyMetricsPanel = () => {
           <span className="sm-section-label">Key Metrics Evolution<UpdateIndicators sources="SEC" /></span>
         </div>
         <div className="sm-card-body">
-        {/* Summary Badges - ASTS pattern */}
+        {/* Summary Badges */}
         <div className="sm-flex-wrap">
-          <span className="sm-bmnr-comps-badge" style={{ '--badge-color': 'var(--cyan)' } as React.CSSProperties}>
+          <span className="sm-news-tag" style={{ '--tag-color': 'var(--cyan)' } as React.CSSProperties}>
             {quarterlyData.length} quarters of data ({quarterlyData[0].quarter} - {quarterlyData[quarterlyData.length-1].quarter})
           </span>
-          <span className="sm-bmnr-comps-badge" style={{ '--badge-color': 'var(--mint)' } as React.CSSProperties}>
+          <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>
             Assets: ${quarterlyData[0].assets}M → ${(quarterlyData[quarterlyData.length-1].assets/1000).toFixed(1)}B
           </span>
-          <span className="sm-bmnr-comps-badge" style={{ '--badge-color': 'var(--gold)' } as React.CSSProperties}>
+          <span className="sm-news-tag" style={{ '--tag-color': 'var(--gold)' } as React.CSSProperties}>
             Shares: {quarterlyData[0].shares.toFixed(0)}M → {quarterlyData[quarterlyData.length-1].shares.toFixed(0)}M
           </span>
-          <span className="sm-bmnr-comps-badge" style={{ '--badge-color': 'var(--violet)' } as React.CSSProperties}>
-            Era: ⛏️ BTC Mining → 💎 ETH Treasury
+          <span className="sm-news-tag" style={{ '--tag-color': 'var(--violet)' } as React.CSSProperties}>
+            Era: BTC Mining → ETH Treasury
           </span>
         </div>
 
@@ -6325,8 +6334,8 @@ const BMNRQuarterlyMetricsPanel = () => {
           </div>
         </div>
 
-        {/* Footnotes - ASTS pattern */}
-        <div className="sm-text-11">
+        {/* Footnotes */}
+        <div className="sm-note-panel sm-text-11">
           <p>* Q3 shares corrected in 10-Q/A amendment due to reverse stock split accounting error.</p>
           <p>* FY 2025 reflects post-pivot ETH treasury company. Pre-pivot quarters show BTC mining operations with going concern warning.</p>
           <p>* Data from SEC filings (10-K, 10-Q, 8-K). Q1 2026 net loss of ($5.2B) reflects unrealized ETH mark-to-market decline.</p>
@@ -6340,36 +6349,38 @@ const BMNRQuarterlyMetricsPanel = () => {
             </div>
             <div className="sm-card-body">
             <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
-              <div className="sm-bg-surface2 sm-p-12">
-                <div className="sm-micro-text">Filing Source</div>
-                <div className="sm-text-13">{latestQuarter.filing}</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Filing Source</div>
+                <div className="sm-kpi-sub">{latestQuarter.filing}</div>
               </div>
-              <div className="sm-bg-surface2 sm-p-12">
-                <div className="sm-micro-text">ETH Holdings</div>
-                <div className="sm-text-13">{latestQuarter.ethHoldings?.toLocaleString() || '—'} ETH</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">ETH Holdings</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--violet)' } as React.CSSProperties}>{latestQuarter.ethHoldings?.toLocaleString() || '—'}</div>
+                <div className="sm-kpi-sub">ETH</div>
               </div>
-              <div className="sm-bg-surface2 sm-p-12">
-                <div className="sm-micro-text">Staking Deployed</div>
-                <div className="sm-text-13">{latestQuarter.stakingDeployed?.toLocaleString() || '—'} ETH ({latestQuarter.stakingYield}% yield)</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Staking Deployed</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>{latestQuarter.stakingDeployed?.toLocaleString() || '—'}</div>
+                <div className="sm-kpi-sub">ETH ({latestQuarter.stakingYield}% yield)</div>
               </div>
-              <div className="sm-bg-surface2 sm-p-12">
-                <div className="sm-micro-text">Treasury Value</div>
-                <div className="sm-text-13">${(latestQuarter.crypto/1000).toFixed(2)}B</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Treasury Value</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--violet)' } as React.CSSProperties}>${(latestQuarter.crypto/1000).toFixed(2)}B</div>
               </div>
-              <div className="sm-bg-surface2 sm-p-12">
-                <div className="sm-micro-text">Cash Position</div>
-                <div className="sm-text-13">${latestQuarter.cash}M</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Cash Position</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>${latestQuarter.cash}M</div>
               </div>
-              <div className="sm-bg-surface2 sm-p-12">
-                <div className="sm-micro-text">Total Assets</div>
-                <div className="sm-text-13">${(latestQuarter.assets/1000).toFixed(2)}B</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Total Assets</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>${(latestQuarter.assets/1000).toFixed(2)}B</div>
               </div>
             </div>
             </div>
           </div>
         </div>
 
-        <div className="sm-text-11">
+        <div className="sm-note-panel sm-text-11">
           Data sourced from SEC filings (10-K, 10-Q). Latest filing: {latestQuarter.filing}.
         </div>
         </div>
@@ -7478,34 +7489,27 @@ const TimelineTab = () => {
           ))}
         </div>
         
-        {/* Filings Grid */}
-        <div className="sm-overflow-x">
-          <div>
-            {/* Header */}
-            <div className="sm-tl-filing-header">
-              {['Date', 'Type', 'Description', 'Period', 'Link'].map((h, idx) => (
-                <span key={h} data-align={idx === 4 ? 'right' : undefined} style={{ textAlign: idx === 4 ? 'right' : 'left' }}>{h}</span>
-              ))}
+        {/* Filings Table */}
+        <div className="sm-overflow-x sm-scroll-hint">
+          <div style={{ minWidth: 600 }}>
+            <div className="sm-fin-table-header" style={{ gridTemplateColumns: '100px 80px 1fr 90px 60px' }}>
+              <span className="sm-fin-th" data-sticky="">Date</span>
+              <span className="sm-fin-th">Type</span>
+              <span className="sm-fin-th">Description</span>
+              <span className="sm-fin-th">Period</span>
+              <span className="sm-fin-th" style={{ textAlign: 'right' }}>Link</span>
             </div>
-            {/* Rows */}
             {displayedFilings.map((filing, idx) => (
-              <div key={idx} className="sm-tl-filing-row">
-                <span style={{ fontSize: 13, whiteSpace: 'nowrap' }}>{filing.date}</span>
-                <span className="sm-text-13">
-                  <span style={{
-                    background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)',
-                    color: secTypeColors[filing.type]?.text || 'var(--text2)',
-                    padding: '2px 8px',
-                    borderRadius: 99,
-                    fontSize: 11,
-                    fontWeight: 600
-                  }}>
+              <div key={idx} className="sm-fin-table-row" style={{ gridTemplateColumns: '100px 80px 1fr 90px 60px' }}>
+                <span className="sm-fin-td-label" style={{ whiteSpace: 'nowrap' }}>{filing.date}</span>
+                <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>
+                  <span className="sm-news-tag" style={{ '--tag-color': secTypeColors[filing.type]?.text || 'var(--text2)' } as React.CSSProperties}>
                     {/^\d+$/.test(filing.type) ? `Form ${filing.type}` : filing.type}
                   </span>
                 </span>
-                <span className="sm-text-13">{filing.description}</span>
-                <span className="sm-text-13">{filing.period}</span>
-                <span className="sm-text-right sm-fs-13">
+                <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{filing.description}</span>
+                <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{filing.period}</span>
+                <span className="sm-fin-td" style={{ textAlign: 'right' }}>
                   <a
                     href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type.replace('S-3', 'S-3').replace('S-1', 'S-1').replace('S-8', 'S-8')}`}
                     target="_blank"
@@ -7525,6 +7529,7 @@ const TimelineTab = () => {
           <button
             onClick={() => setShowAllFilings(!showAllFilings)}
             className="sm-expand-btn"
+            aria-expanded={showAllFilings}
           >
             {showAllFilings ? '▲ Show Less' : `▼ Show ${hiddenCount} More Filings`}
           </button>
@@ -7645,6 +7650,7 @@ const TimelineTab = () => {
               <button
                 onClick={() => setShowAllPR(!showAllPR)}
                 className="sm-expand-btn"
+                aria-expanded={showAllPR}
               >
                 {showAllPR ? '▲ Show Less' : `▼ Show ${hiddenPRCount} More`}
               </button>
@@ -7737,7 +7743,15 @@ const TimelineTab = () => {
 
           return (
             <div key={i} className="sm-tl-event-card">
-              <div onClick={toggleExpand} className="sm-tl-event-row">
+              <div
+                onClick={toggleExpand}
+                className="sm-tl-event-row"
+                role="button"
+                tabIndex={0}
+                aria-expanded={isExpanded}
+                aria-label={`Toggle details for ${entry.title}`}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleExpand())}
+              >
                 <span className="sm-mono-sm sm-text3">{entry.date}</span>
                 <span className="sm-text-11">{entry.category}</span>
                 <span className="sm-text-13t sm-fw-500">{entry.title}</span>
@@ -7747,7 +7761,7 @@ const TimelineTab = () => {
                   {entry.impact === 'neutral' && '→ '}
                   {entry.impact}
                 </span>
-                <span className="sm-bmnr-chevron" data-expanded={isExpanded}>▼</span>
+                <span aria-hidden="true" className="sm-bmnr-chevron" data-expanded={isExpanded}>▼</span>
               </div>
               {isExpanded && (
                 <div className="sm-tl-detail-panel">

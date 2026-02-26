@@ -53,15 +53,26 @@ export const SharedFinancialsTab: React.FC<SharedFinancialsTabProps> = ({
         <div className="sm-card-header">
           <span className="sm-section-label sm-flex sm-gold">Key Financial Milestones<UpdateIndicators sources="SEC" /></span>
         </div>
-        <div className="sm-card-body">
-          <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
-            {milestones.map((m, i) => (
-              <div key={i} className="sm-card-body sm-bg-surface2 sm-rounded-12">
-                <div className="sm-text-11">{m.date}</div>
-                <div className="sm-text-13">{m.event}</div>
+        <div className="sm-card-body" style={{ padding: 0 }}>
+          <div className="sm-overflow-x sm-scroll-hint">
+            <div style={{ minWidth: 400 }}>
+              <div className="sm-fin-table-header" style={{ gridTemplateColumns: '130px 1fr' }}>
+                <span className="sm-fin-th" data-sticky="">Date</span>
+                <span className="sm-fin-th">Event</span>
               </div>
-            ))}
+              {milestones.map((m, i) => (
+                <div key={i} className="sm-fin-table-row" style={{ gridTemplateColumns: '130px 1fr' }}>
+                  <span className="sm-fin-td-label">
+                    <span className="sm-news-tag" style={{ '--tag-color': i === milestones.length - 1 ? 'var(--gold)' : 'var(--accent)' } as React.CSSProperties}>{m.date}</span>
+                  </span>
+                  <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{m.event}</span>
+                </div>
+              ))}
+            </div>
           </div>
+        </div>
+        <div className="sm-note-panel sm-text-11" style={{ margin: '12px 16px 16px' }}>
+          Milestones sourced from SEC filings, press releases, and company announcements. Most recent event highlighted.
         </div>
       </div>
 

@@ -2128,18 +2128,18 @@ const CRCLQuarterlyMetricsPanel = () => {
           <span className="sm-section-label">Key Metrics Evolution<UpdateIndicators sources="SEC" /></span>
         </div>
         <div className="sm-card-body">
-        {/* Summary Badges - ASTS pattern */}
+        {/* Summary Badges */}
         <div className="sm-flex-wrap">
-          <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--cyan) 15%, transparent)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
+          <span className="sm-news-tag" style={{ '--tag-color': 'var(--cyan)' } as React.CSSProperties}>
             {quarterlyData.length} quarters of data ({quarterlyData[0].quarter} - {quarterlyData[quarterlyData.length-1].quarter})
           </span>
-          <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--mint) 15%, transparent)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
+          <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>
             Revenue: ${quarterlyData[0].totalRevenue}M → ${quarterlyData[quarterlyData.length-1].totalRevenue}M
           </span>
-          <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--gold) 15%, transparent)', borderColor: 'var(--gold)', color: 'var(--gold)' }}>
+          <span className="sm-news-tag" style={{ '--tag-color': 'var(--gold)' } as React.CSSProperties}>
             Cash: ${(quarterlyData[0].cashPosition/1000).toFixed(2)}B → ${(quarterlyData[quarterlyData.length-1].cashPosition/1000).toFixed(2)}B
           </span>
-          <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--violet) 15%, transparent)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
+          <span className="sm-news-tag" style={{ '--tag-color': 'var(--violet)' } as React.CSSProperties}>
             USDC: ${quarterlyData[0].usdcCirculation.toFixed(1)}B → ${quarterlyData[quarterlyData.length-1].usdcCirculation.toFixed(1)}B
           </span>
         </div>
@@ -2182,8 +2182,8 @@ const CRCLQuarterlyMetricsPanel = () => {
           </div>
         </div>
 
-        {/* Footnotes - ASTS pattern */}
-        <div className="sm-text-11">
+        {/* Footnotes */}
+        <div className="sm-note-panel sm-text-11">
           <p>* Q2 2025 net loss includes $660M IPO-related stock-based compensation acceleration. Normalized EPS was positive.</p>
           <p>* RLDC (Revenue Less Distribution Costs) is Circle's key profitability metric. Distribution costs are payments to exchange partners (Coinbase, Binance).</p>
           <p>* Data from SEC filings (10-K, 10-Q, S-1). Circle went public via IPO in Q2 2025 at $31/share.</p>
@@ -2196,37 +2196,37 @@ const CRCLQuarterlyMetricsPanel = () => {
               <span className="sm-section-label">Latest Quarter Summary ({latestQuarter.quarter})<UpdateIndicators sources="SEC" /></span>
             </div>
             <div className="sm-card-body">
-            <div className="sm-grid-2-lg">
-              <div className="sm-bg-surface2" style={{ borderRadius: 8, padding: 12 }}>
-                <div className="sm-micro-text">Filing Source</div>
-                <div className="sm-text-13">{latestQuarter.filing}</div>
+            <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Filing Source</div>
+                <div className="sm-kpi-sub">{latestQuarter.filing}</div>
               </div>
-              <div className="sm-bg-surface2" style={{ borderRadius: 8, padding: 12 }}>
-                <div className="sm-micro-text">USDC Circulation</div>
-                <div className="sm-text-13">${latestQuarter.usdcCirculation.toFixed(1)}B</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">USDC Circulation</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>${latestQuarter.usdcCirculation.toFixed(1)}B</div>
               </div>
-              <div className="sm-bg-surface2" style={{ borderRadius: 8, padding: 12 }}>
-                <div className="sm-micro-text">Reserve Income</div>
-                <div className="sm-text-13">${latestQuarter.reserveIncome}M</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Reserve Income</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>${latestQuarter.reserveIncome}M</div>
               </div>
-              <div className="sm-bg-surface2" style={{ borderRadius: 8, padding: 12 }}>
-                <div className="sm-micro-text">Market Share</div>
-                <div className="sm-text-13">{latestQuarter.marketShare}%</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Market Share</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--sky)' } as React.CSSProperties}>{latestQuarter.marketShare}%</div>
               </div>
-              <div className="sm-bg-surface2" style={{ borderRadius: 8, padding: 12 }}>
-                <div className="sm-micro-text">Cash Position</div>
-                <div className="sm-text-13">${(latestQuarter.cashPosition/1000).toFixed(2)}B</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Cash Position</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>${(latestQuarter.cashPosition/1000).toFixed(2)}B</div>
               </div>
-              <div className="sm-bg-surface2" style={{ borderRadius: 8, padding: 12 }}>
-                <div className="sm-micro-text">Adj. EBITDA</div>
-                <div className="sm-text-13">${latestQuarter.adjustedEbitda}M</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Adj. EBITDA</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>${latestQuarter.adjustedEbitda}M</div>
               </div>
             </div>
             </div>
           </div>
         </div>
 
-        <div className="sm-text-11">
+        <div className="sm-note-panel sm-text-11">
           Data sourced from SEC filings (10-K, 10-Q). Latest filing: {latestQuarter.filing}.
         </div>
         </div>
@@ -3351,21 +3351,19 @@ function CRCLModel() {
                       tabIndex={0}
                       aria-expanded={investmentSections.has('scorecard')}
                       aria-label="Toggle Investment Scorecard"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('scorecard')}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('scorecard'))}
                     >
                       <span className="sm-section-label">Investment Scorecard<UpdateIndicators sources={['PR', 'SEC']} /></span>
                       <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('scorecard') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('scorecard') && (
                       <div className="sm-card-body">
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+                        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
                           {investmentCurrent.scorecard.map((item, i) => (
-                            <div key={i} className="sm-flex-between sm-bg-surface2" style={{ padding: '12px 16px', borderRadius: 12 }}>
-                              <div>
-                                <div className="sm-text-13t sm-fw-600">{item.category}</div>
-                                <div className="sm-text-11">{item.detail}</div>
-                              </div>
-                              <div className="sm-mono sm-fw-700" style={{ fontSize: 20, color: item.color }}>{item.rating}</div>
+                            <div key={i} className="sm-kpi-cell" style={{ '--kpi-color': item.color } as React.CSSProperties}>
+                              <div className="sm-kpi-hero-md">{item.rating}</div>
+                              <div className="sm-kpi-label">{item.category}</div>
+                              <div className="sm-kpi-sub">{item.detail}</div>
                             </div>
                           ))}
                         </div>
@@ -3388,14 +3386,14 @@ function CRCLModel() {
                       tabIndex={0}
                       aria-expanded={investmentSections.has('summary')}
                       aria-label="Toggle Investment Summary"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('summary')}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('summary'))}
                     >
                       <span className="sm-section-label">Investment Summary<UpdateIndicators sources={['PR', 'SEC']} /></span>
                       <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('summary') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('summary') && (
                       <div className="sm-card-body">
-                        <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
+                        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--mint)', '--bar-accent-2': 'var(--cyan)' } as React.CSSProperties}>
                           <div className="sm-mint sm-fw-600">What's New ({investmentCurrent.source})</div>
                           <ul className="sm-m-0 sm-pl-16 sm-text2 sm-fs-13 sm-lh-18">
                             {investmentCurrent.executiveSummary.whatsNew.map((item, i) => (
@@ -3407,9 +3405,9 @@ function CRCLModel() {
                           <p>
                             <strong>Thesis:</strong> {investmentCurrent.executiveSummary.thesis}
                           </p>
-                          <p style={{ fontStyle: 'italic', color: 'var(--cyan)' }}>
+                          <div className="sm-note-panel" style={{ fontStyle: 'italic', color: 'var(--cyan)' }}>
                             "{investmentCurrent.executiveSummary.bottomLine}"
-                          </p>
+                          </div>
                           <p>
                             <strong>Position Sizing:</strong> 3-5% for growth portfolios • 1-2% for balanced • Speculative allocation for conservative
                           </p>
@@ -3427,7 +3425,7 @@ function CRCLModel() {
                       tabIndex={0}
                       aria-expanded={investmentSections.has('financial')}
                       aria-label="Toggle Financial Health"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('financial')}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('financial'))}
                     >
                       <span className="sm-section-label">Financial Health<UpdateIndicators sources="SEC" /></span>
                       <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('financial') ? '−' : '+'}</span>
@@ -3490,7 +3488,7 @@ function CRCLModel() {
                       tabIndex={0}
                       aria-expanded={investmentSections.has('unit-economics')}
                       aria-label="Toggle Unit Economics"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('unit-economics')}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('unit-economics'))}
                     >
                       <span className="sm-section-label">Unit Economics & Margins<UpdateIndicators sources="SEC" /></span>
                       <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('unit-economics') ? '−' : '+'}</span>
@@ -3558,7 +3556,7 @@ function CRCLModel() {
                       tabIndex={0}
                       aria-expanded={investmentSections.has('growth')}
                       aria-label="Toggle Growth Drivers"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('growth')}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('growth'))}
                     >
                       <span className="sm-section-label">Growth Drivers<UpdateIndicators sources="PR" /></span>
                       <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('growth') ? '−' : '+'}</span>
@@ -3640,7 +3638,7 @@ function CRCLModel() {
                       tabIndex={0}
                       aria-expanded={investmentSections.has('valuation')}
                       aria-label="Toggle Valuation Framework"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('valuation')}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('valuation'))}
                     >
                       <span className="sm-section-label">Valuation Framework<UpdateIndicators sources="WS" /></span>
                       <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('valuation') ? '−' : '+'}</span>
@@ -3700,7 +3698,7 @@ function CRCLModel() {
                       tabIndex={0}
                       aria-expanded={investmentSections.has('sensitivity')}
                       aria-label="Toggle Rate Sensitivity Calculator"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('sensitivity')}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('sensitivity'))}
                     >
                       <span className="sm-section-label">Rate Sensitivity Calculator<UpdateIndicators sources="MARKET" /></span>
                       <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('sensitivity') ? '−' : '+'}</span>
@@ -3840,7 +3838,7 @@ function CRCLModel() {
                       tabIndex={0}
                       aria-expanded={investmentSections.has('moat')}
                       aria-label="Toggle Competitive Moat"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('moat')}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('moat'))}
                     >
                       <span className="sm-section-label">Competitive Moat<UpdateIndicators sources={['PR', 'SEC']} /></span>
                       <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('moat') ? '−' : '+'}</span>
@@ -3885,7 +3883,7 @@ function CRCLModel() {
                             ))}
                           </div>
                         </div>
-                        <div className="sm-bg-surface2 sm-body-sm" style={{ padding: 12, borderRadius: 12 }}>
+                        <div className="sm-note-panel sm-body-sm">
                           <strong>Moat Durability:</strong> B+ (Moderate-Strong). Regulatory moat strengthening but Tether's scale advantage persists. Key differentiator is TradFi trust — Circle is the only stablecoin issuer with major bank/exchange partnerships. Moat widens if CPN/Arc achieve enterprise adoption.
                         </div>
                       </div>
@@ -3907,7 +3905,7 @@ function CRCLModel() {
                       tabIndex={0}
                       aria-expanded={investmentSections.has('risks')}
                       aria-label="Toggle Risk Matrix"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('risks')}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('risks'))}
                     >
                       <span className="sm-section-label">Risk Matrix<UpdateIndicators sources={['PR', 'SEC']} /></span>
                       <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('risks') ? '−' : '+'}</span>
@@ -3928,7 +3926,7 @@ function CRCLModel() {
                         </div>
 
                         {/* Risk Assessment */}
-                        <div style={{ padding: 12, background: 'color-mix(in srgb, var(--gold) 10%, transparent)', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--gold) 20%, transparent)' }}>
+                        <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
                           <div className="sm-flex">
                             <span className="sm-gold sm-fw-600">Overall Risk Assessment: MODERATE</span>
                           </div>
@@ -3949,7 +3947,7 @@ function CRCLModel() {
                       tabIndex={0}
                       aria-expanded={investmentSections.has('catalysts')}
                       aria-label="Toggle Catalyst Calendar"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('catalysts')}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('catalysts'))}
                     >
                       <span className="sm-section-label">Catalyst Calendar<UpdateIndicators sources="PR" /></span>
                       <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('catalysts') ? '−' : '+'}</span>
@@ -4000,7 +3998,7 @@ function CRCLModel() {
                       tabIndex={0}
                       aria-expanded={investmentSections.has('position')}
                       aria-label="Toggle Position Management"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('position')}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('position'))}
                     >
                       <span className="sm-section-label">Position Management<UpdateIndicators sources="WS" /></span>
                       <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('position') ? '−' : '+'}</span>
@@ -4033,40 +4031,40 @@ function CRCLModel() {
                             </div>
                           </div>
                         </div>
-                        <div className="sm-bg-surface2" style={{ padding: 12, borderRadius: 12 }}>
+                        <div className="sm-card-body sm-bg-surface2">
                           <div className="sm-text sm-fw-600">Position Sizing by Risk Profile</div>
-                          <div className="sm-flex-wrap sm-gap-16">
-                            <div style={{ fontSize: 13 }}><span className="sm-mint">Aggressive:</span> <span className="sm-text2">4-5%</span></div>
-                            <div style={{ fontSize: 13 }}><span className="sm-sky">Growth:</span> <span className="sm-text2">2-4%</span></div>
-                            <div style={{ fontSize: 13 }}><span className="sm-gold">Balanced:</span> <span className="sm-text2">1-2%</span></div>
-                            <div style={{ fontSize: 13 }}><span className="sm-coral">Conservative:</span> <span className="sm-text2">0-1%</span></div>
+                          <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
+                            <div className="sm-kpi-cell"><div className="sm-kpi-label">Aggressive</div><div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>4-5%</div></div>
+                            <div className="sm-kpi-cell"><div className="sm-kpi-label">Growth</div><div className="sm-kpi-value" style={{ '--kpi-color': 'var(--sky)' } as React.CSSProperties}>2-4%</div></div>
+                            <div className="sm-kpi-cell"><div className="sm-kpi-label">Balanced</div><div className="sm-kpi-value" style={{ '--kpi-color': 'var(--gold)' } as React.CSSProperties}>1-2%</div></div>
+                            <div className="sm-kpi-cell"><div className="sm-kpi-label">Conservative</div><div className="sm-kpi-value" style={{ '--kpi-color': 'var(--coral)' } as React.CSSProperties}>0-1%</div></div>
                           </div>
                         </div>
 
                         {/* Portfolio Context — Unified framework for multi-asset allocation */}
-                        <div style={{ padding: 16, background: 'color-mix(in srgb, var(--violet) 8%, transparent)', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
-                          <div className="sm-violet sm-fw-600" style={{ fontSize: 14 }}>Portfolio Construction Context</div>
-                          <div className="sm-subtle" style={{ fontStyle: 'italic' }}>For multi-asset portfolios holding CRCL alongside other positions</div>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 12 }}>
-                            <div className="sm-bg-surface" style={{ padding: 12, borderRadius: 12 }}>
-                              <div className="sm-text-11">Asset Class Bucket</div>
-                              <div className="sm-text-13t sm-fw-600">Alternatives / Fintech</div>
-                              <div style={{ fontSize: 11, color: 'var(--gold)' }}>Limit: 10-20% of portfolio</div>
-                            </div>
-                            <div className="sm-bg-surface" style={{ padding: 12, borderRadius: 12 }}>
-                              <div className="sm-text-11">Single-Name Limit</div>
-                              <div className="sm-text-13t sm-fw-600">3-5% max</div>
-                              <div style={{ fontSize: 11, color: 'var(--coral)' }}>Rate sensitive, crypto adjacent</div>
-                            </div>
-                            <div className="sm-bg-surface" style={{ padding: 12, borderRadius: 12 }}>
-                              <div className="sm-text-11">Correlation Note</div>
-                              <div className="sm-text-13t sm-fw-600">CRCL + BMNR</div>
-                              <div style={{ fontSize: 11, color: 'var(--sky)' }}>Both ETH-correlated; size combined</div>
-                            </div>
+                        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--violet)', '--bar-accent-2': 'var(--sky)' } as React.CSSProperties}>
+                          <div style={{ fontSize: 11, color: 'var(--violet)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>Portfolio Construction Context</div>
+                          <div className="sm-subtle" style={{ fontStyle: 'italic', marginTop: 4 }}>For multi-asset portfolios holding CRCL alongside other positions</div>
+                        </div>
+                        <div className="sm-model-grid sm-mt-12" style={{ '--cols': 3 } as React.CSSProperties}>
+                          <div className="sm-kpi-cell">
+                            <div className="sm-kpi-label">Asset Class Bucket</div>
+                            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>Alternatives / Fintech</div>
+                            <div className="sm-kpi-sub sm-gold">Limit: 10-20% of portfolio</div>
                           </div>
-                          <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 8 }}>
-                            <strong>Combined Crypto Allocation:</strong> If holding both CRCL and BMNR, treat as a single "Ethereum ecosystem" allocation. Combined weight should not exceed alternatives bucket limit. CRCL provides infrastructure/revenue exposure; BMNR provides NAV/yield exposure.
+                          <div className="sm-kpi-cell">
+                            <div className="sm-kpi-label">Single-Name Limit</div>
+                            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>3-5% max</div>
+                            <div className="sm-kpi-sub sm-coral">Rate sensitive, crypto adjacent</div>
                           </div>
+                          <div className="sm-kpi-cell">
+                            <div className="sm-kpi-label">Correlation Note</div>
+                            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>CRCL + BMNR</div>
+                            <div className="sm-kpi-sub sm-sky">Both ETH-correlated; size combined</div>
+                          </div>
+                        </div>
+                        <div className="sm-note-panel">
+                          <strong>Combined Crypto Allocation:</strong> If holding both CRCL and BMNR, treat as a single "Ethereum ecosystem" allocation. Combined weight should not exceed alternatives bucket limit. CRCL provides infrastructure/revenue exposure; BMNR provides NAV/yield exposure.
                         </div>
                       </div>
                     )}
@@ -4081,7 +4079,7 @@ function CRCLModel() {
                       tabIndex={0}
                       aria-expanded={investmentSections.has('archive')}
                       aria-label="Toggle Analysis Archive"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('archive')}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('archive'))}
                     >
                       <span className="sm-section-label">Analysis Archive — Complete History<UpdateIndicators sources={['PR', 'SEC']} /></span>
                       <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('archive') ? '−' : '+'}</span>
@@ -4091,13 +4089,13 @@ function CRCLModel() {
                         <div className="sm-subtle">Full record of all investment thesis updates. Never deleted.</div>
                         <div className="sm-flex-col" style={{ maxHeight: 500, overflowY: 'auto' }}>
                           {/* Current */}
-                          <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
+                          <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
                             <div className="sm-flex-between">
                               <div className="sm-flex">
                                 <span className="sm-text sm-fw-600">Dec 31, 2025</span>
-                                <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '2px 8px', borderRadius: 99, fontSize: 10, fontWeight: 600 }}>CURRENT</span>
+                                <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>CURRENT</span>
                               </div>
-                              <span className="sm-mint sm-fw-600" style={{ fontSize: 13 }}>OVERWEIGHT</span>
+                              <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>OVERWEIGHT</span>
                             </div>
                             <div className="sm-body-sm">
                               Post-Q3 2025: Upgraded conviction on execution. USDC at $73.7B validates network effects thesis. OCC charter approval removes key regulatory overhang. Maintaining overweight despite lock-up supply risk given fundamental momentum.
@@ -4115,13 +4113,13 @@ function CRCLModel() {
                             { date: 'Aug 21, 2023', rating: 'MONITORING', color: 'var(--gold)', summary: 'Centre Consortium dissolution and Coinbase equity investment restructures USDC economics. Circle now sole issuer with full governance control. Revenue share agreement creates ~50-60% distribution cost.', trigger: 'Centre Dissolution PR, Coinbase Equity Investment' },
                             { date: 'Mar 2023', rating: 'UNDERWEIGHT', color: 'var(--coral)', summary: 'SVB collapse creates existential risk. $3.3B of USDC reserves held at SVB. Weekend depeg to $0.87 causes $6B+ redemptions. Fed/FDIC backstop saves reserves but damages trust.', trigger: 'SVB Collapse, USDC Depeg Event' },
                           ].map((entry, i) => (
-                            <div key={i} className="sm-bg-surface2" style={{ padding: '12px 16px', borderRadius: 12 }}>
+                            <div key={i} className="sm-card-body sm-bg-surface2">
                               <div className="sm-flex-between">
                                 <span className="sm-text sm-fw-600">{entry.date}</span>
-                                <span style={{ color: entry.color, fontWeight: 600, fontSize: 13 }}>{entry.rating}</span>
+                                <span className="sm-news-tag" style={{ '--tag-color': entry.color } as React.CSSProperties}>{entry.rating}</span>
                               </div>
                               <div className="sm-body-sm">{entry.summary}</div>
-                              <div className="sm-text-11">Trigger: {entry.trigger}</div>
+                              <div className="sm-text-11 sm-text3">Trigger: {entry.trigger}</div>
                             </div>
                           ))}
                         </div>
@@ -4138,7 +4136,7 @@ function CRCLModel() {
                       tabIndex={0}
                       aria-expanded={investmentSections.has('strategic-assessment')}
                       aria-label="Toggle Risks and Strategic Assessment"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('strategic-assessment')}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('strategic-assessment'))}
                     >
                       <span className="sm-section-label">Risks & Strategic Assessment<UpdateIndicators sources={['PR', 'SEC']} /></span>
                       <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('strategic-assessment') ? '−' : '+'}</span>
@@ -4154,9 +4152,9 @@ function CRCLModel() {
                         <div style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', marginBottom: 8 }}><span className="sm-section-label sm-text">Risk Evaluation — Four Perspectives</span></div>
 
                         {/* CFA Level III Perspective */}
-                        <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
+                        <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
                           <div className="sm-flex">
-                            <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CFA LEVEL III</span>
+                            <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>CFA LEVEL III</span>
                             <span className="sm-subtle">Portfolio Construction & Factor Analysis</span>
                           </div>
                           <div className="sm-body" style={{ lineHeight: 1.8 }}>
@@ -4173,9 +4171,9 @@ function CRCLModel() {
                         </div>
 
                         {/* Hedge Fund Manager Perspective */}
-                        <div style={{ background: 'color-mix(in srgb, var(--violet) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
+                        <div className="sm-callout" style={{ '--callout-color': 'var(--violet)' } as React.CSSProperties}>
                           <div className="sm-flex">
-                            <span style={{ background: 'var(--violet)', color: 'white', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>HEDGE FUND</span>
+                            <span className="sm-news-tag" style={{ '--tag-color': 'var(--violet)' } as React.CSSProperties}>HEDGE FUND</span>
                             <span className="sm-subtle">Alpha Generation & Event Catalysts</span>
                           </div>
                           <div className="sm-body" style={{ lineHeight: 1.8 }}>
@@ -4192,9 +4190,9 @@ function CRCLModel() {
                         </div>
 
                         {/* CIO/CIS Institutional Perspective */}
-                        <div style={{ background: 'color-mix(in srgb, var(--sky) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
+                        <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
                           <div className="sm-flex">
-                            <span style={{ background: 'var(--sky)', color: 'white', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>CIO / CIS</span>
+                            <span className="sm-news-tag" style={{ '--tag-color': 'var(--sky)' } as React.CSSProperties}>CIO / CIS</span>
                             <span className="sm-subtle">Strategic Allocation & Fiduciary Considerations</span>
                           </div>
                           <div className="sm-body" style={{ lineHeight: 1.8 }}>
@@ -4211,9 +4209,9 @@ function CRCLModel() {
                         </div>
 
                         {/* Technical Analyst Perspective */}
-                        <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: '12px 16px', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
+                        <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
                           <div className="sm-flex">
-                            <span style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 600 }}>TECHNICAL ANALYST</span>
+                            <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>TECHNICAL ANALYST</span>
                             <span className="sm-subtle">Chart Patterns & Price Action</span>
                           </div>
                           <div className="sm-body" style={{ lineHeight: 1.8 }}>
@@ -4226,9 +4224,9 @@ function CRCLModel() {
                             <p>
                               <strong>Lock-up Dynamics:</strong> December 2025 lock-up expiry creates potential supply overhang. Monitor volume patterns carefully around that date. Historical IPO lock-up expirations show initial weakness followed by recovery if fundamentals intact. Use weakness as accumulation opportunity, not exit signal.
                             </p>
-                            <p style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--mint) 10%, transparent)', borderRadius: 12, borderLeft: '3px solid #34d399' }}>
-                              <strong style={{ color: '#34d399' }}>Technical Outlook:</strong> {investmentCurrent.perspectives.technicalAnalyst.ecosystemView}
-                            </p>
+                            <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+                              <strong className="sm-mint">Technical Outlook:</strong> {investmentCurrent.perspectives.technicalAnalyst.ecosystemView}
+                            </div>
                           </div>
                         </div>
 
@@ -4236,10 +4234,10 @@ function CRCLModel() {
                         <div style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', marginBottom: 8 }}><span className="sm-section-label sm-text">Key Strategic Questions</span></div>
 
                         {/* Would I Buy Now? */}
-                        <div className="sm-bg-surface2" style={{ padding: '12px 16px', borderRadius: 12 }}>
+                        <div className="sm-card-body sm-bg-surface2">
                           <div className="sm-flex-between">
-                            <span className="sm-text" style={{ fontWeight: 600, fontSize: 15 }}>Would I Buy Now?</span>
-                            <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '6px 16px', borderRadius: 99, fontWeight: 700, fontSize: 13 }}>YES — ACCUMULATE</span>
+                            <span className="sm-text sm-fw-600" style={{ fontSize: 15 }}>Would I Buy Now?</span>
+                            <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)', padding: '6px 16px', fontSize: 13, fontWeight: 700 } as React.CSSProperties}>YES — ACCUMULATE</span>
                           </div>
                           <div className="sm-body" style={{ lineHeight: 1.8 }}>
                             <p>
@@ -4255,22 +4253,22 @@ function CRCLModel() {
                         </div>
 
                         {/* What Can I Expect? */}
-                        <div className="sm-bg-surface2" style={{ padding: '12px 16px', borderRadius: 12 }}>
-                          <div className="sm-text" style={{ fontWeight: 600, fontSize: 15 }}>What Can I Expect?</div>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-                            <div style={{ background: 'color-mix(in srgb, var(--gold) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--gold) 20%, transparent)' }}>
+                        <div className="sm-card-body sm-bg-surface2">
+                          <div className="sm-text sm-fw-600" style={{ fontSize: 15 }}>What Can I Expect?</div>
+                          <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
+                            <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
                               <div className="sm-gold sm-fw-600" style={{ fontSize: 13 }}>Short-Term (0-6 months)</div>
                               <div className="sm-text-13" style={{ lineHeight: 1.6 }}>
                                 Expect volatility. Lock-up creates 15-25% downside risk. Q4 earnings (Feb) should be strong given Q3 momentum. Trading range: $60-95. Don't panic on lock-up weakness — it's expected and temporary.
                               </div>
                             </div>
-                            <div style={{ background: 'color-mix(in srgb, var(--sky) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
+                            <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
                               <div className="sm-sky sm-fw-600" style={{ fontSize: 13 }}>Mid-Term (6-18 months)</div>
                               <div className="sm-text-13" style={{ lineHeight: 1.6 }}>
                                 Catalyst-rich period. Arc mainnet, OCC charter, potential Coinbase renegotiation all converge. If execution continues, expect multiple expansion toward 10x P/S. Target range: $100-150. This is where the thesis gets tested.
                               </div>
                             </div>
-                            <div style={{ background: 'color-mix(in srgb, var(--mint) 10%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
+                            <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
                               <div className="sm-mint sm-fw-600" style={{ fontSize: 13 }}>Long-Term (3-5 years)</div>
                               <div className="sm-text-13" style={{ lineHeight: 1.6 }}>
                                 If stablecoin TAM expands to $1-2T and Circle maintains 25%+ share, this is a $150-350 stock. Payment network multiples (15-17x P/S) on $8-10B revenue = $120-170B market cap. Current: $52B. The math works if the thesis holds.
@@ -4280,8 +4278,8 @@ function CRCLModel() {
                         </div>
 
                         {/* What's My Strategy? */}
-                        <div className="sm-bg-surface2" style={{ padding: '12px 16px', borderRadius: 12 }}>
-                          <div className="sm-text" style={{ fontWeight: 600, fontSize: 15 }}>What's My Strategy?</div>
+                        <div className="sm-card-body sm-bg-surface2">
+                          <div className="sm-text sm-fw-600" style={{ fontSize: 15 }}>What's My Strategy?</div>
                           <div className="sm-body" style={{ lineHeight: 1.8 }}>
                             <p>
                               <strong className="sm-mint">Position Sizing:</strong> 3-5% for growth-oriented portfolios, 1-2% for balanced, avoid for income-focused (no dividend). This is a high-conviction, higher-volatility position — size accordingly. Never more than you can stomach watching drop 30%.
@@ -4304,11 +4302,11 @@ function CRCLModel() {
                         {/* Part 3: Final Verdict */}
                         <div style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', marginBottom: 8 }}><span className="sm-section-label sm-text">Final Verdict</span></div>
 
-                        <div style={{ background: 'color-mix(in srgb, var(--mint) 10%, transparent)', padding: 24, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 30%, transparent)' }}>
+                        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--mint)', '--bar-accent-2': 'var(--cyan)', padding: 24 } as React.CSSProperties}>
                           <div className="sm-flex-between" style={{ flexWrap: 'wrap', gap: 16 }}>
                             <div className="sm-flex sm-gap-12">
-                              <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontWeight: 700, fontSize: 16 }}>OVERWEIGHT</span>
-                              <span style={{ background: 'color-mix(in srgb, var(--mint) 20%, transparent)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 99, fontWeight: 600, fontSize: 12 }}>HIGH CONVICTION</span>
+                              <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)', padding: '8px 20px', fontSize: 16, fontWeight: 700 } as React.CSSProperties}>OVERWEIGHT</span>
+                              <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)', padding: '6px 12px', fontSize: 12 } as React.CSSProperties}>HIGH CONVICTION</span>
                             </div>
                             <div className="sm-text-right">
                               <div className="sm-subtle">12-Month Target</div>
@@ -4320,7 +4318,7 @@ function CRCLModel() {
                             <strong>Action:</strong> Accumulate on weakness, hold core position through volatility. Use lock-up as entry opportunity, not exit excuse. This is a 3-5 year compounder disguised as a volatile new issue.
                           </div>
                           
-                          <div style={{ background: 'var(--bg)', padding: 12, borderRadius: 12, borderLeft: '4px solid var(--mint)' }}>
+                          <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
                             <div className="sm-text" style={{ fontSize: 14, fontStyle: 'italic' }}>
                               "Best-in-class regulated stablecoin infrastructure trading at a crypto discount that shouldn't exist. The market is pricing the past (crypto winter, SVB crisis) while ignoring the future (payment network economics, regulatory moat, TradFi adoption). Time arbitrage favors the patient."
                             </div>
@@ -4339,7 +4337,7 @@ function CRCLModel() {
                       tabIndex={0}
                       aria-expanded={investmentSections.has('methodology')}
                       aria-label="Toggle Methodology and Disclosures"
-                      onKeyDown={(e) => e.key === 'Enter' && toggleSection('methodology')}
+                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('methodology'))}
                     >
                       <span className="sm-section-label">Methodology & Disclosures<UpdateIndicators sources={['PR', 'SEC']} /></span>
                       <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('methodology') ? '−' : '+'}</span>
@@ -5393,42 +5391,39 @@ function CRCLModel() {
                     ))}
                   </div>
 
-                  {/* Filings Grid */}
-                  <div className="sm-overflow-x">
-                    <div className="sm-tl-filing-header">
-                      {['Date', 'Type', 'Description', 'Period', 'Link'].map((h, i) => (
-                        <span key={h} style={{ textAlign: i === 4 ? 'right' : 'left' }}>{h}</span>
+                  {/* Filings Table */}
+                  <div className="sm-overflow-x sm-scroll-hint">
+                    <div style={{ minWidth: 600 }}>
+                      <div className="sm-fin-table-header" style={{ gridTemplateColumns: '100px 80px 1fr 90px 60px' }}>
+                        <span className="sm-fin-th" data-sticky="">Date</span>
+                        <span className="sm-fin-th">Type</span>
+                        <span className="sm-fin-th">Description</span>
+                        <span className="sm-fin-th">Period</span>
+                        <span className="sm-fin-th" style={{ textAlign: 'right' }}>Link</span>
+                      </div>
+                      {displayedFilings.map((filing, idx) => (
+                        <div key={idx} className="sm-fin-table-row" style={{ gridTemplateColumns: '100px 80px 1fr 90px 60px' }}>
+                          <span className="sm-fin-td-label" style={{ whiteSpace: 'nowrap' }}>{filing.date}</span>
+                          <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>
+                            <span className="sm-news-tag" style={{ '--tag-color': secTypeColors[filing.type]?.text || 'var(--text2)' } as React.CSSProperties}>
+                              {filing.type}
+                            </span>
+                          </span>
+                          <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{filing.description}</span>
+                          <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{filing.period}</span>
+                          <span className="sm-fin-td" style={{ textAlign: 'right' }}>
+                            <a
+                              href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="sm-mint"
+                            >
+                              SEC →
+                            </a>
+                          </span>
+                        </div>
                       ))}
                     </div>
-                    {displayedFilings.map((filing, idx) => (
-                      <div key={idx} className="sm-tl-filing-row">
-                        <span className="sm-text" style={{ fontSize: 12, whiteSpace: 'nowrap' }}>{filing.date}</span>
-                        <span>
-                          <span style={{
-                            background: secTypeColors[filing.type]?.bg || 'color-mix(in srgb, var(--text3) 20%, transparent)',
-                            color: secTypeColors[filing.type]?.text || 'var(--text2)',
-                            padding: '2px 8px',
-                            borderRadius: 99,
-                            fontSize: 11,
-                            fontWeight: 600
-                          }}>
-                            {filing.type}
-                          </span>
-                        </span>
-                        <span className="sm-text-12">{filing.description}</span>
-                        <span className="sm-text-12">{filing.period}</span>
-                        <span className="sm-text-right">
-                          <a
-                            href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="sm-mint" style={{ fontSize: 12 }}
-                          >
-                            SEC
-                          </a>
-                        </span>
-                      </div>
-                    ))}
                   </div>
 
                   {/* Show More/Less Button */}
@@ -5436,6 +5431,7 @@ function CRCLModel() {
                     <button
                       onClick={() => setShowAllFilings(!showAllFilings)}
                       className="sm-expand-btn"
+                      aria-expanded={showAllFilings}
                     >
                       {showAllFilings ? '▲ Show Less' : `▼ Show ${hiddenCount} More Filings`}
                     </button>
@@ -5446,7 +5442,7 @@ function CRCLModel() {
                     <div className="sm-flex-wrap sm-gap-24" style={{ fontSize: 12 }}>
                       <div>
                         <span className="sm-text3">CIK:</span>
-                        <span className="sm-text2" style={{ marginLeft: 6, fontFamily: "'Space Mono', monospace" }}>{secMeta.cik}</span>
+                        <span className="sm-text2 sm-mono-sm" style={{ marginLeft: 6 }}>{secMeta.cik}</span>
                       </div>
                       <div>
                         <span className="sm-text3">Ticker:</span>
@@ -5486,33 +5482,33 @@ function CRCLModel() {
                     </div>
                     <div className="sm-card-body">
                       <div className="sm-flex-col-gap">
-                        <div className="sm-flex-between sm-bg-surface2" style={{ padding: '12px 16px', borderRadius: 12 }}>
+                        <div className="sm-flex-between sm-card-body sm-bg-surface2">
                           <div>
                             <div className="sm-text sm-fw-600">Q4 2025 Earnings</div>
                             <div className="sm-subtle">10-K Annual Report</div>
                           </div>
                           <div className="sm-text-right">
-                            <div className="sm-mint" style={{ fontFamily: "'Space Mono', monospace" }}>~Feb 2026</div>
+                            <div className="sm-mint sm-mono-sm">~Feb 2026</div>
                             <div className="sm-text-11">Est.</div>
                           </div>
                         </div>
-                        <div className="sm-flex-between sm-bg-surface2" style={{ padding: '12px 16px', borderRadius: 12 }}>
+                        <div className="sm-flex-between sm-card-body sm-bg-surface2">
                           <div>
                             <div className="sm-text sm-fw-600">Lock-up Expiry</div>
                             <div className="sm-subtle">~198M shares eligible for sale</div>
                           </div>
                           <div className="sm-text-right">
-                            <div className="sm-gold" style={{ fontFamily: "'Space Mono', monospace" }}>Dec 2025</div>
+                            <div className="sm-gold sm-mono-sm">Dec 2025</div>
                             <div className="sm-text-11">180 days post-IPO</div>
                           </div>
                         </div>
-                        <div className="sm-flex-between sm-bg-surface2" style={{ padding: '12px 16px', borderRadius: 12 }}>
+                        <div className="sm-flex-between sm-card-body sm-bg-surface2">
                           <div>
                             <div className="sm-text sm-fw-600">Convertible Note Maturity</div>
                             <div className="sm-subtle">2019 SeedInvest Note ($15.7M)</div>
                           </div>
                           <div className="sm-text-right">
-                            <div className="sm-sky" style={{ fontFamily: "'Space Mono', monospace" }}>Mar 2026</div>
+                            <div className="sm-sky sm-mono-sm">Mar 2026</div>
                             <div className="sm-text-11">Convertible @ $16.23</div>
                           </div>
                         </div>
@@ -5529,7 +5525,7 @@ function CRCLModel() {
                     <div className="sm-card-body">
                       <div className="sm-flex-col-gap">
                         {displayedPR.map((pr, i) => (
-                          <div key={i} style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
+                          <div key={i} className="sm-card-body sm-bg-surface2">
                             <div className="sm-flex-between">
                               <span className="sm-text-11">{pr.date}</span>
                               <span className="sm-subtle-sm" style={{ color: pr.color }}>{pr.category}</span>
@@ -5543,6 +5539,7 @@ function CRCLModel() {
                           <button
                             onClick={() => setShowAllPR(!showAllPR)}
                             className="sm-expand-btn"
+                            aria-expanded={showAllPR}
                           >
                             {showAllPR ? '▲ Show Less' : `▼ Show ${hiddenPRCount} More`}
                           </button>
@@ -5636,7 +5633,10 @@ function CRCLModel() {
 
                   return (
                     <div key={idx} className="sm-tl-event-card">
-                      <div onClick={toggleExpand} className="sm-tl-event-row">
+                      <div onClick={toggleExpand} className="sm-tl-event-row"
+                        role="button" tabIndex={0} aria-expanded={isExpanded}
+                        aria-label={`Toggle details for ${p.event}`}
+                        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleExpand())}>
                         <span className="sm-mono-sm sm-text3">{p.date}</span>
                         <span className="sm-text-11">{p.category}</span>
                         <span className="sm-text-13t sm-fw-500">{p.event}</span>
@@ -5687,7 +5687,7 @@ function CRCLModel() {
                   <div className="sm-grid-2-lg">
                     <div>
                       <h4 className="sm-mint sm-fw-500 sm-mb-8" style={{ fontSize: 14, marginTop: 0 }}>Categories Explained</h4>
-                      <ul className="sm-flex-col sm-body-sm" style={{ listStyle: 'none', padding: 0, margin: 0, gap: 6 }}>
+                      <ul className="sm-flex-col sm-body-sm sm-text2" style={{ listStyle: 'none', padding: 0, margin: 0, gap: 6 }}>
                         <li><span className="sm-gold">Partnership:</span> Commercial integrations, strategic alliances</li>
                         <li><span className="sm-sky">Product:</span> USDC features, protocol upgrades, launches</li>
                         <li><span className="sm-violet">Regulatory:</span> Licenses, compliance, legal milestones</li>
@@ -5696,7 +5696,7 @@ function CRCLModel() {
                     </div>
                     <div>
                       <h4 className="sm-mint sm-fw-500 sm-mb-8" style={{ fontSize: 14, marginTop: 0 }}>Updating This Log</h4>
-                      <ul className="sm-flex-col sm-body-sm" style={{ listStyle: 'none', padding: 0, margin: 0, gap: 4 }}>
+                      <ul className="sm-flex-col sm-body-sm sm-text2" style={{ listStyle: 'none', padding: 0, margin: 0, gap: 4 }}>
                         <li>Add new entries chronologically at the top</li>
                         <li>Include sources for traceability</li>
                         <li>Tag verdict: Positive/Negative/Neutral</li>

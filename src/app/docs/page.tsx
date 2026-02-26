@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Documentation | ABISON",
   description:
-    "ABISON design system documentation — layout, CSS classes, components, design tokens, and UI conventions",
+    "ABISON documentation — app architecture, routing, component hierarchy, design system, CSS classes, and conventions",
 };
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -214,7 +214,8 @@ const projectStructure: FileEntry[] = [
   { path: "src/app/hooks/page.tsx",                      type: "Page",      description: "Agent Hooks documentation page" },
   { path: "src/app/docs/page.tsx",                       type: "Page",      description: "This documentation page" },
   { path: "src/app/audit/comprehensive-code-audit/page.tsx", type: "Page", description: "Code audit report page" },
-  { path: "src/components/stocks/stock-model-styles.ts", type: "Styles",    description: "Central CSS system — getStockModelCSS(accent) template" },
+  { path: "src/components/stocks/stock-model-styles.css", type: "Styles",    description: "Central CSS file — all sm-* utilities, design tokens, responsive breakpoints" },
+  { path: "src/components/stocks/stock-model-styles.ts", type: "Types",     description: "AccentColor type export ('cyan' | 'violet' | 'mint')" },
   { path: "src/components/stocks/ASTS.tsx",              type: "Component", description: "AST SpaceMobile model — golden standard" },
   { path: "src/components/stocks/BMNR.tsx",              type: "Component", description: "BitMine model — mirrors ASTS structure" },
   { path: "src/components/stocks/CRCL.tsx",              type: "Component", description: "Circle model — mirrors ASTS structure" },
@@ -240,6 +241,107 @@ const projectStructure: FileEntry[] = [
   { path: "src/lib/auth-fetch.ts",                            type: "Utility",   description: "PIN-authenticated fetch wrapper" },
   { path: "src/lib/ai-gate.ts",                               type: "Utility",   description: "Server-side AI feature flag" },
   { path: "src/hooks/useHashTab.ts",                           type: "Hook",      description: "URL hash-based tab state (#tab-name)" },
+];
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   APP ARCHITECTURE DATA — Hierarchical structure for the Architecture section.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+const routingTree = [
+  { path: "/",                                     label: "Home",              file: "app/page.tsx",                          note: "Coverage grid, audits, workflows" },
+  { path: "/stocks",                               label: "Stock List",        file: "app/stocks/page.tsx",                   note: "Tracked companies index" },
+  { path: "/stocks/[ticker]",                      label: "Stock Detail",      file: "app/stocks/[ticker]/page.tsx",          note: "Loads ASTS / BMNR / CRCL component" },
+  { path: "/docs",                                 label: "Docs",             file: "app/docs/page.tsx",                     note: "This page — design system + architecture" },
+  { path: "/hooks",                                label: "Hooks",            file: "app/hooks/page.tsx",                    note: "Agent hooks documentation" },
+  { path: "/audit/comprehensive-code-audit",       label: "Code Audit",       file: "app/audit/comprehensive-code-audit/page.tsx", note: "35-category audit results" },
+  { path: "/db-setup",                             label: "DB Setup",         file: "app/db-setup/page.tsx",                 note: "Browser-based database initialization" },
+];
+
+const apiRoutes = [
+  { group: "Auth",      routes: [
+    { method: "GET/POST", path: "/api/auth/verify-pin",            auth: "—",   note: "PIN verification" },
+  ]},
+  { group: "EDGAR",     routes: [
+    { method: "GET",  path: "/api/edgar/[ticker]",              auth: "—",   note: "Fetch SEC filings by CIK" },
+    { method: "POST", path: "/api/edgar/analyze",               auth: "PIN", note: "AI analysis of filing (Claude)" },
+    { method: "POST", path: "/api/edgar/refresh-local",         auth: "—",   note: "Refresh cached filings" },
+  ]},
+  { group: "Sources",   routes: [
+    { method: "POST", path: "/api/sources/analyze",             auth: "PIN", note: "AI analysis of news article (Claude)" },
+    { method: "GET",  path: "/api/news/[symbol]",               auth: "—",   note: "Google News RSS by ticker" },
+    { method: "GET",  path: "/api/press-releases/[symbol]",     auth: "—",   note: "IR press releases via RSS" },
+    { method: "GET",  path: "/api/competitor-feed/[company]",   auth: "—",   note: "Competitor intelligence feed" },
+  ]},
+  { group: "Data",      routes: [
+    { method: "GET",  path: "/api/stock/[symbol]",              auth: "—",   note: "Live price (Yahoo Finance)" },
+    { method: "POST", path: "/api/seen-articles",               auth: "—",   note: "Track viewed articles in DB" },
+    { method: "POST", path: "/api/seen-filings",                auth: "—",   note: "Track viewed filings in DB" },
+    { method: "GET/POST", path: "/api/analysis-cache",          auth: "—",   note: "AI analysis cache read/write" },
+    { method: "GET",  path: "/api/check-analyzed",              auth: "—",   note: "Check if filing is analyzed" },
+  ]},
+  { group: "Infra",     routes: [
+    { method: "POST", path: "/api/db/setup",                    auth: "—",   note: "Seed database from .ts data files" },
+    { method: "POST", path: "/api/audit-checks",                auth: "—",   note: "Persist audit findings" },
+    { method: "POST", path: "/api/workflow/run",                auth: "—",   note: "Execute AI agent workflow" },
+    { method: "POST", path: "/api/workflow/apply",              auth: "—",   note: "Apply workflow output as patch" },
+    { method: "POST", path: "/api/workflow/commit",             auth: "—",   note: "Commit applied workflow changes" },
+  ]},
+];
+
+const componentHierarchy = [
+  { depth: 0, name: "RootLayout",                     file: "app/layout.tsx",         note: "HTML shell, fonts, PinGate" },
+  { depth: 1, name: "PinGate",                        file: "components/PinGate.tsx",  note: "Full-screen PIN auth gate" },
+  { depth: 2, name: "Navigation",                     file: "app/layout.tsx",         note: "Fixed top nav — dropdowns + mobile hamburger" },
+  { depth: 3, name: "PinStatus",                      file: "components/shared/PinStatus.tsx",  note: "Auth indicator badge" },
+  { depth: 3, name: "AiToggle",                       file: "components/shared/AiToggle.tsx",   note: "AI on/off toggle" },
+  { depth: 3, name: "MobileNav",                      file: "components/shared/MobileNav.tsx",  note: "Drawer nav for mobile" },
+  { depth: 2, name: "main → [Page]",                  file: "",                       note: "Dynamic content area (pt-14)" },
+  { depth: 2, name: "Footer",                         file: "app/layout.tsx",         note: "Disclaimer footer" },
+];
+
+const stockPageTree = [
+  { depth: 0, name: "stocks/[ticker]/page.tsx",           note: "Resolves ticker → ASTS | BMNR | CRCL component" },
+  { depth: 1, name: ".stock-model-app[data-accent]",      note: "Scoped reset + accent color (cyan/violet/mint)" },
+  { depth: 2, name: "Hero",                               note: "Company name, ticker, live price, stats row" },
+  { depth: 3, name: "LivePrice",                          note: "Real-time price from Yahoo Finance" },
+  { depth: 2, name: "StockNavigation",                    note: "Tab bar with dropdown groups" },
+  { depth: 2, name: "Tab Content (conditional)",           note: "One of the following shared tabs:" },
+  { depth: 3, name: "Overview / Model / Capital / Comps",  note: "Stock-specific — rendered inline in ASTS/BMNR/CRCL" },
+  { depth: 3, name: "SharedFinancialsTab",                 note: "Quarterly metrics, bar charts, CFA notes" },
+  { depth: 3, name: "SharedTimelineTab",                   note: "Event timeline with topic filters" },
+  { depth: 3, name: "SharedInvestmentTab",                 note: "Thesis, scorecard, bull/bear, catalysts" },
+  { depth: 3, name: "SharedWallStreetTab",                 note: "Analyst coverage, estimates, consensus" },
+  { depth: 3, name: "SharedSourcesTab",                    note: "Press releases & news with AI analysis" },
+  { depth: 3, name: "SharedEdgarTab",                      note: "SEC filings browser with DB tracking" },
+  { depth: 3, name: "SharedAIAgentsTab",                   note: "Workflow execution & diff preview" },
+  { depth: 2, name: "DisclaimerBanner",                    note: "Not financial advice" },
+];
+
+interface DBTable {
+  name: string;
+  purpose: string;
+  key: string;
+}
+
+const dbTables: DBTable[] = [
+  { name: "sec_filings",         purpose: "Tracked SEC filings from research .ts files",     key: "ticker + date + type" },
+  { name: "filing_cross_refs",   purpose: "Cross-references linking filings → data sections", key: "ticker + filing_key" },
+  { name: "timeline_events",     purpose: "Company events timeline",                          key: "ticker + date" },
+  { name: "catalysts",           purpose: "Upcoming/completed milestones",                    key: "ticker + event" },
+  { name: "partner_news",        purpose: "Partner & competitor activity",                    key: "ticker + date + entity" },
+  { name: "seen_filings",        purpose: "User-viewed filings (NEW/SEEN badge state)",       key: "ticker + accession_number" },
+  { name: "seen_articles",       purpose: "User-viewed articles (dismissed state)",           key: "ticker + cache_key" },
+  { name: "analysis_cache",      purpose: "AI analysis results (EDGAR + Sources)",            key: "ticker + type + key" },
+  { name: "audit_checks",        purpose: "Code audit finding verdicts",                      key: "finding_id" },
+];
+
+const dataArchitecture = [
+  { layer: "Data Files",   path: "src/data/{asts,bmnr,crcl}/",       note: "Hardcoded .ts files — company, capital, financials, sec-filings, timeline, catalysts, partners, analyst-coverage, comps" },
+  { layer: "Shared Types", path: "src/data/shared/types.ts",          note: "Central TypeScript interfaces for all data shapes (Partner, ShareClass, Catalyst, Timeline, etc.)" },
+  { layer: "Schemas",      path: "src/data/schemas/",                 note: "Zod validation schemas per stock + filing templates" },
+  { layer: "DB Schema",    path: "src/lib/schema.ts",                 note: "Drizzle ORM table definitions (9 tables in Neon PostgreSQL)" },
+  { layer: "Seed Path",    path: "/api/db/setup → seed-helpers.ts",   note: "Reads .ts data files → inserts into PostgreSQL tables" },
+  { layer: "AI Workflows", path: "src/data/workflows.ts",             note: "Agent prompts (earnings calls, code audit, data quality)" },
 ];
 
 const breakpoints = [
@@ -288,16 +390,21 @@ const conventions = [
 <div className="sm-progress-fill" style={{ width: \`\${pct}%\` }} />`,
   },
   {
-    title: "Accent Theming via getStockModelCSS()",
-    description: "Each stock calls getStockModelCSS('cyan' | 'violet' | 'mint'). This sets --accent and --accent-dim. All sm-accent references resolve automatically.",
-    code: `// In ASTS.tsx
-const css = getStockModelCSS('cyan');
+    title: "Accent Theming via data-accent",
+    description: "Each stock component sets data-accent on .stock-model-app. CSS selectors in stock-model-styles.css resolve --accent and --accent-dim automatically. All sm-accent references adopt the stock's color.",
+    code: `// ASTS.tsx — cyan accent
+<div className="stock-model-app" data-accent="cyan">
 
-// In BMNR.tsx
-const css = getStockModelCSS('violet');
+// BMNR.tsx — violet accent
+<div className="stock-model-app" data-accent="violet">
 
-// In CRCL.tsx
-const css = getStockModelCSS('mint');`,
+// CRCL.tsx — mint accent
+<div className="stock-model-app" data-accent="mint">
+
+// CSS (stock-model-styles.css)
+[data-accent="cyan"]  { --accent: var(--cyan);   --accent-dim: var(--cyan-dim); }
+[data-accent="violet"]{ --accent: var(--violet); --accent-dim: var(--violet-dim); }
+[data-accent="mint"]  { --accent: var(--mint);   --accent-dim: var(--mint-dim); }`,
   },
   {
     title: "Shared tracking tabs (stock-agentic)",
@@ -329,17 +436,6 @@ ecosystemHealth?: EcosystemHealth;
 extraBeforeChildren?: ReactNode;
 extraAfterChildren?: ReactNode;
 secFilingConfig?: FinancialsSECConfig;`,
-  },
-  {
-    title: "Merging with branch claude/disable-git-hooks-8qdjs",
-    description: "That branch changes: (1) CSS import from getStockModelCSS() to stock-model-styles.css and root data-accent, (2) fontFamily from 'Space Mono' to \"'Space Mono', monospace\" in ASTS/BMNR/CRCL, (3) removal of some inline hover handlers. Overlap: same files (ASTS, BMNR, CRCL, stock-model-styles). When merging: keep this branch's SharedFinancialsTab/SharedTimelineTab refactor and shared component usage; take their CSS/import and fontFamily/style fixes. Resolve conflicts in FinancialsTab/TimelineTab by keeping the Shared* wrapper and their fontFamily changes inside the content.",
-    code: `// Prefer: their root + styles
-import './stock-model-styles.css';
-<div className="stock-model-app" data-accent="cyan">
-
-// Keep: our shared tab usage
-<SharedFinancialsTab ...><QuarterlyMetricsPanel /></SharedFinancialsTab>
-<SharedTimelineTab ...>{/* their fontFamily fixes inside */}</SharedTimelineTab>`,
   },
 ];
 
@@ -408,6 +504,18 @@ function CodeBlock({ code }: { code: string }) {
   );
 }
 
+function TreeRow({ depth, name, detail, mono }: { depth: number; name: string; detail: string; mono?: boolean }) {
+  const indent = depth * 24;
+  const connector = depth === 0 ? "" : "├─ ";
+  return (
+    <div className="flex items-baseline gap-2 py-1 hover:bg-white/[0.02] transition-colors" style={{ paddingLeft: indent }}>
+      {depth > 0 && <span className="text-[10px] font-mono text-white/15 select-none">{connector}</span>}
+      <span className={`text-[12px] ${mono ? 'font-mono text-cyan-400/70' : 'font-medium text-white/70'}`}>{name}</span>
+      <span className="text-[11px] text-white/25">{detail}</span>
+    </div>
+  );
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    PAGE
    ───────────────────────────────────────────────────────────────────────────── */
@@ -420,48 +528,187 @@ export default function DocsPage() {
         {/* ── Header ──────────────────────────────────────────────────────── */}
         <div className="mb-8">
           <h1 className="text-2xl font-semibold tracking-tight text-white mb-3">
-            Design System
+            Documentation
           </h1>
           <p className="text-[13px] text-white/40 leading-relaxed max-w-3xl">
-            Comprehensive documentation for the ABISON UI — design tokens, CSS utility classes,
-            component patterns, project structure, and coding conventions. All styles are defined
-            in <span className="font-mono text-white/50">stock-model-styles.ts</span> and consumed
-            via class names and CSS custom properties.
+            Comprehensive documentation for the ABISON platform — app architecture, routing,
+            component hierarchy, data flow, design tokens, CSS utility classes, and coding
+            conventions. All styles are defined in <span className="font-mono text-white/50">stock-model-styles.css</span> and
+            consumed via class names, CSS custom properties, and <span className="font-mono text-white/50">data-accent</span> attributes.
           </p>
         </div>
 
         {/* ── Quick nav ───────────────────────────────────────────────────── */}
         <div className="flex flex-wrap items-center gap-2 mb-10 pb-6 border-b border-white/[0.06]">
           {[
+            { id: "architecture",label: "Architecture", accent: true },
+            { id: "routing",     label: "Routing" },
+            { id: "components",  label: "Components" },
+            { id: "stock-page",  label: "Stock Page" },
+            { id: "api",         label: "API Routes" },
+            { id: "database",    label: "Database" },
+            { id: "data-flow",   label: "Data Flow" },
             { id: "tokens",      label: "Tokens" },
             { id: "layout",      label: "Layout" },
             { id: "typography",  label: "Typography" },
-            { id: "colors",     label: "Colors" },
-            { id: "components", label: "Components" },
-            { id: "data-attrs", label: "Data Attrs" },
-            { id: "css-vars",   label: "CSS Vars" },
-            { id: "responsive", label: "Responsive" },
-            { id: "conventions",label: "Conventions" },
-            { id: "structure",  label: "Structure" },
-            { id: "fonts",      label: "Fonts" },
-            { id: "theming",    label: "Theming" },
-            { id: "liveprice-classes", label: "LivePrice" },
-            { id: "error-classes",     label: "Error" },
+            { id: "colors",      label: "Colors" },
+            { id: "component-patterns", label: "Patterns" },
+            { id: "data-attrs",  label: "Data Attrs" },
+            { id: "css-vars",    label: "CSS Vars" },
+            { id: "responsive",  label: "Responsive" },
+            { id: "conventions", label: "Conventions" },
+            { id: "structure",   label: "Files" },
+            { id: "fonts",       label: "Fonts" },
+            { id: "theming",     label: "Theming" },
           ].map((item) => (
             <a
               key={item.id}
               href={`#${item.id}`}
-              className="text-[11px] font-mono text-white/30 px-2.5 py-1 rounded-md bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.06] hover:text-white/50 transition-colors"
+              className={`text-[11px] font-mono px-2.5 py-1 rounded-md border transition-colors ${
+                'accent' in item && item.accent
+                  ? 'text-cyan-400/60 bg-cyan-400/[0.06] border-cyan-400/[0.12] hover:bg-cyan-400/[0.12] hover:text-cyan-400/80'
+                  : 'text-white/30 bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:text-white/50'
+              }`}
             >
               {item.label}
             </a>
           ))}
         </div>
 
+        {/* ════════════════════════════════════════════════════════════════════
+            APP ARCHITECTURE
+            ════════════════════════════════════════════════════════════════════ */}
+
+        <div id="architecture" className="scroll-mt-20 pt-10 pb-4 border-b border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-semibold tracking-tight text-white">App Architecture</h2>
+            <span className="text-[10px] font-mono text-cyan-400/40 bg-cyan-400/[0.06] px-2 py-0.5 rounded border border-cyan-400/[0.08]">
+              Next.js 16 · React 19 · TypeScript · Tailwind v4 · Drizzle ORM · Neon PostgreSQL
+            </span>
+          </div>
+        </div>
+        <p className="text-[12px] text-white/30 mt-3 mb-6">
+          ABISON is an investment research platform tracking three companies (ASTS, BMNR, CRCL).
+          Each stock has a dedicated financial model component backed by hardcoded data files,
+          with shared tabs for EDGAR filings, sources, financials, timeline, and Wall Street coverage.
+          AI analysis is powered by Claude via PIN-protected API routes. All state is persisted to Neon PostgreSQL.
+        </p>
+
+        {/* ── Routing ──────────────────────────────────────────────────────── */}
+        <SectionHeader id="routing" title="Page Routes" count={routingTree.length} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Next.js App Router — file-based routing under <span className="font-mono text-white/40">src/app/</span>.
+        </p>
+        <div className="mt-4 rounded-xl border border-white/[0.06] overflow-hidden">
+          <div className="grid grid-cols-[160px_180px_1fr_1fr] bg-white/[0.03] border-b border-white/[0.06]">
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">Route</div>
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">Label</div>
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">File</div>
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">Description</div>
+          </div>
+          {routingTree.map((r) => (
+            <div key={r.path} className="grid grid-cols-[160px_180px_1fr_1fr] border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.02] transition-colors">
+              <div className="px-4 py-2.5 text-[12px] font-mono text-cyan-400/70">{r.path}</div>
+              <div className="px-4 py-2.5 text-[12px] text-white/60">{r.label}</div>
+              <div className="px-4 py-2.5 text-[11px] font-mono text-white/25">{r.file}</div>
+              <div className="px-4 py-2.5 text-[11px] text-white/30">{r.note}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Component Hierarchy ──────────────────────────────────────────── */}
+        <SectionHeader id="components" title="Component Hierarchy" />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          App shell — every page is wrapped in PinGate → Navigation → main → Footer.
+        </p>
+        <div className="mt-4 p-5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+          {componentHierarchy.map((c, i) => (
+            <TreeRow key={i} depth={c.depth} name={c.name} detail={c.note} />
+          ))}
+        </div>
+
+        {/* ── Stock Page Tree ──────────────────────────────────────────────── */}
+        <SectionHeader id="stock-page" title="Stock Page Structure" />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Each stock page renders a monolithic component (ASTS / BMNR / CRCL) with shared tabs.
+          The <span className="font-mono text-white/40">data-accent</span> attribute sets the stock&apos;s accent color.
+        </p>
+        <div className="mt-4 p-5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+          {stockPageTree.map((c, i) => (
+            <TreeRow key={i} depth={c.depth} name={c.name} detail={c.note} />
+          ))}
+        </div>
+
+        {/* ── API Routes ──────────────────────────────────────────────────── */}
+        <SectionHeader id="api" title="API Routes" count={apiRoutes.reduce((n, g) => n + g.routes.length, 0)} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Serverless API routes under <span className="font-mono text-white/40">src/app/api/</span>.
+          PIN-protected routes require <span className="font-mono text-white/40">x-auth-pin</span> header (checked in middleware.ts).
+        </p>
+        {apiRoutes.map((group) => (
+          <div key={group.group} className="mt-4">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25 mb-2">{group.group}</div>
+            <div className="rounded-xl border border-white/[0.06] overflow-hidden">
+              {group.routes.map((r) => (
+                <div key={r.path} className="grid grid-cols-[70px_1fr_50px_1fr] border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.02] transition-colors">
+                  <div className="px-4 py-2 text-[10px] font-mono text-white/20">{r.method}</div>
+                  <div className="px-4 py-2 text-[12px] font-mono text-cyan-400/70">{r.path}</div>
+                  <div className={`px-4 py-2 text-[10px] font-mono ${r.auth === 'PIN' ? 'text-yellow-400/50' : 'text-white/15'}`}>{r.auth}</div>
+                  <div className="px-4 py-2 text-[11px] text-white/30">{r.note}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {/* ── Database ────────────────────────────────────────────────────── */}
+        <SectionHeader id="database" title="Database Schema" count={dbTables.length} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Neon PostgreSQL (serverless, HTTP-based) via Drizzle ORM. Schema in <span className="font-mono text-white/40">src/lib/schema.ts</span>.
+        </p>
+        <div className="mt-4 rounded-xl border border-white/[0.06] overflow-hidden">
+          <div className="grid grid-cols-[180px_1fr_1fr] bg-white/[0.03] border-b border-white/[0.06]">
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">Table</div>
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">Purpose</div>
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">Primary Key</div>
+          </div>
+          {dbTables.map((t) => (
+            <div key={t.name} className="grid grid-cols-[180px_1fr_1fr] border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.02] transition-colors">
+              <div className="px-4 py-2.5 text-[12px] font-mono text-cyan-400/70">{t.name}</div>
+              <div className="px-4 py-2.5 text-[12px] text-white/40">{t.purpose}</div>
+              <div className="px-4 py-2.5 text-[11px] font-mono text-white/20">{t.key}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── Data Flow ──────────────────────────────────────────────────── */}
+        <SectionHeader id="data-flow" title="Data Architecture" count={dataArchitecture.length} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Stock data flows from hardcoded TypeScript files → seeded into PostgreSQL → read by shared tab components.
+          AI workflows can patch .ts files, then re-seed the database to keep them in sync.
+        </p>
+        <div className="mt-4 grid gap-3">
+          {dataArchitecture.map((d, i) => (
+            <div key={i} className="flex items-start gap-4 p-4 rounded-lg bg-white/[0.02] border border-white/[0.06]">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/25 w-28 flex-shrink-0 pt-0.5">{d.layer}</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[12px] font-mono text-cyan-400/60">{d.path}</div>
+                <div className="text-[11px] text-white/30 mt-0.5">{d.note}</div>
+              </div>
+              {i < dataArchitecture.length - 1 && (
+                <div className="text-[14px] text-white/10 flex-shrink-0 pt-0.5">↓</div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 mb-4 border-t border-white/[0.06]" />
+        <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/15 mb-8">Design System</div>
+
         {/* ── 1. Design Tokens ────────────────────────────────────────────── */}
         <SectionHeader id="tokens" title="Design Tokens" count={designTokens.length} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
-          Defined in <span className="font-mono text-white/40">:root</span> inside <span className="font-mono text-white/40">getStockModelCSS()</span>.
+          Defined in <span className="font-mono text-white/40">:root</span> inside <span className="font-mono text-white/40">stock-model-styles.css</span>.
           Also mirrored in <span className="font-mono text-white/40">globals.css</span> for non-stock pages.
         </p>
         <SmallTable
@@ -495,7 +742,7 @@ export default function DocsPage() {
         </div>
 
         {/* ── 5. Component Patterns ──────────────────────────────────────── */}
-        <SectionHeader id="components" title="Component Patterns" count={componentClasses.length} />
+        <SectionHeader id="component-patterns" title="Component Patterns" count={componentClasses.length} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
           Pre-built patterns for panels, grids, badges, data rows, progress bars, and more.
           Dynamic values use CSS custom properties set via <span className="font-mono text-white/40">style=&#123;&#123; &apos;--var&apos;: value &#125;&#125;</span>.
@@ -583,7 +830,7 @@ export default function DocsPage() {
         {/* ── 12. Theming ──────────────────────────────────────────────────── */}
         <SectionHeader id="theming" title="Accent Theming" />
         <p className="text-[12px] text-white/30 mt-3 mb-4">
-          Each stock component calls <span className="font-mono text-white/40">getStockModelCSS(accent)</span> which sets <span className="font-mono text-white/40">--accent</span> and <span className="font-mono text-white/40">--accent-dim</span>.
+          Each stock component sets <span className="font-mono text-white/40">data-accent</span> on the <span className="font-mono text-white/40">.stock-model-app</span> root. CSS attribute selectors in <span className="font-mono text-white/40">stock-model-styles.css</span> resolve <span className="font-mono text-white/40">--accent</span> and <span className="font-mono text-white/40">--accent-dim</span>.
           All <span className="font-mono text-white/40">.sm-accent</span> classes, active nav buttons, and highlight boxes automatically adopt the stock&apos;s color.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -828,8 +1075,8 @@ export default function DocsPage() {
         <div className="mt-16 pt-6 border-t border-white/[0.06]">
           <p className="text-[11px] text-white/15">
             This documentation is auto-generated from the design system.
-            CSS source: <span className="font-mono">src/components/stocks/stock-model-styles.ts</span>.
-            Last architecture: Feb 2026.
+            CSS source: <span className="font-mono">src/components/stocks/stock-model-styles.css</span>.
+            Last updated: Feb 2026.
           </p>
         </div>
       </div>
