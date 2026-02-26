@@ -9,6 +9,7 @@
  */
 
 import type { ReactNode } from 'react';
+import type { UpdateSource } from './stockModelTypes';
 
 export interface SECFiling {
   date: string;
@@ -77,6 +78,6 @@ export interface SharedTimelineTabProps {
   description: string;
   /** Optional: SEC filings table + event list rendered as children */
   children: ReactNode;
-  /** Optional: update indicator sources for the section label */
-  sources?: string | string[];
+  /** Optional: update indicator sources for the section label (PR, SEC, WS, MARKET) */
+  sources?: UpdateSource | UpdateSource[];
 }
