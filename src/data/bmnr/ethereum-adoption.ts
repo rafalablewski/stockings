@@ -8,6 +8,50 @@
 export const BMNR_ADOPTION_TIMELINE = [
     // === FEBRUARY 2026 ===
     {
+      date: '2026-02-26',
+      category: 'Protocol',
+      company: 'Ethereum Foundation',
+      title: 'EF Publishes Strawmap: Seven L1 Forks Through 2029 Targeting Fast Finality and Quantum Resistance',
+      summary: 'The Ethereum Foundation Protocol team published the "strawmap," a strawman roadmap outlining seven projected forks through 2029. Five north stars: fast L1 (slot times from 12s to 2s), gigagas L1 (1 gigagas/sec = 10K TPS via zkEVMs), teragas L2 (1GB/sec via DAS), post-quantum security (hash-based signatures), and native privacy (shielded ETH transfers). Vitalik Buterin elaborated on the Minimmit finality algorithm targeting 6-16 second finality vs current ~16 minutes. Named forks include Glamsterdam (ePBS + BALs) and Hegotá, with placeholder I* and J* forks. Maintained by EF Architecture team (Drake, Dietrichs, Monnot, Fradamt). Vitalik highlighted erasure coded networking and reduced attester counts as key enablers for faster slots.',
+      significance: 'Most comprehensive long-range Ethereum L1 roadmap published to date. Signals aggressive upgrade cadence (one fork every ~6 months) with transformative UX improvements. Fast finality and quantum resistance strengthen Ethereum as institutional-grade settlement layer.',
+      bmnrImplication: 'Highly positive for BMNR ETH treasury thesis. Faster finality (6-16s vs 16min) and 10K TPS dramatically improve Ethereum UX, driving adoption and potentially ETH demand. Post-quantum security and native privacy address key institutional concerns. Seven forks through 2029 shows strong development momentum.',
+      impact: 'Bullish',
+      source: 'Ethereum Foundation / strawmap.org'
+    },
+    {
+      date: '2026-02-25',
+      category: 'Enterprise',
+      company: 'Tether / Whop',
+      title: 'Tether Invests in Whop (18.4M Users), Integrates WDK Wallet for Stablecoin Payments',
+      summary: 'Tether Investments made a strategic investment in Whop.com, the world\'s largest internet market (18.4M users, ~$3B annual payouts, 25% MoM growth). Whop will integrate Tether\'s Wallet Development Kit (WDK) for self-custodial stablecoin payments supporting USD₮ and USA₮. The integration enables on-chain settlement, lending/borrowing via DeFi primitives, and positions Whop as a self-custodial digital wallet. Funding supports expansion across LATAM, Europe, and APAC. Tether ecosystem reaches 530M+ users globally with $180B+ issued stablecoins.',
+      significance: 'Tether embedding stablecoin infrastructure into a mainstream internet marketplace with 18.4M users and $3B annual payouts demonstrates real-economy adoption of crypto-native payments. WDK integration brings self-custodial wallets and DeFi primitives to a non-crypto-native user base. 25% MoM growth signals accelerating stablecoin utility demand.',
+      bmnrImplication: 'Stablecoin adoption at mainstream internet marketplace scale validates Ethereum ecosystem\'s role in real-economy settlement. USD₮ is the largest ERC-20 token — growing USDT utility drives Ethereum network activity. More users entering crypto via stablecoin payments expands the addressable market for ETH-denominated products and services.',
+      impact: 'Bullish',
+      source: 'PRNewswire / Whop'
+    },
+    {
+      date: '2026-02-25',
+      category: 'Institutional',
+      company: 'UK Financial Conduct Authority',
+      title: 'UK FCA Selects 4 Firms for Stablecoin Regulatory Sandbox — UK Crypto Regime Live Oct 2027',
+      summary: 'The UK Financial Conduct Authority selected 4 firms (Monee Financial Technologies, ReStabilise, Revolut, VVTX) from 20 applicants to test stablecoin services in its Regulatory Sandbox. Testing begins Q1 2026 focusing on stablecoin issuance for payments, wholesale settlement, and crypto trading. Findings will shape UK\'s final stablecoin rules later in 2026. The full UK crypto regulatory regime application gateway opens September 2026, with the regime going live October 2027. FCA crypto consultations are substantively complete with Policy Statements expected summer 2026.',
+      significance: 'UK regulator actively testing stablecoin products with major fintech players (including Revolut) signals growing institutional and regulatory trust in stablecoin/crypto infrastructure. Clear regulatory timeline (sandbox Q1 2026 → Policy Statements summer 2026 → regime October 2027) provides certainty for institutional adoption. UK joining EU (MiCA) in comprehensive crypto regulation.',
+      bmnrImplication: 'Regulatory clarity in major financial centers (UK following EU MiCA) reduces institutional adoption barriers for Ethereum-based products. Stablecoin regulatory frameworks legitimize the Ethereum ecosystem as settlement infrastructure. Revolut\'s participation (100M+ users) signals mainstream fintech commitment to crypto/stablecoin rails. Positive for overall crypto ecosystem confidence that supports ETH value proposition.',
+      impact: 'Bullish',
+      source: 'FCA Press Release'
+    },
+    {
+      date: '2026-02-24',
+      category: 'Enterprise',
+      company: 'Oobit',
+      title: 'Oobit Launches Real-Time Stablecoin Wallet-to-Bank Transfers via Local Payment Rails',
+      summary: 'Oobit launched real-time wallet-to-bank transfers enabling stablecoins held in self-custody wallets to settle directly into bank accounts via local payment rails: SEPA (Europe), ACH (U.S.), SPEI (Mexico), PIX (Brazil), INSTAPAY (Philippines). Transfers execute in seconds vs days through traditional correspondent banking. Crypto remains under user control until transaction authorization. Supported currencies: USD, EUR, MXN, PHP with more launching. $150B+ stablecoins circulating globally now have direct banking off-ramps.',
+      significance: 'Real-time stablecoin-to-bank settlement removes the last structural barrier between crypto and traditional banking. Bypassing correspondent banking corridors (SEPA, ACH, PIX, SPEI integration) dramatically reduces settlement time and cost. Completes the full crypto financial loop: spend at merchants + P2P transfers + bank settlement.',
+      bmnrImplication: 'Direct stablecoin-to-bank settlement via local rails validates Ethereum-based stablecoins as real-world money infrastructure. Removing the banking-to-crypto friction makes ETH ecosystem products more accessible to mainstream users. $150B+ stablecoin circulation with instant bank off-ramps strengthens the case for Ethereum as global settlement layer.',
+      impact: 'Bullish',
+      source: 'Oobit Blog'
+    },
+    {
       date: '2026-02-20',
       category: 'Enterprise',
       company: 'BNP Paribas',
@@ -185,6 +229,39 @@ export const BMNR_ADOPTION_TIMELINE = [
     },
     // === JANUARY 2026 ===
     {
+      date: '2026-01-28',
+      category: 'Enterprise',
+      company: 'Oobit',
+      title: 'Oobit Launches Plug and Pay — Embedded Stablecoin Payment SDK for Any Wallet Provider',
+      summary: 'Oobit launched Plug and Pay, an embedded payments solution enabling wallet providers to add real-world crypto spending via single integration. Oobit operates the full regulated payments stack (card issuing, settlement, KYC, AML, risk management). Supports Apple Pay, Google Pay, white-label or branded experiences. Designed for 100+ countries from day one. Wallet teams can launch payment capabilities in days vs months.',
+      significance: 'Infrastructure-as-a-service for crypto wallet payments removes the final barrier for wallet providers to offer real-world spending. Oobit handling compliance/licensing means wallet providers can focus on UX. Potential to rapidly scale stablecoin spending across the entire wallet ecosystem.',
+      bmnrImplication: 'Plug and Pay SDK commoditizes stablecoin payment infrastructure, enabling rapid adoption across wallet ecosystem. More wallets offering real-world spending = more stablecoin on-chain activity = stronger Ethereum network effects. Infrastructure maturation makes crypto/ETH ecosystem more accessible and practical.',
+      impact: 'Bullish',
+      source: 'Oobit Blog'
+    },
+    {
+      date: '2026-01-27',
+      category: 'Enterprise',
+      company: 'Oobit / Tether America',
+      title: 'Oobit First to Make Tether USA₮ (Genius Act-Compliant) Spendable at 100M+ Visa Merchants',
+      summary: 'Oobit became the first platform to make Tether\'s USA₮ stablecoin spendable at Visa merchants. USA₮ is a Genius Act-compliant USD-backed stablecoin issued by Tether America, a JV between Tether and Anchorage Digital (U.S.-regulated crypto bank). 14M+ U.S. merchant businesses accepting Visa are already compatible. U.S. launch via Bakkt partnership for licensing across all 50 states. Supports MetaMask, Trust Wallet and other self-custody wallets.',
+      significance: 'First regulated U.S.-compliant stablecoin (Genius Act) achieving real-world merchant spending represents a landmark for stablecoin mainstream adoption. Anchorage Digital partnership (federally chartered crypto bank) provides institutional-grade compliance. 14M+ compatible U.S. merchants from day one.',
+      bmnrImplication: 'U.S. regulatory compliance for stablecoin payments legitimizes the broader crypto ecosystem. Regulated stablecoins achieving Visa-merchant spending validates the infrastructure Ethereum enables. More regulated on-ramps/off-ramps for crypto reduce barriers to institutional ETH adoption. Tether/Anchorage JV signals deep institutional commitment to stablecoin infrastructure.',
+      impact: 'Bullish',
+      source: 'Oobit Blog'
+    },
+    {
+      date: '2026-01-14',
+      category: 'Enterprise',
+      company: 'Oobit / Phantom',
+      title: 'Oobit Enables 15M Phantom Wallet Users to Make Real-World Crypto Payments at Visa Merchants',
+      summary: 'Oobit added native Phantom Wallet support, enabling 15M+ users to make real-world payments with crypto directly from their wallet anywhere Visa is accepted. Funds remain in user custody until payment approval. Transactions convert to local currency and settle instantly to merchants. Live in U.S., Brazil, Philippines, South Korea, Thailand, and 50+ countries.',
+      significance: 'Phantom Wallet (15M+ users, one of most trusted self-custody wallets) gaining real-world spending capability demonstrates growing trust in crypto for daily commerce. Geographic spread across U.S., LatAm, and APAC shows global demand.',
+      bmnrImplication: 'Expanding real-world crypto payment corridors increases ecosystem utility and user engagement. More wallet-to-merchant payment activity generates on-chain transactions, supporting ETH network value. Growing crypto spending infrastructure makes ETH-based assets more practical for real-world use.',
+      impact: 'Bullish',
+      source: 'Oobit Blog'
+    },
+    {
       date: '2026-01-30',
       category: 'Institutional',
       company: 'Naviator Global',
@@ -306,6 +383,17 @@ export const BMNR_ADOPTION_TIMELINE = [
       source: 'Business Wire'
     },
     // === DECEMBER 2025 ===
+    {
+      date: '2025-12-15',
+      category: 'Enterprise',
+      company: 'Oobit / Plasma',
+      title: 'Oobit Integrates Plasma for USD₮ Spending at 100M+ Visa Merchants Worldwide',
+      summary: 'Oobit, a Tether-backed mobile crypto payments app, integrated with Plasma to enable USD₮ spending at 100M+ Visa merchants globally. Users spend directly from self-custody wallets (Phantom, MetaMask, Trust Wallet, Binance Wallet) via Oobit\'s DePay decentralized payment layer with on-chain settlement on Plasma\'s stablecoin L1 blockchain. Merchants receive fiat instantly. 5% cashback on USD₮ transactions from Plasma. Oobit expanding into U.S. via Bakkt partnership providing licensing across all 50 states.',
+      significance: 'Stablecoin payments at Visa-scale merchant acceptance (100M+ merchants) represents a step-change in real-world crypto utility. Self-custody wallet-to-merchant payment corridor removes traditional payment intermediaries while maintaining Visa compatibility. Demonstrates stablecoin infrastructure maturity for mainstream commerce.',
+      bmnrImplication: 'Real-world USD₮ spending at 100M+ merchants drives Ethereum ecosystem adoption — USD₮ (USDT) is the largest ERC-20 token and primary stablecoin on Ethereum. More stablecoin utility = more on-chain activity = stronger ETH network effects. Self-custody wallet integration validates decentralized finance infrastructure that Ethereum enables.',
+      impact: 'Bullish',
+      source: 'Oobit Blog'
+    },
     {
       date: '2025-12-26',
       category: 'Enterprise',
