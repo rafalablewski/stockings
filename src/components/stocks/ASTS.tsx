@@ -1770,97 +1770,141 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         ))}
       </div>
 
-      {/* Partner Ecosystem Timeline — Glass panel header */}
-      <div className="sm-card sm-mt-8">
-        <div className="sm-card-section">
-          <div className="sm-flex-between sm-items-center sm-mb-12">
-            <div>
-              <span className="sm-param-label">Partner Ecosystem Timeline</span>
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: 'var(--text3)', marginLeft: 12 }}>{filteredPartnerNews.length} events</span>
-            </div>
-            {partnerFilter !== 'All' && (
-              <button onClick={() => setPartnerFilter('All')} className="sm-filter-pill" style={{ '--pill-accent': 'var(--coral)', background: 'color-mix(in srgb, var(--coral) 10%, transparent)', color: 'var(--coral)' } as React.CSSProperties}>Clear Filter</button>
-            )}
-          </div>
-          <p className="sm-subtle sm-lh-16" style={{ margin: 0 }}>Track news about ASTS MNO partners — IoT expansion, connected vehicles, 5G rollouts, coverage expansion</p>
-        </div>
+      {/* Partner Ecosystem Timeline — matches BMNR Ecosystem Intelligence layout */}
+      <div className="sm-divider">
+        <span className="sm-param-label">Partner Ecosystem</span>
+        <span className="sm-divider-line" />
+      </div>
 
-        {/* Partner Filter Pills */}
-        <div className="sm-flex-wrap sm-gap-6" style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
+      {/* Partner Filter */}
+      <div className="sm-panel sm-mt-8 sm-p-24 sm-rounded-16">
+        <p className="sm-text2 sm-lh-16 sm-fs-13 sm-bmnr-mb-4-reset">Track news about <strong>ASTS MNO partners</strong> — IoT expansion, connected vehicles, 5G rollouts, coverage expansion</p>
+        <p className="sm-subtle-sm sm-italic sm-bmnr-mb-16-reset">Partner-level news affecting commercial deployment and revenue</p>
+        <div className="sm-flex-between sm-mb-8">
+          <span className="sm-section-label">Filter by Partner</span>
+          {partnerFilter !== 'All' && (
+            <button
+              onClick={() => setPartnerFilter('All')}
+              className="sm-bmnr-clear-btn"
+              aria-label="Clear partner filter"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+        <div className="sm-flex-wrap sm-gap-6">
           {partnerNames.map(partner => {
             const isSelected = partnerFilter === partner;
             const count = PARTNER_NEWS.filter(n => n.partner === partner).length;
             return (
-              <button key={partner} onClick={() => setPartnerFilter(partner)} className="sm-filter-pill" data-active={isSelected || undefined} style={{ '--pill-accent': 'var(--cyan)' } as React.CSSProperties}>
+              <button
+                key={partner}
+                onClick={() => setPartnerFilter(partner)}
+                className="sm-filter-pill"
+                data-active={isSelected}
+                style={{ '--pill-accent': 'var(--cyan)' } as React.CSSProperties}
+                aria-label={`Filter by ${partner}`}
+              >
                 {partner} ({partner === 'All' ? PARTNER_NEWS.length : count})
               </button>
             );
           })}
         </div>
+        {partnerFilter !== 'All' && (
+          <div className="sm-mono-sm sm-text3 sm-mt-8 sm-fs-11">
+            {partnerFilter} → {filteredPartnerNews.length} results
+          </div>
+        )}
+      </div>
 
-        {/* Category Filter + Expand/Collapse */}
-        <div className="sm-flex-between sm-items-center" style={{ padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
-          <div className="sm-flex-wrap sm-gap-6">
-            {categories.map(cat => (
-              <button key={cat} onClick={() => setCategoryFilter(cat)} className="sm-filter-pill" data-active={categoryFilter === cat || undefined} style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}>
+      {/* Category pills row with Expand All button */}
+      <div className="sm-flex-between sm-items-center sm-mt-8">
+        <div className="sm-flex-wrap sm-gap-6">
+          {categories.map(cat => {
+            const isActive = categoryFilter === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setCategoryFilter(cat)}
+                className="sm-filter-pill"
+                data-active={isActive}
+                style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}
+                aria-label={`Filter by category: ${cat}`}
+              >
                 {cat === 'All' ? `All (${PARTNER_NEWS.length})` : `${cat} (${PARTNER_NEWS.filter(n => n.category === cat).length})`}
               </button>
-            ))}
-          </div>
-          <button onClick={() => { if (expandedPartnerNews.size === filteredPartnerNews.length) { setExpandedPartnerNews(new Set()); } else { setExpandedPartnerNews(new Set(filteredPartnerNews.map((_, i) => i))); } }} className="sm-filter-pill" style={{ whiteSpace: 'nowrap' }}>
-            {expandedPartnerNews.size === filteredPartnerNews.length ? 'Collapse All' : 'Expand All'}
-          </button>
+            );
+          })}
         </div>
+        <button
+          onClick={() => {
+            if (expandedPartnerNews.size === filteredPartnerNews.length) {
+              setExpandedPartnerNews(new Set());
+            } else {
+              setExpandedPartnerNews(new Set(filteredPartnerNews.map((_, i) => i)));
+            }
+          }}
+          className="sm-filter-pill sm-nowrap"
+          aria-label={expandedPartnerNews.size === filteredPartnerNews.length ? 'Collapse all partner news' : 'Expand all partner news'}
+        >
+          {expandedPartnerNews.size === filteredPartnerNews.length ? '- Collapse All' : '+ Expand All'}
+        </button>
       </div>
 
       {/* Partner News Events */}
-      <div className="sm-flex-col">
+      <div className="sm-card sm-mt-8">
         {filteredPartnerNews.length > 0 ? (
           filteredPartnerNews.map((news, i) => {
             const isExpanded = expandedPartnerNews.has(i);
+            const accentColor = news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)';
             return (
               <div
                 key={i}
                 role="button"
                 tabIndex={0}
-                aria-label={`${news.headline} — ${news.partner} ${news.date}`}
-                onKeyDown={(e) => { if (e.key === 'Enter') { const next = new Set(expandedPartnerNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedPartnerNews(next); } }}
-                className="sm-news-card" style={{ '--news-accent': news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)' } as React.CSSProperties}
+                aria-label={`${news.headline} — ${news.impact} — click to ${isExpanded ? 'collapse' : 'expand'}`}
+                className="sm-bmnr-news-row"
+                style={{ '--news-accent': accentColor, borderBottom: i < filteredPartnerNews.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' } as React.CSSProperties}
                 onClick={() => {
                   const next = new Set(expandedPartnerNews);
                   if (isExpanded) next.delete(i);
                   else next.add(i);
                   setExpandedPartnerNews(next);
                 }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const next = new Set(expandedPartnerNews);
+                    if (isExpanded) next.delete(i);
+                    else next.add(i);
+                    setExpandedPartnerNews(next);
+                  }
+                }}
               >
                 <div className="sm-flex-between sm-items-start">
-                  <div style={{ flex: 1 }}>
-                    <div className="sm-flex-wrap">
-                      <span className="sm-text-11">{news.date}</span>
-                      <span className="sm-news-tag" style={{ '--tag-color': 'var(--cyan)' } as React.CSSProperties}>{news.partner}</span>
-                      <span className="sm-news-tag" style={{ '--tag-color': 'var(--violet)' } as React.CSSProperties}>{news.category}</span>
+                  <div className="sm-flex-1">
+                    <div className="sm-flex-wrap sm-gap-6 sm-mb-4">
+                      <span className="sm-mono-sm sm-text3 sm-fs-10">{news.date}</span>
+                      <span className="sm-micro-badge sm-bmnr-cat-badge" data-type="category">{news.category}</span>
+                      <span className="sm-micro-badge sm-bmnr-cat-badge" data-type="company">{news.partner}</span>
                     </div>
-                    <div className="sm-fw-600 sm-text" style={{ fontSize: 14 }}>{news.headline}</div>
+                    <div className="sm-text sm-fw-600 sm-lh-14 sm-fs-13">{news.headline}</div>
                   </div>
-                  <span style={{ fontSize: 12, color: news.impact === 'Bullish' ? 'var(--mint)' : news.impact === 'Bearish' ? 'var(--coral)' : 'var(--sky)', marginLeft: 12, whiteSpace: 'nowrap' }}>
-                    {news.impact === 'Bullish' ? '↑' : news.impact === 'Bearish' ? '↓' : '→'} {news.impact}
+                  <span className="sm-bmnr-impact-val" style={{ color: accentColor }}>
+                    {news.impact === 'Bullish' ? '+' : news.impact === 'Bearish' ? '-' : '~'} {news.impact}
                   </span>
                 </div>
                 {isExpanded && (
-                  <div className="sm-border-t sm-pt-12">
-                    {/* Summary */}
+                  <div className="sm-bmnr-news-detail">
                     <div className="sm-text-13 sm-lh-16">{news.summary}</div>
 
-                    {/* ASTS Relevance */}
                     {news.astsRelevance && (
-                      <div style={{ padding: 12, background: 'var(--surface)', borderRadius: 8, borderLeft: '3px solid var(--mint)' }}>
-                        <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--mint)' }}>📡 ASTS RELEVANCE</div>
-                        <div className="sm-text-12 sm-text2" style={{ lineHeight: 1.5 }}>{news.astsRelevance}</div>
+                      <div className="sm-bmnr-insight-card" style={{ '--insight-color': 'var(--mint)' } as React.CSSProperties}>
+                        <div className="sm-micro-label sm-mint sm-mb-4 sm-ls-1">ASTS Relevance</div>
+                        <div className="sm-subtle sm-text2 sm-lh-15">{news.astsRelevance}</div>
                       </div>
                     )}
 
-                    {/* Source */}
-                    <div className="sm-text-11">Source: {news.source}</div>
+                    <div className="sm-bmnr-source-text">Source: {news.source}</div>
                   </div>
                 )}
               </div>
