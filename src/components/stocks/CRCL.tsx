@@ -1451,7 +1451,7 @@ const ScenariosTab = () => {
             <div className="sm-card">
               <div className="sm-card-section"><span className="sm-section-label">Financial Projections — {selected.name} Scenario</span></div>
               <div className="sm-overflow-x">
-                <table className="sm-w-full" style={{ borderCollapse: 'collapse' }}>
+                <table className="sm-w-full sm-border-collapse">
                   <thead>
                     <tr>
                       <th>Metric</th>
@@ -1590,7 +1590,7 @@ const ScenariosTab = () => {
             <div className="sm-grid-2-lg">
               <div className="sm-card">
                 <div className="sm-card-section"><span className="sm-section-label">Key Assumptions</span></div>
-                <ul className="sm-text2" style={{ margin: 0, paddingLeft: 20 }}>
+                <ul className="sm-text2 sm-m-0 sm-pl-20">
                   {selected.assumptions.map((a, i) => (
                     <li key={i} className="sm-lh-15">{a}</li>
                   ))}
@@ -1598,7 +1598,7 @@ const ScenariosTab = () => {
               </div>
               <div className="sm-card">
                 <div className="sm-card-section"><span className="sm-section-label">{selected.catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</span></div>
-                <ul className="sm-text2" style={{ margin: 0, paddingLeft: 20 }}>
+                <ul className="sm-text2 sm-m-0 sm-pl-20">
                   {(selected.catalysts.length > 0 ? selected.catalysts : selected.risks).map((item, i) => (
                     <li key={i} className="sm-lh-15">{item}</li>
                   ))}
@@ -1606,7 +1606,7 @@ const ScenariosTab = () => {
                 {selected.catalysts.length > 0 && selected.risks.length > 0 && (
                   <>
                     <div className="sm-card-section"><span className="sm-section-label">Risks</span></div>
-                    <ul className="sm-text2" style={{ margin: 0, paddingLeft: 20 }}>
+                    <ul className="sm-text2 sm-m-0 sm-pl-20">
                       {selected.risks.map((r, i) => (
                         <li key={i} className="sm-lh-15">{r}</li>
                       ))}

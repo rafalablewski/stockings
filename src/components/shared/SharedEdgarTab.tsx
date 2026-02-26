@@ -1664,10 +1664,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             disabled={loading}
             aria-label="Fetch EDGAR filings"
             title="Fetch filings from SEC EDGAR"
-            className="sm-ed-action-btn"
+            className="sm-ed-action-btn sm-p-5-14 sm-gap-6"
             data-variant="mint"
             data-state={loading ? 'loading' : undefined}
-            style={{ padding: '5px 14px', gap: 6 }}
           >
             <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
               <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -1682,10 +1681,9 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               disabled={recheckLoading}
               aria-label="Re-check local database"
               title="Re-check if filings have been added to local database"
-              className="sm-ed-action-btn"
+              className="sm-ed-action-btn sm-p-5-14 sm-gap-6"
               data-variant="blue"
               data-state={recheckLoading ? 'loading' : undefined}
-              style={{ padding: '5px 14px', gap: 6 }}
             >
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
                 <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />

@@ -229,8 +229,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
         type="button"
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
-        className="sm-w-full sm-pointer sm-gap-16 sm-flex sm-items-start sm-text-left"
-        style={{ padding: "16px 20px", justifyContent: "space-between", background: "none", border: "none" }}
+        className="sm-w-full sm-pointer sm-gap-16 sm-flex sm-items-start sm-text-left sm-p-16-20 sm-justify-between sm-bg-transparent sm-border-none"
       >
         <div className="sm-flex-1 sm-min-w-0">
           <div className="sm-flex sm-gap-8 sm-mb-4">
@@ -266,7 +265,6 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
               onClick={async () => { await navigator.clipboard.writeText(workflow.prompt); setCopiedPrompt(true); setTimeout(() => setCopiedPrompt(false), 2000); }}
               className="sm-ed-action-btn-sm"
               data-state={copiedPrompt ? "success" : undefined}
-              style={copiedPrompt ? { color: "var(--mint)", borderColor: "rgba(130,200,130,0.15)" } : undefined}
             >
               {copiedPrompt ? "Copied!" : "Copy prompt"}
             </button>
@@ -308,10 +306,9 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                 type="button"
                 disabled={!canRun}
                 onClick={handleRun}
-                className="sm-ed-action-btn"
+                className="sm-ed-action-btn sm-p-5-14"
                 data-variant="mint"
                 data-state={canRun ? undefined : "disabled"}
-                style={{ padding: "5px 14px" }}
               >
                 Run Analysis
               </button>
@@ -319,9 +316,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
               <button
                 type="button"
                 onClick={handleStop}
-                className="sm-ed-action-btn"
+                className="sm-ed-action-btn sm-p-5-14"
                 data-variant="coral"
-                style={{ padding: "5px 14px" }}
               >
                 Stop
               </button>

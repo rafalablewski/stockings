@@ -751,10 +751,9 @@ const CompanyFeedCard: React.FC<{
               disabled={data.loading}
               aria-label={`AI Fetch ${label} feeds`}
               title="Search for new articles via AI"
-              className="sm-ed-action-btn"
+              className="sm-ed-action-btn sm-p-5-14"
               data-variant="mint"
               data-state={data.loading ? 'loading' : undefined}
-              style={{ padding: '5px 14px' }}
             >
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
                 <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -770,10 +769,9 @@ const CompanyFeedCard: React.FC<{
               disabled={aiChecking ?? false}
               aria-label={`Re-check ${label} tracked/untracked status`}
               title="Re-check tracked/untracked status for all articles (does NOT query seen_articles DB)"
-              className="sm-ed-action-btn"
+              className="sm-ed-action-btn sm-p-5-14"
               data-variant="blue"
               data-state={aiChecking ? 'loading' : undefined}
-              style={{ padding: '5px 14px' }}
             >
               <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
                 <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
