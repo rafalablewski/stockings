@@ -25,36 +25,18 @@ export class FinancialModelErrorBoundary extends Component<ErrorBoundaryProps, E
   render(): ReactNode {
     if (this.state.hasError) {
       return (
-        <div style={{
-          padding: '48px',
-          background: 'linear-gradient(135deg, color-mix(in srgb, var(--coral) 10%, transparent) 0%, color-mix(in srgb, var(--coral) 5%, transparent) 100%)',
-          border: '1px solid color-mix(in srgb, var(--coral) 30%, transparent)',
-          borderRadius: '16px',
-          textAlign: 'center',
-          margin: '24px'
-        }}>
+        <div className="sm-error-boundary">
           <div style={{ fontSize: '48px' }}>⚠️</div>
-          <h2 style={{ color: 'var(--coral)', fontFamily: 'Outfit, sans-serif' }}>
-            Calculation Error
-          </h2>
-          <p style={{ color: 'var(--text2)', fontFamily: 'Outfit, sans-serif' }}>
+          <h2>Calculation Error</h2>
+          <p>
             An error occurred in the financial model. This may be due to invalid input parameters.
           </p>
-          <p style={{ color: 'var(--text2)', fontSize: '14px', fontFamily: 'Space Mono, monospace' }}>
+          <p className="sm-error-detail">
             {this.state.error?.message || 'Unknown error'}
           </p>
           <button
             onClick={() => window.location.reload()}
-            style={{
-              padding: '12px 24px',
-              background: 'var(--cyan)',
-              color: 'var(--bg)',
-              border: 'none',
-              borderRadius: '8px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              fontFamily: 'Outfit, sans-serif'
-            }}
+            className="sm-error-reload"
           >
             Reload Application
           </button>

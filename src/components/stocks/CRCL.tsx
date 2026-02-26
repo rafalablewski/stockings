@@ -727,7 +727,7 @@ const CRCLParameterCard = ({
       <p className="sm-note-list">
         {explanation}
       </p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+      <div className="sm-param-grid-7">
         {options.slice(0, 6).map((opt, idx) => {
           const isActive = value === opt;
           const colors = getButtonColor(idx);
@@ -738,18 +738,13 @@ const CRCLParameterCard = ({
               role="button"
               tabIndex={0}
               onKeyDown={(e) => e.key === 'Enter' && (() => { onChange(opt); setCustomMode(false); })()}
-              style={{
-                padding: '12px 4px',
-                borderRadius: 8,
-                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                background: isActive ? colors.bg : 'var(--surface2)',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-                textAlign: 'center',
-                fontSize: 12,
-                fontWeight: isActive ? 600 : 400,
-                color: isActive ? colors.text : 'var(--text3)',
-              }}
+              className="sm-param-btn"
+              data-active={isActive || undefined}
+              style={isActive ? {
+                borderColor: colors.border,
+                background: colors.bg,
+                color: colors.text,
+              } : undefined}
             >
               {formatValue(opt)}
             </div>
@@ -757,13 +752,7 @@ const CRCLParameterCard = ({
         })}
         {/* Custom input button/field */}
         {customMode ? (
-          <div style={{
-            display: 'flex',
-            borderRadius: 8,
-            border: '2px solid var(--violet)',
-            background: 'color-mix(in srgb, var(--violet) 15%, transparent)',
-            overflow: 'hidden',
-          }}>
+          <div className="sm-custom-input-wrap">
             <input
               type="text"
               value={customInput}
@@ -771,18 +760,7 @@ const CRCLParameterCard = ({
               onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
               placeholder="..."
               autoFocus
-              style={{
-                flex: 1,
-                minWidth: 0,
-                padding: '8px 4px',
-                border: 'none',
-                background: 'transparent',
-                color: 'var(--violet)',
-                fontSize: 12,
-                fontWeight: 600,
-                textAlign: 'center',
-                outline: 'none',
-              }}
+              className="sm-custom-input-field"
             />
           </div>
         ) : (
@@ -792,18 +770,13 @@ const CRCLParameterCard = ({
             tabIndex={0}
             aria-label="Enter custom value"
             onKeyDown={(e) => e.key === 'Enter' && setCustomMode(true)}
-            style={{
-              padding: '12px 4px',
-              borderRadius: 8,
-              border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
-              background: isCustomValue ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'var(--surface2)',
-              cursor: 'pointer',
-              transition: 'all 0.15s',
-              textAlign: 'center',
-              fontSize: 12,
-              fontWeight: isCustomValue ? 600 : 400,
-              color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
-            }}
+            className="sm-param-btn"
+            data-active={isCustomValue || undefined}
+            style={isCustomValue ? {
+              borderColor: 'var(--violet)',
+              background: 'color-mix(in srgb, var(--violet) 15%, transparent)',
+              color: 'var(--violet)',
+            } : undefined}
           >
             {isCustomValue ? formatValue(value) : '...'}
           </div>

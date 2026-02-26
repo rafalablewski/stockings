@@ -868,7 +868,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     <div className="sm-tab-hero">
       <div className="sm-section-label">Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></div>
       <h2>Overview<span className="sm-accent">.</span></h2>
-      <p><strong style={{ color: 'var(--text2)', fontWeight: 500 }}>AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
+      <p><strong className="sm-text2 sm-fw-500">AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
 
     <div className="sm-model-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>

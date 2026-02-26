@@ -6268,4 +6268,1638 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-refresh-icon[data-loading="true"] {
   animation: spin 1s linear infinite;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 33. STOCK-SPECIFIC COMPONENT CLASSES
+
+   Reusable patterns extracted from inline styles in ASTS/BMNR/CRCL .tsx files.
+   These classes replace the highest-frequency inline style patterns:
+   table headers, data grid rows, badges, filter pills, KPI values,
+   key-value pair rows, bullet items, legend items, accent-bar panels,
+   and chart containers.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Table header cell (micro-label in grid header rows) ──────────────── */
+.sm-th {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.sm-th[data-align="right"] { text-align: right; }
+.sm-th[data-align="center"] { text-align: center; }
+
+/* ── Generic grid header row ──────────────────────────────────────────── */
+.sm-grid-header {
+  display: grid;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Generic grid data row (hoverable, bottom-bordered) ───────────────── */
+.sm-grid-row {
+  display: grid;
+  padding: 12px 24px;
+  align-items: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-grid-row:hover { background: var(--surface2); }
+.sm-grid-row:last-child { border-bottom: none; }
+.sm-grid-row[data-highlight="true"] {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+/* ── Padded grid data row (16px vertical padding) ─────────────────────── */
+.sm-grid-row-lg {
+  display: grid;
+  padding: 16px 24px;
+  align-items: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-grid-row-lg:hover { background: var(--surface2); }
+.sm-grid-row-lg:last-child { border-bottom: none; }
+
+/* ── Dynamic badge (uses --badge-color CSS var for color) ─────────────── */
+/* Already have .sm-badge — this adds .sm-badge-dynamic for inline color */
+.sm-badge-dynamic {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 100px;
+  color: var(--badge-color, var(--text3));
+  background: color-mix(in srgb, var(--badge-color, var(--text3)) 10%, transparent);
+}
+.sm-badge-dynamic[data-bold="true"] {
+  font-weight: 700;
+  min-width: 60px;
+  text-align: center;
+  background: color-mix(in srgb, var(--badge-color, var(--text3)) 12%, transparent);
+}
+
+/* ── Filter pill button (partner/category/competitor filters) ─────────── */
+.sm-filter-pill {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Outfit', sans-serif;
+  background: color-mix(in srgb, var(--border) 60%, transparent);
+  color: var(--text3);
+}
+.sm-filter-pill[data-active="true"] {
+  background: color-mix(in srgb, var(--pill-accent, var(--accent)) 15%, transparent);
+  color: var(--pill-accent, var(--accent));
+}
+
+/* ── Pill toggle (chart type selector, scenario selector) ─────────────── */
+.sm-pill-toggle {
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+}
+.sm-pill-toggle[data-active="true"] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+}
+
+/* ── KPI hero value (large monospace number with dynamic color) ────────── */
+.sm-kpi-hero {
+  font-family: 'Space Mono', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+  margin: 8px 0 4px;
+}
+
+/* ── KPI value medium (20px variant) ──────────────────────────────────── */
+.sm-kpi-hero-md {
+  font-family: 'Space Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+}
+
+/* ── Key-value pair row (flex, space-between, light border) ───────────── */
+.sm-kv-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+.sm-kv-row-lg {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+/* ── Monospace value with dynamic color (for kv-rows) ─────────────────── */
+.sm-mono-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--val-color, var(--text));
+}
+.sm-mono-val[data-weight="600"] { font-weight: 600; }
+
+/* ── Bull/bear case bullet item ───────────────────────────────────────── */
+.sm-case-item {
+  display: flex;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+.sm-case-icon {
+  flex-shrink: 0;
+}
+
+/* ── Accent-bar side panel (borderLeft colored bar) ───────────────────── */
+.sm-accent-panel {
+  background: var(--surface);
+  padding: 24px;
+  border-left: 3px solid var(--panel-accent, var(--accent));
+}
+
+/* ── Section title inside accent panel ────────────────────────────────── */
+.sm-accent-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--panel-accent, var(--accent));
+  letter-spacing: -0.2px;
+  margin-bottom: 16px;
+}
+
+/* ── Accent panel note (smaller callout box) ──────────────────────────── */
+.sm-accent-note {
+  background: var(--surface);
+  padding: 24px;
+  border-left: 3px solid var(--panel-accent, var(--accent));
+}
+.sm-accent-note-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--panel-accent, var(--accent));
+  margin-bottom: 8px;
+}
+.sm-accent-note-text {
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* ── Spectrum / status badge (letter-spacing 0.5) ─────────────────────── */
+.sm-status-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  display: inline-block;
+  color: var(--badge-color, var(--sky));
+  background: color-mix(in srgb, var(--badge-color, var(--sky)) 10%, transparent);
+}
+
+/* ── Chart legend row ─────────────────────────────────────────────────── */
+.sm-chart-legend {
+  display: flex;
+  gap: 24px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--text3);
+  flex-wrap: wrap;
+}
+.sm-chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* ── Legend color swatch (small rectangle) ─────────────────────────────── */
+.sm-legend-swatch {
+  width: 8px;
+  height: 3px;
+  border-radius: 1px;
+  background: var(--swatch-color, var(--accent));
+}
+.sm-legend-swatch-sq {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  background: var(--swatch-color, var(--accent));
+}
+
+/* ── Dot indicator (4px circle) ───────────────────────────────────────── */
+.sm-dot-4 {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--dot-color, var(--text3));
+}
+.sm-dot-5 {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--dot-color, var(--text3));
+}
+
+/* ── Data freshness timestamp badge ───────────────────────────────────── */
+.sm-data-freshness {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34,211,238,0.1);
+  border: 1px solid rgba(34,211,238,0.3);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: #22d3ee;
+}
+
+/* ── Refresh button (transparent icon button) ─────────────────────────── */
+.sm-refresh-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  opacity: 0.6;
+}
+.sm-refresh-btn:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+
+/* ── Grid separator (1px gap) with explicit columns ───────────────────── */
+.sm-grid-sep-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+}
+.sm-grid-sep-3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+}
+
+/* ── Grid cell surface (inside 1px gap grids) ─────────────────────────── */
+.sm-cell-surface {
+  background: var(--surface);
+  padding: 16px 24px;
+}
+.sm-cell-surface-center {
+  background: var(--surface);
+  padding: 16px 12px;
+  text-align: center;
+}
+
+/* ── Info note bar (borderTop + padding, subtle background) ───────────── */
+.sm-info-bar {
+  padding: 12px 24px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text2);
+}
+
+/* ── Highlight summary bar (gradient background, accent) ──────────────── */
+.sm-highlight-bar {
+  padding: 16px 24px;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--bar-accent-1, var(--mint)) 8%, var(--surface)),
+    color-mix(in srgb, var(--bar-accent-2, var(--violet)) 8%, var(--surface)));
+  border-top: 1px solid var(--border);
+}
+
+/* ── Partner news event card ──────────────────────────────────────────── */
+.sm-news-card {
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+  cursor: pointer;
+  border-left: 3px solid var(--news-accent, var(--sky));
+  transition: all 0.2s;
+}
+
+/* ── News mini badge (inline tag) ─────────────────────────────────────── */
+.sm-news-tag {
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--tag-color, var(--cyan));
+  background: color-mix(in srgb, var(--tag-color, var(--cyan)) 20%, transparent);
+}
+
+/* ── Empty state (centered message) ───────────────────────────────────── */
+.sm-empty-state {
+  padding: 24px;
+  text-align: center;
+  color: var(--text3);
+}
+
+/* ── Inline note box (rounded, muted background) ─────────────────────── */
+.sm-inline-note {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--border) 30%, transparent);
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.5;
+}
+
+/* ── Callout panel with border-left accent ────────────────────────────── */
+.sm-callout {
+  padding: 16px 24px;
+  border-left: 3px solid var(--callout-color, var(--violet));
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text3);
+  line-height: 1.6;
+}
+
+/* ── Chart bar column (vertical bar chart built with divs) ────────────── */
+.sm-bar-chart {
+  padding: 24px 24px 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+.sm-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+.sm-bar-col-label {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.sm-bar-col-foot {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* ── Coverage progress row ────────────────────────────────────────────── */
+.sm-coverage-row {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── KPI category label (below count in catalyst cards) ───────────────── */
+.sm-kpi-category {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 4px;
+  color: var(--kpi-color, var(--text3));
+}
+
+/* ── Overflow auto wrapper (for tables) ───────────────────────────────── */
+.sm-overflow-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Border-left accent on spectrum/filing items ──────────────────────── */
+.sm-border-l-accent {
+  border-left: 3px solid var(--panel-accent, var(--accent));
+  transition: background 0.15s;
+}
+
+/* ── Spectrum detail grid (4-col repeat) ──────────────────────────────── */
+.sm-detail-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+/* ── Detail field label ───────────────────────────────────────────────── */
+.sm-detail-label {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.sm-detail-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: 2px;
+}
+
+/* ── Note panel (background + rounded + fontSize 11) ──────────────────── */
+.sm-note-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 8px;
+  padding: 12px 24px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* ── SBC stat card ────────────────────────────────────────────────────── */
+.sm-stat-card {
+  background: var(--surface2);
+  padding: 12px;
+  border-radius: 12px;
+}
+.sm-stat-card-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--stat-color, var(--accent));
+}
+
+/* ── Responsive overrides for § 33 classes ────────────────────────────── */
+@media (max-width: 768px) {
+  .sm-grid-header { padding: 10px 16px; }
+  .sm-grid-row { padding: 10px 16px; }
+  .sm-grid-row-lg { padding: 12px 16px; }
+  .sm-th { font-size: 9px; letter-spacing: 0.5px; }
+  .sm-kpi-hero { font-size: 20px; }
+  .sm-kpi-hero-md { font-size: 16px; }
+  .sm-accent-panel { padding: 16px; }
+  .sm-cell-surface { padding: 12px 16px; }
+  .sm-bar-chart { padding: 16px 16px 0; }
+  .sm-callout { padding: 12px 16px; }
+  .sm-detail-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .sm-grid-sep-2col { grid-template-columns: 1fr; }
+  .sm-grid-sep-3col { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .sm-grid-header { padding: 8px 12px; }
+  .sm-grid-row { padding: 8px 12px; }
+  .sm-grid-row-lg { padding: 10px 12px; }
+  .sm-kpi-hero { font-size: 18px; }
+  .sm-kpi-hero-md { font-size: 14px; }
+  .sm-accent-panel { padding: 12px; }
+  .sm-filter-pill { font-size: 9px; padding: 3px 10px; }
+  .sm-pill-toggle { font-size: 10px; padding: 3px 10px; }
+  .sm-stat-card-value { font-size: 16px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   § 35. CRCL STOCK-SPECIFIC CLASSES
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Parameter preset button (6-color gradient buttons in model/MC tabs) */
+.sm-param-btn {
+  padding: 12px 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text3);
+}
+.sm-param-btn[data-active="true"] {
+  font-weight: 600;
+  border-width: 2px;
+}
+
+/* Custom value input wrapper (violet-bordered) */
+.sm-custom-input-wrap {
+  display: flex;
+  border-radius: 8px;
+  border: 2px solid var(--violet);
+  background: color-mix(in srgb, var(--violet) 15%, transparent);
+  overflow: hidden;
+}
+.sm-custom-input-field {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  color: var(--violet);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+}
+
+/* 7-column parameter grid (6 presets + 1 custom) */
+.sm-param-grid-7 {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+/* 6-column parameter grid (MC options) */
+.sm-param-grid-6 {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+
+/* Section toggle header (collapsible panels in investment tab) */
+.sm-section-toggle {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Data freshness badge (hero area) */
+.sm-data-freshness {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--mint) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mint) 30%, transparent);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: #34d399;
+}
+
+/* Tinted info box (assessment, moat, risk panels) - set --tint-color */
+.sm-tinted-box {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--tint-color, var(--accent)) 20%, transparent);
+  background: color-mix(in srgb, var(--tint-color, var(--accent)) 10%, transparent);
+}
+
+/* Tinted info box - no border variant */
+.sm-tinted-box-nb {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--tint-color, var(--accent)) 10%, transparent);
+}
+
+/* Surface2 rounded card (events, metrics) */
+.sm-surface2-card {
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-radius: 12px;
+}
+
+/* Surface2 rounded card - padded variant */
+.sm-surface2-card-lg {
+  padding: 24px;
+  background: var(--surface2);
+  border-radius: 12px;
+}
+
+/* KPI separator grid (1px border grid) */
+.sm-kpi-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* KPI separator grid - 3 col */
+.sm-kpi-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* Perspective badge (pill on perspective cards) */
+.sm-perspective-badge {
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--bg);
+}
+
+/* Scenario preset button grid (6 columns) */
+.sm-scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+/* Year/sim toggle button */
+.sm-toggle-btn {
+  padding: 8px 16px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.sm-toggle-btn[data-active="true"] {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* MC run button */
+.sm-run-btn {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--accent);
+  color: var(--bg1);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.15s;
+}
+
+/* Table header row (MC percentile/risk tables) */
+.sm-table-header {
+  display: grid;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* Table data row (MC percentile/risk tables) */
+.sm-table-row {
+  display: grid;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  cursor: default;
+}
+
+/* Panel with surface2 background and border */
+.sm-bordered-panel {
+  background: color-mix(in srgb, var(--surface2) 60%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+/* Comps section panel title (fontSize 13, fw 600) */
+.sm-comps-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+/* Comps metric big number */
+.sm-comps-big-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+/* Competitor filter pill button */
+.sm-pill-btn {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sm-pill-btn[data-active="true"] {
+  border-color: var(--pill-color, var(--violet));
+  background: color-mix(in srgb, var(--pill-color, var(--violet)) 15%, transparent);
+  color: var(--pill-color, var(--violet));
+}
+
+/* Competitor news clear button */
+.sm-pill-clear-btn {
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--coral) 15%, transparent);
+  color: var(--coral);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Competitor news item row */
+.sm-news-item {
+  padding: 16px 24px;
+  cursor: pointer;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-news-item:last-child {
+  border-bottom: none;
+}
+
+/* Competitor profile card */
+.sm-comp-profile-card {
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+/* List with no default styling */
+.sm-list-clean {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Expand/collapse all button (minimal style) */
+.sm-expand-collapse-btn {
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+/* Card section header with border-bottom */
+.sm-card-section-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* SEC filing type badge */
+.sm-sec-type-badge {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Timeline verdict label */
+.sm-verdict-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+/* Timeline detail info cell */
+.sm-tl-info-cell {
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+/* Thesis comparison box */
+.sm-thesis-box {
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--mint) 5%, var(--surface));
+  border-radius: 12px;
+  border-left: 3px solid var(--mint);
+  margin-top: 12px;
+}
+
+/* Thesis comparison label */
+.sm-thesis-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--mint);
+  margin-bottom: 4px;
+}
+
+/* SM mono value with Space Mono */
+.sm-mono-value {
+  font-family: 'Space Mono', monospace;
+  font-weight: 600;
+}
+
+/* Projection table grid rows */
+.sm-proj-grid-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.sm-proj-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* H4-style section heading (no margin top) */
+.sm-h4-heading {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 0;
+}
+
+/* Surface2 padded row (reserve yield, RLDC margin stats) */
+.sm-surface2-row {
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+}
+
+/* Mono large value display */
+.sm-mono-lg-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 18px;
+}
+
+/* Compact news category/competitor micro badge */
+.sm-micro-badge {
+  padding: 1px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+}
+
+/* Footer/metadata section with top border */
+.sm-footer-meta {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 34. BMNR STOCK-SPECIFIC CLASSES
+   Patterns extracted from BMNR.tsx inline styles for reuse.
+   Prefixed with "sm-bmnr-" to avoid collision with existing classes.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Data Freshness Badge (hero header) ─────────────────────────────────── */
+.sm-bmnr-freshness-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(167,139,250,0.1);
+  border: 1px solid rgba(167,139,250,0.3);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  color: #a78bfa;
+}
+.sm-bmnr-freshness-sep { color: rgba(167,139,250,0.5); }
+
+/* ── Refresh Button (hero price area) ───────────────────────────────────── */
+.sm-bmnr-refresh-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  opacity: 0.6;
+}
+.sm-bmnr-refresh-btn[data-loading="true"] { cursor: wait; opacity: 0.5; }
+
+/* ── Parameter Panel (card wrapper for BMNRParameterCard) ────────────────── */
+.sm-bmnr-param-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 12px;
+}
+.sm-bmnr-param-panel[data-disabled="true"] { opacity: 0.6; }
+
+/* ── Parameter Grid (7-column button row) ────────────────────────────────── */
+.sm-bmnr-param-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.sm-bmnr-param-grid[data-disabled="true"] { pointer-events: none; }
+
+/* ── Parameter Button (preset value selector) ────────────────────────────── */
+.sm-bmnr-param-btn {
+  padding: 12px 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text3);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Outfit', sans-serif;
+}
+.sm-bmnr-param-btn[data-active="true"] {
+  border: 2px solid var(--btn-color, var(--violet));
+  background: color-mix(in srgb, var(--btn-color, var(--violet)) 15%, transparent);
+  color: var(--btn-color, var(--violet));
+  font-weight: 600;
+}
+.sm-bmnr-param-btn[data-disabled="true"] { cursor: default; }
+
+/* ── Custom Input Wrapper ────────────────────────────────────────────────── */
+.sm-bmnr-custom-wrap {
+  display: flex;
+  border-radius: 8px;
+  border: 2px solid var(--violet);
+  background: rgba(167,139,250,0.15);
+  overflow: hidden;
+}
+.sm-bmnr-custom-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  color: var(--violet);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+}
+
+/* ── Scale Label (← Bearish | Bullish →) ─────────────────────────────────── */
+.sm-bmnr-scale-label {
+  font-size: 11px;
+  color: var(--text3);
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* ── Scenario Preset Grid (6-column) ─────────────────────────────────────── */
+.sm-bmnr-scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+/* ── Scenario Preset Cell ────────────────────────────────────────────────── */
+.sm-bmnr-scenario-cell {
+  padding: 16px 8px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  border-bottom: 2px solid transparent;
+}
+.sm-bmnr-scenario-cell[data-active="true"] {
+  background: color-mix(in srgb, var(--scenario-color) 8%, var(--surface));
+  border-bottom-color: var(--scenario-color);
+}
+
+/* ── Custom Scenario Notice ──────────────────────────────────────────────── */
+.sm-bmnr-custom-notice {
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--violet) 8%, transparent);
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--violet);
+  margin-top: 8px;
+}
+
+/* ── Mode Toggle Card (current vs growth) ────────────────────────────────── */
+.sm-bmnr-mode-card {
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.sm-bmnr-mode-card[data-active="true"] {
+  border: 2px solid var(--mode-color, var(--mint));
+  background: color-mix(in srgb, var(--mode-color, var(--mint)) 10%, transparent);
+}
+
+/* ── Mode Icon / Label ───────────────────────────────────────────────────── */
+.sm-bmnr-mode-icon { font-size: 20px; margin-bottom: 4px; }
+.sm-bmnr-mode-label { font-weight: 600; font-size: 13px; }
+
+/* ── Mode Status Banner ──────────────────────────────────────────────────── */
+.sm-bmnr-mode-status {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--text3);
+  border: 1px solid var(--border);
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sm-bmnr-mode-status[data-mode="current"] {
+  background: rgba(52,211,153,0.1);
+  border-color: rgba(52,211,153,0.3);
+}
+.sm-bmnr-mode-status[data-mode="growth"] {
+  background: rgba(34,211,238,0.1);
+  border-color: rgba(34,211,238,0.3);
+}
+
+/* ── KPI Value Sizes (Space Mono) ────────────────────────────────────────── */
+.sm-bmnr-kpi-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+  margin: 6px 0 4px;
+}
+.sm-bmnr-kpi-val-lg {
+  font-family: 'Space Mono', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+  margin: 6px 0 2px;
+}
+.sm-bmnr-kpi-val-xl {
+  font-family: 'Space Mono', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+  margin: 8px 0 4px;
+}
+
+/* ── Accent Hero KPI Grid (2-col) ────────────────────────────────────────── */
+.sm-bmnr-hero-kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: color-mix(in srgb, var(--accent) 30%, var(--border));
+  border-radius: 16px;
+  overflow: hidden;
+}
+.sm-bmnr-hero-kpi-cell {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  padding: 24px 16px;
+  text-align: center;
+}
+
+/* ── Key Assumptions Box ─────────────────────────────────────────────────── */
+.sm-bmnr-assumptions {
+  padding: 16px;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.7;
+  margin-top: 16px;
+  border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+/* ── Step Badge (methodology) ────────────────────────────────────────────── */
+.sm-bmnr-step-badge {
+  color: var(--bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Space Mono', monospace;
+  background: var(--step-color, var(--accent));
+}
+
+/* ── Methodology Result Value ────────────────────────────────────────────── */
+.sm-bmnr-method-result {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--result-color, var(--accent));
+  flex-shrink: 0;
+}
+
+/* ── Method Formula ──────────────────────────────────────────────────────── */
+.sm-bmnr-formula {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── List Reset (margin:0, paddingLeft) ──────────────────────────────────── */
+.sm-bmnr-list-reset { margin: 0; padding-left: 16px; }
+.sm-bmnr-list-reset-20 { margin: 0; padding-left: 20px; }
+
+/* ── Year / Scenario Selector Buttons ────────────────────────────────────── */
+.sm-bmnr-year-btn {
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+  cursor: pointer;
+  font-weight: 400;
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  transition: all 0.15s;
+  outline: none;
+}
+.sm-bmnr-year-btn[data-active="true"] {
+  border: 2px solid var(--btn-color, var(--mint));
+  background: color-mix(in srgb, var(--btn-color, var(--mint)) 15%, transparent);
+  color: var(--btn-color, var(--mint));
+  font-weight: 700;
+}
+.sm-bmnr-scenario-btn {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+  cursor: pointer;
+  font-weight: 400;
+  font-size: 14px;
+  transition: all 0.15s;
+  font-family: 'Outfit', sans-serif;
+  outline: none;
+}
+.sm-bmnr-scenario-btn[data-active="true"] {
+  border: 2px solid var(--btn-color);
+  background: color-mix(in srgb, var(--btn-color) 13%, transparent);
+  color: var(--btn-color);
+  font-weight: 700;
+}
+
+/* ── Scenario Detail Card ────────────────────────────────────────────────── */
+.sm-bmnr-scenario-detail {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  border-left: 4px solid var(--scenario-color, var(--accent));
+  padding: 24px;
+}
+
+/* ── Return / Sentiment Text ─────────────────────────────────────────────── */
+.sm-bmnr-return-text { font-size: 12px; }
+.sm-bmnr-return-text[data-sentiment="positive"] { color: var(--mint); }
+.sm-bmnr-return-text[data-sentiment="negative"] { color: var(--coral); }
+
+/* ── Staking Strategy Cell ───────────────────────────────────────────────── */
+.sm-bmnr-staking-cell {
+  background: var(--surface);
+  padding: 24px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-bottom: 3px solid transparent;
+}
+.sm-bmnr-staking-cell[data-active="true"] {
+  background: color-mix(in srgb, var(--violet) 8%, var(--surface));
+  border-bottom-color: var(--violet);
+}
+
+/* ── Mono APY Display ────────────────────────────────────────────────────── */
+.sm-bmnr-apy-display {
+  font-family: 'Space Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--mint);
+}
+
+/* ── Small Desc Text ─────────────────────────────────────────────────────── */
+.sm-bmnr-desc-sm { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+
+/* ── Multi-Tranche Row ───────────────────────────────────────────────────── */
+.sm-bmnr-tranche-row {
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s;
+  background: var(--surface);
+  opacity: 0.5;
+}
+.sm-bmnr-tranche-row[data-enabled="true"] {
+  background: color-mix(in srgb, var(--violet) 3%, var(--surface));
+  opacity: 1;
+}
+.sm-bmnr-tranche-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  flex: 1;
+}
+
+/* ── Factor Card (left-border accent) ────────────────────────────────────── */
+.sm-bmnr-factor-card {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  border-left: 3px solid var(--factor-color, var(--accent));
+}
+.sm-bmnr-factor-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--factor-color, var(--accent));
+}
+
+/* ── Row Item (flex-between with border-bottom) ──────────────────────────── */
+.sm-bmnr-row-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+.sm-bmnr-row-item-sm {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+/* ── Stress Scenario Cell ────────────────────────────────────────────────── */
+.sm-bmnr-stress-cell {
+  padding: 24px 16px;
+  text-align: center;
+  background: var(--surface);
+}
+.sm-bmnr-stress-cell[data-safe="true"] {
+  background: color-mix(in srgb, var(--mint) 3%, var(--surface));
+}
+.sm-bmnr-stress-cell[data-danger="true"] {
+  background: color-mix(in srgb, var(--coral) 3%, var(--surface));
+}
+
+/* ── LTV Cell + Breach ───────────────────────────────────────────────────── */
+.sm-bmnr-ltv-cell {
+  padding: 24px 12px;
+  text-align: center;
+  background: var(--surface);
+}
+.sm-bmnr-ltv-cell[data-breach="true"] {
+  background: color-mix(in srgb, var(--coral) 5%, var(--surface));
+}
+.sm-bmnr-breach-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--coral);
+  text-transform: uppercase;
+}
+
+/* ── Micro Label Override (no uppercase/spacing) ─────────────────────────── */
+.sm-bmnr-micro-plain {
+  letter-spacing: normal;
+  text-transform: none;
+  font-weight: 400;
+}
+
+/* ── Capital Summary Banner ──────────────────────────────────────────────── */
+.sm-bmnr-capital-summary {
+  padding: 16px 24px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--mint) 8%, var(--surface)), color-mix(in srgb, var(--violet) 8%, var(--surface)));
+  border-top: 1px solid var(--border);
+}
+
+/* ── Caveats Box ─────────────────────────────────────────────────────────── */
+.sm-bmnr-caveats { padding: 16px; background: var(--surface2); border-radius: 8px; }
+.sm-bmnr-caveats-list {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text3);
+  line-height: 1.8;
+  font-size: 13px;
+}
+
+/* ── Analyst Card (ETH tab) ──────────────────────────────────────────────── */
+.sm-bmnr-analyst-card {
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+  border-left: 3px solid var(--card-accent, var(--mint));
+}
+.sm-bmnr-analyst-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--badge-accent, var(--mint)) 20%, transparent);
+  color: var(--badge-accent, var(--mint));
+}
+.sm-bmnr-analyst-summary {
+  padding: 12px;
+  background: var(--surface);
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* ── Investment Case Banner ──────────────────────────────────────────────── */
+.sm-bmnr-invest-banner {
+  padding: 12px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--mint) 15%, transparent), color-mix(in srgb, var(--violet) 15%, transparent));
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+/* ── Roadmap Item ────────────────────────────────────────────────────────── */
+.sm-bmnr-roadmap-item {
+  padding: 16px 24px;
+  border-left: 3px solid var(--impact-color, var(--sky));
+  transition: background 0.15s;
+}
+.sm-bmnr-roadmap-item:hover { background: var(--surface2); }
+
+/* ── Status / Date Pills ─────────────────────────────────────────────────── */
+.sm-bmnr-status-pill {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  letter-spacing: 0.3px;
+}
+.sm-bmnr-status-pill[data-status="Complete"] { background: color-mix(in srgb, var(--mint) 15%, transparent); color: var(--mint); }
+.sm-bmnr-status-pill[data-status="Development"] { background: color-mix(in srgb, var(--sky) 15%, transparent); color: var(--sky); }
+.sm-bmnr-status-pill[data-status="Planning"],
+.sm-bmnr-status-pill[data-status="Exploratory"] { background: color-mix(in srgb, var(--violet) 15%, transparent); color: var(--violet); }
+.sm-bmnr-date-pill {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  background: color-mix(in srgb, var(--border) 60%, transparent);
+  color: var(--text3);
+}
+
+/* ── News Filter Pill ────────────────────────────────────────────────────── */
+.sm-bmnr-filter-pill {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+  outline: none;
+}
+.sm-bmnr-filter-pill[data-active="true"] {
+  border-color: var(--pill-color, var(--sky));
+  background: color-mix(in srgb, var(--pill-color, var(--sky)) 15%, transparent);
+  color: var(--pill-color, var(--sky));
+}
+.sm-bmnr-clear-btn {
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--coral) 15%, transparent);
+  color: var(--coral);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ── News Row ────────────────────────────────────────────────────────────── */
+.sm-bmnr-news-row {
+  padding: 16px 24px;
+  cursor: pointer;
+  border-left: 3px solid var(--news-accent, var(--violet));
+  transition: background 0.15s;
+}
+.sm-bmnr-news-row:hover { background: var(--surface2); }
+
+/* ── Category / Company Badge ────────────────────────────────────────────── */
+.sm-bmnr-cat-badge[data-type="category"] {
+  background: color-mix(in srgb, var(--violet) 12%, transparent);
+  color: var(--violet);
+}
+.sm-bmnr-cat-badge[data-type="company"] {
+  background: color-mix(in srgb, var(--sky) 12%, transparent);
+  color: var(--sky);
+}
+
+/* ── News Impact Value ───────────────────────────────────────────────────── */
+.sm-bmnr-impact-val {
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  margin-left: 12px;
+  white-space: nowrap;
+}
+
+/* ── News Detail Section ─────────────────────────────────────────────────── */
+.sm-bmnr-news-detail {
+  padding-top: 16px;
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Insight Card (significance / implication) ───────────────────────────── */
+.sm-bmnr-insight-card {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border-left: 3px solid var(--insight-color, var(--violet));
+  background: color-mix(in srgb, var(--insight-color, var(--violet)) 5%, var(--surface));
+  margin-top: 8px;
+}
+
+/* ── Source Text ──────────────────────────────────────────────────────────── */
+.sm-bmnr-source-text {
+  font-size: 10px;
+  color: var(--text3);
+  font-family: 'Space Mono', monospace;
+  margin-top: 8px;
+}
+
+/* ── SEC Meta Section ────────────────────────────────────────────────────── */
+.sm-bmnr-sec-meta { padding-top: 12px; border-top: 1px solid var(--border); }
+.sm-bmnr-sec-meta-row { display: flex; gap: 24px; flex-wrap: wrap; font-size: 12px; }
+.sm-bmnr-sec-meta-sub { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 8px; }
+
+/* ── Catalyst Tracker ────────────────────────────────────────────────────── */
+.sm-bmnr-catalyst-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--surface2);
+}
+.sm-bmnr-catalyst-row[data-complete="true"] {
+  background: color-mix(in srgb, var(--mint) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mint) 40%, transparent);
+}
+
+/* ── PR Item ─────────────────────────────────────────────────────────────── */
+.sm-bmnr-pr-item {
+  padding: 12px 16px;
+  background: var(--surface2);
+  border-radius: 12px;
+}
+
+/* ── Event Heading ───────────────────────────────────────────────────────── */
+.sm-bmnr-event-heading {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sm-bmnr-event-count { font-size: 13px; font-weight: 400; color: var(--text3); }
+
+/* ── Changes Table ───────────────────────────────────────────────────────── */
+.sm-bmnr-changes-header {
+  display: grid;
+  grid-template-columns: 1fr 100px 100px 120px;
+  border-bottom: 1px solid var(--border);
+}
+.sm-bmnr-changes-th {
+  padding: 8px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+  background: var(--surface2);
+}
+.sm-bmnr-changes-th[data-align="right"] { text-align: right; }
+.sm-bmnr-changes-row {
+  display: grid;
+  grid-template-columns: 1fr 100px 100px 120px;
+  transition: background 0.15s;
+}
+.sm-bmnr-changes-row:hover { background: var(--surface2); }
+.sm-bmnr-changes-cell { padding: 8px 12px; font-size: 12px; }
+.sm-bmnr-changes-cell[data-type="mono"] {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  text-align: right;
+}
+
+/* ── Event Note Box ──────────────────────────────────────────────────────── */
+.sm-bmnr-event-note {
+  padding: 12px;
+  background: var(--surface2);
+  border-radius: 12px;
+  font-style: italic;
+  color: var(--text3);
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ── Impact Label ────────────────────────────────────────────────────────── */
+.sm-bmnr-impact-label { font-size: 11px; font-weight: 600; text-align: right; }
+.sm-bmnr-impact-label[data-impact="positive"] { color: var(--mint); }
+.sm-bmnr-impact-label[data-impact="negative"] { color: var(--coral); }
+.sm-bmnr-impact-label[data-impact="neutral"] { color: var(--text3); }
+
+/* ── Expand Chevron ──────────────────────────────────────────────────────── */
+.sm-bmnr-chevron {
+  font-size: 12px;
+  color: var(--text3);
+  text-align: center;
+  transition: transform 0.2s;
+}
+.sm-bmnr-chevron[data-expanded="true"] { transform: rotate(180deg); }
+
+/* ── Explain Section ─────────────────────────────────────────────────────── */
+.sm-bmnr-explain-heading { color: var(--violet); font-weight: 500; margin-bottom: 8px; }
+.sm-bmnr-explain-list {
+  display: flex;
+  flex-direction: column;
+  color: var(--text2);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sm-bmnr-explain-list[data-gap="8"] { gap: 8px; }
+.sm-bmnr-explain-list[data-gap="4"] { gap: 4px; }
+
+/* ── Bull/Bear Case Item ─────────────────────────────────────────────────── */
+.sm-bmnr-case-item {
+  display: flex;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+.sm-bmnr-case-icon { flex-shrink: 0; }
+
+/* ── Panel Header / Body (overview chart card) ───────────────────────────── */
+.sm-bmnr-panel-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sm-bmnr-panel-body { padding: 24px 24px 0; overflow-x: auto; }
+
+/* ── Bar Chart ───────────────────────────────────────────────────────────── */
+.sm-bmnr-bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 200px; }
+.sm-bmnr-bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 56px; }
+.sm-bmnr-bar { width: 100%; background: var(--accent); border-radius: 4px 4px 0 0; transition: height 0.3s; }
+.sm-bmnr-bar-label { font-size: 10px; color: var(--text3); margin-top: 4px; text-align: center; }
+
+/* ── Disabled Overlay ────────────────────────────────────────────────────── */
+.sm-bmnr-disabled-overlay[data-disabled="true"] { opacity: 0.4; pointer-events: none; }
+
+/* ── § 34 Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sm-bmnr-param-grid { grid-template-columns: repeat(4, 1fr); }
+  .sm-bmnr-scenario-grid { grid-template-columns: repeat(3, 1fr); }
+  .sm-bmnr-hero-kpi-grid { grid-template-columns: 1fr; }
+  .sm-bmnr-bar-chart { height: 160px; }
+  .sm-bmnr-bar-col { min-width: 44px; }
+  .sm-bmnr-panel-header { padding: 16px; }
+  .sm-bmnr-panel-body { padding: 16px 16px 0; }
+  .sm-bmnr-tranche-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .sm-bmnr-changes-header, .sm-bmnr-changes-row { grid-template-columns: 1fr 80px 80px 100px; }
+  .sm-bmnr-kpi-val-xl { font-size: 20px; }
+}
+@media (max-width: 480px) {
+  .sm-bmnr-param-grid { grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .sm-bmnr-scenario-grid { grid-template-columns: repeat(2, 1fr); }
+  .sm-bmnr-kpi-val { font-size: 16px; }
+  .sm-bmnr-kpi-val-lg { font-size: 18px; }
+  .sm-bmnr-kpi-val-xl { font-size: 18px; }
+  .sm-bmnr-param-panel { padding: 16px; }
+  .sm-bmnr-tranche-row { padding: 12px; gap: 10px; flex-direction: column; }
+  .sm-bmnr-tranche-grid { grid-template-columns: 1fr 1fr; }
+  .sm-bmnr-changes-header, .sm-bmnr-changes-row { grid-template-columns: 1fr 60px 60px 80px; }
+  .sm-bmnr-news-row { padding: 12px 16px; }
+}
 `;
