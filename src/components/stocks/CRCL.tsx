@@ -727,7 +727,7 @@ const CRCLParameterCard = ({
       <p className="sm-note-list">
         {explanation}
       </p>
-      <div className="sm-param-grid-7">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
         {options.slice(0, 6).map((opt, idx) => {
           const isActive = value === opt;
           const colors = getButtonColor(idx);
@@ -738,13 +738,18 @@ const CRCLParameterCard = ({
               role="button"
               tabIndex={0}
               onKeyDown={(e) => e.key === 'Enter' && (() => { onChange(opt); setCustomMode(false); })()}
-              className="sm-param-btn"
-              data-active={isActive || undefined}
-              style={isActive ? {
-                borderColor: colors.border,
-                background: colors.bg,
-                color: colors.text,
-              } : undefined}
+              style={{
+                padding: '12px 4px',
+                borderRadius: 8,
+                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                background: isActive ? colors.bg : 'var(--surface2)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                textAlign: 'center',
+                fontSize: 12,
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? colors.text : 'var(--text3)',
+              }}
             >
               {formatValue(opt)}
             </div>
@@ -752,7 +757,13 @@ const CRCLParameterCard = ({
         })}
         {/* Custom input button/field */}
         {customMode ? (
-          <div className="sm-custom-input-wrap">
+          <div style={{
+            display: 'flex',
+            borderRadius: 8,
+            border: '2px solid var(--violet)',
+            background: 'color-mix(in srgb, var(--violet) 15%, transparent)',
+            overflow: 'hidden',
+          }}>
             <input
               type="text"
               value={customInput}
@@ -760,7 +771,18 @@ const CRCLParameterCard = ({
               onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
               placeholder="..."
               autoFocus
-              className="sm-custom-input-field"
+              style={{
+                flex: 1,
+                minWidth: 0,
+                padding: '8px 4px',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--violet)',
+                fontSize: 12,
+                fontWeight: 600,
+                textAlign: 'center',
+                outline: 'none',
+              }}
             />
           </div>
         ) : (
@@ -770,13 +792,18 @@ const CRCLParameterCard = ({
             tabIndex={0}
             aria-label="Enter custom value"
             onKeyDown={(e) => e.key === 'Enter' && setCustomMode(true)}
-            className="sm-param-btn"
-            data-active={isCustomValue || undefined}
-            style={isCustomValue ? {
-              borderColor: 'var(--violet)',
-              background: 'color-mix(in srgb, var(--violet) 15%, transparent)',
-              color: 'var(--violet)',
-            } : undefined}
+            style={{
+              padding: '12px 4px',
+              borderRadius: 8,
+              border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
+              background: isCustomValue ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'var(--surface2)',
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+              textAlign: 'center',
+              fontSize: 12,
+              fontWeight: isCustomValue ? 600 : 400,
+              color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
+            }}
           >
             {isCustomValue ? formatValue(value) : '...'}
           </div>
@@ -843,7 +870,7 @@ const OverviewParameterCard = ({
       <p className="sm-note-list">
         {explanation}
       </p>
-      <div className="sm-param-grid-7">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
         {options.slice(0, 6).map((opt, idx) => {
           const isActive = value === opt;
           const isCurrent = currentValue !== undefined && opt === currentValue;
@@ -855,14 +882,20 @@ const OverviewParameterCard = ({
               role="button"
               tabIndex={0}
               onKeyDown={(e) => e.key === 'Enter' && (() => { onChange(opt); setCustomMode(false); })()}
-              className="sm-param-btn sm-relative"
-              data-active={isActive || undefined}
-              style={isActive ? {
-                borderColor: colors.border,
-                background: colors.bg,
-                color: colors.text,
+              style={{
+                padding: '12px 4px',
+                borderRadius: 8,
+                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
+                background: isActive ? colors.bg : 'var(--surface2)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                textAlign: 'center',
+                fontSize: 12,
+                fontWeight: isActive ? 600 : 400,
+                color: isActive ? colors.text : 'var(--text3)',
+                position: 'relative',
                 overflow: 'hidden',
-              } : { overflow: 'hidden' }}
+              }}
             >
               {formatValue(opt)}
             </div>
@@ -870,7 +903,13 @@ const OverviewParameterCard = ({
         })}
         {/* Custom input button/field */}
         {customMode ? (
-          <div className="sm-custom-input-wrap">
+          <div style={{
+            display: 'flex',
+            borderRadius: 8,
+            border: '2px solid var(--violet)',
+            background: 'color-mix(in srgb, var(--violet) 15%, transparent)',
+            overflow: 'hidden',
+          }}>
             <input
               type="text"
               value={customInput}
@@ -878,7 +917,18 @@ const OverviewParameterCard = ({
               onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
               placeholder="..."
               autoFocus
-              className="sm-custom-input-field"
+              style={{
+                flex: 1,
+                minWidth: 0,
+                padding: '8px 4px',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--violet)',
+                fontSize: 12,
+                fontWeight: 600,
+                textAlign: 'center',
+                outline: 'none',
+              }}
             />
           </div>
         ) : (
@@ -888,19 +938,24 @@ const OverviewParameterCard = ({
             tabIndex={0}
             aria-label="Enter custom value"
             onKeyDown={(e) => e.key === 'Enter' && setCustomMode(true)}
-            className="sm-param-btn"
-            data-active={isCustomValue || undefined}
-            style={isCustomValue ? {
-              borderColor: 'var(--violet)',
-              background: 'color-mix(in srgb, var(--violet) 15%, transparent)',
-              color: 'var(--violet)',
-            } : undefined}
+            style={{
+              padding: '12px 4px',
+              borderRadius: 8,
+              border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
+              background: isCustomValue ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'var(--surface2)',
+              cursor: 'pointer',
+              transition: 'all 0.15s',
+              textAlign: 'center',
+              fontSize: 12,
+              fontWeight: isCustomValue ? 600 : 400,
+              color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
+            }}
           >
             {isCustomValue ? formatValue(value) : '...'}
           </div>
         )}
       </div>
-      <div className="sm-subtle-sm sm-text-center sm-mt-4">
+      <div className="sm-subtle-sm sm-text-center" style={{ marginTop: 6 }}>
         ← Bearish | Bullish →
       </div>
     </div>
@@ -1038,8 +1093,8 @@ const CRCLModelTab = ({
 
         {/* Scenario Presets - 6 scenarios from Worst to Moon */}
         <div className="sm-panel" style={{ borderRadius: 14 }}>
-          <div className="sm-panel-title sm-mb-12">Scenario Presets</div>
-          <div className="sm-scenario-grid" style={{ gap: 1, background: 'var(--border)', borderRadius: 10, overflow: 'hidden' }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Scenario Presets</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 10, overflow: 'hidden' }}>
             {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
               const preset = CRCL_SCENARIO_PRESETS[s];
               const isActive = selectedScenario === s;
@@ -1051,17 +1106,20 @@ const CRCLModelTab = ({
                   tabIndex={0}
                   aria-label={`${preset.label} scenario`}
                   onKeyDown={(e) => e.key === 'Enter' && applyScenario(s)}
-                  className="sm-p-12 sm-bg-surface sm-pointer sm-transition sm-text-center"
                   style={{
-                    background: isActive ? `${preset.color}15` : undefined,
+                    padding: 12,
+                    background: isActive ? `${preset.color}15` : 'var(--surface)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    textAlign: 'center',
                     borderBottom: isActive ? `2px solid ${preset.color}` : '2px solid transparent',
                   }}
                 >
-                  <div className="sm-text-20">{preset.icon}</div>
-                  <div className="sm-fw-600" style={{ fontSize: 13, color: isActive ? preset.color : 'var(--text)' }}>
+                  <div style={{ fontSize: 20 }}>{preset.icon}</div>
+                  <div style={{ fontWeight: 600, fontSize: 13, color: isActive ? preset.color : 'var(--text)' }}>
                     {preset.label}
                   </div>
-                  <div className="sm-text3 sm-text-10" style={{ lineHeight: 1.3 }}>
+                  <div style={{ fontSize: 10, color: 'var(--text3)', lineHeight: 1.3 }}>
                     {preset.usdcGrowthRate > 0 ? '+' : ''}{preset.usdcGrowthRate}% · {preset.reserveYield}%
                   </div>
                 </div>
@@ -1069,7 +1127,7 @@ const CRCLModelTab = ({
             })}
           </div>
           {/* Always show to prevent layout shift */}
-          <div className="sm-tinted-box-nb sm-rounded-8" style={{ '--tint-color': 'var(--violet)', padding: 12, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 } as React.CSSProperties}>
+          <div style={{ padding: 12, background: 'color-mix(in srgb, var(--violet) 10%, transparent)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
             ⚙️ {selectedScenario === 'custom' ? 'Custom scenario - parameters modified from preset' : 'Click any value below to create custom scenario'}
           </div>
         </div>
@@ -1139,7 +1197,7 @@ const CRCLModelTab = ({
             <p className="sm-note-list">
               Live data from Circle financials. Used as starting point for projections.
             </p>
-            <div className="sm-proj-grid-4" style={{ gap: 8, fontSize: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, fontSize: 12 }}>
               <div><span className="sm-text3">USDC Circulation:</span> <strong>${currentUSDC}B</strong></div>
               <div><span className="sm-text3">Market Share:</span> <strong>{currentMarketShare}%</strong></div>
               <div><span className="sm-text3">Est. Gross Rev:</span> <strong>${currentGrossRevenue.toFixed(2)}B</strong></div>
@@ -1183,7 +1241,7 @@ const CRCLModelTab = ({
           Probability of adverse events that could significantly impair value. Combined as: (1-Reg) × (1-Comp) × (1-Rate) = {(riskFactor * 100).toFixed(0)}% success probability.
         </p>
 
-        <div className="sm-proj-grid-3" style={{ gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
           <CRCLParameterCard
             title="Regulatory Risk (%)"
             explanation="Probability of adverse stablecoin regulation. SEC/banking agency scrutiny, reserve requirements, licensing issues. 5% = favorable legislation. 30%+ = CBDC mandates or stablecoin restrictions."
@@ -1219,20 +1277,20 @@ const CRCLModelTab = ({
           <span className="sm-divider-line" />
         </div>
         {/* Hero KPI row - 2 column */}
-        <div className="sm-kpi-grid-4 sm-mb-12" style={{ gridTemplateColumns: '1fr 1fr' }}>
-          <div className="sm-bg-accent-dim sm-text-center sm-p-24">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 14, overflow: 'hidden', marginBottom: 12 }}>
+          <div style={{ background: 'var(--accent-dim)', padding: 24, textAlign: 'center' }}>
             <div className="sm-section-label sm-accent">Target Stock Price</div>
-            <div className="sm-comps-big-num sm-accent" style={{ lineHeight: 1 }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
-            <div className="sm-subtle sm-mt-4">vs ${currentStockPrice.toFixed(0)} current</div>
+            <div style={{ fontFamily: 'Space Mono', fontSize: 36, fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
+            <div className="sm-subtle" style={{ marginTop: 6 }}>vs ${currentStockPrice.toFixed(0)} current</div>
           </div>
-          <div className="sm-bg-accent-dim sm-text-center sm-p-24">
+          <div style={{ background: 'var(--accent-dim)', padding: 24, textAlign: 'center' }}>
             <div className="sm-section-label sm-accent">Implied Upside</div>
-            <div className="sm-comps-big-num" style={{ color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)', lineHeight: 1 }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
-            <div className="sm-subtle sm-mt-4">{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
+            <div style={{ fontFamily: 'Space Mono', fontSize: 36, fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)', lineHeight: 1 }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
+            <div className="sm-subtle" style={{ marginTop: 6 }}>{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
           </div>
         </div>
         {/* 4-column metrics grid */}
-        <div className="sm-kpi-grid-4">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 14, overflow: 'hidden' }}>
           {[
             { label: 'Present Value', value: `$${riskAdjustedEV.toFixed(1)}B`, detail: `${(riskFactor * 100).toFixed(0)}% prob` },
             { label: 'Market Cap', value: `$${currentMarketCap.toFixed(1)}B`, detail: `${currentPSRatio.toFixed(1)}x Net Rev` },
@@ -1247,10 +1305,10 @@ const CRCLModelTab = ({
             { label: 'Risk Factor', value: `${(riskFactor * 100).toFixed(0)}%`, detail: 'Success prob.' },
             { label: 'Equity Value', value: `$${equityValue.toFixed(1)}B`, detail: 'Risk-adj' },
           ].map((m, i) => (
-            <div key={i} className="sm-bg-surface sm-text-center sm-p-16">
-              <div className="sm-micro-label sm-mb-4">{m.label}</div>
-              <div className="sm-mono sm-fw-600 sm-text sm-text-16">{m.value}</div>
-              <div className="sm-subtle-sm sm-mt-2">{m.detail}</div>
+            <div key={i} className="sm-bg-surface sm-text-center" style={{ padding: 16 }}>
+              <div className="sm-micro-label" style={{ marginBottom: 4 }}>{m.label}</div>
+              <div className="sm-mono sm-fw-600 sm-text" style={{ fontSize: 16 }}>{m.value}</div>
+              <div className="sm-subtle-sm" style={{ marginTop: 2 }}>{m.detail}</div>
             </div>
           ))}
         </div>
@@ -1262,13 +1320,13 @@ const CRCLModelTab = ({
         </div>
         <div className="sm-card">
           <div className="sm-card-section">
-            <div className="sm-text sm-fw-600 sm-text-16 sm-mb-8">Stablecoin DCF — Revenue-Based Terminal Value</div>
-            <p className="sm-body-sm sm-text3 sm-m-0 sm-lh-17">
+            <div className="sm-text sm-fw-600" style={{ fontSize: 16, marginBottom: 6 }}>Stablecoin DCF — Revenue-Based Terminal Value</div>
+            <p className="sm-body-sm sm-text3" style={{ margin: 0, lineHeight: 1.7 }}>
               Revenue-based terminal value approach incorporating USDC growth, reserve yield, distribution costs, and risk-adjusted discounting.
             </p>
           </div>
           <div className="sm-card-body">
-            <div className="sm-grid-2-lg">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               {[
                 { step: '1-3', title: 'Terminal Year Revenue', color: 'var(--accent)', items: [
                   { label: 'Terminal USDC', formula: `$${currentUSDC}B × (1+${usdcGrowthRate}%)^5`, result: `$${terminalUSDC.toFixed(0)}B` },
@@ -1291,17 +1349,17 @@ const CRCLModelTab = ({
                   { label: 'Target Price', formula: `$${equityValue.toFixed(1)}B ÷ ${terminalShares.toFixed(0)}M`, result: `$${targetStockPrice.toFixed(0)}` },
                 ]},
               ].map((section, si) => (
-                <div key={si} className="sm-bg-surface2 sm-overflow-hidden sm-rounded-12">
-                  <div className="sm-flex sm-p-12-16 sm-border-b">
-                    <span className="sm-mono-sm sm-text-10 sm-fw-700 sm-rounded-4" style={{ background: section.color, color: 'var(--bg)', padding: '2px 8px' }}>Step {section.step}</span>
+                <div key={si} className="sm-bg-surface2 sm-overflow-hidden" style={{ borderRadius: 12 }}>
+                  <div className="sm-flex" style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
+                    <span style={{ background: section.color, color: 'var(--bg)', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono' }}>Step {section.step}</span>
                     <span className="sm-text sm-fw-600" style={{ fontSize: 12 }}>{section.title}</span>
                   </div>
-                  <div className="sm-flex-col sm-p-12-16 sm-gap-8">
+                  <div className="sm-flex-col" style={{ padding: '12px 16px', gap: 8 }}>
                     {section.items.map((item, ii) => (
-                      <div key={ii} className="sm-flex-between sm-gap-8" style={{ alignItems: 'baseline' }}>
+                      <div key={ii} className="sm-flex-between" style={{ alignItems: 'baseline', gap: 8 }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div className="sm-subtle-sm sm-text2 sm-fw-600">{item.label}</div>
-                          <div className="sm-text3 sm-text-10 sm-nowrap sm-overflow-hidden" style={{ fontFamily: 'Space Mono', textOverflow: 'ellipsis' }}>{item.formula}</div>
+                          <div className="sm-text3" style={{ fontSize: 10, fontFamily: 'Space Mono', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.formula}</div>
                         </div>
                         <div className="sm-mono sm-fw-700 sm-shrink-0" style={{ fontSize: 13, color: section.color }}>{item.result}</div>
                       </div>
@@ -1311,9 +1369,9 @@ const CRCLModelTab = ({
               ))}
             </div>
 
-            <div className="sm-tinted-box sm-mt-16" style={{ '--tint-color': 'var(--accent)', fontSize: 12, color: 'var(--text3)', lineHeight: 1.7 } as React.CSSProperties}>
-              <div className="sm-text2 sm-fw-600 sm-mb-4">Key Assumptions</div>
-              <ul className="sm-m-0 sm-pl-16">
+            <div style={{ padding: '16px 16px', background: 'color-mix(in srgb, var(--accent) 6%, transparent)', borderRadius: 10, fontSize: 12, color: 'var(--text3)', lineHeight: 1.7, marginTop: 16, border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)' }}>
+              <div className="sm-text2 sm-fw-600" style={{ marginBottom: 4 }}>Key Assumptions</div>
+              <ul style={{ margin: 0, paddingLeft: 16 }}>
                 <li>Terminal year: {new Date().getFullYear() + 5} (5 years out)</li>
                 <li>FCF conversion = 85% of EBITDA (asset-light model)</li>
                 <li>Coinbase distribution cost applied to gross yield revenue</li>
@@ -1337,9 +1395,9 @@ const ScenariosTab = () => {
       <div className="sm-divider"><span className="sm-section-label">Scenario Simulation</span><UpdateIndicators sources={['PR', 'SEC']} /></div>
 
       {/* Highlight Box */}
-      <div className="sm-tinted-box sm-rounded-16 sm-p-24" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--sky) 5%, transparent))' }}>
+      <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--sky) 5%, transparent))', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)', borderRadius: 16, padding: '24px 24px' }}>
         <h3>Multi-Year Projections</h3>
-        <p className="sm-body">
+        <p style={{ fontSize: 14 }}>
           Model different growth trajectories based on USDC adoption, rate environment, and margin evolution.
           Bear case assumes rate cuts and competition pressure. Bull case models stablecoin dominance with
           expanding platform margins. Probability-weight for expected value.
@@ -1356,9 +1414,17 @@ const ScenariosTab = () => {
               <button
                 key={year}
                 onClick={() => setTargetYear(year)}
-                className="sm-toggle-btn sm-text-16"
-                data-active={targetYear === year ? 'true' : undefined}
-                style={{ padding: '12px 20px', fontFamily: 'Space Mono' }}
+                style={{
+                  padding: '12px 20px',
+                  borderRadius: 8,
+                  border: targetYear === year ? '2px solid var(--mint)' : '1px solid var(--border)',
+                  background: targetYear === year ? 'color-mix(in srgb, var(--mint) 15%, transparent)' : 'var(--surface2)',
+                  color: targetYear === year ? 'var(--mint)' : 'var(--text2)',
+                  cursor: 'pointer',
+                  fontWeight: targetYear === year ? 700 : 400,
+                  fontFamily: 'Space Mono',
+                  fontSize: 16,
+                }}
               >
                 {year}
               </button>
@@ -1372,16 +1438,19 @@ const ScenariosTab = () => {
           <div className="sm-flex-wrap">
             {SCENARIO_KEYS.map(key => {
               const s = SCENARIO_SIMULATIONS[key];
-              const isActive = selectedScenario === key;
               return (
                 <button
                   key={key}
                   onClick={() => setSelectedScenario(key)}
-                  className="sm-toggle-btn sm-text-14"
-                  data-active={isActive ? 'true' : undefined}
                   style={{
                     padding: '12px 16px',
-                    ...(isActive ? { borderColor: s.color, background: `${s.color}22`, color: s.color } : {}),
+                    borderRadius: 8,
+                    border: selectedScenario === key ? `2px solid ${s.color}` : '1px solid var(--border)',
+                    background: selectedScenario === key ? `${s.color}22` : 'var(--surface2)',
+                    color: selectedScenario === key ? s.color : 'var(--text2)',
+                    cursor: 'pointer',
+                    fontWeight: selectedScenario === key ? 700 : 400,
+                    fontSize: 14,
                   }}
                 >
                   {s.name} ({s.prob}%)
@@ -1414,7 +1483,7 @@ const ScenariosTab = () => {
                 </div>
                 <div className="sm-text-right">
                   <div className="sm-subtle">Probability Weight</div>
-                  <div className="sm-comps-big-num" style={{ fontSize: 32, color: selected.color }}>
+                  <div style={{ fontFamily: 'Space Mono', fontSize: 32, fontWeight: 700, color: selected.color }}>
                     {selected.prob}%
                   </div>
                 </div>
@@ -1423,25 +1492,25 @@ const ScenariosTab = () => {
 
             {/* Key Metrics */}
             <div className="g4">
-              <div className="sm-bg-surface sm-text-center sm-surface2-card-lg sm-rounded-16">
-                <div className="sm-mono-xl" style={{ letterSpacing: '-1px', color: selected.color }}>${projection.sharePrice.toLocaleString()}</div>
+              <div className="sm-bg-surface sm-text-center" style={{ borderRadius: 16, padding: '24px 24px' }}>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, letterSpacing: '-1px', color: selected.color }}>${projection.sharePrice.toLocaleString()}</div>
                 <div className="sm-section-label sm-mt-8">Share Price</div>
-                <div className="sm-subtle" style={{ color: priceReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
+                <div style={{ fontSize: 12, color: priceReturn >= 0 ? 'var(--mint)' : 'var(--coral)' }}>
                   {priceReturn >= 0 ? '+' : ''}{priceReturn.toFixed(0)}% from today
                 </div>
               </div>
-              <div className="sm-bg-surface sm-text-center sm-surface2-card-lg sm-rounded-16">
+              <div className="sm-bg-surface sm-text-center" style={{ borderRadius: 16, padding: '24px 24px' }}>
                 <div className="sm-mono-xl sm-text" style={{ letterSpacing: '-1px' }}>${projection.equityValue}B</div>
                 <div className="sm-section-label sm-mt-8">Equity Value</div>
               </div>
-              <div className="sm-bg-surface sm-text-center sm-surface2-card-lg sm-rounded-16">
+              <div className="sm-bg-surface sm-text-center" style={{ borderRadius: 16, padding: '24px 24px' }}>
                 <div className="sm-mono-xl sm-text" style={{ letterSpacing: '-1px' }}>${projection.usdc}B</div>
                 <div className="sm-section-label sm-mt-8">USDC Circulation</div>
-                <div className="sm-subtle sm-sky">
+                <div style={{ fontSize: 12, color: 'var(--sky)' }}>
                   +{usdcGrowth.toFixed(0)}% growth
                 </div>
               </div>
-              <div className="sm-bg-surface sm-text-center sm-surface2-card-lg sm-rounded-16">
+              <div className="sm-bg-surface sm-text-center" style={{ borderRadius: 16, padding: '24px 24px' }}>
                 <div className="sm-mono-xl sm-text" style={{ letterSpacing: '-1px' }}>{projection.marketShare}%</div>
                 <div className="sm-section-label sm-mt-8">Market Share</div>
               </div>
@@ -1451,7 +1520,7 @@ const ScenariosTab = () => {
             <div className="sm-card">
               <div className="sm-card-section"><span className="sm-section-label">Financial Projections — {selected.name} Scenario</span></div>
               <div className="sm-overflow-x">
-                <table className="sm-w-full" style={{ borderCollapse: 'collapse' }}>
+                <table className="sm-w-full sm-border-collapse">
                   <thead>
                     <tr>
                       <th>Metric</th>
@@ -1590,25 +1659,25 @@ const ScenariosTab = () => {
             <div className="sm-grid-2-lg">
               <div className="sm-card">
                 <div className="sm-card-section"><span className="sm-section-label">Key Assumptions</span></div>
-                <ul className="sm-text2" style={{ margin: 0, paddingLeft: 20 }}>
+                <ul className="sm-text2 sm-m-0 sm-pl-20">
                   {selected.assumptions.map((a, i) => (
-                    <li key={i} className="sm-lh-15">{a}</li>
+                    <li key={i} style={{ lineHeight: 1.5 }}>{a}</li>
                   ))}
                 </ul>
               </div>
               <div className="sm-card">
                 <div className="sm-card-section"><span className="sm-section-label">{selected.catalysts.length > 0 ? 'Catalysts' : 'Key Risks'}</span></div>
-                <ul className="sm-text2" style={{ margin: 0, paddingLeft: 20 }}>
+                <ul className="sm-text2 sm-m-0 sm-pl-20">
                   {(selected.catalysts.length > 0 ? selected.catalysts : selected.risks).map((item, i) => (
-                    <li key={i} className="sm-lh-15">{item}</li>
+                    <li key={i} style={{ lineHeight: 1.5 }}>{item}</li>
                   ))}
                 </ul>
                 {selected.catalysts.length > 0 && selected.risks.length > 0 && (
                   <>
                     <div className="sm-card-section"><span className="sm-section-label">Risks</span></div>
-                    <ul className="sm-text2" style={{ margin: 0, paddingLeft: 20 }}>
+                    <ul className="sm-text2 sm-m-0 sm-pl-20">
                       {selected.risks.map((r, i) => (
-                        <li key={i} className="sm-lh-15">{r}</li>
+                        <li key={i} style={{ lineHeight: 1.5 }}>{r}</li>
                       ))}
                     </ul>
                   </>
@@ -1620,7 +1689,7 @@ const ScenariosTab = () => {
       })()}
 
       {/* Probability-Weighted Expected Value */}
-      <div className="sm-tinted-box" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--sky) 5%, transparent))', borderRadius: 16, padding: 24 }}>
+      <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), color-mix(in srgb, var(--sky) 5%, transparent))', border: '1px solid color-mix(in srgb, var(--accent) 20%, transparent)', borderRadius: 16, padding: '24px 24px' }}>
         <h3>Probability-Weighted Expected Value — {targetYear}</h3>
         <p className="sm-text2">
           Weighted average across all scenarios based on assigned probabilities
@@ -1665,7 +1734,7 @@ const ScenariosTab = () => {
 
               {/* Scenario Breakdown */}
               <div>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <table className="sm-w-full sm-border-collapse">
                   <thead>
                     <tr>
                       <th>Scenario</th>
@@ -1716,7 +1785,7 @@ const ScenariosTab = () => {
       <div className="sm-card">
         <div className="sm-card-section"><span className="sm-section-label">All Scenarios — {targetYear} Comparison</span></div>
         <div className="sm-overflow-x">
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table className="sm-w-full sm-border-collapse">
             <thead>
               <tr>
                 <th>Metric</th>
@@ -1812,7 +1881,7 @@ const ScenariosTab = () => {
         <div className="sm-grid-2-lg">
           <div>
             <h4 className="sm-mint">Valuation Framework</h4>
-            <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
+            <ul className="sm-text2 sm-m-0 sm-pl-20 sm-lh-18">
               <li><strong>Revenue Model:</strong> USDC Circulation × Reserve Yield = Gross Reserve Income</li>
               <li><strong>Distribution Costs:</strong> Coinbase revenue share (currently ~54%, varies by scenario)</li>
               <li><strong>Net Revenue:</strong> Gross Revenue − Distribution Costs + Other Revenue</li>
@@ -1823,7 +1892,7 @@ const ScenariosTab = () => {
           </div>
           <div>
             <h4 className="sm-sky">Key Model Inputs</h4>
-            <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text2)', lineHeight: 1.8 }}>
+            <ul className="sm-text2 sm-m-0 sm-pl-20 sm-lh-18">
               <li><strong>Stablecoin TAM:</strong> $250B (2025) → $500B-2T (2030) depending on scenario</li>
               <li><strong>Fed Funds Rate:</strong> 4.0-4.5% (2025) → 1.5-4.0% (2030) depending on scenario</li>
               <li><strong>Market Share:</strong> Current 29% vs Tether 65%; varies 8-48% by scenario</li>
@@ -1834,7 +1903,7 @@ const ScenariosTab = () => {
         </div>
         <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
           <h4 className="sm-gold">Important Caveats</h4>
-          <ul style={{ margin: 0, paddingLeft: 20, color: 'var(--text3)', lineHeight: 1.8, fontSize: 13 }}>
+          <ul className="sm-text3 sm-m-0 sm-pl-20 sm-lh-18 sm-fs-13">
             <li>Projections are illustrative scenarios, not forecasts. Actual results may differ materially.</li>
             <li>Probabilities are subjective estimates and do not represent statistical likelihoods.</li>
             <li>Model assumes current share count (~229M); dilution from equity plans not explicitly modeled.</li>
@@ -2908,7 +2977,17 @@ function CRCLModel() {
               <h1>Circle Internet Group</h1>
               <div className="ticker">◉ NYSE: CRCL</div>
               {/* H4: Data Freshness Timestamp */}
-              <div className="sm-data-freshness">
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                background: 'color-mix(in srgb, var(--mint) 10%, transparent)',
+                border: '1px solid color-mix(in srgb, var(--mint) 30%, transparent)',
+                borderRadius: 6,
+                padding: '4px 12px',
+                fontSize: 11,
+                color: '#34d399',
+              }}>
                 <span>📅</span>
                 <span>Data as of: {MODEL_METADATA.priceAsOf}</span>
                 <span style={{ color: 'color-mix(in srgb, var(--mint) 50%, transparent)' }}>|</span>
@@ -3002,7 +3081,7 @@ function CRCLModel() {
               <div className="sm-model-grid" style={{ '--cols': 2 } as React.CSSProperties}>
                 <div className="sm-grid-cell">
                   <div className="sm-flex sm-mb-12">
-                    <span className="sm-section-label sm-mint" style={{ fontSize: 13, letterSpacing: '1.5px' }}>Bull Case</span>
+                    <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--mint)' }}>Bull Case</span>
                     <UpdateIndicators sources="PR" />
                   </div>
                   {[
@@ -3041,7 +3120,7 @@ function CRCLModel() {
               </div>
 
               <div className="sm-card sm-mt-8">
-                <div className="sm-flex sm-section-toggle">
+                <div className="sm-flex" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
                   <span className="sm-param-label">Revenue Progression</span>
                   <UpdateIndicators sources="SEC" />
                 </div>
@@ -3309,7 +3388,7 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div
                       onClick={() => toggleSection('scorecard')}
-                      className="sm-flex-between sm-pointer sm-section-toggle"
+                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('scorecard')}
@@ -3317,7 +3396,7 @@ function CRCLModel() {
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('scorecard')}
                     >
                       <span className="sm-section-label">Investment Scorecard<UpdateIndicators sources={['PR', 'SEC']} /></span>
-                      <span className="sm-text3 sm-text-18">{investmentSections.has('scorecard') ? '−' : '+'}</span>
+                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('scorecard') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('scorecard') && (
                       <div className="sm-card-body">
@@ -3346,7 +3425,7 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div
                       onClick={() => toggleSection('summary')}
-                      className="sm-flex-between sm-pointer sm-section-toggle"
+                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('summary')}
@@ -3354,7 +3433,7 @@ function CRCLModel() {
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('summary')}
                     >
                       <span className="sm-section-label">Investment Summary<UpdateIndicators sources={['PR', 'SEC']} /></span>
-                      <span className="sm-text3 sm-text-18">{investmentSections.has('summary') ? '−' : '+'}</span>
+                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('summary') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('summary') && (
                       <div className="sm-card-body">
@@ -3385,7 +3464,7 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div
                       onClick={() => toggleSection('financial')}
-                      className="sm-flex-between sm-pointer sm-section-toggle"
+                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('financial')}
@@ -3393,7 +3472,7 @@ function CRCLModel() {
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('financial')}
                     >
                       <span className="sm-section-label">Financial Health<UpdateIndicators sources="SEC" /></span>
-                      <span className="sm-text3 sm-text-18">{investmentSections.has('financial') ? '−' : '+'}</span>
+                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('financial') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('financial') && (
                       <div className="sm-card-body">
@@ -3448,7 +3527,7 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div
                       onClick={() => toggleSection('unit-economics')}
-                      className="sm-flex-between sm-pointer sm-section-toggle"
+                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('unit-economics')}
@@ -3456,7 +3535,7 @@ function CRCLModel() {
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('unit-economics')}
                     >
                       <span className="sm-section-label">Unit Economics & Margins<UpdateIndicators sources="SEC" /></span>
-                      <span className="sm-text3 sm-text-18">{investmentSections.has('unit-economics') ? '−' : '+'}</span>
+                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('unit-economics') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('unit-economics') && (
                       <div className="sm-card-body">
@@ -3516,7 +3595,7 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div
                       onClick={() => toggleSection('growth')}
-                      className="sm-flex-between sm-pointer sm-section-toggle"
+                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('growth')}
@@ -3524,7 +3603,7 @@ function CRCLModel() {
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('growth')}
                     >
                       <span className="sm-section-label">Growth Drivers<UpdateIndicators sources="PR" /></span>
-                      <span className="sm-text3 sm-text-18">{investmentSections.has('growth') ? '−' : '+'}</span>
+                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('growth') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('growth') && (
                       <div className="sm-card-body">
@@ -3598,7 +3677,7 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div
                       onClick={() => toggleSection('valuation')}
-                      className="sm-flex-between sm-pointer sm-section-toggle"
+                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('valuation')}
@@ -3606,7 +3685,7 @@ function CRCLModel() {
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('valuation')}
                     >
                       <span className="sm-section-label">Valuation Framework<UpdateIndicators sources="WS" /></span>
-                      <span className="sm-text3 sm-text-18">{investmentSections.has('valuation') ? '−' : '+'}</span>
+                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('valuation') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('valuation') && (
                       <div className="sm-card-body">
@@ -3658,7 +3737,7 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div
                       onClick={() => toggleSection('sensitivity')}
-                      className="sm-flex-between sm-pointer sm-section-toggle"
+                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('sensitivity')}
@@ -3666,7 +3745,7 @@ function CRCLModel() {
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('sensitivity')}
                     >
                       <span className="sm-section-label">Rate Sensitivity Calculator<UpdateIndicators sources="MARKET" /></span>
-                      <span className="sm-text3 sm-text-18">{investmentSections.has('sensitivity') ? '−' : '+'}</span>
+                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('sensitivity') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('sensitivity') && (
                       <div className="sm-card-body">
@@ -3798,7 +3877,7 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div
                       onClick={() => toggleSection('moat')}
-                      className="sm-flex-between sm-pointer sm-section-toggle"
+                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('moat')}
@@ -3806,7 +3885,7 @@ function CRCLModel() {
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('moat')}
                     >
                       <span className="sm-section-label">Competitive Moat<UpdateIndicators sources={['PR', 'SEC']} /></span>
-                      <span className="sm-text3 sm-text-18">{investmentSections.has('moat') ? '−' : '+'}</span>
+                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('moat') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('moat') && (
                       <div className="sm-card-body">
@@ -3865,7 +3944,7 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div
                       onClick={() => toggleSection('risks')}
-                      className="sm-flex-between sm-pointer sm-section-toggle"
+                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('risks')}
@@ -3873,7 +3952,7 @@ function CRCLModel() {
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('risks')}
                     >
                       <span className="sm-section-label">Risk Matrix<UpdateIndicators sources={['PR', 'SEC']} /></span>
-                      <span className="sm-text3 sm-text-18">{investmentSections.has('risks') ? '−' : '+'}</span>
+                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('risks') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('risks') && (
                       <div className="sm-card-body">
@@ -3907,7 +3986,7 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div
                       onClick={() => toggleSection('catalysts')}
-                      className="sm-flex-between sm-pointer sm-section-toggle"
+                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('catalysts')}
@@ -3915,7 +3994,7 @@ function CRCLModel() {
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('catalysts')}
                     >
                       <span className="sm-section-label">Catalyst Calendar<UpdateIndicators sources="PR" /></span>
-                      <span className="sm-text3 sm-text-18">{investmentSections.has('catalysts') ? '−' : '+'}</span>
+                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('catalysts') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('catalysts') && (
                       <div className="sm-card-body">
@@ -3958,7 +4037,7 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div
                       onClick={() => toggleSection('position')}
-                      className="sm-flex-between sm-pointer sm-section-toggle"
+                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('position')}
@@ -3966,7 +4045,7 @@ function CRCLModel() {
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('position')}
                     >
                       <span className="sm-section-label">Position Management<UpdateIndicators sources="WS" /></span>
-                      <span className="sm-text3 sm-text-18">{investmentSections.has('position') ? '−' : '+'}</span>
+                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('position') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('position') && (
                       <div className="sm-card-body">
@@ -4039,7 +4118,7 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div
                       onClick={() => toggleSection('archive')}
-                      className="sm-flex-between sm-pointer sm-section-toggle"
+                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('archive')}
@@ -4047,7 +4126,7 @@ function CRCLModel() {
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('archive')}
                     >
                       <span className="sm-section-label">Analysis Archive — Complete History<UpdateIndicators sources={['PR', 'SEC']} /></span>
-                      <span className="sm-text3 sm-text-18">{investmentSections.has('archive') ? '−' : '+'}</span>
+                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('archive') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('archive') && (
                       <div className="sm-card-body">
@@ -4096,7 +4175,7 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div
                       onClick={() => toggleSection('strategic-assessment')}
-                      className="sm-flex-between sm-pointer sm-section-toggle"
+                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('strategic-assessment')}
@@ -4104,7 +4183,7 @@ function CRCLModel() {
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('strategic-assessment')}
                     >
                       <span className="sm-section-label">Risks & Strategic Assessment<UpdateIndicators sources={['PR', 'SEC']} /></span>
-                      <span className="sm-text3 sm-text-18">{investmentSections.has('strategic-assessment') ? '−' : '+'}</span>
+                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('strategic-assessment') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('strategic-assessment') && (
                       <div className="sm-card-body">
@@ -4297,7 +4376,7 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div
                       onClick={() => toggleSection('methodology')}
-                      className="sm-flex-between sm-pointer sm-section-toggle"
+                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
                       role="button"
                       tabIndex={0}
                       aria-expanded={investmentSections.has('methodology')}
@@ -4305,7 +4384,7 @@ function CRCLModel() {
                       onKeyDown={(e) => e.key === 'Enter' && toggleSection('methodology')}
                     >
                       <span className="sm-section-label">Methodology & Disclosures<UpdateIndicators sources={['PR', 'SEC']} /></span>
-                      <span className="sm-text3 sm-text-18">{investmentSections.has('methodology') ? '−' : '+'}</span>
+                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('methodology') ? '−' : '+'}</span>
                     </div>
                     {investmentSections.has('methodology') && (
                       <div style={{ padding: '24px 24px', fontSize: 13, color: 'var(--text2)', lineHeight: 1.8 }}>
@@ -4364,7 +4443,7 @@ function CRCLModel() {
               </div>
 
               <div className="sm-card sm-mt-8">
-                <div className="sm-flex sm-section-toggle">
+                <div className="sm-flex" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
                   <span className="sm-param-label">Circulation Growth</span>
                   <UpdateIndicators sources="SEC" />
                 </div>
@@ -4384,7 +4463,7 @@ function CRCLModel() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 8 }}>
                 {/* Mint / Redeem Activity */}
                 <div className="sm-card">
-                  <div className="sm-flex sm-section-toggle">
+                  <div className="sm-flex" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
                     <span className="sm-param-label">Mint / Redeem Activity ($B)</span>
                     <UpdateIndicators sources="SEC" />
                   </div>
@@ -4410,7 +4489,7 @@ function CRCLModel() {
 
                 {/* Rate Sensitivity Matrix */}
                 <div className="sm-card">
-                  <div className="sm-flex sm-section-toggle">
+                  <div className="sm-flex" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}>
                     <span className="sm-param-label">Rate Sensitivity Matrix ($B Annual)</span>
                     <UpdateIndicators sources="SEC" />
                   </div>

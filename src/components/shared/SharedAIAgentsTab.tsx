@@ -223,17 +223,17 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
   };
 
   return (
-    <div className="sm-ai-runner">
+    <div className="sm-rounded-12 sm-overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.06)", transition: "border-color 0.2s" }}>
       {/* Header */}
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
-        className="sm-w-full sm-pointer sm-gap-16 sm-flex sm-items-start sm-text-left"
-        style={{ padding: "16px 20px", justifyContent: "space-between", background: "none", border: "none" }}
+        className="sm-w-full sm-pointer sm-gap-16 sm-flex sm-items-start sm-text-left sm-justify-between"
+        style={{ padding: "16px 20px", background: "none", border: "none" }}
       >
-        <div className="sm-flex-1 sm-min-w-0">
-          <div className="sm-flex sm-gap-8 sm-mb-4">
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="sm-flex sm-gap-8" style={{ marginBottom: 4 }}>
             <span className="sm-fw-500" style={{ fontSize: 13, fontFamily: "var(--font-mono, monospace)", color: "rgba(255,255,255,0.85)" }}>
               {workflow.name}
             </span>
@@ -266,7 +266,6 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
               onClick={async () => { await navigator.clipboard.writeText(workflow.prompt); setCopiedPrompt(true); setTimeout(() => setCopiedPrompt(false), 2000); }}
               className="sm-ed-action-btn-sm"
               data-state={copiedPrompt ? "success" : undefined}
-              style={copiedPrompt ? { color: "var(--mint)", borderColor: "rgba(130,200,130,0.15)" } : undefined}
             >
               {copiedPrompt ? "Copied!" : "Copy prompt"}
             </button>
@@ -308,10 +307,9 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                 type="button"
                 disabled={!canRun}
                 onClick={handleRun}
-                className="sm-ed-action-btn"
+                className="sm-ed-action-btn sm-p-5-14"
                 data-variant="mint"
                 data-state={canRun ? undefined : "disabled"}
-                style={{ padding: "5px 14px" }}
               >
                 Run Analysis
               </button>
@@ -319,9 +317,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
               <button
                 type="button"
                 onClick={handleStop}
-                className="sm-ed-action-btn"
+                className="sm-ed-action-btn sm-p-5-14"
                 data-variant="coral"
-                style={{ padding: "5px 14px" }}
               >
                 Stop
               </button>
@@ -373,7 +370,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                     </button>
 
                     {/* 2. Copy Markdown */}
-                    <button type="button" onClick={handleCopy} className="sm-ed-action-btn" data-state={copied ? "success" : undefined}>
+                    <button type="button" onClick={handleCopy} className="sm-ed-action-btn" style={{ '--ed-btn-color': copied ? "var(--mint)" : undefined, borderColor: copied ? "rgba(130,200,130,0.15)" : undefined } as React.CSSProperties}>
                       <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                         <rect x={9} y={9} width={13} height={13} rx={2} ry={2} />
                         <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
@@ -383,7 +380,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 
                     {/* 3. Preview Changes / Applied indicator */}
                     {applyStep === "applied" ? (
-                      <span className="sm-ed-action-btn" data-state="success">
+                      <span className="sm-ed-action-btn" style={{ '--ed-btn-color': "var(--mint)", borderColor: "rgba(130,200,130,0.15)", cursor: "default" } as React.CSSProperties}>
                         <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
