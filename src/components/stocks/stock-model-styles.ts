@@ -4026,18 +4026,18 @@ input[type="range"]::-webkit-slider-thumb {
 /* ── Additional layout utilities ── */
 .sm-inline-flex { display: inline-flex; align-items: center; gap: 6px; }
 .sm-overflow-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.sm-p-16 { padding: 16px; }
-.sm-p-24 { padding: 24px; }
+.sm-bg-none { background: none; }
+.sm-border-collapse { border-collapse: collapse; }
+.sm-border-none { border: none; }
+.sm-m-0 { margin: 0; }
 .sm-p-5-14 { padding: 5px 14px; }
+.sm-p-16 { padding: 16px; }
 .sm-p-16-20 { padding: 16px 20px; }
-.sm-px-24 { padding-left: 24px; padding-right: 24px; }
-.sm-py-12 { padding-top: 12px; padding-bottom: 12px; }
+.sm-p-24 { padding: 24px; }
 .sm-pl-16 { padding-left: 16px; }
 .sm-pl-20 { padding-left: 20px; }
-.sm-m-0 { margin: 0; }
-.sm-bg-none { background: none; }
-.sm-border-none { border: none; }
-.sm-border-collapse { border-collapse: collapse; }
+.sm-px-24 { padding-left: 24px; padding-right: 24px; }
+.sm-py-12 { padding-top: 12px; padding-bottom: 12px; }
 
 /* ── Additional border radius utilities ── */
 .sm-rounded-4 { border-radius: 4px; }
