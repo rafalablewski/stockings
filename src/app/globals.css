@@ -5,6 +5,10 @@
 @import "tailwindcss/utilities";
 
 :root {
+  /* ═══ FONT VARIABLES ═══ */
+  --font-outfit: 'Outfit';
+  --font-space-mono: 'Space Mono';
+
   /* ═══ NEXT.JS APP VARIABLES ═══ */
   --background: #000000;
   --foreground: #ededed;
@@ -49,7 +53,7 @@ body {
   margin: 0;
   background: #000;
   color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-outfit), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
 }
 

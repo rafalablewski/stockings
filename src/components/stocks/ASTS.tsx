@@ -2023,123 +2023,6 @@ const CompetitorsTab = () => {
 
   return (
     <div className="tab-content">
-      <style>{`
-        .competitor-card {
-          background: var(--bg2);
-          border: 1px solid var(--stroke);
-          border-radius: 12px;
-          padding: 16px;
-          margin-bottom: 12px;
-        }
-        .threat-high { border-left: 3px solid var(--red); }
-        .threat-medium { border-left: 3px solid var(--gold); }
-        .threat-low { border-left: 3px solid var(--mint); }
-        .competitor-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 8px;
-        }
-        .competitor-name {
-          font-weight: 600;
-          font-size: 14px;
-          color: var(--text1);
-        }
-        .competitor-type {
-          font-size: 11px;
-          color: var(--text3);
-          padding: 2px 8px;
-          background: var(--bg3);
-          border-radius: 4px;
-        }
-        .competitor-detail {
-          font-size: 12px;
-          color: var(--text2);
-          margin-bottom: 4px;
-        }
-        .competitor-notes {
-          font-size: 11px;
-          color: var(--text3);
-          font-style: italic;
-        }
-        .news-entry {
-          background: var(--bg2);
-          border: 1px solid var(--stroke);
-          border-radius: 8px;
-          margin-bottom: 8px;
-          overflow: hidden;
-          transition: all 0.2s ease;
-        }
-        .news-entry:hover {
-          border-color: var(--text3);
-        }
-        .news-header {
-          padding: 12px 16px;
-          cursor: pointer;
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          gap: 12px;
-        }
-        .news-title {
-          font-size: 13px;
-          color: var(--text1);
-          font-weight: 500;
-          flex: 1;
-        }
-        .news-meta {
-          display: flex;
-          gap: 8px;
-          align-items: center;
-          flex-shrink: 0;
-        }
-        .news-date {
-          font-size: 11px;
-          color: var(--text3);
-        }
-        .news-impact {
-          font-size: 10px;
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-weight: 500;
-        }
-        .impact-bullish { background: rgba(16, 185, 129, 0.2); color: var(--mint); }
-        .impact-bearish { background: rgba(239, 68, 68, 0.2); color: var(--red); }
-        .impact-neutral { background: rgba(148, 163, 184, 0.2); color: var(--text3); }
-        .news-body {
-          padding: 0 16px 16px 16px;
-          border-top: 1px solid var(--stroke);
-        }
-        .news-summary {
-          font-size: 12px;
-          color: var(--text2);
-          line-height: 1.6;
-          margin-bottom: 12px;
-        }
-        .news-implication {
-          font-size: 12px;
-          color: var(--sky);
-          padding: 8px 12px;
-          background: rgba(56, 189, 248, 0.1);
-          border-radius: 6px;
-          margin-bottom: 8px;
-        }
-        .news-source {
-          font-size: 11px;
-          color: var(--text3);
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-        .news-source a {
-          color: var(--sky);
-          text-decoration: none;
-        }
-        .news-source a:hover {
-          text-decoration: underline;
-        }
-      `}</style>
-
       {/* Key Competitors Overview */}
       <div className="sm-divider"><span className="sm-param-label">Key Competitors</span><span className="sm-divider-line" /></div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 24 }}>
@@ -4770,9 +4653,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           ].map((row, i) => {
             const pctChange = ((row.value / currentStockPrice - 1) * 100);
             return (
-              <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: row.highlight ? 'var(--accent-dim)' : 'transparent', cursor: 'default' }}
-                onMouseEnter={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'var(--surface2)'; }}
-                onMouseLeave={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
+              <div key={i} className="sm-data-row" data-highlight={row.highlight ? "true" : undefined} style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : undefined, cursor: 'default' }}
               >
                 <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
                 <span style={{ textAlign: 'right', fontFamily: 'Space Mono', fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
@@ -7363,9 +7244,7 @@ const InvestmentTab = () => {
         <div className="sm-subtle">Full record of all investment thesis updates. Never deleted. Tracking since Q3 2022.</div>
         <div style={{ display: 'flex', flexDirection: 'column', maxHeight: 500, overflowY: 'auto' }}>
           {archive.map((a, i) => (
-            <div key={i} style={{ background: i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)', padding: '12px 16px', borderRadius: 12, border: i === 0 ? '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' : '1px solid var(--border)' }}
-              onMouseEnter={e => (e.currentTarget.style.background = i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)')}
-              onMouseLeave={e => (e.currentTarget.style.background = i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)')}>
+            <div key={i} style={{ background: i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)', padding: '12px 16px', borderRadius: 12, border: i === 0 ? '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' : '1px solid var(--border)' }}>
               <div className="sm-flex-between">
                 <div className="sm-flex">
                   <span className="sm-text sm-fw-600">{a.date}</span>

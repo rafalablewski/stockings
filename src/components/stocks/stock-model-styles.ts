@@ -50,8 +50,9 @@
  *   Removed patterns: onMouseEnter/onMouseLeave for style manipulation.
  *
  * FONTS:
- *   Outfit — UI text (headings, labels, body, buttons)
- *   Space Mono — Data display (prices, percentages, KPIs, tickers, dates)
+ *   Outfit — UI text (headings, labels, body, buttons)  [via var(--font-outfit)]
+ *   Space Mono — Data display (prices, percentages, KPIs, tickers, dates)  [via var(--font-space-mono)]
+ *   Fonts are self-hosted by next/font in layout.tsx — no external Google Fonts requests.
  *
  * RESPONSIVE:
  *   Desktop-first with breakpoints at 1200, 900, 768, 480, 360px.
@@ -74,8 +75,6 @@ export type AccentColor = 'cyan' | 'violet' | 'mint';
  * @returns Complete CSS string to be injected via <style> tag
  */
 export const getStockModelCSS = (accent: AccentColor): string => `
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
-
 :root {
   /* ═══ UNIFIED DESIGN TOKENS (shared across ASTS/BMNR/CRCL) ═══
    *
@@ -136,7 +135,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 .stock-model-app, .stock-model-app * { box-sizing: border-box; margin: 0; padding: 0; }
 
 .stock-model-app {
-  font-family: 'Outfit', sans-serif;  /* Primary UI font — all non-data text */
+  font-family: var(--font-outfit), sans-serif;  /* Primary UI font — all non-data text */
   background: var(--bg);
   min-height: 100vh;
   color: var(--text);
@@ -192,7 +191,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 14px;
   color: var(--accent);
   background: var(--accent-dim);
@@ -213,7 +212,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 }
 
 .price-big {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 56px;
   font-weight: 700;
   letter-spacing: -2px;
@@ -259,7 +258,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 }
 
 .stat-item .val {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 22px;
   font-weight: 600;
 }
@@ -307,7 +306,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-outfit), sans-serif;
   white-space: nowrap;
   flex-shrink: 0;
   display: flex;
@@ -386,7 +385,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   color: var(--text3);
   cursor: pointer;
   transition: all 0.2s;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-outfit), sans-serif;
   white-space: nowrap;
 }
 .filter-btn:hover {
@@ -474,7 +473,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   cursor: pointer;
   transition: color 0.15s, background 0.15s;
   white-space: nowrap;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-outfit), sans-serif;
 }
 .nav-dropdown-item:hover {
   color: var(--text);
@@ -633,7 +632,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 }
 
 .bar-val {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 10px;
   letter-spacing: 0.3px;
   color: var(--text2);
@@ -664,7 +663,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 }
 
 .bar-label {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 9px;
   letter-spacing: 0.5px;
   text-transform: uppercase;
@@ -689,7 +688,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 }
 
 .big-stat .num {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 36px;
   font-weight: 700;
   color: var(--accent);
@@ -726,7 +725,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 .tbl th:last-child { border-radius: 0 10px 0 0; }
 
 .tbl td {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 14px;
 }
 
@@ -764,7 +763,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
   cursor: pointer;
   transition: all 0.2s;
   color: var(--text3);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-outfit), sans-serif;
 }
 
 .pill:hover, .pill.active {
@@ -787,7 +786,7 @@ export const getStockModelCSS = (accent: AccentColor): string => `
 
 .slider-head span:first-child { color: var(--text2); }
 .slider-head span:last-child {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   color: var(--accent);
   font-weight: 600;
 }
@@ -1032,13 +1031,13 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* Monospace number display */
-.sm-mono { font-family: 'Space Mono', monospace; font-weight: 700; }
-.sm-mono-sm { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 600; }
-.sm-mono-md { font-family: 'Space Mono', monospace; font-size: 14px; font-weight: 600; }
-.sm-mono-lg { font-family: 'Space Mono', monospace; font-size: 18px; font-weight: 700; }
-.sm-mono-xl { font-family: 'Space Mono', monospace; font-size: 28px; font-weight: 700; }
-.sm-mono-2xl { font-family: 'Space Mono', monospace; font-size: 32px; font-weight: 700; }
-.sm-mono-3xl { font-family: 'Space Mono', monospace; font-size: 42px; font-weight: 700; }
+.sm-mono { font-family: var(--font-space-mono), monospace; font-weight: 700; }
+.sm-mono-sm { font-family: var(--font-space-mono), monospace; font-size: 12px; font-weight: 600; }
+.sm-mono-md { font-family: var(--font-space-mono), monospace; font-size: 14px; font-weight: 600; }
+.sm-mono-lg { font-family: var(--font-space-mono), monospace; font-size: 18px; font-weight: 700; }
+.sm-mono-xl { font-family: var(--font-space-mono), monospace; font-size: 28px; font-weight: 700; }
+.sm-mono-2xl { font-family: var(--font-space-mono), monospace; font-size: 32px; font-weight: 700; }
+.sm-mono-3xl { font-family: var(--font-space-mono), monospace; font-size: 42px; font-weight: 700; }
 
 /* Text styles */
 .sm-subtle { font-size: 12px; color: var(--text3); }
@@ -1105,7 +1104,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-weight: 500;
 }
 .sm-kpi-value {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 18px;
   font-weight: 700;
   color: var(--kpi-color, var(--text));
@@ -1142,7 +1141,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
   transition: background 0.15s;
 }
-.sm-data-row:hover {
+.sm-data-row:not([data-highlight="true"]):hover {
   background: var(--surface2);
 }
 .sm-data-row:last-child {
@@ -1241,7 +1240,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 12px;
   cursor: pointer;
   transition: all 0.15s;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-outfit), sans-serif;
 }
 .sm-expand-btn:hover {
   background: var(--surface3);
@@ -1259,7 +1258,7 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--text2);
   cursor: pointer;
   transition: all 0.15s;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-outfit), sans-serif;
 }
 .sm-action-btn:hover {
   background: var(--surface3);
@@ -1320,7 +1319,7 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-card-value {
   font-size: 28px;
   font-weight: 700;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   color: var(--card-text);
 }
 
@@ -1347,7 +1346,7 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-row-value {
   font-size: 14px;
   font-weight: 600;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   color: var(--text);
 }
 .sm-row[data-highlight="true"] .sm-row-value {
@@ -1370,7 +1369,7 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 8px;
   padding: 12px 16px;
   font-size: 14px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   color: var(--text);
   outline: none;
 }
@@ -1419,7 +1418,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 12px;
   font-weight: 400;
   color: var(--text3);
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-outfit), sans-serif;
 }
 .sm-preset-btn[data-active="true"] {
   border: 2px solid var(--preset-color);
@@ -1538,7 +1537,7 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 8px 4px;
 }
 .sm-ws-metric-val {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 14px;
   font-weight: 600;
   color: var(--text);
@@ -1578,7 +1577,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 11px;
   cursor: pointer;
   padding: 4px 0;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-outfit), sans-serif;
 }
 
 /* Report expanded details container */
@@ -1648,7 +1647,7 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--text);
 }
 .sm-ws-estimate-cell[data-align="right"] {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   color: var(--text2);
   text-align: right;
 }
@@ -1759,7 +1758,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* PT display mono — unified badge treatment */
 .sm-ws-pt {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   text-align: right;
   min-width: 60px;
   padding: 5px 10px;
@@ -1861,7 +1860,7 @@ input[type="range"]::-webkit-slider-thumb {
 /* Form type badge */
 .sm-ed-form-badge {
   font-size: 10px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-weight: 600;
   padding: 2px 0;
   border-radius: 5px;
@@ -1899,7 +1898,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* Date column */
 .sm-ed-date {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 11px;
   color: var(--text3);
   flex-shrink: 0;
@@ -2028,7 +2027,7 @@ input[type="range"]::-webkit-slider-thumb {
   max-width: min(380px, calc(100vw - 2rem));
   box-shadow: 0 8px 24px rgba(0,0,0,0.3);
   font-size: 10px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   color: var(--text);
   line-height: 1.8;
   pointer-events: none;
@@ -2040,7 +2039,7 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: center;
   gap: 3px;
   font-size: 8px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   padding: 1px 4px;
   border-radius: 3px;
   background: transparent;
@@ -2058,7 +2057,7 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 4px 0;
 }
 .sm-ed-crossref-line {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 10.5px;
   line-height: 1.7;
   color: var(--text3);
@@ -2135,7 +2134,7 @@ input[type="range"]::-webkit-slider-thumb {
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 11px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   color: var(--text);
   text-align: center;
 }
@@ -2147,7 +2146,7 @@ input[type="range"]::-webkit-slider-thumb {
   border: 1px solid var(--sky);
   border-radius: 8px;
   font-size: 11px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   color: var(--sky);
   text-align: center;
   font-weight: 600;
@@ -2185,7 +2184,7 @@ input[type="range"]::-webkit-slider-thumb {
 /* Methodology mono description text */
 .sm-ed-method-text {
   font-size: 10px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   color: var(--text3);
   line-height: 2;
 }
@@ -3280,7 +3279,7 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--surface2);
 }
 .t-date {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 13px;
   color: var(--accent);
   font-weight: 600;
@@ -3696,7 +3695,7 @@ input[type="range"]::-webkit-slider-thumb {
   line-height: 1.2;
 }
 .comp-card-ticker {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 11px;
   color: var(--text3);
 }
@@ -3746,7 +3745,7 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 4px 0;
 }
 .comp-card-metric .val {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 13px;
   font-weight: 600;
   color: var(--text);
@@ -3955,7 +3954,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* Mono text alignment helpers */
 .sm-mono-right {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 12px;
   font-weight: 600;
   color: var(--text2);
@@ -4186,7 +4185,7 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-cap-td {
   padding: 12px 16px;
   font-size: 12px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
 }
 .sm-cap-td[data-align="right"] { text-align: right; }
 .sm-cap-td[data-highlight] {
@@ -4223,7 +4222,7 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--text2);
   cursor: pointer;
   transition: all 0.2s;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-outfit), sans-serif;
   white-space: nowrap;
 }
 .sm-cmp-filter-btn[data-active="true"] {
@@ -4272,7 +4271,7 @@ input[type="range"]::-webkit-slider-thumb {
   line-height: 1.2;
 }
 .sm-cmp-card-ticker {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 11px;
   color: var(--text3);
   margin-top: 2px;
@@ -4320,7 +4319,7 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 4px 0;
 }
 .sm-cmp-metric-value {
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 13px;
   font-weight: 600;
   color: var(--text);
@@ -4395,7 +4394,7 @@ input[type="range"]::-webkit-slider-thumb {
 /* Valuation table — data cell */
 .sm-cmp-td {
   padding: 12px 16px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 14px;
 }
 .sm-cmp-td[data-align="right"] { text-align: right; }
@@ -4403,7 +4402,7 @@ input[type="range"]::-webkit-slider-thumb {
 /* Valuation table — label cell (first column, sticky on mobile) */
 .sm-cmp-td-label {
   padding: 12px 16px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   font-size: 14px;
   font-weight: 500;
   position: sticky;
@@ -4506,7 +4505,7 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-fin-td {
   padding: 12px 16px;
   font-size: 12px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   text-align: right;
 }
 .sm-fin-td[data-latest] {
@@ -4615,13 +4614,13 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-chart-price {
   font-size: 24px;
   font-weight: 600;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
 }
 
 /* Price change text */
 .sm-chart-price-change {
   font-size: 14px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
 }
 
 /* Controls row */
@@ -4663,7 +4662,7 @@ input[type="range"]::-webkit-slider-thumb {
   white-space: nowrap;
   flex-shrink: 0;
   touch-action: manipulation;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
 }
 .sm-chart-range-btn[data-active="true"] {
   font-weight: 600;
@@ -4805,7 +4804,7 @@ input[type="range"]::-webkit-slider-thumb {
 /* Toggle section active count badge */
 .sm-chart-toggle-count {
   font-size: 9px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-space-mono), monospace;
   padding: 1px 5px;
   background: color-mix(in srgb, var(--accent) 15%, transparent);
   color: var(--accent);
@@ -5141,5 +5140,121 @@ input[type="range"]::-webkit-slider-thumb {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+/* ── Legacy competitor-card & news-entry classes (from ASTS Comps tab) ── */
+.competitor-card {
+  background: var(--bg2);
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.threat-high { border-left: 3px solid var(--red); }
+.threat-medium { border-left: 3px solid var(--gold); }
+.threat-low { border-left: 3px solid var(--mint); }
+.competitor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.competitor-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text1);
+}
+.competitor-type {
+  font-size: 11px;
+  color: var(--text3);
+  padding: 2px 8px;
+  background: var(--bg3);
+  border-radius: 4px;
+}
+.competitor-detail {
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 4px;
+}
+.competitor-notes {
+  font-size: 11px;
+  color: var(--text3);
+  font-style: italic;
+}
+.news-entry {
+  background: var(--bg2);
+  border: 1px solid var(--stroke);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.news-entry:hover {
+  border-color: var(--text3);
+}
+.news-header {
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+.news-title {
+  font-size: 13px;
+  color: var(--text1);
+  font-weight: 500;
+  flex: 1;
+}
+.news-meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+.news-date {
+  font-size: 11px;
+  color: var(--text3);
+}
+.news-impact {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.impact-bullish { background: rgba(16, 185, 129, 0.2); color: var(--mint); }
+.impact-bearish { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+.impact-neutral { background: rgba(148, 163, 184, 0.2); color: var(--text3); }
+.news-body {
+  padding: 0 16px 16px 16px;
+  border-top: 1px solid var(--stroke);
+}
+.news-summary {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.news-implication {
+  font-size: 12px;
+  color: var(--sky);
+  padding: 8px 12px;
+  background: rgba(56, 189, 248, 0.1);
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.news-source {
+  font-size: 11px;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.news-source a {
+  color: var(--sky);
+  text-decoration: none;
+}
+.news-source a:hover {
+  text-decoration: underline;
 }
 `;
