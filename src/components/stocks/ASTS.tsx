@@ -5400,22 +5400,15 @@ const TimelineTab = () => {
           </div>
           {displayedFilings.map((filing, idx) => (
             <div key={idx} className="sm-tl-filing-row">
-              <span style={{ fontSize: 13, color: 'var(--text2)', whiteSpace: 'nowrap' }}>{filing.date}</span>
-              <span style={{ fontSize: 13 }}>
-                <span style={{
-                  background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)',
-                  color: secTypeColors[filing.type]?.text || 'var(--text2)',
-                  padding: '2px 8px',
-                  borderRadius: 99,
-                  fontSize: 11,
-                  fontWeight: 600
-                }}>
+              <span className="sm-text-13 sm-text2" style={{ whiteSpace: 'nowrap' }}>{filing.date}</span>
+              <span>
+                <span className="sm-news-tag" style={{ '--tag-color': secTypeColors[filing.type]?.text || 'var(--text2)' } as React.CSSProperties}>
                   {filing.type}
                 </span>
               </span>
               <span className="sm-text-13t">{filing.description}</span>
               <span className="sm-text-13">{filing.period}</span>
-              <span style={{ fontSize: 13, textAlign: 'right' }}>
+              <span className="sm-text-13 sm-text-right">
                 <a
                   href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
                   target="_blank"
@@ -5434,6 +5427,7 @@ const TimelineTab = () => {
           <button
             onClick={() => setShowAllFilings(!showAllFilings)}
             className="sm-expand-btn"
+            aria-expanded={showAllFilings}
           >
             {showAllFilings ? '▲ Show Less' : `▼ Show ${hiddenCount} More Filings`}
           </button>
@@ -5441,31 +5435,31 @@ const TimelineTab = () => {
 
         {/* Footer with metadata and Last PR marker */}
         <div className="sm-border-t sm-pt-12">
-          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 12 }}>
+          <div className="sm-flex-wrap sm-text-12" style={{ gap: 24 }}>
             <div>
               <span className="sm-text3">CIK:</span>
-              <span style={{ color: 'var(--text2)', marginLeft: 6, fontFamily: "'Space Mono', monospace" }}>{secMeta.cik}</span>
+              <span className="sm-mono-sm sm-text2" style={{ marginLeft: 6 }}>{secMeta.cik}</span>
             </div>
             <div>
               <span className="sm-text3">Ticker:</span>
-              <span style={{ color: 'var(--cyan)', marginLeft: 6, fontWeight: 600 }}>{secMeta.ticker}</span>
+              <span className="sm-cyan sm-fw-600" style={{ marginLeft: 6 }}>{secMeta.ticker}</span>
             </div>
             <div>
               <span className="sm-text3">Exchange:</span>
-              <span style={{ color: 'var(--text2)', marginLeft: 6 }}>{secMeta.exchange}</span>
+              <span className="sm-text2" style={{ marginLeft: 6 }}>{secMeta.exchange}</span>
             </div>
             <a
               href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=&dateb=&owner=include&count=40`}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: 'var(--sky)', marginLeft: 'auto' }}
+              className="sm-sky" style={{ marginLeft: 'auto' }}
             >
               View All SEC Filings →
             </a>
           </div>
-          <div style={{ fontSize: 11, color: 'var(--text3)', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div className="sm-text-11 sm-text3 sm-flex sm-items-center" style={{ gap: 8 }}>
             <span className="sm-cyan">●</span>
-            <span style={{ display: 'flex', alignItems: 'center' }}>Last PR Processed: {secMeta.lastPR.date} — {secMeta.lastPR.title}<UpdateIndicators sources="PR" /></span>
+            <span className="sm-flex sm-items-center">Last PR Processed: {secMeta.lastPR.date} — {secMeta.lastPR.title}<UpdateIndicators sources="PR" /></span>
           </div>
         </div>
         </div>
@@ -5484,43 +5478,43 @@ const TimelineTab = () => {
             </div>
             <div className="sm-card-body">
           <div className="sm-flex-col-gap">
-            <div className="sm-flex-between sm-items-center sm-rounded-12" style={{ padding: '12px 16px', background: 'var(--surface2)' }}>
+            <div className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
               <div>
                 <div className="sm-text sm-fw-600">Q4 2025 Earnings</div>
                 <div className="sm-subtle">10-K Annual Report</div>
               </div>
               <div className="sm-text-right">
-                <div style={{ fontFamily: "'Space Mono', monospace", color: 'var(--cyan)' }}>~Mar 2026</div>
+                <div className="sm-mono-sm sm-cyan">~Mar 2026</div>
                 <div className="sm-text-11">Est.</div>
               </div>
             </div>
-            <div className="sm-flex-between sm-items-center sm-rounded-12" style={{ padding: '12px 16px', background: 'var(--surface2)' }}>
+            <div className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
               <div>
                 <div className="sm-text sm-fw-600">BB7-BB11 Launches</div>
                 <div className="sm-subtle">Block 2 constellation expansion</div>
               </div>
               <div className="sm-text-right">
-                <div style={{ fontFamily: "'Space Mono', monospace", color: 'var(--mint)' }}>Q1 2026</div>
+                <div className="sm-mono-sm sm-mint">Q1 2026</div>
                 <div className="sm-text-11">45-60 sats by EOY</div>
               </div>
             </div>
-            <div className="sm-flex-between sm-items-center sm-rounded-12" style={{ padding: '12px 16px', background: 'var(--surface2)' }}>
+            <div className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
               <div>
                 <div className="sm-text sm-fw-600">Commercial Service Launch</div>
                 <div className="sm-subtle">Initial revenue generation</div>
               </div>
               <div className="sm-text-right">
-                <div style={{ fontFamily: "'Space Mono', monospace", color: 'var(--gold)' }}>H1 2026</div>
+                <div className="sm-mono-sm sm-gold">H1 2026</div>
                 <div className="sm-text-11">Post-constellation</div>
               </div>
             </div>
-            <div className="sm-flex-between sm-items-center sm-rounded-12" style={{ padding: '12px 16px', background: 'var(--surface2)' }}>
+            <div className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
               <div>
                 <div className="sm-text sm-fw-600">Convertible Notes Maturity</div>
                 <div className="sm-subtle">$698M converts @ 4.25%</div>
               </div>
               <div className="sm-text-right">
-                <div style={{ fontFamily: "'Space Mono', monospace", color: 'var(--sky)' }}>2028-2030</div>
+                <div className="sm-mono-sm sm-sky">2028-2030</div>
                 <div className="sm-text-11">Per 10-Q</div>
               </div>
             </div>
@@ -5537,10 +5531,10 @@ const TimelineTab = () => {
             <div className="sm-card-body">
               <div className="sm-flex-col-gap">
                 {displayedPR.map((pr, i) => (
-                  <div key={i} style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12 }}>
+                  <div key={i} className="sm-card-body sm-bg-surface2 sm-rounded-12">
                     <div className="sm-flex-between">
                       <span className="sm-text-11">{pr.date}</span>
-                      <span style={{ fontSize: 11, color: pr.color }}>{pr.category}</span>
+                      <span className="sm-text-11" style={{ color: pr.color }}>{pr.category}</span>
                     </div>
                     <div className="sm-fw-500 sm-text" style={{ fontSize: 14 }}>{pr.title}</div>
                   </div>
@@ -5551,6 +5545,7 @@ const TimelineTab = () => {
                   <button
                     onClick={() => setShowAllPR(!showAllPR)}
                     className="sm-expand-btn"
+                    aria-expanded={showAllPR}
                   >
                     {showAllPR ? '▲ Show Less' : `▼ Show ${hiddenPRCount} More`}
                   </button>
@@ -5639,7 +5634,15 @@ const TimelineTab = () => {
 
           return (
             <div key={i} className="sm-tl-event-card">
-              <div onClick={toggleExpand} className="sm-tl-event-row">
+              <div
+                onClick={toggleExpand}
+                className="sm-tl-event-row"
+                role="button"
+                tabIndex={0}
+                aria-expanded={isExpanded}
+                aria-label={`Toggle details for ${entry.title}`}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleExpand())}
+              >
                 <span className="sm-mono-sm sm-text3">{entry.date}</span>
                 <span className="sm-text-11">{entry.category}</span>
                 <span className="sm-text-13t sm-fw-500">{entry.title}</span>
@@ -5649,22 +5652,22 @@ const TimelineTab = () => {
                   {entry.impact === 'Neutral' && '→ '}
                   {entry.impact?.toLowerCase() || 'neutral'}
                 </span>
-                <span style={{ fontSize: 12, color: 'var(--text3)', textAlign: 'center', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▼</span>
+                <span aria-hidden="true" style={{ fontSize: 12, color: 'var(--text3)', textAlign: 'center', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>▼</span>
               </div>
               {isExpanded && (
                 <div className="sm-tl-detail-panel">
                   <div className="sm-tl-details-grid">
                     <div>
                       {/* Summary */}
-                      <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 12, fontStyle: 'italic', color: 'var(--text3)', fontSize: 12, lineHeight: 1.6 }}>
+                      <div className="sm-inline-note" style={{ fontStyle: 'italic' }}>
                         {entry.summary}
                       </div>
                       {/* Details */}
                       {entry.details && entry.details.length > 0 && (
-                        <ul style={{ margin: '12px 0 0', paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <ul className="sm-flex-col sm-mt-12" style={{ paddingLeft: 0, listStyle: 'none', gap: 4 }}>
                           {entry.details.map((detail, j) => (
-                            <li key={j} style={{ display: 'flex', gap: 8, fontSize: 12, color: 'var(--text2)', lineHeight: 1.6 }}>
-                              <span style={{ color: 'var(--accent)', fontWeight: 'bold' }}>•</span>
+                            <li key={j} className="sm-flex sm-text-12 sm-text2" style={{ gap: 8, lineHeight: 1.6 }}>
+                              <span className="sm-accent sm-fw-700">•</span>
                               {detail}
                             </li>
                           ))}
@@ -5672,9 +5675,9 @@ const TimelineTab = () => {
                       )}
                       {/* Change indicator */}
                       {entry.prevValue && (
-                        <div style={{ marginTop: 12, fontSize: 13, padding: '8px 12px', background: 'var(--surface2)', borderRadius: 8 }}>
-                          <span style={{ color: 'var(--coral)', textDecoration: 'line-through' }}>{entry.prevValue}</span>
-                          <span style={{ color: 'var(--text3)', margin: '0 8px' }}>→</span>
+                        <div className="sm-callout sm-mt-12" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+                          <span className="sm-coral" style={{ textDecoration: 'line-through' }}>{entry.prevValue}</span>
+                          <span className="sm-text3" style={{ margin: '0 8px' }}>→</span>
                           <span className="sm-mint">{entry.newValue}</span>
                         </div>
                       )}
@@ -5682,7 +5685,7 @@ const TimelineTab = () => {
                     <div className="sm-flex-col-gap">
                       <div>
                         <div className="sm-micro-label">Impact</div>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: entry.impact === 'Positive' ? 'var(--mint)' : entry.impact === 'Negative' ? 'var(--coral)' : 'var(--text3)' }}>
+                        <div className="sm-text-13 sm-fw-600" style={{ color: entry.impact === 'Positive' ? 'var(--mint)' : entry.impact === 'Negative' ? 'var(--coral)' : 'var(--text3)' }}>
                           {entry.impact === 'Positive' && '● Bullish'}
                           {entry.impact === 'Negative' && '● Bearish'}
                           {entry.impact === 'Neutral' && '● Neutral'}
@@ -5711,7 +5714,7 @@ const TimelineTab = () => {
         <div className="sm-tl-explain-grid">
           <div>
             <h4 className="sm-cyan sm-fw-500 sm-mb-8">Categories Explained</h4>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: 8, color: 'var(--text2)', listStyle: 'none', padding: 0, margin: 0 }}>
+            <ul className="sm-flex-col sm-text2" style={{ gap: 8, listStyle: 'none', padding: 0, margin: 0 }}>
               <li><span className="sm-gold">Partnership:</span> Commercial agreements, MNO deals, government contracts</li>
               <li><span className="sm-mint">Product:</span> Satellite launches, tech milestones, deployments</li>
               <li><span style={{ color: 'var(--pink)' }}>Regulatory:</span> FCC approvals, spectrum licenses, authorizations</li>
@@ -5722,7 +5725,7 @@ const TimelineTab = () => {
           </div>
           <div>
             <h4 className="sm-cyan sm-fw-500 sm-mb-8">Updating This Log</h4>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: 4, color: 'var(--text2)', listStyle: 'none', padding: 0, margin: 0 }}>
+            <ul className="sm-flex-col sm-text2" style={{ gap: 4, listStyle: 'none', padding: 0, margin: 0 }}>
               <li>• Add new entries chronologically at the top</li>
               <li>• Include sources for traceability</li>
               <li>• Note prev → new values for comparisons</li>
@@ -6744,10 +6747,11 @@ const InvestmentTab = () => {
         role="button"
         tabIndex={0}
         aria-expanded={investmentSections.has(id)}
-        onKeyDown={(e) => e.key === 'Enter' && toggleSection(id)}
+        aria-label={`Toggle ${title}`}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection(id))}
       >
         <span className="sm-section-label">{title}{sources && <UpdateIndicators sources={sources} />}</span>
-        <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
+        <span className="sm-text3" aria-hidden="true" style={{ fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
       </div>
       {investmentSections.has(id) && <div className="sm-card-body">{children}</div>}
     </div>
@@ -6832,12 +6836,10 @@ const InvestmentTab = () => {
       <CollapsibleSection id="scorecard" title="Investment Scorecard" sources={['PR', 'SEC']}>
         <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
           {current.scorecard.map((item, i) => (
-            <div key={i} className="sm-card-body sm-bg-surface2 sm-rounded-12 sm-flex-between sm-items-center">
-              <div>
-                <div className="sm-text-13t sm-fw-600">{item.category}</div>
-                <div className="sm-text-11">{item.detail}</div>
-              </div>
-              <div className="sm-mono-lg" style={{ fontSize: 20, color: item.color }}>{item.rating}</div>
+            <div key={i} className="sm-kpi-cell" style={{ '--kpi-color': item.color } as React.CSSProperties}>
+              <div className="sm-kpi-hero-md">{item.rating}</div>
+              <div className="sm-kpi-label">{item.category}</div>
+              <div className="sm-kpi-sub">{item.detail}</div>
             </div>
           ))}
         </div>
@@ -6851,9 +6853,9 @@ const InvestmentTab = () => {
 
       {/* Summary */}
       <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
-        <div className="sm-card-body sm-rounded-12 sm-mb-12" style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
-          <div className="sm-fw-600 sm-mint">What's New ({current.source})</div>
-          <ul className="sm-text-13 sm-text2" style={{ margin: 0, paddingLeft: 16, lineHeight: 1.8 }}>
+        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--mint)', '--bar-accent-2': 'var(--cyan)' } as React.CSSProperties}>
+          <div style={{ fontSize: 11, color: 'var(--mint)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>What's New ({current.source})</div>
+          <ul className="sm-text-13 sm-text2" style={{ margin: '4px 0 0', paddingLeft: 16, lineHeight: 1.8 }}>
             {current.executiveSummary.whatsNew.map((item, i) => (
               <li key={i}>{item}</li>
             ))}
@@ -6863,9 +6865,11 @@ const InvestmentTab = () => {
           <p>
             <strong>Thesis:</strong> {current.executiveSummary.thesis}
           </p>
-          <p style={{ fontStyle: 'italic', color: 'var(--cyan)' }}>
-            "{current.executiveSummary.bottomLine}"
-          </p>
+        </div>
+        <div className="sm-note-panel">
+          <em className="sm-cyan">"{current.executiveSummary.bottomLine}"</em>
+        </div>
+        <div className="sm-text-13 sm-text2 sm-body" style={{ lineHeight: 1.8 }}>
           <p>
             <strong>Position Sizing:</strong> 3-5% for growth portfolios • 1-2% for balanced • Speculative allocation for conservative
           </p>
@@ -6921,7 +6925,7 @@ const InvestmentTab = () => {
             ))}
           </div>
         </div>
-        <div className="sm-text-13 sm-card-body sm-bg-surface2 sm-rounded-12 sm-mt-12">
+        <div className="sm-note-panel">
           <strong>Moat Durability:</strong> A- (Strong). Spectrum + patents + manufacturing scale create defensible position. 4+ year technology lead is substantial. Key risk is well-funded competitors (Starlink) accelerating D2D efforts.
         </div>
       </CollapsibleSection>
@@ -6935,19 +6939,22 @@ const InvestmentTab = () => {
       {/* Risk Matrix */}
       <CollapsibleSection id="risks" title="Risk Matrix" sources={['PR', 'SEC']}>
         <div className="sm-flex-col sm-gap-8">
-          {current.risks.map((r, i) => (
-            <div key={i} className="sm-card-body sm-bg-surface2 sm-rounded-12" style={{ borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}>
-              <div className="sm-flex-between">
-                <span className="sm-text sm-fw-600">{r.risk}</span>
-                <div className="sm-flex sm-gap-8" style={{ alignItems: 'initial' }}>
-                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: r.severity === 'Critical' ? 'color-mix(in srgb, var(--coral) 20%, transparent)' : r.severity === 'High' ? 'color-mix(in srgb, var(--gold) 20%, transparent)' : 'color-mix(in srgb, var(--sky) 20%, transparent)', color: r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)' }}>{r.severity}</span>
-                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{r.likelihood} likelihood</span>
+          {current.risks.map((r, i) => {
+            const severityColor = r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)';
+            return (
+              <div key={i} className="sm-callout" style={{ '--callout-color': severityColor } as React.CSSProperties}>
+                <div className="sm-flex-between">
+                  <span className="sm-text sm-fw-600">{r.risk}</span>
+                  <div className="sm-flex sm-gap-8">
+                    <span className="sm-news-tag" style={{ '--tag-color': severityColor } as React.CSSProperties}>{r.severity}</span>
+                    <span className="sm-news-tag" style={{ '--tag-color': 'var(--text3)' } as React.CSSProperties}>{r.likelihood} likelihood</span>
+                  </div>
                 </div>
+                <div className="sm-text-13" style={{ marginTop: 4 }}>{r.detail}</div>
+                <div className="sm-subtle" style={{ marginTop: 4 }}><strong className="sm-mint">Mitigation:</strong> {r.mitigation}</div>
               </div>
-              <div className="sm-text-13">{r.detail}</div>
-              <div className="sm-subtle"><strong className="sm-mint">Mitigation:</strong> {r.mitigation}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </CollapsibleSection>
 
@@ -6962,9 +6969,9 @@ const InvestmentTab = () => {
         <div className="sm-mb-8" style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span className="sm-section-label sm-text">Risk Evaluation — Four Perspectives</span></div>
 
         {/* CFA Level III Perspective */}
-        <div className="sm-rounded-12" style={{ background: 'color-mix(in srgb, var(--cyan) 5%, transparent)', padding: '12px 16px', border: '1px solid color-mix(in srgb, var(--cyan) 20%, transparent)' }}>
+        <div className="sm-callout" style={{ '--callout-color': 'var(--cyan)' } as React.CSSProperties}>
           <div className="sm-flex">
-            <span className="sm-fw-600" style={{ background: 'var(--cyan)', color: 'var(--bg)', padding: '4px 12px', borderRadius: 99, fontSize: 11 }}>CFA LEVEL III</span>
+            <span className="sm-news-tag" style={{ '--tag-color': 'var(--cyan)' } as React.CSSProperties}>CFA LEVEL III</span>
             <span className="sm-subtle">Portfolio Construction & Factor Analysis</span>
           </div>
           <div className="sm-body sm-lh-18">
@@ -6981,9 +6988,9 @@ const InvestmentTab = () => {
         </div>
 
         {/* Hedge Fund Manager Perspective */}
-        <div className="sm-rounded-12" style={{ background: 'color-mix(in srgb, var(--gold) 5%, transparent)', padding: '12px 16px', border: '1px solid color-mix(in srgb, var(--gold) 20%, transparent)' }}>
+        <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
           <div className="sm-flex">
-            <span className="sm-fw-600" style={{ background: 'var(--gold)', color: 'var(--bg)', padding: '4px 12px', borderRadius: 99, fontSize: 11 }}>HEDGE FUND</span>
+            <span className="sm-news-tag" style={{ '--tag-color': 'var(--gold)' } as React.CSSProperties}>HEDGE FUND</span>
             <span className="sm-subtle">Alpha Generation & Event Catalysts</span>
           </div>
           <div className="sm-body sm-lh-18">
@@ -7000,9 +7007,9 @@ const InvestmentTab = () => {
         </div>
 
         {/* CIO/CIS Institutional Perspective */}
-        <div className="sm-rounded-12" style={{ background: 'color-mix(in srgb, var(--sky) 5%, transparent)', padding: '12px 16px', border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
+        <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
           <div className="sm-flex">
-            <span className="sm-fw-600" style={{ background: 'var(--sky)', color: 'white', padding: '4px 12px', borderRadius: 99, fontSize: 11 }}>CIO / CIS</span>
+            <span className="sm-news-tag" style={{ '--tag-color': 'var(--sky)' } as React.CSSProperties}>CIO / CIS</span>
             <span className="sm-subtle">Strategic Allocation & Fiduciary Considerations</span>
           </div>
           <div className="sm-body sm-lh-18">
@@ -7019,9 +7026,9 @@ const InvestmentTab = () => {
         </div>
 
         {/* Technical Analyst Perspective */}
-        <div className="sm-rounded-12" style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: '12px 16px', border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
+        <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
           <div className="sm-flex">
-            <span className="sm-fw-600" style={{ background: '#34d399', color: 'var(--bg)', padding: '4px 12px', borderRadius: 99, fontSize: 11 }}>TECHNICAL ANALYST</span>
+            <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>TECHNICAL ANALYST</span>
             <span className="sm-subtle">Chart Patterns & Price Action</span>
           </div>
           <div className="sm-body sm-lh-18">
@@ -7034,9 +7041,9 @@ const InvestmentTab = () => {
             <p>
               <strong>Catalyst Trading:</strong> Satellite launch dates provide predictable volatility windows. Build position 2-3 weeks before scheduled launches. Take partial profits into strength post-launch. Use RSI divergence to identify exhaustion after catalyst-driven rallies. Relative strength vs NASDAQ positive — outperforming growth cohort.
             </p>
-            <p className="sm-rounded-6" style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--mint) 10%, transparent)', borderLeft: '3px solid #34d399' }}>
-              <strong style={{ color: '#34d399' }}>Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
-            </p>
+            <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+              <strong className="sm-mint">Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
+            </div>
           </div>
         </div>
 
@@ -7044,10 +7051,10 @@ const InvestmentTab = () => {
         <div className="sm-mb-8" style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span className="sm-section-label sm-text">Key Strategic Questions</span></div>
 
         {/* Would I Buy Now? */}
-        <div className="sm-rounded-12" style={{ background: 'var(--surface2)', padding: '12px 16px' }}>
+        <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
           <div className="sm-flex-between">
             <span className="sm-text sm-fw-600" style={{ fontSize: 15 }}>Would I Buy Now?</span>
-            <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '6px 16px', borderRadius: 99, fontWeight: 700, fontSize: 13 }}>YES — HIGH CONVICTION</span>
+            <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)', fontWeight: 700, fontSize: 13, padding: '6px 16px' } as React.CSSProperties}>YES — HIGH CONVICTION</span>
           </div>
           <div className="sm-body sm-lh-18">
             <p>
@@ -7063,23 +7070,23 @@ const InvestmentTab = () => {
         </div>
 
         {/* What Can I Expect? */}
-        <div className="sm-rounded-12" style={{ background: 'var(--surface2)', padding: '12px 16px' }}>
+        <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
           <div className="sm-text sm-fw-600" style={{ fontSize: 15 }}>What Can I Expect?</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
-            <div className="sm-rounded-12" style={{ background: 'color-mix(in srgb, var(--gold) 10%, transparent)', padding: 12, border: '1px solid color-mix(in srgb, var(--gold) 20%, transparent)' }}>
-              <div className="sm-fw-600" style={{ color: 'var(--gold)', fontSize: 13 }}>Short-Term (0-6 months)</div>
+          <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
+            <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
+              <div className="sm-fw-600 sm-gold" style={{ fontSize: 13 }}>Short-Term (0-6 months)</div>
               <div className="sm-text-13 sm-lh-16">
                 Catalyst-rich period: BB7-13 launches, US commercial service initiation, Q4 earnings. Expect 30-50% swings around events. Successful launches = 10-20% pops, then consolidation. Trading range likely $20-45 depending on execution. Volatility is your friend if sized correctly.
               </div>
             </div>
-            <div className="sm-rounded-12" style={{ background: 'color-mix(in srgb, var(--sky) 10%, transparent)', padding: 12, border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
-              <div className="sm-fw-600" style={{ color: 'var(--sky)', fontSize: 13 }}>Mid-Term (6-18 months)</div>
+            <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
+              <div className="sm-fw-600 sm-sky" style={{ fontSize: 13 }}>Mid-Term (6-18 months)</div>
               <div className="sm-text-13 sm-lh-16">
                 Revenue recognition begins — first real P&L validation. If penetration tracks to 1%+, narrative shifts from "will it work?" to "how big can it get?" Multiple expansion potential. Target range: $50-100 if execution continues. This is where the thesis gets proven or broken.
               </div>
             </div>
-            <div className="sm-rounded-12" style={{ background: 'color-mix(in srgb, var(--cyan) 10%, transparent)', padding: 12, border: '1px solid color-mix(in srgb, var(--cyan) 20%, transparent)' }}>
-              <div className="sm-fw-600" style={{ color: 'var(--cyan)', fontSize: 13 }}>Long-Term (3-5 years)</div>
+            <div className="sm-callout" style={{ '--callout-color': 'var(--cyan)' } as React.CSSProperties}>
+              <div className="sm-fw-600 sm-cyan" style={{ fontSize: 13 }}>Long-Term (3-5 years)</div>
               <div className="sm-text-13 sm-lh-16">
                 At scale (2%+ penetration, 60M+ subs), ASTS could generate $5-10B revenue at 50%+ EBITDA margins. At telco multiples (8-12x EBITDA), that's $40-120B EV vs ~$12B today. 3-10x return potential. But crypto-like volatility along the way — expect multiple 40%+ drawdowns.
               </div>
@@ -7088,7 +7095,7 @@ const InvestmentTab = () => {
         </div>
 
         {/* What's My Strategy? */}
-        <div className="sm-rounded-12" style={{ background: 'var(--surface2)', padding: '12px 16px' }}>
+        <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
           <div className="sm-text sm-fw-600" style={{ fontSize: 15 }}>What's My Strategy?</div>
           <div className="sm-body sm-lh-18">
             <p>
@@ -7113,22 +7120,25 @@ const InvestmentTab = () => {
           <div>
             <span className="sm-section-label sm-text sm-inline-block">Recommended Allocation</span>
             <div className="sm-flex-col">
-              {Object.entries(current.positionSizing).map(([key, val]) => (
-                <div key={key} className="sm-flex-between sm-rounded-6" style={{ padding: '12px 16px', background: 'var(--surface2)', fontSize: 13 }}>
-                  <span className="sm-text2" style={{ textTransform: 'capitalize' }}>{key}</span>
-                  <span style={{ color: key === 'aggressive' ? 'var(--mint)' : key === 'growth' ? 'var(--sky)' : key === 'balanced' ? 'var(--gold)' : 'var(--coral)', fontWeight: 500 }}>{val.range}</span>
-                </div>
-              ))}
+              {Object.entries(current.positionSizing).map(([key, val]) => {
+                const posColor = key === 'aggressive' ? 'var(--mint)' : key === 'growth' ? 'var(--sky)' : key === 'balanced' ? 'var(--gold)' : 'var(--coral)';
+                return (
+                  <div key={key} className="sm-flex-between sm-card-body sm-bg-surface2 sm-rounded-6 sm-text-13">
+                    <span className="sm-text2 sm-capitalize">{key}</span>
+                    <span className="sm-fw-500" style={{ color: posColor }}>{val.range}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
           <div>
             <span className="sm-section-label sm-text sm-inline-block">Price Targets by Timeframe</span>
             <div className="sm-flex-col">
               {current.priceTargets.map((t, i) => (
-                <div key={i} className="sm-rounded-6" style={{ padding: '12px 16px', background: 'var(--surface2)', fontSize: 13 }}>
+                <div key={i} className="sm-card-body sm-bg-surface2 sm-rounded-6 sm-text-13">
                   <div className="sm-flex-between">
                     <span className="sm-text2">{t.period}</span>
-                    <span style={{ color: 'var(--mint)', fontWeight: 600 }}>{t.range}</span>
+                    <span className="sm-fw-600 sm-mint">{t.range}</span>
                   </div>
                   <div className="sm-text-11">{t.detail}</div>
                 </div>
@@ -7138,29 +7148,29 @@ const InvestmentTab = () => {
         </div>
 
         {/* Portfolio Context — Unified framework for multi-asset allocation */}
-        <div className="sm-rounded-12" style={{ padding: 16, background: 'color-mix(in srgb, var(--violet) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
-          <div className="sm-fw-600 sm-violet" style={{ fontSize: 14 }}>Portfolio Construction Context</div>
-          <div className="sm-subtle" style={{ fontStyle: 'italic' }}>For multi-asset portfolios holding ASTS alongside other positions</div>
-          <div className="sm-mt-12" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
-            <div className="sm-rounded-6" style={{ background: 'var(--surface)', padding: 12 }}>
-              <div className="sm-text-11">Asset Class Bucket</div>
-              <div className="sm-text-13t sm-fw-600">Growth / Technology</div>
-              <div className="sm-text-11 sm-gold">Limit: 15-25% of portfolio</div>
-            </div>
-            <div className="sm-rounded-6" style={{ background: 'var(--surface)', padding: 12 }}>
-              <div className="sm-text-11">Single-Name Limit</div>
-              <div className="sm-text-13t sm-fw-600">3-6% max</div>
-              <div className="sm-text-11 sm-coral">Pre-revenue, high volatility</div>
-            </div>
-            <div className="sm-rounded-6" style={{ background: 'var(--surface)', padding: 12 }}>
-              <div className="sm-text-11">Correlation Note</div>
-              <div className="sm-text-13t sm-fw-600">Low correlation</div>
-              <div className="sm-text-11 sm-mint">Unique D2D space exposure</div>
-            </div>
+        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--violet)', '--bar-accent-2': 'var(--sky)' } as React.CSSProperties}>
+          <div style={{ fontSize: 11, color: 'var(--violet)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>Portfolio Construction Context</div>
+          <div className="sm-subtle" style={{ fontStyle: 'italic', marginTop: 4 }}>For multi-asset portfolios holding ASTS alongside other positions</div>
+        </div>
+        <div className="sm-model-grid sm-mt-12" style={{ '--cols': 3 } as React.CSSProperties}>
+          <div className="sm-kpi-cell">
+            <div className="sm-kpi-label">Asset Class Bucket</div>
+            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>Growth / Tech</div>
+            <div className="sm-kpi-sub sm-gold">Limit: 15-25% of portfolio</div>
           </div>
-          <div className="sm-text-12 sm-text2 sm-mt-8">
-            <strong>Sector Exposure:</strong> ASTS is uncorrelated to other model positions (BMNR, CRCL). Provides telecom infrastructure / space tech exposure. Can be sized independently within growth allocation, but account for total tech concentration if holding other growth names.
+          <div className="sm-kpi-cell">
+            <div className="sm-kpi-label">Single-Name Limit</div>
+            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>3-6% max</div>
+            <div className="sm-kpi-sub sm-coral">Pre-revenue, high volatility</div>
           </div>
+          <div className="sm-kpi-cell">
+            <div className="sm-kpi-label">Correlation Note</div>
+            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>Low corr.</div>
+            <div className="sm-kpi-sub sm-mint">Unique D2D space exposure</div>
+          </div>
+        </div>
+        <div className="sm-note-panel">
+          <strong>Sector Exposure:</strong> ASTS is uncorrelated to other model positions (BMNR, CRCL). Provides telecom infrastructure / space tech exposure. Can be sized independently within growth allocation, but account for total tech concentration if holding other growth names.
         </div>
       </CollapsibleSection>
 
@@ -7192,11 +7202,11 @@ const InvestmentTab = () => {
                     </div>
                   </div>
                   <div className="sm-grid-2-lg">
-                    <div className="sm-rounded-6" style={{ padding: 12, background: 'color-mix(in srgb, var(--mint) 10%, transparent)' }}>
+                    <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
                       <div className="sm-fw-600 sm-mint" style={{ fontSize: 11 }}>Why It Mattered</div>
                       <div className="sm-text-12">{a.whyItMatters}</div>
                     </div>
-                    <div className="sm-rounded-6" style={{ padding: 12, background: 'color-mix(in srgb, var(--violet) 10%, transparent)' }}>
+                    <div className="sm-callout" style={{ '--callout-color': 'var(--violet)' } as React.CSSProperties}>
                       <div className="sm-fw-600 sm-violet" style={{ fontSize: 11 }}>Looking Ahead (at the time)</div>
                       <div className="sm-text-12">{a.lookingAhead}</div>
                     </div>
@@ -7204,9 +7214,12 @@ const InvestmentTab = () => {
                 </div>
               )}
               
-              <button 
+              <button
                 onClick={() => setExpandedArchive(expandedArchive === i ? null : i)}
-                className="sm-text-11 sm-text3" style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                className="sm-text-11 sm-text3"
+                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                aria-expanded={expandedArchive === i}
+                aria-label={`Toggle details for ${a.headline}`}
               >
                 {expandedArchive === i ? '▼ Less' : '▶ More details'}
               </button>
