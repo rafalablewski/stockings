@@ -14,6 +14,11 @@ interface AnalysisEntry {
   detail?: string; // summary, notes, or other context
 }
 
+// In-memory cache for analysis data — avoids hitting 4 DB tables on every request.
+// TTL of 5 minutes: analysis data changes infrequently (manual research updates).
+const CACHE_TTL_MS = 5 * 60 * 1000;
+const analysisCache = new Map<string, { data: AnalysisEntry[]; ts: number }>();
+
 // Lightweight stemmer: strips common English suffixes so "reports" ≈ "report",
 // "announces" ≈ "announcement", "partnership" ≈ "partner", etc.
 function stem(word: string): string {
@@ -184,6 +189,12 @@ function localMatch(articleHeadline: string, articleDate: string, analysisData: 
 async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
   const upperTicker = ticker.toUpperCase();
 
+  // Return cached data if fresh
+  const cached = analysisCache.get(upperTicker);
+  if (cached && Date.now() - cached.ts < CACHE_TTL_MS) {
+    return cached.data;
+  }
+
   // Query all 4 tables in parallel
   const [timelineRows, filingRows, catalystRows, newsRows] = await Promise.all([
     db.select({
@@ -235,12 +246,15 @@ async function getAnalysisData(ticker: string): Promise<AnalysisEntry[]> {
 
   // Deduplicate by headline (normalized)
   const seen = new Set<string>();
-  return entries.filter(e => {
+  const deduped = entries.filter(e => {
     const key = e.headline.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 80);
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
+
+  analysisCache.set(upperTicker, { data: deduped, ts: Date.now() });
+  return deduped;
 }
 
 export async function POST(request: NextRequest) {

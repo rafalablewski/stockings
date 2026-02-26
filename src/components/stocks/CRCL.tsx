@@ -110,7 +110,7 @@
  */
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import { getStockModelCSS } from './stock-model-styles';
+import './stock-model-styles.css';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner } from '../shared';
 import type { UpdateSource } from '../shared';
 import StockChart from '../shared/StockChart';
@@ -552,9 +552,7 @@ const crclCompetitors: Competitor[] = [
 
 const crclResearchSources = CRCL_RESEARCH_SOURCES;
 
-// CSS is now imported from shared styles (Golden Standard: ASTS)
-// To modify styles, edit: ./stock-model-styles.ts
-const css = getStockModelCSS('mint');
+// CSS imported from stock-model-styles.css (see import at top of file)
 
 // Row, Card, Panel, Input imported from '../shared'
 
@@ -1280,12 +1278,12 @@ const CRCLModelTab = ({
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1, background: 'var(--border)', borderRadius: 14, overflow: 'hidden', marginBottom: 12 }}>
           <div style={{ background: 'var(--accent-dim)', padding: 24, textAlign: 'center' }}>
             <div className="sm-section-label sm-accent">Target Stock Price</div>
-            <div style={{ fontFamily: 'Space Mono', fontSize: 36, fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 36, fontWeight: 700, color: 'var(--accent)', lineHeight: 1 }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
             <div className="sm-subtle" style={{ marginTop: 6 }}>vs ${currentStockPrice.toFixed(0)} current</div>
           </div>
           <div style={{ background: 'var(--accent-dim)', padding: 24, textAlign: 'center' }}>
             <div className="sm-section-label sm-accent">Implied Upside</div>
-            <div style={{ fontFamily: 'Space Mono', fontSize: 36, fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)', lineHeight: 1 }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
+            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 36, fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)', lineHeight: 1 }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
             <div className="sm-subtle" style={{ marginTop: 6 }}>{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
           </div>
         </div>
@@ -1351,7 +1349,7 @@ const CRCLModelTab = ({
               ].map((section, si) => (
                 <div key={si} className="sm-bg-surface2 sm-overflow-hidden" style={{ borderRadius: 12 }}>
                   <div className="sm-flex" style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
-                    <span style={{ background: section.color, color: 'var(--bg)', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono' }}>Step {section.step}</span>
+                    <span style={{ background: section.color, color: 'var(--bg)', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 700, fontFamily: "'Space Mono', monospace" }}>Step {section.step}</span>
                     <span className="sm-text sm-fw-600" style={{ fontSize: 12 }}>{section.title}</span>
                   </div>
                   <div className="sm-flex-col" style={{ padding: '12px 16px', gap: 8 }}>
@@ -1359,7 +1357,7 @@ const CRCLModelTab = ({
                       <div key={ii} className="sm-flex-between" style={{ alignItems: 'baseline', gap: 8 }}>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div className="sm-subtle-sm sm-text2 sm-fw-600">{item.label}</div>
-                          <div className="sm-text3" style={{ fontSize: 10, fontFamily: 'Space Mono', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.formula}</div>
+                          <div className="sm-text3" style={{ fontSize: 10, fontFamily: "'Space Mono', monospace", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.formula}</div>
                         </div>
                         <div className="sm-mono sm-fw-700 sm-shrink-0" style={{ fontSize: 13, color: section.color }}>{item.result}</div>
                       </div>
@@ -1422,7 +1420,7 @@ const ScenariosTab = () => {
                   color: targetYear === year ? 'var(--mint)' : 'var(--text2)',
                   cursor: 'pointer',
                   fontWeight: targetYear === year ? 700 : 400,
-                  fontFamily: 'Space Mono',
+                  fontFamily: "'Space Mono', monospace",
                   fontSize: 16,
                 }}
               >
@@ -1483,7 +1481,7 @@ const ScenariosTab = () => {
                 </div>
                 <div className="sm-text-right">
                   <div className="sm-subtle">Probability Weight</div>
-                  <div style={{ fontFamily: 'Space Mono', fontSize: 32, fontWeight: 700, color: selected.color }}>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 32, fontWeight: 700, color: selected.color }}>
                     {selected.prob}%
                   </div>
                 </div>
@@ -2963,8 +2961,7 @@ function CRCLModel() {
 
   return (
     <UpdateIndicatorContext.Provider value={{ showIndicators, setShowIndicators }}>
-      <style>{css}</style>
-      <div className="stock-model-app">
+      <div className="stock-model-app" data-accent="mint">
         {/* ============================================================================
             LEGAL DISCLAIMER BANNER
             ============================================================================ */}
@@ -3363,17 +3360,17 @@ function CRCLModel() {
                   <div className="sm-flex-wrap sm-gap-24">
                     <div className="sm-text-center">
                       <div className="sm-text-11">Price Target</div>
-                      <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$100-150</div>
+                      <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$100-150</div>
                       <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>12-month</div>
                     </div>
                     <div className="sm-text-center">
                       <div className="sm-text-11">Risk/Reward</div>
-                      <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>3.2:1</div>
+                      <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>3.2:1</div>
                       <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>Asymmetric</div>
                     </div>
                     <div className="sm-text-center">
                       <div className="sm-text-11">Current</div>
-                      <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--text)', fontWeight: 700 }}>${MARKET.price}</div>
+                      <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, color: 'var(--text)', fontWeight: 700 }}>${MARKET.price}</div>
                       <div style={{ fontSize: 10, color: 'var(--mint)' }}>+165% since IPO</div>
                     </div>
                   </div>
@@ -3551,11 +3548,11 @@ function CRCLModel() {
                           </div>
                           <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
                             <div className="sm-text-11">Coinbase Cost</div>
-                            <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--coral)', fontWeight: 700 }}>54%</div>
+                            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--coral)', fontWeight: 700 }}>54%</div>
                           </div>
                           <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
                             <div className="sm-text-11">EBITDA Margin</div>
-                            <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--sky)', fontWeight: 700 }}>22%</div>
+                            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--sky)', fontWeight: 700 }}>22%</div>
                           </div>
                         </div>
 
@@ -3701,7 +3698,7 @@ function CRCLModel() {
                           </div>
                           <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
                             <div className="sm-text-11">Fair Value</div>
-                            <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--sky)', fontWeight: 700 }}>$100-150</div>
+                            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--sky)', fontWeight: 700 }}>$100-150</div>
                           </div>
                           <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
                             <div className="sm-text-11">Expected Return</div>
@@ -3759,7 +3756,7 @@ function CRCLModel() {
                           <div className="sm-bg-surface2" style={{ padding: 16, borderRadius: 12 }}>
                             <div className="sm-flex-between">
                               <span className="sm-subtle">Fed Funds Rate</span>
-                              <span style={{ fontFamily: 'Space Mono', color: 'var(--mint)', fontWeight: 600 }}>{sensRate.toFixed(1)}%</span>
+                              <span style={{ fontFamily: "'Space Mono', monospace", color: 'var(--mint)', fontWeight: 600 }}>{sensRate.toFixed(1)}%</span>
                             </div>
                             <input 
                               type="range" 
@@ -3780,7 +3777,7 @@ function CRCLModel() {
                           <div className="sm-bg-surface2" style={{ padding: 16, borderRadius: 12 }}>
                             <div className="sm-flex-between">
                               <span className="sm-subtle">USDC Circulation</span>
-                              <span style={{ fontFamily: 'Space Mono', color: 'var(--sky)', fontWeight: 600 }}>${sensUsdc}B</span>
+                              <span style={{ fontFamily: "'Space Mono', monospace", color: 'var(--sky)', fontWeight: 600 }}>${sensUsdc}B</span>
                             </div>
                             <input 
                               type="range" 
@@ -3801,7 +3798,7 @@ function CRCLModel() {
                           <div className="sm-bg-surface2" style={{ padding: 16, borderRadius: 12 }}>
                             <div className="sm-flex-between">
                               <span className="sm-subtle">Coinbase Distribution</span>
-                              <span style={{ fontFamily: 'Space Mono', color: 'var(--coral)', fontWeight: 600 }}>{sensDist}%</span>
+                              <span style={{ fontFamily: "'Space Mono', monospace", color: 'var(--coral)', fontWeight: 600 }}>{sensDist}%</span>
                             </div>
                             <input 
                               type="range" 
@@ -3835,13 +3832,13 @@ function CRCLModel() {
                           </div>
                           <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
                             <div className="sm-text-11">RLDC Margin</div>
-                            <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: sensRate >= 3 && sensDist <= 50 ? 'var(--mint)' : 'var(--gold)', fontWeight: 700 }}>
+                            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: sensRate >= 3 && sensDist <= 50 ? 'var(--mint)' : 'var(--gold)', fontWeight: 700 }}>
                               {(100 - sensDist).toFixed(0)}%
                             </div>
                           </div>
                           <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
                             <div className="sm-text-11">Est. EBITDA</div>
-                            <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--sky)', fontWeight: 700 }}>
+                            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--sky)', fontWeight: 700 }}>
                               ${((sensUsdc * sensRate / 100) * (1 - sensDist / 100) * 0.55).toFixed(2)}B
                             </div>
                           </div>
@@ -3852,13 +3849,13 @@ function CRCLModel() {
                           <div className="sm-flex-between" style={{ flexWrap: 'wrap', gap: 12 }}>
                             <div>
                               <div className="sm-subtle">Implied Fair Value (8x P/S)</div>
-                              <div style={{ fontFamily: 'Space Mono', fontSize: 28, color: 'var(--mint)', fontWeight: 700 }}>
+                              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, color: 'var(--mint)', fontWeight: 700 }}>
                                 ${((sensUsdc * sensRate / 100) * 8 / 0.23).toFixed(0)}
                               </div>
                             </div>
                             <div className="sm-text-right">
                               <div className="sm-subtle">vs. Current ($82)</div>
-                              <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: ((sensUsdc * sensRate / 100) * 8 / 0.23) > 82 ? 'var(--mint)' : 'var(--coral)', fontWeight: 600 }}>
+                              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: ((sensUsdc * sensRate / 100) * 8 / 0.23) > 82 ? 'var(--mint)' : 'var(--coral)', fontWeight: 600 }}>
                                 {((((sensUsdc * sensRate / 100) * 8 / 0.23) - 82) / 82 * 100) > 0 ? '+' : ''}{((((sensUsdc * sensRate / 100) * 8 / 0.23) - 82) / 82 * 100).toFixed(0)}%
                               </div>
                             </div>
@@ -4809,7 +4806,7 @@ function CRCLModel() {
                     {EQUITY_PLANS.map((p, i) => (
                       <div key={i} className="sm-bg-surface2" style={{ padding: 24, borderRadius: 12 }}>
                       <div className="sm-text-13 sm-text3">{p.plan}</div>
-                      <div style={{ fontFamily: 'Space Mono', fontSize: 24, fontWeight: 700, color: 'var(--mint)' }}>
+                      <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 24, fontWeight: 700, color: 'var(--mint)' }}>
                         {(p.reserved / 1000).toFixed(1)}M
                       </div>
                       <div className="sm-subtle">shares reserved</div>
@@ -4984,7 +4981,7 @@ function CRCLModel() {
                             color: mcYears === yr ? 'var(--accent)' : 'var(--text2)',
                             cursor: 'pointer',
                             fontWeight: mcYears === yr ? 700 : 400,
-                            fontFamily: 'Space Mono',
+                            fontFamily: "'Space Mono', monospace",
                             fontSize: 16,
                             transition: 'all 0.15s'
                           }}
@@ -5012,7 +5009,7 @@ function CRCLModel() {
                             color: mcSims === simCount ? 'var(--accent)' : 'var(--text2)',
                             cursor: 'pointer',
                             fontWeight: mcSims === simCount ? 700 : 400,
-                            fontFamily: 'Space Mono',
+                            fontFamily: "'Space Mono', monospace",
                             fontSize: 14,
                             transition: 'all 0.15s'
                           }}
@@ -5332,14 +5329,12 @@ function CRCLModel() {
                   ].map((row, i) => {
                     const pctChange = ((row.value / MARKET.price - 1) * 100);
                     return (
-                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: row.highlight ? 'var(--accent-dim)' : 'transparent', cursor: 'default' }}
-                        onMouseEnter={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'var(--surface2)'; }}
-                        onMouseLeave={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
+                      <div key={i} className="sm-grid-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : 'transparent', cursor: 'default' }}
                       >
                         <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
-                        <span style={{ textAlign: 'right', fontFamily: 'Space Mono', fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
-                        <span style={{ textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>${(row.value - MARKET.price).toFixed(2)}</span>
-                        <span style={{ textAlign: 'right', fontFamily: 'Space Mono', fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</span>
+                        <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
+                        <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", color: 'var(--text2)' }}>${(row.value - MARKET.price).toFixed(2)}</span>
+                        <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</span>
                       </div>
                     );
                   })}
@@ -5355,12 +5350,12 @@ function CRCLModel() {
                     <span className="sm-text-left">Interpretation</span>
                   </div>
                   {[
-                    { label: 'Win Probability', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: mcSim.winProb > 50 ? 'var(--mint)' : 'var(--red)' }}>{mcSim.winProb.toFixed(1)}%</span>, interp: 'Prob. of exceeding current price' },
-                    { label: 'Expected Value', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${mcSim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
-                    { label: 'Sharpe Ratio', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: mcSim.sharpe > 1 ? 'var(--mint)' : mcSim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{mcSim.sharpe.toFixed(2)}</span>, interp: mcSim.sharpe > 1 ? 'Excellent risk-adj return' : mcSim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
-                    { label: 'Sortino Ratio', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: mcSim.sortino > 1 ? 'var(--mint)' : mcSim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{mcSim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
-                    { label: 'VaR (5%)', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{mcSim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
-                    { label: 'CVaR (5%)', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: 'var(--red)' }}>{mcSim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
+                    { label: 'Win Probability', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: mcSim.winProb > 50 ? 'var(--mint)' : 'var(--red)' }}>{mcSim.winProb.toFixed(1)}%</span>, interp: 'Prob. of exceeding current price' },
+                    { label: 'Expected Value', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600 }}>${mcSim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
+                    { label: 'Sharpe Ratio', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: mcSim.sharpe > 1 ? 'var(--mint)' : mcSim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{mcSim.sharpe.toFixed(2)}</span>, interp: mcSim.sharpe > 1 ? 'Excellent risk-adj return' : mcSim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
+                    { label: 'Sortino Ratio', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: mcSim.sortino > 1 ? 'var(--mint)' : mcSim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{mcSim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
+                    { label: 'VaR (5%)', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: 'var(--red)' }}>{mcSim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
+                    { label: 'CVaR (5%)', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: 'var(--red)' }}>{mcSim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
                   ].map((row, i) => (
                     <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', cursor: 'default' }}
                     >
@@ -5491,7 +5486,7 @@ function CRCLModel() {
                     <div className="sm-flex-wrap sm-gap-24" style={{ fontSize: 12 }}>
                       <div>
                         <span className="sm-text3">CIK:</span>
-                        <span className="sm-text2" style={{ marginLeft: 6, fontFamily: 'Space Mono' }}>{secMeta.cik}</span>
+                        <span className="sm-text2" style={{ marginLeft: 6, fontFamily: "'Space Mono', monospace" }}>{secMeta.cik}</span>
                       </div>
                       <div>
                         <span className="sm-text3">Ticker:</span>
@@ -5537,7 +5532,7 @@ function CRCLModel() {
                             <div className="sm-subtle">10-K Annual Report</div>
                           </div>
                           <div className="sm-text-right">
-                            <div className="sm-mint" style={{ fontFamily: 'Space Mono' }}>~Feb 2026</div>
+                            <div className="sm-mint" style={{ fontFamily: "'Space Mono', monospace" }}>~Feb 2026</div>
                             <div className="sm-text-11">Est.</div>
                           </div>
                         </div>
@@ -5547,7 +5542,7 @@ function CRCLModel() {
                             <div className="sm-subtle">~198M shares eligible for sale</div>
                           </div>
                           <div className="sm-text-right">
-                            <div className="sm-gold" style={{ fontFamily: 'Space Mono' }}>Dec 2025</div>
+                            <div className="sm-gold" style={{ fontFamily: "'Space Mono', monospace" }}>Dec 2025</div>
                             <div className="sm-text-11">180 days post-IPO</div>
                           </div>
                         </div>
@@ -5557,7 +5552,7 @@ function CRCLModel() {
                             <div className="sm-subtle">2019 SeedInvest Note ($15.7M)</div>
                           </div>
                           <div className="sm-text-right">
-                            <div className="sm-sky" style={{ fontFamily: 'Space Mono' }}>Mar 2026</div>
+                            <div className="sm-sky" style={{ fontFamily: "'Space Mono', monospace" }}>Mar 2026</div>
                             <div className="sm-text-11">Convertible @ $16.23</div>
                           </div>
                         </div>
@@ -6137,19 +6132,19 @@ const CompsTab = () => {
           <div className="sm-flex-between" style={{ flexWrap: 'wrap', gap: 16 }}>
             <div>
               <span className="sm-subtle">Reserve Yield</span>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--sky)' }}>{CIRCLE_METRICS.reserveYield}%</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--sky)' }}>{CIRCLE_METRICS.reserveYield}%</div>
             </div>
             <div>
               <span className="sm-subtle">RLDC Margin</span>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--mint)' }}>{CIRCLE_METRICS.rldcMargin}%</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--mint)' }}>{CIRCLE_METRICS.rldcMargin}%</div>
             </div>
             <div>
               <span className="sm-subtle">Tether Take Rate</span>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--text2)' }}>4.4%</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--text2)' }}>4.4%</div>
             </div>
             <div>
               <span className="sm-subtle">Tether Margin</span>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 18, color: 'var(--text2)' }}>85%</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--text2)' }}>85%</div>
             </div>
           </div>
         </div>
