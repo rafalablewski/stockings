@@ -42,6 +42,15 @@ const SOURCE_COLORS: Record<string, string> = {
   company: 'var(--coral)',
 };
 
+/** All categorized form types — used by 'Other' filter for exclusion */
+const STANDARD_FILING_TYPES = new Set([
+  '10-K', '10-K/A', 'ARS', '10-Q', '10-Q/A', '8-K', '8-K/A',
+  'S-1', 'S-3', 'S-3ASR', 'S-8', '424B4', '424B5', '424B7', 'FWP',
+  'Form 3', 'Form 4', 'Form 4/A', 'Form 5', 'Form 144',
+  'DEF 14A', 'DEFA14A', 'DEFR14A', 'PRE 14A', 'DEF 14C', 'PRE 14C',
+  'SC 13D', 'SC 13D/A', 'SC 13G', 'SC 13G/A', 'CORRESP', 'RW',
+]);
+
 /** Generic filter matchers covering ASTS, BMNR, CRCL filter types */
 const FILTER_MATCHERS: Record<string, (type: string) => boolean> = {
   'All': () => true,
@@ -55,16 +64,7 @@ const FILTER_MATCHERS: Record<string, (type: string) => boolean> = {
   'Proxy': t => ['DEF 14A', 'DEFA14A', 'DEFR14A', 'PRE 14A', 'DEF 14C', 'PRE 14C'].includes(t),
   'SC 13D/G': t => ['SC 13D', 'SC 13D/A', 'SC 13G', 'SC 13G/A'].includes(t),
   'CORRESP': t => t === 'CORRESP' || t === 'RW',
-  'Other': t => {
-    const standard = [
-      '10-K', '10-K/A', 'ARS', '10-Q', '10-Q/A', '8-K', '8-K/A',
-      'S-1', 'S-3', 'S-3ASR', 'S-8', '424B4', '424B5', '424B7', 'FWP',
-      'Form 3', 'Form 4', 'Form 4/A', 'Form 5', 'Form 144',
-      'DEF 14A', 'DEFA14A', 'DEFR14A', 'PRE 14A', 'DEF 14C', 'PRE 14C',
-      'SC 13D', 'SC 13D/A', 'SC 13G', 'SC 13G/A', 'CORRESP', 'RW',
-    ];
-    return !standard.includes(t);
-  },
+  'Other': t => !STANDARD_FILING_TYPES.has(t),
 };
 
 // ── Date normalization (from SharedEdgarTab) ─────────────────────────────────
@@ -274,7 +274,7 @@ export const SharedSecFilingsSection: React.FC<SharedSecFilingsSectionProps> = (
           <div className="sm-sec-list">
             {displayed.map((filing, idx) => (
               <FilingCard
-                key={`${filing.date}-${filing.type}-${idx}`}
+                key={`${filing.date}-${filing.type}-${filing.description}`}
                 filing={filing}
                 typeColors={typeColors}
                 crossRefs={lookupFilingCrossRefs(filing, crossRefIndex)}
