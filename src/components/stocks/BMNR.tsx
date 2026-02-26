@@ -214,6 +214,7 @@ import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import SharedEdgarTab from '../shared/SharedEdgarTab';
+import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
@@ -7304,8 +7305,6 @@ const TimelineTab = () => {
   const [filterCategory, setFilterCategory] = useState('all');
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [expanded, setExpanded] = useState(new Set());
-  const [secFilter, setSecFilter] = useState('All');
-  const [showAllFilings, setShowAllFilings] = useState(false);
   const [showAllPR, setShowAllPR] = useState(false);
 
   const pressReleases = [
@@ -7328,24 +7327,8 @@ const TimelineTab = () => {
   const displayedPR = showAllPR ? pressReleases : pressReleases.slice(0, 5);
   const hiddenPRCount = pressReleases.length - 5;
 
-  const secFilings = BMNR_SEC_FILINGS;
-  const secMeta = BMNR_SEC_META;
-  const secTypeColors = BMNR_SEC_TYPE_COLORS;
   const secFilterTypes = BMNR_SEC_FILTER_TYPES;
-  
-  const filteredFilings = secFilings.filter(f => {
-    if (secFilter === 'All') return true;
-    if (secFilter === 'S-1/S-3') return f.type === 'S-1' || f.type === 'S-3' || f.type === 'S-3ASR' || f.type === 'S-8';
-    if (secFilter === '424B') return f.type === '424B4' || f.type === '424B5';
-    if (secFilter === 'Form 4') return f.type === 'Form 3' || f.type === 'Form 4' || f.type === 'Form 4/A' || f.type === 'Form 5';
-    if (secFilter === 'Proxy') return f.type === 'DEF 14A' || f.type === 'DEFA14A' || f.type === 'DEFR14A' || f.type === 'PRE 14A' || f.type === 'DEF 14C' || f.type === 'PRE 14C';
-    if (secFilter === 'SC 13D/G') return f.type === 'SC 13D' || f.type === 'SC 13G/A';
-    return f.type === secFilter;
-  });
-  
-  const displayedFilings = showAllFilings ? filteredFilings : filteredFilings.slice(0, 6);
-  const hiddenCount = filteredFilings.length - 6;
-  
+
   /*
    * ╔═══════════════════════════════════════════════════════════════════════════════╗
    * ║  CRITICAL INSTRUCTION FOR AI MODELS (Claude, GPT, etc.)                       ║
@@ -7459,110 +7442,15 @@ const TimelineTab = () => {
       description="SEC filings, weekly holdings updates, corporate events, and key milestones. Chronological record tracking BMNR's evolution from mining company to ETH treasury."
       sources="PR"
     >
-      {/* Section Divider: SEC Filings */}
-      <div className="sm-divider">
-        <span className="sm-param-label">SEC Filings</span>
-        <span className="sm-divider-line" />
-      </div>
-
-      {/* Latest SEC Filings - Enhanced with filtering and pagination */}
-      <div className="sm-card">
-        <div className="sm-card-header">
-          <span className="sm-section-label">SEC Filings<UpdateIndicators sources="SEC" /></span>
-        </div>
-        <div className="sm-card-body">
-        
-        {/* Filter Buttons */}
-        <div className="sm-flex-wrap">
-          {secFilterTypes.map(type => (
-            <button
-              key={type}
-              onClick={() => { setSecFilter(type); setShowAllFilings(false); }}
-              className="sm-action-btn"
-              data-active={secFilter === type}
-            >
-              {type}
-            </button>
-          ))}
-        </div>
-        
-        {/* Filings Table */}
-        <div className="sm-overflow-x sm-scroll-hint">
-          <div style={{ minWidth: 600 }}>
-            <div className="sm-fin-table-header" style={{ gridTemplateColumns: '100px 80px 1fr 90px 60px' }}>
-              <span className="sm-fin-th" data-sticky="">Date</span>
-              <span className="sm-fin-th">Type</span>
-              <span className="sm-fin-th">Description</span>
-              <span className="sm-fin-th">Period</span>
-              <span className="sm-fin-th" style={{ textAlign: 'right' }}>Link</span>
-            </div>
-            {displayedFilings.map((filing, idx) => (
-              <div key={idx} className="sm-fin-table-row" style={{ gridTemplateColumns: '100px 80px 1fr 90px 60px' }}>
-                <span className="sm-fin-td-label" style={{ whiteSpace: 'nowrap' }}>{filing.date}</span>
-                <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>
-                  <span className="sm-news-tag" style={{ '--tag-color': secTypeColors[filing.type]?.text || 'var(--text2)' } as React.CSSProperties}>
-                    {/^\d+$/.test(filing.type) ? `Form ${filing.type}` : filing.type}
-                  </span>
-                </span>
-                <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{filing.description}</span>
-                <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{filing.period}</span>
-                <span className="sm-fin-td" style={{ textAlign: 'right' }}>
-                  <a
-                    href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type.replace('S-3', 'S-3').replace('S-1', 'S-1').replace('S-8', 'S-8')}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="sm-violet"
-                  >
-                    SEC →
-                  </a>
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        {/* Show More/Less Button */}
-        {filteredFilings.length > 6 && (
-          <button
-            onClick={() => setShowAllFilings(!showAllFilings)}
-            className="sm-expand-btn"
-            aria-expanded={showAllFilings}
-          >
-            {showAllFilings ? '▲ Show Less' : `▼ Show ${hiddenCount} More Filings`}
-          </button>
-        )}
-        
-        {/* Footer with metadata and Last PR marker */}
-        <div className="sm-bmnr-sec-meta">
-          <div className="sm-bmnr-sec-meta-row">
-            <div>
-              <span className="sm-text3">CIK:</span>
-              <span className="sm-text2 sm-mono-value sm-ml-6">{secMeta.cik}</span>
-            </div>
-            <div>
-              <span className="sm-text3">Ticker:</span>
-              <span className="sm-violet sm-fw-600 sm-ml-6">{secMeta.ticker}</span>
-            </div>
-            <div>
-              <span className="sm-text3">Exchange:</span>
-              <span className="sm-text2 sm-ml-4 sm-ml-6">{secMeta.exchange}</span>
-            </div>
-            <a 
-              href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=&dateb=&owner=include&count=40`}
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="sm-sky" style={{ marginLeft: 'auto' }}
-            >
-              View All SEC Filings →
-            </a>
-          </div>
-          <div className="sm-bmnr-sec-meta-sub">
-            <span className="sm-cyan">●</span>
-            <span className="sm-flex sm-items-center">Last PR Processed: {secMeta.lastPR.date} — {secMeta.lastPR.title}<UpdateIndicators sources="PR" /></span>
-          </div>
-        </div>
-        </div>
-      </div>
+      {/* SEC Filings — Redesigned card layout with KPI strip + cross-ref dots */}
+      <SharedSecFilingsSection
+        filings={BMNR_SEC_FILINGS}
+        secMeta={BMNR_SEC_META}
+        typeColors={BMNR_SEC_TYPE_COLORS}
+        filterTypes={secFilterTypes}
+        crossRefIndex={BMNR_FILING_CROSS_REFS}
+        initialVisibleCount={6}
+      />
 
       {/* Section Divider: Events & Press Releases */}
       <div className="sm-divider">

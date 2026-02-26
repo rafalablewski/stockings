@@ -1713,6 +1713,183 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   § 12b. SEC FILINGS TIMELINE CARDS (sm-sec-*)
+
+   SharedSecFilingsSection.tsx — Redesigned SEC Filings section for
+   Timeline tab. Description-first card layout with KPI summary strip
+   and cross-reference source dots. Ive×Tesla golden standard.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Filing card list ───────────────────────────────────────────────────── */
+.sm-sec-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ── Filing card ────────────────────────────────────────────────────────── */
+.sm-sec-card {
+  background: var(--surface);
+  padding: 16px 20px;
+  transition: background 0.15s;
+}
+.sm-sec-card:hover {
+  background: var(--surface2);
+}
+
+/* Top row: badge + description */
+.sm-sec-card-top {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+/* Form type badge */
+.sm-sec-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--badge-bg, var(--surface2));
+  color: var(--badge-text, var(--text3));
+  min-width: 42px;
+  text-align: center;
+  margin-top: 1px;
+}
+
+/* Description — hero text */
+.sm-sec-desc {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.55;
+  font-weight: 400;
+}
+
+/* Subtle separator between description and meta */
+.sm-sec-separator {
+  height: 1px;
+  background: color-mix(in srgb, var(--border) 40%, transparent);
+  margin: 10px 0 8px;
+}
+
+/* Meta row: date + period + source dots */
+.sm-sec-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Date (monospace, dim) */
+.sm-sec-date {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  opacity: 0.6;
+}
+
+/* Period (monospace, dim) */
+.sm-sec-period {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  opacity: 0.6;
+}
+
+/* Dot separator in meta line */
+.sm-sec-dot-sep {
+  font-size: 10px;
+  color: var(--text3);
+  opacity: 0.3;
+}
+
+/* Cross-ref source tags container */
+.sm-sec-sources {
+  display: inline-flex;
+  gap: 8px;
+  margin-left: auto;
+  align-items: center;
+}
+
+/* Individual source tag (dot + label) */
+.sm-sec-source-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--src-color, var(--text3));
+  opacity: 0.7;
+}
+
+/* Source dot (5px circle) */
+.sm-sec-source-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--src-color, var(--text3));
+  flex-shrink: 0;
+}
+
+/* Filter pill count */
+.sm-sec-pill-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  opacity: 0.4;
+  margin-left: 4px;
+}
+.sm-action-btn[data-active="true"] .sm-sec-pill-count {
+  opacity: 0.8;
+}
+
+/* Footer */
+.sm-sec-footer {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.sm-sec-footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  font-size: 12px;
+}
+.sm-sec-footer-pr {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 6px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sm-sec-card { padding: 14px 16px; }
+  .sm-sec-desc { font-size: 12px; }
+  .sm-sec-sources { margin-left: 0; margin-top: 4px; }
+  .sm-sec-meta { gap: 6px; }
+}
+@media (max-width: 480px) {
+  .sm-sec-card { padding: 12px; }
+  .sm-sec-desc { font-size: 11px; }
+  .sm-sec-sources { display: none; }
+  .sm-sec-badge { font-size: 8px; min-width: 36px; padding: 2px 6px; }
+  .sm-sec-footer-meta { gap: 12px; font-size: 11px; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
    § 13. EDGAR TAB COMPONENTS (sm-ed-*)
 
    SharedEdgarTab.tsx + SharedSourcesTab.tsx — SEC filing browser and

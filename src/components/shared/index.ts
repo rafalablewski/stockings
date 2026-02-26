@@ -14,6 +14,7 @@ export { SharedFinancialsTab } from './SharedFinancialsTab';
 
 // Timeline Tab (stock-agnostic)
 export { SharedTimelineTab } from './SharedTimelineTab';
+export { SharedSecFilingsSection } from './SharedSecFilingsSection';
 
 // Wall Street Tab
 export * from './wallStreetTypes';

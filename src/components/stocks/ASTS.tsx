@@ -121,6 +121,7 @@ import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import SharedEdgarTab from '../shared/SharedEdgarTab';
+import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
 import { COMPS_TIMELINE } from '@/data/asts/comps-timeline';
@@ -5268,8 +5269,6 @@ const QuarterlyMetricsPanel = () => {
 
 // TIMELINE TAB - Historical log of assumption changes, guidance updates, and company events
 const TimelineTab = () => {
-  const [secFilter, setSecFilter] = useState('All');
-  const [showAllFilings, setShowAllFilings] = useState(false);
   const [showAllPR, setShowAllPR] = useState(false);
 
   // [PR_CHECKLIST_RECENT_PRESS_RELEASES] - MANDATORY: Add new PR at top!
@@ -5285,21 +5284,8 @@ const TimelineTab = () => {
   const displayedPR = showAllPR ? pressReleases : pressReleases.slice(0, 5);
   const hiddenPRCount = pressReleases.length - 5;
 
-  const secFilings = ASTS_SEC_FILINGS;
-  const secMeta = ASTS_SEC_META;
-  const secTypeColors = ASTS_SEC_TYPE_COLORS;
   const secFilterTypes = ASTS_SEC_FILTER_TYPES;
-  
-  const filteredFilings = secFilings.filter(f => {
-    if (secFilter === 'All') return true;
-    if (secFilter === 'S-1/S-3') return f.type === 'S-1' || f.type === 'S-3';
-    if (secFilter === 'Other') return !['10-K', '10-Q', '8-K', 'S-1', 'S-3', '424B5'].includes(f.type);
-    return f.type === secFilter;
-  });
-  
-  const displayedFilings = showAllFilings ? filteredFilings : filteredFilings.slice(0, 15);
-  const hiddenCount = filteredFilings.length - 15;
-  
+
   // ============================================================================
   // CRITICAL RULE FOR AI ASSISTANTS AND FUTURE EDITORS:
   // ============================================================================
@@ -5411,108 +5397,15 @@ const TimelineTab = () => {
       description="SEC filings, press releases, upcoming events, and key corporate milestones. Chronological record of all official communications and regulatory submissions."
       sources="PR"
     >
-      {/* Latest SEC Filings - Enhanced with filtering and pagination */}
-      <div className="sm-divider">
-        <span className="sm-param-label">SEC Filings</span>
-        <span className="sm-divider-line" />
-      </div>
-      <div className="sm-card">
-        <div className="sm-card-header">
-          <span className="sm-section-label">SEC Filings<UpdateIndicators sources="SEC" /></span>
-        </div>
-        <div className="sm-card-body">
-
-        {/* Filter Buttons */}
-        <div className="sm-flex-wrap">
-          {secFilterTypes.map(type => (
-            <button
-              key={type}
-              onClick={() => { setSecFilter(type); setShowAllFilings(false); }}
-              className="sm-action-btn"
-              data-active={secFilter === type}
-            >
-              {type}
-            </button>
-          ))}
-        </div>
-
-        {/* Filings Table */}
-        <div className="sm-overflow-x sm-scroll-hint">
-          <div style={{ minWidth: 600 }}>
-            <div className="sm-fin-table-header" style={{ gridTemplateColumns: '100px 80px 1fr 90px 60px' }}>
-              <span className="sm-fin-th" data-sticky="">Date</span>
-              <span className="sm-fin-th">Type</span>
-              <span className="sm-fin-th">Description</span>
-              <span className="sm-fin-th">Period</span>
-              <span className="sm-fin-th" style={{ textAlign: 'right' }}>Link</span>
-            </div>
-            {displayedFilings.map((filing, idx) => (
-              <div key={idx} className="sm-fin-table-row" style={{ gridTemplateColumns: '100px 80px 1fr 90px 60px' }}>
-                <span className="sm-fin-td-label" style={{ whiteSpace: 'nowrap' }}>{filing.date}</span>
-                <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>
-                  <span className="sm-news-tag" style={{ '--tag-color': secTypeColors[filing.type]?.text || 'var(--text2)' } as React.CSSProperties}>
-                    {filing.type}
-                  </span>
-                </span>
-                <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{filing.description}</span>
-                <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{filing.period}</span>
-                <span className="sm-fin-td" style={{ textAlign: 'right' }}>
-                  <a
-                    href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="sm-cyan"
-                  >
-                    SEC →
-                  </a>
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Show More/Less Button */}
-        {filteredFilings.length > 15 && (
-          <button
-            onClick={() => setShowAllFilings(!showAllFilings)}
-            className="sm-expand-btn"
-            aria-expanded={showAllFilings}
-          >
-            {showAllFilings ? '▲ Show Less' : `▼ Show ${hiddenCount} More Filings`}
-          </button>
-        )}
-
-        {/* Footer with metadata and Last PR marker */}
-        <div className="sm-border-t sm-pt-12">
-          <div className="sm-flex-wrap sm-text-12" style={{ gap: 24 }}>
-            <div>
-              <span className="sm-text3">CIK:</span>
-              <span className="sm-mono-sm sm-text2" style={{ marginLeft: 6 }}>{secMeta.cik}</span>
-            </div>
-            <div>
-              <span className="sm-text3">Ticker:</span>
-              <span className="sm-cyan sm-fw-600" style={{ marginLeft: 6 }}>{secMeta.ticker}</span>
-            </div>
-            <div>
-              <span className="sm-text3">Exchange:</span>
-              <span className="sm-text2" style={{ marginLeft: 6 }}>{secMeta.exchange}</span>
-            </div>
-            <a
-              href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=&dateb=&owner=include&count=40`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="sm-sky" style={{ marginLeft: 'auto' }}
-            >
-              View All SEC Filings →
-            </a>
-          </div>
-          <div className="sm-text-11 sm-text3 sm-flex sm-items-center" style={{ gap: 8 }}>
-            <span className="sm-cyan">●</span>
-            <span className="sm-flex sm-items-center">Last PR Processed: {secMeta.lastPR.date} — {secMeta.lastPR.title}<UpdateIndicators sources="PR" /></span>
-          </div>
-        </div>
-        </div>
-      </div>
+      {/* SEC Filings — Redesigned card layout with KPI strip + cross-ref dots */}
+      <SharedSecFilingsSection
+        filings={ASTS_SEC_FILINGS}
+        secMeta={ASTS_SEC_META}
+        typeColors={ASTS_SEC_TYPE_COLORS}
+        filterTypes={secFilterTypes}
+        crossRefIndex={ASTS_FILING_CROSS_REFS}
+        initialVisibleCount={15}
+      />
 
       {/* Upcoming Events + Recent Press Releases */}
       <div className="sm-divider">
