@@ -635,18 +635,8 @@ const BMNRDilutionAnalysis = () => {
                   onClick={handleRefreshAll}
                   disabled={priceLoading}
                   title={priceLastUpdated ? `Last updated: ${priceLastUpdated.toLocaleTimeString()}` : 'Click to refresh price & chart'}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: priceLoading ? 'wait' : 'pointer',
-                    padding: 8,
-                    borderRadius: 8,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.2s',
-                    opacity: priceLoading ? 0.5 : 0.6,
-                  }}
+                  className="sm-bmnr-refresh-btn"
+                  data-loading={priceLoading}
                 >
                   <svg
                     width="18"

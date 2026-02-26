@@ -548,20 +548,10 @@ const ASTSAnalysis = () => {
               <h1>ASTS SpaceMobile</h1>
               <div className="ticker">NASDAQ: ASTS · Direct-to-Device Cellular</div>
               {/* H4: Data Freshness Timestamp */}
-              <div style={{ 
-                display: 'inline-flex', 
-                alignItems: 'center', 
-                gap: 6, 
-                background: 'rgba(34,211,238,0.1)', 
-                border: '1px solid rgba(34,211,238,0.3)', 
-                borderRadius: 6, 
-                padding: '4px 12px', 
-                fontSize: 11, 
-                color: '#22d3ee',
-              }}>
+              <div className="sm-data-freshness">
                 <span>📅</span>
                 <span>Data as of: {DATA_FRESHNESS.dataAsOf}</span>
-                <span style={{ color: 'rgba(34,211,238,0.5)' }}>|</span>
+                <span className="sm-data-freshness-sep">|</span>
                 <span>{DATA_FRESHNESS.priceNote}</span>
               </div>
               <p className="desc">
@@ -871,9 +861,9 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       <p><strong className="sm-text2 sm-fw-500">AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
     </div>
 
-    <div className="sm-model-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+    <div className="sm-model-grid" style={{ '--cols': 2 } as React.CSSProperties}>
       <div className="sm-card-body sm-bg-surface">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+        <div className="sm-flex sm-items-center sm-gap-8 sm-mb-12">
           <span className="sm-section-label sm-mint" style={{ fontSize: 13 }}>Bull Case</span>
           <UpdateIndicators sources="PR" />
         </div>

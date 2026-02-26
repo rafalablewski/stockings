@@ -843,7 +843,7 @@ const OverviewParameterCard = ({
       <p className="sm-note-list">
         {explanation}
       </p>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 6 }}>
+      <div className="sm-param-grid-7">
         {options.slice(0, 6).map((opt, idx) => {
           const isActive = value === opt;
           const isCurrent = currentValue !== undefined && opt === currentValue;
@@ -855,20 +855,14 @@ const OverviewParameterCard = ({
               role="button"
               tabIndex={0}
               onKeyDown={(e) => e.key === 'Enter' && (() => { onChange(opt); setCustomMode(false); })()}
-              style={{
-                padding: '12px 4px',
-                borderRadius: 8,
-                border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                background: isActive ? colors.bg : 'var(--surface2)',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-                textAlign: 'center',
-                fontSize: 12,
-                fontWeight: isActive ? 600 : 400,
-                color: isActive ? colors.text : 'var(--text3)',
-                position: 'relative',
+              className="sm-param-btn sm-relative"
+              data-active={isActive || undefined}
+              style={isActive ? {
+                borderColor: colors.border,
+                background: colors.bg,
+                color: colors.text,
                 overflow: 'hidden',
-              }}
+              } : { overflow: 'hidden' }}
             >
               {formatValue(opt)}
             </div>
@@ -876,13 +870,7 @@ const OverviewParameterCard = ({
         })}
         {/* Custom input button/field */}
         {customMode ? (
-          <div style={{
-            display: 'flex',
-            borderRadius: 8,
-            border: '2px solid var(--violet)',
-            background: 'color-mix(in srgb, var(--violet) 15%, transparent)',
-            overflow: 'hidden',
-          }}>
+          <div className="sm-custom-input-wrap">
             <input
               type="text"
               value={customInput}
@@ -890,18 +878,7 @@ const OverviewParameterCard = ({
               onKeyDown={(e) => e.key === 'Enter' && handleCustomSubmit()}
               placeholder="..."
               autoFocus
-              style={{
-                flex: 1,
-                minWidth: 0,
-                padding: '8px 4px',
-                border: 'none',
-                background: 'transparent',
-                color: 'var(--violet)',
-                fontSize: 12,
-                fontWeight: 600,
-                textAlign: 'center',
-                outline: 'none',
-              }}
+              className="sm-custom-input-field"
             />
           </div>
         ) : (
@@ -911,24 +888,19 @@ const OverviewParameterCard = ({
             tabIndex={0}
             aria-label="Enter custom value"
             onKeyDown={(e) => e.key === 'Enter' && setCustomMode(true)}
-            style={{
-              padding: '12px 4px',
-              borderRadius: 8,
-              border: isCustomValue ? '2px solid var(--violet)' : '1px solid var(--border)',
-              background: isCustomValue ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'var(--surface2)',
-              cursor: 'pointer',
-              transition: 'all 0.15s',
-              textAlign: 'center',
-              fontSize: 12,
-              fontWeight: isCustomValue ? 600 : 400,
-              color: isCustomValue ? 'var(--violet)' : 'var(--text3)',
-            }}
+            className="sm-param-btn"
+            data-active={isCustomValue || undefined}
+            style={isCustomValue ? {
+              borderColor: 'var(--violet)',
+              background: 'color-mix(in srgb, var(--violet) 15%, transparent)',
+              color: 'var(--violet)',
+            } : undefined}
           >
             {isCustomValue ? formatValue(value) : '...'}
           </div>
         )}
       </div>
-      <div className="sm-subtle-sm sm-text-center" style={{ marginTop: 6 }}>
+      <div className="sm-subtle-sm sm-text-center sm-mt-4">
         ← Bearish | Bullish →
       </div>
     </div>
@@ -1066,8 +1038,8 @@ const CRCLModelTab = ({
 
         {/* Scenario Presets - 6 scenarios from Worst to Moon */}
         <div className="sm-panel" style={{ borderRadius: 14 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Scenario Presets</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 10, overflow: 'hidden' }}>
+          <div className="sm-panel-title sm-mb-12">Scenario Presets</div>
+          <div className="sm-kpi-grid-3" style={{ gridTemplateColumns: 'repeat(6, 1fr)', borderRadius: 10 }}>
             {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
               const preset = CRCL_SCENARIO_PRESETS[s];
               const isActive = selectedScenario === s;
