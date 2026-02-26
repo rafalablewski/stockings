@@ -32,6 +32,53 @@ export const BMNR_COMPETITOR_NEWS: CompetitorNewsEntry[] = [
   // ═══════════════════════════════════════════════════════════════════════════
 
   // ═══════════════════════════════════════════════════════════════════════════
+  // ONDO / BINANCE - TOKENIZED EQUITIES ON BINANCE ALPHA (Feb 24, 2026)
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    date: '2026-02-24',
+    competitor: 'other',
+    category: 'Partnership',
+    headline: 'Ondo Global Markets tokenized securities go live on Binance Alpha exchange',
+    details: [
+      'Ondo tokenized U.S. equities now accessible via Binance Alpha to hundreds of millions of users',
+      '10 initial listings: AAPLon, GOOGLon, TSLAon, NVDAon, QQQon, CRCLon, METAon, AMZNon, SPYon, MSFTon',
+      'Ondo Global Markets has surpassed $550M TVL and $11B cumulative trading volume since Sep 2025 launch',
+      'Not available in the U.S. — targets non-U.S. investors for onchain equity exposure',
+      'Direct competitor to Kraken xStocks for tokenized equity market share',
+    ],
+    implication: 'neutral',
+    thesisComparison: 'Tokenized equity infrastructure growth validates the broader crypto-TradFi convergence thesis. Ondo competes with Kraken xStocks but does not directly impact BMNR ETH treasury strategy. MSFTon tokenized listing may attract traditional investors to crypto rails.',
+    source: 'Ondo Finance',
+    sourceUrl: '',
+    storyId: 'tokenized-equities-competition',
+    storyTitle: 'Tokenized Equities Market Competition',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // KRAKEN - xSTOCKS TOKENIZED EQUITY PERPETUAL FUTURES (Feb 24, 2026)
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    date: '2026-02-24',
+    competitor: 'kraken',
+    category: 'Technology',
+    headline: 'Kraken launches world first tokenized equity perpetual futures via xStocks',
+    details: [
+      'World first regulated tokenized equity perpetual futures contracts listed on Kraken derivatives venue',
+      '10 initial perp listings: SPYx, QQQx, GLDx, NVDAx, AAPLx, GOOGLx, TSLAx, HOODx, MSTRx, CRCLx',
+      'Up to 20x leverage with 24/7 trading including weekends and holidays',
+      'Available to non-U.S. clients in 110+ countries via Payward Digital Solutions Ltd (Bermuda licensed)',
+      'xStocks claims leading tokenized equity position by cumulative volume, unique holders, 24hr activity',
+      'MSTRx perps enable leveraged exposure to Strategy/Bitcoin treasury thesis competitor',
+    ],
+    implication: 'neutral',
+    thesisComparison: 'Kraken expanding xStocks from spot to leveraged perps deepens crypto-native equity trading infrastructure. MSTRx perps give traders leveraged access to BTC treasury competitor Strategy. Does not directly threaten BMNR ETH treasury thesis but grows the tokenized equity ecosystem Kraken operates in.',
+    source: 'Kraken',
+    sourceUrl: '',
+    storyId: 'kraken-xstocks-platform',
+    storyTitle: 'Kraken xStocks Tokenized Equities Platform',
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
   // ETHZILLA - TOKENIZED AVIATION ASSETS (Feb 12, 2026)
   // ═══════════════════════════════════════════════════════════════════════════
   {

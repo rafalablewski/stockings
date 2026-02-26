@@ -61,6 +61,29 @@ export const COMPS_TIMELINE: CompetitorNewsEntry[] = [
     },
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // STARLINK ENTERPRISE — AVIATION IFC (terminal-based, NOT D2C)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-26',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'ZIPAIR operates Asia first commercial Starlink inflight Wi-Fi flight — fleet-wide by spring 2026',
+      details: [
+        'First Starlink-equipped ZIPAIR flight ZG045 from Tokyo Narita to Incheon, South Korea on Feb 26, 2026',
+        'Free ultra high-speed Wi-Fi for all passengers with ground-broadband-comparable performance',
+        'Fleet-wide installation across 8 Boeing 787 Dreamliners to be completed by spring 2026',
+        'ZIPAIR becomes first airline in Asia to operate fully Starlink-enabled fleet across entire route network',
+        'Starlink enables real-time payment authorization and inflight commerce on proprietary IFS system',
+        'ZIPAIR is wholly owned subsidiary of Japan Airlines, operates 10 international routes from Tokyo Narita',
+      ],
+      implication: 'neutral',
+      thesisComparison: 'Starlink aviation IFC is a different TAM from D2D cellular broadband. Demonstrates SpaceX constellation revenue diversification but does not erode ASTS handset-based D2D moat. Asia expansion parallels ASTS Rakuten partnership geography.',
+      source: 'ZIPAIR / SpaceX',
+      storyId: 'starlink-aviation-expansion',
+      storyTitle: 'Starlink Aviation IFC Expansion',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // STARLINK ENTERPRISE — RAIL BROADBAND (terminal-based, NOT D2C)
     // ═══════════════════════════════════════════════════════════════════════════
     {
