@@ -264,9 +264,9 @@ const CrossRefLines: React.FC<{ refs: { source: string; data: string }[] }> = ({
   <div className="sm-ed-crossref">
     {refs.map((ref, i) => (
       <div key={i} className="sm-ed-crossref-line">
-        <span style={{ opacity: 0.7 }}>{'// '}</span>
-        <span style={{ opacity: 0.7 }}>{ref.source}</span>
-        <span style={{ opacity: 0.5 }}>{' \u2192 '}</span>
+        <span className="sm-opacity-70">{'// '}</span>
+        <span className="sm-opacity-70">{ref.source}</span>
+        <span className="sm-opacity-50">{' \u2192 '}</span>
         {ref.data}
       </div>
     ))}
@@ -434,9 +434,9 @@ const FilingRow: React.FC<{
   if (isHidden) {
     return (
       <div className="sm-ed-hidden-row">
-        <div className="sm-flex sm-gap-8" style={{ padding: '3px 12px', borderRadius: 6 }}>
-          <span className="sm-ed-form-badge" style={{
-            fontSize: 9, padding: '1px 6px', borderRadius: 4, width: 'auto',
+        <div className="sm-flex sm-gap-8 sm-p-3-12 sm-rounded-6">
+          <span className="sm-ed-form-badge sm-text-9 sm-p-1-6 sm-rounded-4" style={{
+            width: 'auto',
             '--badge-bg': colors.bg, '--badge-text': colors.text,
           } as React.CSSProperties}>
             {formDisplay}

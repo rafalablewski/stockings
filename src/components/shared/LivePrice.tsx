@@ -113,26 +113,14 @@ export const LivePriceDisplay = ({
 
   return (
     <div className={`live-price-container ${className}`}>
-      <div className="price-big" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div className="price-big sm-flex sm-items-center sm-gap-12">
         ${displayPrice.toFixed(2)}
         <button
           onClick={refresh}
           disabled={isLoading}
           title={lastUpdated ? `Last updated: ${lastUpdated.toLocaleTimeString()}` : 'Click to refresh'}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: isLoading ? 'wait' : 'pointer',
-            padding: 8,
-            borderRadius: 8,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.2s',
-            opacity: isLoading ? 0.5 : 0.7,
-          }}
-          onMouseEnter={(e) => { if (!isLoading) e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = 'var(--surface2)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.opacity = isLoading ? '0.5' : '0.7'; e.currentTarget.style.background = 'transparent'; }}
+          className="sm-refresh-btn"
+          data-loading={isLoading ? 'true' : undefined}
         >
           <svg
             width="20"
@@ -143,10 +131,8 @@ export const LivePriceDisplay = ({
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            style={{
-              color: 'var(--text3)',
-              animation: isLoading ? 'spin 1s linear infinite' : 'none',
-            }}
+            className="sm-refresh-icon"
+            data-loading={isLoading ? 'true' : undefined}
           >
             <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
             <path d="M3 3v5h5" />
@@ -157,17 +143,10 @@ export const LivePriceDisplay = ({
       </div>
 
       {showChange && priceChange !== null && priceChangePercent !== null && (
-        <div
-          style={{
-            fontSize: 12,
-            fontFamily: 'Space Mono, monospace',
-            color: priceChange >= 0 ? 'var(--mint)' : 'var(--coral)',
-            marginTop: 4,
-          }}
-        >
+        <div className="sm-price-change" data-direction={priceChange >= 0 ? 'up' : 'down'}>
           {priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)} ({priceChangePercent >= 0 ? '+' : ''}{priceChangePercent.toFixed(2)}%)
           {lastUpdated && (
-            <span style={{ color: 'var(--text3)', marginLeft: 8, fontSize: 10 }}>
+            <span className="sm-price-change-ts">
               {lastUpdated.toLocaleTimeString()}
             </span>
           )}
@@ -175,17 +154,10 @@ export const LivePriceDisplay = ({
       )}
 
       {error && (
-        <div style={{ fontSize: 11, color: 'var(--coral)', marginTop: 4 }}>
+        <div className="sm-price-error">
           {error}
         </div>
       )}
-
-      <style jsx global>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 };

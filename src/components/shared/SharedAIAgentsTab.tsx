@@ -223,17 +223,17 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
   };
 
   return (
-    <div className="sm-rounded-12 sm-overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.06)", transition: "border-color 0.2s" }}>
+    <div className="sm-ai-runner">
       {/* Header */}
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
-        className="sm-w-full sm-pointer sm-gap-16"
-        style={{ padding: "16px 20px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", background: "none", border: "none", textAlign: "left" }}
+        className="sm-w-full sm-pointer sm-gap-16 sm-flex sm-items-start sm-text-left"
+        style={{ padding: "16px 20px", justifyContent: "space-between", background: "none", border: "none" }}
       >
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div className="sm-flex sm-gap-8" style={{ marginBottom: 4 }}>
+        <div className="sm-flex-1 sm-min-w-0">
+          <div className="sm-flex sm-gap-8 sm-mb-4">
             <span className="sm-fw-500" style={{ fontSize: 13, fontFamily: "var(--font-mono, monospace)", color: "rgba(255,255,255,0.85)" }}>
               {workflow.name}
             </span>

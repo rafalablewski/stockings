@@ -1800,7 +1800,7 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 4px 10px;
   border-radius: 4px;
   background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
+  border: 1px solid var(--ed-btn-border, var(--border));
   cursor: pointer;
   transition: all 0.15s;
   display: inline-flex;
@@ -1810,6 +1810,10 @@ input[type="range"]::-webkit-slider-thumb {
   outline: none;
   text-decoration: none;
   color: var(--ed-btn-color, var(--text3));
+}
+.sm-ed-action-btn[data-loading="true"] {
+  cursor: wait;
+  opacity: 0.5;
 }
 .sm-ed-action-btn:disabled {
   cursor: not-allowed;
@@ -1824,7 +1828,7 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 2px 6px;
   border-radius: 4px;
   background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
+  border: 1px solid var(--ed-btn-border, var(--border));
   cursor: pointer;
   transition: all 0.15s;
   outline: none;
@@ -1833,6 +1837,10 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: center;
   gap: 4px;
   color: var(--ed-btn-color, var(--text3));
+}
+.sm-ed-action-btn-sm[data-loading="true"] {
+  cursor: wait;
+  opacity: 0.5;
 }
 
 /* Filing row — hover-highlight container */
@@ -5170,6 +5178,354 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-text-ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sm-ls-05 { letter-spacing: 0.5px; }
 .sm-ls-08 { letter-spacing: 0.8px; }
+.sm-ls-neg05 { letter-spacing: -0.5px; }
+.sm-ls-005em { letter-spacing: 0.05em; }
+.sm-ls-008em { letter-spacing: 0.08em; }
+.sm-ls-01em { letter-spacing: 0.1em; }
+.sm-ls-1 { letter-spacing: 1px; }
+.sm-opacity-25 { opacity: 0.25; }
+.sm-opacity-30 { opacity: 0.3; }
+.sm-opacity-40 { opacity: 0.4; }
+.sm-opacity-80 { opacity: 0.8; }
+.sm-opacity-90 { opacity: 0.9; }
+.sm-text-8 { font-size: 8px; }
+.sm-text-9 { font-size: 9px; }
+.sm-text-10 { font-size: 10px; }
+.sm-lh-14 { line-height: 1.4; }
+.sm-lh-20 { line-height: 2; }
+.sm-lh-22 { line-height: 2.2; }
+.sm-mb-4 { margin-bottom: 4px; }
+.sm-mb-6 { margin-bottom: 6px; }
+.sm-ml-4 { margin-left: 4px; }
+.sm-ml-12 { margin-left: 12px; }
+.sm-mt-2 { margin-top: 2px; }
+.sm-mt-4 { margin-top: 4px; }
+.sm-mt-10 { margin-top: 10px; }
+.sm-pt-8 { padding-top: 8px; }
+.sm-gap-1 { gap: 1px; }
+.sm-gap-20 { gap: 20px; }
+.sm-gap-32 { gap: 32px; }
+.sm-text-left { text-align: left; }
+.sm-block { display: block; }
+.sm-flex-1 { flex: 1; }
+.sm-relative { position: relative; }
+.sm-bg-transparent { background: transparent; }
+.sm-border-none { border: none; }
+.sm-text-none { text-transform: none; }
+.sm-ls-0 { letter-spacing: 0; }
+.sm-min-w-0 { min-width: 0; }
+.sm-p-3-12 { padding: 3px 12px; }
+.sm-p-4-10 { padding: 4px 10px; }
+.sm-p-4-12 { padding: 4px 12px; }
+.sm-p-5-12 { padding: 5px 12px; }
+.sm-p-5-14 { padding: 5px 14px; }
+.sm-p-10-16 { padding: 10px 16px; }
+.sm-p-1-5 { padding: 1px 5px; }
+.sm-p-1-6 { padding: 1px 6px; }
+.sm-p-2-6 { padding: 2px 6px; }
+.sm-p-3-8 { padding: 3px 8px; }
+.sm-rounded-3 { border-radius: 3px; }
+.sm-rounded-5 { border-radius: 5px; }
+
+/* Edgar methodology — small colored dot */
+.sm-ed-color-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--dot-color, var(--text3));
+}
+.sm-ed-color-dot-sm {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--dot-color, var(--text3));
+}
+
+/* Edgar methodology — vertical line */
+.sm-ed-vline-short { width: 1px; height: 6px; background: color-mix(in srgb, var(--text3) 25%, transparent); }
+.sm-ed-vline-med { width: 1px; height: 8px; background: color-mix(in srgb, var(--text3) 25%, transparent); }
+
+/* Edgar methodology — accent connector */
+.sm-ed-connector { width: 2px; height: 10px; background: var(--sky); }
+
+/* Edgar diff preview — file path action badge */
+.sm-ed-patch-badge {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--patch-bg, rgba(130,200,130,0.1));
+  color: var(--patch-color, rgba(130,200,130,0.6));
+  border: 1px solid var(--patch-border, rgba(130,200,130,0.15));
+}
+
+/* Edgar diff preview — file path */
+.sm-ed-patch-file {
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  font-weight: 500;
+  color: var(--file-color, var(--text2));
+}
+
+/* Edgar methodology — patch preview header label */
+/* Error boundary */
+.sm-error-boundary {
+  padding: 48px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--coral) 10%, transparent) 0%, color-mix(in srgb, var(--coral) 5%, transparent) 100%);
+  border: 1px solid color-mix(in srgb, var(--coral) 30%, transparent);
+  border-radius: 16px;
+  text-align: center;
+  margin: 24px;
+}
+.sm-error-boundary h2 {
+  color: var(--coral);
+  font-family: Outfit, sans-serif;
+}
+.sm-error-boundary p {
+  color: var(--text2);
+  font-family: Outfit, sans-serif;
+}
+.sm-error-boundary .sm-error-detail {
+  font-size: 14px;
+  font-family: 'Space Mono', monospace;
+}
+.sm-error-boundary .sm-error-reload {
+  padding: 12px 24px;
+  background: var(--cyan);
+  color: var(--bg);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: Outfit, sans-serif;
+}
+
+.sm-ed-patch-header-label {
+  font-size: 11px;
+  color: rgba(234,179,8,0.7);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Edgar methodology — patch preview footer warning */
+.sm-ed-patch-footer-warning {
+  font-size: 9px;
+  color: rgba(234,179,8,0.5);
+  letter-spacing: 0.05em;
+}
+
+/* Edgar methodology — status message */
+.sm-ed-status-msg {
+  font-size: 10px;
+  margin-left: 4px;
+  color: var(--msg-color, var(--text3));
+}
+
+/* Edgar methodology — applying spinner dot */
+.sm-ed-pulse-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(234,179,8,0.5);
+  animation: pulse 2s infinite;
+}
+
+/* Edgar methodology — applying spinner text */
+.sm-ed-spinner-text {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Edgar filter pill count */
+.sm-ed-pill-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+}
+
+/* Edgar year section — divider line */
+.sm-ed-year-divider {
+  flex: 1;
+  height: 1px;
+  background: color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+/* Edgar show-more/collapse hidden button */
+.sm-ed-hidden-toggle {
+  display: block;
+  padding: 4px 12px;
+  margin: 2px 0;
+  font-size: 9px;
+  background: transparent;
+  border: none;
+  opacity: 0.25;
+  text-align: left;
+}
+
+/* Edgar no-filings message */
+.sm-ed-empty-msg {
+  font-size: 13px;
+  padding: 24px 0;
+  line-height: 1.6;
+}
+
+/* Edgar cross-ref info note */
+.sm-ed-crossref-note {
+  font-size: 9px;
+  opacity: 0.4;
+  padding: 0 4px 8px;
+  font-family: 'Space Mono', monospace;
+  line-height: 1.6;
+}
+
+/* Edgar info card title */
+.sm-ed-card-title {
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+
+/* Edgar info card body text */
+.sm-ed-card-body {
+  font-size: 9.5px;
+  line-height: 1.7;
+}
+
+/* Edgar method info text */
+.sm-ed-method-info {
+  font-size: 10px;
+  line-height: 1.8;
+}
+
+/* Edgar method detail text */
+.sm-ed-method-detail {
+  font-size: 10px;
+  line-height: 2;
+}
+
+/* Edgar method small flowbox */
+.sm-ed-flowbox-sm {
+  padding: 5px 12px;
+  font-size: 10px;
+}
+
+/* Edgar method persisted data text */
+.sm-ed-persisted-text {
+  font-size: 10px;
+  line-height: 2.2;
+}
+
+/* Edgar diff border top (amber-tinted) */
+.sm-ed-border-amber {
+  border-top: 1px solid rgba(234,179,8,0.1);
+}
+.sm-ed-border-amber-bottom {
+  border-bottom: 1px solid rgba(234,179,8,0.1);
+}
+
+/* Edgar section — margin top for methodology header */
+.sm-mb-0 { margin-bottom: 0; }
+
+/* SVG spin animation for loading states - applied via data attribute */
+[data-spin="true"] { animation: spin 1s linear infinite; }
+[data-spin-fast="true"] { animation: spin 0.8s linear infinite; }
+
+/* Edgar chevron rotation via data attribute */
+.sm-ed-chevron {
+  transition: transform 0.2s;
+}
+.sm-ed-chevron[data-expanded="true"] {
+  transform: rotate(90deg);
+}
+.sm-ed-chevron[data-expanded="false"] {
+  transform: rotate(0deg);
+}
+
+/* Stroke-dasharray transition for SVG arcs */
+.sm-ed-arc-transition { transition: stroke-dasharray 0.4s ease; }
+
+/* Fixed width utilities */
+.sm-w-48 { width: 48px; }
+
+/* Padding utilities */
+.sm-p-8-12-4 { padding: 8px 12px 4px; }
+
+/* Letter-spacing — wide small (1.5px) */
+.sm-ls-wide-sm { letter-spacing: 1.5px; }
+
+/* Spin animation utility class */
+.sm-spin-fast { animation: spin 0.8s linear infinite; }
+
+/* DB tooltip header */
+.sm-ed-db-tooltip-header {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* DB tooltip field label */
+.sm-ed-db-field-label {
+  min-width: 70px;
+  display: inline-block;
+}
+
+/* DB tooltip field value — uses --field-color CSS variable */
+.sm-ed-db-field-value {
+  color: var(--field-color, var(--text3));
+  font-weight: 600;
+}
+
+/* DB tooltip category value — uses --field-color CSS variable */
+.sm-ed-db-category-value {
+  color: var(--field-color, var(--text3));
+}
+
+/* DB status dot — uses --dot-color CSS variable */
+.sm-ed-db-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--dot-color, var(--text3));
+}
+
+/* Sources verdict badge (expanded) — uses --verdict-color and --verdict-bg */
+.sm-ed-verdict-badge-expanded {
+  margin: 12px 0 0 7px;
+  display: inline-flex;
+  gap: 6px;
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--verdict-bg, rgba(255,255,255,0.04));
+  color: var(--verdict-color, var(--text2));
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Sources verdict explanation text */
+.sm-ed-verdict-explanation {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.7;
+  font-size: 10px;
+}
+
+/* Action button variants — AI and recheck */
+.sm-ed-action-btn-ai,
+.sm-ed-action-btn-recheck {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: var(--ed-btn-border, 1px solid var(--border));
+  cursor: var(--ed-btn-cursor, pointer);
+  opacity: var(--ed-btn-opacity, 1);
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    § 26. INVESTMENT TAB (sm-inv-*)
@@ -5842,5 +6198,74 @@ input[type="range"]::-webkit-slider-thumb {
 @media (max-width: 480px) {
   .sm-inv-verdict-badge { font-size: 14px; padding: 6px 16px; }
   .sm-inv-scorecard-grid { grid-template-columns: 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § 32. LIVE PRICE & UPDATE LEGEND
+   Classes for LivePrice refresh button and UpdateLegend toggle.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Price change display */
+.sm-price-change {
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+  margin-top: 4px;
+}
+.sm-price-change[data-direction="up"] { color: var(--mint); }
+.sm-price-change[data-direction="down"] { color: var(--coral); }
+
+/* Price change timestamp */
+.sm-price-change-ts {
+  color: var(--text3);
+  margin-left: 8px;
+  font-size: 10px;
+}
+
+/* Price error */
+.sm-price-error {
+  font-size: 11px;
+  color: var(--coral);
+  margin-top: 4px;
+}
+
+/* Update legend sources label */
+.sm-legend-label {
+  font-weight: 500;
+  color: var(--text3);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Update legend toggle button */
+.sm-legend-toggle {
+  margin-left: auto;
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 500;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  color: var(--text3);
+}
+.sm-legend-toggle[data-active="true"] {
+  color: var(--text);
+  border-color: rgba(255,255,255,0.15);
+}
+
+/* SVG refresh icon spin */
+.sm-refresh-icon {
+  color: var(--text3);
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.sm-refresh-icon[data-loading="true"] {
+  animation: spin 1s linear infinite;
 }
 `;

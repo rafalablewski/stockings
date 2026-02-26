@@ -260,27 +260,21 @@ const SourceArticleRow: React.FC<{
   if (isHidden) {
     return (
       <div className="sm-ed-hidden-row">
-        <div className="sm-flex" style={{ padding: '3px 12px', borderRadius: 6 }}>
-          <span className="sm-shrink-0" style={{
-            fontSize: 9, fontFamily: 'Space Mono, monospace', fontWeight: 600,
-            padding: '1px 6px', borderRadius: 4,
+        <div className="sm-flex sm-p-3-12 sm-rounded-6">
+          <span className="sm-shrink-0 sm-text-9 sm-mono-sm sm-fw-600 sm-p-1-6 sm-rounded-4" style={{
             background: tc.bg, color: tc.text,
           }}>
             {type === 'pr' ? 'PR' : 'NEWS'}
           </span>
-          <span className="sm-subtle-sm" style={{
-            flex: 1, minWidth: 0,
-            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            textDecoration: 'line-through',
-          }}>
+          <span className="sm-subtle-sm sm-flex-1 sm-min-w-0 sm-overflow-hidden sm-text-ellipsis sm-nowrap sm-line-through">
             {article.headline}
           </span>
           {article.date && (
-            <span className="sm-text3 sm-shrink-0" style={{ fontFamily: 'Space Mono, monospace', fontSize: 10 }}>
+            <span className="sm-text3 sm-shrink-0 sm-mono-sm sm-text-10">
               {article.date}
             </span>
           )}
-          <span className="sm-text3 sm-shrink-0" style={{ fontSize: 8, fontFamily: 'Space Mono, monospace', textTransform: 'uppercase' }}>hidden</span>
+          <span className="sm-text3 sm-shrink-0 sm-mono-sm sm-uppercase sm-text-8">hidden</span>
           {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
           <div className="sm-shrink-0" onClick={e => e.stopPropagation()}>
             <button
@@ -308,8 +302,7 @@ const SourceArticleRow: React.FC<{
         aria-expanded={aiAnalysis ? expanded : undefined}
         onClick={aiAnalysis ? () => setExpanded(!expanded) : undefined}
         onKeyDown={aiAnalysis ? (e) => { if (e.key === 'Enter') setExpanded(!expanded); } : undefined}
-        className="sm-ed-filing-row"
-        style={{ cursor: aiAnalysis ? 'pointer' : undefined }}
+        className={`sm-ed-filing-row${aiAnalysis ? ' sm-pointer' : ''}`}
       >
         {/* Main row: chevron + status + badge + headline */}
         <div className="sm-ed-row-main">
@@ -320,9 +313,8 @@ const SourceArticleRow: React.FC<{
               width={12} height={12} viewBox="0 0 24 24" fill="none"
               stroke="rgba(255,255,255,0.3)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
               aria-hidden="true"
-              style={{
-                transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
-              }}
+              className="sm-ed-chevron"
+              data-expanded={expanded ? 'true' : 'false'}
             >
               <path d="M9 5l7 7-7 7" />
             </svg>
@@ -332,16 +324,14 @@ const SourceArticleRow: React.FC<{
           {showAnalysis && (
             <span
               title={statusTitle}
-              className="sm-ed-status-dot"
+              className={`sm-ed-status-dot ${localAnalyzed === null || localAnalyzed === undefined ? 'sm-opacity-40' : 'sm-opacity-90'}`}
               style={{
                 '--dot-color': statusColor,
-                opacity: localAnalyzed === null || localAnalyzed === undefined ? 0.4 : 0.9,
               } as React.CSSProperties}
             />
           )}
           {/* Source type badge — fixed width so columns align */}
-          <span className="sm-ed-form-badge" style={{
-            width: 48,
+          <span className="sm-ed-form-badge sm-w-48" style={{
             '--badge-bg': tc.bg, '--badge-text': tc.text,
           } as React.CSSProperties}>
             {type === 'pr' ? 'PR' : 'NEWS'}
@@ -398,7 +388,7 @@ const SourceArticleRow: React.FC<{
             {showAnalysis && statusLabel ? statusLabel : '\u00A0'}
           </span>
           {/* DB status button — hover fetches live data from database */}
-          <span className="sm-shrink-0" style={{ position: 'relative' }}>
+          <span className="sm-shrink-0 sm-relative">
             <button
               type="button"
               aria-label="Show database record"
@@ -410,29 +400,29 @@ const SourceArticleRow: React.FC<{
               onFocus={handleDbHoverEnter}
               onBlur={handleDbHoverLeave}
             >
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: dbColor }} />
+              <span className="sm-ed-db-dot" style={{ '--dot-color': dbColor } as React.CSSProperties} />
               DB
             </button>
             {/* Tooltip — shows live DB data */}
             {dbTooltipVisible && (
               <div ref={dbTooltipRef} className="sm-ed-db-tooltip sm-db-tooltip-responsive">
                 {/* Header — explains what this tooltip checks */}
-                <div className="sm-text3" style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: 6, paddingBottom: 6, borderBottom: '1px solid var(--border)' }}>
+                <div className="sm-text3 sm-ed-db-tooltip-header">
                   Saved in seen_articles DB?
                 </div>
                 {dbTooltipLoading ? (
-                  <div className="sm-text3" style={{ fontStyle: 'italic' }}>Fetching from database...</div>
+                  <div className="sm-text3 sm-italic">Fetching from database...</div>
                 ) : dbTooltip ? (
                   <>
-                    <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>status:</span> <span style={{ color: dbTooltip.status === 'TRACKED' ? 'var(--mint)' : dbTooltip.status === 'UNTRACKED' ? 'var(--coral)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.status}</span></div>
-                    <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>category:</span> <span style={{ color: dbTooltip.category === 'PRESS RELEASE' ? 'var(--sky)' : dbTooltip.category === 'NEWS' ? 'var(--mint)' : 'var(--text3)' }}>{dbTooltip.category}</span></div>
-                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>heading:</span> {dbTooltip.heading}</div>
-                    <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>source:</span> {dbTooltip.source}</div>
-                    <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>date:</span> {dbTooltip.date}</div>
-                    <div><span className="sm-text3" style={{ minWidth: 70, display: 'inline-block' }}>seen:</span> <span style={{ color: dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)', fontWeight: 600 }}>{dbTooltip.seen}</span></div>
+                    <div><span className="sm-text3 sm-ed-db-field-label">status:</span> <span className="sm-ed-db-field-value" style={{ '--field-color': dbTooltip.status === 'TRACKED' ? 'var(--mint)' : dbTooltip.status === 'UNTRACKED' ? 'var(--coral)' : 'var(--text3)' } as React.CSSProperties}>{dbTooltip.status}</span></div>
+                    <div><span className="sm-text3 sm-ed-db-field-label">category:</span> <span className="sm-ed-db-category-value" style={{ '--field-color': dbTooltip.category === 'PRESS RELEASE' ? 'var(--sky)' : dbTooltip.category === 'NEWS' ? 'var(--mint)' : 'var(--text3)' } as React.CSSProperties}>{dbTooltip.category}</span></div>
+                    <div className="sm-text-ellipsis"><span className="sm-text3 sm-ed-db-field-label">heading:</span> {dbTooltip.heading}</div>
+                    <div><span className="sm-text3 sm-ed-db-field-label">source:</span> {dbTooltip.source}</div>
+                    <div><span className="sm-text3 sm-ed-db-field-label">date:</span> {dbTooltip.date}</div>
+                    <div><span className="sm-text3 sm-ed-db-field-label">seen:</span> <span className="sm-ed-db-field-value" style={{ '--field-color': dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)' } as React.CSSProperties}>{dbTooltip.seen}</span></div>
                   </>
                 ) : (
-                  <div className="sm-coral" style={{ fontWeight: 600 }}>NOT IN DATABASE</div>
+                  <div className="sm-coral sm-fw-600">NOT IN DATABASE</div>
                 )}
               </div>
             )}
@@ -455,13 +445,12 @@ const SourceArticleRow: React.FC<{
               onClick={handleAnalyze}
               disabled={analyzing}
               title={aiAnalysis ? 'Close AI analysis' : 'Analyze with AI'}
-              className="sm-ed-action-btn-sm"
+              className="sm-ed-action-btn-sm sm-ed-action-btn-ai"
               style={{
                 '--ed-btn-color': aiAnalysis ? 'var(--accent)' : 'rgba(130,200,130,0.5)',
-                textTransform: 'uppercase', letterSpacing: '0.08em',
-                border: `1px solid ${aiAnalysis ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(130,200,130,0.15)'}`,
-                cursor: analyzing ? 'wait' : 'pointer',
-                opacity: analyzing ? 0.5 : 1,
+                '--ed-btn-border': `1px solid ${aiAnalysis ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(130,200,130,0.15)'}`,
+                '--ed-btn-cursor': analyzing ? 'wait' : 'pointer',
+                '--ed-btn-opacity': analyzing ? 0.5 : 1,
               } as React.CSSProperties}
             >
               {analyzing ? '...' : 'AI'}
@@ -471,15 +460,15 @@ const SourceArticleRow: React.FC<{
                 onClick={handleRecheck}
                 disabled={recheckLoading}
                 title="Re-check tracked/untracked status"
-                className="sm-ed-action-btn-sm"
+                className="sm-ed-action-btn-sm sm-ed-action-btn-recheck"
                 style={{
                   '--ed-btn-color': recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
-                  border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
-                  cursor: recheckLoading ? 'wait' : 'pointer',
-                  opacity: recheckLoading ? 0.5 : 1,
+                  '--ed-btn-border': `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
+                  '--ed-btn-cursor': recheckLoading ? 'wait' : 'pointer',
+                  '--ed-btn-opacity': recheckLoading ? 0.5 : 1,
                 } as React.CSSProperties}
               >
-                <svg width={11} height={11} viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 0.8s linear infinite' : 'none' }}>
+                <svg width={11} height={11} viewBox="0 0 16 16" fill="none" className={recheckLoading ? 'sm-spin-fast' : ''}>
                   <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
                   <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -488,8 +477,7 @@ const SourceArticleRow: React.FC<{
             <button
               onClick={() => onToggleHide?.()}
               title="Hide article"
-              className="sm-ed-action-btn-sm"
-              style={{ opacity: 0.5 }}
+              className="sm-ed-action-btn-sm sm-opacity-50"
             >
               <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" />
@@ -502,20 +490,18 @@ const SourceArticleRow: React.FC<{
 
       {/* Expanded body — analysis content */}
       {aiAnalysis && expanded && (
-        <div style={{ padding: '0 12px 12px' }}>
+        <div className="sm-p-0-12-12">
           {/* Verdict badge */}
           {(() => {
             const verdict = parseVerdict(aiAnalysis);
             if (!verdict) return null;
             const vc = VERDICT_COLORS[verdict.level];
             return (
-              <div className="sm-ed-verdict-badge" style={{
-                margin: '12px 0 0 7px', display: 'inline-flex', gap: 6,
-                fontSize: 9, padding: '3px 8px', borderRadius: 4,
+              <div className="sm-ed-verdict-badge-expanded" style={{
                 '--verdict-color': vc.color, '--verdict-bg': vc.bg,
               } as React.CSSProperties}>
                 {verdict.level}
-                <span style={{ fontWeight: 400, textTransform: 'none', letterSpacing: 0, opacity: 0.7, fontSize: 10 }}>
+                <span className="sm-ed-verdict-explanation">
                   {verdict.explanation}
                 </span>
               </div>
@@ -524,7 +510,7 @@ const SourceArticleRow: React.FC<{
           {/* Analysis panel */}
           <div className="sm-ed-analysis">
             <div className="sm-flex-between sm-mb-12">
-              <span className="sm-section-label" style={{ marginBottom: 0 }}>
+              <span className="sm-section-label sm-mb-0">
                 Analysis Result
               </span>
             </div>
@@ -583,7 +569,7 @@ const SourceArticleSection: React.FC<{
 
   return (
     <div>
-      <div className="sm-micro-label" style={{ padding: '8px 12px 4px', opacity: 0.7, letterSpacing: '1.5px' }}>
+      <div className="sm-micro-label sm-p-8-12-4 sm-opacity-70 sm-ls-wide-sm">
         {label} ({visibleCount}{hidden.length > 0 ? ` + ${hidden.length} hidden` : ''})
       </div>
       {displayed.map((a) => {
