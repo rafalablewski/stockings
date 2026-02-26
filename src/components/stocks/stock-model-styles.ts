@@ -4029,10 +4029,14 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-p-16 { padding: 16px; }
 .sm-p-24 { padding: 24px; }
 .sm-p-5-14 { padding: 5px 14px; }
+.sm-p-16-20 { padding: 16px 20px; }
 .sm-px-24 { padding-left: 24px; padding-right: 24px; }
 .sm-py-12 { padding-top: 12px; padding-bottom: 12px; }
+.sm-pl-16 { padding-left: 16px; }
 .sm-pl-20 { padding-left: 20px; }
 .sm-m-0 { margin: 0; }
+.sm-bg-none { background: none; }
+.sm-border-none { border: none; }
 .sm-border-collapse { border-collapse: collapse; }
 
 /* ── Additional border radius utilities ── */

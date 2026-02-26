@@ -229,8 +229,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
         type="button"
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
-        className="sm-w-full sm-pointer sm-gap-16 sm-flex sm-items-start sm-text-left sm-justify-between"
-        style={{ padding: "16px 20px", background: "none", border: "none" }}
+        className="sm-w-full sm-pointer sm-gap-16 sm-flex sm-items-start sm-text-left sm-justify-between sm-p-16-20 sm-bg-none sm-border-none"
       >
         <div style={{ flex: 1, minWidth: 0 }}>
           <div className="sm-flex sm-gap-8" style={{ marginBottom: 4 }}>
