@@ -1673,8 +1673,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             href={edgarBrowseUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="sm-ed-action-btn"
-            style={{ padding: '5px 14px', gap: 6 }}
+            className="sm-ed-action-btn sm-p-5-14 sm-gap-6"
           >
             <svg width="8" height="8" viewBox="0 0 12 12" fill="none" className="sm-shrink-0">
               <path d="M3.5 1.5h7v7M10.5 1.5L1.5 10.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
