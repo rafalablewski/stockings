@@ -2128,18 +2128,18 @@ const CRCLQuarterlyMetricsPanel = () => {
           <span className="sm-section-label">Key Metrics Evolution<UpdateIndicators sources="SEC" /></span>
         </div>
         <div className="sm-card-body">
-        {/* Summary Badges - ASTS pattern */}
+        {/* Summary Badges */}
         <div className="sm-flex-wrap">
-          <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--cyan) 15%, transparent)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
+          <span className="sm-news-tag" style={{ '--tag-color': 'var(--cyan)' } as React.CSSProperties}>
             {quarterlyData.length} quarters of data ({quarterlyData[0].quarter} - {quarterlyData[quarterlyData.length-1].quarter})
           </span>
-          <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--mint) 15%, transparent)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
+          <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>
             Revenue: ${quarterlyData[0].totalRevenue}M → ${quarterlyData[quarterlyData.length-1].totalRevenue}M
           </span>
-          <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--gold) 15%, transparent)', borderColor: 'var(--gold)', color: 'var(--gold)' }}>
+          <span className="sm-news-tag" style={{ '--tag-color': 'var(--gold)' } as React.CSSProperties}>
             Cash: ${(quarterlyData[0].cashPosition/1000).toFixed(2)}B → ${(quarterlyData[quarterlyData.length-1].cashPosition/1000).toFixed(2)}B
           </span>
-          <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--violet) 15%, transparent)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
+          <span className="sm-news-tag" style={{ '--tag-color': 'var(--violet)' } as React.CSSProperties}>
             USDC: ${quarterlyData[0].usdcCirculation.toFixed(1)}B → ${quarterlyData[quarterlyData.length-1].usdcCirculation.toFixed(1)}B
           </span>
         </div>
@@ -2182,8 +2182,8 @@ const CRCLQuarterlyMetricsPanel = () => {
           </div>
         </div>
 
-        {/* Footnotes - ASTS pattern */}
-        <div className="sm-text-11">
+        {/* Footnotes */}
+        <div className="sm-note-panel sm-text-11">
           <p>* Q2 2025 net loss includes $660M IPO-related stock-based compensation acceleration. Normalized EPS was positive.</p>
           <p>* RLDC (Revenue Less Distribution Costs) is Circle's key profitability metric. Distribution costs are payments to exchange partners (Coinbase, Binance).</p>
           <p>* Data from SEC filings (10-K, 10-Q, S-1). Circle went public via IPO in Q2 2025 at $31/share.</p>
@@ -2196,37 +2196,37 @@ const CRCLQuarterlyMetricsPanel = () => {
               <span className="sm-section-label">Latest Quarter Summary ({latestQuarter.quarter})<UpdateIndicators sources="SEC" /></span>
             </div>
             <div className="sm-card-body">
-            <div className="sm-grid-2-lg">
-              <div className="sm-bg-surface2" style={{ borderRadius: 8, padding: 12 }}>
-                <div className="sm-micro-text">Filing Source</div>
-                <div className="sm-text-13">{latestQuarter.filing}</div>
+            <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Filing Source</div>
+                <div className="sm-kpi-sub">{latestQuarter.filing}</div>
               </div>
-              <div className="sm-bg-surface2" style={{ borderRadius: 8, padding: 12 }}>
-                <div className="sm-micro-text">USDC Circulation</div>
-                <div className="sm-text-13">${latestQuarter.usdcCirculation.toFixed(1)}B</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">USDC Circulation</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>${latestQuarter.usdcCirculation.toFixed(1)}B</div>
               </div>
-              <div className="sm-bg-surface2" style={{ borderRadius: 8, padding: 12 }}>
-                <div className="sm-micro-text">Reserve Income</div>
-                <div className="sm-text-13">${latestQuarter.reserveIncome}M</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Reserve Income</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>${latestQuarter.reserveIncome}M</div>
               </div>
-              <div className="sm-bg-surface2" style={{ borderRadius: 8, padding: 12 }}>
-                <div className="sm-micro-text">Market Share</div>
-                <div className="sm-text-13">{latestQuarter.marketShare}%</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Market Share</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--sky)' } as React.CSSProperties}>{latestQuarter.marketShare}%</div>
               </div>
-              <div className="sm-bg-surface2" style={{ borderRadius: 8, padding: 12 }}>
-                <div className="sm-micro-text">Cash Position</div>
-                <div className="sm-text-13">${(latestQuarter.cashPosition/1000).toFixed(2)}B</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Cash Position</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>${(latestQuarter.cashPosition/1000).toFixed(2)}B</div>
               </div>
-              <div className="sm-bg-surface2" style={{ borderRadius: 8, padding: 12 }}>
-                <div className="sm-micro-text">Adj. EBITDA</div>
-                <div className="sm-text-13">${latestQuarter.adjustedEbitda}M</div>
+              <div className="sm-kpi-cell">
+                <div className="sm-kpi-label">Adj. EBITDA</div>
+                <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>${latestQuarter.adjustedEbitda}M</div>
               </div>
             </div>
             </div>
           </div>
         </div>
 
-        <div className="sm-text-11">
+        <div className="sm-note-panel sm-text-11">
           Data sourced from SEC filings (10-K, 10-Q). Latest filing: {latestQuarter.filing}.
         </div>
         </div>
@@ -4031,40 +4031,40 @@ function CRCLModel() {
                             </div>
                           </div>
                         </div>
-                        <div className="sm-bg-surface2" style={{ padding: 12, borderRadius: 12 }}>
+                        <div className="sm-card-body sm-bg-surface2">
                           <div className="sm-text sm-fw-600">Position Sizing by Risk Profile</div>
-                          <div className="sm-flex-wrap sm-gap-16">
-                            <div style={{ fontSize: 13 }}><span className="sm-mint">Aggressive:</span> <span className="sm-text2">4-5%</span></div>
-                            <div style={{ fontSize: 13 }}><span className="sm-sky">Growth:</span> <span className="sm-text2">2-4%</span></div>
-                            <div style={{ fontSize: 13 }}><span className="sm-gold">Balanced:</span> <span className="sm-text2">1-2%</span></div>
-                            <div style={{ fontSize: 13 }}><span className="sm-coral">Conservative:</span> <span className="sm-text2">0-1%</span></div>
+                          <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
+                            <div className="sm-kpi-cell"><div className="sm-kpi-label">Aggressive</div><div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>4-5%</div></div>
+                            <div className="sm-kpi-cell"><div className="sm-kpi-label">Growth</div><div className="sm-kpi-value" style={{ '--kpi-color': 'var(--sky)' } as React.CSSProperties}>2-4%</div></div>
+                            <div className="sm-kpi-cell"><div className="sm-kpi-label">Balanced</div><div className="sm-kpi-value" style={{ '--kpi-color': 'var(--gold)' } as React.CSSProperties}>1-2%</div></div>
+                            <div className="sm-kpi-cell"><div className="sm-kpi-label">Conservative</div><div className="sm-kpi-value" style={{ '--kpi-color': 'var(--coral)' } as React.CSSProperties}>0-1%</div></div>
                           </div>
                         </div>
 
                         {/* Portfolio Context — Unified framework for multi-asset allocation */}
-                        <div style={{ padding: 16, background: 'color-mix(in srgb, var(--violet) 8%, transparent)', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
-                          <div className="sm-violet sm-fw-600" style={{ fontSize: 14 }}>Portfolio Construction Context</div>
-                          <div className="sm-subtle" style={{ fontStyle: 'italic' }}>For multi-asset portfolios holding CRCL alongside other positions</div>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 12 }}>
-                            <div className="sm-bg-surface" style={{ padding: 12, borderRadius: 12 }}>
-                              <div className="sm-text-11">Asset Class Bucket</div>
-                              <div className="sm-text-13t sm-fw-600">Alternatives / Fintech</div>
-                              <div style={{ fontSize: 11, color: 'var(--gold)' }}>Limit: 10-20% of portfolio</div>
-                            </div>
-                            <div className="sm-bg-surface" style={{ padding: 12, borderRadius: 12 }}>
-                              <div className="sm-text-11">Single-Name Limit</div>
-                              <div className="sm-text-13t sm-fw-600">3-5% max</div>
-                              <div style={{ fontSize: 11, color: 'var(--coral)' }}>Rate sensitive, crypto adjacent</div>
-                            </div>
-                            <div className="sm-bg-surface" style={{ padding: 12, borderRadius: 12 }}>
-                              <div className="sm-text-11">Correlation Note</div>
-                              <div className="sm-text-13t sm-fw-600">CRCL + BMNR</div>
-                              <div style={{ fontSize: 11, color: 'var(--sky)' }}>Both ETH-correlated; size combined</div>
-                            </div>
+                        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--violet)', '--bar-accent-2': 'var(--sky)' } as React.CSSProperties}>
+                          <div style={{ fontSize: 11, color: 'var(--violet)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>Portfolio Construction Context</div>
+                          <div className="sm-subtle" style={{ fontStyle: 'italic', marginTop: 4 }}>For multi-asset portfolios holding CRCL alongside other positions</div>
+                        </div>
+                        <div className="sm-model-grid sm-mt-12" style={{ '--cols': 3 } as React.CSSProperties}>
+                          <div className="sm-kpi-cell">
+                            <div className="sm-kpi-label">Asset Class Bucket</div>
+                            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>Alternatives / Fintech</div>
+                            <div className="sm-kpi-sub sm-gold">Limit: 10-20% of portfolio</div>
                           </div>
-                          <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 8 }}>
-                            <strong>Combined Crypto Allocation:</strong> If holding both CRCL and BMNR, treat as a single "Ethereum ecosystem" allocation. Combined weight should not exceed alternatives bucket limit. CRCL provides infrastructure/revenue exposure; BMNR provides NAV/yield exposure.
+                          <div className="sm-kpi-cell">
+                            <div className="sm-kpi-label">Single-Name Limit</div>
+                            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>3-5% max</div>
+                            <div className="sm-kpi-sub sm-coral">Rate sensitive, crypto adjacent</div>
                           </div>
+                          <div className="sm-kpi-cell">
+                            <div className="sm-kpi-label">Correlation Note</div>
+                            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>CRCL + BMNR</div>
+                            <div className="sm-kpi-sub sm-sky">Both ETH-correlated; size combined</div>
+                          </div>
+                        </div>
+                        <div className="sm-note-panel">
+                          <strong>Combined Crypto Allocation:</strong> If holding both CRCL and BMNR, treat as a single "Ethereum ecosystem" allocation. Combined weight should not exceed alternatives bucket limit. CRCL provides infrastructure/revenue exposure; BMNR provides NAV/yield exposure.
                         </div>
                       </div>
                     )}
@@ -4095,7 +4095,7 @@ function CRCLModel() {
                                 <span className="sm-text sm-fw-600">Dec 31, 2025</span>
                                 <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>CURRENT</span>
                               </div>
-                              <span className="sm-mint sm-fw-600" style={{ fontSize: 13 }}>OVERWEIGHT</span>
+                              <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>OVERWEIGHT</span>
                             </div>
                             <div className="sm-body-sm">
                               Post-Q3 2025: Upgraded conviction on execution. USDC at $73.7B validates network effects thesis. OCC charter approval removes key regulatory overhang. Maintaining overweight despite lock-up supply risk given fundamental momentum.
@@ -4113,13 +4113,13 @@ function CRCLModel() {
                             { date: 'Aug 21, 2023', rating: 'MONITORING', color: 'var(--gold)', summary: 'Centre Consortium dissolution and Coinbase equity investment restructures USDC economics. Circle now sole issuer with full governance control. Revenue share agreement creates ~50-60% distribution cost.', trigger: 'Centre Dissolution PR, Coinbase Equity Investment' },
                             { date: 'Mar 2023', rating: 'UNDERWEIGHT', color: 'var(--coral)', summary: 'SVB collapse creates existential risk. $3.3B of USDC reserves held at SVB. Weekend depeg to $0.87 causes $6B+ redemptions. Fed/FDIC backstop saves reserves but damages trust.', trigger: 'SVB Collapse, USDC Depeg Event' },
                           ].map((entry, i) => (
-                            <div key={i} className="sm-bg-surface2" style={{ padding: '12px 16px', borderRadius: 12 }}>
+                            <div key={i} className="sm-card-body sm-bg-surface2">
                               <div className="sm-flex-between">
                                 <span className="sm-text sm-fw-600">{entry.date}</span>
-                                <span style={{ color: entry.color, fontWeight: 600, fontSize: 13 }}>{entry.rating}</span>
+                                <span className="sm-news-tag" style={{ '--tag-color': entry.color } as React.CSSProperties}>{entry.rating}</span>
                               </div>
                               <div className="sm-body-sm">{entry.summary}</div>
-                              <div className="sm-text-11">Trigger: {entry.trigger}</div>
+                              <div className="sm-text-11 sm-text3">Trigger: {entry.trigger}</div>
                             </div>
                           ))}
                         </div>
@@ -5391,35 +5391,39 @@ function CRCLModel() {
                     ))}
                   </div>
 
-                  {/* Filings Grid */}
-                  <div className="sm-overflow-x">
-                    <div className="sm-tl-filing-header">
-                      {['Date', 'Type', 'Description', 'Period', 'Link'].map((h, i) => (
-                        <span key={h} style={{ textAlign: i === 4 ? 'right' : 'left' }}>{h}</span>
+                  {/* Filings Table */}
+                  <div className="sm-overflow-x sm-scroll-hint">
+                    <div style={{ minWidth: 600 }}>
+                      <div className="sm-fin-table-header" style={{ gridTemplateColumns: '100px 80px 1fr 90px 60px' }}>
+                        <span className="sm-fin-th" data-sticky="">Date</span>
+                        <span className="sm-fin-th">Type</span>
+                        <span className="sm-fin-th">Description</span>
+                        <span className="sm-fin-th">Period</span>
+                        <span className="sm-fin-th" style={{ textAlign: 'right' }}>Link</span>
+                      </div>
+                      {displayedFilings.map((filing, idx) => (
+                        <div key={idx} className="sm-fin-table-row" style={{ gridTemplateColumns: '100px 80px 1fr 90px 60px' }}>
+                          <span className="sm-fin-td-label" style={{ whiteSpace: 'nowrap' }}>{filing.date}</span>
+                          <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>
+                            <span className="sm-news-tag" style={{ '--tag-color': secTypeColors[filing.type]?.text || 'var(--text2)' } as React.CSSProperties}>
+                              {filing.type}
+                            </span>
+                          </span>
+                          <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{filing.description}</span>
+                          <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{filing.period}</span>
+                          <span className="sm-fin-td" style={{ textAlign: 'right' }}>
+                            <a
+                              href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="sm-mint"
+                            >
+                              SEC →
+                            </a>
+                          </span>
+                        </div>
                       ))}
                     </div>
-                    {displayedFilings.map((filing, idx) => (
-                      <div key={idx} className="sm-tl-filing-row">
-                        <span className="sm-text" style={{ fontSize: 12, whiteSpace: 'nowrap' }}>{filing.date}</span>
-                        <span>
-                          <span className="sm-news-tag" style={{ '--tag-color': secTypeColors[filing.type]?.text || 'var(--text2)' } as React.CSSProperties}>
-                            {filing.type}
-                          </span>
-                        </span>
-                        <span className="sm-text-12">{filing.description}</span>
-                        <span className="sm-text-12">{filing.period}</span>
-                        <span className="sm-text-right">
-                          <a
-                            href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="sm-mint" style={{ fontSize: 12 }}
-                          >
-                            SEC
-                          </a>
-                        </span>
-                      </div>
-                    ))}
                   </div>
 
                   {/* Show More/Less Button */}

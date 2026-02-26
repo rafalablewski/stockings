@@ -4824,16 +4824,16 @@ const QuarterlyMetricsPanel = () => {
       <div className="sm-card-body">
       {/* Dynamic Summary Badges */}
       <div className="sm-flex-wrap">
-        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--cyan) 15%, transparent)', borderColor: 'var(--cyan)', color: 'var(--cyan)' }}>
+        <span className="sm-news-tag" style={{ '--tag-color': 'var(--cyan)' } as React.CSSProperties}>
           {summaryStats.quarterCount} quarters of data ({summaryStats.firstQuarter} - {summaryStats.lastQuarter})
         </span>
-        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--mint) 15%, transparent)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>
+        <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>
           Cash: {summaryStats.cashRange.first !== null ? `$${summaryStats.cashRange.first.toFixed(0)}M` : 'N/A'} → {summaryStats.cashRange.last !== null ? `$${summaryStats.cashRange.last.toFixed(0)}M` : 'N/A'}
         </span>
-        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--gold) 15%, transparent)', borderColor: 'var(--gold)', color: 'var(--gold)' }}>
+        <span className="sm-news-tag" style={{ '--tag-color': 'var(--gold)' } as React.CSSProperties}>
           Shares: {summaryStats.sharesRange.first !== null ? `${summaryStats.sharesRange.first.toFixed(0)}M` : 'N/A'} → {summaryStats.sharesRange.last !== null ? `${summaryStats.sharesRange.last.toFixed(0)}M` : 'N/A'}
         </span>
-        <span style={{ padding: '4px 12px', borderRadius: 99, border: '1px solid', fontSize: 11, fontWeight: 500, background: 'color-mix(in srgb, var(--violet) 15%, transparent)', borderColor: 'var(--violet)', color: 'var(--violet)' }}>
+        <span className="sm-news-tag" style={{ '--tag-color': 'var(--violet)' } as React.CSSProperties}>
           Satellites: {summaryStats.satellitesRange.first ?? 'N/A'} → {summaryStats.satellitesRange.last ?? 'N/A'}
         </span>
       </div>
@@ -4882,7 +4882,7 @@ const QuarterlyMetricsPanel = () => {
       </div>
       
       {/* Footnote */}
-      <div className="sm-text-11">
+      <div className="sm-note-panel sm-text-11">
         <p>* Cash & Equiv. includes restricted cash (~$0.7-20M depending on quarter). Other reports might exclude restricted cash, which explains small differences between our values and theirs.</p>
         <p>* Total Debt shows Long-Term Debt only (balance sheet line item). Other sources may report "Total Debt" which includes current portion, accrued interest, and finance leases—explaining differences of $3-45M. Notable: Q3 2024 shows $156M here vs $201M elsewhere because the $48.5M Atlas Credit Facility was classified as current (due within 12 months) and repaid in Q4 2024.</p>
         <p>* Employees estimates from PRs/filings. Data from SEC filings (10-K, 10-Q).</p>
@@ -4897,39 +4897,42 @@ const QuarterlyMetricsPanel = () => {
           <span className="sm-section-label">Latest Quarter Summary (Q3 2025)<UpdateIndicators sources="SEC" /></span>
         </div>
         <div className="sm-card-body">
-        <div className="sm-grid-2-lg">
-          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
-            <div className="sm-micro-text">Filing Source</div>
-            <div className="sm-text-13">{quarterlyData['Q3 2025'].filing}</div>
+        <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
+          <div className="sm-kpi-cell">
+            <div className="sm-kpi-label">Filing Source</div>
+            <div className="sm-kpi-sub">{quarterlyData['Q3 2025'].filing}</div>
           </div>
-          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
-            <div className="sm-micro-text">Satellites in Orbit</div>
-            <div className="sm-text-13">{quarterlyData['Q3 2025'].satellites} (BW3 + BB1-5)</div>
+          <div className="sm-kpi-cell">
+            <div className="sm-kpi-label">Satellites in Orbit</div>
+            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--cyan)' } as React.CSSProperties}>{quarterlyData['Q3 2025'].satellites}</div>
+            <div className="sm-kpi-sub">BW3 + BB1-5</div>
           </div>
-          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
-            <div className="sm-micro-text">MNO Partnerships</div>
-            <div className="sm-text-13">{quarterlyData['Q3 2025'].definitiveAgreements} definitive, {quarterlyData['Q3 2025'].mous}+ MOUs/LOIs</div>
+          <div className="sm-kpi-cell">
+            <div className="sm-kpi-label">MNO Partnerships</div>
+            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>{quarterlyData['Q3 2025'].definitiveAgreements}</div>
+            <div className="sm-kpi-sub">definitive, {quarterlyData['Q3 2025'].mous}+ MOUs/LOIs</div>
           </div>
-          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
-            <div className="sm-micro-text">Contracted Revenue</div>
-            <div className="sm-text-13">${quarterlyData['Q3 2025'].contractedRevenue}M+ committed</div>
+          <div className="sm-kpi-cell">
+            <div className="sm-kpi-label">Contracted Revenue</div>
+            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>${quarterlyData['Q3 2025'].contractedRevenue}M+</div>
+            <div className="sm-kpi-sub">committed</div>
           </div>
-          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
-            <div className="sm-micro-text">Spectrum Position</div>
-            <div className="sm-text-13">
-              {quarterlyData['Q3 2025'].spectrumOwned} MHz owned | {quarterlyData['Q3 2025'].spectrumUS}+ MHz US
-            </div>
+          <div className="sm-kpi-cell">
+            <div className="sm-kpi-label">Spectrum Position</div>
+            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--sky)' } as React.CSSProperties}>{quarterlyData['Q3 2025'].spectrumOwned} MHz</div>
+            <div className="sm-kpi-sub">owned | {quarterlyData['Q3 2025'].spectrumUS}+ MHz US</div>
           </div>
-          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
-            <div className="sm-micro-text">Headcount</div>
-            <div className="sm-text-13">{quarterlyData['Q3 2025'].employees ? quarterlyData['Q3 2025'].employees.toLocaleString() : '—'} employees</div>
+          <div className="sm-kpi-cell">
+            <div className="sm-kpi-label">Headcount</div>
+            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>{quarterlyData['Q3 2025'].employees ? quarterlyData['Q3 2025'].employees.toLocaleString() : '—'}</div>
+            <div className="sm-kpi-sub">employees</div>
           </div>
         </div>
         </div>
       </div>
       </div>
 
-      <div className="sm-text-11">
+      <div className="sm-note-panel sm-text-11">
         Data sourced from SEC filings (10-K, 10-K/A, 10-Q). Latest filing: Q3 2025 10-Q (Nov 10, 2025).
       </div>
 
@@ -5390,36 +5393,38 @@ const TimelineTab = () => {
         </div>
 
         {/* Filings Table */}
-        <div>
-          <div className="sm-tl-filing-header">
-            <span className="sm-table-header">Date</span>
-            <span className="sm-table-header">Type</span>
-            <span className="sm-table-header">Description</span>
-            <span className="sm-table-header">Period</span>
-            <span className="sm-table-header sm-text-right">Link</span>
-          </div>
-          {displayedFilings.map((filing, idx) => (
-            <div key={idx} className="sm-tl-filing-row">
-              <span className="sm-text-13 sm-text2" style={{ whiteSpace: 'nowrap' }}>{filing.date}</span>
-              <span>
-                <span className="sm-news-tag" style={{ '--tag-color': secTypeColors[filing.type]?.text || 'var(--text2)' } as React.CSSProperties}>
-                  {filing.type}
-                </span>
-              </span>
-              <span className="sm-text-13t">{filing.description}</span>
-              <span className="sm-text-13">{filing.period}</span>
-              <span className="sm-text-13 sm-text-right">
-                <a
-                  href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="sm-cyan"
-                >
-                  SEC →
-                </a>
-              </span>
+        <div className="sm-overflow-x sm-scroll-hint">
+          <div style={{ minWidth: 600 }}>
+            <div className="sm-fin-table-header" style={{ gridTemplateColumns: '100px 80px 1fr 90px 60px' }}>
+              <span className="sm-fin-th" data-sticky="">Date</span>
+              <span className="sm-fin-th">Type</span>
+              <span className="sm-fin-th">Description</span>
+              <span className="sm-fin-th">Period</span>
+              <span className="sm-fin-th" style={{ textAlign: 'right' }}>Link</span>
             </div>
-          ))}
+            {displayedFilings.map((filing, idx) => (
+              <div key={idx} className="sm-fin-table-row" style={{ gridTemplateColumns: '100px 80px 1fr 90px 60px' }}>
+                <span className="sm-fin-td-label" style={{ whiteSpace: 'nowrap' }}>{filing.date}</span>
+                <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>
+                  <span className="sm-news-tag" style={{ '--tag-color': secTypeColors[filing.type]?.text || 'var(--text2)' } as React.CSSProperties}>
+                    {filing.type}
+                  </span>
+                </span>
+                <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{filing.description}</span>
+                <span className="sm-fin-td" style={{ textAlign: 'left', fontFamily: 'inherit' }}>{filing.period}</span>
+                <span className="sm-fin-td" style={{ textAlign: 'right' }}>
+                  <a
+                    href={`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${secMeta.cik}&type=${filing.type}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="sm-cyan"
+                  >
+                    SEC →
+                  </a>
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Show More/Less Button */}
@@ -7179,17 +7184,17 @@ const InvestmentTab = () => {
         <div className="sm-subtle">Full record of all investment thesis updates. Never deleted. Tracking since Q3 2022.</div>
         <div className="sm-flex-col" style={{ maxHeight: 500, overflowY: 'auto' }}>
           {archive.map((a, i) => (
-            <div key={i} style={{ background: i === 0 ? 'color-mix(in srgb, var(--mint) 5%, transparent)' : 'var(--surface2)', padding: '12px 16px', borderRadius: 12, border: i === 0 ? '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' : '1px solid var(--border)' }}>
+            <div key={i} className={i === 0 ? 'sm-callout' : 'sm-card-body sm-bg-surface2'} style={i === 0 ? { '--callout-color': 'var(--mint)' } as React.CSSProperties : undefined}>
               <div className="sm-flex-between">
                 <div className="sm-flex">
                   <span className="sm-text sm-fw-600">{a.date}</span>
-                  {i === 0 && <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '2px 8px', borderRadius: 99, fontSize: 10, fontWeight: 600 }}>CURRENT</span>}
+                  {i === 0 && <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>CURRENT</span>}
                 </div>
-                <span style={{ color: getVerdictColor(a.verdict), fontWeight: 600, fontSize: 13 }}>{a.verdict}</span>
+                <span className="sm-news-tag" style={{ '--tag-color': getVerdictColor(a.verdict) } as React.CSSProperties}>{a.verdict}</span>
               </div>
               <div className="sm-fw-500 sm-text" style={{ fontSize: 14 }}>{a.headline}</div>
               <div className="sm-text-13 sm-text2">{a.summary}</div>
-              <div className="sm-text-11">Filing: {a.filing}</div>
+              <div className="sm-text-11 sm-text3">Filing: {a.filing}</div>
               
               {expandedArchive === i && (
                 <div className="sm-border-t sm-pt-12">
@@ -7197,7 +7202,7 @@ const InvestmentTab = () => {
                     <div className="sm-fw-600 sm-sky sm-text-12">Key Developments</div>
                     <div className="sm-flex-wrap sm-gap-8">
                       {a.keyDevelopments.map((d, j) => (
-                        <span key={j} className="sm-text-11 sm-text3" style={{ padding: '4px 8px', background: 'var(--surface)', borderRadius: 4 }}>• {d}</span>
+                        <span key={j} className="sm-text-11 sm-text3 sm-bg-surface sm-rounded-6" style={{ padding: '4px 8px' }}>• {d}</span>
                       ))}
                     </div>
                   </div>
@@ -7216,8 +7221,8 @@ const InvestmentTab = () => {
               
               <button
                 onClick={() => setExpandedArchive(expandedArchive === i ? null : i)}
-                className="sm-text-11 sm-text3"
-                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                className="sm-action-btn"
+                data-active={expandedArchive === i}
                 aria-expanded={expandedArchive === i}
                 aria-label={`Toggle details for ${a.headline}`}
               >
