@@ -1371,7 +1371,7 @@ const CRCLModelTab = ({
 
             <div style={{ padding: '16px 16px', background: 'color-mix(in srgb, var(--accent) 6%, transparent)', borderRadius: 10, fontSize: 12, color: 'var(--text3)', lineHeight: 1.7, marginTop: 16, border: '1px solid color-mix(in srgb, var(--accent) 15%, transparent)' }}>
               <div className="sm-text2 sm-fw-600" style={{ marginBottom: 4 }}>Key Assumptions</div>
-              <ul style={{ margin: 0, paddingLeft: 16 }}>
+              <ul className="sm-m-0 sm-pl-16">
                 <li>Terminal year: {new Date().getFullYear() + 5} (5 years out)</li>
                 <li>FCF conversion = 85% of EBITDA (asset-light model)</li>
                 <li>Coinbase distribution cost applied to gross yield revenue</li>
@@ -3439,7 +3439,7 @@ function CRCLModel() {
                       <div className="sm-card-body">
                         <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
                           <div className="sm-mint sm-fw-600">What's New ({investmentCurrent.source})</div>
-                          <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
+                          <ul className="sm-m-0 sm-pl-16 sm-text2 sm-fs-13 sm-lh-18">
                             {investmentCurrent.executiveSummary.whatsNew.map((item, i) => (
                               <li key={i}>{item}</li>
                             ))}

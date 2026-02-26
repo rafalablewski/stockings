@@ -101,7 +101,7 @@ Guide.displayName = 'Guide';
 export const CFANotes = React.memo<CFANotesProps>(({ title, items }) => (
   <div className="sm-cfa-notes">
     <div className="sm-flex sm-gap-6">
-      <span className="sm-subtle" style={{ opacity: 0.7 }}>📚</span>
+      <span className="sm-subtle sm-opacity-70">📚</span>
       <h4 className="sm-cfa-title">{title || 'CFA Level III — Key Concepts'}</h4>
     </div>
     <div className="sm-cfa-list">

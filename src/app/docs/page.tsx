@@ -48,13 +48,26 @@ const layoutClasses: CSSClass[] = [
   { name: ".sm-flex-col",     description: "Flex column",                                usage: "className=\"sm-flex-col\"" },
   { name: ".sm-flex-col-gap", description: "Flex column, gap 12px",                      usage: "className=\"sm-flex-col-gap\"" },
   { name: ".sm-flex-wrap",    description: "Flex row, wrap, gap 8px",                    usage: "className=\"sm-flex-wrap\"" },
-  { name: ".sm-gap-{n}",     description: "Gap override — 4 | 6 | 8 | 12 | 16 | 24",  usage: "className=\"sm-flex sm-gap-16\"" },
+  { name: ".sm-flex-1",       description: "flex: 1",                                    usage: "className=\"sm-flex-1\"" },
+  { name: ".sm-items-center", description: "align-items: center",                        usage: "className=\"sm-items-center\"" },
+  { name: ".sm-items-start",  description: "align-items: flex-start",                    usage: "className=\"sm-items-start\"" },
+  { name: ".sm-gap-{n}",     description: "Gap override — 1 | 4 | 6 | 8 | 12 | 16 | 20 | 24 | 32", usage: "className=\"sm-flex sm-gap-16\"" },
   { name: ".sm-text-center",  description: "text-align: center",                         usage: "className=\"sm-text-center\"" },
   { name: ".sm-text-right",   description: "text-align: right",                          usage: "className=\"sm-text-right\"" },
+  { name: ".sm-text-left",    description: "text-align: left",                           usage: "className=\"sm-text-left\"" },
   { name: ".sm-shrink-0",     description: "flex-shrink: 0",                             usage: "className=\"sm-shrink-0\"" },
   { name: ".sm-w-full",       description: "width: 100%",                                usage: "className=\"sm-w-full\"" },
-  { name: ".sm-mt-{n}",      description: "Margin-top — 8 | 12 | 16 | 24 | 32",        usage: "className=\"sm-mt-16\"" },
-  { name: ".sm-mb-{n}",      description: "Margin-bottom — 8 | 12 | 16",                usage: "className=\"sm-mb-8\"" },
+  { name: ".sm-w-48",         description: "width: 48px",                                usage: "className=\"sm-w-48\"" },
+  { name: ".sm-min-w-0",      description: "min-width: 0 — prevents flex overflow",      usage: "className=\"sm-min-w-0\"" },
+  { name: ".sm-relative",     description: "position: relative",                          usage: "className=\"sm-relative\"" },
+  { name: ".sm-mt-{n}",      description: "Margin-top — 2 | 4 | 8 | 10 | 12 | 16 | 24 | 32", usage: "className=\"sm-mt-16\"" },
+  { name: ".sm-mb-{n}",      description: "Margin-bottom — 0 | 4 | 6 | 8 | 12 | 16",   usage: "className=\"sm-mb-8\"" },
+  { name: ".sm-ml-{n}",      description: "Margin-left — 4 | 12",                        usage: "className=\"sm-ml-4\"" },
+  { name: ".sm-p-{x}-{y}",   description: "Padding shortcuts — 3-12, 4-10, 4-12, 5-12, 8-12-4, etc.", usage: "className=\"sm-p-5-12\"" },
+  { name: ".sm-rounded-{n}",  description: "Border-radius — 3 | 4 | 5 | 6 | 8 | 12 | 16 | full", usage: "className=\"sm-rounded-8\"" },
+  { name: ".sm-overflow-hidden", description: "overflow: hidden",                         usage: "className=\"sm-overflow-hidden\"" },
+  { name: ".sm-inline-flex",  description: "display: inline-flex",                        usage: "className=\"sm-inline-flex\"" },
+  { name: ".sm-block",        description: "display: block",                              usage: "className=\"sm-block\"" },
   { name: ".g2 / .g3 / .g4 / .g5", description: "Grid layouts — 2–5 equal columns, 24px gap", usage: "className=\"g3\"" },
 ];
 
@@ -75,6 +88,16 @@ const typographyClasses: CSSClass[] = [
   { name: ".sm-body",           description: "14px text2 — standard body text",                              usage: "className=\"sm-body\"" },
   { name: ".sm-body-sm",        description: "13px text2, line-height 1.5",                                  usage: "className=\"sm-body-sm\"" },
   { name: ".sm-body-lg",        description: "15px text2, line-height 1.7",                                  usage: "className=\"sm-body-lg\"" },
+  { name: ".sm-fw-{n}",        description: "Font-weight — 300 | 400 | 500 | 600 | 700",                   usage: "className=\"sm-fw-600\"" },
+  { name: ".sm-text-{n}",      description: "Font-size — 8 | 9 | 10 (px)",                                  usage: "className=\"sm-text-9\"" },
+  { name: ".sm-lh-{n}",        description: "Line-height — 14 | 15 | 16 | 17 | 18 | 20 | 22 (÷10)",       usage: "className=\"sm-lh-17\"" },
+  { name: ".sm-ls-{n}",        description: "Letter-spacing — 0 | 05 | 08 | 1 | wide-sm (1.5px) | 005em", usage: "className=\"sm-ls-05\"" },
+  { name: ".sm-uppercase",     description: "text-transform: uppercase",                                     usage: "className=\"sm-uppercase\"" },
+  { name: ".sm-italic",        description: "font-style: italic",                                            usage: "className=\"sm-italic\"" },
+  { name: ".sm-line-through",  description: "text-decoration: line-through",                                 usage: "className=\"sm-line-through\"" },
+  { name: ".sm-nowrap",        description: "white-space: nowrap",                                            usage: "className=\"sm-nowrap\"" },
+  { name: ".sm-text-ellipsis", description: "overflow: hidden; text-overflow: ellipsis; white-space: nowrap", usage: "className=\"sm-text-ellipsis\"" },
+  { name: ".sm-opacity-{n}",   description: "Opacity — 25 | 30 | 40 | 50 | 60 | 70 | 80 | 90",             usage: "className=\"sm-opacity-70\"" },
 ];
 
 const colorClasses: CSSClass[] = [
@@ -136,6 +159,10 @@ const dataAttributes: DataAttr[] = [
   { attribute: "data-sticky",    values: "present",                               effect: "On .sm-fin-th: sticky left position with z-index for horizontal scroll" },
   { attribute: "data-overflow",  values: "true",                                  effect: "On .sm-fin-bar: switches to fixed-width (flex: 0 0 auto) for >8 bars" },
   { attribute: "data-highlight", values: "present",                               effect: "On .sm-cap-td: accent color + font-weight 600 for key values" },
+  { attribute: "data-loading",   values: "true",                                  effect: "On .sm-refresh-btn: wait cursor + 50% opacity. On .sm-refresh-icon: spin animation" },
+  { attribute: "data-direction", values: "up | down",                              effect: "On .sm-price-change: mint (up) or coral (down) text color" },
+  { attribute: "data-expanded",  values: "true | false",                           effect: "On .sm-ed-chevron: rotates 0° ↔ 90° with transition" },
+  { attribute: "data-spin",      values: "true",                                   effect: "spin animation 1s linear infinite" },
 ];
 
 interface CSSVarDynamic {
@@ -167,6 +194,10 @@ const cssCustomProperties: CSSVarDynamic[] = [
   { variable: "--verdict-bg",     usedBy: ".sm-ed-verdict-badge", purpose: "EDGAR verdict badge background" },
   { variable: "--db-color",       usedBy: ".sm-ed-db-btn",       purpose: "EDGAR DB button color" },
   { variable: "--db-opacity",     usedBy: ".sm-ed-db-btn",       purpose: "EDGAR DB button opacity" },
+  { variable: "--field-color",    usedBy: ".sm-ed-db-field-value", purpose: "DB tooltip field value color (status/seen)" },
+  { variable: "--ed-btn-border",  usedBy: ".sm-ed-action-btn-ai, .sm-ed-action-btn-recheck", purpose: "Full border value for action button variants" },
+  { variable: "--ed-btn-cursor",  usedBy: ".sm-ed-action-btn-ai, .sm-ed-action-btn-recheck", purpose: "Cursor style (pointer/wait) for action buttons" },
+  { variable: "--ed-btn-opacity", usedBy: ".sm-ed-action-btn-ai, .sm-ed-action-btn-recheck", purpose: "Opacity for action buttons (analyzing state)" },
 ];
 
 interface FileEntry {
@@ -370,6 +401,8 @@ export default function DocsPage() {
             { id: "structure",  label: "Structure" },
             { id: "fonts",      label: "Fonts" },
             { id: "theming",    label: "Theming" },
+            { id: "liveprice-classes", label: "LivePrice" },
+            { id: "error-classes",     label: "Error" },
           ].map((item) => (
             <a
               key={item.id}
@@ -559,7 +592,7 @@ export default function DocsPage() {
         />
 
         {/* ── EDGAR Tab Classes ───────────────────────────────────────────── */}
-        <SectionHeader id="edgar-classes" title="EDGAR Tab Classes (sm-ed-*)" count={33} />
+        <SectionHeader id="edgar-classes" title="EDGAR Tab Classes (sm-ed-*)" count={45} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
           SEC filing browser components — filing rows, badges, status indicators, analysis panels, diff views.
         </p>
@@ -599,6 +632,17 @@ export default function DocsPage() {
             [".sm-ed-method-label", "Methodology section header (10px uppercase)."],
             [".sm-ed-method-text", "Methodology mono description text."],
             [".sm-ed-info-card / -lg / -xl", "Methodology info cards (flex: 1 1 160/180/220px)."],
+            [".sm-ed-action-btn-ai / -recheck", "Action button variants — uppercase, letter-spacing. Uses --ed-btn-border, --ed-btn-cursor, --ed-btn-opacity."],
+            [".sm-ed-db-tooltip-header", "DB tooltip header — 9px uppercase with bottom border."],
+            [".sm-ed-db-field-label", "DB tooltip field label — min-width 70px, inline-block."],
+            [".sm-ed-db-field-value", "DB tooltip field value — font-weight 600. Uses --field-color."],
+            [".sm-ed-db-dot", "5px dot for DB status. Uses --dot-color."],
+            [".sm-ed-verdict-badge-expanded", "Expanded verdict badge — inline-flex, 9px, 3×8px padding. Uses --verdict-color, --verdict-bg."],
+            [".sm-ed-verdict-explanation", "Verdict explanation text — normal weight, 10px, 70% opacity."],
+            [".sm-ed-chevron", "SVG chevron with rotation transition. data-expanded='true' rotates 90°."],
+            [".sm-ed-color-dot / -sm", "6px / 5px colored dot. Uses --dot-color."],
+            [".sm-ed-patch-badge / -file", "Diff preview badges and file paths."],
+            [".sm-ed-status-msg / -pulse-dot / -spinner-text", "Status messages and loading indicators."],
           ]}
         />
 
@@ -673,6 +717,38 @@ export default function DocsPage() {
             [".sm-cmp-td", "Data cell (Space Mono, 14px). data-align='right' for right-alignment."],
             [".sm-cmp-td-label", "Sticky label cell — position: sticky, left: 0 for horizontal scroll."],
             [".sm-cmp-table-total", "Summary/total row with 2px top border and 600 weight."],
+          ]}
+        />
+
+        {/* ── LivePrice & Legend Classes ─────────────────────────────────── */}
+        <SectionHeader id="liveprice-classes" title="LivePrice & Legend Classes" count={7} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Real-time price display, refresh button, price change indicators, and update legend toggle.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".sm-refresh-btn", "Transparent refresh button with 8px padding. data-loading='true' sets wait cursor + 50% opacity."],
+            [".sm-refresh-icon", "SVG refresh icon — color: text3. data-loading='true' triggers spin animation."],
+            [".sm-price-change", "Price change text (12px Space Mono). data-direction='up|down' sets mint/coral color."],
+            [".sm-price-change-ts", "Timestamp within price change — text3, 10px, margin-left 8px."],
+            [".sm-price-error", "Error message — 11px, coral color, margin-top 4px."],
+            [".sm-legend-label", "Sources label — 10px, 500 weight, uppercase, text3."],
+            [".sm-legend-toggle", "On/Off toggle button — auto margin-left, border, transition. data-active='true' for highlight."],
+          ]}
+        />
+
+        {/* ── Error Boundary Classes ──────────────────────────────────────── */}
+        <SectionHeader id="error-classes" title="Error Boundary Classes" count={3} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Calculation error fallback UI — coral gradient card with retry button.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".sm-error-boundary", "Error card — coral gradient, 48px padding, centered text, rounded-16."],
+            [".sm-error-detail", "Error message detail — 14px Space Mono."],
+            [".sm-error-reload", "Reload button — cyan background, 600 weight, rounded-8."],
           ]}
         />
 
