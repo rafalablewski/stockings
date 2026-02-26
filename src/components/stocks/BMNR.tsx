@@ -5667,13 +5667,14 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
         role="button"
         tabIndex={0}
         aria-expanded={investmentSections.has(id)}
-        onKeyDown={(e) => e.key === 'Enter' && toggleSection(id)}
+        aria-label={`Toggle ${title}`}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection(id))}
       >
         <span className="sm-section-label">
           {title}
           {sources && <UpdateIndicators sources={sources} />}
         </span>
-        <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
+        <span aria-hidden="true" style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
       </div>
       {investmentSections.has(id) && <div className="sm-card-body">{children}</div>}
     </div>
@@ -5748,14 +5749,12 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 
       {/* Investment Scorecard */}
       <CollapsibleSection id="scorecard" title="Investment Scorecard" sources={['PR', 'SEC']}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
           {current.scorecard.map((item, i) => (
-            <div key={i} style={{ background: 'var(--surface2)', padding: '12px 16px', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <div className="sm-text-13t sm-fw-600">{item.category}</div>
-                <div className="sm-text-11">{item.detail}</div>
-              </div>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 20, fontWeight: 700, color: item.color }}>{item.rating}</div>
+            <div key={i} className="sm-kpi-cell" style={{ '--kpi-color': item.color } as React.CSSProperties}>
+              <div className="sm-kpi-hero-md">{item.rating}</div>
+              <div className="sm-kpi-label">{item.category}</div>
+              <div className="sm-kpi-sub">{item.detail}</div>
             </div>
           ))}
         </div>
@@ -5792,21 +5791,23 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 
       {/* Summary */}
       <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
-        <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
-          <div className="sm-mint sm-fw-600">What's New ({current.source})</div>
-          <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
+        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--mint)', '--bar-accent-2': 'var(--cyan)' } as React.CSSProperties}>
+          <div style={{ fontSize: 11, color: 'var(--mint)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>What's New ({current.source})</div>
+          <ul className="sm-text-13 sm-text2" style={{ margin: '4px 0 0', paddingLeft: 16, lineHeight: 1.8 }}>
             {current.executiveSummary.whatsNew.map((item, i) => (
               <li key={i}>{item}</li>
             ))}
           </ul>
         </div>
-        <div style={{ color: 'var(--text2)', lineHeight: 1.8, fontSize: 14 }}>
+        <div className="sm-text-13 sm-text2 sm-body" style={{ lineHeight: 1.8 }}>
           <p>
             <strong>Thesis:</strong> {current.executiveSummary.thesis}
           </p>
-          <p style={{ fontStyle: 'italic', color: 'var(--cyan)' }}>
-            "{current.executiveSummary.bottomLine}"
-          </p>
+        </div>
+        <div className="sm-note-panel">
+          <em className="sm-cyan">"{current.executiveSummary.bottomLine}"</em>
+        </div>
+        <div className="sm-text-13 sm-text2 sm-body" style={{ lineHeight: 1.8 }}>
           <p>
             <strong>Position Sizing:</strong> 5-10% for aggressive portfolios • 2-5% for growth • Alternatives allocation for balanced
           </p>
@@ -5873,7 +5874,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
             ))}
           </div>
         </div>
-        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 12, fontSize: 13, color: 'var(--text2)' }}>
+        <div className="sm-note-panel">
           <strong>Moat Durability:</strong> A- (Strong). Scale advantage is nearly unassailable — would take years and billions for competitors to catch up. Yield advantage over BTC treasuries is permanent. Key risk is ETH price, not competitive dynamics.
         </div>
       </CollapsibleSection>
@@ -5886,20 +5887,23 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 
       {/* Risk Matrix */}
       <CollapsibleSection id="risks" title="Risk Matrix" sources={['PR', 'SEC']}>
-        <div className="sm-flex-col">
-          {current.risks.map((r, i) => (
-            <div key={i} style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12, borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}>
-              <div className="sm-flex-between">
-                <span className="sm-text sm-fw-600">{r.risk}</span>
-                <div className="sm-flex sm-gap-8 sm-items-initial">
-                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: r.severity === 'Critical' ? 'color-mix(in srgb, var(--coral) 20%, transparent)' : r.severity === 'High' ? 'color-mix(in srgb, var(--gold) 20%, transparent)' : 'color-mix(in srgb, var(--sky) 20%, transparent)', color: r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)' }}>{r.severity}</span>
-                  <span style={{ padding: '2px 8px', borderRadius: 99, fontSize: 11, background: 'var(--surface)', color: 'var(--text3)' }}>{r.likelihood} likelihood</span>
+        <div className="sm-flex-col sm-gap-8">
+          {current.risks.map((r, i) => {
+            const severityColor = r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)';
+            return (
+              <div key={i} className="sm-callout" style={{ '--callout-color': severityColor } as React.CSSProperties}>
+                <div className="sm-flex-between">
+                  <span className="sm-text sm-fw-600">{r.risk}</span>
+                  <div className="sm-flex sm-gap-8">
+                    <span className="sm-news-tag" style={{ '--tag-color': severityColor } as React.CSSProperties}>{r.severity}</span>
+                    <span className="sm-news-tag" style={{ '--tag-color': 'var(--text3)' } as React.CSSProperties}>{r.likelihood} likelihood</span>
+                  </div>
                 </div>
+                <div className="sm-text-13" style={{ marginTop: 4 }}>{r.detail}</div>
+                <div className="sm-subtle" style={{ marginTop: 4 }}><strong className="sm-mint">Mitigation:</strong> {r.mitigation}</div>
               </div>
-              <div className="sm-text-13">{r.detail}</div>
-              <div className="sm-subtle"><strong className="sm-mint">Mitigation:</strong> {r.mitigation}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </CollapsibleSection>
 
@@ -6217,9 +6221,11 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
                 </div>
               )}
               
-              <button 
+              <button
                 onClick={() => setExpandedArchive(expandedArchive === i ? null : i)}
                 className="sm-bmnr-link-btn"
+                aria-expanded={expandedArchive === i}
+                aria-label={`Toggle details for ${a.date}`}
               >
                 {expandedArchive === i ? '▼ Less' : '▶ More details'}
               </button>
@@ -7490,16 +7496,9 @@ const TimelineTab = () => {
             {/* Rows */}
             {displayedFilings.map((filing, idx) => (
               <div key={idx} className="sm-tl-filing-row">
-                <span style={{ fontSize: 13, whiteSpace: 'nowrap' }}>{filing.date}</span>
-                <span className="sm-text-13">
-                  <span style={{
-                    background: secTypeColors[filing.type]?.bg || 'rgba(100,100,100,0.2)',
-                    color: secTypeColors[filing.type]?.text || 'var(--text2)',
-                    padding: '2px 8px',
-                    borderRadius: 99,
-                    fontSize: 11,
-                    fontWeight: 600
-                  }}>
+                <span className="sm-text-13" style={{ whiteSpace: 'nowrap' }}>{filing.date}</span>
+                <span>
+                  <span className="sm-news-tag" style={{ '--tag-color': secTypeColors[filing.type]?.text || 'var(--text2)' } as React.CSSProperties}>
                     {/^\d+$/.test(filing.type) ? `Form ${filing.type}` : filing.type}
                   </span>
                 </span>
@@ -7525,6 +7524,7 @@ const TimelineTab = () => {
           <button
             onClick={() => setShowAllFilings(!showAllFilings)}
             className="sm-expand-btn"
+            aria-expanded={showAllFilings}
           >
             {showAllFilings ? '▲ Show Less' : `▼ Show ${hiddenCount} More Filings`}
           </button>
@@ -7645,6 +7645,7 @@ const TimelineTab = () => {
               <button
                 onClick={() => setShowAllPR(!showAllPR)}
                 className="sm-expand-btn"
+                aria-expanded={showAllPR}
               >
                 {showAllPR ? '▲ Show Less' : `▼ Show ${hiddenPRCount} More`}
               </button>
@@ -7737,7 +7738,15 @@ const TimelineTab = () => {
 
           return (
             <div key={i} className="sm-tl-event-card">
-              <div onClick={toggleExpand} className="sm-tl-event-row">
+              <div
+                onClick={toggleExpand}
+                className="sm-tl-event-row"
+                role="button"
+                tabIndex={0}
+                aria-expanded={isExpanded}
+                aria-label={`Toggle details for ${entry.title}`}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleExpand())}
+              >
                 <span className="sm-mono-sm sm-text3">{entry.date}</span>
                 <span className="sm-text-11">{entry.category}</span>
                 <span className="sm-text-13t sm-fw-500">{entry.title}</span>
@@ -7747,7 +7756,7 @@ const TimelineTab = () => {
                   {entry.impact === 'neutral' && '→ '}
                   {entry.impact}
                 </span>
-                <span className="sm-bmnr-chevron" data-expanded={isExpanded}>▼</span>
+                <span aria-hidden="true" className="sm-bmnr-chevron" data-expanded={isExpanded}>▼</span>
               </div>
               {isExpanded && (
                 <div className="sm-tl-detail-panel">
