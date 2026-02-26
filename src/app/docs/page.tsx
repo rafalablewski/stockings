@@ -222,7 +222,9 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/shared/StockNavigation.tsx",   type: "Component", description: "Tab navigation bar with dropdown support" },
   { path: "src/components/shared/StockChart.tsx",        type: "Component", description: "Interactive stock price chart" },
   { path: "src/components/shared/SharedWallStreetTab.tsx",    type: "Component", description: "Wall Street analyst research tab" },
-  { path: "src/components/shared/SharedInvestmentTab.tsx",    type: "Component", description: "Investment thesis & scoring tab" },
+  { path: "src/components/shared/SharedInvestmentTab.tsx",    type: "Component", description: "Investment thesis & scorecard (stock-agnostic; gold-standard sm-card/sm-toggle-header)" },
+  { path: "src/components/shared/SharedFinancialsTab.tsx",   type: "Component", description: "Financials tab shell: hero, milestones, CFA notes; children = quarterly section" },
+  { path: "src/components/shared/SharedTimelineTab.tsx",     type: "Component", description: "Timeline tab shell: hero + children (SEC filings, event list)" },
   { path: "src/components/shared/SharedEdgarTab.tsx",         type: "Component", description: "SEC EDGAR filings browser" },
   { path: "src/components/shared/SharedSourcesTab.tsx",       type: "Component", description: "Research sources / news feed tab" },
   { path: "src/components/shared/SharedAIAgentsTab.tsx",      type: "Component", description: "AI analysis agents status tab" },
@@ -296,6 +298,48 @@ const css = getStockModelCSS('violet');
 
 // In CRCL.tsx
 const css = getStockModelCSS('mint');`,
+  },
+  {
+    title: "Shared tracking tabs (stock-agentic)",
+    description: "Financials, Timeline, and Investment tabs use shared components. Each stock passes its own data (from @/data/asts, @/data/bmnr, @/data/crcl). No duplication of layout or styling; gold-standard classes (sm-card, sm-toggle-header, sm-divider) applied in one place.",
+    code: `// Financials: SharedFinancialsTab + config + children (quarterly panel)
+<SharedFinancialsTab ticker="ASTS" sectionLabel="..." title="Financials" description="..." secFilingConfig={...} milestones={...} cfaNotes={...}>
+  <QuarterlyMetricsPanel />
+</SharedFinancialsTab>
+
+// Timeline: SharedTimelineTab + children (SEC table, event list)
+<SharedTimelineTab sectionLabel="Corporate Events" title="Timeline" description="...">
+  {/* SEC filings card, topic filters, event list, CFA notes */}
+</SharedTimelineTab>
+
+// Investment: SharedInvestmentTab with current + archive from data
+<SharedInvestmentTab current={investmentCurrent} archive={investmentArchive} ticker="ASTS" />`,
+  },
+  {
+    title: "Stock-specific fields and extensibility",
+    description: "Shared tab types are designed for many current and future stock-specific fields. Investment: add optional fields to InvestmentCurrent (e.g. priceTargets, catalysts, ecosystemHealth) and optional render props to SharedInvestmentTabProps. Financials: use extraBeforeChildren, extraAfterChildren, and optional secFilingConfig. Timeline: pass all stock-specific content as children; extend TimelineEvent union for new event shapes. Add new optional props to shared types as new stocks need them.",
+    code: `// investmentTypes.ts — optional company-specific fields
+priceTargets?: PriceTarget[];
+catalysts?: Catalyst[];
+accumulation?: AccumulationZone[];
+ecosystemHealth?: EcosystemHealth;
+// + renderHeaderMetrics, renderEcosystemHealth, etc.
+
+// financialsTabTypes.ts — optional slots
+extraBeforeChildren?: ReactNode;
+extraAfterChildren?: ReactNode;
+secFilingConfig?: FinancialsSECConfig;`,
+  },
+  {
+    title: "Merging with branch claude/disable-git-hooks-8qdjs",
+    description: "That branch changes: (1) CSS import from getStockModelCSS() to stock-model-styles.css and root data-accent, (2) fontFamily from 'Space Mono' to \"'Space Mono', monospace\" in ASTS/BMNR/CRCL, (3) removal of some inline hover handlers. Overlap: same files (ASTS, BMNR, CRCL, stock-model-styles). When merging: keep this branch's SharedFinancialsTab/SharedTimelineTab refactor and shared component usage; take their CSS/import and fontFamily/style fixes. Resolve conflicts in FinancialsTab/TimelineTab by keeping the Shared* wrapper and their fontFamily changes inside the content.",
+    code: `// Prefer: their root + styles
+import './stock-model-styles.css';
+<div className="stock-model-app" data-accent="cyan">
+
+// Keep: our shared tab usage
+<SharedFinancialsTab ...><QuarterlyMetricsPanel /></SharedFinancialsTab>
+<SharedTimelineTab ...>{/* their fontFamily fixes inside */}</SharedTimelineTab>`,
   },
 ];
 

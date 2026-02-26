@@ -206,8 +206,8 @@
  */
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import { getStockModelCSS } from './stock-model-styles';
-import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner } from '../shared';
+import './stock-model-styles.css';
+import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab } from '../shared';
 import type { UpdateSource } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
@@ -358,9 +358,7 @@ const safeDivide = (numerator: number, denominator: number, fallback: number = 0
 const safeNumber = (value: number, fallback: number = 0): number =>
   isFinite(value) ? value : fallback;
 
-// CSS is now imported from shared styles (Golden Standard: ASTS)
-// To modify styles, edit: ./stock-model-styles.ts
-const css = getStockModelCSS('violet');
+// CSS imported from stock-model-styles.css (see import at top of file)
 
 
 
@@ -601,8 +599,7 @@ const BMNRDilutionAnalysis = () => {
 
   return (
     <UpdateIndicatorContext.Provider value={{ showIndicators, setShowIndicators }}>
-      <style>{css}</style>
-      <div className="stock-model-app">
+      <div className="stock-model-app" data-accent="violet">
         {/* ============================================================================
             LEGAL DISCLAIMER BANNER
             ============================================================================ */}
@@ -3920,7 +3917,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
                         <div className="sm-subtle sm-text2 sm-lh-15">{news.thesisComparison}</div>
                       </div>
                     )}
-                    <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: 'Space Mono, monospace', marginTop: 8 }}>Source: {news.sourceUrl ? <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" className="sm-accent">{news.source} &#8599;</a> : news.source}</div>
+                    <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: "'Space Mono', monospace", marginTop: 8 }}>Source: {news.sourceUrl ? <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" className="sm-accent">{news.source} &#8599;</a> : news.source}</div>
                   </div>
                 )}
               </div>
@@ -4439,11 +4436,11 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
             <span className="sm-mono-sm sm-text-right sm-fw-500">${dcf.terminalPV.toFixed(2)}</span>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: dcfMethod === 'intermediate' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr' : dcfMethod === 'dividend' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr' : '80px 1fr 1fr 1fr 1fr', padding: '12px 24px', background: 'rgba(0,212,170,0.1)' }}>
-            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, fontWeight: 700 }}>TOTAL</span>
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, fontWeight: 700 }}>TOTAL</span>
             {dcfMethod === 'terminal' && <><span /><span /><span /></>}
             {dcfMethod === 'intermediate' && <><span /><span /><span /><span /><span /><span /></>}
             {dcfMethod === 'dividend' && <><span /><span /><span /><span /><span /></>}
-            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, textAlign: 'right', fontWeight: 700, color: 'var(--mint)' }}>${dcf.impliedValue.toFixed(2)}</span>
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, textAlign: 'right', fontWeight: 700, color: 'var(--mint)' }}>${dcf.impliedValue.toFixed(2)}</span>
           </div>
         </div>
       </div>
@@ -4629,7 +4626,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 }}
               >
                 <div className="sm-micro-text">{p.label}</div>
-                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: isActive ? p.color : 'var(--text)', margin: '4px 0 2px' }}>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 16, fontWeight: 700, color: isActive ? p.color : 'var(--text)', margin: '4px 0 2px' }}>
                   {p.drift > 0 ? '+' : ''}{p.drift}%
                 </div>
                 <div className="sm-micro-text sm-bmnr-reset-label">
@@ -4661,7 +4658,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                     color: years === yr ? 'var(--accent)' : 'var(--text2)',
                     cursor: 'pointer',
                     fontWeight: years === yr ? 700 : 400,
-                    fontFamily: 'Space Mono',
+                    fontFamily: "'Space Mono', monospace",
                     fontSize: 16,
                     transition: 'all 0.15s'
                   }}
@@ -4689,7 +4686,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                     color: sims === simCount ? 'var(--accent)' : 'var(--text2)',
                     cursor: 'pointer',
                     fontWeight: sims === simCount ? 700 : 400,
-                    fontFamily: 'Space Mono',
+                    fontFamily: "'Space Mono', monospace",
                     fontSize: 14,
                     transition: 'all 0.15s'
                   }}
@@ -4878,9 +4875,9 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 onMouseLeave={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
               >
                 <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
-                <span style={{ textAlign: 'right', fontFamily: 'Space Mono', fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
-                <span style={{ textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>${(row.value - currentNAV).toFixed(2)}</span>
-                <span style={{ textAlign: 'right', fontFamily: 'Space Mono', fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</span>
+                <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
+                <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", color: 'var(--text2)' }}>${(row.value - currentNAV).toFixed(2)}</span>
+                <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</span>
               </div>
             );
           })}
@@ -4896,10 +4893,10 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
             <span className="sm-text-left">Interpretation</span>
           </div>
           {[
-            { label: 'Win Probability', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.winProb > 50 ? 'var(--mint)' : 'var(--red)' }}>{sim.winProb.toFixed(1)}%</span>, interp: 'Prob. of exceeding current NAV' },
-            { label: 'Expected Value', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${sim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
-            { label: 'Sharpe Ratio', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sharpe > 1 ? 'var(--mint)' : sim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sharpe.toFixed(2)}</span>, interp: sim.sharpe > 1 ? 'Excellent risk-adj return' : sim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
-            { label: 'Sortino Ratio', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sortino > 1 ? 'var(--mint)' : sim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
+            { label: 'Win Probability', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: sim.winProb > 50 ? 'var(--mint)' : 'var(--red)' }}>{sim.winProb.toFixed(1)}%</span>, interp: 'Prob. of exceeding current NAV' },
+            { label: 'Expected Value', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600 }}>${sim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
+            { label: 'Sharpe Ratio', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: sim.sharpe > 1 ? 'var(--mint)' : sim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sharpe.toFixed(2)}</span>, interp: sim.sharpe > 1 ? 'Excellent risk-adj return' : sim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
+            { label: 'Sortino Ratio', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: sim.sortino > 1 ? 'var(--mint)' : sim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
             { label: 'VaR (5%)', value: <span className="sm-mono sm-fw-600 sm-red">{sim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
             { label: 'CVaR (5%)', value: <span className="sm-mono sm-fw-600 sm-red">{sim.cvar5Pct.toFixed(1)}%</span>, interp: 'Expected tail loss' },
           ].map((row, i) => (
@@ -5727,17 +5724,17 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
             <div className="sm-text-center">
               <div className="sm-text-11">NAV/Share</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$23.04</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$23.04</div>
               <div className="sm-micro-text sm-bmnr-reset-label">@ $2,125 ETH</div>
             </div>
             <div className="sm-text-center">
               <div className="sm-text-11">Total Holdings</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>$10.0B</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>$10.0B</div>
               <div style={{ fontSize: 10, color: 'var(--mint)' }}>4.326M ETH + $595M Cash</div>
             </div>
             <div className="sm-text-center">
               <div className="sm-text-11">Staked ETH</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--violet)', fontWeight: 700 }}>2.90M</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, color: 'var(--violet)', fontWeight: 700 }}>2.90M</div>
               <div className="sm-micro-text sm-bmnr-reset-label">$6.2B Value (67%)</div>
             </div>
           </div>
@@ -5760,7 +5757,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
                 <div className="sm-text-13t sm-fw-600">{item.category}</div>
                 <div className="sm-text-11">{item.detail}</div>
               </div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 20, fontWeight: 700, color: item.color }}>{item.rating}</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 20, fontWeight: 700, color: item.color }}>{item.rating}</div>
             </div>
           ))}
         </div>
@@ -5773,14 +5770,14 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
               <div className="sm-text-11">Ethereum network fundamentals (see Ethereum tab for details)</div>
             </div>
             <div className="sm-flex">
-              <div style={{ fontFamily: 'Space Mono', fontSize: 28, fontWeight: 700, color: current.ecosystemHealth.overallColor }}>{current.ecosystemHealth.overallGrade}</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, color: current.ecosystemHealth.overallColor }}>{current.ecosystemHealth.overallGrade}</div>
             </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
             {current.ecosystemHealth.metrics.map((m, i) => (
               <div key={i} style={{ background: 'var(--surface)', padding: 12, borderRadius: 12, textAlign: 'center' }}>
                 <div className="sm-micro-text sm-bmnr-reset-label">{m.metric}</div>
-                <div style={{ fontSize: 13, fontFamily: 'Space Mono', color: m.color, fontWeight: 600 }}>{m.value}</div>
+                <div style={{ fontSize: 13, fontFamily: "'Space Mono', monospace", color: m.color, fontWeight: 600 }}>{m.value}</div>
                 <div style={{ fontSize: 10, color: m.color }}>✓ {m.signal}</div>
               </div>
             ))}
@@ -6613,7 +6610,7 @@ const BMNRQuarterlyMetricsPanel = () => {
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                         <div style={{ width: '100%', background: d.value < 0 ? 'var(--coral)' : 'transparent', borderRadius: '0 0 4px 4px', height: d.value < 0 && maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value < 0 ? 2 : 0, transition: 'height 0.3s' }} />
-                        {d.value < 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginTop: 4 }}>{d.display}</div>}
+                        {d.value < 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: "'Space Mono', monospace", color: 'var(--text)', marginTop: 4 }}>{d.display}</div>}
                       </div>
                     ))}
                   </div>
@@ -6659,72 +6656,41 @@ const FinancialsTab = () => {
     ],
   };
 
+  const cfaItems = [
+    { term: 'Mark-to-Market Accounting', def: 'ETH holdings are marked to market each quarter. Unrealized gains/losses flow through the income statement, creating volatile reported earnings.' },
+    { term: 'Staking Revenue', def: 'Income from validating Ethereum transactions. BMNR generates ~3.11% APY on staked ETH ($202M/yr annualized). This is real, recurring revenue.' },
+    { term: 'Cash Burn Rate', def: 'Quarterly operating cash outflow excluding ETH purchases. Low burn rate (~$5-10M/quarter) means long runway and most capital goes to ETH acquisition.' },
+    { term: 'NAV per Share', def: 'Total asset value (ETH + cash + investments) divided by shares outstanding. Primary valuation metric for treasury companies.' },
+  ];
+
   return (
-    <div className="sm-flex-col">
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 1: HEADER                                                   */}
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Quarterly Data<UpdateIndicators sources="SEC" /></div>
-        <h2>Financials<span className="sm-accent">.</span></h2>
-        <p>Quarterly financial data, balance sheet trends, and key metric evolution. Focus on ETH holdings growth, staking revenue, and cash position management.</p>
-      </div>
-
-      {/* Section Divider: Overview */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Overview</span>
-        <span className="sm-divider-line" />
-      </div>
-
-      <div className="sm-card">
-        <div className="sm-card-section">
-          <span className="sm-section-label">{config.highlightTitle}<UpdateIndicators sources="SEC" /></span>
-        </div>
-        <div className="sm-card-body">
-          <p className="sm-body sm-m-0 sm-lh-17">{config.highlightText}</p>
-        </div>
-      </div>
-
-      {/* Section Divider: Quarterly Metrics */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Quarterly Metrics</span>
-        <span className="sm-divider-line" />
-      </div>
-
-      <BMNRQuarterlyMetricsPanel />
-
-      {/* Section Divider: Milestones */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Key Milestones</span>
-        <span className="sm-divider-line" />
-      </div>
-
-      <div className="sm-card">
-        <div className="sm-card-header">
-          <span className="sm-section-label sm-gold">Key Financial Milestones<UpdateIndicators sources="SEC" /></span>
-        </div>
-        <div className="sm-card-body">
-          <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
-            {config.milestones.map((m, i) => (
-              <div key={i} className="sm-bg-surface2 sm-p-12">
-                <div className="sm-text-11">{m.date}</div>
-                <div className="sm-text-13">{m.event}</div>
-              </div>
-            ))}
+    <SharedFinancialsTab
+      ticker="BMNR"
+      sectionLabel="Quarterly Data"
+      title="Financials"
+      description="Quarterly financial data, balance sheet trends, and key metric evolution. Focus on ETH holdings growth, staking revenue, and cash position management."
+      milestones={config.milestones}
+      cfaNotes={cfaItems}
+      cfaNotesTitle="CFA Level III — Financial Analysis"
+      extraBeforeChildren={
+        <>
+          <div className="sm-divider">
+            <span className="sm-param-label">Overview</span>
+            <span className="sm-divider-line" />
           </div>
-        </div>
-      </div>
-      
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 9: CFA NOTES                                                */}
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      <CFANotes title="CFA Level III — Financial Analysis" items={[
-        { term: 'Mark-to-Market Accounting', def: 'ETH holdings are marked to market each quarter. Unrealized gains/losses flow through the income statement, creating volatile reported earnings.' },
-        { term: 'Staking Revenue', def: 'Income from validating Ethereum transactions. BMNR generates ~3.11% APY on staked ETH ($202M/yr annualized). This is real, recurring revenue.' },
-        { term: 'Cash Burn Rate', def: 'Quarterly operating cash outflow excluding ETH purchases. Low burn rate (~$5-10M/quarter) means long runway and most capital goes to ETH acquisition.' },
-        { term: 'NAV per Share', def: 'Total asset value (ETH + cash + investments) divided by shares outstanding. Primary valuation metric for treasury companies.' },
-      ]} />
-    </div>
+          <div className="sm-card">
+            <div className="sm-card-section">
+              <span className="sm-section-label">{config.highlightTitle}<UpdateIndicators sources="SEC" /></span>
+            </div>
+            <div className="sm-card-body">
+              <p className="sm-body sm-m-0 sm-lh-17">{config.highlightText}</p>
+            </div>
+          </div>
+        </>
+      }
+    >
+      <BMNRQuarterlyMetricsPanel />
+    </SharedFinancialsTab>
   );
 };
 
@@ -7483,13 +7449,12 @@ const TimelineTab = () => {
   };
 
   return (
-    <div className="sm-flex-col-gap-16">
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Corporate Events<UpdateIndicators sources="PR" /></div>
-        <h2>Timeline<span className="sm-accent">.</span></h2>
-        <p>SEC filings, weekly holdings updates, corporate events, and key milestones. Chronological record tracking BMNR's evolution from mining company to ETH treasury.</p>
-      </div>
-
+    <SharedTimelineTab
+      sectionLabel="Corporate Events"
+      title="Timeline"
+      description="SEC filings, weekly holdings updates, corporate events, and key milestones. Chronological record tracking BMNR's evolution from mining company to ETH treasury."
+      sources="PR"
+    >
       {/* Section Divider: SEC Filings */}
       <div className="sm-divider">
         <span className="sm-param-label">SEC Filings</span>
@@ -7806,7 +7771,7 @@ const TimelineTab = () => {
                             <span className="sm-bmnr-changes-cell">{c.metric}</span>
                             <span className="sm-mono-sm sm-text-right sm-bmnr-changes-cell sm-fs-11">{c.previous}</span>
                             <span className="sm-mono-sm sm-text-right sm-bmnr-changes-cell sm-fs-11">{c.new}</span>
-                            <span className="sm-bmnr-changes-cell" style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, textAlign: 'right', color: c.change.startsWith('+') ? 'var(--mint)' : c.change.startsWith('-') ? 'var(--coral)' : undefined }}>{c.change}</span>
+                            <span className="sm-bmnr-changes-cell" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, textAlign: 'right', color: c.change.startsWith('+') ? 'var(--mint)' : c.change.startsWith('-') ? 'var(--coral)' : undefined }}>{c.change}</span>
                           </div>
                         ))}
                       </div>
@@ -7873,7 +7838,7 @@ const TimelineTab = () => {
         { term: 'S-3 Shelf Registration', def: 'Pre-registers securities for future sale. BMNR has $24.5B shelf active — provides flexibility to raise capital quickly via ATM programs.' },
         { term: 'DEFA14A', def: 'Additional proxy solicitation material. Used by BMNR to communicate shareholder vote proposals (e.g., share authorization increase to 50B).' },
       ]} />
-    </div>
+    </SharedTimelineTab>
   );
 };
 

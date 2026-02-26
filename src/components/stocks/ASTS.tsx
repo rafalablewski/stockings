@@ -114,8 +114,8 @@
  */
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
-import { getStockModelCSS } from './stock-model-styles';
-import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner } from '../shared';
+import './stock-model-styles.css';
+import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab } from '../shared';
 import type { UpdateSource } from '../shared';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
@@ -311,11 +311,7 @@ const safeDivide = (numerator: number, denominator: number, fallback: number = 0
 const safeNumber = (value: number, fallback: number = 0): number => 
   isFinite(value) ? value : fallback;
 
-// CSS is now imported from shared styles (Golden Standard: ASTS)
-// To modify styles, edit: ./stock-model-styles.ts
-const css = getStockModelCSS('cyan');
-
-/* See stock-model-styles.ts for all CSS */
+// CSS imported from stock-model-styles.css (see import at top of file)
 
 // UI components (Stat, Card, Row, Input, Panel, Guide, CFANotes) imported from '../shared'
 // Update indicators (UpdateIndicatorContext, UpdateIndicators, UpdateLegend) imported from '../shared'
@@ -532,8 +528,7 @@ const ASTSAnalysis = () => {
 
   return (
     <UpdateIndicatorContext.Provider value={{ showIndicators, setShowIndicators }}>
-      <style>{css}</style>
-      <div className="stock-model-app">
+      <div className="stock-model-app" data-accent="cyan">
         {/* ============================================================================
             LEGAL DISCLAIMER BANNER
             ============================================================================ */}
@@ -1655,7 +1650,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             ].map(row => (
               <div key={row.l} className="sm-kv-row">
                 <span className="sm-subtle">{row.l}</span>
-                <span style={{ fontFamily: row.hl ? 'Space Mono, monospace' : 'inherit', fontSize: 12, color: row.hl ? 'var(--mint)' : 'var(--text2)', fontWeight: row.hl ? 600 : 400 }}>{row.v}</span>
+                <span style={{ fontFamily: row.hl ? "'Space Mono', monospace" : 'inherit', fontSize: 12, color: row.hl ? 'var(--mint)' : 'var(--text2)', fontWeight: row.hl ? 600 : 400 }}>{row.v}</span>
               </div>
             ))}
             <div className="sm-inline-note">{p.notes}</div>
@@ -1781,7 +1776,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
           <div className="sm-flex-between sm-items-center sm-mb-12">
             <div>
               <span className="sm-param-label">Partner Ecosystem Timeline</span>
-              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, color: 'var(--text3)', marginLeft: 12 }}>{filteredPartnerNews.length} events</span>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, color: 'var(--text3)', marginLeft: 12 }}>{filteredPartnerNews.length} events</span>
             </div>
             {partnerFilter !== 'All' && (
               <button onClick={() => setPartnerFilter('All')} className="sm-filter-pill" style={{ '--pill-accent': 'var(--coral)', background: 'color-mix(in srgb, var(--coral) 10%, transparent)', color: 'var(--coral)' } as React.CSSProperties}>Clear Filter</button>
@@ -2312,7 +2307,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             { label: 'FD Mkt Cap', value: `$${(fullyDiluted * currentStockPrice / 1000).toFixed(1)}B`, color: 'var(--gold)' },
           ].map(kpi => (
             <div key={kpi.label} className="sm-kpi-cell">
-              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 20, fontWeight: 700, color: kpi.color }}>{kpi.value}</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 20, fontWeight: 700, color: kpi.color }}>{kpi.value}</div>
               <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500, marginTop: 4 }}>{kpi.label}</div>
             </div>
           ))}
@@ -2326,7 +2321,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ].map(row => (
               <div key={row.label} className="sm-kv-row">
                 <span className="sm-subtle">{row.label}</span>
-                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: row.color }}>{row.value}</span>
+                <span style={{ fontSize: 12, fontFamily: "'Space Mono', monospace", color: row.color }}>{row.value}</span>
               </div>
             ))}
           </div>
@@ -2338,7 +2333,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ].map(row => (
               <div key={row.label} className="sm-kv-row">
                 <span className="sm-subtle">{row.label}</span>
-                <span style={{ fontSize: 12, fontFamily: 'Space Mono, monospace', color: row.color }}>{row.value}</span>
+                <span style={{ fontSize: 12, fontFamily: "'Space Mono', monospace", color: row.color }}>{row.value}</span>
               </div>
             ))}
           </div>
@@ -2439,7 +2434,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           ].map(r => (
             <div key={r.l} className="sm-kv-row-lg">
               <span className="sm-subtle">{r.l}</span>
-              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.color, fontWeight: 600 }}>{r.v}</span>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: r.color, fontWeight: 600 }}>{r.v}</span>
             </div>
           ))}
         </div>
@@ -2452,7 +2447,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           ].map(r => (
             <div key={r.l} className="sm-kv-row-lg">
               <span style={{ fontSize: 12, color: r.hl ? 'var(--text)' : 'var(--text3)', fontWeight: r.hl ? 600 : 400 }}>{r.l}</span>
-              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.color, fontWeight: 600 }}>{r.v}</span>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: r.color, fontWeight: 600 }}>{r.v}</span>
             </div>
           ))}
         </div>
@@ -2653,9 +2648,9 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           ))}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 80px 100px 80px', padding: '12px 24px', background: 'var(--accent-dim)' }}>
             <span style={{ fontSize: 12, color: 'var(--text)', fontWeight: 600 }}>Total</span>
-            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>${convertibleNotes.reduce((s, n) => s + n.outstandingPrincipal, 0).toFixed(1)}M</span>
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: 'var(--text2)', textAlign: 'right', fontWeight: 600 }}>${convertibleNotes.reduce((s, n) => s + n.outstandingPrincipal, 0).toFixed(1)}M</span>
             <span></span><span></span>
-            <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: 'var(--coral)', textAlign: 'right', fontWeight: 600 }}>+{totalConvertDilution.toFixed(1)}M</span>
+            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: 'var(--coral)', textAlign: 'right', fontWeight: 600 }}>+{totalConvertDilution.toFixed(1)}M</span>
             <span></span>
           </div>
         </div>
@@ -2677,9 +2672,9 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <div key={s.label} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 120px 100px 100px', padding: '12px 24px', borderBottom: i < dilutionScenarios.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', background: s.type === 'stress' ? 'color-mix(in srgb, var(--coral) 3%, transparent)' : 'transparent', transition: 'background 0.15s' }}>
               <span style={{ fontSize: 12, color: 'var(--text)', fontWeight: s.type === 'current' ? 600 : 400 }}>{s.label}</span>
               <span className="sm-text-11">{s.source}</span>
-              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: s.newShares > 0 ? 'var(--coral)' : 'var(--text2)', textAlign: 'right' }}>{s.newShares > 0 ? `+${s.newShares.toFixed(1)}M` : '—'}</span>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: s.newShares > 0 ? 'var(--coral)' : 'var(--text2)', textAlign: 'right' }}>{s.newShares > 0 ? `+${s.newShares.toFixed(1)}M` : '—'}</span>
               <span className="sm-mono-right">{s.resultingFD.toFixed(1)}M</span>
-              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: s.dilutionPct > 0 ? 'var(--coral)' : 'var(--mint)', textAlign: 'right' }}>{s.dilutionPct > 0 ? `${s.dilutionPct.toFixed(1)}%` : '—'}</span>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: s.dilutionPct > 0 ? 'var(--coral)' : 'var(--mint)', textAlign: 'right' }}>{s.dilutionPct > 0 ? `${s.dilutionPct.toFixed(1)}%` : '—'}</span>
             </div>
           ))}
         </div>
@@ -2892,7 +2887,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           ].map(r => (
             <div key={r.l} className="sm-kv-row-lg">
               <span className="sm-subtle">{r.l}</span>
-              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.hl ? 'var(--mint)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: r.hl ? 'var(--mint)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
             </div>
           ))}
         </div>
@@ -2906,7 +2901,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           ].map(r => (
             <div key={r.l} className="sm-kv-row-lg">
               <span className="sm-subtle">{r.l}</span>
-              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: r.hl ? 'var(--violet)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: r.hl ? 'var(--violet)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
             </div>
           ))}
         </div>
@@ -3155,7 +3150,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <span className="sm-text-12">{s.date.slice(5)}</span>
               <span className="sm-mono-right" style={{ color: 'var(--rose)' }}>{s.shares.toLocaleString()}</span>
               <span className="sm-mono-right">${s.price.toFixed(2)}</span>
-              <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 12, color: s.proceeds > 0 ? 'var(--rose)' : 'var(--text3)', textAlign: 'right' }}>{s.proceeds > 0 ? `$${(s.proceeds / 1000).toFixed(0)}K` : '—'}</span>
+              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: s.proceeds > 0 ? 'var(--rose)' : 'var(--text3)', textAlign: 'right' }}>{s.proceeds > 0 ? `$${(s.proceeds / 1000).toFixed(0)}K` : '—'}</span>
               <span style={{ fontSize: 10, color: s.type === 'sale' ? 'var(--rose)' : 'var(--gold)', background: s.type === 'sale' ? 'color-mix(in srgb, var(--rose) 15%, transparent)' : 'color-mix(in srgb, var(--gold) 15%, transparent)', padding: '2px 6px', borderRadius: 4, textTransform: 'uppercase', fontWeight: 600 }}>{s.type === 'withholding' ? 'W/H' : 'Sale'}</span>
             </div>
           ))}
@@ -3737,7 +3732,7 @@ const ModelTab = ({
                   }}
                 >
                   <div className="sm-micro-text">{preset.label}</div>
-                  <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: isActive ? preset.color : 'var(--text)', margin: '4px 0 2px' }}>
+                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 16, fontWeight: 700, color: isActive ? preset.color : 'var(--text)', margin: '4px 0 2px' }}>
                     {preset.penetrationRate}%
                   </div>
                   <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>
@@ -3923,7 +3918,7 @@ const ModelTab = ({
             </div>
             <div className="sm-text-center" style={{ background: 'color-mix(in srgb, var(--accent) 8%, var(--surface))', padding: '24px 16px' }}>
               <div className="sm-th" style={{ color: 'var(--accent)' }}>Implied Upside</div>
-              <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 32, fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--coral)', margin: '6px 0 4px' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
+              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 32, fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--coral)', margin: '6px 0 4px' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
               <div className="sm-text-11">{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
             </div>
           </div>
@@ -3992,7 +3987,7 @@ const ModelTab = ({
                 ].map((section, si) => (
                   <div key={si} className="sm-rounded-12 sm-overflow-hidden sm-bg-surface2">
                     <div className="sm-flex sm-items-center sm-gap-8" style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
-                      <span className="sm-fw-700" style={{ background: section.color, color: 'var(--bg)', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontFamily: 'Space Mono' }}>Step {section.step}</span>
+                      <span className="sm-fw-700" style={{ background: section.color, color: 'var(--bg)', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontFamily: "'Space Mono', monospace" }}>Step {section.step}</span>
                       <span className="sm-text-12 sm-fw-600 sm-text">{section.title}</span>
                     </div>
                     <div className="sm-flex-col sm-gap-8" style={{ padding: '12px 16px' }}>
@@ -4000,9 +3995,9 @@ const ModelTab = ({
                         <div key={ii} className="sm-flex-between" style={{ alignItems: 'baseline', gap: 8 }}>
                           <div className="sm-min-w-0" style={{ flex: 1 }}>
                             <div className="sm-text-11 sm-fw-600 sm-text2">{item.label}</div>
-                            <div className="sm-micro-text" style={{ fontFamily: 'Space Mono', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.formula}</div>
+                            <div className="sm-micro-text" style={{ fontFamily: "'Space Mono', monospace", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.formula}</div>
                           </div>
-                          <div className="sm-fw-700 sm-shrink-0" style={{ fontFamily: 'Space Mono', fontSize: 13, color: section.color }}>{item.result}</div>
+                          <div className="sm-fw-700 sm-shrink-0" style={{ fontFamily: "'Space Mono', monospace", fontSize: 13, color: section.color }}>{item.result}</div>
                         </div>
                       ))}
                     </div>
@@ -4318,7 +4313,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 }}
               >
                 <div className="sm-micro-text">{p.label}</div>
-                <div style={{ fontFamily: 'Space Mono, monospace', fontSize: 16, fontWeight: 700, color: isActive ? p.color : 'var(--text)', margin: '4px 0 2px' }}>
+                <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 16, fontWeight: 700, color: isActive ? p.color : 'var(--text)', margin: '4px 0 2px' }}>
                   ${p.baseRev}B
                 </div>
                 <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>
@@ -4341,7 +4336,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 <button
                   key={yr}
                   onClick={() => setYears(yr)}
-                  className="sm-pill-toggle" style={{ flex: 1, padding: '12px 20px', border: years === yr ? '2px solid var(--accent)' : '2px solid transparent', background: years === yr ? 'var(--accent-dim)' : 'var(--surface2)', color: years === yr ? 'var(--accent)' : 'var(--text2)', fontWeight: years === yr ? 700 : 400, fontFamily: 'Space Mono', fontSize: 16 }}
+                  className="sm-pill-toggle" style={{ flex: 1, padding: '12px 20px', border: years === yr ? '2px solid var(--accent)' : '2px solid transparent', background: years === yr ? 'var(--accent-dim)' : 'var(--surface2)', color: years === yr ? 'var(--accent)' : 'var(--text2)', fontWeight: years === yr ? 700 : 400, fontFamily: "'Space Mono', monospace", fontSize: 16 }}
                 >
                   {yr}Y
                 </button>
@@ -4357,7 +4352,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 <button
                   key={simCount}
                   onClick={() => setSims(simCount)}
-                  className="sm-pill-toggle" style={{ flex: 1, padding: '12px 16px', border: sims === simCount ? '2px solid var(--accent)' : '2px solid transparent', background: sims === simCount ? 'var(--accent-dim)' : 'var(--surface2)', color: sims === simCount ? 'var(--accent)' : 'var(--text2)', fontWeight: sims === simCount ? 700 : 400, fontFamily: 'Space Mono', fontSize: 14 }}
+                  className="sm-pill-toggle" style={{ flex: 1, padding: '12px 16px', border: sims === simCount ? '2px solid var(--accent)' : '2px solid transparent', background: sims === simCount ? 'var(--accent-dim)' : 'var(--surface2)', color: sims === simCount ? 'var(--accent)' : 'var(--text2)', fontWeight: sims === simCount ? 700 : 400, fontFamily: "'Space Mono', monospace", fontSize: 14 }}
                 >
                   {simCount.toLocaleString()}
                 </button>
@@ -4582,13 +4577,11 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
             const pctChange = ((row.value / currentStockPrice - 1) * 100);
             return (
               <div key={i} className="sm-grid-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : 'transparent', cursor: 'default' }}
-                onMouseEnter={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'var(--surface2)'; }}
-                onMouseLeave={e => { if (!row.highlight) (e.currentTarget as HTMLDivElement).style.background = 'transparent'; }}
               >
                 <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
-                <span style={{ textAlign: 'right', fontFamily: 'Space Mono', fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
-                <span style={{ textAlign: 'right', fontFamily: 'Space Mono', color: 'var(--text2)' }}>${(row.value - currentStockPrice).toFixed(2)}</span>
-                <span style={{ textAlign: 'right', fontFamily: 'Space Mono', fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</span>
+                <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
+                <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", color: 'var(--text2)' }}>${(row.value - currentStockPrice).toFixed(2)}</span>
+                <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</span>
               </div>
             );
           })}
@@ -4604,12 +4597,12 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
             <span className="sm-text-left">Interpretation</span>
           </div>
           {[
-            { label: 'Win Probability', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.winProbability > 50 ? 'var(--mint)' : 'var(--red)' }}>{sim.winProbability.toFixed(1)}%</span>, interp: 'Prob. of exceeding current price' },
-            { label: 'Expected Value', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600 }}>${sim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
-            { label: 'Sharpe Ratio', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sharpe > 1 ? 'var(--mint)' : sim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sharpe.toFixed(2)}</span>, interp: sim.sharpe > 1 ? 'Excellent risk-adj return' : sim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
-            { label: 'Sortino Ratio', value: <span style={{ fontFamily: 'Space Mono', fontWeight: 600, color: sim.sortino > 1 ? 'var(--mint)' : sim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
-            { label: 'VaR (5%)', value: <span className="sm-fw-600" style={{ fontFamily: 'Space Mono', color: 'var(--red)' }}>{sim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
-            { label: 'CVaR (5%)', value: <span className="sm-fw-600" style={{ fontFamily: 'Space Mono', color: 'var(--red)' }}>{sim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
+            { label: 'Win Probability', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: sim.winProbability > 50 ? 'var(--mint)' : 'var(--red)' }}>{sim.winProbability.toFixed(1)}%</span>, interp: 'Prob. of exceeding current price' },
+            { label: 'Expected Value', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600 }}>${sim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
+            { label: 'Sharpe Ratio', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: sim.sharpe > 1 ? 'var(--mint)' : sim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sharpe.toFixed(2)}</span>, interp: sim.sharpe > 1 ? 'Excellent risk-adj return' : sim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
+            { label: 'Sortino Ratio', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: sim.sortino > 1 ? 'var(--mint)' : sim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
+            { label: 'VaR (5%)', value: <span className="sm-fw-600" style={{ fontFamily: "'Space Mono', monospace", color: 'var(--red)' }}>{sim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
+            { label: 'CVaR (5%)', value: <span className="sm-fw-600" style={{ fontFamily: "'Space Mono', monospace", color: 'var(--red)' }}>{sim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
           ].map((row, i) => (
             <div key={i} className="sm-grid-row" style={{ gridTemplateColumns: '1fr 1fr 1fr', cursor: 'default' }}
             >
@@ -4704,58 +4697,58 @@ const SECFilingTracker = () => {
     cyan: { bg: 'rgba(6, 182, 212, 0.1)', border: 'rgba(6, 182, 212, 0.3)', text: 'var(--cyan)' },
   };
 
-  const rowStyle: React.CSSProperties = {
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-    padding: 8, background: 'var(--surface2)', borderRadius: 4
-  };
-
   return (
-    <div className="sm-card"><div className="sm-card-section"><span className="sm-section-label">SEC Filing Tracker</span></div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, padding: '24px 24px' }}>
-        <div className="sm-flex-col-gap">
-          <div className="sm-th" style={{ fontSize: 11, letterSpacing: '0.05em' }}>Filing History</div>
-          <div className="sm-flex-col sm-gap-8">
-            <div style={rowStyle}>
-              <span className="sm-text-13 sm-text3">First SEC Filing</span>
-              <div className="sm-text-right">
-                <span className="sm-text-13 sm-cyan">{filingData.firstFiling}</span>
-                <div className="sm-text-11">{filingData.firstFilingNote}</div>
-              </div>
-            </div>
-            <div style={rowStyle}>
-              <span className="sm-text-13 sm-text3">Latest Event</span>
-              <div className="sm-text-right">
-                <span style={{ fontSize: 13, color: 'var(--gold)' }}>{filingData.latestEvent}</span>
-                <div className="sm-text-11">{filingData.latestEventDate}</div>
-              </div>
-            </div>
-            <div style={{ ...rowStyle, background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
-              <span className="sm-text-13 sm-text3">Last PR Processed</span>
-              <div className="sm-text-right">
-                <span style={{ fontSize: 13, color: 'var(--mint)' }}>{filingData.lastPressRelease}</span>
-                <div className="sm-text-11">{filingData.lastPressReleaseTitle}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="sm-flex-col-gap">
-          <div className="sm-th" style={{ fontSize: 11, letterSpacing: '0.05em' }}>Latest Filings by Type</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, fontSize: 13 }}>
-            {Object.entries(filingData.filings).map(([type, info]) => {
-              const style = colorStyles[info.color] || colorStyles.cyan;
-              return (
-                <div key={type} style={{ padding: 8, border: `1px solid ${style.border}`, borderRadius: 4, background: style.bg }}>
-                  <div style={{ fontWeight: 500, color: style.text }}>{type}</div>
-                  <div className="sm-text3">{info.date}</div>
-                  <div className="sm-text-11">{info.description}</div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+    <div className="sm-card">
+      <div className="sm-card-header">
+        <span className="sm-section-label">SEC Filing Tracker</span>
       </div>
-      <div className="sm-text-11">
-        CIK: {filingData.cik} | {filingData.exchange}: {filingData.ticker} | Update dates as new filings are processed
+      <div className="sm-card-body">
+        <div className="sm-grid-2-lg">
+          <div className="sm-flex-col-gap">
+            <div className="sm-micro-text">Filing History</div>
+            <div className="sm-flex-col sm-gap-8">
+              <div className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-6">
+                <span className="sm-text-13 sm-text3">First SEC Filing</span>
+                <div className="sm-text-right">
+                  <span className="sm-text-13 sm-cyan">{filingData.firstFiling}</span>
+                  <div className="sm-text-11">{filingData.firstFilingNote}</div>
+                </div>
+              </div>
+              <div className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-6">
+                <span className="sm-text-13 sm-text3">Latest Event</span>
+                <div className="sm-text-right">
+                  <span className="sm-text-13 sm-gold">{filingData.latestEvent}</span>
+                  <div className="sm-text-11">{filingData.latestEventDate}</div>
+                </div>
+              </div>
+              <div className="sm-flex-between sm-items-center sm-card-body sm-rounded-6" style={{ background: 'color-mix(in srgb, var(--mint) 12%, transparent)', border: '1px solid color-mix(in srgb, var(--mint) 30%, transparent)' }}>
+                <span className="sm-text-13 sm-text3">Last PR Processed</span>
+                <div className="sm-text-right">
+                  <span className="sm-text-13 sm-mint">{filingData.lastPressRelease}</span>
+                  <div className="sm-text-11">{filingData.lastPressReleaseTitle}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="sm-flex-col-gap">
+            <div className="sm-micro-text">Latest Filings by Type</div>
+            <div className="sm-grid-2" style={{ fontSize: 13 }}>
+              {Object.entries(filingData.filings).map(([type, info]) => {
+                const style = colorStyles[info.color] || colorStyles.cyan;
+                return (
+                  <div key={type} className="sm-card-body sm-rounded-6" style={{ border: `1px solid ${style.border}`, background: style.bg }}>
+                    <div className="sm-fw-600" style={{ color: style.text }}>{type}</div>
+                    <div className="sm-text3">{info.date}</div>
+                    <div className="sm-text-11">{info.description}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+        <div className="sm-text-11 sm-pt-12">
+          CIK: {filingData.cik} | {filingData.exchange}: {filingData.ticker} | Update dates as new filings are processed
+        </div>
       </div>
     </div>
   );
@@ -5211,7 +5204,7 @@ const QuarterlyMetricsPanel = () => {
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                         <div style={{ width: '100%', background: d.value < 0 ? 'var(--coral)' : 'transparent', borderRadius: '0 0 4px 4px', height: d.value < 0 && maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value < 0 ? 2 : 0, transition: 'height 0.3s' }} />
-                        {d.value < 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace', color: 'var(--text)', marginTop: 6, whiteSpace: 'nowrap' }}>{d.display}</div>}
+                        {d.value < 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: "'Space Mono', monospace", color: 'var(--text)', marginTop: 6, whiteSpace: 'nowrap' }}>{d.display}</div>}
                       </div>
                     ))}
                   </div>
@@ -5365,13 +5358,12 @@ const TimelineTab = () => {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // Newest first
 
   return (
-    <div className="sm-flex-col-gap-16">
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Corporate Events<UpdateIndicators sources="PR" /></div>
-        <h2>Timeline<span className="sm-accent">.</span></h2>
-        <p>SEC filings, press releases, upcoming events, and key corporate milestones. Chronological record of all official communications and regulatory submissions.</p>
-      </div>
-
+    <SharedTimelineTab
+      sectionLabel="Corporate Events"
+      title="Timeline"
+      description="SEC filings, press releases, upcoming events, and key corporate milestones. Chronological record of all official communications and regulatory submissions."
+      sources="PR"
+    >
       {/* Latest SEC Filings - Enhanced with filtering and pagination */}
       <div className="sm-divider">
         <span className="sm-param-label">SEC Filings</span>
@@ -5452,7 +5444,7 @@ const TimelineTab = () => {
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', fontSize: 12 }}>
             <div>
               <span className="sm-text3">CIK:</span>
-              <span style={{ color: 'var(--text2)', marginLeft: 6, fontFamily: 'Space Mono' }}>{secMeta.cik}</span>
+              <span style={{ color: 'var(--text2)', marginLeft: 6, fontFamily: "'Space Mono', monospace" }}>{secMeta.cik}</span>
             </div>
             <div>
               <span className="sm-text3">Ticker:</span>
@@ -5498,7 +5490,7 @@ const TimelineTab = () => {
                 <div className="sm-subtle">10-K Annual Report</div>
               </div>
               <div className="sm-text-right">
-                <div style={{ fontFamily: 'Space Mono', color: 'var(--cyan)' }}>~Mar 2026</div>
+                <div style={{ fontFamily: "'Space Mono', monospace", color: 'var(--cyan)' }}>~Mar 2026</div>
                 <div className="sm-text-11">Est.</div>
               </div>
             </div>
@@ -5508,7 +5500,7 @@ const TimelineTab = () => {
                 <div className="sm-subtle">Block 2 constellation expansion</div>
               </div>
               <div className="sm-text-right">
-                <div style={{ fontFamily: 'Space Mono', color: 'var(--mint)' }}>Q1 2026</div>
+                <div style={{ fontFamily: "'Space Mono', monospace", color: 'var(--mint)' }}>Q1 2026</div>
                 <div className="sm-text-11">45-60 sats by EOY</div>
               </div>
             </div>
@@ -5518,7 +5510,7 @@ const TimelineTab = () => {
                 <div className="sm-subtle">Initial revenue generation</div>
               </div>
               <div className="sm-text-right">
-                <div style={{ fontFamily: 'Space Mono', color: 'var(--gold)' }}>H1 2026</div>
+                <div style={{ fontFamily: "'Space Mono', monospace", color: 'var(--gold)' }}>H1 2026</div>
                 <div className="sm-text-11">Post-constellation</div>
               </div>
             </div>
@@ -5528,7 +5520,7 @@ const TimelineTab = () => {
                 <div className="sm-subtle">$698M converts @ 4.25%</div>
               </div>
               <div className="sm-text-right">
-                <div style={{ fontFamily: 'Space Mono', color: 'var(--sky)' }}>2028-2030</div>
+                <div style={{ fontFamily: "'Space Mono', monospace", color: 'var(--sky)' }}>2028-2030</div>
                 <div className="sm-text-11">Per 10-Q</div>
               </div>
             </div>
@@ -5576,9 +5568,9 @@ const TimelineTab = () => {
       </div>
 
       {/* Topic Filters (AND logic multi-select) */}
-      <div className="sm-card" style={{ padding: 16 }}>
-        <div className="sm-flex-between">
-          <span className="sm-text-13t sm-fw-600">Filter by Topic</span>
+      <div className="sm-card">
+        <div className="sm-card-header">
+          <span className="sm-param-label">Filter by Topic</span>
           {selectedTopics.length > 0 && (
             <button
               onClick={() => setSelectedTopics([])}
@@ -5588,7 +5580,8 @@ const TimelineTab = () => {
             </button>
           )}
         </div>
-        <div className="sm-flex-wrap sm-mt-8">
+        <div className="sm-card-body">
+        <div className="sm-flex-wrap">
           {Object.entries(topicTags).map(([topic, topicStyle]) => {
             const isSelected = selectedTopics.includes(topic);
             const count = timelineEvents.filter(p => detectTopics(p).includes(topic)).length;
@@ -5609,9 +5602,10 @@ const TimelineTab = () => {
             {selectedTopics.map(t => topicTags[t].label).join(' + ')} → {filteredEntries.length} results
           </div>
         )}
+        </div>
       </div>
       
-      <div className="sm-flex-between">
+      <div className="sm-flex-between sm-mt-16">
         <div className="sm-flex-wrap">
           {['ALL', ...Object.keys(categoryColors)].map(cat => (
             <button key={cat} onClick={() => setFilterCategory(cat)} className="sm-action-btn" data-active={filterCategory === cat}>
@@ -5745,7 +5739,7 @@ const TimelineTab = () => {
         { term: 'S-1 / S-3', def: 'Registration statements for securities offerings. S-1 for IPOs (requires full disclosure); S-3 for seasoned issuers (shelf registration for future offerings).' },
         { term: 'DEF 14A / DEFA14A', def: 'Proxy statements for shareholder meetings. DEF 14A is the definitive proxy; DEFA14A is additional solicitation material. Contains executive compensation, board nominees, shareholder proposals.' },
       ]} />
-    </div>
+    </SharedTimelineTab>
   );
 };
 
@@ -6323,7 +6317,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
             </button>
           ); })()}
         </div>
-        {competitorFilter !== 'all' && <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8, fontFamily: 'Space Mono, monospace' }}>{getCompetitorName(competitorFilter)} &rarr; {filteredNews.length} results</div>}
+        {competitorFilter !== 'all' && <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8, fontFamily: "'Space Mono', monospace" }}>{getCompetitorName(competitorFilter)} &rarr; {filteredNews.length} results</div>}
       </div>
 
       {/* Category Filter */}
@@ -6371,13 +6365,13 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 <div className="sm-flex-between sm-items-start">
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
-                      <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: 'var(--text3)' }}>{news.date}</span>
+                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: 'var(--text3)' }}>{news.date}</span>
                       <span style={{ padding: '1px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--violet) 12%, transparent)', color: 'var(--violet)' }}>{news.category}</span>
                       <span style={{ padding: '1px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--sky) 12%, transparent)', color: 'var(--sky)' }}>{competitorName}</span>
                     </div>
                     <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13, lineHeight: 1.4 }}>{news.headline}</div>
                   </div>
-                  <span style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', color: accentColor, marginLeft: 12, whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: accentColor, marginLeft: 12, whiteSpace: 'nowrap' }}>
                     {news.implication === 'positive' ? '+' : news.implication === 'negative' ? '-' : '~'} {impLabel}
                   </span>
                 </div>
@@ -6392,7 +6386,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                         <div className="sm-text-12 sm-text2" style={{ lineHeight: 1.5 }}>{news.thesisComparison}</div>
                       </div>
                     )}
-                    {news.source && <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: 'Space Mono, monospace', marginTop: 8 }}>Source: {news.sourceUrl ? <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" className="sm-accent">{news.source} ↗</a> : news.source}</div>}
+                    {news.source && <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: "'Space Mono', monospace", marginTop: 8 }}>Source: {news.sourceUrl ? <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" className="sm-accent">{news.source} ↗</a> : news.source}</div>}
                   </div>
                 )}
               </div>
@@ -6740,19 +6734,20 @@ const InvestmentTab = () => {
     },
   ];
 
-  // Collapsible section component
+  // Collapsible section component (gold-standard card + toggle header)
   const CollapsibleSection = ({ id, title, children, sources }: { id: string; title: string; children: React.ReactNode; sources?: UpdateSource | UpdateSource[] }) => (
     <div className="sm-card">
       <div
+        className="sm-toggle-header"
+        style={{ borderBottom: investmentSections.has(id) ? '1px solid var(--border)' : 'none' }}
         onClick={() => toggleSection(id)}
-        style={{ padding: '24px 24px', borderBottom: investmentSections.has(id) ? '1px solid var(--border)' : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
         role="button"
         tabIndex={0}
         aria-expanded={investmentSections.has(id)}
         onKeyDown={(e) => e.key === 'Enter' && toggleSection(id)}
       >
         <span className="sm-section-label">{title}{sources && <UpdateIndicators sources={sources} />}</span>
-        <span style={{ color: 'var(--text3)', fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
+        <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
       </div>
       {investmentSections.has(id) && <div className="sm-card-body">{children}</div>}
     </div>
@@ -6767,20 +6762,20 @@ const InvestmentTab = () => {
   };
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-flex-col sm-flex-col-gap-16">
       {/* Controls */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Due Diligence<UpdateIndicators sources={['PR', 'SEC']} /></div>
         <h2>Investment Analysis<span className="sm-accent">.</span></h2>
         <p>Multi-perspective due diligence analysis with CFA, hedge fund, and institutional frameworks. Scoring, risk assessment, and historical perspective tracking.</p>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, alignItems: 'center', paddingTop: 12 }}>
-        <button onClick={expandAll} style={{ padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 500, border: '1px solid var(--border)', cursor: 'pointer', background: 'transparent', color: 'var(--text3)', transition: 'all 0.2s' }}>Expand All</button>
-        <button onClick={collapseAll} style={{ padding: '4px 12px', borderRadius: 99, fontSize: 11, fontWeight: 500, border: '1px solid var(--border)', cursor: 'pointer', background: 'transparent', color: 'var(--text3)', transition: 'all 0.2s' }}>Collapse All</button>
+      <div className="sm-flex sm-items-center sm-gap-12" style={{ justifyContent: 'flex-end' }}>
+        <button onClick={expandAll} className="sm-action-btn">Expand All</button>
+        <button onClick={collapseAll} className="sm-action-btn">Collapse All</button>
       </div>
 
       {/* Data Refresh Indicator */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16, fontSize: 11, color: 'var(--text3)' }}>
+      <div className="sm-flex sm-items-center sm-gap-16 sm-text-11" style={{ justifyContent: 'flex-end', color: 'var(--text3)' }}>
         <span>Data as of: <strong className="sm-text2">{current.date}</strong></span>
         <span>•</span>
         <span>Source: <strong className="sm-text2">{current.source}</strong></span>
@@ -6791,36 +6786,36 @@ const InvestmentTab = () => {
         <span className="sm-param-label">Current Assessment</span>
         <span className="sm-divider-line" />
       </div>
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', borderLeft: '4px solid var(--mint)' }}>
+      <div className="sm-card" style={{ borderLeft: '4px solid var(--mint)' }}>
         <div className="sm-card-body">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+        <div className="sm-flex-between sm-items-start sm-flex-wrap sm-gap-16">
           <div>
-            <div className="sm-flex sm-gap-12">
-              <span style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontWeight: 700, fontSize: 18 }}>CONSTRUCTIVE</span>
-              <span style={{ background: 'rgba(126,231,135,0.15)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 99, fontSize: 12, fontWeight: 600 }}>TECHNOLOGY PROVEN</span>
+            <div className="sm-flex sm-gap-12 sm-mb-12">
+              <span className="sm-fw-700" style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontSize: 18 }}>CONSTRUCTIVE</span>
+              <span className="sm-fw-600 sm-mint" style={{ background: 'color-mix(in srgb, var(--mint) 15%, transparent)', padding: '6px 12px', borderRadius: 99, fontSize: 12 }}>TECHNOLOGY PROVEN</span>
             </div>
-            <div style={{ color: 'var(--text2)', fontSize: 14, maxWidth: 500 }}>
+            <div className="sm-text-13 sm-text2" style={{ maxWidth: 500 }}>
               {current.executiveSummary.thesis}
             </div>
-            <div className="sm-text-11">
+            <div className="sm-text-11 sm-mt-8">
               Last Updated: {current.date} • Trigger: {current.source}
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+          <div className="sm-flex sm-gap-24 sm-flex-wrap">
             <div className="sm-text-center">
               <div className="sm-text-11">Price Target</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$100-150</div>
+              <div className="sm-mono-lg sm-fw-700 sm-mint">$100-150</div>
               <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>12-month</div>
             </div>
             <div className="sm-text-center">
               <div className="sm-text-11">Risk/Reward</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>3:1</div>
+              <div className="sm-mono-lg sm-fw-700 sm-sky">3:1</div>
               <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>Asymmetric</div>
             </div>
             <div className="sm-text-center">
               <div className="sm-text-11">Cash Position</div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 22, color: 'var(--violet)', fontWeight: 700 }}>$760M</div>
-              <div style={{ fontSize: 10, color: 'var(--mint)' }}>Runway secured</div>
+              <div className="sm-mono-lg sm-fw-700 sm-violet">$760M</div>
+              <div className="sm-text-11 sm-mint">Runway secured</div>
             </div>
           </div>
         </div>
@@ -6835,14 +6830,14 @@ const InvestmentTab = () => {
 
       {/* Investment Scorecard */}
       <CollapsibleSection id="scorecard" title="Investment Scorecard" sources={['PR', 'SEC']}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
+        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
           {current.scorecard.map((item, i) => (
-            <div key={i} style={{ background: 'var(--surface2)', padding: '12px 16px', borderRadius: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div key={i} className="sm-card-body sm-bg-surface2 sm-rounded-12 sm-flex-between sm-items-center">
               <div>
                 <div className="sm-text-13t sm-fw-600">{item.category}</div>
                 <div className="sm-text-11">{item.detail}</div>
               </div>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 20, fontWeight: 700, color: item.color }}>{item.rating}</div>
+              <div className="sm-mono-lg" style={{ fontSize: 20, color: item.color }}>{item.rating}</div>
             </div>
           ))}
         </div>
@@ -6856,15 +6851,15 @@ const InvestmentTab = () => {
 
       {/* Summary */}
       <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
-        <div style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', padding: 12, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
-          <div style={{ fontWeight: 600, color: 'var(--mint)' }}>What's New ({current.source})</div>
-          <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text2)', fontSize: 13, lineHeight: 1.8 }}>
+        <div className="sm-card-body sm-rounded-12 sm-mb-12" style={{ background: 'color-mix(in srgb, var(--mint) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
+          <div className="sm-fw-600 sm-mint">What's New ({current.source})</div>
+          <ul className="sm-text-13 sm-text2" style={{ margin: 0, paddingLeft: 16, lineHeight: 1.8 }}>
             {current.executiveSummary.whatsNew.map((item, i) => (
               <li key={i}>{item}</li>
             ))}
           </ul>
         </div>
-        <div style={{ color: 'var(--text2)', lineHeight: 1.8, fontSize: 14 }}>
+        <div className="sm-text-13 sm-text2 sm-body" style={{ lineHeight: 1.8 }}>
           <p>
             <strong>Thesis:</strong> {current.executiveSummary.thesis}
           </p>
@@ -6885,9 +6880,9 @@ const InvestmentTab = () => {
 
       {/* Growth Drivers */}
       <CollapsibleSection id="growth" title="Growth Drivers" sources="PR">
-        <div className="sm-flex-col">
+        <div className="sm-flex-col sm-gap-8">
           {current.growthDrivers.map((d, i) => (
-            <div key={i} className="sm-flex-between sm-items-center sm-rounded-6" style={{ padding: '12px 16px', background: 'var(--surface2)' }}>
+            <div key={i} className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
               <div style={{ flex: 1 }}>
                 <div className="sm-text-13t sm-fw-600">{d.driver}</div>
                 <div className="sm-subtle">{d.description}</div>
@@ -6901,10 +6896,10 @@ const InvestmentTab = () => {
       {/* Competitive Moat */}
       <CollapsibleSection id="moat" title="Competitive Moat" sources={['PR', 'SEC']}>
         <div className="sm-grid-2-lg">
-          <div>
+          <div className="sm-flex-col sm-gap-8">
             <span className="sm-section-label sm-mint sm-inline-block">Moat Sources</span>
             {current.moatSources.map((m, i) => (
-              <div key={i} className="sm-flex-between sm-items-center sm-rounded-6" style={{ padding: '12px 16px', background: 'var(--surface2)' }}>
+              <div key={i} className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
                 <div>
                   <div className="sm-text-13t sm-fw-600">{m.source}</div>
                   <div className="sm-text-11">{m.detail}</div>
@@ -6913,10 +6908,10 @@ const InvestmentTab = () => {
               </div>
             ))}
           </div>
-          <div>
+          <div className="sm-flex-col sm-gap-8">
             <span className="sm-section-label sm-coral sm-inline-block">Competitive Threats</span>
             {current.moatThreats.map((t, i) => (
-              <div key={i} className="sm-flex-between sm-items-center sm-rounded-6" style={{ padding: '12px 16px', background: 'var(--surface2)' }}>
+              <div key={i} className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
                 <div>
                   <div className="sm-text-13t sm-fw-600">{t.threat}</div>
                   <div className="sm-text-11">{t.detail}</div>
@@ -6926,7 +6921,7 @@ const InvestmentTab = () => {
             ))}
           </div>
         </div>
-        <div className="sm-text-13 sm-rounded-12" style={{ padding: 12, background: 'var(--surface2)' }}>
+        <div className="sm-text-13 sm-card-body sm-bg-surface2 sm-rounded-12 sm-mt-12">
           <strong>Moat Durability:</strong> A- (Strong). Spectrum + patents + manufacturing scale create defensible position. 4+ year technology lead is substantial. Key risk is well-funded competitors (Starlink) accelerating D2D efforts.
         </div>
       </CollapsibleSection>
@@ -6939,9 +6934,9 @@ const InvestmentTab = () => {
 
       {/* Risk Matrix */}
       <CollapsibleSection id="risks" title="Risk Matrix" sources={['PR', 'SEC']}>
-        <div className="sm-flex-col">
+        <div className="sm-flex-col sm-gap-8">
           {current.risks.map((r, i) => (
-            <div key={i} style={{ padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12, borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}>
+            <div key={i} className="sm-card-body sm-bg-surface2 sm-rounded-12" style={{ borderLeft: `3px solid ${r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)'}` }}>
               <div className="sm-flex-between">
                 <span className="sm-text sm-fw-600">{r.risk}</span>
                 <div className="sm-flex sm-gap-8" style={{ alignItems: 'initial' }}>
@@ -7312,69 +7307,20 @@ const FinancialsTab = () => {
       { term: 'Gateway Revenue', def: 'Current revenue stream from ground station equipment. Bridge revenue until commercial satellite services launch.' },
     ],
   };
-  
-  const colorClasses = {
-    blue: 'bg-blue-900/20 border-blue-800/30 text-blue-400',
-    purple: 'bg-purple-900/20 border-purple-800/30 text-purple-400',
-    yellow: 'bg-yellow-900/20 border-yellow-800/30 text-yellow-400',
-    green: 'bg-green-900/20 border-green-800/30 text-green-400',
-    orange: 'bg-orange-900/20 border-orange-800/30 text-orange-400',
-    cyan: 'bg-cyan-900/20 border-cyan-800/30 text-cyan-400',
-  };
 
   return (
-    <div className="sm-flex-col">
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 1: HEADER                                                   */}
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Quarterly Data<UpdateIndicators sources="SEC" /></div>
-        <h2>Financials<span className="sm-accent">.</span></h2>
-        <p>Quarterly financial statements, key metrics, and trend analysis. Pre-revenue stage with focus on cash position, burn rate, and path to commercial service.</p>
-      </div>
-
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 3: KEY METRICS EVOLUTION                                    */}
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Quarterly Metrics</span>
-        <span className="sm-divider-line" />
-      </div>
+    <SharedFinancialsTab
+      ticker="ASTS"
+      sectionLabel="Quarterly Data"
+      title="Financials"
+      description="Quarterly financial statements, key metrics, and trend analysis. Pre-revenue stage with focus on cash position, burn rate, and path to commercial service."
+      secFilingConfig={config.secFiling}
+      milestones={config.milestones}
+      cfaNotes={config.cfaNotes}
+      cfaNotesTitle="CFA Level III — Financial Analysis"
+    >
       <QuarterlyMetricsPanel />
-
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 8: KEY FINANCIAL MILESTONES                                 */}
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Key Financial Milestones</span>
-        <span className="sm-divider-line" />
-      </div>
-      <div className="sm-card">
-        <div className="sm-card-header">
-          <span className="sm-section-label sm-flex sm-gold">Key Financial Milestones<UpdateIndicators sources="SEC" /></span>
-        </div>
-        <div className="sm-card-body">
-        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
-          {config.milestones.map((m, i) => (
-            <div key={i} className="sm-bg-surface2" style={{ padding: 12 }}>
-              <div className="sm-text-11">{m.date}</div>
-              <div className="sm-text-13">{m.event}</div>
-            </div>
-          ))}
-        </div>
-        </div>
-      </div>
-      
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      {/* SECTION 9: CFA NOTES                                                */}
-      {/* ═══════════════════════════════════════════════════════════════════ */}
-      <CFANotes title="CFA Level III — Financial Analysis" items={[
-        { term: 'Pre-Revenue Valuation', def: 'Companies with no revenue are valued on TAM, technology readiness, and cash runway. Focus on burn rate, cash position, and path to first revenue rather than traditional multiples.' },
-        { term: 'Cash Burn Rate', def: 'Quarterly operating cash outflow. Critical metric for pre-revenue companies. Divide cash on hand by quarterly burn to get runway in quarters.' },
-        { term: 'SBC vs Cash Expenses', def: 'Stock-based compensation is a real expense but non-cash. Adjusted EBITDA adds back SBC, but GAAP net income includes it. Use both views for complete picture.' },
-        { term: 'Operating Leverage', def: 'High fixed costs + low variable costs = operating leverage. Once revenue exceeds fixed costs, incremental margins are very high. Space/tech companies typically have extreme operating leverage.' },
-      ]} />
-    </div>
+    </SharedFinancialsTab>
   );
 };
 

@@ -8,6 +8,13 @@
 export * from './investmentTypes';
 export { SharedInvestmentTab } from './SharedInvestmentTab';
 
+// Financials Tab (stock-agnostic)
+export * from './financialsTabTypes';
+export { SharedFinancialsTab } from './SharedFinancialsTab';
+
+// Timeline Tab (stock-agnostic)
+export { SharedTimelineTab } from './SharedTimelineTab';
+
 // Wall Street Tab
 export * from './wallStreetTypes';
 export { SharedWallStreetTab } from './SharedWallStreetTab';

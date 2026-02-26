@@ -1,6 +1,11 @@
 /**
  * Shared Investment Tab Types
- * Unified schema for ASTS, BMNR, CRCL Investment Tab data
+ * Unified schema for ASTS, BMNR, CRCL Investment Tab data.
+ *
+ * Extensibility: Add optional stock-specific fields to InvestmentCurrent (e.g. priceTargets,
+ * catalysts, ecosystemHealth). Use render props (renderHeaderMetrics, renderEcosystemHealth,
+ * renderCatalysts, renderAccumulation) for custom sections. For new stocks, extend this interface
+ * with optional fields and add corresponding render props to SharedInvestmentTabProps.
  */
 
 export interface ScorecardItem {
@@ -120,7 +125,7 @@ export interface InvestmentCurrent {
     balanced: PositionSize;
     conservative: PositionSize;
   };
-  // Optional company-specific fields
+  // Optional company-specific fields (extend with more as needed per stock)
   priceTargets?: PriceTarget[];
   catalysts?: Catalyst[];
   accumulation?: AccumulationZone[];
@@ -152,9 +157,10 @@ export interface SharedInvestmentTabProps {
   current: InvestmentCurrent;
   archive: ArchiveEntry[];
   ticker: string;
-  // Optional render props for company-specific sections
+  /** Optional render props for company-specific sections (add more as new stocks need them) */
   renderHeaderMetrics?: () => React.ReactNode;
   renderEcosystemHealth?: () => React.ReactNode;
   renderCatalysts?: () => React.ReactNode;
   renderAccumulation?: () => React.ReactNode;
+  /** Future: add more optional render props for stock-specific blocks, e.g. renderCompsTable, renderCustomScorecard */
 }

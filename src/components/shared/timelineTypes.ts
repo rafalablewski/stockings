@@ -1,7 +1,14 @@
 /**
  * Shared Timeline Tab Types
- * Unified schema for ASTS, BMNR, CRCL Timeline/SEC Filings data
+ * Unified schema for ASTS, BMNR, CRCL Timeline/SEC Filings data.
+ *
+ * Extensibility: Pass all stock-specific content (SEC table, filters, event list, CFA notes)
+ * as children of SharedTimelineTab. For new stocks with different event shapes, extend
+ * TimelineEvent (e.g. TimelineEventDetailed | TimelineEventChanges | YourStockEvent) and
+ * render in the child content. No need to change SharedTimelineTab for new fields.
  */
+
+import type { ReactNode } from 'react';
 
 export interface SECFiling {
   date: string;
@@ -62,10 +69,14 @@ export interface TimelineEventChanges {
 export type TimelineEvent = TimelineEventDetailed | TimelineEventChanges;
 
 export interface SharedTimelineTabProps {
-  ticker: string;
-  secFilings: SECFiling[];
-  secMeta: SECMeta;
-  timelineEvents: TimelineEvent[];
-  secTypeColors?: Record<string, SECTypeColor>;
-  accentColor?: 'sky' | 'violet' | 'mint';
+  /** Section label above title (e.g. "Corporate Events") */
+  sectionLabel: string;
+  /** Tab title (e.g. "Timeline") */
+  title: string;
+  /** Hero description paragraph */
+  description: string;
+  /** Optional: SEC filings table + event list rendered as children */
+  children: ReactNode;
+  /** Optional: update indicator sources for the section label */
+  sources?: string | string[];
 }
