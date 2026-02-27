@@ -121,6 +121,8 @@ import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import SharedEdgarTab from '../shared/SharedEdgarTab';
+import { SharedInvestmentTab } from '../shared/SharedInvestmentTab';
+import type { InvestmentCurrent } from '../shared/investmentTypes';
 import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
@@ -3517,6 +3519,7 @@ const ParameterCard = ({
     if (format === '%') return `${v}%`;
     if (format === 'yr') return v === 0 ? 'On-time' : v > 0 ? `+${v}yr` : `${v}yr`;
     if (format === 'M') return `${(v/1000).toFixed(1)}B`;
+    if (format === 'x') return `${v}x`;
     return String(v);
   };
 
@@ -4381,7 +4384,8 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 <button
                   key={yr}
                   onClick={() => setYears(yr)}
-                  className="sm-pill-toggle" style={{ flex: 1, padding: '12px 20px', border: years === yr ? '2px solid var(--accent)' : '2px solid transparent', background: years === yr ? 'var(--accent-dim)' : 'var(--surface2)', color: years === yr ? 'var(--accent)' : 'var(--text2)', fontWeight: years === yr ? 700 : 400, fontFamily: "'Space Mono', monospace", fontSize: 16 }}
+                  className="sm-mc-horizon-btn"
+                  data-active={years === yr ? "true" : undefined}
                 >
                   {yr}Y
                 </button>
@@ -4397,7 +4401,8 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 <button
                   key={simCount}
                   onClick={() => setSims(simCount)}
-                  className="sm-pill-toggle" style={{ flex: 1, padding: '12px 16px', border: sims === simCount ? '2px solid var(--accent)' : '2px solid transparent', background: sims === simCount ? 'var(--accent-dim)' : 'var(--surface2)', color: sims === simCount ? 'var(--accent)' : 'var(--text2)', fontWeight: sims === simCount ? 700 : 400, fontFamily: "'Space Mono', monospace", fontSize: 14 }}
+                  className="sm-mc-sim-btn"
+                  data-active={sims === simCount ? "true" : undefined}
                 >
                   {simCount.toLocaleString()}
                 </button>
@@ -4415,54 +4420,22 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           <span className="sm-divider-line" />
         </div>
         <div className="sm-grid-2">
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">BASE REVENUE ($B)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Expected terminal year revenue. Source: DCF model or analyst estimates.
-            </p>
-            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
-              {[1.5, 2.5, 4.0, 5.5, 8.0, 12.0].map((opt, idx) => {
-                const isActive = Math.abs(baseRev - opt) < 0.1;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setBaseRev)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>${opt}</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">REVENUE VOLATILITY (%)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Log-normal std dev. 35% = outcomes range 0.7x-1.4x base revenue.
-            </p>
-            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
-              {[50, 45, 40, 35, 30, 25].map((opt, idx) => {
-                const isActive = revVol === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setRevVol)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
+          <ParameterCard
+            title="Base Revenue ($B)"
+            explanation="Expected terminal year revenue. Source: DCF model or analyst estimates."
+            options={[1.5, 2.5, 4.0, 5.5, 8.0, 12.0]}
+            value={baseRev}
+            onChange={updateParam(setBaseRev)}
+            format="$"
+          />
+          <ParameterCard
+            title="Revenue Volatility (%)"
+            explanation="Log-normal std dev. 35% = outcomes range 0.7x-1.4x base revenue."
+            options={[50, 45, 40, 35, 30, 25]}
+            value={revVol}
+            onChange={updateParam(setRevVol)}
+            format="%"
+          />
         </div>
 
         <div className="sm-divider">
@@ -4470,54 +4443,22 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           <span className="sm-divider-line" />
         </div>
         <div className="sm-grid-2">
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">EBITDA MARGIN (%)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Terminal margin at scale. Satellite/telecom: 40-60%. Operating leverage applies.
-            </p>
-            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
-              {[25, 35, 40, 45, 52, 58].map((opt, idx) => {
-                const isActive = margin === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setMargin)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">EV/EBITDA MULTIPLE</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Terminal valuation multiple. Growth: 10-15x, Mature telcos: 6-8x.
-            </p>
-            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
-              {[6, 8, 10, 12, 14, 16].map((opt, idx) => {
-                const isActive = mult === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setMult)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}x</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
+          <ParameterCard
+            title="EBITDA Margin (%)"
+            explanation="Terminal margin at scale. Satellite/telecom: 40-60%. Operating leverage applies."
+            options={[25, 35, 40, 45, 52, 58]}
+            value={margin}
+            onChange={updateParam(setMargin)}
+            format="%"
+          />
+          <ParameterCard
+            title="EV/EBITDA Multiple"
+            explanation="Terminal valuation multiple. Growth: 10-15x, Mature telcos: 6-8x."
+            options={[6, 8, 10, 12, 14, 16]}
+            value={mult}
+            onChange={updateParam(setMult)}
+            format="x"
+          />
         </div>
 
         <div className="sm-divider">
@@ -4525,78 +4466,30 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           <span className="sm-divider-line" />
         </div>
         <div className="sm-grid-sep-3col" style={{ gap: 12, background: 'transparent' }}>
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">LAUNCH RISK (%)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Prob. of constellation failure. If triggered: -40% revenue.
-            </p>
-            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
-              {[30, 25, 20, 15, 10, 5].map((opt, idx) => {
-                const isActive = launchRisk === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setLaunchRisk)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">REGULATORY RISK (%)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Prob. of FCC/spectrum issues. If triggered: -30% revenue.
-            </p>
-            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
-              {[25, 20, 15, 10, 8, 5].map((opt, idx) => {
-                const isActive = regRisk === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setRegRisk)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">DISCOUNT RATE (%)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Required return / WACC. Pre-revenue space: 12-18%.
-            </p>
-            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
-              {[20, 18, 16, 15, 13, 11].map((opt, idx) => {
-                const isActive = discountRate === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => setDiscountRate(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
+          <ParameterCard
+            title="Launch Risk (%)"
+            explanation="Prob. of constellation failure. If triggered: -40% revenue."
+            options={[30, 25, 20, 15, 10, 5]}
+            value={launchRisk}
+            onChange={updateParam(setLaunchRisk)}
+            format="%"
+          />
+          <ParameterCard
+            title="Regulatory Risk (%)"
+            explanation="Prob. of FCC/spectrum issues. If triggered: -30% revenue."
+            options={[25, 20, 15, 10, 8, 5]}
+            value={regRisk}
+            onChange={updateParam(setRegRisk)}
+            format="%"
+          />
+          <ParameterCard
+            title="Discount Rate (%)"
+            explanation="Required return / WACC. Pre-revenue space: 12-18%."
+            options={[20, 18, 16, 15, 13, 11]}
+            value={discountRate}
+            onChange={(v) => setDiscountRate(v)}
+            format="%"
+          />
         </div>
 
         {/* Run Button */}
@@ -4606,7 +4499,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Percentile Distribution */}
       <div>
         <div className="sm-card sm-mt-8">
-          <div className="sm-section-label sm-grid-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
+          <div className="sm-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
             <span className="sm-text-left">Percentile</span>
             <span className="sm-text-right">Price Target</span>
             <span className="sm-text-right">vs Current</span>
@@ -4621,8 +4514,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           ].map((row, i) => {
             const pctChange = ((row.value / currentStockPrice - 1) * 100);
             return (
-              <div key={i} className="sm-grid-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : 'transparent', cursor: 'default' }}
-              >
+              <div key={i} className="sm-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : 'transparent' }}>
                 <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
                 <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
                 <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", color: 'var(--text2)' }}>${(row.value - currentStockPrice).toFixed(2)}</span>
@@ -4636,7 +4528,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Risk Metrics */}
       <div>
         <div className="sm-card sm-mt-8">
-          <div className="sm-section-label sm-grid-header" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+          <div className="sm-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
             <span className="sm-text-left">Risk Metric</span>
             <span className="sm-text-right">Value</span>
             <span className="sm-text-left">Interpretation</span>
@@ -4649,8 +4541,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
             { label: 'VaR (5%)', value: <span className="sm-fw-600" style={{ fontFamily: "'Space Mono', monospace", color: 'var(--red)' }}>{sim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
             { label: 'CVaR (5%)', value: <span className="sm-fw-600" style={{ fontFamily: "'Space Mono', monospace", color: 'var(--red)' }}>{sim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
           ].map((row, i) => (
-            <div key={i} className="sm-grid-row" style={{ gridTemplateColumns: '1fr 1fr 1fr', cursor: 'default' }}
-            >
+            <div key={i} className="sm-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
               <span className="sm-text2">{row.label}</span>
               <span className="sm-text-right">{row.value}</span>
               <span className="sm-text3">{row.interp}</span>
@@ -5404,7 +5295,7 @@ const TimelineTab = () => {
         typeColors={ASTS_SEC_TYPE_COLORS}
         filterTypes={secFilterTypes}
         crossRefIndex={ASTS_FILING_CROSS_REFS}
-        initialVisibleCount={15}
+        initialVisibleCount={5}
       />
 
       {/* Upcoming Events + Recent Press Releases */}
@@ -5419,48 +5310,48 @@ const TimelineTab = () => {
               <span className="sm-section-label">Upcoming Events<UpdateIndicators sources="PR" /></span>
             </div>
             <div className="sm-card-body">
-          <div className="sm-flex-col-gap">
-            <div className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
-              <div>
-                <div className="sm-text sm-fw-600">Q4 2025 Earnings</div>
-                <div className="sm-subtle">10-K Annual Report</div>
+              <div className="sm-tl-event-list">
+                <div className="sm-tl-event-item">
+                  <div>
+                    <div className="sm-text sm-fw-600">Q4 2025 Earnings</div>
+                    <div className="sm-subtle">10-K Annual Report</div>
+                  </div>
+                  <div className="sm-text-right">
+                    <div className="sm-mono-sm sm-cyan">~Mar 2026</div>
+                    <div className="sm-tl-event-sub">Est.</div>
+                  </div>
+                </div>
+                <div className="sm-tl-event-item">
+                  <div>
+                    <div className="sm-text sm-fw-600">BB7-BB11 Launches</div>
+                    <div className="sm-subtle">Block 2 constellation expansion</div>
+                  </div>
+                  <div className="sm-text-right">
+                    <div className="sm-mono-sm sm-mint">Q1 2026</div>
+                    <div className="sm-tl-event-sub">45-60 sats by EOY</div>
+                  </div>
+                </div>
+                <div className="sm-tl-event-item">
+                  <div>
+                    <div className="sm-text sm-fw-600">Commercial Service Launch</div>
+                    <div className="sm-subtle">Initial revenue generation</div>
+                  </div>
+                  <div className="sm-text-right">
+                    <div className="sm-mono-sm sm-gold">H1 2026</div>
+                    <div className="sm-tl-event-sub">Post-constellation</div>
+                  </div>
+                </div>
+                <div className="sm-tl-event-item">
+                  <div>
+                    <div className="sm-text sm-fw-600">Convertible Notes Maturity</div>
+                    <div className="sm-subtle">$698M converts @ 4.25%</div>
+                  </div>
+                  <div className="sm-text-right">
+                    <div className="sm-mono-sm sm-sky">2028-2030</div>
+                    <div className="sm-tl-event-sub">Per 10-Q</div>
+                  </div>
+                </div>
               </div>
-              <div className="sm-text-right">
-                <div className="sm-mono-sm sm-cyan">~Mar 2026</div>
-                <div className="sm-text-11">Est.</div>
-              </div>
-            </div>
-            <div className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
-              <div>
-                <div className="sm-text sm-fw-600">BB7-BB11 Launches</div>
-                <div className="sm-subtle">Block 2 constellation expansion</div>
-              </div>
-              <div className="sm-text-right">
-                <div className="sm-mono-sm sm-mint">Q1 2026</div>
-                <div className="sm-text-11">45-60 sats by EOY</div>
-              </div>
-            </div>
-            <div className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
-              <div>
-                <div className="sm-text sm-fw-600">Commercial Service Launch</div>
-                <div className="sm-subtle">Initial revenue generation</div>
-              </div>
-              <div className="sm-text-right">
-                <div className="sm-mono-sm sm-gold">H1 2026</div>
-                <div className="sm-text-11">Post-constellation</div>
-              </div>
-            </div>
-            <div className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
-              <div>
-                <div className="sm-text sm-fw-600">Convertible Notes Maturity</div>
-                <div className="sm-subtle">$698M converts @ 4.25%</div>
-              </div>
-              <div className="sm-text-right">
-                <div className="sm-mono-sm sm-sky">2028-2030</div>
-                <div className="sm-text-11">Per 10-Q</div>
-              </div>
-            </div>
-          </div>
             </div>
           </div>
         </div>
@@ -5471,14 +5362,14 @@ const TimelineTab = () => {
               <span className="sm-section-label">Recent Press Releases<UpdateIndicators sources="PR" /></span>
             </div>
             <div className="sm-card-body">
-              <div className="sm-flex-col-gap">
+              <div className="sm-tl-pr-list">
                 {displayedPR.map((pr, i) => (
-                  <div key={i} className="sm-card-body sm-bg-surface2 sm-rounded-12">
-                    <div className="sm-flex-between">
-                      <span className="sm-text-11">{pr.date}</span>
-                      <span className="sm-text-11" style={{ color: pr.color }}>{pr.category}</span>
+                  <div key={i} className="sm-tl-pr-item-v2">
+                    <div className="sm-tl-pr-meta">
+                      <span className="sm-tl-pr-date">{pr.date}</span>
+                      <span className="sm-tl-pr-cat" style={{ color: pr.color }}>{pr.category}</span>
                     </div>
-                    <div className="sm-fw-500 sm-text" style={{ fontSize: 14 }}>{pr.title}</div>
+                    <div className="sm-tl-pr-title">{pr.title}</div>
                   </div>
                 ))}
               </div>
@@ -6426,24 +6317,11 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 // NEVER DELETE ARCHIVE ENTRIES - This is the historical record!
 // ============================================================================
 const InvestmentTab = () => {
-  const [investmentSections, setInvestmentSections] = useState(new Set(['summary', 'scorecard']));
-  const [expandedArchive, setExpandedArchive] = useState(null);
-  
-  const toggleSection = (section) => {
-    const next = new Set(investmentSections);
-    if (next.has(section)) next.delete(section);
-    else next.add(section);
-    setInvestmentSections(next);
-  };
-  
-  const expandAll = () => setInvestmentSections(new Set(['summary', 'scorecard', 'growth', 'moat', 'risks', 'strategic-assessment', 'position', 'archive']));
-  const collapseAll = () => setInvestmentSections(new Set(['summary']));
-  
   // ═══════════════════════════════════════════════════════════════════════════
   // CURRENT ASSESSMENT - UPDATE THIS OBJECT AFTER EACH FILING
   // All current investment data consolidated here (unified with BMNR/CRCL)
   // ═══════════════════════════════════════════════════════════════════════════
-  const current = {
+  const current: InvestmentCurrent = {
     date: '2025-11-10',
     source: 'Q3 2025 10-Q',
     verdict: 'CONSTRUCTIVE',
@@ -6689,504 +6567,194 @@ const InvestmentTab = () => {
     },
   ];
 
-  // Collapsible section component (gold-standard card + toggle header)
-  const CollapsibleSection = ({ id, title, children, sources }: { id: string; title: string; children: React.ReactNode; sources?: UpdateSource | UpdateSource[] }) => (
-    <div className="sm-card">
-      <div
-        className="sm-toggle-header"
-        style={{ borderBottom: investmentSections.has(id) ? '1px solid var(--border)' : 'none' }}
-        onClick={() => toggleSection(id)}
-        role="button"
-        tabIndex={0}
-        aria-expanded={investmentSections.has(id)}
-        aria-label={`Toggle ${title}`}
-        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection(id))}
-      >
-        <span className="sm-section-label">{title}{sources && <UpdateIndicators sources={sources} />}</span>
-        <span className="sm-text3" aria-hidden="true" style={{ fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
-      </div>
-      {investmentSections.has(id) && <div className="sm-card-body">{children}</div>}
-    </div>
-  );
-
-  const getVerdictColor = (verdict) => {
-    if (verdict.includes('CONSTRUCTIVE')) return 'var(--mint)';
-    if (verdict.includes('BULLISH')) return 'var(--mint)';
-    if (verdict.includes('NEUTRAL')) return 'var(--gold)';
-    if (verdict.includes('CAUTIOUS')) return 'var(--coral)';
-    return 'var(--coral)';
-  };
-
   return (
-    <div className="sm-flex-col sm-flex-col-gap-16">
-      {/* Controls */}
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Due Diligence<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <h2>Investment Analysis<span className="sm-accent">.</span></h2>
-        <p>Multi-perspective due diligence analysis with CFA, hedge fund, and institutional frameworks. Scoring, risk assessment, and historical perspective tracking.</p>
-      </div>
-      <div className="sm-flex sm-items-center sm-gap-12" style={{ justifyContent: 'flex-end' }}>
-        <button onClick={expandAll} className="sm-action-btn">Expand All</button>
-        <button onClick={collapseAll} className="sm-action-btn">Collapse All</button>
-      </div>
-
-      {/* Data Refresh Indicator */}
-      <div className="sm-flex sm-items-center sm-gap-16 sm-text-11" style={{ justifyContent: 'flex-end', color: 'var(--text3)' }}>
-        <span>Data as of: <strong className="sm-text2">{current.date}</strong></span>
-        <span>•</span>
-        <span>Source: <strong className="sm-text2">{current.source}</strong></span>
-      </div>
-
-      {/* Rating Header */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Current Assessment</span>
-        <span className="sm-divider-line" />
-      </div>
-      <div className="sm-card" style={{ borderLeft: '4px solid var(--mint)' }}>
-        <div className="sm-card-body">
-        <div className="sm-flex-between sm-items-start sm-flex-wrap sm-gap-16">
-          <div>
-            <div className="sm-flex sm-gap-12 sm-mb-12">
-              <span className="sm-fw-700" style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontSize: 18 }}>CONSTRUCTIVE</span>
-              <span className="sm-fw-600 sm-mint" style={{ background: 'color-mix(in srgb, var(--mint) 15%, transparent)', padding: '6px 12px', borderRadius: 99, fontSize: 12 }}>TECHNOLOGY PROVEN</span>
-            </div>
-            <div className="sm-text-13 sm-text2" style={{ maxWidth: 500 }}>
-              {current.executiveSummary.thesis}
-            </div>
-            <div className="sm-text-11 sm-mt-8">
-              Last Updated: {current.date} • Trigger: {current.source}
-            </div>
+    <SharedInvestmentTab
+      current={current}
+      archive={archive}
+      ticker="ASTS"
+      renderHeaderMetrics={() => (
+        <div className="sm-flex sm-gap-24 sm-flex-wrap">
+          <div className="sm-text-center">
+            <div className="sm-text-11">Price Target</div>
+            <div className="sm-mono-lg sm-fw-700 sm-mint">$100-150</div>
+            <div className="sm-micro-text sm-micro-text-normal">12-month</div>
           </div>
-          <div className="sm-flex sm-gap-24 sm-flex-wrap">
-            <div className="sm-text-center">
-              <div className="sm-text-11">Price Target</div>
-              <div className="sm-mono-lg sm-fw-700 sm-mint">$100-150</div>
-              <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>12-month</div>
-            </div>
-            <div className="sm-text-center">
-              <div className="sm-text-11">Risk/Reward</div>
-              <div className="sm-mono-lg sm-fw-700 sm-sky">3:1</div>
-              <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>Asymmetric</div>
-            </div>
-            <div className="sm-text-center">
-              <div className="sm-text-11">Cash Position</div>
-              <div className="sm-mono-lg sm-fw-700 sm-violet">$760M</div>
-              <div className="sm-text-11 sm-mint">Runway secured</div>
-            </div>
+          <div className="sm-text-center">
+            <div className="sm-text-11">Risk/Reward</div>
+            <div className="sm-mono-lg sm-fw-700 sm-sky">3:1</div>
+            <div className="sm-micro-text sm-micro-text-normal">Asymmetric</div>
+          </div>
+          <div className="sm-text-center">
+            <div className="sm-text-11">Cash Position</div>
+            <div className="sm-mono-lg sm-fw-700 sm-violet">$760M</div>
+            <div className="sm-text-11 sm-mint">Runway secured</div>
           </div>
         </div>
-        </div>
-      </div>
+      )}
+      moatDurabilityNote="A- (Strong). Spectrum + patents + manufacturing scale create defensible position. 4+ year technology lead is substantial. Key risk is well-funded competitors (Starlink) accelerating D2D efforts."
+      renderStrategicAssessment={() => (
+        <>
+          {/* Section Header */}
+          <div className="sm-subtle sm-italic">
+            Multi-perspective risk evaluation and strategic decision framework for space-based cellular infrastructure
+          </div>
 
-      {/* Section Divider: Ratings & Scoring */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Ratings & Scoring</span>
-        <span className="sm-divider-line" />
-      </div>
+          {/* Part 1: Multi-Perspective Risk Evaluation */}
+          <div className="sm-inv-section-sub"><span className="sm-section-label sm-text">Risk Evaluation — Four Perspectives</span></div>
 
-      {/* Investment Scorecard */}
-      <CollapsibleSection id="scorecard" title="Investment Scorecard" sources={['PR', 'SEC']}>
-        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
-          {current.scorecard.map((item, i) => (
-            <div key={i} className="sm-kpi-cell" style={{ '--kpi-color': item.color } as React.CSSProperties}>
-              <div className="sm-kpi-hero-md">{item.rating}</div>
-              <div className="sm-kpi-label">{item.category}</div>
-              <div className="sm-kpi-sub">{item.detail}</div>
+          {/* CFA Level III Perspective */}
+          <div className="sm-callout" style={{ '--callout-color': 'var(--cyan)' } as React.CSSProperties}>
+            <div className="sm-flex">
+              <span className="sm-news-tag" style={{ '--tag-color': 'var(--cyan)' } as React.CSSProperties}>CFA LEVEL III</span>
+              <span className="sm-subtle">Portfolio Construction & Factor Analysis</span>
             </div>
-          ))}
-        </div>
-      </CollapsibleSection>
+            <div className="sm-body sm-lh-18">
+              <p>
+                <strong>Factor Exposures:</strong> ASTS exhibits high beta (~1.8-2.2) to growth/momentum factors with significant idiosyncratic risk from execution milestones. Low correlation to traditional telcos (~0.2) and satellite peers (~0.4). This is a binary outcome investment — success yields 5-10x, failure yields 80%+ loss. Standard MPT optimization doesn&apos;t apply; treat as venture-like allocation within public markets sleeve.
+              </p>
+              <p>
+                <strong>Liquidity Analysis:</strong> Average daily volume ~$100-200M provides excellent liquidity for most institutional positions. Options market active with reasonable spreads. Convertible bonds provide additional hedging/exposure vehicles. Short interest ~15% creates squeeze potential but also overhang. Position sizing up to 3-5% of portfolio feasible without market impact.
+              </p>
+              <p>
+                <strong>Governance & ESG:</strong> Founder Abel Avellan controls ~73% voting via Class C shares — concentration risk but also alignment. Board includes telecom veterans. ESG profile positive: enabling connectivity for underserved populations, reducing need for physical infrastructure. Space debris concerns manageable with LEO orbit decay. Spectrum rights secured through MNO partnerships — regulatory moat.
+              </p>
+            </div>
+          </div>
 
-      {/* Section Divider: Investment Thesis */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Investment Thesis</span>
-        <span className="sm-divider-line" />
-      </div>
+          {/* Hedge Fund Manager Perspective */}
+          <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
+            <div className="sm-flex">
+              <span className="sm-news-tag" style={{ '--tag-color': 'var(--gold)' } as React.CSSProperties}>HEDGE FUND</span>
+              <span className="sm-subtle">Alpha Generation & Event Catalysts</span>
+            </div>
+            <div className="sm-body sm-lh-18">
+              <p>
+                <strong>Event Calendar Alpha:</strong> ASTS is a catalyst machine — launches, FCC approvals, MNO activations, revenue recognition events provide defined trading opportunities. Strategy: size up 2-3 weeks before known catalysts, trim 50% into strength on positive outcomes, add on &quot;sell the news&quot; weakness if thesis intact. Each successful launch de-risks the next.
+              </p>
+              <p>
+                <strong>Short Squeeze Dynamics:</strong> ~15% short interest with high conviction longs creates squeeze potential on positive catalysts. Days to cover ~3-4. Monitor borrow rates for squeeze signals. Historical pattern: 20-40% moves on successful launches. Position accordingly — don&apos;t short this name, and size longs to benefit from squeezes.
+              </p>
+              <p>
+                <strong>Convertible Arbitrage:</strong> $1.625B in converts outstanding at various strikes ($80-$180+). As stock approaches conversion prices, arbitrage flows create support. Monitor convert pricing vs equity for relative value opportunities. Converts provide downside cushion narrative but also overhang concerns — net neutral to slightly positive for equity.
+              </p>
+            </div>
+          </div>
 
-      {/* Summary */}
-      <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
-        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--mint)', '--bar-accent-2': 'var(--cyan)' } as React.CSSProperties}>
-          <div style={{ fontSize: 11, color: 'var(--mint)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>What's New ({current.source})</div>
-          <ul className="sm-text-13 sm-text2" style={{ margin: '4px 0 0', paddingLeft: 16, lineHeight: 1.8 }}>
-            {current.executiveSummary.whatsNew.map((item, i) => (
-              <li key={i}>{item}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="sm-text-13 sm-text2 sm-body" style={{ lineHeight: 1.8 }}>
-          <p>
-            <strong>Thesis:</strong> {current.executiveSummary.thesis}
-          </p>
-        </div>
-        <div className="sm-note-panel">
-          <em className="sm-cyan">"{current.executiveSummary.bottomLine}"</em>
-        </div>
-        <div className="sm-text-13 sm-text2 sm-body" style={{ lineHeight: 1.8 }}>
-          <p>
-            <strong>Position Sizing:</strong> 3-5% for growth portfolios • 1-2% for balanced • Speculative allocation for conservative
-          </p>
-        </div>
-      </CollapsibleSection>
+          {/* CIO/CIS Institutional Perspective */}
+          <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
+            <div className="sm-flex">
+              <span className="sm-news-tag" style={{ '--tag-color': 'var(--sky)' } as React.CSSProperties}>CIO / CIS</span>
+              <span className="sm-subtle">Strategic Allocation & Fiduciary Considerations</span>
+            </div>
+            <div className="sm-body sm-lh-18">
+              <p>
+                <strong>Strategic Thesis:</strong> ASTS represents &quot;infrastructure for the next billion connected users&quot; — a thematic play on global connectivity megatrend. Unlike Starlink (D2C, new devices), ASTS works with existing phones via MNO partnerships. This is picks-and-shovels for mobile connectivity expansion. The 50/50 revenue share model means MNOs are incentivized to push adoption.
+              </p>
+              <p>
+                <strong>Portfolio Fit:</strong> Classify as &quot;thematic/disruptive innovation&quot; allocation, not traditional telecom. Appropriate for growth portfolios with 5-10 year horizons. Do not benchmark against telco index — this is a pre-revenue infrastructure buildout. Comparable to early-stage cloud or fiber investments. Size as venture-like position (1-3% max) given binary risk profile.
+              </p>
+              <p>
+                <strong>Fiduciary Narrative:</strong> If questioned by stakeholders: &quot;We own the infrastructure layer enabling mobile operators to extend coverage without building towers — backed by AT&T, Verizon, Vodafone partnerships and $1B+ in contracted revenue.&quot; The blue-chip MNO partnerships provide institutional credibility. Comparable thesis to early investments in cell tower REITs.
+              </p>
+            </div>
+          </div>
 
-      {/* Section Divider: Growth Drivers */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Growth Drivers</span>
-        <span className="sm-divider-line" />
-      </div>
-
-      {/* Growth Drivers */}
-      <CollapsibleSection id="growth" title="Growth Drivers" sources="PR">
-        <div className="sm-flex-col sm-gap-8">
-          {current.growthDrivers.map((d, i) => (
-            <div key={i} className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
-              <div style={{ flex: 1 }}>
-                <div className="sm-text-13t sm-fw-600">{d.driver}</div>
-                <div className="sm-subtle">{d.description}</div>
+          {/* Technical Analyst Perspective */}
+          <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+            <div className="sm-flex">
+              <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>TECHNICAL ANALYST</span>
+              <span className="sm-subtle">Chart Patterns & Price Action</span>
+            </div>
+            <div className="sm-body sm-lh-18">
+              <p>
+                <strong>Trend Structure:</strong> Classic catalyst-driven momentum stock. Price gaps on launch news create defined support/resistance zones. Currently consolidating above 50-day SMA with declining volatility — textbook bull flag formation. RSI reset from overbought provides fresh runway for next leg up.
+              </p>
+              <p>
+                <strong>Key Levels:</strong> Support zone at $25-30 (prior breakout level, high volume node). Resistance at $40-45 (prior swing highs). MACD bullish crossover on weekly chart. Volume accumulation patterns evident — institutional buying on dips. Watch for breakout above $45 with volume &gt;20M shares as confirmation signal.
+              </p>
+              <p>
+                <strong>Catalyst Trading:</strong> Satellite launch dates provide predictable volatility windows. Build position 2-3 weeks before scheduled launches. Take partial profits into strength post-launch. Use RSI divergence to identify exhaustion after catalyst-driven rallies. Relative strength vs NASDAQ positive — outperforming growth cohort.
+              </p>
+              <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+                <strong className="sm-mint">Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
               </div>
-              <span className="sm-fw-600" style={{ color: d.color, fontSize: 12, marginLeft: 16 }}>{d.impact}</span>
             </div>
-          ))}
-        </div>
-      </CollapsibleSection>
+          </div>
 
-      {/* Competitive Moat */}
-      <CollapsibleSection id="moat" title="Competitive Moat" sources={['PR', 'SEC']}>
-        <div className="sm-grid-2-lg">
-          <div className="sm-flex-col sm-gap-8">
-            <span className="sm-section-label sm-mint sm-inline-block">Moat Sources</span>
-            {current.moatSources.map((m, i) => (
-              <div key={i} className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
-                <div>
-                  <div className="sm-text-13t sm-fw-600">{m.source}</div>
-                  <div className="sm-text-11">{m.detail}</div>
+          {/* Part 2: Key Strategic Questions */}
+          <div className="sm-inv-section-sub"><span className="sm-section-label sm-text">Key Strategic Questions</span></div>
+
+          {/* Would I Buy Now? */}
+          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
+            <div className="sm-flex-between">
+              <span className="sm-text sm-fw-600 sm-body-lg">Would I Buy Now?</span>
+              <span className="sm-news-tag-lg" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>YES — HIGH CONVICTION</span>
+            </div>
+            <div className="sm-body sm-lh-18">
+              <p>
+                <strong>The Case:</strong> Constellation deployment is accelerating (6 sats/month production), commercial service imminent in 2026, $1B+ contracted revenue provides visibility, and MNO partnerships de-risk go-to-market. The technology works (BW3 proved it). Valuation at ~$300/potential subscriber is cheap vs telco M&amp;A comps ($500+). Risk/reward is asymmetric to the upside.
+              </p>
+              <p>
+                <strong>The Hesitation:</strong> Still pre-revenue with $300M+ annual burn. Execution risk on 40+ satellite launches. FCC/regulatory uncertainty in some markets. Starlink competition narrative (though different model). Stock has run significantly — buying at highs feels uncomfortable.
+              </p>
+              <p>
+                <strong>The Verdict:</strong> Yes, initiate or add to position. The de-risking from successful launches justifies higher prices. Use pullbacks on &quot;sell the news&quot; events to add. This is a 3-5 year hold — don&apos;t trade around short-term volatility. Size appropriately for binary outcome profile (1-3% of portfolio).
+              </p>
+            </div>
+          </div>
+
+          {/* What Can I Expect? */}
+          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
+            <div className="sm-text sm-fw-600 sm-body-lg">What Can I Expect?</div>
+            <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
+              <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
+                <div className="sm-fw-600 sm-gold sm-text-13">Short-Term (0-6 months)</div>
+                <div className="sm-text-13 sm-lh-16">
+                  Catalyst-rich period: BB7-13 launches, US commercial service initiation, Q4 earnings. Expect 30-50% swings around events. Successful launches = 10-20% pops, then consolidation. Trading range likely $20-45 depending on execution. Volatility is your friend if sized correctly.
                 </div>
-                <span className="sm-fw-600" style={{ color: m.color, fontSize: 12 }}>{m.strength}</span>
               </div>
-            ))}
-          </div>
-          <div className="sm-flex-col sm-gap-8">
-            <span className="sm-section-label sm-coral sm-inline-block">Competitive Threats</span>
-            {current.moatThreats.map((t, i) => (
-              <div key={i} className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
-                <div>
-                  <div className="sm-text-13t sm-fw-600">{t.threat}</div>
-                  <div className="sm-text-11">{t.detail}</div>
+              <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
+                <div className="sm-fw-600 sm-sky sm-text-13">Mid-Term (6-18 months)</div>
+                <div className="sm-text-13 sm-lh-16">
+                  Revenue recognition begins — first real P&amp;L validation. If penetration tracks to 1%+, narrative shifts from &quot;will it work?&quot; to &quot;how big can it get?&quot; Multiple expansion potential. Target range: $50-100 if execution continues. This is where the thesis gets proven or broken.
                 </div>
-                <span className="sm-fw-600" style={{ color: t.color, fontSize: 12 }}>{t.risk}</span>
               </div>
-            ))}
-          </div>
-        </div>
-        <div className="sm-note-panel">
-          <strong>Moat Durability:</strong> A- (Strong). Spectrum + patents + manufacturing scale create defensible position. 4+ year technology lead is substantial. Key risk is well-funded competitors (Starlink) accelerating D2D efforts.
-        </div>
-      </CollapsibleSection>
-
-      {/* Section Divider: Risk Assessment */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Risk Assessment</span>
-        <span className="sm-divider-line" />
-      </div>
-
-      {/* Risk Matrix */}
-      <CollapsibleSection id="risks" title="Risk Matrix" sources={['PR', 'SEC']}>
-        <div className="sm-flex-col sm-gap-8">
-          {current.risks.map((r, i) => {
-            const severityColor = r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)';
-            return (
-              <div key={i} className="sm-callout" style={{ '--callout-color': severityColor } as React.CSSProperties}>
-                <div className="sm-flex-between">
-                  <span className="sm-text sm-fw-600">{r.risk}</span>
-                  <div className="sm-flex sm-gap-8">
-                    <span className="sm-news-tag" style={{ '--tag-color': severityColor } as React.CSSProperties}>{r.severity}</span>
-                    <span className="sm-news-tag" style={{ '--tag-color': 'var(--text3)' } as React.CSSProperties}>{r.likelihood} likelihood</span>
-                  </div>
+              <div className="sm-callout" style={{ '--callout-color': 'var(--cyan)' } as React.CSSProperties}>
+                <div className="sm-fw-600 sm-cyan sm-text-13">Long-Term (3-5 years)</div>
+                <div className="sm-text-13 sm-lh-16">
+                  At scale (2%+ penetration, 60M+ subs), ASTS could generate $5-10B revenue at 50%+ EBITDA margins. At telco multiples (8-12x EBITDA), that&apos;s $40-120B EV vs ~$12B today. 3-10x return potential. But crypto-like volatility along the way — expect multiple 40%+ drawdowns.
                 </div>
-                <div className="sm-text-13" style={{ marginTop: 4 }}>{r.detail}</div>
-                <div className="sm-subtle" style={{ marginTop: 4 }}><strong className="sm-mint">Mitigation:</strong> {r.mitigation}</div>
-              </div>
-            );
-          })}
-        </div>
-      </CollapsibleSection>
-
-      {/* Risks & Strategic Assessment */}
-      <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment" sources={['PR', 'SEC']}>
-        {/* Section Header */}
-        <div className="sm-subtle" style={{ fontStyle: 'italic' }}>
-          Multi-perspective risk evaluation and strategic decision framework for space-based cellular infrastructure
-        </div>
-
-        {/* Part 1: Multi-Perspective Risk Evaluation */}
-        <div className="sm-mb-8" style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span className="sm-section-label sm-text">Risk Evaluation — Four Perspectives</span></div>
-
-        {/* CFA Level III Perspective */}
-        <div className="sm-callout" style={{ '--callout-color': 'var(--cyan)' } as React.CSSProperties}>
-          <div className="sm-flex">
-            <span className="sm-news-tag" style={{ '--tag-color': 'var(--cyan)' } as React.CSSProperties}>CFA LEVEL III</span>
-            <span className="sm-subtle">Portfolio Construction & Factor Analysis</span>
-          </div>
-          <div className="sm-body sm-lh-18">
-            <p>
-              <strong>Factor Exposures:</strong> ASTS exhibits high beta (~1.8-2.2) to growth/momentum factors with significant idiosyncratic risk from execution milestones. Low correlation to traditional telcos (~0.2) and satellite peers (~0.4). This is a binary outcome investment — success yields 5-10x, failure yields 80%+ loss. Standard MPT optimization doesn't apply; treat as venture-like allocation within public markets sleeve.
-            </p>
-            <p>
-              <strong>Liquidity Analysis:</strong> Average daily volume ~$100-200M provides excellent liquidity for most institutional positions. Options market active with reasonable spreads. Convertible bonds provide additional hedging/exposure vehicles. Short interest ~15% creates squeeze potential but also overhang. Position sizing up to 3-5% of portfolio feasible without market impact.
-            </p>
-            <p>
-              <strong>Governance & ESG:</strong> Founder Abel Avellan controls ~73% voting via Class C shares — concentration risk but also alignment. Board includes telecom veterans. ESG profile positive: enabling connectivity for underserved populations, reducing need for physical infrastructure. Space debris concerns manageable with LEO orbit decay. Spectrum rights secured through MNO partnerships — regulatory moat.
-            </p>
-          </div>
-        </div>
-
-        {/* Hedge Fund Manager Perspective */}
-        <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
-          <div className="sm-flex">
-            <span className="sm-news-tag" style={{ '--tag-color': 'var(--gold)' } as React.CSSProperties}>HEDGE FUND</span>
-            <span className="sm-subtle">Alpha Generation & Event Catalysts</span>
-          </div>
-          <div className="sm-body sm-lh-18">
-            <p>
-              <strong>Event Calendar Alpha:</strong> ASTS is a catalyst machine — launches, FCC approvals, MNO activations, revenue recognition events provide defined trading opportunities. Strategy: size up 2-3 weeks before known catalysts, trim 50% into strength on positive outcomes, add on "sell the news" weakness if thesis intact. Each successful launch de-risks the next.
-            </p>
-            <p>
-              <strong>Short Squeeze Dynamics:</strong> ~15% short interest with high conviction longs creates squeeze potential on positive catalysts. Days to cover ~3-4. Monitor borrow rates for squeeze signals. Historical pattern: 20-40% moves on successful launches. Position accordingly — don't short this name, and size longs to benefit from squeezes.
-            </p>
-            <p>
-              <strong>Convertible Arbitrage:</strong> $1.625B in converts outstanding at various strikes ($80-$180+). As stock approaches conversion prices, arbitrage flows create support. Monitor convert pricing vs equity for relative value opportunities. Converts provide downside cushion narrative but also overhang concerns — net neutral to slightly positive for equity.
-            </p>
-          </div>
-        </div>
-
-        {/* CIO/CIS Institutional Perspective */}
-        <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
-          <div className="sm-flex">
-            <span className="sm-news-tag" style={{ '--tag-color': 'var(--sky)' } as React.CSSProperties}>CIO / CIS</span>
-            <span className="sm-subtle">Strategic Allocation & Fiduciary Considerations</span>
-          </div>
-          <div className="sm-body sm-lh-18">
-            <p>
-              <strong>Strategic Thesis:</strong> ASTS represents "infrastructure for the next billion connected users" — a thematic play on global connectivity megatrend. Unlike Starlink (D2C, new devices), ASTS works with existing phones via MNO partnerships. This is picks-and-shovels for mobile connectivity expansion. The 50/50 revenue share model means MNOs are incentivized to push adoption.
-            </p>
-            <p>
-              <strong>Portfolio Fit:</strong> Classify as "thematic/disruptive innovation" allocation, not traditional telecom. Appropriate for growth portfolios with 5-10 year horizons. Do not benchmark against telco index — this is a pre-revenue infrastructure buildout. Comparable to early-stage cloud or fiber investments. Size as venture-like position (1-3% max) given binary risk profile.
-            </p>
-            <p>
-              <strong>Fiduciary Narrative:</strong> If questioned by stakeholders: "We own the infrastructure layer enabling mobile operators to extend coverage without building towers — backed by AT&T, Verizon, Vodafone partnerships and $1B+ in contracted revenue." The blue-chip MNO partnerships provide institutional credibility. Comparable thesis to early investments in cell tower REITs.
-            </p>
-          </div>
-        </div>
-
-        {/* Technical Analyst Perspective */}
-        <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
-          <div className="sm-flex">
-            <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>TECHNICAL ANALYST</span>
-            <span className="sm-subtle">Chart Patterns & Price Action</span>
-          </div>
-          <div className="sm-body sm-lh-18">
-            <p>
-              <strong>Trend Structure:</strong> Classic catalyst-driven momentum stock. Price gaps on launch news create defined support/resistance zones. Currently consolidating above 50-day SMA with declining volatility — textbook bull flag formation. RSI reset from overbought provides fresh runway for next leg up.
-            </p>
-            <p>
-              <strong>Key Levels:</strong> Support zone at $25-30 (prior breakout level, high volume node). Resistance at $40-45 (prior swing highs). MACD bullish crossover on weekly chart. Volume accumulation patterns evident — institutional buying on dips. Watch for breakout above $45 with volume &gt;20M shares as confirmation signal.
-            </p>
-            <p>
-              <strong>Catalyst Trading:</strong> Satellite launch dates provide predictable volatility windows. Build position 2-3 weeks before scheduled launches. Take partial profits into strength post-launch. Use RSI divergence to identify exhaustion after catalyst-driven rallies. Relative strength vs NASDAQ positive — outperforming growth cohort.
-            </p>
-            <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
-              <strong className="sm-mint">Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
-            </div>
-          </div>
-        </div>
-
-        {/* Part 2: Key Strategic Questions */}
-        <div className="sm-mb-8" style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span className="sm-section-label sm-text">Key Strategic Questions</span></div>
-
-        {/* Would I Buy Now? */}
-        <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
-          <div className="sm-flex-between">
-            <span className="sm-text sm-fw-600" style={{ fontSize: 15 }}>Would I Buy Now?</span>
-            <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)', fontWeight: 700, fontSize: 13, padding: '6px 16px' } as React.CSSProperties}>YES — HIGH CONVICTION</span>
-          </div>
-          <div className="sm-body sm-lh-18">
-            <p>
-              <strong>The Case:</strong> Constellation deployment is accelerating (6 sats/month production), commercial service imminent in 2026, $1B+ contracted revenue provides visibility, and MNO partnerships de-risk go-to-market. The technology works (BW3 proved it). Valuation at ~$300/potential subscriber is cheap vs telco M&A comps ($500+). Risk/reward is asymmetric to the upside.
-            </p>
-            <p>
-              <strong>The Hesitation:</strong> Still pre-revenue with $300M+ annual burn. Execution risk on 40+ satellite launches. FCC/regulatory uncertainty in some markets. Starlink competition narrative (though different model). Stock has run significantly — buying at highs feels uncomfortable.
-            </p>
-            <p>
-              <strong>The Verdict:</strong> Yes, initiate or add to position. The de-risking from successful launches justifies higher prices. Use pullbacks on "sell the news" events to add. This is a 3-5 year hold — don't trade around short-term volatility. Size appropriately for binary outcome profile (1-3% of portfolio).
-            </p>
-          </div>
-        </div>
-
-        {/* What Can I Expect? */}
-        <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
-          <div className="sm-text sm-fw-600" style={{ fontSize: 15 }}>What Can I Expect?</div>
-          <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
-            <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
-              <div className="sm-fw-600 sm-gold" style={{ fontSize: 13 }}>Short-Term (0-6 months)</div>
-              <div className="sm-text-13 sm-lh-16">
-                Catalyst-rich period: BB7-13 launches, US commercial service initiation, Q4 earnings. Expect 30-50% swings around events. Successful launches = 10-20% pops, then consolidation. Trading range likely $20-45 depending on execution. Volatility is your friend if sized correctly.
-              </div>
-            </div>
-            <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
-              <div className="sm-fw-600 sm-sky" style={{ fontSize: 13 }}>Mid-Term (6-18 months)</div>
-              <div className="sm-text-13 sm-lh-16">
-                Revenue recognition begins — first real P&L validation. If penetration tracks to 1%+, narrative shifts from "will it work?" to "how big can it get?" Multiple expansion potential. Target range: $50-100 if execution continues. This is where the thesis gets proven or broken.
-              </div>
-            </div>
-            <div className="sm-callout" style={{ '--callout-color': 'var(--cyan)' } as React.CSSProperties}>
-              <div className="sm-fw-600 sm-cyan" style={{ fontSize: 13 }}>Long-Term (3-5 years)</div>
-              <div className="sm-text-13 sm-lh-16">
-                At scale (2%+ penetration, 60M+ subs), ASTS could generate $5-10B revenue at 50%+ EBITDA margins. At telco multiples (8-12x EBITDA), that's $40-120B EV vs ~$12B today. 3-10x return potential. But crypto-like volatility along the way — expect multiple 40%+ drawdowns.
               </div>
             </div>
           </div>
-        </div>
 
-        {/* What's My Strategy? */}
-        <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
-          <div className="sm-text sm-fw-600" style={{ fontSize: 15 }}>What's My Strategy?</div>
-          <div className="sm-body sm-lh-18">
-            <p>
-              <strong className="sm-cyan">Position Sizing:</strong> 2-4% for aggressive growth portfolios, 1-2% for balanced growth, avoid for conservative/income. This is a high-conviction, high-volatility position. Size so you can hold through 50% drawdowns without losing sleep. Never bet the farm on binary outcomes.
-            </p>
-            <p>
-              <strong className="sm-sky">Entry Approach:</strong> Accumulate on pullbacks, especially "sell the news" events after successful launches. Add on 15-20% dips from local highs. Don't chase parabolic moves. Use 4-8 week DCA for new positions. Options strategies (selling puts, bull call spreads) can enhance entry.
-            </p>
-            <p>
-              <strong className="sm-gold">Exit Strategy:</strong> Trim 20% at 2x, another 20% at 3x, let 60% ride as "house money." Full exit triggers: (1) launch failure pattern (2+ consecutive), (2) major MNO partnership cancellation, (3) competitive moat erosion, (4) management credibility issues. Take profits into strength, not weakness.
-            </p>
-            <p>
-              <strong className="sm-coral">Risk Management:</strong> No hard stop-losses — volatility will trigger them inappropriately. Instead, thesis-based exits: reassess on any launch failure, regulatory setback, or competitive threat. Maintain conviction through normal volatility. If thesis breaks, exit regardless of price. Time stops: if no commercial traction by end of 2026, reassess entire position.
-            </p>
-          </div>
-        </div>
-      </CollapsibleSection>
-
-      {/* Position Sizing */}
-      <CollapsibleSection id="position" title="Position Sizing & Price Targets" sources="WS">
-        <div className="sm-grid-2-lg">
-          <div>
-            <span className="sm-section-label sm-text sm-inline-block">Recommended Allocation</span>
-            <div className="sm-flex-col">
-              {Object.entries(current.positionSizing).map(([key, val]) => {
-                const posColor = key === 'aggressive' ? 'var(--mint)' : key === 'growth' ? 'var(--sky)' : key === 'balanced' ? 'var(--gold)' : 'var(--coral)';
-                return (
-                  <div key={key} className="sm-flex-between sm-card-body sm-bg-surface2 sm-rounded-6 sm-text-13">
-                    <span className="sm-text2 sm-capitalize">{key}</span>
-                    <span className="sm-fw-500" style={{ color: posColor }}>{val.range}</span>
-                  </div>
-                );
-              })}
+          {/* What's My Strategy? */}
+          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
+            <div className="sm-text sm-fw-600 sm-body-lg">What&apos;s My Strategy?</div>
+            <div className="sm-body sm-lh-18">
+              <p>
+                <strong className="sm-cyan">Position Sizing:</strong> 2-4% for aggressive growth portfolios, 1-2% for balanced growth, avoid for conservative/income. This is a high-conviction, high-volatility position. Size so you can hold through 50% drawdowns without losing sleep. Never bet the farm on binary outcomes.
+              </p>
+              <p>
+                <strong className="sm-sky">Entry Approach:</strong> Accumulate on pullbacks, especially &quot;sell the news&quot; events after successful launches. Add on 15-20% dips from local highs. Don&apos;t chase parabolic moves. Use 4-8 week DCA for new positions. Options strategies (selling puts, bull call spreads) can enhance entry.
+              </p>
+              <p>
+                <strong className="sm-gold">Exit Strategy:</strong> Trim 20% at 2x, another 20% at 3x, let 60% ride as &quot;house money.&quot; Full exit triggers: (1) launch failure pattern (2+ consecutive), (2) major MNO partnership cancellation, (3) competitive moat erosion, (4) management credibility issues. Take profits into strength, not weakness.
+              </p>
+              <p>
+                <strong className="sm-coral">Risk Management:</strong> No hard stop-losses — volatility will trigger them inappropriately. Instead, thesis-based exits: reassess on any launch failure, regulatory setback, or competitive threat. Maintain conviction through normal volatility. If thesis breaks, exit regardless of price. Time stops: if no commercial traction by end of 2026, reassess entire position.
+              </p>
             </div>
           </div>
-          <div>
-            <span className="sm-section-label sm-text sm-inline-block">Price Targets by Timeframe</span>
-            <div className="sm-flex-col">
-              {current.priceTargets.map((t, i) => (
-                <div key={i} className="sm-card-body sm-bg-surface2 sm-rounded-6 sm-text-13">
-                  <div className="sm-flex-between">
-                    <span className="sm-text2">{t.period}</span>
-                    <span className="sm-fw-600 sm-mint">{t.range}</span>
-                  </div>
-                  <div className="sm-text-11">{t.detail}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Portfolio Context — Unified framework for multi-asset allocation */}
-        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--violet)', '--bar-accent-2': 'var(--sky)' } as React.CSSProperties}>
-          <div style={{ fontSize: 11, color: 'var(--violet)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>Portfolio Construction Context</div>
-          <div className="sm-subtle" style={{ fontStyle: 'italic', marginTop: 4 }}>For multi-asset portfolios holding ASTS alongside other positions</div>
-        </div>
-        <div className="sm-model-grid sm-mt-12" style={{ '--cols': 3 } as React.CSSProperties}>
-          <div className="sm-kpi-cell">
-            <div className="sm-kpi-label">Asset Class Bucket</div>
-            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>Growth / Tech</div>
-            <div className="sm-kpi-sub sm-gold">Limit: 15-25% of portfolio</div>
-          </div>
-          <div className="sm-kpi-cell">
-            <div className="sm-kpi-label">Single-Name Limit</div>
-            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>3-6% max</div>
-            <div className="sm-kpi-sub sm-coral">Pre-revenue, high volatility</div>
-          </div>
-          <div className="sm-kpi-cell">
-            <div className="sm-kpi-label">Correlation Note</div>
-            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>Low corr.</div>
-            <div className="sm-kpi-sub sm-mint">Unique D2D space exposure</div>
-          </div>
-        </div>
-        <div className="sm-note-panel">
-          <strong>Sector Exposure:</strong> ASTS is uncorrelated to other model positions (BMNR, CRCL). Provides telecom infrastructure / space tech exposure. Can be sized independently within growth allocation, but account for total tech concentration if holding other growth names.
-        </div>
-      </CollapsibleSection>
-
-      {/* Analysis Archive */}
-      <CollapsibleSection id="archive" title="Analysis Archive — Complete History" sources={['PR', 'SEC']}>
-        <div className="sm-subtle">Full record of all investment thesis updates. Never deleted. Tracking since Q3 2022.</div>
-        <div className="sm-flex-col" style={{ maxHeight: 500, overflowY: 'auto' }}>
-          {archive.map((a, i) => (
-            <div key={i} className={i === 0 ? 'sm-callout' : 'sm-card-body sm-bg-surface2'} style={i === 0 ? { '--callout-color': 'var(--mint)' } as React.CSSProperties : undefined}>
-              <div className="sm-flex-between">
-                <div className="sm-flex">
-                  <span className="sm-text sm-fw-600">{a.date}</span>
-                  {i === 0 && <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>CURRENT</span>}
-                </div>
-                <span className="sm-news-tag" style={{ '--tag-color': getVerdictColor(a.verdict) } as React.CSSProperties}>{a.verdict}</span>
-              </div>
-              <div className="sm-fw-500 sm-text" style={{ fontSize: 14 }}>{a.headline}</div>
-              <div className="sm-text-13 sm-text2">{a.summary}</div>
-              <div className="sm-text-11 sm-text3">Filing: {a.filing}</div>
-              
-              {expandedArchive === i && (
-                <div className="sm-border-t sm-pt-12">
-                  <div>
-                    <div className="sm-fw-600 sm-sky sm-text-12">Key Developments</div>
-                    <div className="sm-flex-wrap sm-gap-8">
-                      {a.keyDevelopments.map((d, j) => (
-                        <span key={j} className="sm-text-11 sm-text3 sm-bg-surface sm-rounded-6" style={{ padding: '4px 8px' }}>• {d}</span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="sm-grid-2-lg">
-                    <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
-                      <div className="sm-fw-600 sm-mint" style={{ fontSize: 11 }}>Why It Mattered</div>
-                      <div className="sm-text-12">{a.whyItMatters}</div>
-                    </div>
-                    <div className="sm-callout" style={{ '--callout-color': 'var(--violet)' } as React.CSSProperties}>
-                      <div className="sm-fw-600 sm-violet" style={{ fontSize: 11 }}>Looking Ahead (at the time)</div>
-                      <div className="sm-text-12">{a.lookingAhead}</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              <button
-                onClick={() => setExpandedArchive(expandedArchive === i ? null : i)}
-                className="sm-action-btn"
-                data-active={expandedArchive === i}
-                aria-expanded={expandedArchive === i}
-                aria-label={`Toggle details for ${a.headline}`}
-              >
-                {expandedArchive === i ? '▼ Less' : '▶ More details'}
-              </button>
-            </div>
-          ))}
-        </div>
-      </CollapsibleSection>
-
-      <CFANotes title="CFA Level III — Investment Analysis" items={[
+        </>
+      )}
+      cfaNotes={[
         { term: 'Multi-Perspective Analysis', def: 'Evaluating investments through different lenses (CFA fundamentals, hedge fund catalysts, institutional risk). Each perspective reveals blind spots the others miss.' },
         { term: 'Conviction Score', def: 'Aggregate rating combining fundamental analysis, technical positioning, catalyst proximity, and risk/reward asymmetry. Higher scores indicate stronger investment thesis.' },
         { term: 'Position Sizing', def: 'Determining allocation size based on conviction, volatility, correlation to existing holdings, and maximum drawdown tolerance. Higher conviction allows larger positions.' },
         { term: 'Catalyst Calendar', def: 'Timeline of upcoming events that could move the stock (earnings, FDA decisions, product launches). Catalysts create asymmetric risk/reward opportunities.' },
-      ]} />
-    </div>
+      ]}
+    />
   );
 };
 

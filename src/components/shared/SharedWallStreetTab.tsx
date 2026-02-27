@@ -186,7 +186,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                   <div className="sm-flex sm-gap-16">
                     <div>
                       <div className="sm-ws-firm-name">{cov.firm}</div>
-                      <div className="sm-subtle">{cov.analyst} · Since {cov.coverageSince}</div>
+                      <div className="sm-subtle">{cov.analyst} · Since {cov.coverageSince} · {cov.reports.length} report{cov.reports.length !== 1 ? 's' : ''}</div>
                     </div>
                   </div>
 
@@ -203,46 +203,10 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                       </span>
                     </div>
 
-                    {/* Report counts */}
-                    <div className="sm-flex sm-gap-8">
-                      <span className="sm-ws-count-badge" data-type="report">
-                        {fullReportCount} Report{fullReportCount !== 1 ? 's' : ''}
-                      </span>
-                      {updateCount > 0 && (
-                        <span className="sm-ws-count-badge" data-type="update">
-                          {updateCount} Update{updateCount !== 1 ? 's' : ''}
-                        </span>
-                      )}
-                    </div>
-
                     {/* Expand indicator */}
                     <span className="sm-subtle">{isExpanded ? '▼' : '▶'}</span>
                   </div>
                 </div>
-
-                {/* Metrics Grid Summary */}
-                {!isExpanded && (
-                  <div className="sm-ws-metrics-wrap">
-                    <div className="sm-ws-metrics-grid">
-                      <div className="sm-ws-metric-cell">
-                        <div className="sm-ws-metric-val">{cov.currentPT ? `$${cov.currentPT}` : '\u2014'}</div>
-                        <div className="sm-ws-metric-label">Price Target</div>
-                      </div>
-                      <div className="sm-ws-metric-cell">
-                        <div className="sm-ws-metric-val sm-ws-kpi-dynamic" style={{ '--kpi-color': getRatingColor(cov.currentRating, cov.currentRatingNormalized) } as React.CSSProperties}>{cov.currentRating}</div>
-                        <div className="sm-ws-metric-label">Rating</div>
-                      </div>
-                      <div className="sm-ws-metric-cell">
-                        <div className="sm-ws-metric-val">{cov.reports.length}</div>
-                        <div className="sm-ws-metric-label">Reports</div>
-                      </div>
-                      <div className="sm-ws-metric-cell">
-                        <div className="sm-ws-metric-val">{cov.coverageSince}</div>
-                        <div className="sm-ws-metric-label">Since</div>
-                      </div>
-                    </div>
-                  </div>
-                )}
 
                 {/* Firm Notes */}
                 {cov.notes && (

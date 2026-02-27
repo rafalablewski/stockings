@@ -191,7 +191,7 @@ export const SharedSecFilingsSection: React.FC<SharedSecFilingsSectionProps> = (
   typeColors,
   filterTypes,
   crossRefIndex,
-  initialVisibleCount = 15,
+  initialVisibleCount = 5,
 }) => {
   const [filter, setFilter] = useState('All');
   const [showAll, setShowAll] = useState(false);
