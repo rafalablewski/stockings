@@ -64,7 +64,9 @@ export const AUDIT_METADATA = {
   stack: 'Next.js 16 / TypeScript 5.9 / Neon PostgreSQL / Drizzle ORM',
   methodology: 'Automated static analysis + manual code review across 35 categories',
   auditor: 'Claude Deep-Analysis Engine',
-  version: '1.0.0',
+  version: '1.1.0',
+  reauditDate: '2026-02-27',
+  totalFindings: 300,
 } as const;
 
 // ── Findings ─────────────────────────────────────────────────────────────────
