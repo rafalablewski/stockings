@@ -776,6 +776,7 @@ export default function DocsPage() {
             { id: "structure",   label: "Files" },
             { id: "fonts",       label: "Fonts" },
             { id: "theming",     label: "Theming" },
+            { id: "changelog",   label: "Changelog" },
           ].map((item) => (
             <a
               key={item.id}
@@ -1320,6 +1321,27 @@ export default function DocsPage() {
             [".mc-chart / .mc-bar", "Monte Carlo simulation chart bars."],
             [".filter-btn / .filter-btn.active", "Inline filter buttons (competitor filters)."],
             [".g2 / .g3 / .g4 / .g5", "Grid layouts — 2 to 5 columns."],
+          ]}
+        />
+
+        {/* ── Changelog ─────────────────────────────────────────────────── */}
+        <SectionHeader id="changelog" title="Changelog" count={10} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Design unification — Jony Ive × Tesla aesthetic applied across all tabs and all 3 stocks (ASTS, BMNR, CRCL). Feb 27, 2026.
+        </p>
+        <SmallTable
+          headers={["Task", "What Changed", "Files"]}
+          rows={[
+            ["1. Chart Spacing", "Added margin-top: 32px to .sm-chart-guide-card", "stock-model-styles.css"],
+            ["2. Monte Carlo Pills", "Replaced .sm-mc-horizon-btn / .sm-mc-sim-btn → .sm-pill-toggle; removed inline alignItems", "ASTS, BMNR, CRCL"],
+            ["3. Comps Filters", "Replaced .sm-cmp-filter-btn → .sm-pill-toggle; fixed CRCL data-active boolean→string bug", "ASTS, BMNR, CRCL"],
+            ["4. Bar Chart Trim", "Added .slice(-5) to all financials bar charts — show 5 latest periods only", "ASTS, BMNR, CRCL"],
+            ["5. Milestones Layout", "Replaced 6 inline styles with .sm-fin-milestone-* CSS classes; max-width: 680px", "SharedFinancialsTab, CSS"],
+            ["6. Investment Dots", "Deleted inline UpdateIndicators (8px, hex colors) → imported canonical shared component (5px, design tokens)", "SharedInvestmentTab"],
+            ["7. Verdict Badge", "Refined .sm-inv-verdict-badge (13px, uppercase, tracking); removed duplicate CSS def; fixed BMNR verdictColor green→mint, yellow→gold, red→coral", "CSS, BMNR"],
+            ["8. Duplicate Dividers", "Removed 4 redundant dividers matching CollapsibleSection titles; kept 5 distinct group headers", "SharedInvestmentTab"],
+            ["9. Wall Street Dots", "Same canonical UpdateIndicators import as Task 6", "SharedWallStreetTab"],
+            ["10. AI Summary Btn", "New .sm-ai-gen-btn (violet pill); placed in Investment archive + Wall Street report details", "CSS, SharedInvestmentTab, SharedWallStreetTab"],
           ]}
         />
 
