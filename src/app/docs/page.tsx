@@ -147,6 +147,68 @@ const componentClasses: CSSClass[] = [
   { name: ".sm-overflow-x",      description: "Horizontal scroll container (overflow-x: auto)",                            usage: "className=\"sm-overflow-x sm-scroll-hint\"" },
 ];
 
+const investmentClasses: CSSClass[] = [
+  // ── Glass-Border Pattern ──
+  { name: ".sm-inv-glass-list",       description: "Container with 1px gap + var(--border) bg — glass-edge dividers between items. Rounded-12, overflow hidden", usage: "className=\"sm-inv-glass-list\"" },
+  { name: ".sm-inv-glass-item",       description: "Standard row — surface bg, flex space-between, hover → surface2. Drivers, moat, position sizing",            usage: "className=\"sm-inv-glass-item\"" },
+  { name: ".sm-inv-glass-accent",     description: "Row with 3px left border via --inv-accent. Risk matrix items",                                                usage: "style={{ '--inv-accent': color }}" },
+  { name: ".sm-inv-perspective",      description: "Perspective card — top 3px border via --inv-accent. Used in 2×2 perspectives grid",                           usage: "style={{ '--inv-accent': p.color }}" },
+  { name: ".sm-inv-severity",         description: "Severity pill — --inv-accent for 20% bg tint + text color. Rounded-full, 11px",                              usage: "style={{ '--inv-accent': color }}" },
+  // ── Card & Badge ──
+  { name: ".sm-inv-card-accent",      description: "Left 4px border accent via --inv-accent on verdict card",                                                     usage: "style={{ '--inv-accent': 'var(--mint)' }}" },
+  { name: ".sm-inv-verdict-badge",    description: "Large colored pill (verdict text) — 18px/700, bg from --inv-accent, text --bg",                               usage: "className=\"sm-inv-verdict-badge\"" },
+  { name: ".sm-inv-ticker-badge",     description: "Small accent pill (ticker label) — 12px/600, 15% accent bg",                                                 usage: "className=\"sm-inv-ticker-badge\"" },
+  // ── What's New ──
+  { name: ".sm-inv-whats-new",        description: "Mint-tinted callout box — 5% mint bg, 20% mint border, rounded-12, 24px padding",                            usage: "className=\"sm-inv-whats-new\"" },
+  { name: ".sm-inv-whats-new-list",   description: "Styled <ul> inside what's-new — padding-left 16px, line-height 1.8",                                         usage: "className=\"sm-inv-whats-new-list\"" },
+  // ── Data Labels ──
+  { name: ".sm-inv-impact-label",     description: "Right-aligned impact/strength label — 12px/600, color from --inv-accent",                                    usage: "style={{ '--inv-accent': d.color }}" },
+  { name: ".sm-inv-likelihood",       description: "Subtle pill for risk likelihood — surface2 bg, text3, rounded-full, 11px",                                   usage: "className=\"sm-inv-likelihood\"" },
+  { name: ".sm-inv-assess-badge",     description: "Small colored pill in perspectives — --inv-accent bg, 11px/600, rounded-full",                               usage: "style={{ '--inv-accent': p.color }}" },
+  // ── Scorecard ──
+  { name: ".sm-inv-scorecard-grid",   description: "Auto-fit responsive grid (minmax 200px) for scorecard items. 12px gap",                                      usage: "className=\"sm-inv-scorecard-grid\"" },
+  { name: ".sm-inv-scorecard-item",   description: "Scorecard card — flex space-between, surface2 bg, rounded-8, 12px padding",                                  usage: "className=\"sm-inv-scorecard-item\"" },
+  { name: ".sm-inv-scorecard-rating", description: "Scorecard rating number — Space Mono 20px/700, uses --rating-color",                                         usage: "style={{ '--rating-color': color }}" },
+  // ── Growth Drivers ──
+  { name: ".sm-inv-driver-card",      description: "Driver card — surface2, rounded-8, left 3px border via --driver-color",                                      usage: "style={{ '--driver-color': color }}" },
+  { name: ".sm-inv-impact-badge",     description: "Impact badge — 11px/600, --impact-color text + 15% tinted bg, rounded-4",                                   usage: "style={{ '--impact-color': color }}" },
+  // ── Moat ──
+  { name: ".sm-inv-moat-card",        description: "Moat source/threat card — surface2, 12px padding, rounded-8",                                                usage: "className=\"sm-inv-moat-card\"" },
+  { name: ".sm-inv-moat-strength",    description: "Moat strength label — 11px, uses --strength-color",                                                          usage: "style={{ '--strength-color': color }}" },
+  // ── Risk ──
+  { name: ".sm-inv-risk-card",        description: "Risk card — surface2, rounded-8, left 3px border via --severity-color",                                      usage: "style={{ '--severity-color': color }}" },
+  { name: ".sm-inv-severity-badge",   description: "Severity/likelihood pill — 10px, surface bg, text3, rounded-4",                                              usage: "className=\"sm-inv-severity-badge\"" },
+  // ── Perspectives ──
+  { name: ".sm-inv-perspectives-grid",description: "2×2 grid (1-col on mobile) — 1px gap, var(--border) bg, rounded-12, overflow hidden",                        usage: "className=\"sm-inv-perspectives-grid\"" },
+  { name: ".sm-inv-perspective-card", description: "Perspective card — surface2, rounded-8, top 3px border via --perspective-color",                              usage: "style={{ '--perspective-color': color }}" },
+  { name: ".sm-inv-assessment-badge", description: "Assessment badge — 12px/600, --assess-color text + 10% tinted bg, rounded-4",                               usage: "style={{ '--assess-color': color }}" },
+  { name: ".sm-inv-recommendation",   description: "Recommendation box — 12px, mint text, 10% mint bg, rounded-4",                                              usage: "className=\"sm-inv-recommendation\"" },
+  // ── Archive ──
+  { name: ".sm-inv-archive-row",      description: "Clickable archive entry header — 14×20px padding",                                                           usage: "className=\"sm-inv-archive-row\"" },
+  { name: ".sm-inv-archive-detail",   description: "Expanded archive content — 0 20px 14px padding, top border",                                                usage: "className=\"sm-inv-archive-detail\"" },
+  { name: ".sm-inv-archive-verdict",  description: "Archive verdict badge — 11px/600, data-sentiment for positive/constructive/neutral colors",                  usage: "data-sentiment=\"positive\"" },
+  { name: ".sm-inv-archive-list",     description: "Archive developments list — 12px, text3, padding-left 16px",                                                 usage: "className=\"sm-inv-archive-list\"" },
+  { name: ".sm-inv-dev-list",         description: "Key developments <ul> — padding-left 16px, line-height 1.7, margin-top 12px",                                usage: "className=\"sm-inv-dev-list\"" },
+  // ── BMNR Ecosystem Health ──
+  { name: ".sm-inv-eco-panel",        description: "Ecosystem health container — 8% violet bg, 20% violet border, rounded-12",                                  usage: "className=\"sm-inv-eco-panel\"" },
+  { name: ".sm-inv-eco-grid",         description: "Responsive metric grid — 5-col (3 at 768px, 2 at 480px), 8px gap",                                          usage: "className=\"sm-inv-eco-grid\"" },
+  { name: ".sm-inv-eco-metric",       description: "Individual metric cell — surface bg, 12px padding, rounded-12, centered",                                   usage: "className=\"sm-inv-eco-metric\"" },
+  { name: ".sm-inv-eco-value",        description: "Metric value — Space Mono 13px/600, --inv-accent color",                                                    usage: "className=\"sm-inv-eco-value\"" },
+  { name: ".sm-inv-eco-signal",       description: "Signal indicator — 10px, --inv-accent color",                                                               usage: "className=\"sm-inv-eco-signal\"" },
+  { name: ".sm-inv-eco-grade",        description: "Overall grade badge — Space Mono 28px/700, --inv-accent color",                                             usage: "className=\"sm-inv-eco-grade\"" },
+  { name: ".sm-inv-eco-catalyst",     description: "Catalyst callout box — 10% violet bg, border, rounded-12, 13px text2",                                     usage: "className=\"sm-inv-eco-catalyst\"" },
+  // ── Interactive ──
+  { name: ".sm-toggle-icon",          description: "Expand/collapse +/- indicator — 18px, text3 color",                                                         usage: "className=\"sm-toggle-icon\"" },
+  { name: ".sm-toggle-header",        description: "Collapsible section header — 24px padding, pointer cursor, hover → surface2",                               usage: "className=\"sm-toggle-header\"" },
+  { name: ".sm-range-input",          description: "Full-width range slider with mint accent-color",                                                             usage: "className=\"sm-range-input\"" },
+  // ── Misc ──
+  { name: ".sm-inv-section-sub",      description: "Section sub-header — bottom border at 50% opacity, 8px padding/margin",                                     usage: "className=\"sm-inv-section-sub\"" },
+  { name: ".sm-inv-scroll",           description: "Scrollable container — max-height 500px, overflow-y auto",                                                  usage: "className=\"sm-inv-scroll\"" },
+  { name: ".sm-inv-bottom-line",      description: "Bottom-line quote — italic accent, surface2 bg, rounded-8, 12px padding",                                   usage: "className=\"sm-inv-bottom-line\"" },
+  { name: ".sm-inv-panel-bordered",   description: "Panel with left 4px border via --panel-border-color. 16px margin-bottom",                                   usage: "style={{ '--panel-border-color': color }}" },
+  { name: ".sm-justify-end",          description: "justify-content: flex-end utility",                                                                          usage: "className=\"sm-justify-end\"" },
+];
+
 interface DataAttr {
   attribute: string;
   values: string;
@@ -208,6 +270,17 @@ const cssCustomProperties: CSSVarDynamic[] = [
   { variable: "--callout-color",  usedBy: ".sm-callout",           purpose: "Left-border accent color for callout panels" },
   { variable: "--bar-accent-1",   usedBy: ".sm-highlight-bar",     purpose: "First gradient stop for highlight bar" },
   { variable: "--bar-accent-2",   usedBy: ".sm-highlight-bar",     purpose: "Second gradient stop for highlight bar" },
+  // ── Investment Tab ──
+  { variable: "--inv-accent",          usedBy: ".sm-inv-glass-accent, .sm-inv-card-accent, .sm-inv-verdict-badge, .sm-inv-impact-label, .sm-inv-assess-badge, .sm-inv-severity", purpose: "Dynamic accent for investment cards — verdict, severity, impact, perspective color (fallback: --accent or --border)" },
+  { variable: "--dot-bg",             usedBy: "update indicator dots",   purpose: "Update dot background color (PR/SEC/WS sources)" },
+  { variable: "--rating-color",       usedBy: ".sm-inv-scorecard-rating", purpose: "Scorecard rating number color" },
+  { variable: "--driver-color",       usedBy: ".sm-inv-driver-card",     purpose: "Growth driver card left-border accent" },
+  { variable: "--impact-color",       usedBy: ".sm-inv-impact-badge",    purpose: "Impact badge text + 15% tinted background" },
+  { variable: "--strength-color",     usedBy: ".sm-inv-moat-strength",   purpose: "Moat strength label color" },
+  { variable: "--severity-color",     usedBy: ".sm-inv-risk-card, .sm-inv-severity-badge", purpose: "Risk card left-border and severity badge color" },
+  { variable: "--perspective-color",  usedBy: ".sm-inv-perspective-card", purpose: "Perspective card top-border accent" },
+  { variable: "--assess-color",       usedBy: ".sm-inv-assessment-badge", purpose: "Assessment badge text + 10% tinted background" },
+  { variable: "--panel-border-color", usedBy: ".sm-inv-panel-bordered",  purpose: "Left-border accent for bordered panels" },
 ];
 
 interface FileEntry {
@@ -499,6 +572,86 @@ extraBeforeChildren?: ReactNode;
 extraAfterChildren?: ReactNode;
 secFilingConfig?: FinancialsSECConfig;`,
   },
+  {
+    title: "Investment Tab: Render-Prop Architecture",
+    description: "SharedInvestmentTab accepts 10 typed render props. Each injects content at a fixed point in the layout. Only CSS custom property pass-throughs allowed as inline style.",
+    code: `// src/components/shared/SharedInvestmentTab.tsx — Layout injection points
+
+Tab Hero
+├── Current Assessment (verdict card)
+│   └── renderHeaderMetrics()        → KPI columns (right side)
+├── Scorecard Grid
+│   └── renderAfterScorecard()       → e.g., BMNR Ecosystem Health
+├── Executive Summary (What's New)
+│   └── renderBeforeGrowthDrivers()  → e.g., CRCL Financial Health, Unit Economics
+├── Growth Drivers
+│   ├── renderGrowthDriversExtra()   → Extra content at bottom of section
+│   └── renderAfterGrowthDrivers()   → e.g., CRCL Valuation Framework
+├── Competitive Moat
+│   └── moatDurabilityNote           → String appended after moat analysis
+├── Risk Matrix
+│   └── renderAfterRiskMatrix()      → e.g., CRCL Rate Sensitivity Calculator
+├── Strategic Assessment
+│   └── renderStrategicAssessment()  → Full perspectives + strategic questions
+├── Position Sizing & Price Targets
+│   └── renderAccumulation()         → e.g., BMNR Accumulation Zones
+├── Archive (expandable entries)
+└── CFA Notes
+    └── cfaNotes[]                   → Custom term/definition pairs
+
+// TypeScript interface (src/components/shared/investmentTypes.ts)
+interface SharedInvestmentTabProps {
+  current: InvestmentCurrent;           // Scorecard + thesis + drivers + risks + perspectives
+  archive: ArchiveEntry[];              // Historical analysis entries (expandable)
+  ticker: string;                       // Stock ticker for display
+  renderHeaderMetrics?: () => ReactNode;
+  renderAfterScorecard?: () => ReactNode;
+  renderBeforeGrowthDrivers?: () => ReactNode;
+  renderGrowthDriversExtra?: () => ReactNode;
+  renderAfterGrowthDrivers?: () => ReactNode;
+  moatDurabilityNote?: string;
+  renderAfterRiskMatrix?: () => ReactNode;
+  renderStrategicAssessment?: () => ReactNode;
+  renderAccumulation?: () => ReactNode;
+  cfaNotes?: { term: string; def: string }[];
+}`,
+  },
+  {
+    title: "Adding a New Stock — Investment Tab",
+    description: "Step-by-step guide for adding a new stock with SharedInvestmentTab. All stock-specific sections use CSS classes from stock-model-styles.css; only CSS custom property pass-throughs allowed as inline style.",
+    code: `// 1. Create InvestmentCurrent data object with type annotation
+const current: InvestmentCurrent = {
+  date: "2026-02-27", source: "PR",
+  verdict: "BUY", verdictColor: "mint", tagline: "Strong growth trajectory...",
+  scorecard: [/* 8 ScorecardItem objects */],
+  executiveSummary: { headline: "...", thesis: "...", bottomLine: "...", whatsNew: ["..."] },
+  growthDrivers: [/* GrowthDriver[] with driver, impact, color, detail */],
+  moatSources: [/* MoatSource[] */], moatThreats: [/* MoatThreat[] */],
+  risks: [/* Risk[] with severity, likelihood, impact, mitigation */],
+  perspectives: { cfa: {...}, hedgeFund: {...}, cio: {...}, technicalAnalyst: {...} },
+  positionSizing: { aggressive: {...}, growth: {...}, balanced: {...}, conservative: {...} },
+};
+
+// 2. Create ArchiveEntry[] array (can be empty initially)
+const archive: ArchiveEntry[] = [];
+
+// 3. Render SharedInvestmentTab with required props
+<SharedInvestmentTab current={current} archive={archive} ticker="NEWT" />
+
+// 4. Add render props ONLY for stock-specific sections
+<SharedInvestmentTab
+  current={current} archive={archive} ticker="NEWT"
+  renderHeaderMetrics={() => <div className="sm-flex sm-gap-16">...</div>}
+  renderAfterScorecard={() => <EcosystemHealth />}
+  renderStrategicAssessment={() => <CustomPerspectives />}
+  moatDurabilityNote="B+ (Building) — network effects strengthening"
+  cfaNotes={[{ term: "ROIC", def: "Return on invested capital..." }]}
+/>
+
+// 5. All sm-inv-* classes work automatically — no new CSS needed
+//    Only style={{}} allowed: CSS custom property pass-throughs
+//    e.g. style={{ '--inv-accent': 'var(--mint)' } as React.CSSProperties}`,
+  },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -615,6 +768,7 @@ export default function DocsPage() {
             { id: "typography",  label: "Typography" },
             { id: "colors",      label: "Colors" },
             { id: "component-patterns", label: "Patterns" },
+            { id: "investment",  label: "Investment" },
             { id: "data-attrs",  label: "Data Attrs" },
             { id: "css-vars",    label: "CSS Vars" },
             { id: "responsive",  label: "Responsive" },
@@ -810,6 +964,15 @@ export default function DocsPage() {
           Dynamic values use CSS custom properties set via <span className="font-mono text-white/40">style=&#123;&#123; &apos;--var&apos;: value &#125;&#125;</span>.
         </p>
         <ClassTable classes={componentClasses} />
+
+        {/* ── 5b. Investment Tab Classes ─────────────────────────────────── */}
+        <SectionHeader id="investment" title="Investment Tab Classes (sm-inv-*)" count={investmentClasses.length} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Glass-border card pattern for <span className="font-mono text-white/40">SharedInvestmentTab</span>. All classes in{" "}
+          <span className="font-mono text-white/40">stock-model-styles.css</span>.
+          Dynamic color via <span className="font-mono text-white/40">--inv-accent</span> CSS custom property.
+        </p>
+        <ClassTable classes={investmentClasses} />
 
         {/* ── 6. Data Attributes ──────────────────────────────────────────── */}
         <SectionHeader id="data-attrs" title="Data Attributes" count={dataAttributes.length} />
