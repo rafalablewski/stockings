@@ -234,7 +234,7 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/shared/StockChart.tsx",        type: "Component", description: "Interactive stock price chart" },
   { path: "src/components/shared/SharedWallStreetTab.tsx",    type: "Component", description: "Wall Street analyst research tab" },
   { path: "src/components/shared/investmentTypes.ts",         type: "Types",     description: "InvestmentCurrent, ArchiveEntry, SharedInvestmentTabProps — typed render-prop interface" },
-  { path: "src/components/shared/SharedInvestmentTab.tsx",    type: "Component", description: "Investment thesis & scorecard — glass-border card pattern, zero inline styles, 10 render-prop slots for stock-specific sections (see docs/DESIGN_SYSTEM.md)" },
+  { path: "src/components/shared/SharedInvestmentTab.tsx",    type: "Component", description: "Investment thesis & scorecard — glass-border card pattern, zero inline styles, 10 render-prop slots for stock-specific sections" },
   { path: "src/components/shared/SharedFinancialsTab.tsx",   type: "Component", description: "Financials tab shell: hero, sm-fin-table milestones, CFA notes; children = quarterly section" },
   { path: "src/components/shared/SharedTimelineTab.tsx",     type: "Component", description: "Timeline tab shell: hero + children (SEC filings, event list)" },
   { path: "src/components/shared/SharedSecFilingsSection.tsx", type: "Component", description: "SEC Filings cards for Timeline tab — KPI strip, filter pills, description-first cards, cross-ref source dots" },
@@ -441,8 +441,7 @@ const conventions = [
   renderHeaderMetrics={() => <KPIColumns />}
   renderStrategicAssessment={() => <Perspectives />}
   moatDurabilityNote="A- (Strong)..."
-/>
-// See docs/DESIGN_SYSTEM.md for full glass-border pattern + CSS class reference`,
+/>`,
   },
   {
     title: "Gold-Standard Visual Patterns",
