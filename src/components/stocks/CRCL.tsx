@@ -117,6 +117,8 @@ import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
+import { SharedInvestmentTab } from '../shared/SharedInvestmentTab';
+import type { InvestmentCurrent } from '../shared/investmentTypes';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
@@ -2599,10 +2601,6 @@ function CRCLModel() {
   // NEVER DELETE ARCHIVE ENTRIES - This is the historical record!
   // ============================================================================
 
-  // Investment Tab State
-  const [investmentSections, setInvestmentSections] = useState<Set<string>>(new Set(['summary', 'scorecard']));
-  const [expandedArchive, setExpandedArchive] = useState<number | null>(null);
-
   // Rate Sensitivity Calculator State
   const [sensRate, setSensRate] = useState(4.0);  // Fed Funds Rate %
   const [sensUsdc, setSensUsdc] = useState(75);   // USDC Circulation $B
@@ -2612,7 +2610,7 @@ function CRCLModel() {
   // CURRENT ASSESSMENT - UPDATE THIS OBJECT AFTER EACH FILING
   // All current investment data consolidated here (unified with ASTS/BMNR)
   // ═══════════════════════════════════════════════════════════════════════════
-  const investmentCurrent = {
+  const investmentCurrent: InvestmentCurrent = {
     date: '2025-12-31',
     source: 'Q3 2025 10-Q, OCC Charter Approval',
     verdict: 'OVERWEIGHT',
@@ -2736,23 +2734,85 @@ function CRCLModel() {
     // ⬇️ ADD NEW ENTRIES HERE (most recent first) ⬇️
     {
       date: '2025-12-31',
-      trigger: 'Q3 2025 10-Q, OCC Charter Progress',
+      source: 'Q3 2025 10-Q, OCC Charter Progress',
       verdict: 'OVERWEIGHT',
       verdictColor: 'mint',
       headline: 'Regulatory Moat Strengthening',
       summary: 'Q3 delivered 66% revenue growth, USDC hit $62.5B. OCC charter advancing. GENIUS Act provides tailwind. Lock-up expiry creates entry opportunity.',
       keyDevelopments: ['66% YoY revenue growth', '$62.5B USDC circulation', 'OCC charter application advancing', 'GENIUS Act regulatory clarity'],
-      forwardView: 'Lock-up Dec 2025 — use weakness as entry. Watch OCC charter timeline and Coinbase renegotiation progress.',
+      lookingAhead: 'Lock-up Dec 2025 — use weakness as entry. Watch OCC charter timeline and Coinbase renegotiation progress.',
     },
     {
       date: '2025-09-30',
-      trigger: 'Q2 2025 10-Q',
+      source: 'Q2 2025 10-Q',
       verdict: 'OVERWEIGHT',
       verdictColor: 'mint',
       headline: 'IPO Momentum Continues',
       summary: 'Strong post-IPO execution. USDC growth accelerating. TradFi partnerships expanding.',
       keyDevelopments: ['Successful NYSE listing', 'USDC growth re-accelerating', 'BlackRock/Fidelity cornerstone investors'],
-      forwardView: 'Focus on USDC growth trajectory and margin expansion path.',
+      lookingAhead: 'Focus on USDC growth trajectory and margin expansion path.',
+    },
+    {
+      date: '2025-11-14',
+      source: "Q3'25 8-K Earnings Release",
+      verdict: 'OVERWEIGHT',
+      verdictColor: 'mint',
+      headline: 'Beat on All Metrics',
+      summary: "Post-Q3'25 earnings: Beat on all metrics. Revenue +66% YoY exceeded buy-side expectations of +55%. Platform % inflection to 13.5% suggests early CPN traction. Raised guidance on RLDC margin encouraging.",
+    },
+    {
+      date: '2025-08-18',
+      source: 'S-1 Follow-on Filing, Pricing at $130',
+      verdict: 'NEUTRAL → OVERWEIGHT',
+      verdictColor: 'mint',
+      headline: 'Follow-on Validates Demand',
+      summary: 'Follow-on priced at $130 (4.2x IPO price in 10 weeks) validates institutional demand. Secondary-heavy deal (8M of 10M shares) means existing holders taking profits, not company needing capital. Upgrading on strength.',
+    },
+    {
+      date: '2025-08-12',
+      source: "Q2'25 10-Q, First Public Earnings",
+      verdict: 'NEUTRAL',
+      headline: 'First Earnings Mixed',
+      summary: 'First earnings as public company mixed: Strong top-line (+53% YoY) but $482M net loss on IPO-related charges creates headline noise. Underlying business healthy — $126M Adj. EBITDA, $61.3B USDC (+90% YoY).',
+    },
+    {
+      date: '2025-06-06',
+      source: 'IPO Pricing, 424B4 Prospectus',
+      verdict: 'NEUTRAL',
+      headline: 'IPO at Low End of Range',
+      summary: 'IPO priced at $31 (low end of range) reflects crypto market hesitancy, not fundamentals. Upsized deal (39M vs 24M shares) absorbed cleanly. $1.21B raised provides growth runway. Initiating at neutral.',
+    },
+    {
+      date: '2025-04-01',
+      source: 'S-1 Initial Public Filing',
+      verdict: 'MONITORING',
+      verdictColor: 'gold',
+      headline: 'S-1 Filed Publicly',
+      summary: 'S-1 filed publicly after confidential submission in Jan 2024. Business model validated: $1.68B FY24 revenue, 38% RLDC margin, USDC at $44B. Key concern is Coinbase distribution cost (54% of revenue).',
+    },
+    {
+      date: '2024-01-11',
+      source: 'Confidential S-1 Announcement',
+      verdict: 'MONITORING',
+      verdictColor: 'gold',
+      headline: 'Confidential S-1 Filed',
+      summary: 'Confidential S-1 submission signals IPO intent after failed SPAC in 2022. Circle has rebuilt credibility post-SVB crisis with 100% reserve transparency. USDC recovery from $24B low to $32B+ suggests crypto winter thaw.',
+    },
+    {
+      date: '2023-08-21',
+      source: 'Centre Dissolution PR, Coinbase Equity Investment',
+      verdict: 'MONITORING',
+      verdictColor: 'gold',
+      headline: 'Centre Dissolved',
+      summary: 'Centre Consortium dissolution and Coinbase equity investment restructures USDC economics. Circle now sole issuer with full governance control. Revenue share agreement creates ~50-60% distribution cost.',
+    },
+    {
+      date: '2023-03-01',
+      source: 'SVB Collapse, USDC Depeg Event',
+      verdict: 'UNDERWEIGHT',
+      verdictColor: 'coral',
+      headline: 'SVB Crisis — Existential Risk',
+      summary: 'SVB collapse creates existential risk. $3.3B of USDC reserves held at SVB. Weekend depeg to $0.87 causes $6B+ redemptions. Fed/FDIC backstop saves reserves but damages trust.',
     },
   ];
 
@@ -2783,20 +2843,7 @@ function CRCLModel() {
     handleRefreshAll();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const toggleSection = (section: string) => {
-    const next = new Set(investmentSections);
-    if (next.has(section)) next.delete(section);
-    else next.add(section);
-    setInvestmentSections(next);
-  };
-  
-  const expandAll = () => {
-    setInvestmentSections(new Set(['summary', 'scorecard', 'financial', 'unit-economics', 'growth', 'valuation', 'sensitivity', 'moat', 'risks', 'catalysts', 'position', 'archive', 'strategic-assessment', 'methodology']));
-  };
-  
-  const collapseAll = () => {
-    setInvestmentSections(new Set(['summary']));
-  };
+
 
   // Topic tags for multi-select filtering (AND logic)
   const topicTags: Record<string, { label: string; color: string }> = {
@@ -3272,1083 +3319,643 @@ function CRCLModel() {
           </TabPanel>)}
 
           {activeTab === 'investment' && (<TabPanel id="investment">
-            <>
-              {/* Controls */}
-              <div className="sm-flex-between">
-                <div className="sm-tab-hero">
-                  <div className="sm-section-label">Due Diligence<UpdateIndicators sources={['PR', 'SEC']} /></div>
-                  <h2>Investment Analysis<span className="sm-accent">.</span></h2>
-                  <p>Multi-perspective due diligence with CFA, hedge fund, and institutional frameworks. Stablecoin infrastructure thesis scoring and risk assessment.</p>
-                </div>
-                <div className="sm-flex sm-gap-12">
-                  <button onClick={expandAll} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text2)', cursor: 'pointer' }}>⊞ Expand All</button>
-                  <button onClick={collapseAll} style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid var(--border)', background: 'transparent', color: 'var(--text2)', cursor: 'pointer' }}>⊟ Collapse All</button>
-                </div>
-              </div>
+            <SharedInvestmentTab
+              current={investmentCurrent}
+              archive={investmentArchive}
+              ticker="CRCL"
 
-              {/* Data Refresh Indicator */}
-              <div className="sm-flex sm-gap-16 sm-subtle-sm" style={{ justifyContent: 'flex-end' }}>
-                <span>Data as of: <strong className="sm-text2">{investmentCurrent.date}</strong></span>
-                <span>•</span>
-                <span>Source: <strong className="sm-text2">{investmentCurrent.source}</strong></span>
-              </div>
-
-              {/* Rating Header */}
-              <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', borderLeft: `4px solid var(--${investmentCurrent.verdictColor})` }}>
-                <div className="sm-flex-between" style={{ padding: '24px 24px', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
-                  <div>
-                    <div className="sm-flex sm-gap-12">
-                      <span style={{ background: `var(--${investmentCurrent.verdictColor})`, color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontWeight: 700, fontSize: 18 }}>{investmentCurrent.verdict}</span>
-                      <span style={{ background: 'color-mix(in srgb, var(--mint) 15%, transparent)', color: 'var(--mint)', padding: '6px 12px', borderRadius: 99, fontSize: 12, fontWeight: 600 }}>HIGH CONVICTION</span>
-                    </div>
-                    <div className="sm-body" style={{ maxWidth: 500 }}>
-                      {investmentCurrent.executiveSummary.thesis}
-                    </div>
-                    <div className="sm-text-11">
-                      Last Updated: {investmentCurrent.date} • Trigger: {investmentCurrent.source}
-                    </div>
+              renderHeaderMetrics={() => (
+                <>
+{/* [PR_CHECKLIST_INVESTMENT_DISPLAY] - Hardcoded metrics, update with every PR! */}
+                <div className="sm-flex sm-gap-24 sm-flex-wrap">
+                  <div className="sm-text-center">
+                    <div className="sm-text-11">Price Target</div>
+                    <div className="sm-mono-lg sm-fw-700 sm-mint">$100-150</div>
+                    <div className="sm-micro-text sm-micro-text-normal">12-month</div>
                   </div>
-                  <div className="sm-flex-wrap sm-gap-24">
-                    <div className="sm-text-center">
-                      <div className="sm-text-11">Price Target</div>
-                      <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, color: 'var(--mint)', fontWeight: 700 }}>$100-150</div>
-                      <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>12-month</div>
-                    </div>
-                    <div className="sm-text-center">
-                      <div className="sm-text-11">Risk/Reward</div>
-                      <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, color: 'var(--sky)', fontWeight: 700 }}>3.2:1</div>
-                      <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>Asymmetric</div>
-                    </div>
-                    <div className="sm-text-center">
-                      <div className="sm-text-11">Current</div>
-                      <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 22, color: 'var(--text)', fontWeight: 700 }}>${MARKET.price}</div>
-                      <div style={{ fontSize: 10, color: 'var(--mint)' }}>+165% since IPO</div>
-                    </div>
+                  <div className="sm-text-center">
+                    <div className="sm-text-11">Risk/Reward</div>
+                    <div className="sm-mono-lg sm-fw-700 sm-sky">3.2:1</div>
+                    <div className="sm-micro-text sm-micro-text-normal">Asymmetric</div>
+                  </div>
+                  <div className="sm-text-center">
+                    <div className="sm-text-11">Current</div>
+                    <div className="sm-mono-lg sm-fw-700">${MARKET.price}</div>
+                    <div className="sm-text-11 sm-mint">+165% since IPO</div>
                   </div>
                 </div>
-              </div>
+                </>
+              )}
 
-                  {/* Section Divider: Ratings & Scoring */}
-                  <div className="sm-divider">
-                    <span className="sm-param-label">Ratings & Scoring</span>
-                    <span className="sm-divider-line" />
-                  </div>
-                  <div className="sm-card">
-                    <div
-                      onClick={() => toggleSection('scorecard')}
-                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={investmentSections.has('scorecard')}
-                      aria-label="Toggle Investment Scorecard"
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('scorecard'))}
-                    >
-                      <span className="sm-section-label">Investment Scorecard<UpdateIndicators sources={['PR', 'SEC']} /></span>
-                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('scorecard') ? '−' : '+'}</span>
-                    </div>
-                    {investmentSections.has('scorecard') && (
-                      <div className="sm-card-body">
-                        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
-                          {investmentCurrent.scorecard.map((item, i) => (
-                            <div key={i} className="sm-kpi-cell" style={{ '--kpi-color': item.color } as React.CSSProperties}>
-                              <div className="sm-kpi-hero-md">{item.rating}</div>
-                              <div className="sm-kpi-label">{item.category}</div>
-                              <div className="sm-kpi-sub">{item.detail}</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Section Divider: Investment Thesis */}
-                  <div className="sm-divider">
-                    <span className="sm-param-label">Investment Thesis</span>
-                    <span className="sm-divider-line" />
-                  </div>
-
-                  {/* Investment Summary */}
-                  <div className="sm-card">
-                    <div
-                      onClick={() => toggleSection('summary')}
-                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={investmentSections.has('summary')}
-                      aria-label="Toggle Investment Summary"
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('summary'))}
-                    >
-                      <span className="sm-section-label">Investment Summary<UpdateIndicators sources={['PR', 'SEC']} /></span>
-                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('summary') ? '−' : '+'}</span>
-                    </div>
-                    {investmentSections.has('summary') && (
-                      <div className="sm-card-body">
-                        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--mint)', '--bar-accent-2': 'var(--cyan)' } as React.CSSProperties}>
-                          <div className="sm-mint sm-fw-600">What's New ({investmentCurrent.source})</div>
-                          <ul className="sm-m-0 sm-pl-16 sm-text2 sm-fs-13 sm-lh-18">
-                            {investmentCurrent.executiveSummary.whatsNew.map((item, i) => (
-                              <li key={i}>{item}</li>
-                            ))}
-                          </ul>
-                        </div>
-                        <div className="sm-body" style={{ lineHeight: 1.8 }}>
-                          <p>
-                            <strong>Thesis:</strong> {investmentCurrent.executiveSummary.thesis}
-                          </p>
-                          <div className="sm-note-panel" style={{ fontStyle: 'italic', color: 'var(--cyan)' }}>
-                            "{investmentCurrent.executiveSummary.bottomLine}"
-                          </div>
-                          <p>
-                            <strong>Position Sizing:</strong> 3-5% for growth portfolios • 1-2% for balanced • Speculative allocation for conservative
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
+              renderBeforeGrowthDrivers={() => (
+                <>
                   {/* Financial Health */}
+                  <div className="sm-divider">
+                    <span className="sm-param-label">Financial Health</span>
+                    <span className="sm-divider-line" />
+                  </div>
                   <div className="sm-card">
-                    <div
-                      onClick={() => toggleSection('financial')}
-                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={investmentSections.has('financial')}
-                      aria-label="Toggle Financial Health"
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('financial'))}
-                    >
-                      <span className="sm-section-label">Financial Health<UpdateIndicators sources="SEC" /></span>
-                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('financial') ? '−' : '+'}</span>
-                    </div>
-                    {investmentSections.has('financial') && (
-                      <div className="sm-card-body">
-                        {/* Quick Stats */}
-                        <div className="sm-grid-sep" style={{ '--cols': 4 } as React.CSSProperties}>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">Cash Position</div>
-                            <div className="sm-mono-lg sm-mint">$1.15B</div>
-                          </div>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">Total Debt</div>
-                            <div className="sm-mono-lg sm-mint">$0</div>
-                          </div>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">Quarterly FCF</div>
-                            <div className="sm-mono-lg sm-mint">~$140M</div>
-                          </div>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">Dilution Risk</div>
-                            <div className="sm-mono-lg sm-mint">LOW</div>
-                          </div>
+                    <div className="sm-card-body">
+                      <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">Cash Position</div>
+                          <div className="sm-kpi-value">$1.15B</div>
                         </div>
-                        
-                        {/* Summary */}
-                        <div className="sm-body" style={{ lineHeight: 1.8 }}>
-                          <p>
-                            <strong className="sm-mint">Liquidity:</strong> Exceptional. $1.15B cash with zero debt creates fortress balance sheet. Asset-light model requires minimal working capital. Generating ~$140M quarterly FCF provides infinite runway for organic growth.
-                          </p>
-                          <p>
-                            <strong className="sm-sky">Leverage:</strong> None. Company raised $2.5B across IPO ($1.21B) and follow-on ($1.3B) without adding debt. Only liability is a legacy $15.7M convertible note from 2019 SeedInvest round at $16.23 conversion — converts to &lt;1M shares, immaterial dilution.
-                          </p>
-                          <p>
-                            <strong className="sm-gold">Capital Needs:</strong> None foreseeable. FCF positive operations fund growth organically. S-3ASR shelf registration active as WKSI status provides flexibility for opportunistic M&A, but no equity raise expected. Self-funding trajectory intact.
-                          </p>
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">Total Debt</div>
+                          <div className="sm-kpi-value">$0</div>
                         </div>
-
-                        {/* Assessment */}
-                        <div style={{ padding: 12, background: 'color-mix(in srgb, var(--mint) 10%, transparent)', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
-                          <div className="sm-flex">
-                            <span className="sm-mint sm-fw-600">Assessment: A+</span>
-                            <span className="sm-subtle">Fortress Balance Sheet</span>
-                          </div>
-                          <div className="sm-text-13">
-                            Circle has one of the cleanest balance sheets in fintech. No debt, substantial cash, and positive FCF generation eliminate any near-term dilution or liquidity concerns. The company is fully self-funding and could pursue meaningful M&A without leverage.
-                          </div>
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">Quarterly FCF</div>
+                          <div className="sm-kpi-value">~$140M</div>
+                        </div>
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">Dilution Risk</div>
+                          <div className="sm-kpi-value">LOW</div>
                         </div>
                       </div>
-                    )}
+                      <div className="sm-body sm-lh-18">
+                        <p>
+                          <strong className="sm-mint">Liquidity:</strong> Exceptional. $1.15B cash with zero debt creates fortress balance sheet. Asset-light model requires minimal working capital. Generating ~$140M quarterly FCF provides infinite runway for organic growth.
+                        </p>
+                        <p>
+                          <strong className="sm-sky">Leverage:</strong> None. Company raised $2.5B across IPO ($1.21B) and follow-on ($1.3B) without adding debt. Only liability is a legacy $15.7M convertible note from 2019 SeedInvest round at $16.23 conversion &mdash; converts to &lt;1M shares, immaterial dilution.
+                        </p>
+                        <p>
+                          <strong className="sm-gold">Capital Needs:</strong> None foreseeable. FCF positive operations fund growth organically. S-3ASR shelf registration active as WKSI status provides flexibility for opportunistic M&amp;A, but no equity raise expected. Self-funding trajectory intact.
+                        </p>
+                      </div>
+                      <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+                        <div className="sm-flex">
+                          <span className="sm-mint sm-fw-600">Assessment: A+</span>
+                          <span className="sm-subtle">Fortress Balance Sheet</span>
+                        </div>
+                        <div className="sm-text-13">
+                          Circle has one of the cleanest balance sheets in fintech. No debt, substantial cash, and positive FCF generation eliminate any near-term dilution or liquidity concerns. The company is fully self-funding and could pursue meaningful M&amp;A without leverage.
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Unit Economics */}
                   <div className="sm-card">
-                    <div
-                      onClick={() => toggleSection('unit-economics')}
-                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={investmentSections.has('unit-economics')}
-                      aria-label="Toggle Unit Economics"
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('unit-economics'))}
-                    >
-                      <span className="sm-section-label">Unit Economics & Margins<UpdateIndicators sources="SEC" /></span>
-                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('unit-economics') ? '−' : '+'}</span>
-                    </div>
-                    {investmentSections.has('unit-economics') && (
-                      <div className="sm-card-body">
-                        {/* Key Metrics Row */}
-                        <div className="sm-grid-sep" style={{ '--cols': 4 } as React.CSSProperties}>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">Net Take Rate</div>
-                            <div className="sm-mono-lg sm-mint">1.27%</div>
-                          </div>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">RLDC Margin</div>
-                            <div className="sm-mono-lg sm-mint">39%</div>
-                          </div>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">Coinbase Cost</div>
-                            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--coral)', fontWeight: 700 }}>54%</div>
-                          </div>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">EBITDA Margin</div>
-                            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--sky)', fontWeight: 700 }}>22%</div>
-                          </div>
+                    <div className="sm-card-body">
+                      <div className="sm-fw-600 sm-text sm-mb-8">Unit Economics &amp; Margins</div>
+                      <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">Net Take Rate</div>
+                          <div className="sm-kpi-value">1.27%</div>
                         </div>
-
-                        {/* Summary */}
-                        <div className="sm-body" style={{ lineHeight: 1.8 }}>
-                          <p>
-                            <strong className="sm-mint">Revenue Model:</strong> Circle earns ~4¢ per dollar of USDC in circulation annually through reserve yield (T-bills, repos). At $73.7B circulation, this generates ~$2.96B TTM revenue. The model is highly scalable with near-zero marginal cost per additional USDC dollar.
-                          </p>
-                          <p>
-                            <strong className="sm-coral">Margin Pressure:</strong> Coinbase receives ~54% of reserve income as distribution cost — the single largest expense item. This creates a structural margin cap, but the partnership ensures distribution to Coinbase's 100M+ users. RLDC margin (39%) is healthy; OpEx ratio (17%) declining with scale.
-                          </p>
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">RLDC Margin</div>
+                          <div className="sm-kpi-value">39%</div>
                         </div>
-
-                        {/* Coinbase Sensitivity */}
-                        <div style={{ padding: 16, background: 'color-mix(in srgb, var(--gold) 10%, transparent)', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--gold) 20%, transparent)' }}>
-                          <div className="sm-flex">
-                            <span className="sm-gold sm-fw-600">Coinbase Sensitivity Analysis</span>
-                          </div>
-                          <div className="sm-text-13">
-                            If Coinbase cost reduced from 54% → 45%: RLDC margin expands from 39% → 48% (+$67M/qtr at current revenue). Each 5% reduction in Coinbase share adds ~$37M quarterly profit.
-                          </div>
-                          <div className="sm-text-13">
-                            <strong>Renegotiation Leverage:</strong> Coinbase equity stake aligns incentives. Diversifying distribution (Binance 240M users, OKX 60M, Kraken) reduces dependency. CPN direct bank relationships bypass exchange distribution entirely.
-                          </div>
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--coral)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">Coinbase Cost</div>
+                          <div className="sm-kpi-value">54%</div>
+                        </div>
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--sky)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">EBITDA Margin</div>
+                          <div className="sm-kpi-value">22%</div>
                         </div>
                       </div>
-                    )}
+                      <div className="sm-body sm-lh-18">
+                        <p>
+                          <strong className="sm-mint">Revenue Model:</strong> Circle earns ~4&cent; per dollar of USDC in circulation annually through reserve yield (T-bills, repos). At $73.7B circulation, this generates ~$2.96B TTM revenue. The model is highly scalable with near-zero marginal cost per additional USDC dollar.
+                        </p>
+                        <p>
+                          <strong className="sm-coral">Margin Pressure:</strong> Coinbase receives ~54% of reserve income as distribution cost &mdash; the single largest expense item. This creates a structural margin cap, but the partnership ensures distribution to Coinbase&apos;s 100M+ users. RLDC margin (39%) is healthy; OpEx ratio (17%) declining with scale.
+                        </p>
+                      </div>
+                      <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
+                        <div className="sm-flex">
+                          <span className="sm-gold sm-fw-600">Coinbase Sensitivity Analysis</span>
+                        </div>
+                        <div className="sm-text-13">
+                          If Coinbase cost reduced from 54% &rarr; 45%: RLDC margin expands from 39% &rarr; 48% (+$67M/qtr at current revenue). Each 5% reduction in Coinbase share adds ~$37M quarterly profit.
+                        </div>
+                        <div className="sm-text-13">
+                          <strong>Renegotiation Leverage:</strong> Coinbase equity stake aligns incentives. Diversifying distribution (Binance 240M users, OKX 60M, Kraken) reduces dependency. CPN direct bank relationships bypass exchange distribution entirely.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              renderGrowthDriversExtra={() => (
+                <>
+                  {/* Expansion Vectors */}
+                  <span className="sm-section-label sm-sky sm-inline-block sm-mb-8">Expansion Vectors</span>
+                  <div className="sm-inv-glass-list">
+                    {[
+                      { region: 'US (Core)', status: 'Dominant', color: 'var(--mint)' },
+                      { region: 'Europe (MiCA)', status: 'Growing', color: 'var(--mint)' },
+                      { region: "Japan (FSA)", status: "Launched Mar'25", color: 'var(--mint)' },
+                      { region: 'LatAm (Brazil)', status: 'Nubank 100M+', color: 'var(--sky)' },
+                      { region: 'MENA (UAE)', status: 'ADGM licensed', color: 'var(--sky)' },
+                      { region: 'APAC (Singapore)', status: 'MPI License', color: 'var(--sky)' },
+                    ].map((item, i) => (
+                      <div key={i} className="sm-inv-glass-item">
+                        <span className="sm-text2">{item.region}</span>
+                        <span className="sm-inv-impact-label" style={{ '--inv-accent': item.color } as React.CSSProperties}>{item.status}</span>
+                      </div>
+                    ))}
                   </div>
 
-                  {/* Section Divider: Growth Drivers */}
+                  {/* Platform & Product Expansion */}
+                  <span className="sm-section-label sm-violet sm-inline-block sm-mb-8 sm-mt-16">Platform &amp; Product Expansion</span>
+                  <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
+                    {[
+                      { product: 'CPN', desc: 'Cross-border payments network', status: '29 FIs, $3.4B vol', color: 'var(--mint)' },
+                      { product: 'Arc', desc: 'L1 blockchain for finance', status: '100+ testnet', color: 'var(--sky)' },
+                      { product: 'USYC', desc: 'Tokenized money market', status: '$1.5B+ AUM', color: 'var(--mint)' },
+                    ].map((p, i) => (
+                      <div key={i} className="sm-kpi-cell">
+                        <div className="sm-kpi-label">{p.product}</div>
+                        <div className="sm-subtle">{p.desc}</div>
+                        <div className="sm-kpi-sub" style={{ '--kpi-color': p.color } as React.CSSProperties}>{p.status}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* TAM */}
+                  <div className="sm-note-panel sm-mt-8">
+                    <strong>TAM Expansion:</strong> Stablecoin market currently ~$250B. Bull case: $1-2T by 2030 as stablecoins capture share of $150T+ global payments, FX settlement, and collateral markets. Circle targeting 25-35% market share.
+                  </div>
+
+                  {/* Ethereum Ecosystem Catalyst */}
+                  <span className="sm-section-label sm-gold sm-inline-block sm-mb-8 sm-mt-16">Ethereum Ecosystem Catalyst</span>
+                  <div className="sm-inv-eco-catalyst">
+                    <p>
+                      <strong className="sm-violet">On-Chain Growth Thesis:</strong> As more companies build on Ethereum (DeFi, tokenization, payments, gaming), on-chain transaction volume increases. USDC is the dominant stablecoin for DeFi settlement and on-chain payments &mdash; more Ethereum activity directly drives USDC circulation and Circle revenue.
+                    </p>
+                    <p>
+                      <strong className="sm-mint">USDC Dominance:</strong> ~70% of on-chain stablecoin volume on Ethereum flows through USDC. Every new DeFi protocol, tokenized asset, or on-chain payment rail increases USDC utility and sticky demand.
+                    </p>
+                    <p>
+                      <strong className="sm-sky">Cross-Portfolio Note:</strong> This thesis is doubly bullish for portfolios holding both CRCL and BMNR &mdash; Ethereum adoption drives both USDC demand (CRCL revenue) and ETH price appreciation (BMNR NAV). The positions are positively correlated through Ethereum ecosystem growth.
+                    </p>
+                  </div>
+                </>
+              )}
+
+              renderAfterGrowthDrivers={() => (
+                <>
+                  {/* Valuation Framework */}
                   <div className="sm-divider">
-                    <span className="sm-param-label">Growth Drivers</span>
+                    <span className="sm-param-label">Valuation Framework</span>
                     <span className="sm-divider-line" />
                   </div>
-
-                  {/* Growth Drivers */}
                   <div className="sm-card">
-                    <div
-                      onClick={() => toggleSection('growth')}
-                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={investmentSections.has('growth')}
-                      aria-label="Toggle Growth Drivers"
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('growth'))}
-                    >
-                      <span className="sm-section-label">Growth Drivers<UpdateIndicators sources="PR" /></span>
-                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('growth') ? '−' : '+'}</span>
-                    </div>
-                    {investmentSections.has('growth') && (
-                      <div className="sm-card-body">
-                        {/* Summary */}
-                        <div className="sm-body" style={{ lineHeight: 1.8 }}>
-                          <p>
-                            <strong className="sm-mint">USDC Momentum:</strong> Circulation grew from $32.3B (Q2 2024) to $73.7B (Q3 2025) — a 128% increase in 18 months. Growth is accelerating: +20% QoQ in Q3 2025 vs +18% in Q2 2025. The flywheel is working as more integrations drive more use cases drive more circulation.
-                          </p>
-                          <p>
-                            <strong className="sm-sky">Geographic Diversification:</strong> Circle is methodically obtaining licenses globally to reduce US concentration risk. MiCA compliance in Europe, FSA registration in Japan, and partnerships in LatAm (Nubank 100M+ users) and MENA create multiple growth vectors.
-                          </p>
+                    <div className="sm-card-body">
+                      <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">P/S Multiple*</div>
+                          <div className="sm-kpi-value">6.4x</div>
                         </div>
-
-                        {/* Expansion Vectors */}
-                        <span className="sm-section-label sm-sky" style={{ display: 'block' }}>Expansion Vectors</span>
-                        <div className="sm-flex-col">
-                          {[
-                            { region: 'US (Core)', status: 'Dominant', color: 'var(--mint)' },
-                            { region: 'Europe (MiCA)', status: 'Growing', color: 'var(--mint)' },
-                            { region: 'Japan (FSA)', status: 'Launched Mar\'25', color: 'var(--mint)' },
-                            { region: 'LatAm (Brazil)', status: 'Nubank 100M+', color: 'var(--sky)' },
-                            { region: 'MENA (UAE)', status: 'ADGM licensed', color: 'var(--sky)' },
-                            { region: 'APAC (Singapore)', status: 'MPI License', color: 'var(--sky)' },
-                          ].map((item, i) => (
-                            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: 'var(--surface2)', borderRadius: 12, fontSize: 13 }}>
-                              <span className="sm-text2">{item.region}</span>
-                              <span style={{ color: item.color, fontWeight: 500 }}>{item.status}</span>
-                            </div>
-                          ))}
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">Rule of 40</div>
+                          <div className="sm-kpi-value">105</div>
                         </div>
-
-                        {/* Platform & Product Expansion */}
-                        <span className="sm-section-label sm-violet" style={{ display: 'block' }}>Platform & Product Expansion</span>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-                          {[
-                            { product: 'CPN', desc: 'Cross-border payments network', status: '29 FIs, $3.4B vol', color: 'var(--mint)' },
-                            { product: 'Arc', desc: 'L1 blockchain for finance', status: '100+ testnet', color: 'var(--sky)' },
-                            { product: 'USYC', desc: 'Tokenized money market', status: '$1.5B+ AUM', color: 'var(--mint)' },
-                          ].map((p, i) => (
-                            <div key={i} className="sm-bg-surface2" style={{ padding: 12, borderRadius: 12 }}>
-                              <div className="sm-text sm-fw-600">{p.product}</div>
-                              <div className="sm-subtle">{p.desc}</div>
-                              <div style={{ fontSize: 13, color: p.color, fontWeight: 500 }}>{p.status}</div>
-                            </div>
-                          ))}
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--sky)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">Fair Value</div>
+                          <div className="sm-kpi-value">$100-150</div>
                         </div>
-
-                        {/* TAM Expansion */}
-                        <div className="sm-bg-surface2 sm-body-sm" style={{ padding: 12, borderRadius: 12 }}>
-                          <strong>TAM Expansion:</strong> Stablecoin market currently ~$250B. Bull case: $1-2T by 2030 as stablecoins capture share of $150T+ global payments, FX settlement, and collateral markets. Circle targeting 25-35% market share.
-                        </div>
-
-                        {/* Ethereum Ecosystem Catalyst */}
-                        <span className="sm-section-label sm-gold" style={{ display: 'block' }}>Ethereum Ecosystem Catalyst</span>
-                        <div style={{ padding: 12, background: 'color-mix(in srgb, var(--violet) 10%, transparent)', border: '1px solid var(--border)', borderRadius: 12, fontSize: 13, color: 'var(--text2)' }}>
-                          <p>
-                            <strong className="sm-violet">On-Chain Growth Thesis:</strong> As more companies build on Ethereum (DeFi, tokenization, payments, gaming), on-chain transaction volume increases. USDC is the dominant stablecoin for DeFi settlement and on-chain payments — more Ethereum activity directly drives USDC circulation and Circle revenue.
-                          </p>
-                          <p>
-                            <strong className="sm-mint">USDC Dominance:</strong> ~70% of on-chain stablecoin volume on Ethereum flows through USDC. Every new DeFi protocol, tokenized asset, or on-chain payment rail increases USDC utility and sticky demand.
-                          </p>
-                          <p>
-                            <strong className="sm-sky">Cross-Portfolio Note:</strong> This thesis is doubly bullish for portfolios holding both CRCL and BMNR — Ethereum adoption drives both USDC demand (CRCL revenue) and ETH price appreciation (BMNR NAV). The positions are positively correlated through Ethereum ecosystem growth.
-                          </p>
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">Expected Return</div>
+                          <div className="sm-kpi-value">+56%</div>
                         </div>
                       </div>
-                    )}
-                  </div>
-
-                  {/* Valuation Framework */}
-                  <div className="sm-card">
-                    <div
-                      onClick={() => toggleSection('valuation')}
-                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={investmentSections.has('valuation')}
-                      aria-label="Toggle Valuation Framework"
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('valuation'))}
-                    >
-                      <span className="sm-section-label">Valuation Framework<UpdateIndicators sources="WS" /></span>
-                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('valuation') ? '−' : '+'}</span>
-                    </div>
-                    {investmentSections.has('valuation') && (
-                      <div className="sm-card-body">
-                        {/* Key Metrics */}
-                        <div className="sm-grid-sep" style={{ '--cols': 4 } as React.CSSProperties}>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">P/S Multiple*</div>
-                            <div className="sm-mono-lg sm-mint">6.4x</div>
-                          </div>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">Rule of 40</div>
-                            <div className="sm-mono-lg sm-mint">105</div>
-                          </div>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">Fair Value</div>
-                            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--sky)', fontWeight: 700 }}>$100-150</div>
-                          </div>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">Expected Return</div>
-                            <div className="sm-mono-lg sm-mint">+56%</div>
-                          </div>
-                        </div>
-                        <div className="sm-subtle-sm" style={{ fontStyle: 'italic' }}>
-                          * P/S based on Q3 2025 annualized run-rate revenue ($2.96B). TTM P/S (Q4 2024–Q3 2025) is 7.8x.
-                        </div>
-
-                        {/* Summary */}
-                        <div className="sm-body" style={{ lineHeight: 1.8 }}>
-                          <p>
-                            <strong className="sm-mint">Peer Comparison:</strong> Circle trades at 6.4x P/S — a ~60% discount to Visa/Mastercard (16-17x) despite 6x higher revenue growth (66% vs 10%). Even Coinbase trades at 13.1x with lower growth (30%). Circle's Rule of 40 score of 105 (66% growth + 39% margin) is exceptional for any SaaS/fintech company.
-                          </p>
-                          <p>
-                            <strong className="sm-sky">Discount Drivers:</strong> The valuation gap reflects three factors: (1) crypto association risk premium (~20% discount), (2) Coinbase margin uncertainty (~20% discount), (3) interest rate sensitivity (~10% discount). As these concerns diminish, multiple expansion is likely.
-                          </p>
-                          <p>
-                            <strong className="sm-gold">Scenario Analysis:</strong> Probability-weighted expected value is $128 (+56% upside). Bear case ($50, 20% prob) assumes rate cuts + Tether parity. Base case ($120, 50% prob) reflects continued execution. Bull case ($200, 25% prob) assumes CPN/Arc traction. Moon case ($350, 5% prob) assumes stablecoin market 5x expansion.
-                          </p>
-                        </div>
-
-                        {/* Methodology */}
-                        <div className="sm-bg-surface2 sm-body-sm" style={{ padding: 12, borderRadius: 12 }}>
-                          <strong>Methodology:</strong> P/S-based valuation anchored on payment network comparables. Fair value range 10-12x P/S implies $100-150 target. DCF (12% WACC, 3% terminal growth) supports similar range. SOTP analysis adds $10-20 optionality value for CPN/Arc platforms.
-                        </div>
+                      <div className="sm-subtle sm-italic sm-mb-8">
+                        * P/S based on Q3 2025 annualized run-rate revenue ($2.96B). TTM P/S (Q4 2024&ndash;Q3 2025) is 7.8x.
                       </div>
-                    )}
+                      <div className="sm-body sm-lh-18">
+                        <p>
+                          <strong className="sm-mint">Peer Comparison:</strong> Circle trades at 6.4x P/S &mdash; a ~60% discount to Visa/Mastercard (16-17x) despite 6x higher revenue growth (66% vs 10%). Even Coinbase trades at 13.1x with lower growth (30%). Circle&apos;s Rule of 40 score of 105 (66% growth + 39% margin) is exceptional for any SaaS/fintech company.
+                        </p>
+                        <p>
+                          <strong className="sm-sky">Discount Drivers:</strong> The valuation gap reflects three factors: (1) crypto association risk premium (~20% discount), (2) Coinbase margin uncertainty (~20% discount), (3) interest rate sensitivity (~10% discount). As these concerns diminish, multiple expansion is likely.
+                        </p>
+                        <p>
+                          <strong className="sm-gold">Scenario Analysis:</strong> Probability-weighted expected value is $128 (+56% upside). Bear case ($50, 20% prob) assumes rate cuts + Tether parity. Base case ($120, 50% prob) reflects continued execution. Bull case ($200, 25% prob) assumes CPN/Arc traction. Moon case ($350, 5% prob) assumes stablecoin market 5x expansion.
+                        </p>
+                      </div>
+                      <div className="sm-note-panel">
+                        <strong>Methodology:</strong> P/S-based valuation anchored on payment network comparables. Fair value range 10-12x P/S implies $100-150 target. DCF (12% WACC, 3% terminal growth) supports similar range. SOTP analysis adds $10-20 optionality value for CPN/Arc platforms.
+                      </div>
+                    </div>
                   </div>
+                </>
+              )}
 
+              renderAfterRiskMatrix={() => (
+                <>
                   {/* Rate Sensitivity Calculator */}
                   <div className="sm-card">
-                    <div
-                      onClick={() => toggleSection('sensitivity')}
-                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={investmentSections.has('sensitivity')}
-                      aria-label="Toggle Rate Sensitivity Calculator"
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('sensitivity'))}
-                    >
-                      <span className="sm-section-label">Rate Sensitivity Calculator<UpdateIndicators sources="MARKET" /></span>
-                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('sensitivity') ? '−' : '+'}</span>
-                    </div>
-                    {investmentSections.has('sensitivity') && (
-                      <div className="sm-card-body">
-                        <div className="sm-subtle" style={{ fontStyle: 'italic' }}>
-                          Adjust assumptions to see implied financial impact. Calculations based on current model structure.
-                        </div>
-
-                        {/* Sliders */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-                          {/* Fed Funds Rate */}
-                          <div className="sm-bg-surface2" style={{ padding: 16, borderRadius: 12 }}>
-                            <div className="sm-flex-between">
-                              <span className="sm-subtle">Fed Funds Rate</span>
-                              <span style={{ fontFamily: "'Space Mono', monospace", color: 'var(--mint)', fontWeight: 600 }}>{sensRate.toFixed(1)}%</span>
-                            </div>
-                            <input 
-                              type="range" 
-                              min="1" 
-                              max="6" 
-                              step="0.25" 
-                              value={sensRate} 
-                              onChange={(e) => setSensRate(parseFloat(e.target.value))}
-                              style={{ width: '100%', accentColor: 'var(--mint)' }}
-                            />
-                            <div className="sm-flex-between sm-text3" style={{ fontSize: 10 }}>
-                              <span>1%</span>
-                              <span>6%</span>
-                            </div>
+                    <div className="sm-card-body">
+                      <div className="sm-fw-600 sm-text sm-mb-8">Rate Sensitivity Calculator</div>
+                      <div className="sm-subtle sm-italic sm-mb-12">
+                        Adjust assumptions to see implied financial impact. Calculations based on current model structure.
+                      </div>
+                      <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
+                        {/* Fed Funds Rate */}
+                        <div className="sm-kpi-cell">
+                          <div className="sm-flex-between">
+                            <span className="sm-subtle">Fed Funds Rate</span>
+                            <span className="sm-mono-sm sm-mint sm-fw-600">{sensRate.toFixed(1)}%</span>
                           </div>
-
-                          {/* USDC Circulation */}
-                          <div className="sm-bg-surface2" style={{ padding: 16, borderRadius: 12 }}>
-                            <div className="sm-flex-between">
-                              <span className="sm-subtle">USDC Circulation</span>
-                              <span style={{ fontFamily: "'Space Mono', monospace", color: 'var(--sky)', fontWeight: 600 }}>${sensUsdc}B</span>
-                            </div>
-                            <input 
-                              type="range" 
-                              min="40" 
-                              max="150" 
-                              step="5" 
-                              value={sensUsdc} 
-                              onChange={(e) => setSensUsdc(parseInt(e.target.value))}
-                              style={{ width: '100%', accentColor: 'var(--sky)' }}
-                            />
-                            <div className="sm-flex-between sm-text3" style={{ fontSize: 10 }}>
-                              <span>$40B</span>
-                              <span>$150B</span>
-                            </div>
-                          </div>
-
-                          {/* Coinbase Distribution */}
-                          <div className="sm-bg-surface2" style={{ padding: 16, borderRadius: 12 }}>
-                            <div className="sm-flex-between">
-                              <span className="sm-subtle">Coinbase Distribution</span>
-                              <span style={{ fontFamily: "'Space Mono', monospace", color: 'var(--coral)', fontWeight: 600 }}>{sensDist}%</span>
-                            </div>
-                            <input 
-                              type="range" 
-                              min="30" 
-                              max="70" 
-                              step="1" 
-                              value={sensDist} 
-                              onChange={(e) => setSensDist(parseInt(e.target.value))}
-                              style={{ width: '100%', accentColor: 'var(--coral)' }}
-                            />
-                            <div className="sm-flex-between sm-text3" style={{ fontSize: 10 }}>
-                              <span>30%</span>
-                              <span>70%</span>
-                            </div>
+                          <input
+                            type="range"
+                            min="1"
+                            max="6"
+                            step="0.25"
+                            value={sensRate}
+                            onChange={(e) => setSensRate(parseFloat(e.target.value))}
+                            className="sm-range-input"
+                          />
+                          <div className="sm-flex-between sm-text3 sm-text-11">
+                            <span>1%</span>
+                            <span>6%</span>
                           </div>
                         </div>
-
-                        {/* Calculated Outputs */}
-                        <div className="sm-grid-sep" style={{ '--cols': 4 } as React.CSSProperties}>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">Implied Revenue</div>
-                            <div className="sm-mono-lg sm-mint">
-                              ${((sensUsdc * sensRate / 100)).toFixed(1)}B
-                            </div>
+                        {/* USDC Circulation */}
+                        <div className="sm-kpi-cell">
+                          <div className="sm-flex-between">
+                            <span className="sm-subtle">USDC Circulation</span>
+                            <span className="sm-mono-sm sm-sky sm-fw-600">${sensUsdc}B</span>
                           </div>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">RLDC (Gross Profit)</div>
-                            <div className="sm-mono-lg sm-mint">
-                              ${((sensUsdc * sensRate / 100) * (1 - sensDist / 100)).toFixed(2)}B
-                            </div>
-                          </div>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">RLDC Margin</div>
-                            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: sensRate >= 3 && sensDist <= 50 ? 'var(--mint)' : 'var(--gold)', fontWeight: 700 }}>
-                              {(100 - sensDist).toFixed(0)}%
-                            </div>
-                          </div>
-                          <div className="sm-bg-surface2 sm-text-center" style={{ padding: 12 }}>
-                            <div className="sm-text-11">Est. EBITDA</div>
-                            <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--sky)', fontWeight: 700 }}>
-                              ${((sensUsdc * sensRate / 100) * (1 - sensDist / 100) * 0.55).toFixed(2)}B
-                            </div>
+                          <input
+                            type="range"
+                            min="40"
+                            max="150"
+                            step="5"
+                            value={sensUsdc}
+                            onChange={(e) => setSensUsdc(parseInt(e.target.value))}
+                            className="sm-range-input"
+                          />
+                          <div className="sm-flex-between sm-text3 sm-text-11">
+                            <span>$40B</span>
+                            <span>$150B</span>
                           </div>
                         </div>
-
-                        {/* Fair Value Estimate */}
-                        <div style={{ background: 'color-mix(in srgb, var(--mint) 10%, transparent)', padding: 16, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
-                          <div className="sm-flex-between" style={{ flexWrap: 'wrap', gap: 12 }}>
-                            <div>
-                              <div className="sm-subtle">Implied Fair Value (8x P/S)</div>
-                              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, color: 'var(--mint)', fontWeight: 700 }}>
-                                ${((sensUsdc * sensRate / 100) * 8 / 0.23).toFixed(0)}
-                              </div>
-                            </div>
-                            <div className="sm-text-right">
-                              <div className="sm-subtle">vs. Current ($82)</div>
-                              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: ((sensUsdc * sensRate / 100) * 8 / 0.23) > 82 ? 'var(--mint)' : 'var(--coral)', fontWeight: 600 }}>
-                                {((((sensUsdc * sensRate / 100) * 8 / 0.23) - 82) / 82 * 100) > 0 ? '+' : ''}{((((sensUsdc * sensRate / 100) * 8 / 0.23) - 82) / 82 * 100).toFixed(0)}%
-                              </div>
-                            </div>
+                        {/* Coinbase Distribution */}
+                        <div className="sm-kpi-cell">
+                          <div className="sm-flex-between">
+                            <span className="sm-subtle">Coinbase Distribution</span>
+                            <span className="sm-mono-sm sm-coral sm-fw-600">{sensDist}%</span>
                           </div>
-                        </div>
-
-                        {/* Methodology Note */}
-                        <div className="sm-subtle-sm" style={{ fontStyle: 'italic' }}>
-                          Note: Revenue = USDC × Rate. RLDC = Revenue × (1 − Distribution%). EBITDA assumes 55% of RLDC after OpEx. Fair value uses 8x P/S on 229M shares. Simplified model — actual results may vary.
+                          <input
+                            type="range"
+                            min="30"
+                            max="70"
+                            step="1"
+                            value={sensDist}
+                            onChange={(e) => setSensDist(parseInt(e.target.value))}
+                            className="sm-range-input"
+                          />
+                          <div className="sm-flex-between sm-text3 sm-text-11">
+                            <span>30%</span>
+                            <span>70%</span>
+                          </div>
                         </div>
                       </div>
-                    )}
-                  </div>
 
-                  {/* Competitive Moat */}
-                  <div className="sm-card">
-                    <div
-                      onClick={() => toggleSection('moat')}
-                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={investmentSections.has('moat')}
-                      aria-label="Toggle Competitive Moat"
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('moat'))}
-                    >
-                      <span className="sm-section-label">Competitive Moat<UpdateIndicators sources={['PR', 'SEC']} /></span>
-                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('moat') ? '−' : '+'}</span>
-                    </div>
-                    {investmentSections.has('moat') && (
-                      <div className="sm-card-body">
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+                      {/* Calculated Outputs */}
+                      <div className="sm-model-grid sm-mt-12" style={{ '--cols': 4 } as React.CSSProperties}>
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">Implied Revenue</div>
+                          <div className="sm-kpi-value">${((sensUsdc * sensRate / 100)).toFixed(1)}B</div>
+                        </div>
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">RLDC (Gross Profit)</div>
+                          <div className="sm-kpi-value">${((sensUsdc * sensRate / 100) * (1 - sensDist / 100)).toFixed(2)}B</div>
+                        </div>
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': sensRate >= 3 && sensDist <= 50 ? 'var(--mint)' : 'var(--gold)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">RLDC Margin</div>
+                          <div className="sm-kpi-value">{(100 - sensDist).toFixed(0)}%</div>
+                        </div>
+                        <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--sky)' } as React.CSSProperties}>
+                          <div className="sm-kpi-label">Est. EBITDA</div>
+                          <div className="sm-kpi-value">${((sensUsdc * sensRate / 100) * (1 - sensDist / 100) * 0.55).toFixed(2)}B</div>
+                        </div>
+                      </div>
+
+                      {/* Fair Value Estimate */}
+                      <div className="sm-callout sm-mt-12" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+                        <div className="sm-flex-between sm-flex-wrap sm-gap-12">
                           <div>
-                            <span className="sm-section-label sm-mint" style={{ display: 'block' }}>Moat Sources</span>
-                            {[
-                              { source: 'Regulatory Licenses', strength: 'Strong', detail: '48 US states + MiCA + Japan FSA + OCC pending', color: 'var(--mint)' },
-                              { source: 'Network Effects', strength: 'Growing', detail: '15 chains, 6.3M wallets, $12T+ settled', color: 'var(--sky)' },
-                              { source: 'Trust & Transparency', strength: 'Strong', detail: 'Monthly attestations, 100% reserves, no depeg (ex-SVB)', color: 'var(--mint)' },
-                              { source: 'TradFi Integration', strength: 'Building', detail: 'ICE, Visa, FIS, Fiserv partnerships', color: 'var(--sky)' },
-                              { source: 'Developer Ecosystem', strength: 'Moderate', detail: 'CCTP, Programmable Wallets, Web3 Services', color: 'var(--gold)' },
-                            ].map((m, i) => (
-                              <div key={i} className="sm-flex-between sm-bg-surface2" style={{ padding: '12px 16px', borderRadius: 12 }}>
-                                <div>
-                                  <div className="sm-text-13t sm-fw-600">{m.source}</div>
-                                  <div className="sm-text-11">{m.detail}</div>
-                                </div>
-                                <span style={{ color: m.color, fontWeight: 600, fontSize: 12 }}>{m.strength}</span>
-                              </div>
-                            ))}
+                            <div className="sm-subtle">Implied Fair Value (8x P/S)</div>
+                            <div className="sm-mono-lg sm-fw-700 sm-mint">
+                              ${((sensUsdc * sensRate / 100) * 8 / 0.23).toFixed(0)}
+                            </div>
                           </div>
-                          <div>
-                            <span className="sm-section-label sm-coral" style={{ display: 'block' }}>Competitive Threats</span>
-                            {[
-                              { threat: 'Tether (USDT)', risk: 'High', detail: '65% market share, $140B+ circulation', color: 'var(--coral)' },
-                              { threat: 'PayPal (PYUSD)', risk: 'Medium', detail: '$1B circulation, 400M user base', color: 'var(--gold)' },
-                              { threat: 'Bank Stablecoins', risk: 'Medium', detail: 'JPM Coin, potential Fed/CBDC', color: 'var(--gold)' },
-                              { threat: 'CBDCs', risk: 'Low-Med', detail: 'EU/UK in development, 3-5yr timeline', color: 'var(--sky)' },
-                              { threat: 'New Entrants', risk: 'Low', detail: 'Regulatory barriers high post-GENIUS', color: 'var(--mint)' },
-                            ].map((t, i) => (
-                              <div key={i} className="sm-flex-between sm-bg-surface2" style={{ padding: '12px 16px', borderRadius: 12 }}>
-                                <div>
-                                  <div className="sm-text-13t sm-fw-600">{t.threat}</div>
-                                  <div className="sm-text-11">{t.detail}</div>
-                                </div>
-                                <span style={{ color: t.color, fontWeight: 600, fontSize: 12 }}>{t.risk}</span>
-                              </div>
-                            ))}
+                          <div className="sm-text-right">
+                            <div className="sm-subtle">vs. Current ($82)</div>
+                            <div className="sm-mono-sm sm-fw-600" style={{ '--inv-accent': ((sensUsdc * sensRate / 100) * 8 / 0.23) > 82 ? 'var(--mint)' : 'var(--coral)' } as React.CSSProperties}>
+                              {((((sensUsdc * sensRate / 100) * 8 / 0.23) - 82) / 82 * 100) > 0 ? '+' : ''}{((((sensUsdc * sensRate / 100) * 8 / 0.23) - 82) / 82 * 100).toFixed(0)}%
+                            </div>
                           </div>
-                        </div>
-                        <div className="sm-note-panel sm-body-sm">
-                          <strong>Moat Durability:</strong> B+ (Moderate-Strong). Regulatory moat strengthening but Tether's scale advantage persists. Key differentiator is TradFi trust — Circle is the only stablecoin issuer with major bank/exchange partnerships. Moat widens if CPN/Arc achieve enterprise adoption.
                         </div>
                       </div>
-                    )}
-                  </div>
 
-                  {/* Section Divider: Risk Assessment */}
-                  <div className="sm-divider">
-                    <span className="sm-param-label">Risk Assessment</span>
-                    <span className="sm-divider-line" />
-                  </div>
-
-                  {/* Risk Matrix */}
-                  <div className="sm-card">
-                    <div
-                      onClick={() => toggleSection('risks')}
-                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={investmentSections.has('risks')}
-                      aria-label="Toggle Risk Matrix"
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('risks'))}
-                    >
-                      <span className="sm-section-label">Risk Matrix<UpdateIndicators sources={['PR', 'SEC']} /></span>
-                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('risks') ? '−' : '+'}</span>
+                      <div className="sm-subtle sm-italic sm-mt-8">
+                        Note: Revenue = USDC &times; Rate. RLDC = Revenue &times; (1 &minus; Distribution%). EBITDA assumes 55% of RLDC after OpEx. Fair value uses 8x P/S on 229M shares. Simplified model &mdash; actual results may vary.
+                      </div>
                     </div>
-                    {investmentSections.has('risks') && (
-                      <div className="sm-card-body">
-                        {/* Summary */}
-                        <div className="sm-body" style={{ lineHeight: 1.8 }}>
-                          <p>
-                            <strong className="sm-coral">High Impact Risks:</strong> Interest rate sensitivity remains the primary concern — if Fed cuts to sub-3%, reserve income compresses faster than volume can grow. Coinbase renegotiation failure would cap margins permanently. Regulatory reversal (low probability) would be existential. Smart contract exploits are tail risks mitigated by audits and multi-sig.
-                          </p>
-                          <p>
-                            <strong className="sm-gold">Medium Impact Risks:</strong> Tether achieving transparency parity would eliminate Circle's trust premium in crypto-native markets. Lock-up expiry (Dec 2025) creates near-term supply pressure with ~198M shares eligible for sale — likely temporary given fundamental momentum.
-                          </p>
-                          <p>
-                            <strong className="sm-mint">Risk Mitigants:</strong> Multi-jurisdiction licensing reduces regulatory concentration. Distribution diversification (Binance, OKX, Kraken) reduces Coinbase dependency. USYC yield products provide revenue diversification beyond reserve income. OCC charter creates regulatory moat. Volume growth historically offsets rate compression.
-                          </p>
-                        </div>
-
-                        {/* Risk Assessment */}
-                        <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
-                          <div className="sm-flex">
-                            <span className="sm-gold sm-fw-600">Overall Risk Assessment: MODERATE</span>
-                          </div>
-                          <div className="sm-text-13">
-                            Circle's risk profile has improved significantly since IPO. Balance sheet strength, regulatory progress, and distribution diversification reduce company-specific risks. Primary exposures are now macro (rates) and competitive (Tether, banks) — both manageable with current growth trajectory.
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   {/* Catalyst Calendar */}
                   <div className="sm-card">
-                    <div
-                      onClick={() => toggleSection('catalysts')}
-                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={investmentSections.has('catalysts')}
-                      aria-label="Toggle Catalyst Calendar"
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('catalysts'))}
-                    >
-                      <span className="sm-section-label">Catalyst Calendar<UpdateIndicators sources="PR" /></span>
-                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('catalysts') ? '−' : '+'}</span>
-                    </div>
-                    {investmentSections.has('catalysts') && (
-                      <div className="sm-card-body">
-                        {/* Summary */}
-                        <div className="sm-body" style={{ lineHeight: 1.8 }}>
-                          <p>
-                            <strong className="sm-coral">Near-Term (Dec 2025):</strong> Lock-up expiry is the most immediate catalyst — ~198M shares become eligible for sale. Watch insider selling percentage and price support levels. Historically, strong-performing IPOs see limited insider selling if fundamentals remain intact.
-                          </p>
-                          <p>
-                            <strong className="sm-mint">H1 2026:</strong> Multiple positive catalysts converge. Q4/FY25 earnings (Feb) will provide first full-year numbers and 2026 guidance. Arc mainnet launch will demonstrate platform revenue potential. OCC charter finalization would provide Fed master account pathway — transformative for institutional adoption.
-                          </p>
-                          <p>
-                            <strong className="sm-sky">Longer-Term:</strong> Coinbase distribution cost renegotiation timing uncertain but represents significant margin expansion optionality. S&P 500 inclusion possible once GAAP profitability criteria met — would trigger substantial index fund buying (~$2-3B estimated).
-                          </p>
-                        </div>
-
-                        {/* Key Dates */}
-                        <div className="sm-bg-surface2" style={{ padding: 12, borderRadius: 12 }}>
-                          <div className="sm-text sm-fw-600">Key Dates to Watch</div>
-                          <div className="sm-flex-wrap">
-                            {[
-                              { event: 'Lock-up Expiry', date: 'Dec 2025', color: 'var(--coral)' },
-                              { event: 'Q4/FY25 Earnings', date: 'Feb 2026', color: 'var(--mint)' },
-                              { event: 'Arc Mainnet', date: 'H1 2026', color: 'var(--mint)' },
-                              { event: 'OCC Charter', date: 'Dec 2025 ✓', color: 'var(--mint)' },
-                            ].map((c, i) => (
-                              <div key={i} style={{ background: 'var(--bg)', padding: '6px 12px', borderRadius: 12, fontSize: 12 }}>
-                                <span className="sm-text">{c.event}</span>
-                                <span className="sm-text3" style={{ margin: '0 6px' }}>•</span>
-                                <span style={{ color: c.color }}>{c.date}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
+                    <div className="sm-card-body">
+                      <div className="sm-fw-600 sm-text sm-mb-8">Catalyst Calendar</div>
+                      <div className="sm-body sm-lh-18">
+                        <p>
+                          <strong className="sm-coral">Near-Term (Dec 2025):</strong> Lock-up expiry is the most immediate catalyst &mdash; ~198M shares become eligible for sale. Watch insider selling percentage and price support levels. Historically, strong-performing IPOs see limited insider selling if fundamentals remain intact.
+                        </p>
+                        <p>
+                          <strong className="sm-mint">H1 2026:</strong> Multiple positive catalysts converge. Q4/FY25 earnings (Feb) will provide first full-year numbers and 2026 guidance. Arc mainnet launch will demonstrate platform revenue potential. OCC charter finalization would provide Fed master account pathway &mdash; transformative for institutional adoption.
+                        </p>
+                        <p>
+                          <strong className="sm-sky">Longer-Term:</strong> Coinbase distribution cost renegotiation timing uncertain but represents significant margin expansion optionality. S&amp;P 500 inclusion possible once GAAP profitability criteria met &mdash; would trigger substantial index fund buying (~$2-3B estimated).
+                        </p>
                       </div>
-                    )}
+                      <div className="sm-inv-glass-list">
+                        {[
+                          { event: 'Lock-up Expiry', date: 'Dec 2025', color: 'var(--coral)' },
+                          { event: 'Q4/FY25 Earnings', date: 'Feb 2026', color: 'var(--mint)' },
+                          { event: 'Arc Mainnet', date: 'H1 2026', color: 'var(--mint)' },
+                          { event: 'OCC Charter', date: 'Dec 2025 \u2713', color: 'var(--mint)' },
+                        ].map((c, i) => (
+                          <div key={i} className="sm-inv-glass-item">
+                            <span className="sm-text">{c.event}</span>
+                            <span className="sm-inv-impact-label" style={{ '--inv-accent': c.color } as React.CSSProperties}>{c.date}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              moatDurabilityNote="B+ (Moderate-Strong). Regulatory moat strengthening but Tether's scale advantage persists. Key differentiator is TradFi trust — Circle is the only stablecoin issuer with major bank/exchange partnerships. Moat widens if CPN/Arc achieve enterprise adoption."
+
+              renderStrategicAssessment={() => (
+                <>
+                  <div className="sm-subtle sm-italic">
+                    Multi-perspective risk evaluation and strategic decision framework
                   </div>
 
-                  {/* Position Management */}
-                  <div className="sm-card">
-                    <div
-                      onClick={() => toggleSection('position')}
-                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={investmentSections.has('position')}
-                      aria-label="Toggle Position Management"
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('position'))}
-                    >
-                      <span className="sm-section-label">Position Management<UpdateIndicators sources="WS" /></span>
-                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('position') ? '−' : '+'}</span>
-                    </div>
-                    {investmentSections.has('position') && (
-                      <div className="sm-card-body">
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-                          <div style={{ background: 'color-mix(in srgb, var(--mint) 10%, transparent)', padding: 16, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--mint) 20%, transparent)' }}>
-                            <div className="sm-mint sm-fw-600">Entry Zones</div>
-                            <div className="sm-text-13">
-                              <div>$75-80: Current (hold)</div>
-                              <div>$65-70: Add on weakness</div>
-                              <div>$55-60: Aggressive accumulate</div>
-                            </div>
-                          </div>
-                          <div style={{ background: 'color-mix(in srgb, var(--coral) 10%, transparent)', padding: 16, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--coral) 20%, transparent)' }}>
-                            <div className="sm-coral sm-fw-600">Risk Management</div>
-                            <div className="sm-text-13">
-                              <div>Stop-loss: $50 (-39%)</div>
-                              <div>Max position: 5% of portfolio</div>
-                              <div>Risk per trade: 1-2%</div>
-                            </div>
-                          </div>
-                          <div style={{ background: 'color-mix(in srgb, var(--sky) 10%, transparent)', padding: 16, borderRadius: 12, border: '1px solid color-mix(in srgb, var(--sky) 20%, transparent)' }}>
-                            <div className="sm-sky sm-fw-600">Take Profit Levels</div>
-                            <div className="sm-text-13">
-                              <div>$100: Trim 20%</div>
-                              <div>$130: Trim 25%</div>
-                              <div>$150+: Hold core (50%)</div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="sm-card-body sm-bg-surface2">
-                          <div className="sm-text sm-fw-600">Position Sizing by Risk Profile</div>
-                          <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
-                            <div className="sm-kpi-cell"><div className="sm-kpi-label">Aggressive</div><div className="sm-kpi-value" style={{ '--kpi-color': 'var(--mint)' } as React.CSSProperties}>4-5%</div></div>
-                            <div className="sm-kpi-cell"><div className="sm-kpi-label">Growth</div><div className="sm-kpi-value" style={{ '--kpi-color': 'var(--sky)' } as React.CSSProperties}>2-4%</div></div>
-                            <div className="sm-kpi-cell"><div className="sm-kpi-label">Balanced</div><div className="sm-kpi-value" style={{ '--kpi-color': 'var(--gold)' } as React.CSSProperties}>1-2%</div></div>
-                            <div className="sm-kpi-cell"><div className="sm-kpi-label">Conservative</div><div className="sm-kpi-value" style={{ '--kpi-color': 'var(--coral)' } as React.CSSProperties}>0-1%</div></div>
-                          </div>
-                        </div>
+                  <div className="sm-inv-section-sub"><span className="sm-section-label sm-text">Risk Evaluation &mdash; Four Perspectives</span></div>
 
-                        {/* Portfolio Context — Unified framework for multi-asset allocation */}
-                        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--violet)', '--bar-accent-2': 'var(--sky)' } as React.CSSProperties}>
-                          <div style={{ fontSize: 11, color: 'var(--violet)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>Portfolio Construction Context</div>
-                          <div className="sm-subtle" style={{ fontStyle: 'italic', marginTop: 4 }}>For multi-asset portfolios holding CRCL alongside other positions</div>
-                        </div>
-                        <div className="sm-model-grid sm-mt-12" style={{ '--cols': 3 } as React.CSSProperties}>
-                          <div className="sm-kpi-cell">
-                            <div className="sm-kpi-label">Asset Class Bucket</div>
-                            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>Alternatives / Fintech</div>
-                            <div className="sm-kpi-sub sm-gold">Limit: 10-20% of portfolio</div>
-                          </div>
-                          <div className="sm-kpi-cell">
-                            <div className="sm-kpi-label">Single-Name Limit</div>
-                            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>3-5% max</div>
-                            <div className="sm-kpi-sub sm-coral">Rate sensitive, crypto adjacent</div>
-                          </div>
-                          <div className="sm-kpi-cell">
-                            <div className="sm-kpi-label">Correlation Note</div>
-                            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>CRCL + BMNR</div>
-                            <div className="sm-kpi-sub sm-sky">Both ETH-correlated; size combined</div>
-                          </div>
-                        </div>
-                        <div className="sm-note-panel">
-                          <strong>Combined Crypto Allocation:</strong> If holding both CRCL and BMNR, treat as a single "Ethereum ecosystem" allocation. Combined weight should not exceed alternatives bucket limit. CRCL provides infrastructure/revenue exposure; BMNR provides NAV/yield exposure.
-                        </div>
-                      </div>
-                    )}
+                  {/* CFA Level III */}
+                  <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+                    <div className="sm-flex">
+                      <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>CFA LEVEL III</span>
+                      <span className="sm-subtle">Portfolio Construction &amp; Factor Analysis</span>
+                    </div>
+                    <div className="sm-body sm-lh-18">
+                      <p>
+                        <strong>Factor Exposures:</strong> CRCL exhibits significant interest rate sensitivity (negative duration &mdash; rising rates benefit reserve income) and moderate crypto beta correlation (~0.4 to BTC). This creates a unique hedge: positive rate sensitivity while maintaining crypto upside optionality. Low correlation to traditional equities makes it an attractive diversifier.
+                      </p>
+                      <p>
+                        <strong>Liquidity Analysis:</strong> Average daily volume ~$180M provides adequate liquidity for institutional positions up to $50M without material market impact. Post-lock-up, float increases from ~40M to ~240M shares, dramatically improving liquidity profile. Bid-ask spreads tight at ~0.05%.
+                      </p>
+                      <p>
+                        <strong>Governance &amp; ESG:</strong> Dual-class structure (Class B 5:1 voting) concentrates control with founders through 2030 sunset &mdash; acceptable given founder alignment and temporary nature. Board composition strong (ex-Goldman CRO, ex-CFTC Chair). ESG profile positive: financial inclusion focus, transparent reserves, no direct energy consumption concerns unlike PoW crypto.
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Analysis Archive */}
-                  <div className="sm-card">
-                    <div
-                      onClick={() => toggleSection('archive')}
-                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={investmentSections.has('archive')}
-                      aria-label="Toggle Analysis Archive"
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('archive'))}
-                    >
-                      <span className="sm-section-label">Analysis Archive — Complete History<UpdateIndicators sources={['PR', 'SEC']} /></span>
-                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('archive') ? '−' : '+'}</span>
+                  {/* Hedge Fund */}
+                  <div className="sm-callout" style={{ '--callout-color': 'var(--violet)' } as React.CSSProperties}>
+                    <div className="sm-flex">
+                      <span className="sm-news-tag" style={{ '--tag-color': 'var(--violet)' } as React.CSSProperties}>HEDGE FUND</span>
+                      <span className="sm-subtle">Alpha Generation &amp; Event Catalysts</span>
                     </div>
-                    {investmentSections.has('archive') && (
-                      <div className="sm-card-body">
-                        <div className="sm-subtle">Full record of all investment thesis updates. Never deleted.</div>
-                        <div className="sm-flex-col" style={{ maxHeight: 500, overflowY: 'auto' }}>
-                          {/* Current */}
-                          <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
-                            <div className="sm-flex-between">
-                              <div className="sm-flex">
-                                <span className="sm-text sm-fw-600">Dec 31, 2025</span>
-                                <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>CURRENT</span>
-                              </div>
-                              <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>OVERWEIGHT</span>
-                            </div>
-                            <div className="sm-body-sm">
-                              Post-Q3 2025: Upgraded conviction on execution. USDC at $73.7B validates network effects thesis. OCC charter approval removes key regulatory overhang. Maintaining overweight despite lock-up supply risk given fundamental momentum.
-                            </div>
-                            <div className="sm-text-11">Trigger: Q3 2025 10-Q, OCC Charter Approval (Dec 12)</div>
-                          </div>
-
-                          {[
-                            { date: 'Nov 14, 2025', rating: 'OVERWEIGHT', color: 'var(--mint)', summary: 'Post-Q3\'25 earnings: Beat on all metrics. Revenue +66% YoY exceeded buy-side expectations of +55%. Platform % inflection to 13.5% suggests early CPN traction. Raised guidance on RLDC margin encouraging.', trigger: 'Q3\'25 8-K Earnings Release' },
-                            { date: 'Aug 18, 2025', rating: 'NEUTRAL → OVERWEIGHT', color: 'var(--mint)', summary: 'Follow-on priced at $130 (4.2x IPO price in 10 weeks) validates institutional demand. Secondary-heavy deal (8M of 10M shares) means existing holders taking profits, not company needing capital. Upgrading on strength.', trigger: 'S-1 Follow-on Filing, Pricing at $130' },
-                            { date: 'Aug 12, 2025', rating: 'NEUTRAL', color: 'var(--sky)', summary: 'First earnings as public company mixed: Strong top-line (+53% YoY) but $482M net loss on IPO-related charges creates headline noise. Underlying business healthy — $126M Adj. EBITDA, $61.3B USDC (+90% YoY).', trigger: 'Q2\'25 10-Q, First Public Earnings' },
-                            { date: 'Jun 6, 2025', rating: 'NEUTRAL', color: 'var(--sky)', summary: 'IPO priced at $31 (low end of range) reflects crypto market hesitancy, not fundamentals. Upsized deal (39M vs 24M shares) absorbed cleanly. $1.21B raised provides growth runway. Initiating at neutral.', trigger: 'IPO Pricing, 424B4 Prospectus' },
-                            { date: 'Apr 1, 2025', rating: 'MONITORING', color: 'var(--gold)', summary: 'S-1 filed publicly after confidential submission in Jan 2024. Business model validated: $1.68B FY24 revenue, 38% RLDC margin, USDC at $44B. Key concern is Coinbase distribution cost (54% of revenue).', trigger: 'S-1 Initial Public Filing' },
-                            { date: 'Jan 11, 2024', rating: 'MONITORING', color: 'var(--gold)', summary: 'Confidential S-1 submission signals IPO intent after failed SPAC in 2022. Circle has rebuilt credibility post-SVB crisis with 100% reserve transparency. USDC recovery from $24B low to $32B+ suggests crypto winter thaw.', trigger: 'Confidential S-1 Announcement' },
-                            { date: 'Aug 21, 2023', rating: 'MONITORING', color: 'var(--gold)', summary: 'Centre Consortium dissolution and Coinbase equity investment restructures USDC economics. Circle now sole issuer with full governance control. Revenue share agreement creates ~50-60% distribution cost.', trigger: 'Centre Dissolution PR, Coinbase Equity Investment' },
-                            { date: 'Mar 2023', rating: 'UNDERWEIGHT', color: 'var(--coral)', summary: 'SVB collapse creates existential risk. $3.3B of USDC reserves held at SVB. Weekend depeg to $0.87 causes $6B+ redemptions. Fed/FDIC backstop saves reserves but damages trust.', trigger: 'SVB Collapse, USDC Depeg Event' },
-                          ].map((entry, i) => (
-                            <div key={i} className="sm-card-body sm-bg-surface2">
-                              <div className="sm-flex-between">
-                                <span className="sm-text sm-fw-600">{entry.date}</span>
-                                <span className="sm-news-tag" style={{ '--tag-color': entry.color } as React.CSSProperties}>{entry.rating}</span>
-                              </div>
-                              <div className="sm-body-sm">{entry.summary}</div>
-                              <div className="sm-text-11 sm-text3">Trigger: {entry.trigger}</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    <div className="sm-body sm-lh-18">
+                      <p>
+                        <strong>Event Calendar Alpha:</strong> Lock-up expiry (Dec 2025) creates a defined event with predictable dynamics. Historical data shows 70% of high-quality IPOs recover lock-up weakness within 60 days. Strategy: scale into weakness with 30-day DCA starting at lock-up, targeting 15-20% position discount to current price. This is a repeatable playbook.
+                      </p>
+                      <p>
+                        <strong>Short Interest Dynamics:</strong> Current short interest ~8% of float &mdash; elevated but not crowded. Post-lock-up, short interest as % of new float drops to ~1.3%, reducing squeeze risk but also squeeze upside. No significant borrow cost premium currently. Asymmetric long thesis remains intact.
+                      </p>
+                      <p>
+                        <strong>Catalyst Stacking:</strong> Q4 earnings (Feb) + Arc mainnet (H1) + OCC charter (H1) creates a &quot;catalyst stacking&quot; setup through mid-2026. Each positive catalyst de-risks the next. Position sizing: start 3% portfolio, add to 5% on lock-up weakness, trim to 3% core on 50%+ gains. Defined entry/exit framework limits behavioral errors.
+                      </p>
+                    </div>
                   </div>
 
-                  {/* Risks & Strategic Assessment */}
-                  <div className="sm-card">
-                    <div
-                      onClick={() => toggleSection('strategic-assessment')}
-                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={investmentSections.has('strategic-assessment')}
-                      aria-label="Toggle Risks and Strategic Assessment"
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('strategic-assessment'))}
-                    >
-                      <span className="sm-section-label">Risks & Strategic Assessment<UpdateIndicators sources={['PR', 'SEC']} /></span>
-                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('strategic-assessment') ? '−' : '+'}</span>
+                  {/* CIO/CIS */}
+                  <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
+                    <div className="sm-flex">
+                      <span className="sm-news-tag" style={{ '--tag-color': 'var(--sky)' } as React.CSSProperties}>CIO / CIS</span>
+                      <span className="sm-subtle">Strategic Allocation &amp; Fiduciary Considerations</span>
                     </div>
-                    {investmentSections.has('strategic-assessment') && (
-                      <div className="sm-card-body">
-                        {/* Section Header */}
-                        <div className="sm-subtle" style={{ fontStyle: 'italic' }}>
-                          Multi-perspective risk evaluation and strategic decision framework
-                        </div>
+                    <div className="sm-body sm-lh-18">
+                      <p>
+                        <strong>Strategic Thesis:</strong> Circle represents a &quot;TradFi on-ramp to crypto infrastructure&quot; &mdash; the cleanest way to gain crypto ecosystem exposure without direct token/protocol risk. For institutions constrained by crypto mandates, CRCL provides compliant exposure to stablecoin adoption megatrend. Think of it as &quot;picks and shovels&quot; for the digital dollar economy.
+                      </p>
+                      <p>
+                        <strong>Benchmark Considerations:</strong> Not yet in S&amp;P 500 but likely candidate within 12-18 months once GAAP profitability sustained. Early positioning ahead of index inclusion creates alpha opportunity. Tracking error vs. benchmark acceptable for growth allocations given asymmetric return profile.
+                      </p>
+                      <p>
+                        <strong>Reputational Risk Assessment:</strong> Post-FTX, crypto association carries headline risk. However, Circle&apos;s regulatory positioning (OCC charter, GENIUS Act compliance, major bank partnerships) provides defensible narrative. If questioned by stakeholders, response framework: &quot;We own the regulated payments infrastructure, not speculative tokens.&quot; Blackrock/Fidelity ownership validates institutional acceptability.
+                      </p>
+                    </div>
+                  </div>
 
-                        {/* Part 1: Multi-Perspective Risk Evaluation */}
-                        <div style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', marginBottom: 8 }}><span className="sm-section-label sm-text">Risk Evaluation — Four Perspectives</span></div>
+                  {/* Technical Analyst */}
+                  <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+                    <div className="sm-flex">
+                      <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>TECHNICAL ANALYST</span>
+                      <span className="sm-subtle">Chart Patterns &amp; Price Action</span>
+                    </div>
+                    <div className="sm-body sm-lh-18">
+                      <p>
+                        <strong>IPO Base Formation:</strong> Recent IPO establishing price discovery range. Watch for completion of IPO base &mdash; typically 3-6 months of consolidation before directional move. Initial support at IPO price level ($31). Declining volume on pullbacks is constructive accumulation pattern.
+                      </p>
+                      <p>
+                        <strong>Key Levels:</strong> VWAP from IPO serving as key pivot level. Bollinger Bands narrowing suggests volatility compression before expansion. RSI neutral at 50 provides no directional bias yet &mdash; wait for confirmation. Watch for breakout above $45 with volume as momentum entry signal.
+                      </p>
+                      <p>
+                        <strong>Lock-up Dynamics:</strong> December 2025 lock-up expiry creates potential supply overhang. Monitor volume patterns carefully around that date. Historical IPO lock-up expirations show initial weakness followed by recovery if fundamentals intact. Use weakness as accumulation opportunity, not exit signal.
+                      </p>
+                      <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+                        <strong className="sm-mint">Technical Outlook:</strong> {investmentCurrent.perspectives.technicalAnalyst.ecosystemView}
+                      </div>
+                    </div>
+                  </div>
 
-                        {/* CFA Level III Perspective */}
-                        <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
-                          <div className="sm-flex">
-                            <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>CFA LEVEL III</span>
-                            <span className="sm-subtle">Portfolio Construction & Factor Analysis</span>
-                          </div>
-                          <div className="sm-body" style={{ lineHeight: 1.8 }}>
-                            <p>
-                              <strong>Factor Exposures:</strong> CRCL exhibits significant interest rate sensitivity (negative duration — rising rates benefit reserve income) and moderate crypto beta correlation (~0.4 to BTC). This creates a unique hedge: positive rate sensitivity while maintaining crypto upside optionality. Low correlation to traditional equities makes it an attractive diversifier.
-                            </p>
-                            <p>
-                              <strong>Liquidity Analysis:</strong> Average daily volume ~$180M provides adequate liquidity for institutional positions up to $50M without material market impact. Post-lock-up, float increases from ~40M to ~240M shares, dramatically improving liquidity profile. Bid-ask spreads tight at ~0.05%.
-                            </p>
-                            <p>
-                              <strong>Governance & ESG:</strong> Dual-class structure (Class B 5:1 voting) concentrates control with founders through 2030 sunset — acceptable given founder alignment and temporary nature. Board composition strong (ex-Goldman CRO, ex-CFTC Chair). ESG profile positive: financial inclusion focus, transparent reserves, no direct energy consumption concerns unlike PoW crypto.
-                            </p>
-                          </div>
-                        </div>
+                  {/* Key Strategic Questions */}
+                  <div className="sm-inv-section-sub"><span className="sm-section-label sm-text">Key Strategic Questions</span></div>
 
-                        {/* Hedge Fund Manager Perspective */}
-                        <div className="sm-callout" style={{ '--callout-color': 'var(--violet)' } as React.CSSProperties}>
-                          <div className="sm-flex">
-                            <span className="sm-news-tag" style={{ '--tag-color': 'var(--violet)' } as React.CSSProperties}>HEDGE FUND</span>
-                            <span className="sm-subtle">Alpha Generation & Event Catalysts</span>
-                          </div>
-                          <div className="sm-body" style={{ lineHeight: 1.8 }}>
-                            <p>
-                              <strong>Event Calendar Alpha:</strong> Lock-up expiry (Dec 2025) creates a defined event with predictable dynamics. Historical data shows 70% of high-quality IPOs recover lock-up weakness within 60 days. Strategy: scale into weakness with 30-day DCA starting at lock-up, targeting 15-20% position discount to current price. This is a repeatable playbook.
-                            </p>
-                            <p>
-                              <strong>Short Interest Dynamics:</strong> Current short interest ~8% of float — elevated but not crowded. Post-lock-up, short interest as % of new float drops to ~1.3%, reducing squeeze risk but also squeeze upside. No significant borrow cost premium currently. Asymmetric long thesis remains intact.
-                            </p>
-                            <p>
-                              <strong>Catalyst Stacking:</strong> Q4 earnings (Feb) + Arc mainnet (H1) + OCC charter (H1) creates a "catalyst stacking" setup through mid-2026. Each positive catalyst de-risks the next. Position sizing: start 3% portfolio, add to 5% on lock-up weakness, trim to 3% core on 50%+ gains. Defined entry/exit framework limits behavioral errors.
-                            </p>
-                          </div>
-                        </div>
+                  {/* Would I Buy Now? */}
+                  <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
+                    <div className="sm-flex-between">
+                      <span className="sm-text sm-fw-600">Would I Buy Now?</span>
+                      <span className="sm-news-tag-lg" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>YES &mdash; ACCUMULATE</span>
+                    </div>
+                    <div className="sm-body sm-lh-18">
+                      <p>
+                        <strong>The Case:</strong> At $82, CRCL trades at 6.4x P/S with 66% revenue growth &mdash; a valuation anomaly for a Rule of 40 score of 105. Fair value range is $100-150, implying 22-83% upside. The risk/reward ratio of 3.2:1 is compelling. You&apos;re buying a regulated payment network at a crypto discount that shouldn&apos;t exist.
+                      </p>
+                      <p>
+                        <strong>The Hesitation:</strong> Lock-up expiry in Dec 2025 creates near-term supply overhang. Waiting could provide a better entry. However, strong fundamentals often absorb lock-up selling quickly, and waiting risks missing the move entirely if selling is lighter than expected.
+                      </p>
+                      <p>
+                        <strong>The Verdict:</strong> Yes, initiate position now at 50% target weight. Reserve 50% for lock-up weakness (target entry: $65-70). If lock-up passes without material weakness, deploy remaining capital on confirmation of support. Don&apos;t let perfect be the enemy of good &mdash; the asymmetry favors action.
+                      </p>
+                    </div>
+                  </div>
 
-                        {/* CIO/CIS Institutional Perspective */}
-                        <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
-                          <div className="sm-flex">
-                            <span className="sm-news-tag" style={{ '--tag-color': 'var(--sky)' } as React.CSSProperties}>CIO / CIS</span>
-                            <span className="sm-subtle">Strategic Allocation & Fiduciary Considerations</span>
-                          </div>
-                          <div className="sm-body" style={{ lineHeight: 1.8 }}>
-                            <p>
-                              <strong>Strategic Thesis:</strong> Circle represents a "TradFi on-ramp to crypto infrastructure" — the cleanest way to gain crypto ecosystem exposure without direct token/protocol risk. For institutions constrained by crypto mandates, CRCL provides compliant exposure to stablecoin adoption megatrend. Think of it as "picks and shovels" for the digital dollar economy.
-                            </p>
-                            <p>
-                              <strong>Benchmark Considerations:</strong> Not yet in S&P 500 but likely candidate within 12-18 months once GAAP profitability sustained. Early positioning ahead of index inclusion creates alpha opportunity. Tracking error vs. benchmark acceptable for growth allocations given asymmetric return profile.
-                            </p>
-                            <p>
-                              <strong>Reputational Risk Assessment:</strong> Post-FTX, crypto association carries headline risk. However, Circle's regulatory positioning (OCC charter, GENIUS Act compliance, major bank partnerships) provides defensible narrative. If questioned by stakeholders, response framework: "We own the regulated payments infrastructure, not speculative tokens." Blackrock/Fidelity ownership validates institutional acceptability.
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Technical Analyst Perspective */}
-                        <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
-                          <div className="sm-flex">
-                            <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>TECHNICAL ANALYST</span>
-                            <span className="sm-subtle">Chart Patterns & Price Action</span>
-                          </div>
-                          <div className="sm-body" style={{ lineHeight: 1.8 }}>
-                            <p>
-                              <strong>IPO Base Formation:</strong> Recent IPO establishing price discovery range. Watch for completion of IPO base — typically 3-6 months of consolidation before directional move. Initial support at IPO price level ($31). Declining volume on pullbacks is constructive accumulation pattern.
-                            </p>
-                            <p>
-                              <strong>Key Levels:</strong> VWAP from IPO serving as key pivot level. Bollinger Bands narrowing suggests volatility compression before expansion. RSI neutral at 50 provides no directional bias yet — wait for confirmation. Watch for breakout above $45 with volume as momentum entry signal.
-                            </p>
-                            <p>
-                              <strong>Lock-up Dynamics:</strong> December 2025 lock-up expiry creates potential supply overhang. Monitor volume patterns carefully around that date. Historical IPO lock-up expirations show initial weakness followed by recovery if fundamentals intact. Use weakness as accumulation opportunity, not exit signal.
-                            </p>
-                            <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
-                              <strong className="sm-mint">Technical Outlook:</strong> {investmentCurrent.perspectives.technicalAnalyst.ecosystemView}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Part 2: Key Strategic Questions */}
-                        <div style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', marginBottom: 8 }}><span className="sm-section-label sm-text">Key Strategic Questions</span></div>
-
-                        {/* Would I Buy Now? */}
-                        <div className="sm-card-body sm-bg-surface2">
-                          <div className="sm-flex-between">
-                            <span className="sm-text sm-fw-600" style={{ fontSize: 15 }}>Would I Buy Now?</span>
-                            <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)', padding: '6px 16px', fontSize: 13, fontWeight: 700 } as React.CSSProperties}>YES — ACCUMULATE</span>
-                          </div>
-                          <div className="sm-body" style={{ lineHeight: 1.8 }}>
-                            <p>
-                              <strong>The Case:</strong> At $82, CRCL trades at 6.4x P/S with 66% revenue growth — a valuation anomaly for a Rule of 40 score of 105. Fair value range is $100-150, implying 22-83% upside. The risk/reward ratio of 3.2:1 is compelling. You're buying a regulated payment network at a crypto discount that shouldn't exist.
-                            </p>
-                            <p>
-                              <strong>The Hesitation:</strong> Lock-up expiry in Dec 2025 creates near-term supply overhang. Waiting could provide a better entry. However, strong fundamentals often absorb lock-up selling quickly, and waiting risks missing the move entirely if selling is lighter than expected.
-                            </p>
-                            <p>
-                              <strong>The Verdict:</strong> Yes, initiate position now at 50% target weight. Reserve 50% for lock-up weakness (target entry: $65-70). If lock-up passes without material weakness, deploy remaining capital on confirmation of support. Don't let perfect be the enemy of good — the asymmetry favors action.
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* What Can I Expect? */}
-                        <div className="sm-card-body sm-bg-surface2">
-                          <div className="sm-text sm-fw-600" style={{ fontSize: 15 }}>What Can I Expect?</div>
-                          <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
-                            <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
-                              <div className="sm-gold sm-fw-600" style={{ fontSize: 13 }}>Short-Term (0-6 months)</div>
-                              <div className="sm-text-13" style={{ lineHeight: 1.6 }}>
-                                Expect volatility. Lock-up creates 15-25% downside risk. Q4 earnings (Feb) should be strong given Q3 momentum. Trading range: $60-95. Don't panic on lock-up weakness — it's expected and temporary.
-                              </div>
-                            </div>
-                            <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
-                              <div className="sm-sky sm-fw-600" style={{ fontSize: 13 }}>Mid-Term (6-18 months)</div>
-                              <div className="sm-text-13" style={{ lineHeight: 1.6 }}>
-                                Catalyst-rich period. Arc mainnet, OCC charter, potential Coinbase renegotiation all converge. If execution continues, expect multiple expansion toward 10x P/S. Target range: $100-150. This is where the thesis gets tested.
-                              </div>
-                            </div>
-                            <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
-                              <div className="sm-mint sm-fw-600" style={{ fontSize: 13 }}>Long-Term (3-5 years)</div>
-                              <div className="sm-text-13" style={{ lineHeight: 1.6 }}>
-                                If stablecoin TAM expands to $1-2T and Circle maintains 25%+ share, this is a $150-350 stock. Payment network multiples (15-17x P/S) on $8-10B revenue = $120-170B market cap. Current: $52B. The math works if the thesis holds.
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* What's My Strategy? */}
-                        <div className="sm-card-body sm-bg-surface2">
-                          <div className="sm-text sm-fw-600" style={{ fontSize: 15 }}>What's My Strategy?</div>
-                          <div className="sm-body" style={{ lineHeight: 1.8 }}>
-                            <p>
-                              <strong className="sm-mint">Position Sizing:</strong> 3-5% for growth-oriented portfolios, 1-2% for balanced, avoid for income-focused (no dividend). This is a high-conviction, higher-volatility position — size accordingly. Never more than you can stomach watching drop 30%.
-                            </p>
-                            <p>
-                              <strong className="sm-sky">Entry Approach:</strong> Tranche in. 50% now at ~$82. 25% reserved for lock-up weakness ($65-70 target). Final 25% on confirmation of support or breakout above $95. Average cost target: $72-78. Patience beats FOMO.
-                            </p>
-                            <p>
-                              <strong className="sm-gold">Add Triggers:</strong> Below $65 = aggressive accumulate (oversold on lock-up). Below $55 = back up the truck (existential discount). Major partnership announcement (Apple, Google, Amazon) = add regardless of price.
-                            </p>
-                            <p>
-                              <strong className="sm-violet">Trim Triggers:</strong> Above $130 = trim 20% (take some chips off). Above $150 = trim another 25%. Above $200 = reduce to core 50% position. Let winners run, but harvest along the way.
-                            </p>
-                            <p>
-                              <strong className="sm-coral">Exit Criteria:</strong> Full exit if: (1) Coinbase renegotiation fails AND margins compress below 30%, (2) Regulatory environment turns hostile (SEC enforcement, GENIUS Act failure), (3) Tether achieves full transparency AND captures 80%+ market share, (4) Better opportunity emerges with superior risk/reward. Don't marry the position.
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Part 3: Final Verdict */}
-                        <div style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', marginBottom: 8 }}><span className="sm-section-label sm-text">Final Verdict</span></div>
-
-                        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--mint)', '--bar-accent-2': 'var(--cyan)', padding: 24 } as React.CSSProperties}>
-                          <div className="sm-flex-between" style={{ flexWrap: 'wrap', gap: 16 }}>
-                            <div className="sm-flex sm-gap-12">
-                              <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)', padding: '8px 20px', fontSize: 16, fontWeight: 700 } as React.CSSProperties}>OVERWEIGHT</span>
-                              <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)', padding: '6px 12px', fontSize: 12 } as React.CSSProperties}>HIGH CONVICTION</span>
-                            </div>
-                            <div className="sm-text-right">
-                              <div className="sm-subtle">12-Month Target</div>
-                              <div className="sm-mono sm-mint sm-fw-700" style={{ fontSize: 20 }}>$100 - $150</div>
-                            </div>
-                          </div>
-                          
-                          <div className="sm-body" style={{ lineHeight: 1.8 }}>
-                            <strong>Action:</strong> Accumulate on weakness, hold core position through volatility. Use lock-up as entry opportunity, not exit excuse. This is a 3-5 year compounder disguised as a volatile new issue.
-                          </div>
-                          
-                          <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
-                            <div className="sm-text" style={{ fontSize: 14, fontStyle: 'italic' }}>
-                              "Best-in-class regulated stablecoin infrastructure trading at a crypto discount that shouldn't exist. The market is pricing the past (crypto winter, SVB crisis) while ignoring the future (payment network economics, regulatory moat, TradFi adoption). Time arbitrage favors the patient."
-                            </div>
-                          </div>
+                  {/* What Can I Expect? */}
+                  <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
+                    <div className="sm-text sm-fw-600">What Can I Expect?</div>
+                    <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
+                      <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
+                        <div className="sm-fw-600 sm-gold sm-text-13">Short-Term (0-6 months)</div>
+                        <div className="sm-text-13 sm-lh-16">
+                          Expect volatility. Lock-up creates 15-25% downside risk. Q4 earnings (Feb) should be strong given Q3 momentum. Trading range: $60-95. Don&apos;t panic on lock-up weakness &mdash; it&apos;s expected and temporary.
                         </div>
                       </div>
-                    )}
+                      <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
+                        <div className="sm-fw-600 sm-sky sm-text-13">Mid-Term (6-18 months)</div>
+                        <div className="sm-text-13 sm-lh-16">
+                          Catalyst-rich period. Arc mainnet, OCC charter, potential Coinbase renegotiation all converge. If execution continues, expect multiple expansion toward 10x P/S. Target range: $100-150. This is where the thesis gets tested.
+                        </div>
+                      </div>
+                      <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+                        <div className="sm-fw-600 sm-mint sm-text-13">Long-Term (3-5 years)</div>
+                        <div className="sm-text-13 sm-lh-16">
+                          If stablecoin TAM expands to $1-2T and Circle maintains 25%+ share, this is a $150-350 stock. Payment network multiples (15-17x P/S) on $8-10B revenue = $120-170B market cap. Current: $52B. The math works if the thesis holds.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* What's My Strategy? */}
+                  <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
+                    <div className="sm-text sm-fw-600">What&apos;s My Strategy?</div>
+                    <div className="sm-body sm-lh-18">
+                      <p>
+                        <strong className="sm-mint">Position Sizing:</strong> 3-5% for growth-oriented portfolios, 1-2% for balanced, avoid for income-focused (no dividend). This is a high-conviction, higher-volatility position &mdash; size accordingly. Never more than you can stomach watching drop 30%.
+                      </p>
+                      <p>
+                        <strong className="sm-sky">Entry Approach:</strong> Tranche in. 50% now at ~$82. 25% reserved for lock-up weakness ($65-70 target). Final 25% on confirmation of support or breakout above $95. Average cost target: $72-78. Patience beats FOMO.
+                      </p>
+                      <p>
+                        <strong className="sm-gold">Add Triggers:</strong> Below $65 = aggressive accumulate (oversold on lock-up). Below $55 = back up the truck (existential discount). Major partnership announcement (Apple, Google, Amazon) = add regardless of price.
+                      </p>
+                      <p>
+                        <strong className="sm-violet">Trim Triggers:</strong> Above $130 = trim 20% (take some chips off). Above $150 = trim another 25%. Above $200 = reduce to core 50% position. Let winners run, but harvest along the way.
+                      </p>
+                      <p>
+                        <strong className="sm-coral">Exit Criteria:</strong> Full exit if: (1) Coinbase renegotiation fails AND margins compress below 30%, (2) Regulatory environment turns hostile (SEC enforcement, GENIUS Act failure), (3) Tether achieves full transparency AND captures 80%+ market share, (4) Better opportunity emerges with superior risk/reward. Don&apos;t marry the position.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Final Verdict */}
+                  <div className="sm-inv-section-sub"><span className="sm-section-label sm-text">Final Verdict</span></div>
+
+                  <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--mint)', '--bar-accent-2': 'var(--cyan)' } as React.CSSProperties}>
+                    <div className="sm-flex-between sm-flex-wrap sm-gap-16">
+                      <div className="sm-flex sm-gap-12">
+                        <span className="sm-news-tag-lg" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>OVERWEIGHT</span>
+                        <span className="sm-inv-ticker-badge">HIGH CONVICTION</span>
+                      </div>
+                      <div className="sm-text-right">
+                        <div className="sm-subtle">12-Month Target</div>
+                        <div className="sm-mono-lg sm-mint sm-fw-700">$100 - $150</div>
+                      </div>
+                    </div>
+                    <div className="sm-body sm-lh-18">
+                      <strong>Action:</strong> Accumulate on weakness, hold core position through volatility. Use lock-up as entry opportunity, not exit excuse. This is a 3-5 year compounder disguised as a volatile new issue.
+                    </div>
+                    <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+                      <div className="sm-text sm-italic">
+                        &quot;Best-in-class regulated stablecoin infrastructure trading at a crypto discount that shouldn&apos;t exist. The market is pricing the past (crypto winter, SVB crisis) while ignoring the future (payment network economics, regulatory moat, TradFi adoption). Time arbitrage favors the patient.&quot;
+                      </div>
+                    </div>
                   </div>
 
                   {/* Methodology */}
-                  <div className="sm-card">
-                    <div
-                      onClick={() => toggleSection('methodology')}
-                      className="sm-flex-between sm-pointer" style={{ padding: '24px 24px', borderBottom: '1px solid var(--border)' }}
-                      role="button"
-                      tabIndex={0}
-                      aria-expanded={investmentSections.has('methodology')}
-                      aria-label="Toggle Methodology and Disclosures"
-                      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection('methodology'))}
-                    >
-                      <span className="sm-section-label">Methodology & Disclosures<UpdateIndicators sources={['PR', 'SEC']} /></span>
-                      <span className="sm-text3" style={{ fontSize: 18 }}>{investmentSections.has('methodology') ? '−' : '+'}</span>
-                    </div>
-                    {investmentSections.has('methodology') && (
-                      <div style={{ padding: '24px 24px', fontSize: 13, color: 'var(--text2)', lineHeight: 1.8 }}>
-                        <p><strong>Data Sources:</strong> SEC EDGAR filings (10-K, 10-Q, 8-K, S-1, S-3), company press releases, earnings call transcripts, third-party research.</p>
-                        <p><strong>Valuation:</strong> Primary method is P/S multiples with peer comparison. Secondary: DCF (12% WACC, 3% terminal growth), SOTP for platform optionality.</p>
-                        <p><strong>Ratings Scale:</strong> OVERWEIGHT (expected 20%+ outperformance), NEUTRAL (market perform ±10%), UNDERWEIGHT (expected 20%+ underperformance), MONITORING (not yet rated).</p>
-                        <p><strong>Update Frequency:</strong> Analysis updated after each material SEC filing or significant press release. All historical analyses preserved permanently.</p>
-                        <p><strong>Limitations:</strong> Forward-looking statements involve uncertainty. Model assumes current regulatory trajectory continues. Interest rate and crypto market assumptions may prove incorrect. Not investment advice — do your own research.</p>
+                  <div className="sm-inv-section-sub sm-mt-16"><span className="sm-section-label sm-text">Methodology &amp; Disclosures</span></div>
+                  <div className="sm-body sm-text2 sm-lh-18">
+                    <p><strong>Data Sources:</strong> SEC EDGAR filings (10-K, 10-Q, 8-K, S-1, S-3), company press releases, earnings call transcripts, third-party research.</p>
+                    <p><strong>Valuation:</strong> Primary method is P/S multiples with peer comparison. Secondary: DCF (12% WACC, 3% terminal growth), SOTP for platform optionality.</p>
+                    <p><strong>Ratings Scale:</strong> OVERWEIGHT (expected 20%+ outperformance), NEUTRAL (market perform &plusmn;10%), UNDERWEIGHT (expected 20%+ underperformance), MONITORING (not yet rated).</p>
+                    <p><strong>Update Frequency:</strong> Analysis updated after each material SEC filing or significant press release. All historical analyses preserved permanently.</p>
+                    <p><strong>Limitations:</strong> Forward-looking statements involve uncertainty. Model assumes current regulatory trajectory continues. Interest rate and crypto market assumptions may prove incorrect. Not investment advice &mdash; do your own research.</p>
+                  </div>
+                </>
+              )}
+
+              renderAccumulation={() => (
+                <>
+                  {/* Entry/Exit Framework */}
+                  <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
+                    <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+                      <div className="sm-mint sm-fw-600">Entry Zones</div>
+                      <div className="sm-text-13">
+                        <div>$75-80: Current (hold)</div>
+                        <div>$65-70: Add on weakness</div>
+                        <div>$55-60: Aggressive accumulate</div>
                       </div>
-                    )}
+                    </div>
+                    <div className="sm-callout" style={{ '--callout-color': 'var(--coral)' } as React.CSSProperties}>
+                      <div className="sm-coral sm-fw-600">Risk Management</div>
+                      <div className="sm-text-13">
+                        <div>Stop-loss: $50 (-39%)</div>
+                        <div>Max position: 5% of portfolio</div>
+                        <div>Risk per trade: 1-2%</div>
+                      </div>
+                    </div>
+                    <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
+                      <div className="sm-sky sm-fw-600">Take Profit Levels</div>
+                      <div className="sm-text-13">
+                        <div>$100: Trim 20%</div>
+                        <div>$130: Trim 25%</div>
+                        <div>$150+: Hold core (50%)</div>
+                      </div>
+                    </div>
                   </div>
 
-              <CFANotes title="CFA Level III — Stablecoin Analysis" items={[
+                  {/* Portfolio Context */}
+                  <div className="sm-highlight-bar sm-mt-12" style={{ '--bar-accent-1': 'var(--violet)', '--bar-accent-2': 'var(--sky)' } as React.CSSProperties}>
+                    <div className="sm-micro-text sm-violet">Portfolio Construction Context</div>
+                    <div className="sm-subtle sm-italic sm-mt-8">For multi-asset portfolios holding CRCL alongside other positions</div>
+                  </div>
+                  <div className="sm-model-grid sm-mt-12" style={{ '--cols': 3 } as React.CSSProperties}>
+                    <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>
+                      <div className="sm-kpi-label">Asset Class Bucket</div>
+                      <div className="sm-kpi-value">Alternatives / Fintech</div>
+                      <div className="sm-kpi-sub sm-gold">Limit: 10-20% of portfolio</div>
+                    </div>
+                    <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>
+                      <div className="sm-kpi-label">Single-Name Limit</div>
+                      <div className="sm-kpi-value">3-5% max</div>
+                      <div className="sm-kpi-sub sm-coral">Rate sensitive, crypto adjacent</div>
+                    </div>
+                    <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>
+                      <div className="sm-kpi-label">Correlation Note</div>
+                      <div className="sm-kpi-value">CRCL + BMNR</div>
+                      <div className="sm-kpi-sub sm-sky">Both ETH-correlated; size combined</div>
+                    </div>
+                  </div>
+                  <div className="sm-note-panel">
+                    <strong>Combined Crypto Allocation:</strong> If holding both CRCL and BMNR, treat as a single &quot;Ethereum ecosystem&quot; allocation. Combined weight should not exceed alternatives bucket limit. CRCL provides infrastructure/revenue exposure; BMNR provides NAV/yield exposure.
+                  </div>
+                </>
+              )}
+
+              cfaNotes={[
                 { term: 'Stablecoin Reserve Yield', def: 'Income from investing stablecoin reserves (primarily US Treasuries). Circle earns yield on USDC reserves — this is the primary revenue driver.' },
                 { term: 'USDC Circulation', def: 'Total USDC in circulation, analogous to deposits for a bank. Higher circulation = more reserve assets = more interest income.' },
                 { term: 'Network Effects', def: 'USDC adoption creates self-reinforcing cycles: more integrations attract more users, which attract more integrations. Critical competitive moat.' },
-              ]} />
-            </>
+              ]}
+            />
           </TabPanel>)}
 
           {activeTab === 'model' && (<TabPanel id="model">

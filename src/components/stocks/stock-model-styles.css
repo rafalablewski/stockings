@@ -1962,6 +1962,266 @@ input[type="range"]::-webkit-slider-thumb {
   line-height: 1.4;
 }
 
+/* ── Investment glass-border list (1px gap, surface bg, hover) ── */
+.sm-inv-glass-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.sm-inv-glass-item {
+  background: var(--surface);
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.15s;
+}
+.sm-inv-glass-item:hover { background: var(--surface2); }
+
+/* Investment glass-border with left accent (risks) */
+.sm-inv-glass-accent {
+  background: var(--surface);
+  padding: 14px 20px;
+  border-left: 3px solid var(--inv-accent, var(--border));
+  transition: background 0.15s;
+}
+.sm-inv-glass-accent:hover { background: var(--surface2); }
+
+/* Investment perspective card (top accent) */
+.sm-inv-perspective {
+  background: var(--surface);
+  padding: 20px;
+  border-top: 3px solid var(--inv-accent, var(--violet));
+  transition: background 0.15s;
+}
+.sm-inv-perspective:hover { background: var(--surface2); }
+
+/* Investment severity badge */
+.sm-inv-severity {
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--inv-accent) 20%, transparent);
+  color: var(--inv-accent);
+}
+
+/* ── Investment Tab — Semantic Component Classes ──────────────────────── */
+
+/* Toggle header: border appears when expanded (via aria-expanded) */
+.sm-toggle-header[aria-expanded="true"] {
+  border-bottom: 1px solid var(--border);
+}
+
+/* Verdict card — left accent border driven by --inv-accent */
+.sm-inv-card-accent {
+  border-left: 4px solid var(--inv-accent, var(--accent));
+}
+
+/* Verdict badge — large colored pill */
+.sm-inv-verdict-badge {
+  font-weight: 700;
+  font-size: 18px;
+  padding: 8px 20px;
+  border-radius: 9999px;
+  color: var(--bg);
+  background: var(--inv-accent, var(--accent));
+}
+
+/* Ticker badge — small accent pill */
+.sm-inv-ticker-badge {
+  font-weight: 600;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+/* What's New callout box */
+.sm-inv-whats-new {
+  background: color-mix(in srgb, var(--mint) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mint) 20%, transparent);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 12px;
+}
+
+/* What's New list */
+.sm-inv-whats-new-list {
+  margin: 0;
+  padding-left: 16px;
+  line-height: 1.8;
+}
+
+/* Impact / strength / risk label (right side of glass-item) */
+.sm-inv-impact-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 16px;
+  white-space: nowrap;
+  color: var(--inv-accent, var(--text2));
+}
+
+/* Likelihood badge — subtle pill in risk matrix */
+.sm-inv-likelihood {
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  background: var(--surface2);
+  color: var(--text3);
+}
+
+/* Assessment badge — small colored pill in perspectives */
+.sm-inv-assess-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--bg);
+  background: var(--inv-accent, var(--accent));
+}
+
+/* Perspectives 2x2 grid (glass-list variant as grid) */
+.sm-inv-perspectives-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Archive row — clickable header */
+.sm-inv-archive-row {
+  padding: 14px 20px;
+}
+
+/* Archive expanded detail */
+.sm-inv-archive-detail {
+  padding: 0 20px 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* Archive key-developments list */
+.sm-inv-dev-list {
+  padding-left: 16px;
+  line-height: 1.7;
+  margin-top: 12px;
+}
+
+/* Toggle +/- icon */
+.sm-toggle-icon {
+  font-size: 18px;
+  color: var(--text3);
+}
+
+/* Justify flex-end utility */
+.sm-justify-end {
+  justify-content: flex-end;
+}
+
+/* Micro text reset (normal letter-spacing + case) */
+.sm-micro-text-normal {
+  letter-spacing: normal;
+  text-transform: none;
+  font-weight: 400;
+}
+
+/* Section sub-header with bottom border accent */
+.sm-inv-section-sub {
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+/* Scrollable container with max height */
+.sm-inv-scroll {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* Ecosystem Health panel (BMNR) */
+.sm-inv-eco-panel {
+  padding: 16px;
+  background: color-mix(in srgb, var(--violet) 8%, transparent);
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--violet) 20%, transparent);
+}
+.sm-inv-eco-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.sm-inv-eco-metric {
+  background: var(--surface);
+  padding: 12px;
+  border-radius: 12px;
+  text-align: center;
+}
+.sm-inv-eco-value {
+  font-size: 13px;
+  font-family: 'Space Mono', monospace;
+  font-weight: 600;
+  color: var(--inv-accent, var(--mint));
+}
+.sm-inv-eco-signal {
+  font-size: 10px;
+  color: var(--inv-accent, var(--mint));
+}
+.sm-inv-eco-grade {
+  font-family: 'Space Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--inv-accent, var(--mint));
+}
+
+/* Ethereum catalyst panel (BMNR) */
+.sm-inv-eco-catalyst {
+  padding: 12px;
+  background: color-mix(in srgb, var(--violet) 10%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--text2);
+}
+
+/* Range input slider (Rate Sensitivity Calculator) */
+.sm-range-input {
+  width: 100%;
+  accent-color: var(--mint);
+}
+
+@media (max-width: 768px) {
+  .sm-inv-eco-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 480px) {
+  .sm-inv-eco-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* News tag variant — larger for emphasis */
+.sm-news-tag-lg {
+  padding: 6px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--tag-color, var(--cyan));
+  background: color-mix(in srgb, var(--tag-color, var(--cyan)) 20%, transparent);
+}
+
+@media (max-width: 768px) {
+  .sm-inv-glass-item { padding: 12px 16px; }
+  .sm-inv-glass-accent { padding: 12px 16px; }
+  .sm-inv-perspective { padding: 16px; }
+  .sm-inv-perspectives-grid { grid-template-columns: 1fr; }
+  .sm-inv-verdict-badge { font-size: 14px; padding: 6px 16px; }
+  .sm-inv-archive-row { padding: 12px 16px; }
+  .sm-inv-archive-detail { padding: 0 16px 12px; }
+}
+
 @media (max-width: 768px) {
   .sm-tl-event-item { padding: 12px 16px; }
   .sm-tl-pr-item-v2 { padding: 12px 16px; }

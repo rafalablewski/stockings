@@ -47,7 +47,7 @@ export interface Risk {
   risk: string;
   severity: 'Critical' | 'High' | 'Medium' | 'Low';
   likelihood: 'High' | 'Medium' | 'Low' | 'Low-Medium';
-  impact: 'Severe' | 'High' | 'Moderate' | 'Low';
+  impact: 'Severe' | 'High' | 'Moderate' | 'Medium' | 'Low';
   detail: string;
   mitigation: string;
 }
@@ -157,10 +157,24 @@ export interface SharedInvestmentTabProps {
   current: InvestmentCurrent;
   archive: ArchiveEntry[];
   ticker: string;
-  /** Optional render props for company-specific sections (add more as new stocks need them) */
+  /** KPI columns in the rating header (right side) */
   renderHeaderMetrics?: () => React.ReactNode;
-  renderEcosystemHealth?: () => React.ReactNode;
-  renderCatalysts?: () => React.ReactNode;
+  /** After scorecard (BMNR: Ecosystem Health rating) */
+  renderAfterScorecard?: () => React.ReactNode;
+  /** Before Growth Drivers (CRCL: Financial Health, Unit Economics) */
+  renderBeforeGrowthDrivers?: () => React.ReactNode;
+  /** Extra content at bottom of Growth Drivers section */
+  renderGrowthDriversExtra?: () => React.ReactNode;
+  /** After Growth Drivers (CRCL: Valuation Framework) */
+  renderAfterGrowthDrivers?: () => React.ReactNode;
+  /** After moat section — durability note */
+  moatDurabilityNote?: string;
+  /** After Risk Matrix (CRCL: Rate Sensitivity Calculator) */
+  renderAfterRiskMatrix?: () => React.ReactNode;
+  /** Full body of Risks & Strategic Assessment (perspectives + strategic questions + timeframes) */
+  renderStrategicAssessment?: () => React.ReactNode;
+  /** Extra content in Position Sizing (BMNR: Accumulation zones) */
   renderAccumulation?: () => React.ReactNode;
-  /** Future: add more optional render props for stock-specific blocks, e.g. renderCompsTable, renderCustomScorecard */
+  /** CFA Notes items — if not provided, defaults will be used */
+  cfaNotes?: { term: string; def: string }[];
 }

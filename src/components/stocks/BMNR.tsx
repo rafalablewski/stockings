@@ -214,6 +214,8 @@ import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import SharedEdgarTab from '../shared/SharedEdgarTab';
+import { SharedInvestmentTab } from '../shared/SharedInvestmentTab';
+import type { InvestmentCurrent } from '../shared/investmentTypes';
 import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
@@ -5024,21 +5026,8 @@ const SECFilingTracker = () => {
 // Updated after every PR/SEC filing with archived historical summaries
 // ═══════════════════════════════════════════════════════════════════════════════
 const InvestmentTab = () => {
-  const [investmentSections, setInvestmentSections] = useState(new Set(['summary', 'scorecard']));
-  const [expandedArchive, setExpandedArchive] = useState(null);
-  
-  const toggleSection = (section) => {
-    const next = new Set(investmentSections);
-    if (next.has(section)) next.delete(section);
-    else next.add(section);
-    setInvestmentSections(next);
-  };
-  
-  const expandAll = () => setInvestmentSections(new Set(['summary', 'scorecard', 'growth', 'moat', 'risks', 'strategic-assessment', 'position', 'archive']));
-  const collapseAll = () => setInvestmentSections(new Set(['summary']));
-  
   // Current Investment Summary
-  const current = {
+  const current: InvestmentCurrent = {
     date: '2026-02-12',
     source: 'February 12, 2026 — Updated: CoinDesk Consensus + Beast/Step + S-8 + Nelson Separation',
     verdict: 'STRONG BUY',
@@ -5605,592 +5594,352 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
     },
   ];
 
-  // Collapsible section component — Unified pattern (matches ASTS/CRCL)
-  const CollapsibleSection = ({ id, title, children, sources }: { id: string; title: string; children: React.ReactNode; sources?: UpdateSource | UpdateSource[] }) => (
-    <div className="sm-card">
-      <div
-        className="sm-toggle-header"
-        style={{ borderBottom: investmentSections.has(id) ? '1px solid var(--border)' : 'none' }}
-        onClick={() => toggleSection(id)}
-        role="button"
-        tabIndex={0}
-        aria-expanded={investmentSections.has(id)}
-        aria-label={`Toggle ${title}`}
-        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), toggleSection(id))}
-      >
-        <span className="sm-section-label">{title}{sources && <UpdateIndicators sources={sources} />}</span>
-        <span className="sm-text3" aria-hidden="true" style={{ fontSize: 18 }}>{investmentSections.has(id) ? '−' : '+'}</span>
-      </div>
-      {investmentSections.has(id) && <div className="sm-card-body">{children}</div>}
-    </div>
-  );
-
   return (
-    <div className="sm-flex-col sm-flex-col-gap-16">
-      {/* Controls */}
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Due Diligence<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <h2>Investment Analysis<span className="sm-accent">.</span></h2>
-        <p>Multi-perspective due diligence analysis with CFA, hedge fund, and institutional frameworks. ETH treasury thesis scoring and risk assessment.</p>
-      </div>
-      <div className="sm-flex sm-items-center sm-gap-12" style={{ justifyContent: 'flex-end' }}>
-        <button onClick={expandAll} className="sm-action-btn">Expand All</button>
-        <button onClick={collapseAll} className="sm-action-btn">Collapse All</button>
-      </div>
+    <SharedInvestmentTab
+      current={current}
+      archive={archive}
+      ticker="BMNR"
 
-      {/* Data Refresh Indicator */}
-      <div className="sm-flex sm-items-center sm-gap-16 sm-text-11" style={{ justifyContent: 'flex-end', color: 'var(--text3)' }}>
-        <span>Data as of: <strong className="sm-text2">{current.date}</strong></span>
-        <span>•</span>
-        <span>Source: <strong className="sm-text2">{current.source}</strong></span>
-      </div>
-
-      {/* Rating Header */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Current Assessment</span>
-        <span className="sm-divider-line" />
-      </div>
-      <div className="sm-card" style={{ borderLeft: '4px solid var(--mint)' }}>
-        <div className="sm-card-body">
-        <div className="sm-flex-between sm-items-start sm-flex-wrap sm-gap-16">
-          <div>
-            <div className="sm-flex sm-gap-12 sm-mb-12">
-              <span className="sm-fw-700" style={{ background: 'var(--mint)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 99, fontSize: 18 }}>BUY</span>
-              <span className="sm-fw-600 sm-mint" style={{ background: 'color-mix(in srgb, var(--mint) 15%, transparent)', padding: '6px 12px', borderRadius: 99, fontSize: 12 }}>HIGH CONVICTION</span>
-            </div>
-            <div className="sm-text-13 sm-text2" style={{ maxWidth: 500 }}>
-              {current.executiveSummary.headline}
-            </div>
-            <div className="sm-text-11 sm-mt-8">
-              Last Updated: {current.date} • Trigger: {current.source}
-            </div>
-          </div>
+      renderHeaderMetrics={() => (
+        <>
 {/* [PR_CHECKLIST_INVESTMENT_DISPLAY] - Hardcoded metrics, update with every PR! */}
-          <div className="sm-flex sm-gap-24 sm-flex-wrap">
-            <div className="sm-text-center">
-              <div className="sm-text-11">NAV/Share</div>
-              <div className="sm-mono-lg sm-fw-700 sm-mint">$23.04</div>
-              <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>@ $2,125 ETH</div>
-            </div>
-            <div className="sm-text-center">
-              <div className="sm-text-11">Total Holdings</div>
-              <div className="sm-mono-lg sm-fw-700 sm-sky">$10.0B</div>
-              <div className="sm-text-11 sm-mint">4.326M ETH + $595M Cash</div>
-            </div>
-            <div className="sm-text-center">
-              <div className="sm-text-11">Staked ETH</div>
-              <div className="sm-mono-lg sm-fw-700 sm-violet">2.90M</div>
-              <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>$6.2B Value (67%)</div>
-            </div>
+        <div className="sm-flex sm-gap-24 sm-flex-wrap">
+          <div className="sm-text-center">
+            <div className="sm-text-11">NAV/Share</div>
+            <div className="sm-mono-lg sm-fw-700 sm-mint">$23.04</div>
+            <div className="sm-micro-text sm-micro-text-normal">@ $2,125 ETH</div>
+          </div>
+          <div className="sm-text-center">
+            <div className="sm-text-11">Total Holdings</div>
+            <div className="sm-mono-lg sm-fw-700 sm-sky">$10.0B</div>
+            <div className="sm-text-11 sm-mint">4.326M ETH + $595M Cash</div>
+          </div>
+          <div className="sm-text-center">
+            <div className="sm-text-11">Staked ETH</div>
+            <div className="sm-mono-lg sm-fw-700 sm-violet">2.90M</div>
+            <div className="sm-micro-text sm-micro-text-normal">$6.2B Value (67%)</div>
           </div>
         </div>
-        </div>
-      </div>
+        </>
+      )}
 
-      {/* Section Divider: Ratings & Scoring */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Ratings & Scoring</span>
-        <span className="sm-divider-line" />
-      </div>
-
-      {/* Investment Scorecard */}
-      <CollapsibleSection id="scorecard" title="Investment Scorecard" sources={['PR', 'SEC']}>
-        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
-          {current.scorecard.map((item, i) => (
-            <div key={i} className="sm-kpi-cell" style={{ '--kpi-color': item.color } as React.CSSProperties}>
-              <div className="sm-kpi-hero-md">{item.rating}</div>
-              <div className="sm-kpi-label">{item.category}</div>
-              <div className="sm-kpi-sub">{item.detail}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Ecosystem Health Rating */}
-        <div style={{ padding: 16, background: 'color-mix(in srgb, var(--violet) 8%, transparent)', borderRadius: 12, border: '1px solid color-mix(in srgb, var(--violet) 20%, transparent)' }}>
+      renderAfterScorecard={() => current.ecosystemHealth ? (
+        <div className="sm-inv-eco-panel">
           <div className="sm-flex-between">
             <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>Ecosystem Health</div>
+              <div className="sm-fw-600 sm-text">Ecosystem Health</div>
               <div className="sm-text-11">Ethereum network fundamentals (see Ethereum tab for details)</div>
             </div>
             <div className="sm-flex">
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 28, fontWeight: 700, color: current.ecosystemHealth.overallColor }}>{current.ecosystemHealth.overallGrade}</div>
+              <div className="sm-inv-eco-grade" style={{ '--inv-accent': current.ecosystemHealth.overallColor } as React.CSSProperties}>{current.ecosystemHealth.overallGrade}</div>
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+          <div className="sm-inv-eco-grid">
             {current.ecosystemHealth.metrics.map((m, i) => (
-              <div key={i} style={{ background: 'var(--surface)', padding: 12, borderRadius: 12, textAlign: 'center' }}>
+              <div key={i} className="sm-inv-eco-metric">
                 <div className="sm-micro-text sm-bmnr-reset-label">{m.metric}</div>
-                <div style={{ fontSize: 13, fontFamily: "'Space Mono', monospace", color: m.color, fontWeight: 600 }}>{m.value}</div>
-                <div style={{ fontSize: 10, color: m.color }}>✓ {m.signal}</div>
+                <div className="sm-inv-eco-value" style={{ '--inv-accent': m.color } as React.CSSProperties}>{m.value}</div>
+                <div className="sm-inv-eco-signal" style={{ '--inv-accent': m.color } as React.CSSProperties}>&#10003; {m.signal}</div>
               </div>
             ))}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text2)', fontStyle: 'italic' }}>{current.ecosystemHealth.summary}</div>
+          <div className="sm-text-12 sm-text2 sm-italic">{current.ecosystemHealth.summary}</div>
         </div>
-      </CollapsibleSection>
+      ) : null}
 
-      {/* Section Divider: Investment Thesis */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Investment Thesis</span>
-        <span className="sm-divider-line" />
-      </div>
-
-      {/* Summary */}
-      <CollapsibleSection id="summary" title="Investment Summary" sources={['PR', 'SEC']}>
-        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--mint)', '--bar-accent-2': 'var(--cyan)' } as React.CSSProperties}>
-          <div style={{ fontSize: 11, color: 'var(--mint)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>What's New ({current.source})</div>
-          <ul className="sm-text-13 sm-text2" style={{ margin: '4px 0 0', paddingLeft: 16, lineHeight: 1.8 }}>
-            {current.executiveSummary.whatsNew.map((item, i) => (
-              <li key={i}>{item}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="sm-text-13 sm-text2 sm-body" style={{ lineHeight: 1.8 }}>
-          <p>
-            <strong>Thesis:</strong> {current.executiveSummary.thesis}
-          </p>
-        </div>
-        <div className="sm-note-panel">
-          <em className="sm-cyan">"{current.executiveSummary.bottomLine}"</em>
-        </div>
-        <div className="sm-text-13 sm-text2 sm-body" style={{ lineHeight: 1.8 }}>
-          <p>
-            <strong>Position Sizing:</strong> 5-10% for aggressive portfolios • 2-5% for growth • Alternatives allocation for balanced
-          </p>
-        </div>
-      </CollapsibleSection>
-
-      {/* Section Divider: Growth Drivers */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Growth Drivers</span>
-        <span className="sm-divider-line" />
-      </div>
-
-      {/* Growth Drivers */}
-      <CollapsibleSection id="growth" title="Growth Drivers" sources="PR">
-        <div className="sm-flex-col sm-gap-8">
-          {current.growthDrivers.map((d, i) => (
-            <div key={i} className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
-              <div style={{ flex: 1 }}>
-                <div className="sm-text-13t sm-fw-600">{d.driver}</div>
-                <div className="sm-subtle">{d.description}</div>
-              </div>
-              <span className="sm-fw-600" style={{ color: d.color, fontSize: 12, marginLeft: 16 }}>{d.impact}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Ethereum Ecosystem Catalyst */}
-        <div style={{ padding: 12, background: 'color-mix(in srgb, var(--violet) 10%, transparent)', border: '1px solid var(--border)', borderRadius: 12, fontSize: 13, color: 'var(--text2)' }}>
+      renderGrowthDriversExtra={() => (
+        <div className="sm-inv-eco-catalyst">
           <div className="sm-violet sm-fw-600">Ethereum Ecosystem Catalyst</div>
           <p>
-            <strong className="sm-mint">Adoption Thesis:</strong> As more companies build on Ethereum (DeFi protocols, tokenized assets, on-chain payments, gaming), network activity and transaction fees increase. Greater Ethereum utility drives fundamental demand for ETH, directly benefiting BMNR's treasury holdings.
+            <strong className="sm-mint">Adoption Thesis:</strong> As more companies build on Ethereum (DeFi protocols, tokenized assets, on-chain payments, gaming), network activity and transaction fees increase. Greater Ethereum utility drives fundamental demand for ETH, directly benefiting BMNR&apos;s treasury holdings.
           </p>
           <p>
-            <strong className="sm-sky">Cross-Portfolio Note:</strong> This thesis is doubly bullish for portfolios holding both BMNR and CRCL — Ethereum adoption drives ETH price appreciation (BMNR NAV) and increases USDC demand for on-chain settlement (CRCL revenue). The positions are positively correlated through Ethereum ecosystem growth.
+            <strong className="sm-sky">Cross-Portfolio Note:</strong> This thesis is doubly bullish for portfolios holding both BMNR and CRCL &mdash; Ethereum adoption drives ETH price appreciation (BMNR NAV) and increases USDC demand for on-chain settlement (CRCL revenue). The positions are positively correlated through Ethereum ecosystem growth.
           </p>
         </div>
-      </CollapsibleSection>
+      )}
 
-      {/* Competitive Moat */}
-      <CollapsibleSection id="moat" title="Competitive Moat" sources={['PR', 'SEC']}>
-        <div className="sm-grid-2-lg">
-          <div className="sm-flex-col sm-gap-8">
-            <span className="sm-section-label sm-mint sm-inline-block">Moat Sources</span>
-            {current.moatSources.map((m, i) => (
-              <div key={i} className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
-                <div>
-                  <div className="sm-text-13t sm-fw-600">{m.source}</div>
-                  <div className="sm-text-11">{m.detail}</div>
+      moatDurabilityNote="A- (Strong). Scale advantage is nearly unassailable — would take years and billions for competitors to catch up. Yield advantage over BTC treasuries is permanent. Key risk is ETH price, not competitive dynamics."
+
+      renderStrategicAssessment={() => (
+        <>
+          {/* Section Header */}
+          <div className="sm-subtle sm-italic">
+            Multi-perspective risk evaluation and strategic decision framework for ETH treasury exposure
+          </div>
+
+          {/* Part 1: Multi-Perspective Risk Evaluation */}
+          <div className="sm-inv-section-sub"><span className="sm-section-label sm-text">Risk Evaluation &mdash; Four Perspectives</span></div>
+
+          {/* CFA Level III Perspective */}
+          <div className="sm-callout" style={{ '--callout-color': 'var(--violet)' } as React.CSSProperties}>
+            <div className="sm-flex">
+              <span className="sm-news-tag" style={{ '--tag-color': 'var(--violet)' } as React.CSSProperties}>CFA LEVEL III</span>
+              <span className="sm-subtle">Portfolio Construction &amp; Factor Analysis</span>
+            </div>
+            <div className="sm-body sm-lh-18">
+              <p>
+                <strong>Factor Exposures:</strong> BMNR exhibits ~0.85 beta to ETH with additional equity volatility from NAV premium fluctuations. Correlation to BTC ~0.7, SPY ~0.3. This is levered crypto exposure &mdash; expect 1.2-1.5x ETH moves in both directions. The staking yield (3-5% APY on ETH) provides modest carry but doesn&apos;t materially reduce volatility. Position sizing must account for crypto-like drawdowns (50-80% peak-to-trough historically).
+              </p>
+              <p>
+                <strong>Liquidity Analysis:</strong> Average daily volume ~$2-5M &mdash; adequate for retail but challenging for institutional blocks &gt;$500K without market impact. Bid-ask spreads can widen to 1-2% in volatility. This is a small-cap ($50-150M market cap) with corresponding liquidity constraints. Consider multi-day accumulation for positions &gt;1% of portfolio.
+              </p>
+              <p>
+                <strong>Governance &amp; ESG:</strong> Founder-controlled via Class B shares. Management pivoted successfully from BTC mining &mdash; demonstrates adaptability but also thesis drift risk. ESG profile mixed: PoS staking is energy-efficient, but crypto association carries headline risk. No dividend history despite recent announcement &mdash; track record TBD.
+              </p>
+              <div className="sm-callout" style={{ '--callout-color': 'var(--violet)' } as React.CSSProperties}>
+                <strong className="sm-violet">Ecosystem Assessment:</strong> {current.perspectives.cfa.ecosystemView}
+              </div>
+            </div>
+          </div>
+
+          {/* Hedge Fund Manager Perspective */}
+          <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
+            <div className="sm-flex">
+              <span className="sm-news-tag" style={{ '--tag-color': 'var(--gold)' } as React.CSSProperties}>HEDGE FUND</span>
+              <span className="sm-subtle">Alpha Generation &amp; Event Catalysts</span>
+            </div>
+            <div className="sm-body sm-lh-18">
+              <p>
+                <strong>NAV Arbitrage:</strong> BMNR trades at varying premiums/discounts to NAV. When premium compresses to &lt;10%, accumulate. When premium expands to &gt;50%, trim. This is the core tactical playbook. Track ETH price × holdings ÷ shares = NAV per share, compare to stock price daily. Premium mean-reverts over 30-60 day windows.
+              </p>
+              <p>
+                <strong>Catalyst Stacking:</strong> Key events: (1) MAVAN infrastructure launch &mdash; validates yield thesis, (2) ETH ETF approval/flows &mdash; institutional demand driver, (3) Quarterly ETH accumulation PRs &mdash; shows execution, (4) Staking deployment milestones &mdash; unlocks yield narrative. Each positive catalyst builds momentum. Position into catalysts, trim into strength.
+              </p>
+              <p>
+                <strong>Cycle Positioning:</strong> ETH treasury equities are leveraged bets on crypto cycles. In bull markets, NAV premiums expand and stock outperforms ETH. In bear markets, premiums compress and stock underperforms ETH. We&apos;re in early-to-mid cycle based on halving timing. Aggressive accumulation phase, but maintain stop-losses for cycle turn protection.
+              </p>
+              <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
+                <strong className="sm-gold">Ecosystem Assessment:</strong> {current.perspectives.hedgeFund.ecosystemView}
+              </div>
+            </div>
+          </div>
+
+          {/* CIO/CIS Institutional Perspective */}
+          <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
+            <div className="sm-flex">
+              <span className="sm-news-tag" style={{ '--tag-color': 'var(--sky)' } as React.CSSProperties}>CIO / CIS</span>
+              <span className="sm-subtle">Strategic Allocation &amp; Fiduciary Considerations</span>
+            </div>
+            <div className="sm-body sm-lh-18">
+              <p>
+                <strong>Strategic Thesis:</strong> BMNR offers &quot;yield-bearing ETH exposure in equity wrapper&quot; &mdash; the only way to get staking yield through traditional brokerage accounts. For investors who can&apos;t or won&apos;t hold ETH directly, this provides compliant exposure to ETH + staking yield. Think of it as the &quot;MSTR for ETH&quot; with added yield kicker.
+              </p>
+              <p>
+                <strong>Portfolio Fit:</strong> Classify as &quot;alternative/crypto allocation&quot; not &quot;equity.&quot; Size within crypto bucket (typically 1-5% of portfolio for aggressive investors, 0% for conservative). Do not benchmark against S&amp;P &mdash; this will underperform in risk-off environments. Appropriate for investors with 3-5 year horizons who can stomach 50%+ drawdowns.
+              </p>
+              <p>
+                <strong>Reputational Risk:</strong> Small-cap crypto equity carries headline risk. However, the pivot from BTC mining to ETH treasury is defensible (&quot;we followed the yield opportunity&quot;). If questioned: &quot;It&apos;s a regulated equity providing exposure to Ethereum staking infrastructure, not speculative tokens.&quot; The yield narrative differentiates from pure crypto speculation.
+              </p>
+              <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
+                <strong className="sm-sky">Ecosystem Assessment:</strong> {current.perspectives.cio.ecosystemView}
+              </div>
+            </div>
+          </div>
+
+          {/* Technical Analyst Perspective */}
+          <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+            <div className="sm-flex">
+              <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>TECHNICAL ANALYST</span>
+              <span className="sm-subtle">Chart Patterns &amp; Price Action</span>
+            </div>
+            <div className="sm-body sm-lh-18">
+              <p>
+                <strong>Trend Structure:</strong> Price action shows higher highs and higher lows since ETH treasury pivot &mdash; classic uptrend structure. Weekly RSI holding above 50 confirms sustained bullish momentum. MACD histogram expanding on daily timeframe. Key support at 20-day SMA has held on all pullbacks &mdash; this is your buy zone.
+              </p>
+              <p>
+                <strong>ETH Correlation:</strong> BMNR exhibits 0.85-0.95 correlation with ETH on 30-day rolling basis &mdash; trade it as leveraged ETH proxy. When ETH breaks key levels, BMNR moves 1.2-1.5x. Watch ETH $3,500 support and $4,200 resistance for directional cues on BMNR positioning.
+              </p>
+              <p>
+                <strong>NAV Premium Cycles:</strong> NAV premium/discount provides tactical entry/exit signals independent of price. Accumulate aggressively below 1.0x NAV (discount = free money). Trim 20-30% above 1.5x NAV. Current Bollinger Band squeeze on weekly suggests imminent volatility expansion &mdash; prepare for directional move.
+              </p>
+              <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
+                <strong className="sm-mint">Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
+              </div>
+            </div>
+          </div>
+
+          {/* Part 2: Key Strategic Questions */}
+          <div className="sm-inv-section-sub"><span className="sm-section-label sm-text">Key Strategic Questions</span></div>
+
+          {/* Would I Buy Now? */}
+          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
+            <div className="sm-flex-between">
+              <span className="sm-text sm-fw-600">Would I Buy Now?</span>
+              <span className="sm-news-tag-lg" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>YES &mdash; ACCUMULATE ON DIPS</span>
+            </div>
+            <div className="sm-body sm-lh-18">
+              <p>
+                <strong>The Case:</strong> At current NAV premium levels, you&apos;re getting ETH exposure + staking yield + management execution at a reasonable markup. The &quot;Alchemy of 5%&quot; thesis (premium issuance &rarr; NAV accretion) is mathematically sound and management is executing. First-mover advantage in ETH treasury space creates optionality.
+              </p>
+              <p>
+                <strong>The Hesitation:</strong> This is highly correlated to ETH &mdash; if ETH drops 50%, expect BMNR to drop 50-70%. Small-cap liquidity means exits can be painful. Management track record is short (pivot was recent). NAV premium can compress rapidly in risk-off environments.
+              </p>
+              <p>
+                <strong>The Verdict:</strong> Yes, but size appropriately and accumulate on weakness. Don&apos;t chase NAV premiums &gt;40%. Build position over 4-6 weeks using NAV discount as entry signal. This is a high-conviction, high-volatility position &mdash; treat it as levered ETH, not a stock.
+              </p>
+            </div>
+          </div>
+
+          {/* What Can I Expect? */}
+          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
+            <div className="sm-text sm-fw-600">What Can I Expect?</div>
+            <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
+              <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
+                <div className="sm-fw-600 sm-gold sm-text-13">Short-Term (0-6 months)</div>
+                <div className="sm-text-13 sm-lh-16">
+                  Expect ETH-correlated volatility ±30-50%. NAV premium will fluctuate with sentiment. Key catalysts: MAVAN progress, ETH accumulation PRs, staking deployment updates. Trading range tied to ETH &mdash; if ETH $3-5K, expect BMNR $3-8 range (rough).
                 </div>
-                <span className="sm-fw-600" style={{ color: m.color, fontSize: 12 }}>{m.strength}</span>
               </div>
-            ))}
-          </div>
-          <div className="sm-flex-col sm-gap-8">
-            <span className="sm-section-label sm-coral sm-inline-block">Competitive Threats</span>
-            {current.moatThreats.map((t, i) => (
-              <div key={i} className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
-                <div>
-                  <div className="sm-text-13t sm-fw-600">{t.threat}</div>
-                  <div className="sm-text-11">{t.detail}</div>
+              <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
+                <div className="sm-fw-600 sm-sky sm-text-13">Mid-Term (6-18 months)</div>
+                <div className="sm-text-13 sm-lh-16">
+                  If ETH cycle continues upward, NAV premium expansion drives outsized returns. Target: 2-4x from entry if ETH doubles and premium expands. Risk: cycle reversal could mean 60-80% drawdown. MAVAN fully operational should validate yield thesis.
                 </div>
-                <span className="sm-fw-600" style={{ color: t.color, fontSize: 12 }}>{t.risk}</span>
               </div>
-            ))}
-          </div>
-        </div>
-        <div className="sm-note-panel">
-          <strong>Moat Durability:</strong> A- (Strong). Scale advantage is nearly unassailable — would take years and billions for competitors to catch up. Yield advantage over BTC treasuries is permanent. Key risk is ETH price, not competitive dynamics.
-        </div>
-      </CollapsibleSection>
-
-      {/* Section Divider: Risk Assessment */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Risk Assessment</span>
-        <span className="sm-divider-line" />
-      </div>
-
-      {/* Risk Matrix */}
-      <CollapsibleSection id="risks" title="Risk Matrix" sources={['PR', 'SEC']}>
-        <div className="sm-flex-col sm-gap-8">
-          {current.risks.map((r, i) => {
-            const severityColor = r.severity === 'Critical' ? 'var(--coral)' : r.severity === 'High' ? 'var(--gold)' : 'var(--sky)';
-            return (
-              <div key={i} className="sm-callout" style={{ '--callout-color': severityColor } as React.CSSProperties}>
-                <div className="sm-flex-between">
-                  <span className="sm-text sm-fw-600">{r.risk}</span>
-                  <div className="sm-flex sm-gap-8">
-                    <span className="sm-news-tag" style={{ '--tag-color': severityColor } as React.CSSProperties}>{r.severity}</span>
-                    <span className="sm-news-tag" style={{ '--tag-color': 'var(--text3)' } as React.CSSProperties}>{r.likelihood} likelihood</span>
-                  </div>
+              <div className="sm-callout" style={{ '--callout-color': 'var(--cyan)' } as React.CSSProperties}>
+                <div className="sm-fw-600 sm-cyan sm-text-13">Long-Term (3-5 years)</div>
+                <div className="sm-text-13 sm-lh-16">
+                  If ETH reaches $10-20K cycle highs and BMNR executes on accumulation, this could be a 5-10x from current levels. But crypto cycles are brutal &mdash; expect at least one 70%+ drawdown along the way. Diamond hands required. Position size must allow holding through drawdowns.
                 </div>
-                <div className="sm-text-13" style={{ marginTop: 4 }}>{r.detail}</div>
-                <div className="sm-subtle" style={{ marginTop: 4 }}><strong className="sm-mint">Mitigation:</strong> {r.mitigation}</div>
-              </div>
-            );
-          })}
-        </div>
-      </CollapsibleSection>
-
-      {/* Risks & Strategic Assessment */}
-      <CollapsibleSection id="strategic-assessment" title="Risks & Strategic Assessment" sources={['PR', 'SEC']}>
-        {/* Section Header */}
-        <div className="sm-subtle sm-italic">
-          Multi-perspective risk evaluation and strategic decision framework for ETH treasury exposure
-        </div>
-
-        {/* Part 1: Multi-Perspective Risk Evaluation */}
-        <div className="sm-mb-8" style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span className="sm-section-label sm-text">Risk Evaluation — Four Perspectives</span></div>
-
-        {/* CFA Level III Perspective */}
-        <div className="sm-callout" style={{ '--callout-color': 'var(--violet)' } as React.CSSProperties}>
-          <div className="sm-flex">
-            <span className="sm-news-tag" style={{ '--tag-color': 'var(--violet)' } as React.CSSProperties}>CFA LEVEL III</span>
-            <span className="sm-subtle">Portfolio Construction & Factor Analysis</span>
-          </div>
-          <div className="sm-body sm-lh-18">
-            <p>
-              <strong>Factor Exposures:</strong> BMNR exhibits ~0.85 beta to ETH with additional equity volatility from NAV premium fluctuations. Correlation to BTC ~0.7, SPY ~0.3. This is levered crypto exposure — expect 1.2-1.5x ETH moves in both directions. The staking yield (3-5% APY on ETH) provides modest carry but doesn't materially reduce volatility. Position sizing must account for crypto-like drawdowns (50-80% peak-to-trough historically).
-            </p>
-            <p>
-              <strong>Liquidity Analysis:</strong> Average daily volume ~$2-5M — adequate for retail but challenging for institutional blocks &gt;$500K without market impact. Bid-ask spreads can widen to 1-2% in volatility. This is a small-cap ($50-150M market cap) with corresponding liquidity constraints. Consider multi-day accumulation for positions &gt;1% of portfolio.
-            </p>
-            <p>
-              <strong>Governance & ESG:</strong> Founder-controlled via Class B shares. Management pivoted successfully from BTC mining — demonstrates adaptability but also thesis drift risk. ESG profile mixed: PoS staking is energy-efficient, but crypto association carries headline risk. No dividend history despite recent announcement — track record TBD.
-            </p>
-            <div className="sm-callout" style={{ '--callout-color': 'var(--violet)' } as React.CSSProperties}>
-              <strong className="sm-violet">Ecosystem Assessment:</strong> {current.perspectives.cfa.ecosystemView}
-            </div>
-          </div>
-        </div>
-
-        {/* Hedge Fund Manager Perspective */}
-        <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
-          <div className="sm-flex">
-            <span className="sm-news-tag" style={{ '--tag-color': 'var(--gold)' } as React.CSSProperties}>HEDGE FUND</span>
-            <span className="sm-subtle">Alpha Generation & Event Catalysts</span>
-          </div>
-          <div className="sm-body sm-lh-18">
-            <p>
-              <strong>NAV Arbitrage:</strong> BMNR trades at varying premiums/discounts to NAV. When premium compresses to &lt;10%, accumulate. When premium expands to &gt;50%, trim. This is the core tactical playbook. Track ETH price × holdings ÷ shares = NAV per share, compare to stock price daily. Premium mean-reverts over 30-60 day windows.
-            </p>
-            <p>
-              <strong>Catalyst Stacking:</strong> Key events: (1) MAVAN infrastructure launch — validates yield thesis, (2) ETH ETF approval/flows — institutional demand driver, (3) Quarterly ETH accumulation PRs — shows execution, (4) Staking deployment milestones — unlocks yield narrative. Each positive catalyst builds momentum. Position into catalysts, trim into strength.
-            </p>
-            <p>
-              <strong>Cycle Positioning:</strong> ETH treasury equities are leveraged bets on crypto cycles. In bull markets, NAV premiums expand and stock outperforms ETH. In bear markets, premiums compress and stock underperforms ETH. We're in early-to-mid cycle based on halving timing. Aggressive accumulation phase, but maintain stop-losses for cycle turn protection.
-            </p>
-            <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
-              <strong className="sm-gold">Ecosystem Assessment:</strong> {current.perspectives.hedgeFund.ecosystemView}
-            </div>
-          </div>
-        </div>
-
-        {/* CIO/CIS Institutional Perspective */}
-        <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
-          <div className="sm-flex">
-            <span className="sm-news-tag" style={{ '--tag-color': 'var(--sky)' } as React.CSSProperties}>CIO / CIS</span>
-            <span className="sm-subtle">Strategic Allocation & Fiduciary Considerations</span>
-          </div>
-          <div className="sm-body sm-lh-18">
-            <p>
-              <strong>Strategic Thesis:</strong> BMNR offers "yield-bearing ETH exposure in equity wrapper" — the only way to get staking yield through traditional brokerage accounts. For investors who can't or won't hold ETH directly, this provides compliant exposure to ETH + staking yield. Think of it as the "MSTR for ETH" with added yield kicker.
-            </p>
-            <p>
-              <strong>Portfolio Fit:</strong> Classify as "alternative/crypto allocation" not "equity." Size within crypto bucket (typically 1-5% of portfolio for aggressive investors, 0% for conservative). Do not benchmark against S&P — this will underperform in risk-off environments. Appropriate for investors with 3-5 year horizons who can stomach 50%+ drawdowns.
-            </p>
-            <p>
-              <strong>Reputational Risk:</strong> Small-cap crypto equity carries headline risk. However, the pivot from BTC mining to ETH treasury is defensible ("we followed the yield opportunity"). If questioned: "It's a regulated equity providing exposure to Ethereum staking infrastructure, not speculative tokens." The yield narrative differentiates from pure crypto speculation.
-            </p>
-            <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
-              <strong className="sm-sky">Ecosystem Assessment:</strong> {current.perspectives.cio.ecosystemView}
-            </div>
-          </div>
-        </div>
-
-        {/* Technical Analyst Perspective */}
-        <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
-          <div className="sm-flex">
-            <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>TECHNICAL ANALYST</span>
-            <span className="sm-subtle">Chart Patterns & Price Action</span>
-          </div>
-          <div className="sm-body sm-lh-18">
-            <p>
-              <strong>Trend Structure:</strong> Price action shows higher highs and higher lows since ETH treasury pivot — classic uptrend structure. Weekly RSI holding above 50 confirms sustained bullish momentum. MACD histogram expanding on daily timeframe. Key support at 20-day SMA has held on all pullbacks — this is your buy zone.
-            </p>
-            <p>
-              <strong>ETH Correlation:</strong> BMNR exhibits 0.85-0.95 correlation with ETH on 30-day rolling basis — trade it as leveraged ETH proxy. When ETH breaks key levels, BMNR moves 1.2-1.5x. Watch ETH $3,500 support and $4,200 resistance for directional cues on BMNR positioning.
-            </p>
-            <p>
-              <strong>NAV Premium Cycles:</strong> NAV premium/discount provides tactical entry/exit signals independent of price. Accumulate aggressively below 1.0x NAV (discount = free money). Trim 20-30% above 1.5x NAV. Current Bollinger Band squeeze on weekly suggests imminent volatility expansion — prepare for directional move.
-            </p>
-            <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
-              <strong className="sm-mint">Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
-            </div>
-          </div>
-        </div>
-
-        {/* Part 2: Key Strategic Questions */}
-        <div className="sm-mb-8" style={{ paddingBottom: 8, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}><span className="sm-section-label sm-text">Key Strategic Questions</span></div>
-
-        {/* Would I Buy Now? */}
-        <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
-          <div className="sm-flex-between">
-            <span className="sm-text sm-fw-600" style={{ fontSize: 15 }}>Would I Buy Now?</span>
-            <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)', fontWeight: 700, fontSize: 13, padding: '6px 16px' } as React.CSSProperties}>YES — ACCUMULATE ON DIPS</span>
-          </div>
-          <div className="sm-body sm-lh-18">
-            <p>
-              <strong>The Case:</strong> At current NAV premium levels, you're getting ETH exposure + staking yield + management execution at a reasonable markup. The "Alchemy of 5%" thesis (premium issuance → NAV accretion) is mathematically sound and management is executing. First-mover advantage in ETH treasury space creates optionality.
-            </p>
-            <p>
-              <strong>The Hesitation:</strong> This is highly correlated to ETH — if ETH drops 50%, expect BMNR to drop 50-70%. Small-cap liquidity means exits can be painful. Management track record is short (pivot was recent). NAV premium can compress rapidly in risk-off environments.
-            </p>
-            <p>
-              <strong>The Verdict:</strong> Yes, but size appropriately and accumulate on weakness. Don't chase NAV premiums &gt;40%. Build position over 4-6 weeks using NAV discount as entry signal. This is a high-conviction, high-volatility position — treat it as levered ETH, not a stock.
-            </p>
-          </div>
-        </div>
-
-        {/* What Can I Expect? */}
-        <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
-          <div className="sm-text sm-fw-600" style={{ fontSize: 15 }}>What Can I Expect?</div>
-          <div className="sm-model-grid" style={{ '--cols': 3 } as React.CSSProperties}>
-            <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
-              <div className="sm-fw-600 sm-gold" style={{ fontSize: 13 }}>Short-Term (0-6 months)</div>
-              <div className="sm-text-13 sm-lh-16">
-                Expect ETH-correlated volatility ±30-50%. NAV premium will fluctuate with sentiment. Key catalysts: MAVAN progress, ETH accumulation PRs, staking deployment updates. Trading range tied to ETH — if ETH $3-5K, expect BMNR $3-8 range (rough).
-              </div>
-            </div>
-            <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
-              <div className="sm-fw-600 sm-sky" style={{ fontSize: 13 }}>Mid-Term (6-18 months)</div>
-              <div className="sm-text-13 sm-lh-16">
-                If ETH cycle continues upward, NAV premium expansion drives outsized returns. Target: 2-4x from entry if ETH doubles and premium expands. Risk: cycle reversal could mean 60-80% drawdown. MAVAN fully operational should validate yield thesis.
-              </div>
-            </div>
-            <div className="sm-callout" style={{ '--callout-color': 'var(--cyan)' } as React.CSSProperties}>
-              <div className="sm-fw-600 sm-cyan" style={{ fontSize: 13 }}>Long-Term (3-5 years)</div>
-              <div className="sm-text-13 sm-lh-16">
-                If ETH reaches $10-20K cycle highs and BMNR executes on accumulation, this could be a 5-10x from current levels. But crypto cycles are brutal — expect at least one 70%+ drawdown along the way. Diamond hands required. Position size must allow holding through drawdowns.
               </div>
             </div>
           </div>
-        </div>
 
-        {/* What's My Strategy? */}
-        <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
-          <div className="sm-text sm-fw-600" style={{ fontSize: 15 }}>What's My Strategy?</div>
-          <div className="sm-body sm-lh-18">
-            <p>
-              <strong className="sm-violet">Position Sizing:</strong> 1-3% for aggressive crypto-tolerant portfolios, 0.5-1% for growth-oriented, avoid for balanced/conservative. This is your "high-octane ETH exposure" position. Never more than you can watch drop 70% without panic selling.
-            </p>
-            <p>
-              <strong className="sm-sky">Entry Approach:</strong> Accumulate when NAV premium &lt;20%. Add aggressively when premium &lt;10% or at discount. Reduce when premium &gt;50%. Use 4-6 week DCA to avoid catching falling knives. Set limit orders at target NAV premium levels.
-            </p>
-            <p>
-              <strong className="sm-gold">Exit Strategy:</strong> Trim 25% at 2x, another 25% at 3x. Let remaining 50% ride with trailing stop at -30% from highs. Full exit if thesis breaks (management stops accumulating, yield thesis fails, competitive moat erodes).
-            </p>
-            <p>
-              <strong className="sm-coral">Risk Management:</strong> Set mental stop at -50% from entry (not hard stop — liquidity issues). If ETH enters confirmed bear market (below 200-day MA for 60+ days), reduce position by 50%. Re-enter when cycle turns. Don't try to catch the exact bottom.
-            </p>
+          {/* What's My Strategy? */}
+          <div className="sm-card-body sm-bg-surface2 sm-rounded-12">
+            <div className="sm-text sm-fw-600">What&apos;s My Strategy?</div>
+            <div className="sm-body sm-lh-18">
+              <p>
+                <strong className="sm-violet">Position Sizing:</strong> 1-3% for aggressive crypto-tolerant portfolios, 0.5-1% for growth-oriented, avoid for balanced/conservative. This is your &quot;high-octane ETH exposure&quot; position. Never more than you can watch drop 70% without panic selling.
+              </p>
+              <p>
+                <strong className="sm-sky">Entry Approach:</strong> Accumulate when NAV premium &lt;20%. Add aggressively when premium &lt;10% or at discount. Reduce when premium &gt;50%. Use 4-6 week DCA to avoid catching falling knives. Set limit orders at target NAV premium levels.
+              </p>
+              <p>
+                <strong className="sm-gold">Exit Strategy:</strong> Trim 25% at 2x, another 25% at 3x. Let remaining 50% ride with trailing stop at -30% from highs. Full exit if thesis breaks (management stops accumulating, yield thesis fails, competitive moat erodes).
+              </p>
+              <p>
+                <strong className="sm-coral">Risk Management:</strong> Set mental stop at -50% from entry (not hard stop &mdash; liquidity issues). If ETH enters confirmed bear market (below 200-day MA for 60+ days), reduce position by 50%. Re-enter when cycle turns. Don&apos;t try to catch the exact bottom.
+              </p>
+            </div>
           </div>
-        </div>
-        
-        {/* Ecosystem-Based Triggers */}
-        <div className="sm-callout" style={{ '--callout-color': 'var(--violet)' } as React.CSSProperties}>
-          <div className="sm-text sm-fw-600" style={{ fontSize: 15 }}>Ecosystem-Based Triggers</div>
-          <div className="sm-subtle sm-italic">Monitor these Ethereum ecosystem signals (see Ethereum tab) alongside BMNR-specific metrics</div>
 
-          <div className="sm-grid-3-gap-24">
-            {/* Entry Signals */}
-            <div className="sm-bg-surface sm-p-12 sm-rounded-12">
-              <div className="sm-fw-600 sm-mint" style={{ fontSize: 13 }}>Entry Signals (Consider Adding)</div>
-              <div className="sm-flex-col-gap sm-gap-6">
-                {[
-                  'ETF net flows positive 3+ weeks',
-                  'DeFi TVL expanding >5% monthly',
-                  'Major protocol upgrade successful',
-                  'Enterprise adoption announcement',
-                  'Staking rate stable or growing',
-                ].map((signal, i) => (
-                  <div key={i} className="sm-subtle sm-text2 sm-flex sm-gap-6">
-                    <span className="sm-mint">→</span> {signal}
+          {/* Ecosystem-Based Triggers */}
+          <div className="sm-callout" style={{ '--callout-color': 'var(--violet)' } as React.CSSProperties}>
+            <div className="sm-text sm-fw-600">Ecosystem-Based Triggers</div>
+            <div className="sm-subtle sm-italic">Monitor these Ethereum ecosystem signals (see Ethereum tab) alongside BMNR-specific metrics</div>
+
+            <div className="sm-grid-3-gap-24">
+              {/* Entry Signals */}
+              <div className="sm-bg-surface sm-p-12 sm-rounded-12">
+                <div className="sm-fw-600 sm-mint sm-text-13">Entry Signals (Consider Adding)</div>
+                <div className="sm-flex-col-gap sm-gap-6">
+                  {[
+                    'ETF net flows positive 3+ weeks',
+                    'DeFi TVL expanding >5% monthly',
+                    'Major protocol upgrade successful',
+                    'Enterprise adoption announcement',
+                    'Staking rate stable or growing',
+                  ].map((signal, i) => (
+                    <div key={i} className="sm-subtle sm-text2 sm-flex sm-gap-6">
+                      <span className="sm-mint">&rarr;</span> {signal}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Exit Signals */}
+              <div className="sm-bg-surface sm-p-12 sm-rounded-12">
+                <div className="sm-fw-600 sm-coral sm-text-13">Exit Signals (Consider Reducing)</div>
+                <div className="sm-flex-col-gap sm-gap-6">
+                  {[
+                    'ETF outflows >$500M for 2+ weeks',
+                    'DeFi TVL contracting >10% monthly',
+                    'Protocol upgrade delayed 6+ months',
+                    'Regulatory enforcement on ETH',
+                    'Staking rate declining >2%',
+                  ].map((signal, i) => (
+                    <div key={i} className="sm-subtle sm-text2 sm-flex sm-gap-6">
+                      <span className="sm-coral">&rarr;</span> {signal}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Hold Signals */}
+              <div className="sm-bg-surface sm-p-12 sm-rounded-12">
+                <div className="sm-sky sm-fw-600 sm-fs-13">Hold Signals (Stay Course)</div>
+                <div className="sm-flex-col-gap sm-gap-6">
+                  {[
+                    'Mixed or flat ETF flows',
+                    'Sideways DeFi activity',
+                    'Protocol development on track',
+                    'No major regulatory changes',
+                    'Ecosystem metrics stable',
+                  ].map((signal, i) => (
+                    <div key={i} className="sm-subtle sm-text2 sm-flex sm-gap-6">
+                      <span className="sm-sky">&rarr;</span> {signal}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      renderAccumulation={() => (
+        <>
+          {current.accumulation && (
+            <div>
+              <span className="sm-section-label sm-text sm-inline-block sm-mb-8">Accumulation Zones</span>
+              <div className="sm-inv-glass-list">
+                {current.accumulation.map((z, i) => (
+                  <div key={i} className="sm-inv-glass-item">
+                    <span className="sm-text2">{z.zone}</span>
+                    <span className="sm-fw-500 sm-mono-sm sm-inv-impact-label" style={{ '--inv-accent': z.color } as React.CSSProperties}>{z.action}</span>
                   </div>
                 ))}
               </div>
             </div>
-            
-            {/* Exit Signals */}
-            <div className="sm-bg-surface sm-p-12 sm-rounded-12">
-              <div className="sm-fw-600 sm-coral" style={{ fontSize: 13 }}>Exit Signals (Consider Reducing)</div>
-              <div className="sm-flex-col-gap sm-gap-6">
-                {[
-                  'ETF outflows >$500M for 2+ weeks',
-                  'DeFi TVL contracting >10% monthly',
-                  'Protocol upgrade delayed 6+ months',
-                  'Regulatory enforcement on ETH',
-                  'Staking rate declining >2%',
-                ].map((signal, i) => (
-                  <div key={i} className="sm-subtle sm-text2 sm-flex sm-gap-6">
-                    <span className="sm-coral">→</span> {signal}
-                  </div>
-                ))}
-              </div>
+          )}
+
+          {/* Portfolio Context */}
+          <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--violet)', '--bar-accent-2': 'var(--sky)' } as React.CSSProperties}>
+            <div className="sm-micro-text sm-violet">Portfolio Construction Context</div>
+            <div className="sm-subtle sm-italic sm-mt-8">For multi-asset portfolios holding BMNR alongside other positions</div>
+          </div>
+          <div className="sm-model-grid sm-mt-12" style={{ '--cols': 3 } as React.CSSProperties}>
+            <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>
+              <div className="sm-kpi-label">Asset Class Bucket</div>
+              <div className="sm-kpi-value">Alternatives / Crypto</div>
+              <div className="sm-kpi-sub sm-gold">Limit: 10-20% of portfolio</div>
             </div>
-            
-            {/* Hold Signals */}
-            <div className="sm-bg-surface sm-p-12 sm-rounded-12">
-              <div className="sm-sky sm-fw-600 sm-fs-13">Hold Signals (Stay Course)</div>
-              <div className="sm-flex-col-gap sm-gap-6">
-                {[
-                  'Mixed or flat ETF flows',
-                  'Sideways DeFi activity',
-                  'Protocol development on track',
-                  'No major regulatory changes',
-                  'Ecosystem metrics stable',
-                ].map((signal, i) => (
-                  <div key={i} className="sm-subtle sm-text2 sm-flex sm-gap-6">
-                    <span className="sm-sky">→</span> {signal}
-                  </div>
-                ))}
-              </div>
+            <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>
+              <div className="sm-kpi-label">Single-Name Limit</div>
+              <div className="sm-kpi-value">5-10% max</div>
+              <div className="sm-kpi-sub sm-coral">High volatility asset</div>
+            </div>
+            <div className="sm-kpi-cell" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>
+              <div className="sm-kpi-label">Correlation Note</div>
+              <div className="sm-kpi-value">BMNR + CRCL</div>
+              <div className="sm-kpi-sub sm-sky">Both ETH-correlated; size combined</div>
             </div>
           </div>
-        </div>
-      </CollapsibleSection>
-
-      {/* Position Sizing */}
-      <CollapsibleSection id="position" title="Position Sizing & Price Targets" sources="WS">
-        <div className="sm-grid-2-lg">
-          <div>
-            <span className="sm-section-label sm-text sm-inline-block">Recommended Allocation</span>
-            <div className="sm-flex-col">
-              {Object.entries(current.positionSizing).map(([key, val]) => {
-                const posColor = key === 'aggressive' ? 'var(--mint)' : key === 'growth' ? 'var(--sky)' : key === 'balanced' ? 'var(--gold)' : 'var(--coral)';
-                return (
-                  <div key={key} className="sm-flex-between sm-card-body sm-bg-surface2 sm-rounded-6 sm-text-13">
-                    <span className="sm-text2 sm-capitalize">{key}</span>
-                    <span className="sm-fw-500" style={{ color: posColor }}>{val.range}</span>
-                  </div>
-                );
-              })}
-            </div>
+          <div className="sm-note-panel">
+            <strong>Combined Crypto Allocation:</strong> If holding both BMNR and CRCL, treat as a single &quot;Ethereum ecosystem&quot; allocation. Combined weight should not exceed alternatives bucket limit. BMNR provides NAV/yield exposure; CRCL provides infrastructure/revenue exposure.
           </div>
-          <div>
-            <span className="sm-section-label sm-text sm-inline-block">Accumulation Zones</span>
-            <div className="sm-flex-col">
-              {current.accumulation.map((z, i) => (
-                <div key={i} className="sm-flex-between sm-card-body sm-bg-surface2 sm-rounded-6 sm-text-13">
-                  <span className="sm-text2">{z.zone}</span>
-                  <span className="sm-fw-500" style={{ color: z.color }}>{z.action}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        </>
+      )}
 
-        {/* Portfolio Context — Unified framework for multi-asset allocation */}
-        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--violet)', '--bar-accent-2': 'var(--sky)' } as React.CSSProperties}>
-          <div style={{ fontSize: 11, color: 'var(--violet)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>Portfolio Construction Context</div>
-          <div className="sm-subtle" style={{ fontStyle: 'italic', marginTop: 4 }}>For multi-asset portfolios holding BMNR alongside other positions</div>
-        </div>
-        <div className="sm-model-grid sm-mt-12" style={{ '--cols': 3 } as React.CSSProperties}>
-          <div className="sm-kpi-cell">
-            <div className="sm-kpi-label">Asset Class Bucket</div>
-            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>Alternatives / Crypto</div>
-            <div className="sm-kpi-sub sm-gold">Limit: 10-20% of portfolio</div>
-          </div>
-          <div className="sm-kpi-cell">
-            <div className="sm-kpi-label">Single-Name Limit</div>
-            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>5-10% max</div>
-            <div className="sm-kpi-sub sm-coral">High volatility asset</div>
-          </div>
-          <div className="sm-kpi-cell">
-            <div className="sm-kpi-label">Correlation Note</div>
-            <div className="sm-kpi-value" style={{ '--kpi-color': 'var(--text)' } as React.CSSProperties}>BMNR + CRCL</div>
-            <div className="sm-kpi-sub sm-sky">Both ETH-correlated; size combined</div>
-          </div>
-        </div>
-        <div className="sm-note-panel">
-          <strong>Combined Crypto Allocation:</strong> If holding both BMNR and CRCL, treat as a single "Ethereum ecosystem" allocation. Combined weight should not exceed alternatives bucket limit. BMNR provides NAV/yield exposure; CRCL provides infrastructure/revenue exposure.
-        </div>
-      </CollapsibleSection>
-
-      {/* Section Divider: Historical Analysis */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Historical Analysis</span>
-        <span className="sm-divider-line" />
-      </div>
-
-      {/* Analysis Archive */}
-      <CollapsibleSection id="archive" title="Analysis Archive — Complete History" sources={['PR', 'SEC']}>
-        <div className="sm-subtle">Full record of all investment thesis updates. Never deleted.</div>
-        <div className="sm-flex-col" style={{ maxHeight: 500, overflowY: 'auto' }}>
-          {archive.map((a, i) => (
-            <div key={i} className={i === 0 ? 'sm-callout' : 'sm-card-body sm-bg-surface2'} style={i === 0 ? { '--callout-color': 'var(--mint)' } as React.CSSProperties : undefined}>
-              <div className="sm-flex-between">
-                <div className="sm-flex">
-                  <span className="sm-text sm-fw-600">{a.date}</span>
-                  {i === 0 && <span className="sm-news-tag" style={{ '--tag-color': 'var(--mint)' } as React.CSSProperties}>CURRENT</span>}
-                </div>
-                <span className="sm-news-tag" style={{ '--tag-color': a.verdictColor === 'green' ? 'var(--mint)' : a.verdictColor === 'yellow' ? 'var(--gold)' : 'var(--coral)' } as React.CSSProperties}>{a.verdict}</span>
-              </div>
-              <div className="sm-text2 sm-fs-13">{a.summary}</div>
-              <div className="sm-text-11 sm-text3">Source: {a.source}</div>
-              
-              {expandedArchive === i && a.fullAnalysis && (
-                <div className="sm-border-t sm-pt-12">
-                  <div className="sm-text-13">{a.fullAnalysis.context}</div>
-                  <div className="sm-flex-wrap sm-gap-8">
-                    {a.fullAnalysis.keyHighlights.map((h, j) => (
-                      <span key={j} className="sm-text-11 sm-text3 sm-bg-surface sm-rounded-6" style={{ padding: '4px 8px' }}>• {h}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <button
-                onClick={() => setExpandedArchive(expandedArchive === i ? null : i)}
-                className="sm-action-btn"
-                data-active={expandedArchive === i}
-                aria-expanded={expandedArchive === i}
-                aria-label={`Toggle details for ${a.date}`}
-              >
-                {expandedArchive === i ? '▼ Less' : '▶ More details'}
-              </button>
-            </div>
-          ))}
-        </div>
-      </CollapsibleSection>
-
-      <CFANotes title="CFA Level III — Investment Analysis" items={[
+      cfaNotes={[
         { term: 'NAV Premium/Discount', def: 'Stock price vs net asset value per share. Premium implies market expects future growth; discount implies skepticism. Track premium trends for entry/exit signals.' },
         { term: 'ETH Treasury Model', def: 'Company holds ETH as primary asset and generates yield via staking. Similar to MicroStrategy BTC model but with staking income component.' },
         { term: 'Catalyst Calendar', def: 'Timeline of upcoming events that could move the stock. For BMNR: weekly holdings PRs, MAVAN launch, ETH price movements, ETF staking approvals.' },
         { term: 'Conviction Score', def: 'Aggregate rating combining fundamental analysis, catalyst proximity, and risk/reward asymmetry. Higher scores indicate stronger investment thesis.' },
-      ]} />
-    </div>
+      ]}
+    />
   );
 };
 
