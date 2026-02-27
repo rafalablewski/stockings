@@ -654,6 +654,29 @@ const archive: ArchiveEntry[] = [];
   },
 ];
 
+const changelogDesignUnification: string[][] = [
+  ["1", "Chart Spacing", "margin-top: 32px on .sm-chart-guide-card", "stock-model-styles.css"],
+  ["2", "Monte Carlo Pills", ".sm-mc-horizon-btn / .sm-mc-sim-btn → .sm-pill-toggle; removed inline alignItems", "ASTS, BMNR, CRCL"],
+  ["3", "Comps Filters", ".sm-cmp-filter-btn → .sm-pill-toggle; fixed CRCL data-active boolean→string bug", "ASTS, BMNR, CRCL"],
+  ["4", "Bar Chart Trim", ".slice(-5) on all financials bar charts — 5 latest periods only", "ASTS, BMNR, CRCL"],
+  ["5", "Milestones Layout", "Replaced 6 inline styles with .sm-fin-milestone-* CSS classes; max-width: 680px", "SharedFinancialsTab, CSS"],
+  ["6", "Investment Dots", "Deleted inline UpdateIndicators (8px, hex) → canonical shared component (5px, tokens)", "SharedInvestmentTab"],
+  ["7", "Verdict Badge", ".sm-inv-verdict-badge refined (13px, uppercase, tracking); removed duplicate CSS; fixed BMNR verdictColor", "CSS, BMNR"],
+  ["8", "Duplicate Dividers", "Removed 4 redundant dividers matching CollapsibleSection titles; kept 5 distinct group headers", "SharedInvestmentTab"],
+  ["9", "Wall Street Dots", "Canonical UpdateIndicators import (same fix as task 6)", "SharedWallStreetTab"],
+  ["10", "AI Summary Btn", "New .sm-ai-gen-btn (violet pill); placed in Investment archive + Wall Street report details", "CSS, SharedInvestmentTab, SharedWallStreetTab"],
+];
+
+const changelogEarlierFixes: string[][] = [
+  ["1", "Investment Page Freshness", "Fixed", "SharedInvestmentTab.tsx — all 3 stocks use unified 8-category scorecard framework"],
+  ["2", "Timeline Ordering (CRCL)", "Fixed", "Events sorted newest-first; data files annotated 'Add at BEGINNING of array'"],
+  ["3", "Press Releases Display", "Fixed", "Default 5 items + Show More button (styled like SEC filings section)"],
+  ["4", "Methodology Section", "Fixed", "Redesigned with typography hierarchy, 24px padding, step-by-step grid layout"],
+  ["5", "Peer Charts (ASTS Comps)", "Verify", "Improved scaling (280–500px), 28px bars, 35% opacity, horizontal grid lines"],
+  ["6", "Financial Chart Responsiveness", "Verify", "Dynamic minWidth, touch-scroll, smart flex, 220px height, 12px bar gap"],
+  ["7", "Global Spacing", "Verify", "Spacing constants in src/lib/spacing.ts — 8/16/24/32/48/64px scale"],
+];
+
 /* ─────────────────────────────────────────────────────────────────────────────
    COMPONENTS — Small, focused presentation components.
    ───────────────────────────────────────────────────────────────────────────── */
@@ -776,6 +799,7 @@ export default function DocsPage() {
             { id: "structure",   label: "Files" },
             { id: "fonts",       label: "Fonts" },
             { id: "theming",     label: "Theming" },
+            { id: "changelog",   label: "Changelog" },
           ].map((item) => (
             <a
               key={item.id}
@@ -1322,6 +1346,36 @@ export default function DocsPage() {
             [".g2 / .g3 / .g4 / .g5", "Grid layouts — 2 to 5 columns."],
           ]}
         />
+
+        {/* ── Changelog ─────────────────────────────────────────────────── */}
+        <SectionHeader id="changelog" title="Changelog" count={changelogDesignUnification.length + changelogEarlierFixes.length} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          UI/UX fixes and design unification history. Newest first.
+        </p>
+
+        {/* Design Unification — Feb 27 2026 */}
+        <div className="mt-6 mb-2">
+          <h3 className="text-[13px] font-semibold text-white/60">Design Unification — Jony Ive × Tesla Aesthetic <span className="text-white/20 font-normal ml-2">Feb 27, 2026</span></h3>
+          <p className="text-[11px] text-white/25 mt-1">10 tasks across all tabs, all 3 stocks (ASTS, BMNR, CRCL).</p>
+        </div>
+        <SmallTable
+          headers={["#", "Task", "What Changed", "Files"]}
+          rows={changelogDesignUnification}
+        />
+
+        {/* Earlier UI/UX Fixes */}
+        <div className="mt-8 mb-2">
+          <h3 className="text-[13px] font-semibold text-white/60">Earlier UI/UX Fixes</h3>
+        </div>
+        <SmallTable
+          headers={["#", "Fix", "Status", "Details"]}
+          rows={changelogEarlierFixes}
+        />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          <span className="text-white/40 font-semibold">How to verify:</span>{" "}
+          Visual inspection on all 3 stock pages, responsive test at 375px (no horizontal scroll, 44px touch targets),
+          consistency check (ASTS / BMNR / CRCL render identically), <span className="font-mono text-white/40">npm run build</span> — zero errors.
+        </p>
 
         {/* ── Footer ──────────────────────────────────────────────────────── */}
         <div className="mt-16 pt-6 border-t border-white/[0.06]">

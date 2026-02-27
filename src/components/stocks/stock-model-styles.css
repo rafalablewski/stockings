@@ -2021,14 +2021,16 @@ input[type="range"]::-webkit-slider-thumb {
   border-left: 4px solid var(--inv-accent, var(--accent));
 }
 
-/* Verdict badge — large colored pill */
+/* Verdict badge — refined colored pill (matches sm-badge-dynamic proportions) */
 .sm-inv-verdict-badge {
   font-weight: 700;
-  font-size: 18px;
-  padding: 8px 20px;
-  border-radius: 9999px;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  padding: 6px 16px;
+  border-radius: 100px;
   color: var(--bg);
   background: var(--inv-accent, var(--accent));
+  text-transform: uppercase;
 }
 
 /* Ticker badge — small accent pill */
@@ -2217,7 +2219,7 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-inv-glass-accent { padding: 12px 16px; }
   .sm-inv-perspective { padding: 16px; }
   .sm-inv-perspectives-grid { grid-template-columns: 1fr; }
-  .sm-inv-verdict-badge { font-size: 14px; padding: 6px 16px; }
+  .sm-inv-verdict-badge { font-size: 11px; padding: 5px 12px; }
   .sm-inv-archive-row { padding: 12px 16px; }
   .sm-inv-archive-detail { padding: 0 16px 12px; }
 }
@@ -4960,6 +4962,32 @@ input[type="range"]::-webkit-slider-thumb {
   max-width: 80px;
 }
 
+/* ── Key Financial Milestones layout ─────────────────────────────────── */
+.sm-fin-milestone-wrap { min-width: 400px; max-width: 680px; }
+.sm-fin-milestone-header { display: grid; grid-template-columns: 140px 1fr; }
+.sm-fin-milestone-row { display: grid; grid-template-columns: 140px 1fr; border-bottom: 1px solid var(--border); }
+.sm-fin-milestone-body { padding: 0; }
+.sm-fin-milestone-note { margin: 12px 16px 16px; }
+
+/* ── AI Summary button — compact pill for long text sections ─────── */
+.sm-ai-gen-btn {
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid color-mix(in srgb, var(--violet) 30%, transparent);
+  font-size: 11px;
+  font-weight: 500;
+  background: transparent;
+  color: var(--violet);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Outfit', sans-serif;
+  white-space: nowrap;
+}
+.sm-ai-gen-btn:hover {
+  background: color-mix(in srgb, var(--violet) 10%, transparent);
+  border-color: color-mix(in srgb, var(--violet) 50%, transparent);
+}
+
 /* Scroll hint indicator for horizontally-scrollable containers */
 .sm-scroll-hint {
   position: relative;
@@ -5106,6 +5134,7 @@ input[type="range"]::-webkit-slider-thumb {
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
+  margin-top: 32px;
 }
 
 /* Header area */
@@ -6062,15 +6091,7 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--text3);
 }
 
-/* Verdict badge — uses --badge-bg and --badge-color CSS vars */
-.sm-inv-verdict-badge {
-  background: var(--badge-bg);
-  color: var(--bg);
-  padding: 8px 24px;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 18px;
-}
+/* (Duplicate removed — canonical definition at line ~2025) */
 
 /* Ticker badge — small mint-tinted pill */
 .sm-inv-ticker-badge {

@@ -118,7 +118,7 @@ import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
 import { SharedInvestmentTab } from '../shared/SharedInvestmentTab';
-import type { InvestmentCurrent } from '../shared/investmentTypes';
+import type { InvestmentCurrent, ArchiveEntry } from '../shared/investmentTypes';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
@@ -2242,7 +2242,7 @@ const CRCLQuarterlyMetricsPanel = () => {
             <span className="sm-section-label sm-cyan">Cash Position Evolution<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
-            const data = quarterlyData.slice().reverse().map(d => ({
+            const data = quarterlyData.slice().reverse().slice(-5).map(d => ({
               label: d.quarter,
               value: d.cashPosition,
               display: `$${(d.cashPosition/1000).toFixed(1)}B`
@@ -2274,7 +2274,7 @@ const CRCLQuarterlyMetricsPanel = () => {
           </div>
           <div className="sm-card-body">
           {(() => {
-            const data = quarterlyData.slice().reverse().map(d => ({
+            const data = quarterlyData.slice().reverse().slice(-5).map(d => ({
               label: d.quarter,
               value: d.opex,
               display: `$${d.opex}M`
@@ -2361,7 +2361,7 @@ const CRCLQuarterlyMetricsPanel = () => {
               { label: 'Q1 2025', value: 220, display: '220M' },
               { label: 'Q2 2025', value: 225, display: '225M' },
               { label: 'Q3 2025', value: 230, display: '230M' },
-            ];
+            ].slice(-5);
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             const overflow = data.length > 8;
             return (
@@ -2393,7 +2393,7 @@ const CRCLQuarterlyMetricsPanel = () => {
               { label: 'Q1 2025', value: 15.2, display: '$15.2B' },
               { label: 'Q2 2025', value: 14.1, display: '$14.1B' },
               { label: 'Q3 2025', value: 18.8, display: '$18.8B' },
-            ];
+            ].slice(-5);
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             const overflow = data.length > 8;
             return (
@@ -2420,7 +2420,7 @@ const CRCLQuarterlyMetricsPanel = () => {
             <span className="sm-section-label sm-violet">USDC Circulation ($B)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
-            const data = quarterlyData.slice().reverse().map(d => ({
+            const data = quarterlyData.slice().reverse().slice(-5).map(d => ({
               label: d.quarter,
               value: d.usdcCirculation,
               display: `$${d.usdcCirculation}B`
@@ -2448,7 +2448,7 @@ const CRCLQuarterlyMetricsPanel = () => {
             <span className="sm-section-label sm-cyan">Adjusted EBITDA ($M)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
-            const data = quarterlyData.slice().reverse().map(d => ({
+            const data = quarterlyData.slice().reverse().slice(-5).map(d => ({
               label: d.quarter,
               value: d.adjustedEbitda,
               display: `$${d.adjustedEbitda}M`
@@ -2730,7 +2730,7 @@ function CRCLModel() {
   // ARCHIVE - NEVER DELETE! ADD NEW ENTRIES AT TOP AFTER EACH FILING
   // This is the permanent historical record of investment thesis evolution
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  const investmentArchive = [
+  const investmentArchive: ArchiveEntry[] = [
     // ⬇️ ADD NEW ENTRIES HERE (most recent first) ⬇️
     {
       date: '2025-12-31',
@@ -4523,12 +4523,12 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div className="sm-card-section"><span className="sm-section-label">TIME HORIZON</span></div>
                     <div className="sm-card-body">
-                    <div className="sm-flex sm-gap-8" style={{ alignItems: 'initial' }}>
+                    <div className="sm-flex sm-gap-8">
                       {[3, 5, 7].map(yr => (
                         <button
                           key={yr}
                           onClick={() => { setMcYears(yr); setRunKey(k => k + 1); }}
-                          className="sm-mc-horizon-btn"
+                          className="sm-pill-toggle"
                           data-active={mcYears === yr ? "true" : undefined}
                         >
                           {yr}Y
@@ -4540,12 +4540,12 @@ function CRCLModel() {
                   <div className="sm-card">
                     <div className="sm-card-section"><span className="sm-section-label">SIMULATIONS</span></div>
                     <div className="sm-card-body">
-                    <div className="sm-flex sm-gap-8" style={{ alignItems: 'initial' }}>
+                    <div className="sm-flex sm-gap-8">
                       {[1000, 2000, 5000].map(simCount => (
                         <button
                           key={simCount}
                           onClick={() => { setMcSims(simCount); setRunKey(k => k + 1); }}
-                          className="sm-mc-sim-btn"
+                          className="sm-pill-toggle"
                           data-active={mcSims === simCount ? "true" : undefined}
                         >
                           {simCount.toLocaleString()}
@@ -5355,8 +5355,8 @@ const CompsTab = () => {
         {Object.entries(PEER_GROUPS).map(([key, group]) => (
           <button
             key={key}
-            className="sm-cmp-filter-btn"
-            data-active={selectedPeerGroup === key}
+            className="sm-pill-toggle"
+            data-active={selectedPeerGroup === key ? 'true' : undefined}
             onClick={() => setSelectedPeerGroup(key)}
           >
             {group.name}

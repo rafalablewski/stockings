@@ -12,26 +12,7 @@
 
 import React, { useState } from 'react';
 import type { SharedWallStreetTabProps, AnalystCoverage, AnalystReport } from './wallStreetTypes';
-
-// Update indicator component (inline for portability)
-const UpdateIndicators = ({ sources }: { sources: string | string[] }) => {
-  const sourceArray = Array.isArray(sources) ? sources : [sources];
-  const config: Record<string, { tooltip: string; color: string }> = {
-    PR: { tooltip: 'Updated from Press Releases', color: '#f97316' },
-    SEC: { tooltip: 'Updated from SEC Filings', color: '#3b82f6' },
-    WS: { tooltip: 'Updated from Wall Street Research', color: '#8b5cf6' },
-  };
-  return (
-    <span className="sm-update-dots">
-      {sourceArray.map((source) => {
-        const c = config[source];
-        return c ? (
-          <span key={source} title={c.tooltip} className="sm-update-dot" style={{ '--dot-bg': c.color } as React.CSSProperties} />
-        ) : null;
-      })}
-    </span>
-  );
-};
+import { UpdateIndicators } from './UpdateIndicators';
 
 // Helper functions
 const getRatingColor = (rating: string, normalized?: 'bullish' | 'neutral' | 'bearish') => {
@@ -282,17 +263,20 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                   {report.thesis}
                                 </div>
 
-                                {(report.reportSummary || report.assumptions || report.estimates) && (
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setExpandedReportIdx(isReportExpanded ? null : reportKey);
-                                    }}
-                                    className="sm-ws-detail-btn"
-                                  >
-                                    {isReportExpanded ? '▼ Less details' : '▶ Full report details'}
-                                  </button>
-                                )}
+                                <div className="sm-flex sm-gap-8 sm-items-center">
+                                  {(report.reportSummary || report.assumptions || report.estimates) && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setExpandedReportIdx(isReportExpanded ? null : reportKey);
+                                      }}
+                                      className="sm-ws-detail-btn"
+                                    >
+                                      {isReportExpanded ? '▼ Less details' : '▶ Full report details'}
+                                    </button>
+                                  )}
+                                  <button className="sm-ai-gen-btn" onClick={() => { /* TODO: Implement AI Summary generation */ }}>AI Summary</button>
+                                </div>
 
                                 {isReportExpanded && (
                                   <div className="sm-ws-details">
