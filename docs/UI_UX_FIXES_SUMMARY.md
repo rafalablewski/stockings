@@ -123,6 +123,65 @@ Based on codebase analysis, here's what appears to have been implemented from yo
 
 ---
 
+---
+
+## ✅ 8. Design Unification — Jony Ive × Tesla Aesthetic (2026-02-27)
+
+**Status: FIXED — 10 tasks across all tabs, all 3 stocks (ASTS, BMNR, CRCL)**
+
+### Task 1: Stock Chart — Breathing Room
+- Added `margin-top: 32px` to `.sm-chart-guide-card` for consistent section spacing
+- **File**: `stock-model-styles.css`
+
+### Task 2: Monte Carlo — TIME HORIZON & SIMULATIONS Redesign
+- Replaced chunky `.sm-mc-horizon-btn` / `.sm-mc-sim-btn` with golden-standard `.sm-pill-toggle`
+- Removed inline `style={{ alignItems: 'initial' }}` from all 3 stocks
+- **Files**: `ASTS.tsx`, `BMNR.tsx`, `CRCL.tsx`
+
+### Task 3: Comps Tab — Unified Filters
+- Replaced `.sm-cmp-filter-btn` with `.sm-pill-toggle` across all 3 stocks
+- Fixed CRCL `data-active` bug: was passing boolean, now passes `'true' | undefined`
+- **Files**: `ASTS.tsx`, `BMNR.tsx`, `CRCL.tsx`
+
+### Task 4: Financials — Bar Charts (5 Latest Periods)
+- Added `.slice(-5)` to all bar chart data arrays for cleaner Tesla-style presentation
+- Applied to 6 charts per stock (Cash, OpEx, Share Count, Market Cap, company-specific)
+- **Files**: `ASTS.tsx`, `BMNR.tsx`, `CRCL.tsx`
+
+### Task 5: Financials — KEY FINANCIAL MILESTONES Layout
+- Replaced 6 inline styles with CSS classes (`.sm-fin-milestone-*`)
+- Added `max-width: 680px` to prevent excessive right-side space
+- **Files**: `SharedFinancialsTab.tsx`, `stock-model-styles.css`
+
+### Task 6: Investment Tab — Colored Dots Fix
+- Deleted inline `UpdateIndicators` (wrong 8px dots, hardcoded hex colors)
+- Imported canonical shared `UpdateIndicators` component (5px dots, design-system colors)
+- **File**: `SharedInvestmentTab.tsx`
+
+### Task 7: Investment Tab — CURRENT ASSESSMENT Badge
+- Refined `.sm-inv-verdict-badge`: font-size 18→13px, letter-spacing 1.5px, padding tighter, uppercase
+- Removed duplicate CSS definition at line ~6066 (conflicting `var(--badge-bg)`)
+- Fixed BMNR verdictColor: `'green'`→`'mint'` (17×), `'yellow'`→`'gold'` (1×), `'red'`→`'coral'` (1×)
+- **Files**: `stock-model-styles.css`, `BMNR.tsx`
+
+### Task 8: Investment Tab — Duplicated Card Titles
+- Removed 4 redundant dividers where label exactly duplicated CollapsibleSection title
+- Kept 5 dividers where labels serve as distinct group headers
+- **File**: `SharedInvestmentTab.tsx`
+
+### Task 9: Wall Street Tab — Dot Unification
+- Deleted inline `UpdateIndicators` (same root cause as Task 6)
+- Imported canonical shared component
+- **File**: `SharedWallStreetTab.tsx`
+
+### Task 10: Full Report — AI Summary Button
+- Added `.sm-ai-gen-btn` CSS class (violet pill, 11px, 99px radius)
+- Placed "AI Summary" button in Investment archive entries and Wall Street report details
+- UI-only (onClick noop) — ready for future AI integration
+- **Files**: `stock-model-styles.css`, `SharedInvestmentTab.tsx`, `SharedWallStreetTab.tsx`
+
+---
+
 ## Summary
 
 ### Fully Fixed ✅
@@ -130,6 +189,7 @@ Based on codebase analysis, here's what appears to have been implemented from yo
 2. Timeline Event Ordering (CRCL newest-first)
 3. Methodology Section (improved formatting)
 4. Press Releases Display (5 items + Show More)
+5. Design Unification — 10 tasks (all tabs, all 3 stocks)
 
 ### Needs Verification ⚠️
 5. Peer Charts Quality (ASTS)
@@ -140,10 +200,10 @@ Based on codebase analysis, here's what appears to have been implemented from yo
 
 ## How to Verify
 
-1. **Visual Inspection**: Check each company page in browser
-2. **Responsive Testing**: Test on mobile/tablet/desktop
-3. **Data Volume Testing**: Add more years/data points to financial charts
-4. **Spacing Audit**: Use browser dev tools to measure spacing values
+1. **Visual Inspection**: Check each company page in browser — all tabs
+2. **Responsive Testing**: Test at 375px width — no horizontal scroll, 44px touch targets
+3. **Consistency Check**: All 3 stocks (ASTS, BMNR, CRCL) should render identically (only data differs)
+4. **Build**: `npm run build` — zero errors
 
 ---
 

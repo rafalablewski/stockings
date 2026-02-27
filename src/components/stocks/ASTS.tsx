@@ -4379,12 +4379,12 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           <div className="sm-card">
             <div className="sm-card-section"><span className="sm-section-label">TIME HORIZON</span></div>
             <div className="sm-card-body">
-            <div className="sm-flex sm-gap-8" style={{ alignItems: 'initial' }}>
+            <div className="sm-flex sm-gap-8">
               {[3, 5, 7].map(yr => (
                 <button
                   key={yr}
                   onClick={() => setYears(yr)}
-                  className="sm-mc-horizon-btn"
+                  className="sm-pill-toggle"
                   data-active={years === yr ? "true" : undefined}
                 >
                   {yr}Y
@@ -4396,12 +4396,12 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           <div className="sm-card">
             <div className="sm-card-section"><span className="sm-section-label">SIMULATIONS</span></div>
             <div className="sm-card-body">
-            <div className="sm-flex sm-gap-8" style={{ alignItems: 'initial' }}>
+            <div className="sm-flex sm-gap-8">
               {[1000, 2000, 5000].map(simCount => (
                 <button
                   key={simCount}
                   onClick={() => setSims(simCount)}
-                  className="sm-mc-sim-btn"
+                  className="sm-pill-toggle"
                   data-active={sims === simCount ? "true" : undefined}
                 >
                   {simCount.toLocaleString()}
@@ -4880,7 +4880,7 @@ const QuarterlyMetricsPanel = () => {
             <span className="sm-section-label sm-flex sm-cyan">Cash Position Evolution<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
-            const data = Object.values(quarterlyData).filter(q => q.cashAndEquiv !== null).reverse().map(q => ({
+            const data = Object.values(quarterlyData).filter(q => q.cashAndEquiv !== null).reverse().slice(-5).map(q => ({
               label: q.label,
               value: q.cashAndEquiv,
               display: `$${q.cashAndEquiv}M`
@@ -4912,7 +4912,7 @@ const QuarterlyMetricsPanel = () => {
           </div>
           <div className="sm-card-body">
           {(() => {
-            const data = Object.values(quarterlyData).filter(q => q.opEx !== null).reverse().map(q => ({
+            const data = Object.values(quarterlyData).filter(q => q.opEx !== null).reverse().slice(-5).map(q => ({
               label: q.label,
               value: q.opEx,
               display: `$${q.opEx}M`
@@ -5015,7 +5015,7 @@ const QuarterlyMetricsPanel = () => {
             <span className="sm-section-label sm-flex sm-gold">Share Count (Outstanding / Implied / Fully Diluted)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
-            const data = Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0).map(d => ({
+            const data = Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0).slice(-5).map(d => ({
               label: d.label,
               value: d.sharesOutstanding,
               display: `${d.sharesOutstanding}M`
@@ -5046,7 +5046,7 @@ const QuarterlyMetricsPanel = () => {
             <span className="sm-section-label sm-flex sm-sky">Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
-            const data = Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0 && d.stockPrice > 0).map(d => ({
+            const data = Object.values(quarterlyData).reverse().filter(d => d.sharesOutstanding > 0 && d.stockPrice > 0).slice(-5).map(d => ({
               label: d.label,
               value: d.sharesOutstanding * d.stockPrice,
               display: (d.sharesOutstanding * d.stockPrice) >= 1000 ? `$${((d.sharesOutstanding * d.stockPrice) / 1000).toFixed(1)}B` : `$${(d.sharesOutstanding * d.stockPrice).toFixed(0)}M`
@@ -5080,7 +5080,7 @@ const QuarterlyMetricsPanel = () => {
             <span className="sm-section-label sm-flex sm-cyan">Satellites Deployed<UpdateIndicators sources="PR" /></span>
           </div>
           {(() => {
-            const data = Object.values(quarterlyData).reverse().map(d => ({
+            const data = Object.values(quarterlyData).reverse().slice(-5).map(d => ({
               label: d.label,
               value: d.satellites,
               display: `${d.satellites}`
@@ -5111,7 +5111,7 @@ const QuarterlyMetricsPanel = () => {
             <span className="sm-section-label sm-flex sm-mint">Net Income/(Loss)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
-            const data = Object.values(quarterlyData).filter(q => q.netLoss !== null).reverse().map(q => ({
+            const data = Object.values(quarterlyData).filter(q => q.netLoss !== null).reverse().slice(-5).map(q => ({
               label: q.label,
               value: q.netLoss,
               display: q.netLoss >= 0 ? `$${q.netLoss}M` : `($${Math.abs(q.netLoss)}M)`
@@ -5827,7 +5827,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         {compCategories.map(cat => (
           <button
             key={cat.key}
-            className="sm-cmp-filter-btn"
+            className="sm-pill-toggle"
             data-active={selectedCompCategory === cat.key ? 'true' : undefined}
             onClick={() => setSelectedCompCategory(cat.key)}
           >

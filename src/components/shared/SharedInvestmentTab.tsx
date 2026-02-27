@@ -16,27 +16,9 @@
 
 import React, { useState } from 'react';
 import type { SharedInvestmentTabProps } from './investmentTypes';
+import type { UpdateSource } from './stockModelTypes';
+import { UpdateIndicators } from './UpdateIndicators';
 import { CFANotes } from './StockModelUI';
-
-// Update indicator component (inline for portability)
-const UpdateIndicators = ({ sources }: { sources: string | string[] }) => {
-  const sourceArray = Array.isArray(sources) ? sources : [sources];
-  const config: Record<string, { tooltip: string; color: string }> = {
-    PR: { tooltip: 'Updated from Press Releases', color: '#f97316' },
-    SEC: { tooltip: 'Updated from SEC Filings', color: '#3b82f6' },
-    WS: { tooltip: 'Wall Street', color: '#8b5cf6' },
-  };
-  return (
-    <span className="sm-update-dots">
-      {sourceArray.map((source) => {
-        const c = config[source];
-        return c ? (
-          <span key={source} title={c.tooltip} className="sm-update-dot" style={{ '--dot-bg': c.color } as React.CSSProperties} />
-        ) : null;
-      })}
-    </span>
-  );
-};
 
 // Helper: get archive verdict sentiment for data attribute
 const getVerdictSentiment = (verdict: string): string => {
@@ -71,7 +53,7 @@ const CollapsibleSection = ({
 }: {
   id: string;
   title: string;
-  sources?: string | string[];
+  sources?: UpdateSource | UpdateSource[];
   isOpen: boolean;
   onToggle: () => void;
   children: React.ReactNode;
@@ -231,10 +213,6 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       {renderBeforeGrowthDrivers?.()}
 
       {/* ── Growth Drivers — glass-border ── */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Growth Drivers</span>
-        <span className="sm-divider-line" />
-      </div>
       <CollapsibleSection
         id="growth"
         title="Growth Drivers"
@@ -262,10 +240,6 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       {/* ── Competitive Moat — glass-border ── */}
       {(current.moatSources.length > 0 || current.moatThreats.length > 0) && (
         <>
-          <div className="sm-divider">
-            <span className="sm-param-label">Competitive Moat</span>
-            <span className="sm-divider-line" />
-          </div>
           <CollapsibleSection
             id="moat"
             title="Competitive Moat"
@@ -345,10 +319,6 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       {renderAfterRiskMatrix?.()}
 
       {/* ── Risks & Strategic Assessment ── */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Risks & Strategic Assessment</span>
-        <span className="sm-divider-line" />
-      </div>
       <CollapsibleSection
         id="strategic-assessment"
         title="Risks & Strategic Assessment"
@@ -373,10 +343,6 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       </CollapsibleSection>
 
       {/* ── Position Sizing & Price Targets — glass-border ── */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Position Sizing & Price Targets</span>
-        <span className="sm-divider-line" />
-      </div>
       <CollapsibleSection
         id="position"
         title="Position Sizing & Price Targets"
@@ -447,7 +413,10 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
               </div>
               {expandedArchive === entry.date && (
                 <div className="sm-inv-archive-detail">
-                  <div className="sm-text-13 sm-pt-12">{entry.summary}</div>
+                  <div className="sm-flex-between sm-items-start">
+                    <div className="sm-text-13 sm-pt-12 sm-flex-1">{entry.summary}</div>
+                    <button className="sm-ai-gen-btn sm-mt-12" onClick={() => {}}>AI Summary</button>
+                  </div>
                   {entry.keyDevelopments && (
                     <ul className="sm-text-13 sm-inv-dev-list">
                       {entry.keyDevelopments.map((d, j) => (

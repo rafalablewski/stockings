@@ -3552,7 +3552,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
         {categories.map(cat => (
           <button
             key={cat.key}
-            className="sm-cmp-filter-btn"
+            className="sm-pill-toggle"
             data-active={selectedCategory === cat.key ? 'true' : undefined}
             onClick={() => setSelectedCategory(cat.key)}
           >
@@ -4647,12 +4647,12 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
           <div className="sm-card">
             <div className="sm-card-section"><span className="sm-section-label">TIME HORIZON</span></div>
             <div className="sm-card-body">
-            <div className="sm-flex sm-gap-8 sm-items-initial">
+            <div className="sm-flex sm-gap-8">
               {[3, 5, 7].map(yr => (
                 <button
                   key={yr}
                   onClick={() => setYears(yr)}
-                  className="sm-mc-horizon-btn"
+                  className="sm-pill-toggle"
                   data-active={years === yr ? "true" : undefined}
                 >
                   {yr}Y
@@ -4664,12 +4664,12 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
           <div className="sm-card">
             <div className="sm-card-section"><span className="sm-section-label">SIMULATIONS</span></div>
             <div className="sm-card-body">
-            <div className="sm-flex sm-gap-8 sm-items-initial">
+            <div className="sm-flex sm-gap-8">
               {[1000, 2000, 5000].map(simCount => (
                 <button
                   key={simCount}
                   onClick={() => setSims(simCount)}
-                  className="sm-mc-sim-btn"
+                  className="sm-pill-toggle"
                   data-active={sims === simCount ? "true" : undefined}
                 >
                   {simCount.toLocaleString()}
@@ -5031,7 +5031,7 @@ const InvestmentTab = () => {
     date: '2026-02-12',
     source: 'February 12, 2026 — Updated: CoinDesk Consensus + Beast/Step + S-8 + Nelson Separation',
     verdict: 'STRONG BUY',
-    verdictColor: 'green',
+    verdictColor: 'mint',
     tagline: 'The ETH Supercycle Play',
 
     // Investment Scorecard — Unified 8-category framework (matches ASTS/CRCL)
@@ -5184,7 +5184,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2026-02-23',
       source: 'PR: 4.423M ETH Holdings + $9.6B Total + 3.66% Supply + 73% to Alchemy of 5%',
       verdict: 'STRONG BUY',
-      verdictColor: 'green',
+      verdictColor: 'mint',
       summary: '4.423M ETH ($9.6B @ $1,958). 3.04M ETH staked (68.7% — mechanical decline as new ETH not yet staked). +51,162 ETH acquired. 3.66% of supply (73% to 5%). $691M cash. Tom Lee: "mini crypto winter" — 3 fundamental drivers gaining traction.',
       fullAnalysis: {
         context: 'February 23, 2026 PR shows continued aggressive accumulation (+51,162 ETH WoW) despite further ETH price weakness ($1,998→$1,958). Supply % advances to 3.66% (73% to "Alchemy of 5%"). Cash builds to $691M (+$21M). Staked ETH unchanged at 3.04M — staking ratio mechanically declined to 68.7% as denominator grew. CESR slipped further to 2.81%. Tom Lee reiterates "mini crypto winter" framing and highlights 3 secular drivers: (i) Wall Street tokenization, (ii) AI/agentic-AI using smart blockchains for execution + payments, (iii) emerging creator economy using blockchains for verification. "Price of ETH is not reflective of the high utility of ETH." MAVAN on track Q1 2026. Trading liquidity declining (#165, $0.7B/day).',
@@ -5215,7 +5215,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2026-02-17',
       source: 'PR: 4.371M ETH Holdings + $9.6B Total + Staking 3.04M (69.5%)',
       verdict: 'STRONG BUY',
-      verdictColor: 'green',
+      verdictColor: 'mint',
       summary: '4.371M ETH ($9.6B @ $1,998). 3.04M ETH staked (69.5%) — crossed 3M milestone, largest staker globally. +45,759 ETH acquired. 3.62% of supply. $670M cash. Tom Lee post-Consensus HK: 3 secular drivers (tokenization, AI agents, creators). Sentiment at "rock bottom" = mini-winter, not structural.',
       fullAnalysis: {
         context: 'February 17, 2026 PR shows continued accumulation despite ETH price weakness ($2,125→$1,998). Staked ETH crossed 3M milestone (3,040,483 — +143,024 WoW, +4.9%). Tom Lee at Consensus HK outlined 3 secular drivers: (i) Wall Street tokenization/privacy on Ethereum, (ii) AI agents using ETH for payments + verification, (iii) creators/proof-of-human on L2s (Worldchain). Sentiment at "rock bottom" comparable to Nov 2022/2018 lows but no FTX/3AC-scale failures — "mini-winter" framing. MAVAN on track Q1 2026. GENIUS Act + SEC Project Crypto = transformational.',
@@ -5245,7 +5245,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2026-02-09',
       source: 'PR: 4.326M ETH Holdings + $10.0B Total + ETH -62% from Highs',
       verdict: 'STRONG BUY',
-      verdictColor: 'green',
+      verdictColor: 'mint',
       summary: '4.326M ETH ($9.2B @ $2,125). 2.9M ETH staked (67%). +40,613 ETH acquired. 3.58% of supply. $595M cash. #107 most traded US stock ($1.3B/day). ETH -62% from 2025 highs — V-shaped recovery expected.',
       fullAnalysis: {
         context: 'February 9, 2026 PR shows ETH price declined further ($2,317→$2,125, -62% from 2025 highs) but Tom Lee emphasizes this is the 8th time since 2018 ETH has fallen 50%+ and V-shaped recoveries follow every time. Ethereum daily txns ATH (2.5M), active addresses ATH (1M). CESR improved to 3.11%. Annualized staking revenue $202M (+7% WoW). $200M Beast Industries initial investment closed. MAVAN on track Q1 2026.',
@@ -5275,7 +5275,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2026-02-02',
       source: 'PR: 4.285M ETH Holdings + $10.7B Total + Staking 67.6%',
       verdict: 'STRONG BUY',
-      verdictColor: 'green',
+      verdictColor: 'mint',
       summary: '4.285M ETH ($9.9B @ $2,317). 2.9M ETH staked (67.6%). +41,788 ETH acquired. 3.55% of supply. $586M cash. #105 most traded US stock ($1.1B/day). ETH fundamentals strong despite price drop.',
       fullAnalysis: {
         context: 'February 2, 2026 PR shows ETH price dropped sharply ($3,000→$2,317) but fundamentals strengthening: Ethereum daily txns hit ATH (2.5M), active addresses ATH (1M daily). Tom Lee: non-fundamental factors (leverage, gold rotation) explain weakness. Staking exploded +888K ETH in one week to 2.9M (67.6%). MAVAN on track Q1 2026. GENIUS Act transformational.',
@@ -5304,7 +5304,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2026-01-26',
       source: 'PR: 4.243M ETH Holdings + $12.8B Total + Davos 2026',
       verdict: 'STRONG BUY',
-      verdictColor: 'green',
+      verdictColor: 'mint',
       summary: '4.243M ETH ($12.0B @ $2,839). 2.0M ETH staked (47.4%). +40,302 ETH acquired. 3.52% of supply. $682M cash. #91 most traded US stock ($1.2B/day). Davos: Wall Street embraces crypto.',
       fullAnalysis: {
         context: 'January 26, 2026 PR shows continued aggressive ETH accumulation (+40,302 ETH in one week) and staking expansion (now 2.0M ETH, 47.4%). Davos 2026 featured overwhelming bullish sentiment on crypto from Larry Fink (BlackRock), David Sacks (White House AI/Crypto), Bill Winters (Standard Chartered), and others. Tom Lee: "2026 is the year policymakers and world leaders now view digital assets as central to the future of the financial system."',
@@ -5333,7 +5333,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2026-01-20',
       source: 'PR: 4.203M ETH Holdings + 81% Shareholder Vote YES + Beast CLOSED',
       verdict: 'STRONG BUY',
-      verdictColor: 'green',
+      verdictColor: 'mint',
       summary: '4.203M ETH ($13.5B). 81% YES on Proposal 2 (52.2% turnout). 1.84M ETH staked (43.7%). Beast Industries CLOSED. 500K+ stockholders. #60 most traded US stock.',
       fullAnalysis: {
         context: 'January 20, 2026 marks multiple landmark achievements: 81% shareholder YES vote on Proposal 2 (share authorization), Beast Industries $200M investment officially closed, staking surged to 1.84M ETH (43.7%), and trading volume hit $1.5B/day making BMNR the #60 most traded US stock.',
@@ -5360,7 +5360,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2026-01-15',
       source: 'PR: $200M Beast Industries Investment + Annual Meeting',
       verdict: 'STRONG BUY',
-      verdictColor: 'green',
+      verdictColor: 'mint',
       summary: '$200M strategic equity investment into Beast Industries (MrBeast). GenZ/Millennial demographic expansion. DeFi integration planned. Annual Meeting TODAY @ Wynn Las Vegas.',
       fullAnalysis: {
         context: 'January 15, 2026 marks a pivotal day for BMNR: the Annual Meeting at Wynn Las Vegas coincides with the announcement of a $200M equity investment into Beast Industries — MrBeast\'s entertainment and CPG empire. This represents BMNR\'s first major strategic investment outside pure crypto, positioning the company at the intersection of digital assets and the creator economy.',
@@ -5388,7 +5388,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2026-01-12',
       source: 'PR: ETH Holdings Reach 4.168M, $14.0B Total',
       verdict: 'BUY',
-      verdictColor: 'green',
+      verdictColor: 'mint',
       summary: 'Staking surge: 1.26M ETH staked (30% of holdings, +597K in one week). Cash up to $988M. 70% to "Alchemy of 5%". Annual Meeting in 3 days.',
       fullAnalysis: {
         context: 'The January 12, 2026 PR confirms BMNR\'s relentless accumulation and explosive staking growth. 24,266 ETH acquired in past week while also increasing cash by $73M. Staking nearly doubled in one week (+596,864 to 1.256M). Tom Lee urges stockholders to VOTE YES on Proposal #2 (share authorization).',
@@ -5417,7 +5417,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2026-01-09',
       source: 'PR: CFO/COO Young Kim Appointed',
       verdict: 'BUY',
-      verdictColor: 'green',
+      verdictColor: 'mint',
       summary: 'Leadership upgrade: Young Kim (MIT/HBS, Columbia Threadneedle, Axiom) appointed CFO+COO+Board. Management depth now matches asset scale.',
       fullAnalysis: {
         context: 'The January 9, 2026 PR announces Young Kim as CFO and COO, filling the vacancy from Raymond Mow\'s January 16 departure. Kim joins the Board and reports to Tom Lee. This is a significant leadership upgrade — Kim brings 20+ years of institutional asset management experience managing multi-billion dollar portfolios at Columbia Threadneedle and Axiom Investors.',
@@ -5443,7 +5443,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2026-01-05', 
       source: '8-K: ETH Holdings $14.2B, 4.14M ETH', 
       verdict: 'BUY', 
-      verdictColor: 'green', 
+      verdictColor: 'mint', 
       summary: 'Fortress balance sheet: $14.2B total holdings, $915M cash, 659K ETH staked. Two-thirds to "Alchemy of 5%". MAVAN Q1 2026.',
       fullAnalysis: {
         context: 'The January 5, 2026 8-K confirms BMNR\'s relentless accumulation continues even through holiday-week low volume. 32,977 ETH acquired in the past week alone. Staking scaled dramatically (+250K in one week to 659K total). Cash position nearly doubled to $915M. The machine is operating at full capacity.',
@@ -5469,7 +5469,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2026-01-02', 
       source: 'Chairman\'s Message (8-K, DEFA14A)', 
       verdict: 'STRONG BUY', 
-      verdictColor: 'green', 
+      verdictColor: 'mint', 
       summary: 'ETH/BMNR correlation formalized. Split roadmap disclosed. Premium thesis explained to market.',
       fullAnalysis: {
         context: 'Tom Lee published video explaining the authorized share increase (500M→50B) and explicitly quantified the ETH/BMNR correlation. This is management giving shareholders the exact framework for valuation: BMNR = 0.015×ETH + accretion. The split roadmap at various ETH prices reveals long-term ambitions.',
@@ -5491,7 +5491,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2025-11-24', 
       source: 'FY2025 10-K Annual Report', 
       verdict: 'STRONG BUY', 
-      verdictColor: 'green', 
+      verdictColor: 'mint', 
       summary: 'Transformation complete. First profitable year. Going concern eliminated. The thesis is validated.',
       fullAnalysis: {
         context: 'The 10-K filing confirmed what we suspected: BMNR has pulled off one of the most remarkable corporate pivots in recent memory. From a distressed BTC miner with going concern warnings to an $8.8B ETH treasury powerhouse — in less than 6 months.',
@@ -5512,7 +5512,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2025-08-12', 
       source: 'ATM Expansion to $24.5B (424B5)', 
       verdict: 'BUY', 
-      verdictColor: 'green', 
+      verdictColor: 'mint', 
       summary: 'Market is funding the accumulation at premium. Momentum is undeniable.',
       fullAnalysis: {
         context: 'The prior $4.5B ATM was exhausted in just 5 weeks. Let that sink in. The market absorbed $4.5 BILLION in equity issuance in 35 days, and they came back for more. This $24.5B expansion signals unlimited appetite.',
@@ -5533,7 +5533,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2025-07-29', 
       source: '$1B Buyback Authorization + Holdings Update', 
       verdict: 'BUY', 
-      verdictColor: 'green', 
+      verdictColor: 'mint', 
       summary: 'Management putting money where their mouth is. Aligned with shareholders.',
       fullAnalysis: {
         context: 'The $1B buyback authorization is a powerful signal. Tom Lee\'s comment about "acquiring our own shares" if trading below NAV tells you everything about management alignment. Combined with 625K ETH accumulated, the framework is complete.',
@@ -5554,7 +5554,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2025-06-30', 
       source: 'ETH Pivot Announcement', 
       verdict: 'SPECULATIVE', 
-      verdictColor: 'yellow', 
+      verdictColor: 'gold', 
       summary: 'Bold move. High risk, high reward. Either genius or desperation.',
       fullAnalysis: {
         context: 'This is either the most visionary corporate pivot since Netflix went streaming, or a desperate Hail Mary from a dying company. The BTC mining business was bleeding cash post-halving. Something had to change.',
@@ -5575,7 +5575,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
       date: '2025-07-14', 
       source: 'Q3 FY2025 10-Q Filing', 
       verdict: 'SELL', 
-      verdictColor: 'red', 
+      verdictColor: 'coral', 
       summary: 'Going concern. Cash burning. Without change, this company dies.',
       fullAnalysis: {
         context: 'The final quarterly filing before the pivot tells a grim story. Cash declined from $797K to $392K. Losses mounting. BTC mining completely uneconomic post-halving. This company was circling the drain.',
@@ -6089,7 +6089,7 @@ const BMNRQuarterlyMetricsPanel = () => {
             <span className="sm-section-label sm-cyan">Cash Position Evolution<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
-            const data = quarterlyData.slice().reverse().map(q => ({
+            const data = quarterlyData.slice().reverse().slice(-5).map(q => ({
               label: q.quarter,
               value: q.cash,
               display: q.cash >= 1000 ? `$${(q.cash / 1000).toFixed(1)}B` : q.cash >= 100 ? `$${q.cash}M` : `$${(q.cash * 1000).toFixed(0)}K`
@@ -6121,7 +6121,7 @@ const BMNRQuarterlyMetricsPanel = () => {
           </div>
           <div className="sm-card-body">
           {(() => {
-            const data = quarterlyData.slice().reverse().filter(q => q.opEx).map(q => ({
+            const data = quarterlyData.slice().reverse().filter(q => q.opEx).slice(-5).map(q => ({
               label: q.quarter,
               value: q.opEx,
               display: `$${q.opEx}M`
@@ -6198,7 +6198,7 @@ const BMNRQuarterlyMetricsPanel = () => {
             <span className="sm-section-label sm-gold">Share Count (Outstanding)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
-            const data = quarterlyData.slice().reverse().map(q => ({
+            const data = quarterlyData.slice().reverse().slice(-5).map(q => ({
               label: q.quarter,
               value: q.shares,
               display: `${q.shares.toFixed(0)}M`
@@ -6226,7 +6226,7 @@ const BMNRQuarterlyMetricsPanel = () => {
             <span className="sm-section-label sm-sky">Market Cap Evolution ($M)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
-            const data = BMNR_MARKET_CAP_DATA;
+            const data = BMNR_MARKET_CAP_DATA.slice(-5);
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             const overflow = data.length > 8;
             return (
@@ -6253,7 +6253,7 @@ const BMNRQuarterlyMetricsPanel = () => {
             <span className="sm-section-label sm-violet">Crypto Holdings Evolution<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
-            const data = quarterlyData.slice().reverse().map(q => ({
+            const data = quarterlyData.slice().reverse().slice(-5).map(q => ({
               label: q.quarter,
               value: q.crypto,
               display: q.crypto >= 1000 ? `$${(q.crypto / 1000).toFixed(1)}B` : `$${q.crypto}M`
@@ -6281,7 +6281,7 @@ const BMNRQuarterlyMetricsPanel = () => {
             <span className="sm-section-label sm-mint">Net Income/(Loss)<UpdateIndicators sources="SEC" /></span>
           </div>
           {(() => {
-            const data = quarterlyData.slice().reverse().map(q => ({
+            const data = quarterlyData.slice().reverse().slice(-5).map(q => ({
               label: q.quarter,
               value: q.netIncome,
               display: q.netIncome >= 1000 ? `$${(q.netIncome / 1000).toFixed(1)}B` : q.netIncome <= -1000 ? `($${(Math.abs(q.netIncome) / 1000).toFixed(1)}B)` : q.netIncome >= 0 ? `$${q.netIncome}M` : `($${Math.abs(q.netIncome)}M)`
