@@ -4570,7 +4570,7 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Lower bound for annual USDC revenue growth in simulation.
                     </p>
-                    <div className="sm-grid-sep">
+                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
                       {[5, 10, 15, 20, 25, 30].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcRevenueGrowthMin : mcPresets[mcPreset].revMin;
                         return (
@@ -4586,7 +4586,7 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Upper bound for annual USDC revenue growth in simulation.
                     </p>
-                    <div className="sm-grid-sep">
+                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
                       {[25, 35, 45, 55, 65, 75].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcRevenueGrowthMax : mcPresets[mcPreset].revMax;
                         return (
@@ -4609,7 +4609,7 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Lower bound for EBITDA margin assumption in DCF model.
                     </p>
-                    <div className="sm-grid-sep">
+                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
                       {[30, 40, 50, 55, 60, 65].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcMarginMin : mcPresets[mcPreset].marginMin;
                         return (
@@ -4625,7 +4625,7 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Upper bound for EBITDA margin assumption in DCF model.
                     </p>
-                    <div className="sm-grid-sep">
+                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
                       {[55, 60, 65, 70, 75, 80].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcMarginMax : mcPresets[mcPreset].marginMax;
                         return (
@@ -4648,7 +4648,7 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Lower bound for WACC / required return in DCF model.
                     </p>
-                    <div className="sm-grid-sep">
+                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
                       {[8, 10, 12, 14, 16, 18].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcDiscountMin : mcPresets[mcPreset].discMin;
                         return (
@@ -4664,7 +4664,7 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Upper bound for WACC / required return in DCF model.
                     </p>
-                    <div className="sm-grid-sep">
+                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
                       {[12, 14, 16, 18, 20, 22].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcDiscountMax : mcPresets[mcPreset].discMax;
                         return (
@@ -4682,7 +4682,7 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Lower bound for exit EV/EBITDA multiple in DCF terminal value.
                     </p>
-                    <div className="sm-grid-sep">
+                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
                       {[8, 10, 12, 15, 18, 20].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcTerminalMultMin : mcPresets[mcPreset].termMin;
                         return (
@@ -4698,7 +4698,7 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Upper bound for exit EV/EBITDA multiple in DCF terminal value.
                     </p>
-                    <div className="sm-grid-sep">
+                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
                       {[15, 18, 22, 25, 30, 35].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcTerminalMultMax : mcPresets[mcPreset].termMax;
                         return (
