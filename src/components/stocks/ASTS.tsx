@@ -3517,6 +3517,7 @@ const ParameterCard = ({
     if (format === '%') return `${v}%`;
     if (format === 'yr') return v === 0 ? 'On-time' : v > 0 ? `+${v}yr` : `${v}yr`;
     if (format === 'M') return `${(v/1000).toFixed(1)}B`;
+    if (format === 'x') return `${v}x`;
     return String(v);
   };
 
@@ -4381,7 +4382,8 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 <button
                   key={yr}
                   onClick={() => setYears(yr)}
-                  className="sm-pill-toggle" style={{ flex: 1, padding: '12px 20px', border: years === yr ? '2px solid var(--accent)' : '2px solid transparent', background: years === yr ? 'var(--accent-dim)' : 'var(--surface2)', color: years === yr ? 'var(--accent)' : 'var(--text2)', fontWeight: years === yr ? 700 : 400, fontFamily: "'Space Mono', monospace", fontSize: 16 }}
+                  className="sm-mc-horizon-btn"
+                  data-active={years === yr ? "true" : undefined}
                 >
                   {yr}Y
                 </button>
@@ -4397,7 +4399,8 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
                 <button
                   key={simCount}
                   onClick={() => setSims(simCount)}
-                  className="sm-pill-toggle" style={{ flex: 1, padding: '12px 16px', border: sims === simCount ? '2px solid var(--accent)' : '2px solid transparent', background: sims === simCount ? 'var(--accent-dim)' : 'var(--surface2)', color: sims === simCount ? 'var(--accent)' : 'var(--text2)', fontWeight: sims === simCount ? 700 : 400, fontFamily: "'Space Mono', monospace", fontSize: 14 }}
+                  className="sm-mc-sim-btn"
+                  data-active={sims === simCount ? "true" : undefined}
                 >
                   {simCount.toLocaleString()}
                 </button>
@@ -4415,54 +4418,22 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           <span className="sm-divider-line" />
         </div>
         <div className="sm-grid-2">
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">BASE REVENUE ($B)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Expected terminal year revenue. Source: DCF model or analyst estimates.
-            </p>
-            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
-              {[1.5, 2.5, 4.0, 5.5, 8.0, 12.0].map((opt, idx) => {
-                const isActive = Math.abs(baseRev - opt) < 0.1;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setBaseRev)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>${opt}</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">REVENUE VOLATILITY (%)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Log-normal std dev. 35% = outcomes range 0.7x-1.4x base revenue.
-            </p>
-            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
-              {[50, 45, 40, 35, 30, 25].map((opt, idx) => {
-                const isActive = revVol === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setRevVol)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
+          <ParameterCard
+            title="Base Revenue ($B)"
+            explanation="Expected terminal year revenue. Source: DCF model or analyst estimates."
+            options={[1.5, 2.5, 4.0, 5.5, 8.0, 12.0]}
+            value={baseRev}
+            onChange={updateParam(setBaseRev)}
+            format="$"
+          />
+          <ParameterCard
+            title="Revenue Volatility (%)"
+            explanation="Log-normal std dev. 35% = outcomes range 0.7x-1.4x base revenue."
+            options={[50, 45, 40, 35, 30, 25]}
+            value={revVol}
+            onChange={updateParam(setRevVol)}
+            format="%"
+          />
         </div>
 
         <div className="sm-divider">
@@ -4470,54 +4441,22 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           <span className="sm-divider-line" />
         </div>
         <div className="sm-grid-2">
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">EBITDA MARGIN (%)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Terminal margin at scale. Satellite/telecom: 40-60%. Operating leverage applies.
-            </p>
-            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
-              {[25, 35, 40, 45, 52, 58].map((opt, idx) => {
-                const isActive = margin === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setMargin)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">EV/EBITDA MULTIPLE</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Terminal valuation multiple. Growth: 10-15x, Mature telcos: 6-8x.
-            </p>
-            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
-              {[6, 8, 10, 12, 14, 16].map((opt, idx) => {
-                const isActive = mult === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setMult)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}x</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
+          <ParameterCard
+            title="EBITDA Margin (%)"
+            explanation="Terminal margin at scale. Satellite/telecom: 40-60%. Operating leverage applies."
+            options={[25, 35, 40, 45, 52, 58]}
+            value={margin}
+            onChange={updateParam(setMargin)}
+            format="%"
+          />
+          <ParameterCard
+            title="EV/EBITDA Multiple"
+            explanation="Terminal valuation multiple. Growth: 10-15x, Mature telcos: 6-8x."
+            options={[6, 8, 10, 12, 14, 16]}
+            value={mult}
+            onChange={updateParam(setMult)}
+            format="x"
+          />
         </div>
 
         <div className="sm-divider">
@@ -4525,78 +4464,30 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           <span className="sm-divider-line" />
         </div>
         <div className="sm-grid-sep-3col" style={{ gap: 12, background: 'transparent' }}>
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">LAUNCH RISK (%)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Prob. of constellation failure. If triggered: -40% revenue.
-            </p>
-            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
-              {[30, 25, 20, 15, 10, 5].map((opt, idx) => {
-                const isActive = launchRisk === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setLaunchRisk)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">REGULATORY RISK (%)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Prob. of FCC/spectrum issues. If triggered: -30% revenue.
-            </p>
-            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
-              {[25, 20, 15, 10, 8, 5].map((opt, idx) => {
-                const isActive = regRisk === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setRegRisk)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">DISCOUNT RATE (%)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Required return / WACC. Pre-revenue space: 12-18%.
-            </p>
-            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
-              {[20, 18, 16, 15, 13, 11].map((opt, idx) => {
-                const isActive = discountRate === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => setDiscountRate(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
+          <ParameterCard
+            title="Launch Risk (%)"
+            explanation="Prob. of constellation failure. If triggered: -40% revenue."
+            options={[30, 25, 20, 15, 10, 5]}
+            value={launchRisk}
+            onChange={updateParam(setLaunchRisk)}
+            format="%"
+          />
+          <ParameterCard
+            title="Regulatory Risk (%)"
+            explanation="Prob. of FCC/spectrum issues. If triggered: -30% revenue."
+            options={[25, 20, 15, 10, 8, 5]}
+            value={regRisk}
+            onChange={updateParam(setRegRisk)}
+            format="%"
+          />
+          <ParameterCard
+            title="Discount Rate (%)"
+            explanation="Required return / WACC. Pre-revenue space: 12-18%."
+            options={[20, 18, 16, 15, 13, 11]}
+            value={discountRate}
+            onChange={(v) => setDiscountRate(v)}
+            format="%"
+          />
         </div>
 
         {/* Run Button */}
@@ -4606,7 +4497,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Percentile Distribution */}
       <div>
         <div className="sm-card sm-mt-8">
-          <div className="sm-section-label sm-grid-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
+          <div className="sm-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
             <span className="sm-text-left">Percentile</span>
             <span className="sm-text-right">Price Target</span>
             <span className="sm-text-right">vs Current</span>
@@ -4621,8 +4512,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           ].map((row, i) => {
             const pctChange = ((row.value / currentStockPrice - 1) * 100);
             return (
-              <div key={i} className="sm-grid-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : 'transparent', cursor: 'default' }}
-              >
+              <div key={i} className="sm-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : 'transparent' }}>
                 <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
                 <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
                 <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", color: 'var(--text2)' }}>${(row.value - currentStockPrice).toFixed(2)}</span>
@@ -4636,7 +4526,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Risk Metrics */}
       <div>
         <div className="sm-card sm-mt-8">
-          <div className="sm-section-label sm-grid-header" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+          <div className="sm-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
             <span className="sm-text-left">Risk Metric</span>
             <span className="sm-text-right">Value</span>
             <span className="sm-text-left">Interpretation</span>
@@ -4649,8 +4539,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
             { label: 'VaR (5%)', value: <span className="sm-fw-600" style={{ fontFamily: "'Space Mono', monospace", color: 'var(--red)' }}>{sim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
             { label: 'CVaR (5%)', value: <span className="sm-fw-600" style={{ fontFamily: "'Space Mono', monospace", color: 'var(--red)' }}>{sim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
           ].map((row, i) => (
-            <div key={i} className="sm-grid-row" style={{ gridTemplateColumns: '1fr 1fr 1fr', cursor: 'default' }}
-            >
+            <div key={i} className="sm-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
               <span className="sm-text2">{row.label}</span>
               <span className="sm-text-right">{row.value}</span>
               <span className="sm-text3">{row.interp}</span>
@@ -5404,7 +5293,7 @@ const TimelineTab = () => {
         typeColors={ASTS_SEC_TYPE_COLORS}
         filterTypes={secFilterTypes}
         crossRefIndex={ASTS_FILING_CROSS_REFS}
-        initialVisibleCount={15}
+        initialVisibleCount={5}
       />
 
       {/* Upcoming Events + Recent Press Releases */}
@@ -5419,48 +5308,48 @@ const TimelineTab = () => {
               <span className="sm-section-label">Upcoming Events<UpdateIndicators sources="PR" /></span>
             </div>
             <div className="sm-card-body">
-          <div className="sm-flex-col-gap">
-            <div className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
-              <div>
-                <div className="sm-text sm-fw-600">Q4 2025 Earnings</div>
-                <div className="sm-subtle">10-K Annual Report</div>
+              <div className="sm-tl-event-list">
+                <div className="sm-tl-event-item">
+                  <div>
+                    <div className="sm-text sm-fw-600">Q4 2025 Earnings</div>
+                    <div className="sm-subtle">10-K Annual Report</div>
+                  </div>
+                  <div className="sm-text-right">
+                    <div className="sm-mono-sm sm-cyan">~Mar 2026</div>
+                    <div className="sm-tl-event-sub">Est.</div>
+                  </div>
+                </div>
+                <div className="sm-tl-event-item">
+                  <div>
+                    <div className="sm-text sm-fw-600">BB7-BB11 Launches</div>
+                    <div className="sm-subtle">Block 2 constellation expansion</div>
+                  </div>
+                  <div className="sm-text-right">
+                    <div className="sm-mono-sm sm-mint">Q1 2026</div>
+                    <div className="sm-tl-event-sub">45-60 sats by EOY</div>
+                  </div>
+                </div>
+                <div className="sm-tl-event-item">
+                  <div>
+                    <div className="sm-text sm-fw-600">Commercial Service Launch</div>
+                    <div className="sm-subtle">Initial revenue generation</div>
+                  </div>
+                  <div className="sm-text-right">
+                    <div className="sm-mono-sm sm-gold">H1 2026</div>
+                    <div className="sm-tl-event-sub">Post-constellation</div>
+                  </div>
+                </div>
+                <div className="sm-tl-event-item">
+                  <div>
+                    <div className="sm-text sm-fw-600">Convertible Notes Maturity</div>
+                    <div className="sm-subtle">$698M converts @ 4.25%</div>
+                  </div>
+                  <div className="sm-text-right">
+                    <div className="sm-mono-sm sm-sky">2028-2030</div>
+                    <div className="sm-tl-event-sub">Per 10-Q</div>
+                  </div>
+                </div>
               </div>
-              <div className="sm-text-right">
-                <div className="sm-mono-sm sm-cyan">~Mar 2026</div>
-                <div className="sm-text-11">Est.</div>
-              </div>
-            </div>
-            <div className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
-              <div>
-                <div className="sm-text sm-fw-600">BB7-BB11 Launches</div>
-                <div className="sm-subtle">Block 2 constellation expansion</div>
-              </div>
-              <div className="sm-text-right">
-                <div className="sm-mono-sm sm-mint">Q1 2026</div>
-                <div className="sm-text-11">45-60 sats by EOY</div>
-              </div>
-            </div>
-            <div className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
-              <div>
-                <div className="sm-text sm-fw-600">Commercial Service Launch</div>
-                <div className="sm-subtle">Initial revenue generation</div>
-              </div>
-              <div className="sm-text-right">
-                <div className="sm-mono-sm sm-gold">H1 2026</div>
-                <div className="sm-text-11">Post-constellation</div>
-              </div>
-            </div>
-            <div className="sm-flex-between sm-items-center sm-card-body sm-bg-surface2 sm-rounded-12">
-              <div>
-                <div className="sm-text sm-fw-600">Convertible Notes Maturity</div>
-                <div className="sm-subtle">$698M converts @ 4.25%</div>
-              </div>
-              <div className="sm-text-right">
-                <div className="sm-mono-sm sm-sky">2028-2030</div>
-                <div className="sm-text-11">Per 10-Q</div>
-              </div>
-            </div>
-          </div>
             </div>
           </div>
         </div>
@@ -5471,14 +5360,14 @@ const TimelineTab = () => {
               <span className="sm-section-label">Recent Press Releases<UpdateIndicators sources="PR" /></span>
             </div>
             <div className="sm-card-body">
-              <div className="sm-flex-col-gap">
+              <div className="sm-tl-pr-list">
                 {displayedPR.map((pr, i) => (
-                  <div key={i} className="sm-card-body sm-bg-surface2 sm-rounded-12">
-                    <div className="sm-flex-between">
-                      <span className="sm-text-11">{pr.date}</span>
-                      <span className="sm-text-11" style={{ color: pr.color }}>{pr.category}</span>
+                  <div key={i} className="sm-tl-pr-item-v2">
+                    <div className="sm-tl-pr-meta">
+                      <span className="sm-tl-pr-date">{pr.date}</span>
+                      <span className="sm-tl-pr-cat" style={{ color: pr.color }}>{pr.category}</span>
                     </div>
-                    <div className="sm-fw-500 sm-text" style={{ fontSize: 14 }}>{pr.title}</div>
+                    <div className="sm-tl-pr-title">{pr.title}</div>
                   </div>
                 ))}
               </div>

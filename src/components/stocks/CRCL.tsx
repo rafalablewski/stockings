@@ -4921,19 +4921,8 @@ function CRCLModel() {
                         <button
                           key={yr}
                           onClick={() => { setMcYears(yr); setRunKey(k => k + 1); }}
-                          style={{
-                            flex: 1,
-                            padding: '12px 20px',
-                            borderRadius: 8,
-                            border: mcYears === yr ? '2px solid var(--accent)' : '2px solid transparent',
-                            background: mcYears === yr ? 'var(--accent-dim)' : 'var(--surface2)',
-                            color: mcYears === yr ? 'var(--accent)' : 'var(--text2)',
-                            cursor: 'pointer',
-                            fontWeight: mcYears === yr ? 700 : 400,
-                            fontFamily: "'Space Mono', monospace",
-                            fontSize: 16,
-                            transition: 'all 0.15s'
-                          }}
+                          className="sm-mc-horizon-btn"
+                          data-active={mcYears === yr ? "true" : undefined}
                         >
                           {yr}Y
                         </button>
@@ -4949,19 +4938,8 @@ function CRCLModel() {
                         <button
                           key={simCount}
                           onClick={() => { setMcSims(simCount); setRunKey(k => k + 1); }}
-                          style={{
-                            flex: 1,
-                            padding: '12px 16px',
-                            borderRadius: 8,
-                            border: mcSims === simCount ? '2px solid var(--accent)' : '2px solid transparent',
-                            background: mcSims === simCount ? 'var(--accent-dim)' : 'var(--surface2)',
-                            color: mcSims === simCount ? 'var(--accent)' : 'var(--text2)',
-                            cursor: 'pointer',
-                            fontWeight: mcSims === simCount ? 700 : 400,
-                            fontFamily: "'Space Mono', monospace",
-                            fontSize: 14,
-                            transition: 'all 0.15s'
-                          }}
+                          className="sm-mc-sim-btn"
+                          data-active={mcSims === simCount ? "true" : undefined}
                         >
                           {simCount.toLocaleString()}
                         </button>
@@ -4985,27 +4963,11 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Lower bound for annual USDC revenue growth in simulation.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                      {[5, 10, 15, 20, 25, 30].map((opt, idx) => {
+                    <div className="sm-grid-sep">
+                      {[5, 10, 15, 20, 25, 30].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcRevenueGrowthMin : mcPresets[mcPreset].revMin;
-                        const isActive = currentVal === opt;
-                        const colors = [
-                          { border: 'var(--coral)', bg: 'color-mix(in srgb, var(--coral) 20%, transparent)', text: 'var(--coral)' },
-                          { border: '#f97316', bg: 'color-mix(in srgb, var(--coral) 15%, transparent)', text: '#f97316' },
-                          { border: 'var(--gold)', bg: 'color-mix(in srgb, var(--gold) 15%, transparent)', text: 'var(--gold)' },
-                          { border: '#a3e635', bg: 'color-mix(in srgb, #a3e635 15%, transparent)', text: '#84cc16' },
-                          { border: 'var(--mint)', bg: 'color-mix(in srgb, var(--mint) 15%, transparent)', text: 'var(--mint)' },
-                          { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
-                        ][idx];
                         return (
-                          <div key={opt} onClick={() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); })()} style={{
-                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                            background: isActive ? colors.bg : 'var(--surface2)',
-                            fontWeight: isActive ? 600 : 400,
-                            color: isActive ? colors.text : 'var(--text3)',
-                            transition: 'all 0.15s'
-                          }}>{opt}%</div>
+                          <div key={opt} onClick={() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
                         );
                       })}
                     </div>
@@ -5017,27 +4979,11 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Upper bound for annual USDC revenue growth in simulation.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                      {[25, 35, 45, 55, 65, 75].map((opt, idx) => {
+                    <div className="sm-grid-sep">
+                      {[25, 35, 45, 55, 65, 75].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcRevenueGrowthMax : mcPresets[mcPreset].revMax;
-                        const isActive = currentVal === opt;
-                        const colors = [
-                          { border: 'var(--coral)', bg: 'color-mix(in srgb, var(--coral) 20%, transparent)', text: 'var(--coral)' },
-                          { border: '#f97316', bg: 'color-mix(in srgb, var(--coral) 15%, transparent)', text: '#f97316' },
-                          { border: 'var(--gold)', bg: 'color-mix(in srgb, var(--gold) 15%, transparent)', text: 'var(--gold)' },
-                          { border: '#a3e635', bg: 'color-mix(in srgb, #a3e635 15%, transparent)', text: '#84cc16' },
-                          { border: 'var(--mint)', bg: 'color-mix(in srgb, var(--mint) 15%, transparent)', text: 'var(--mint)' },
-                          { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
-                        ][idx];
                         return (
-                          <div key={opt} onClick={() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); })()} style={{
-                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                            background: isActive ? colors.bg : 'var(--surface2)',
-                            fontWeight: isActive ? 600 : 400,
-                            color: isActive ? colors.text : 'var(--text3)',
-                            transition: 'all 0.15s'
-                          }}>{opt}%</div>
+                          <div key={opt} onClick={() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
                         );
                       })}
                     </div>
@@ -5056,27 +5002,11 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Lower bound for EBITDA margin assumption in DCF model.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                      {[30, 40, 50, 55, 60, 65].map((opt, idx) => {
+                    <div className="sm-grid-sep">
+                      {[30, 40, 50, 55, 60, 65].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcMarginMin : mcPresets[mcPreset].marginMin;
-                        const isActive = currentVal === opt;
-                        const colors = [
-                          { border: 'var(--coral)', bg: 'color-mix(in srgb, var(--coral) 20%, transparent)', text: 'var(--coral)' },
-                          { border: '#f97316', bg: 'color-mix(in srgb, var(--coral) 15%, transparent)', text: '#f97316' },
-                          { border: 'var(--gold)', bg: 'color-mix(in srgb, var(--gold) 15%, transparent)', text: 'var(--gold)' },
-                          { border: '#a3e635', bg: 'color-mix(in srgb, #a3e635 15%, transparent)', text: '#84cc16' },
-                          { border: 'var(--mint)', bg: 'color-mix(in srgb, var(--mint) 15%, transparent)', text: 'var(--mint)' },
-                          { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
-                        ][idx];
                         return (
-                          <div key={opt} onClick={() => { setMcMarginMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcMarginMin(opt); setMcPreset('custom'); })()} style={{
-                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                            background: isActive ? colors.bg : 'var(--surface2)',
-                            fontWeight: isActive ? 600 : 400,
-                            color: isActive ? colors.text : 'var(--text3)',
-                            transition: 'all 0.15s'
-                          }}>{opt}%</div>
+                          <div key={opt} onClick={() => { setMcMarginMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcMarginMin(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
                         );
                       })}
                     </div>
@@ -5088,27 +5018,11 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Upper bound for EBITDA margin assumption in DCF model.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                      {[55, 60, 65, 70, 75, 80].map((opt, idx) => {
+                    <div className="sm-grid-sep">
+                      {[55, 60, 65, 70, 75, 80].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcMarginMax : mcPresets[mcPreset].marginMax;
-                        const isActive = currentVal === opt;
-                        const colors = [
-                          { border: 'var(--coral)', bg: 'color-mix(in srgb, var(--coral) 20%, transparent)', text: 'var(--coral)' },
-                          { border: '#f97316', bg: 'color-mix(in srgb, var(--coral) 15%, transparent)', text: '#f97316' },
-                          { border: 'var(--gold)', bg: 'color-mix(in srgb, var(--gold) 15%, transparent)', text: 'var(--gold)' },
-                          { border: '#a3e635', bg: 'color-mix(in srgb, #a3e635 15%, transparent)', text: '#84cc16' },
-                          { border: 'var(--mint)', bg: 'color-mix(in srgb, var(--mint) 15%, transparent)', text: 'var(--mint)' },
-                          { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
-                        ][idx];
                         return (
-                          <div key={opt} onClick={() => { setMcMarginMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcMarginMax(opt); setMcPreset('custom'); })()} style={{
-                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                            background: isActive ? colors.bg : 'var(--surface2)',
-                            fontWeight: isActive ? 600 : 400,
-                            color: isActive ? colors.text : 'var(--text3)',
-                            transition: 'all 0.15s'
-                          }}>{opt}%</div>
+                          <div key={opt} onClick={() => { setMcMarginMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcMarginMax(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
                         );
                       })}
                     </div>
@@ -5127,27 +5041,11 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Lower bound for WACC / required return in DCF model.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                      {[8, 10, 12, 14, 16, 18].map((opt, idx) => {
+                    <div className="sm-grid-sep">
+                      {[8, 10, 12, 14, 16, 18].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcDiscountMin : mcPresets[mcPreset].discMin;
-                        const isActive = currentVal === opt;
-                        const colors = [
-                          { border: 'var(--coral)', bg: 'color-mix(in srgb, var(--coral) 20%, transparent)', text: 'var(--coral)' },
-                          { border: '#f97316', bg: 'color-mix(in srgb, var(--coral) 15%, transparent)', text: '#f97316' },
-                          { border: 'var(--gold)', bg: 'color-mix(in srgb, var(--gold) 15%, transparent)', text: 'var(--gold)' },
-                          { border: '#a3e635', bg: 'color-mix(in srgb, #a3e635 15%, transparent)', text: '#84cc16' },
-                          { border: 'var(--mint)', bg: 'color-mix(in srgb, var(--mint) 15%, transparent)', text: 'var(--mint)' },
-                          { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
-                        ][idx];
                         return (
-                          <div key={opt} onClick={() => { setMcDiscountMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcDiscountMin(opt); setMcPreset('custom'); })()} style={{
-                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                            background: isActive ? colors.bg : 'var(--surface2)',
-                            fontWeight: isActive ? 600 : 400,
-                            color: isActive ? colors.text : 'var(--text3)',
-                            transition: 'all 0.15s'
-                          }}>{opt}%</div>
+                          <div key={opt} onClick={() => { setMcDiscountMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcDiscountMin(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
                         );
                       })}
                     </div>
@@ -5159,27 +5057,11 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Upper bound for WACC / required return in DCF model.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                      {[12, 14, 16, 18, 20, 22].map((opt, idx) => {
+                    <div className="sm-grid-sep">
+                      {[12, 14, 16, 18, 20, 22].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcDiscountMax : mcPresets[mcPreset].discMax;
-                        const isActive = currentVal === opt;
-                        const colors = [
-                          { border: 'var(--coral)', bg: 'color-mix(in srgb, var(--coral) 20%, transparent)', text: 'var(--coral)' },
-                          { border: '#f97316', bg: 'color-mix(in srgb, var(--coral) 15%, transparent)', text: '#f97316' },
-                          { border: 'var(--gold)', bg: 'color-mix(in srgb, var(--gold) 15%, transparent)', text: 'var(--gold)' },
-                          { border: '#a3e635', bg: 'color-mix(in srgb, #a3e635 15%, transparent)', text: '#84cc16' },
-                          { border: 'var(--mint)', bg: 'color-mix(in srgb, var(--mint) 15%, transparent)', text: 'var(--mint)' },
-                          { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
-                        ][idx];
                         return (
-                          <div key={opt} onClick={() => { setMcDiscountMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcDiscountMax(opt); setMcPreset('custom'); })()} style={{
-                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                            background: isActive ? colors.bg : 'var(--surface2)',
-                            fontWeight: isActive ? 600 : 400,
-                            color: isActive ? colors.text : 'var(--text3)',
-                            transition: 'all 0.15s'
-                          }}>{opt}%</div>
+                          <div key={opt} onClick={() => { setMcDiscountMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcDiscountMax(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
                         );
                       })}
                     </div>
@@ -5193,27 +5075,11 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Lower bound for exit EV/EBITDA multiple in DCF terminal value.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                      {[8, 10, 12, 15, 18, 20].map((opt, idx) => {
+                    <div className="sm-grid-sep">
+                      {[8, 10, 12, 15, 18, 20].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcTerminalMultMin : mcPresets[mcPreset].termMin;
-                        const isActive = currentVal === opt;
-                        const colors = [
-                          { border: 'var(--coral)', bg: 'color-mix(in srgb, var(--coral) 20%, transparent)', text: 'var(--coral)' },
-                          { border: '#f97316', bg: 'color-mix(in srgb, var(--coral) 15%, transparent)', text: '#f97316' },
-                          { border: 'var(--gold)', bg: 'color-mix(in srgb, var(--gold) 15%, transparent)', text: 'var(--gold)' },
-                          { border: '#a3e635', bg: 'color-mix(in srgb, #a3e635 15%, transparent)', text: '#84cc16' },
-                          { border: 'var(--mint)', bg: 'color-mix(in srgb, var(--mint) 15%, transparent)', text: 'var(--mint)' },
-                          { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
-                        ][idx];
                         return (
-                          <div key={opt} onClick={() => { setMcTerminalMultMin(opt); setMcPreset('custom'); }} style={{
-                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                            background: isActive ? colors.bg : 'var(--surface2)',
-                            fontWeight: isActive ? 600 : 400,
-                            color: isActive ? colors.text : 'var(--text3)',
-                            transition: 'all 0.15s'
-                          }}>{opt}x</div>
+                          <div key={opt} onClick={() => { setMcTerminalMultMin(opt); setMcPreset('custom'); }} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}x</div>
                         );
                       })}
                     </div>
@@ -5225,27 +5091,11 @@ function CRCLModel() {
                     <p className="sm-note-list">
                       Upper bound for exit EV/EBITDA multiple in DCF terminal value.
                     </p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 6 }}>
-                      {[15, 18, 22, 25, 30, 35].map((opt, idx) => {
+                    <div className="sm-grid-sep">
+                      {[15, 18, 22, 25, 30, 35].map(opt => {
                         const currentVal = mcPreset === 'custom' ? mcTerminalMultMax : mcPresets[mcPreset].termMax;
-                        const isActive = currentVal === opt;
-                        const colors = [
-                          { border: 'var(--coral)', bg: 'color-mix(in srgb, var(--coral) 20%, transparent)', text: 'var(--coral)' },
-                          { border: '#f97316', bg: 'color-mix(in srgb, var(--coral) 15%, transparent)', text: '#f97316' },
-                          { border: 'var(--gold)', bg: 'color-mix(in srgb, var(--gold) 15%, transparent)', text: 'var(--gold)' },
-                          { border: '#a3e635', bg: 'color-mix(in srgb, #a3e635 15%, transparent)', text: '#84cc16' },
-                          { border: 'var(--mint)', bg: 'color-mix(in srgb, var(--mint) 15%, transparent)', text: 'var(--mint)' },
-                          { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
-                        ][idx];
                         return (
-                          <div key={opt} onClick={() => { setMcTerminalMultMax(opt); setMcPreset('custom'); }} style={{
-                            padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                            border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                            background: isActive ? colors.bg : 'var(--surface2)',
-                            fontWeight: isActive ? 600 : 400,
-                            color: isActive ? colors.text : 'var(--text3)',
-                            transition: 'all 0.15s'
-                          }}>{opt}x</div>
+                          <div key={opt} onClick={() => { setMcTerminalMultMax(opt); setMcPreset('custom'); }} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}x</div>
                         );
                       })}
                     </div>
@@ -5254,16 +5104,13 @@ function CRCLModel() {
                 </div>
 
                 {/* Run Button */}
-                <button onClick={() => setRunKey(k => k + 1)} style={{
-                  width: '100%', padding: '12px 16px', background: 'var(--accent)', color: 'var(--bg1)',
-                  border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
-                }}>🎲 Run Simulation</button>
+                <button onClick={() => setRunKey(k => k + 1)} className="sm-run-btn">🎲 Run Simulation</button>
               </div>
 
               {/* Percentile Distribution */}
               <div>
                 <div className="sm-card">
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '16px 24px', borderBottom: '1px solid var(--border)', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
+                  <div className="sm-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
                     <span className="sm-text-left">Percentile</span>
                     <span className="sm-text-right">Price Target</span>
                     <span className="sm-text-right">vs Current</span>
@@ -5278,7 +5125,7 @@ function CRCLModel() {
                   ].map((row, i) => {
                     const pctChange = ((row.value / MARKET.price - 1) * 100);
                     return (
-                      <div key={i} className="sm-grid-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : 'transparent', cursor: 'default' }}
+                      <div key={i} className="sm-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : 'transparent', cursor: 'default' }}
                       >
                         <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
                         <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
@@ -5293,7 +5140,7 @@ function CRCLModel() {
               {/* Risk Metrics */}
               <div>
                 <div className="sm-card">
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '16px 24px', borderBottom: '1px solid var(--border)', fontSize: 11, fontWeight: 600, letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text3)' }}>
+                  <div className="sm-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
                     <span className="sm-text-left">Risk Metric</span>
                     <span className="sm-text-right">Value</span>
                     <span className="sm-text-left">Interpretation</span>
@@ -5306,7 +5153,7 @@ function CRCLModel() {
                     { label: 'VaR (5%)', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: 'var(--red)' }}>{mcSim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
                     { label: 'CVaR (5%)', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: 'var(--red)' }}>{mcSim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
                   ].map((row, i) => (
-                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', cursor: 'default' }}
+                    <div key={i} className="sm-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}
                     >
                       <span className="sm-text2">{row.label}</span>
                       <span className="sm-text-right">{row.value}</span>
@@ -5367,7 +5214,7 @@ function CRCLModel() {
                 secMeta={secMeta}
                 typeColors={secTypeColors}
                 filterTypes={secFilterTypes}
-                initialVisibleCount={6}
+                initialVisibleCount={5}
               />
 
               {/* Upcoming Events */}
@@ -5382,35 +5229,35 @@ function CRCLModel() {
                       <span className="sm-section-label">Upcoming Events<UpdateIndicators sources="PR" /></span>
                     </div>
                     <div className="sm-card-body">
-                      <div className="sm-flex-col-gap">
-                        <div className="sm-flex-between sm-card-body sm-bg-surface2">
+                      <div className="sm-tl-event-list">
+                        <div className="sm-tl-event-item">
                           <div>
                             <div className="sm-text sm-fw-600">Q4 2025 Earnings</div>
                             <div className="sm-subtle">10-K Annual Report</div>
                           </div>
-                          <div className="sm-text-right">
-                            <div className="sm-mint sm-mono-sm">~Feb 2026</div>
-                            <div className="sm-text-11">Est.</div>
+                          <div>
+                            <div className="sm-mono-sm sm-mint" style={{ textAlign: 'right' }}>~Feb 2026</div>
+                            <div className="sm-tl-event-sub">Est.</div>
                           </div>
                         </div>
-                        <div className="sm-flex-between sm-card-body sm-bg-surface2">
+                        <div className="sm-tl-event-item">
                           <div>
                             <div className="sm-text sm-fw-600">Lock-up Expiry</div>
                             <div className="sm-subtle">~198M shares eligible for sale</div>
                           </div>
-                          <div className="sm-text-right">
-                            <div className="sm-gold sm-mono-sm">Dec 2025</div>
-                            <div className="sm-text-11">180 days post-IPO</div>
+                          <div>
+                            <div className="sm-mono-sm sm-gold" style={{ textAlign: 'right' }}>Dec 2025</div>
+                            <div className="sm-tl-event-sub">180 days post-IPO</div>
                           </div>
                         </div>
-                        <div className="sm-flex-between sm-card-body sm-bg-surface2">
+                        <div className="sm-tl-event-item">
                           <div>
                             <div className="sm-text sm-fw-600">Convertible Note Maturity</div>
                             <div className="sm-subtle">2019 SeedInvest Note ($15.7M)</div>
                           </div>
-                          <div className="sm-text-right">
-                            <div className="sm-sky sm-mono-sm">Mar 2026</div>
-                            <div className="sm-text-11">Convertible @ $16.23</div>
+                          <div>
+                            <div className="sm-mono-sm sm-sky" style={{ textAlign: 'right' }}>Mar 2026</div>
+                            <div className="sm-tl-event-sub">Convertible @ $16.23</div>
                           </div>
                         </div>
                       </div>
@@ -5424,14 +5271,14 @@ function CRCLModel() {
                       <span className="sm-section-label">Recent Press Releases<UpdateIndicators sources="PR" /></span>
                     </div>
                     <div className="sm-card-body">
-                      <div className="sm-flex-col-gap">
+                      <div className="sm-tl-pr-list">
                         {displayedPR.map((pr, i) => (
-                          <div key={i} className="sm-card-body sm-bg-surface2">
-                            <div className="sm-flex-between">
-                              <span className="sm-text-11">{pr.date}</span>
-                              <span className="sm-subtle-sm" style={{ color: pr.color }}>{pr.category}</span>
+                          <div key={i} className="sm-tl-pr-item-v2">
+                            <div className="sm-tl-pr-meta">
+                              <span className="sm-tl-pr-date">{pr.date}</span>
+                              <span className="sm-tl-pr-cat" style={{ color: pr.color }}>{pr.category}</span>
                             </div>
-                            <div className="sm-text sm-fw-500" style={{ fontSize: 14 }}>{pr.title}</div>
+                            <div className="sm-tl-pr-title">{pr.title}</div>
                           </div>
                         ))}
                       </div>

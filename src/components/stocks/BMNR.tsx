@@ -4650,19 +4650,8 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 <button
                   key={yr}
                   onClick={() => setYears(yr)}
-                  style={{
-                    flex: 1,
-                    padding: '12px 20px',
-                    borderRadius: 8,
-                    border: years === yr ? '2px solid var(--accent)' : '2px solid transparent',
-                    background: years === yr ? 'var(--accent-dim)' : 'var(--surface2)',
-                    color: years === yr ? 'var(--accent)' : 'var(--text2)',
-                    cursor: 'pointer',
-                    fontWeight: years === yr ? 700 : 400,
-                    fontFamily: "'Space Mono', monospace",
-                    fontSize: 16,
-                    transition: 'all 0.15s'
-                  }}
+                  className="sm-mc-horizon-btn"
+                  data-active={years === yr ? "true" : undefined}
                 >
                   {yr}Y
                 </button>
@@ -4678,19 +4667,8 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                 <button
                   key={simCount}
                   onClick={() => setSims(simCount)}
-                  style={{
-                    flex: 1,
-                    padding: '12px 16px',
-                    borderRadius: 8,
-                    border: sims === simCount ? '2px solid var(--accent)' : '2px solid transparent',
-                    background: sims === simCount ? 'var(--accent-dim)' : 'var(--surface2)',
-                    color: sims === simCount ? 'var(--accent)' : 'var(--text2)',
-                    cursor: 'pointer',
-                    fontWeight: sims === simCount ? 700 : 400,
-                    fontFamily: "'Space Mono', monospace",
-                    fontSize: 14,
-                    transition: 'all 0.15s'
-                  }}
+                  className="sm-mc-sim-btn"
+                  data-active={sims === simCount ? "true" : undefined}
                 >
                   {simCount.toLocaleString()}
                 </button>
@@ -4714,7 +4692,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
             <p className="sm-note-list">
               Expected annual ETH price appreciation. Negative = bear, positive = bull.
             </p>
-            <div className="sm-bmnr-grid-6">
+            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
               {[-10, -5, 5, 12, 20, 30].map((opt, idx) => {
                 const isActive = drift === opt;
                 const colors = [
@@ -4726,14 +4704,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                   { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
                 ][idx];
                 return (
-                  <div key={opt} onClick={() => updateParam(setDrift)(opt)} style={{
-                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                    background: isActive ? colors.bg : 'var(--surface2)',
-                    fontWeight: isActive ? 600 : 400,
-                    color: isActive ? colors.text : 'var(--text3)',
-                    transition: 'all 0.15s'
-                  }}>{opt > 0 ? '+' : ''}{opt}%</div>
+                  <div key={opt} onClick={() => updateParam(setDrift)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt > 0 ? '+' : ''}{opt}%</div>
                 );
               })}
             </div>
@@ -4745,7 +4716,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
             <p className="sm-note-list">
               Annual volatility. Crypto typically 50-80%. Higher = wider outcomes.
             </p>
-            <div className="sm-bmnr-grid-6">
+            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
               {[90, 80, 70, 65, 55, 45].map((opt, idx) => {
                 const isActive = vol === opt;
                 const colors = [
@@ -4757,14 +4728,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                   { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
                 ][idx];
                 return (
-                  <div key={opt} onClick={() => updateParam(setVol)(opt)} style={{
-                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                    background: isActive ? colors.bg : 'var(--surface2)',
-                    fontWeight: isActive ? 600 : 400,
-                    color: isActive ? colors.text : 'var(--text3)',
-                    transition: 'all 0.15s'
-                  }}>{opt}%</div>
+                  <div key={opt} onClick={() => updateParam(setVol)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
                 );
               })}
             </div>
@@ -4783,7 +4747,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
             <p className="sm-note-list">
               How much the NAV multiple (mNAV) varies. Higher = more premium/discount swings.
             </p>
-            <div className="sm-bmnr-grid-6">
+            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
               {[40, 35, 30, 25, 20, 15].map((opt, idx) => {
                 const isActive = multVol === opt;
                 const colors = [
@@ -4795,14 +4759,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                   { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
                 ][idx];
                 return (
-                  <div key={opt} onClick={() => updateParam(setMultVol)(opt)} style={{
-                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                    background: isActive ? colors.bg : 'var(--surface2)',
-                    fontWeight: isActive ? 600 : 400,
-                    color: isActive ? colors.text : 'var(--text3)',
-                    transition: 'all 0.15s'
-                  }}>{opt}%</div>
+                  <div key={opt} onClick={() => updateParam(setMultVol)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
                 );
               })}
             </div>
@@ -4814,7 +4771,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
             <p className="sm-note-list">
               How NAV multiple moves with ETH. Higher = more correlated swings.
             </p>
-            <div className="sm-bmnr-grid-6">
+            <div className="sm-grid-sep" style={{ '--cols': 6, gap: 6 } as React.CSSProperties}>
               {[0.6, 0.5, 0.4, 0.3, 0.2, 0.1].map((opt, idx) => {
                 const isActive = Math.abs(corr - opt) < 0.05;
                 const colors = [
@@ -4826,14 +4783,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
                   { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
                 ][idx];
                 return (
-                  <div key={opt} onClick={() => updateParam(setCorr)(opt)} style={{
-                    padding: '12px 4px', borderRadius: 8, cursor: 'pointer', textAlign: 'center', fontSize: 12,
-                    border: isActive ? `2px solid ${colors.border}` : '1px solid var(--border)',
-                    background: isActive ? colors.bg : 'var(--surface2)',
-                    fontWeight: isActive ? 600 : 400,
-                    color: isActive ? colors.text : 'var(--text3)',
-                    transition: 'all 0.15s'
-                  }}>{opt}</div>
+                  <div key={opt} onClick={() => updateParam(setCorr)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}</div>
                 );
               })}
             </div>
@@ -4847,16 +4797,13 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
         </div>
 
         {/* Run Button */}
-        <button onClick={() => setRunKey(k => k + 1)} style={{
-          width: '100%', padding: '12px 16px', background: 'var(--accent)', color: 'var(--bg1)',
-          border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: 14, transition: 'all 0.15s'
-        }}>🎲 Run Simulation</button>
+        <button onClick={() => setRunKey(k => k + 1)} className="sm-run-btn">🎲 Run Simulation</button>
       </div>
 
       {/* Percentile Distribution */}
       <div>
         <div className="sm-card">
-          <div className="sm-section-label" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
+          <div className="sm-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
             <span className="sm-text-left">Percentile</span>
             <span className="sm-text-right">Price Target</span>
             <span className="sm-text-right">vs Current</span>
@@ -4871,7 +4818,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
           ].map((row, i) => {
             const pctChange = ((row.value / currentNAV - 1) * 100);
             return (
-              <div key={i} className="sm-grid-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : 'transparent', cursor: 'default' }}
+              <div key={i} className="sm-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : 'transparent', cursor: 'default' }}
               >
                 <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
                 <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
@@ -4886,7 +4833,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
       {/* Risk Metrics */}
       <div>
         <div className="sm-card">
-          <div className="sm-section-label" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
+          <div className="sm-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
             <span className="sm-text-left">Risk Metric</span>
             <span className="sm-text-right">Value</span>
             <span className="sm-text-left">Interpretation</span>
@@ -4899,8 +4846,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
             { label: 'VaR (5%)', value: <span className="sm-mono sm-fw-600 sm-red">{sim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
             { label: 'CVaR (5%)', value: <span className="sm-mono sm-fw-600 sm-red">{sim.cvar5Pct.toFixed(1)}%</span>, interp: 'Expected tail loss' },
           ].map((row, i) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', cursor: 'default' }}
-            >
+            <div key={i} className="sm-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
               <span className="sm-text2">{row.label}</span>
               <span className="sm-text-right">{row.value}</span>
               <span className="sm-text3">{row.interp}</span>
@@ -7449,7 +7395,7 @@ const TimelineTab = () => {
         typeColors={BMNR_SEC_TYPE_COLORS}
         filterTypes={secFilterTypes}
         crossRefIndex={BMNR_FILING_CROSS_REFS}
-        initialVisibleCount={6}
+        initialVisibleCount={5}
       />
 
       {/* Section Divider: Events & Press Releases */}
@@ -7466,48 +7412,38 @@ const TimelineTab = () => {
               <span className="sm-section-label">Upcoming Events<UpdateIndicators sources="PR" /></span>
             </div>
             <div className="sm-card-body">
-          <div className="sm-flex-col-gap">
-            <div className="sm-bmnr-catalyst-row" data-complete="true">
-              <div>
-                <div className="sm-text sm-fw-600">✓ Annual Stockholder Meeting</div>
-                <div className="sm-subtle">Wynn Las Vegas · Prop 2 passed</div>
+              <div className="sm-tl-event-list">
+                <div className="sm-tl-event-item">
+                  <div>
+                    <div className="sm-text sm-fw-600">Q1 2026 Earnings</div>
+                    <div className="sm-subtle">10-Q Quarterly Report</div>
+                  </div>
+                  <div className="sm-text-right">
+                    <div className="sm-mono-sm sm-violet">~Jan 2026</div>
+                    <div className="sm-tl-event-sub">Est.</div>
+                  </div>
+                </div>
+                <div className="sm-tl-event-item">
+                  <div>
+                    <div className="sm-text sm-fw-600">Dividend Ex-Date</div>
+                    <div className="sm-subtle">$0.01/share quarterly</div>
+                  </div>
+                  <div className="sm-text-right">
+                    <div className="sm-mono-sm sm-mint">Q1 2026</div>
+                    <div className="sm-tl-event-sub">First payout</div>
+                  </div>
+                </div>
+                <div className="sm-tl-event-item">
+                  <div>
+                    <div className="sm-text sm-fw-600">5% ETH Supply Target</div>
+                    <div className="sm-subtle">Currently at 3.58% (~6.04M ETH needed)</div>
+                  </div>
+                  <div className="sm-text-right">
+                    <div className="sm-mono-sm sm-gold">72%</div>
+                    <div className="sm-tl-event-sub">~1.71M ETH to go</div>
+                  </div>
+                </div>
               </div>
-              <div className="sm-text-right">
-                <div className="sm-mono-value sm-mint">Jan 15, 2026</div>
-                <div className="sm-mint sm-fs-11">Completed</div>
-              </div>
-            </div>
-            <div className="sm-bmnr-catalyst-row">
-              <div>
-                <div className="sm-text sm-fw-600">Q1 2026 Earnings</div>
-                <div className="sm-subtle">10-Q Quarterly Report</div>
-              </div>
-              <div className="sm-text-right">
-                <div className="sm-mono-value sm-violet">~Jan 2026</div>
-                <div className="sm-text-11">Est.</div>
-              </div>
-            </div>
-            <div className="sm-bmnr-catalyst-row">
-              <div>
-                <div className="sm-text sm-fw-600">Dividend Ex-Date</div>
-                <div className="sm-subtle">$0.01/share quarterly</div>
-              </div>
-              <div className="sm-text-right">
-                <div className="sm-mono-value sm-mint">Q1 2026</div>
-                <div className="sm-text-11">First payout</div>
-              </div>
-            </div>
-            <div className="sm-bmnr-catalyst-row">
-              <div>
-                <div className="sm-text sm-fw-600">5% ETH Supply Target</div>
-                <div className="sm-subtle">Currently at 3.58% (~6.04M ETH needed)</div>
-              </div>
-              <div className="sm-text-right">
-                <div className="sm-mono-value sm-gold">72%</div>
-                <div className="sm-text-11">~1.71M ETH to go</div>
-              </div>
-            </div>
-          </div>
             </div>
           </div>
         </div>
@@ -7519,28 +7455,28 @@ const TimelineTab = () => {
               <span className="sm-section-label">Recent Press Releases<UpdateIndicators sources="PR" /></span>
             </div>
             <div className="sm-card-body">
-          <div className="sm-flex-col-gap">
-            {displayedPR.map((pr, i) => (
-              <div key={i} className="sm-bmnr-pr-item">
-                <div className="sm-flex-between">
-                  <span className="sm-text-11">{pr.date}</span>
-                  <span style={{ fontSize: 11, color: pr.color }}>{pr.category}</span>
-                </div>
-                <div className="sm-fw-500 sm-fs-14">{pr.title}</div>
+              <div className="sm-tl-pr-list">
+                {displayedPR.map((pr, i) => (
+                  <div key={i} className="sm-tl-pr-item-v2">
+                    <div className="sm-tl-pr-meta">
+                      <span className="sm-tl-pr-date">{pr.date}</span>
+                      <span className="sm-tl-pr-cat" style={{ color: pr.color }}>{pr.category}</span>
+                    </div>
+                    <div className="sm-tl-pr-title">{pr.title}</div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          {hiddenPRCount > 0 && (
-            <div className="sm-text-center sm-pt-12 sm-bmnr-pt-16">
-              <button
-                onClick={() => setShowAllPR(!showAllPR)}
-                className="sm-expand-btn"
-                aria-expanded={showAllPR}
-              >
-                {showAllPR ? '▲ Show Less' : `▼ Show ${hiddenPRCount} More`}
-              </button>
-            </div>
-          )}
+              {hiddenPRCount > 0 && (
+                <div className="sm-text-center sm-pt-12 sm-bmnr-pt-16">
+                  <button
+                    onClick={() => setShowAllPR(!showAllPR)}
+                    className="sm-expand-btn"
+                    aria-expanded={showAllPR}
+                  >
+                    {showAllPR ? '▲ Show Less' : `▼ Show ${hiddenPRCount} More`}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
