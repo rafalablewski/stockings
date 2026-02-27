@@ -275,7 +275,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
                                       {isReportExpanded ? '▼ Less details' : '▶ Full report details'}
                                     </button>
                                   )}
-                                  <button className="sm-ai-gen-btn" onClick={() => {}}>AI Summary</button>
+                                  <button className="sm-ai-gen-btn" onClick={() => { /* TODO: Implement AI Summary generation */ }}>AI Summary</button>
                                 </div>
 
                                 {isReportExpanded && (

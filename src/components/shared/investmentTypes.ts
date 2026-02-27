@@ -101,11 +101,13 @@ export interface EcosystemHealth {
   summary: string;
 }
 
+export type VerdictColor = 'mint' | 'gold' | 'coral';
+
 export interface InvestmentCurrent {
   date: string;
   source: string;
   verdict: string;
-  verdictColor: string;
+  verdictColor: VerdictColor;
   tagline: string;
   scorecard: ScorecardItem[];
   executiveSummary: ExecutiveSummary;
@@ -137,7 +139,7 @@ export interface ArchiveEntry {
   source?: string;
   filing?: string;
   verdict: string;
-  verdictColor?: string;
+  verdictColor?: VerdictColor;
   headline?: string;
   summary: string;
   keyDevelopments?: string[];

@@ -118,7 +118,7 @@ import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
 import { SharedInvestmentTab } from '../shared/SharedInvestmentTab';
-import type { InvestmentCurrent } from '../shared/investmentTypes';
+import type { InvestmentCurrent, ArchiveEntry } from '../shared/investmentTypes';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
@@ -2730,7 +2730,7 @@ function CRCLModel() {
   // ARCHIVE - NEVER DELETE! ADD NEW ENTRIES AT TOP AFTER EACH FILING
   // This is the permanent historical record of investment thesis evolution
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  const investmentArchive = [
+  const investmentArchive: ArchiveEntry[] = [
     // ⬇️ ADD NEW ENTRIES HERE (most recent first) ⬇️
     {
       date: '2025-12-31',

@@ -415,7 +415,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
                 <div className="sm-inv-archive-detail">
                   <div className="sm-flex-between sm-items-start">
                     <div className="sm-text-13 sm-pt-12 sm-flex-1">{entry.summary}</div>
-                    <button className="sm-ai-gen-btn sm-mt-12" onClick={() => {}}>AI Summary</button>
+                    <button className="sm-ai-gen-btn sm-mt-12" onClick={() => { /* TODO: Implement AI Summary generation */ }}>AI Summary</button>
                   </div>
                   {entry.keyDevelopments && (
                     <ul className="sm-text-13 sm-inv-dev-list">

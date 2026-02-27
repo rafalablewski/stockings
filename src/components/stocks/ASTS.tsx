@@ -122,7 +122,7 @@ import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import SharedEdgarTab from '../shared/SharedEdgarTab';
 import { SharedInvestmentTab } from '../shared/SharedInvestmentTab';
-import type { InvestmentCurrent } from '../shared/investmentTypes';
+import type { InvestmentCurrent, ArchiveEntry } from '../shared/investmentTypes';
 import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
@@ -6443,7 +6443,7 @@ const InvestmentTab = () => {
   // ARCHIVE - NEVER DELETE! ADD NEW ENTRIES AT TOP AFTER EACH FILING
   // This is the permanent historical record of investment thesis evolution
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  const archive = [
+  const archive: ArchiveEntry[] = [
     // ⬇️ ADD NEW ENTRIES HERE (most recent first) ⬇️
     { 
       date: '2025-11-10', 

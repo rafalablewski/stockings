@@ -215,7 +215,7 @@ import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import SharedEdgarTab from '../shared/SharedEdgarTab';
 import { SharedInvestmentTab } from '../shared/SharedInvestmentTab';
-import type { InvestmentCurrent } from '../shared/investmentTypes';
+import type { InvestmentCurrent, ArchiveEntry } from '../shared/investmentTypes';
 import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
@@ -5179,7 +5179,7 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
   
   // [PR_CHECKLIST_ARCHIVE] - MANDATORY: Add new full analysis at TOP with every press release!
   // Archive - Full historical investment summaries (generous detail for each period)
-  const archive = [
+  const archive: ArchiveEntry[] = [
     {
       date: '2026-02-23',
       source: 'PR: 4.423M ETH Holdings + $9.6B Total + 3.66% Supply + 73% to Alchemy of 5%',
