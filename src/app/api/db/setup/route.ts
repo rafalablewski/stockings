@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from '@/lib/schema';
+import { NOTES_CREATE_TABLE_SQL } from '@/lib/notes-ddl';
 import {
   mapSecFilings, mapCrossRefs, mapCrclTimeline, mapAstsTimeline,
   mapBmnrTimeline, mapCatalysts, mapPartnerNews, mapCompetitorNews,
@@ -174,6 +175,8 @@ CREATE TABLE IF NOT EXISTS audit_checks (
 
 CREATE UNIQUE INDEX IF NOT EXISTS audit_checks_finding_id_idx
   ON audit_checks (finding_id);
+
+${NOTES_CREATE_TABLE_SQL};
 `;
 
 // ── Main handler ─────────────────────────────────────────────────────────────

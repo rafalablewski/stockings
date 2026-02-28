@@ -322,6 +322,7 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/PinUnlock.tsx",                     type: "Component", description: "iOS-style 6-digit PIN entry keypad" },
   { path: "src/components/shared/PinStatus.tsx",              type: "Component", description: "Nav badge showing PIN/Closed status" },
   { path: "src/components/shared/AiToggle.tsx",               type: "Component", description: "AI analysis on/off toggle in nav" },
+  { path: "src/components/shared/NotesPanel.tsx",             type: "Component", description: "Global notes scratch-pad — slide-over drawer with create/view/delete; zero inline styles (category colors via data-cat attribute)" },
   { path: "src/lib/stocks.ts",                                type: "Data",      description: "Stock registry — tickers, names, sectors" },
   { path: "src/lib/schema.ts",                                type: "Data",      description: "Drizzle ORM schema — DB tables" },
   { path: "src/lib/auth-fetch.ts",                            type: "Utility",   description: "PIN-authenticated fetch wrapper" },
@@ -368,6 +369,7 @@ const apiRoutes = [
   { group: "Infra",     routes: [
     { method: "POST", path: "/api/db/setup",                    auth: "—",   note: "Seed database from .ts data files" },
     { method: "POST", path: "/api/audit-checks",                auth: "—",   note: "Persist audit findings" },
+    { method: "GET/POST/DELETE", path: "/api/notes",            auth: "—",   note: "Global notes CRUD" },
     { method: "POST", path: "/api/workflow/run",                auth: "—",   note: "Execute AI agent workflow" },
     { method: "POST", path: "/api/workflow/apply",              auth: "—",   note: "Apply workflow output as patch" },
     { method: "POST", path: "/api/workflow/commit",             auth: "—",   note: "Commit applied workflow changes" },
@@ -378,9 +380,10 @@ const componentHierarchy = [
   { depth: 0, name: "RootLayout",                     file: "app/layout.tsx",         note: "HTML shell, fonts, PinGate" },
   { depth: 1, name: "PinGate",                        file: "components/PinGate.tsx",  note: "Full-screen PIN auth gate" },
   { depth: 2, name: "Navigation",                     file: "app/layout.tsx",         note: "Fixed top nav — dropdowns + mobile hamburger" },
-  { depth: 3, name: "PinStatus",                      file: "components/shared/PinStatus.tsx",  note: "Auth indicator badge" },
-  { depth: 3, name: "AiToggle",                       file: "components/shared/AiToggle.tsx",   note: "AI on/off toggle" },
-  { depth: 3, name: "MobileNav",                      file: "components/shared/MobileNav.tsx",  note: "Drawer nav for mobile" },
+  { depth: 3, name: "PinStatus",                      file: "components/shared/PinStatus.tsx",  note: "Auth indicator badge (desktop nav; mobile → inside MobileNav drawer)" },
+  { depth: 3, name: "AiToggle",                       file: "components/shared/AiToggle.tsx",   note: "AI on/off toggle (desktop nav; mobile → inside MobileNav drawer)" },
+  { depth: 3, name: "NotesPanel",                     file: "components/shared/NotesPanel.tsx",  note: "Global notes drawer (desktop nav; mobile → inside MobileNav drawer); portaled to document.body via createPortal" },
+  { depth: 3, name: "MobileNav",                      file: "components/shared/MobileNav.tsx",  note: "Drawer nav for mobile — receives badges as children; drawer portaled to document.body via createPortal" },
   { depth: 2, name: "main → [Page]",                  file: "",                       note: "Dynamic content area (pt-14)" },
   { depth: 2, name: "Footer",                         file: "app/layout.tsx",         note: "Disclaimer footer" },
 ];
@@ -420,13 +423,14 @@ const dbTables: DBTable[] = [
   { name: "seen_articles",       purpose: "User-viewed articles (dismissed state)",           key: "ticker + cache_key" },
   { name: "analysis_cache",      purpose: "AI analysis results (EDGAR + Sources)",            key: "ticker + type + key" },
   { name: "audit_checks",        purpose: "Code audit finding verdicts",                      key: "finding_id" },
+  { name: "notes",               purpose: "User notes scratch-pad (article ideas, enhancements, other)", key: "id (auto)" },
 ];
 
 const dataArchitecture = [
   { layer: "Data Files",   path: "src/data/{asts,bmnr,crcl}/",       note: "Hardcoded .ts files — company, capital, financials, sec-filings, timeline, catalysts, partners, analyst-coverage, comps" },
   { layer: "Shared Types", path: "src/data/shared/types.ts",          note: "Central TypeScript interfaces for all data shapes (Partner, ShareClass, Catalyst, Timeline, etc.)" },
   { layer: "Schemas",      path: "src/data/schemas/",                 note: "Zod validation schemas per stock + filing templates" },
-  { layer: "DB Schema",    path: "src/lib/schema.ts",                 note: "Drizzle ORM table definitions (9 tables in Neon PostgreSQL)" },
+  { layer: "DB Schema",    path: "src/lib/schema.ts",                 note: "Drizzle ORM table definitions (10 tables in Neon PostgreSQL)" },
   { layer: "Seed Path",    path: "/api/db/setup → seed-helpers.ts",   note: "Reads .ts data files → inserts into PostgreSQL tables" },
   { layer: "AI Workflows", path: "src/data/workflows.ts",             note: "Agent prompts (earnings calls, code audit, data quality)" },
 ];
@@ -453,9 +457,22 @@ const conventions = [
   },
   {
     title: "data-* Attributes for State",
-    description: "Use data attributes instead of conditional inline styles. CSS selectors handle the visual state.",
-    code: `// Good — data attribute
+    description: "Use data attributes instead of conditional inline styles. CSS selectors handle the visual state. For category/variant coloring, use a data-cat (or data-variant) attribute with a --cat-rgb CSS variable resolved per-value — eliminates all runtime rgba() inline styles.",
+    code: `// Good — data attribute for boolean state
 <div className="sm-preset-btn" data-active={isActive ? "true" : "false"}>
+
+// Good — data-cat for category coloring (NotesPanel pattern)
+<button className="notes-cat-btn" data-cat={cat.value} data-active={isActive ? "true" : "false"}>
+<span className="notes-card-badge" data-cat={note.category}>
+
+// CSS — each selector sets --cat-rgb, one rule consumes it
+.notes-cat-btn[data-cat="article"]     { --cat-rgb: 34,211,238; }
+.notes-cat-btn[data-cat="enhancement"] { --cat-rgb: 52,211,153; }
+.notes-cat-btn[data-active="true"] {
+  border-color: rgba(var(--cat-rgb), 0.3);
+  background: rgba(var(--cat-rgb), 0.12);
+  color: rgba(var(--cat-rgb), 0.9);
+}
 
 // Bad — ternary in style
 <div style={{ background: isActive ? '...' : '...' }}>`,
@@ -475,6 +492,41 @@ const conventions = [
     code: `// Acceptable — computed value
 <div className="sm-bar" style={{ height: \`\${percentage}%\` }} />
 <div className="sm-progress-fill" style={{ width: \`\${pct}%\` }} />`,
+  },
+  {
+    title: "Portal Fixed Overlays Out of backdrop-filter Parents",
+    description: "CSS backdrop-filter (and filter, transform, perspective) creates a new containing block — position:fixed children are trapped inside the parent's box instead of the viewport. Any full-screen overlay (drawer, backdrop, modal) rendered inside the nav bar or another backdrop-filter parent MUST use createPortal(jsx, document.body) to escape the stacking context. Both MobileNav and NotesPanel use this pattern.",
+    code: `// Bad — drawer trapped inside nav's 56px height
+function MobileNav() {
+  return (
+    <>
+      <button onClick={toggle}>☰</button>
+      <div className="mobile-nav-drawer">…</div>  {/* position:fixed but clipped! */}
+    </>
+  );
+}
+
+// Good — portal to body
+import { createPortal } from 'react-dom';
+
+function MobileNav() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const drawer = (
+    <>
+      <div className="mobile-nav-backdrop" />
+      <div className="mobile-nav-drawer">…</div>
+    </>
+  );
+
+  return (
+    <>
+      <button onClick={toggle}>☰</button>
+      {mounted && createPortal(drawer, document.body)}
+    </>
+  );
+}`,
   },
   {
     title: "Accent Theming via data-accent",
