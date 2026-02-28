@@ -257,7 +257,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
         <div className="sm-border-t" style={{ padding: "0 20px 20px" }}>
           {/* View prompt toggle */}
           <div className="sm-flex sm-gap-6 sm-mb-16" style={{ paddingTop: 16 }}>
-            <button type="button" onClick={() => setShowPrompt(!showPrompt)} className="sm-ed-action-btn-sm" style={{ marginLeft: "auto" }}>
+            <button type="button" onClick={() => setShowPrompt(!showPrompt)} className="sm-ed-action-btn-sm sm-ml-auto">
               {showPrompt ? "Hide prompt" : "View prompt"}
             </button>
             <button
@@ -369,7 +369,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                     </button>
 
                     {/* 2. Copy Markdown */}
-                    <button type="button" onClick={handleCopy} className="sm-ed-action-btn" style={{ '--ed-btn-color': copied ? "var(--mint)" : undefined, borderColor: copied ? "rgba(130,200,130,0.15)" : undefined } as React.CSSProperties}>
+                    <button type="button" onClick={handleCopy} className="sm-ed-action-btn" data-state={copied ? "success" : undefined}>
                       <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                         <rect x={9} y={9} width={13} height={13} rx={2} ry={2} />
                         <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />

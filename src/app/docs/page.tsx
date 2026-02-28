@@ -207,6 +207,7 @@ const investmentClasses: CSSClass[] = [
   { name: ".sm-inv-bottom-line",      description: "Bottom-line quote — italic accent, surface2 bg, rounded-8, 12px padding",                                   usage: "className=\"sm-inv-bottom-line\"" },
   { name: ".sm-inv-panel-bordered",   description: "Panel with left 4px border via --panel-border-color. 16px margin-bottom",                                   usage: "style={{ '--panel-border-color': color }}" },
   { name: ".sm-justify-end",          description: "justify-content: flex-end utility",                                                                          usage: "className=\"sm-justify-end\"" },
+  { name: ".sm-ml-auto",              description: "margin-left: auto utility — push element to end of flex row",                                               usage: "className=\"sm-ml-auto\"" },
 ];
 
 interface DataAttr {
@@ -660,6 +661,9 @@ const changelogHeaderFixes: string[][] = [
   ["3", "Hero Header Spacing", "brand-block: flex column, gap 12px. price-block: flex column, align-items flex-end, gap 8px. Removed margin-bottom: 0 overrides.", "stock-model-styles.css"],
   ["4", "Unified .price-updated", "New CSS class replaces inconsistent sm-text-10/sm-mt-4 utilities and inline styles across all 3 stocks.", "ASTS, BMNR, CRCL, CSS"],
   ["5", "Accent-Aware Freshness Badge", ".sm-data-freshness uses var(--accent)/var(--accent-dim) instead of hardcoded colors. CRCL inline styles and BMNR .sm-bmnr-freshness-badge replaced.", "ASTS, BMNR, CRCL, CSS"],
+  ["6", "WS Detail Button", ".sm-ws-detail-btn: added border, border-radius 99px (pill), padding 4px 12px (was 4px 0), hover state. Matches .sm-ai-gen-btn style.", "stock-model-styles.css"],
+  ["7", "Ed Button Inline Styles", "SharedEdgarTab ActionBtn: replaced inline opacity/cursor/borderColor/--ed-btn-color with data-active, data-variant, data-loading attributes.", "SharedEdgarTab.tsx, CSS"],
+  ["8", "AI Agents Inline Styles", "SharedAIAgentsTab: replaced inline marginLeft → .sm-ml-auto class; Copy btn inline borderColor → data-state='success'. New .sm-ml-auto utility.", "SharedAIAgentsTab.tsx, CSS"],
 ];
 
 const changelogDesignUnification: string[][] = [
@@ -1125,7 +1129,7 @@ export default function DocsPage() {
             [".sm-ws-metrics-grid", "Auto-fit metrics grid inside collapsed firm card."],
             [".sm-ws-metric-cell / -val / -label", "Individual metric display with label."],
             [".sm-ws-report", "Report entry row with left border. data-full for expanded state."],
-            [".sm-ws-detail-btn", "Detail expand button — violet accent."],
+            [".sm-ws-detail-btn", "Detail expand button — violet pill (4px 12px padding, 99px radius, border, hover state)."],
             [".sm-ws-details", "Expanded details container with top border."],
             [".sm-ws-summary", "Pre-formatted summary block."],
             [".sm-ws-assumption", "Assumption chip — rounded pill."],
@@ -1147,8 +1151,8 @@ export default function DocsPage() {
         <SmallTable
           headers={["Class", "Description"]}
           rows={[
-            [".sm-ed-action-btn", "Tiny action button (9px uppercase). Uses --ed-btn-color."],
-            [".sm-ed-action-btn-sm", "Smaller inline variant of action button."],
+            [".sm-ed-action-btn", "Tiny action button (9px uppercase). Uses --ed-btn-color. States: data-loading, data-state (disabled/loading/success), data-variant (mint/coral/blue)."],
+            [".sm-ed-action-btn-sm", "Smaller inline variant. States: data-loading, data-active, data-variant (accent), data-state (success)."],
             [".sm-ed-filing-row", "Filing row with flex layout and hover highlight."],
             [".sm-ed-form-badge", "Form type badge (10-K, 8-K etc). Uses --badge-bg, --badge-text."],
             [".sm-ed-status-dot", "7px status indicator dot. Uses --dot-color."],
@@ -1380,7 +1384,7 @@ export default function DocsPage() {
         {/* Header & Disclaimer Fixes — Feb 28 2026 */}
         <div className="mt-6 mb-2">
           <h3 className="text-[13px] font-semibold text-white/60">Header, Disclaimer & Nav Badge Fixes <span className="text-white/20 font-normal ml-2">Feb 28, 2026</span></h3>
-          <p className="text-[11px] text-white/25 mt-1">5 fixes: nav badge heights, collapsible disclaimer, hero spacing, unified price-updated class, accent-aware freshness badge.</p>
+          <p className="text-[11px] text-white/25 mt-1">8 fixes: nav badge heights, collapsible disclaimer, hero spacing, unified price-updated class, accent-aware freshness badge, WS detail button, Ed/AI inline style cleanup.</p>
         </div>
         <SmallTable
           headers={["#", "Task", "What Changed", "Files"]}

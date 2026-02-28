@@ -283,17 +283,15 @@ const ActionBtn: React.FC<{
   loading?: boolean;
   variant?: 'default' | 'accent';
 }> = ({ label, title, onClick, href, active, loading, variant = 'default' }) => {
-  const isAccent = variant === 'accent' || active;
-  const dynamicStyle: React.CSSProperties = {
-    '--ed-btn-color': active ? 'var(--accent)' : isAccent ? 'rgba(130,200,130,0.5)' : undefined,
-    borderColor: active ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : isAccent ? 'rgba(130,200,130,0.15)' : undefined,
-    cursor: loading ? 'wait' : undefined,
-    opacity: loading ? 0.5 : 1,
-  } as React.CSSProperties;
+  const dataAttrs: Record<string, string | undefined> = {
+    'data-active': active ? 'true' : undefined,
+    'data-variant': !active && variant === 'accent' ? 'accent' : undefined,
+    'data-loading': loading ? 'true' : undefined,
+  };
   if (href) {
-    return <a href={href} target="_blank" rel="noopener noreferrer" title={title} className="sm-ed-action-btn-sm" style={dynamicStyle}>{label}</a>;
+    return <a href={href} target="_blank" rel="noopener noreferrer" title={title} className="sm-ed-action-btn-sm" {...dataAttrs}>{label}</a>;
   }
-  return <button onClick={onClick} disabled={loading} title={title} className="sm-ed-action-btn-sm" style={dynamicStyle}>{loading ? '...' : label}</button>;
+  return <button onClick={onClick} disabled={loading} title={title} className="sm-ed-action-btn-sm" {...dataAttrs}>{loading ? '...' : label}</button>;
 };
 
 // ── Analysis panel ──────────────────────────────────────────────────────────
