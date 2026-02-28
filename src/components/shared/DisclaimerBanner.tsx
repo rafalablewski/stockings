@@ -4,7 +4,10 @@
  * Legal disclaimer banner displayed at the top of every stock model page.
  *
  * Identical across all three models (ASTS, BMNR, CRCL).
+ * Collapsible — preference persisted via localStorage.
  */
+
+import { useState, useEffect } from 'react';
 
 export const LEGAL_DISCLAIMERS = {
   notInvestmentAdvice: {
@@ -17,14 +20,49 @@ export const LEGAL_DISCLAIMERS = {
   }
 };
 
+const STORAGE_KEY = 'disclaimer-collapsed';
+
 export function DisclaimerBanner() {
+  const [collapsed, setCollapsed] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === 'false') {
+      setCollapsed(false);
+    }
+  }, []);
+
+  function toggle() {
+    const next = !collapsed;
+    setCollapsed(next);
+    localStorage.setItem(STORAGE_KEY, next ? 'true' : 'false');
+  }
+
+  const isCollapsed = !mounted || collapsed;
+
   return (
-    <div className="disclaimer-banner">
-      <span className="disclaimer-title">⚠️ {LEGAL_DISCLAIMERS.notInvestmentAdvice.title}</span>
-      <span className="disclaimer-text">{LEGAL_DISCLAIMERS.notInvestmentAdvice.body}</span>
-      <span className="disclaimer-divider">|</span>
-      <span className="disclaimer-title">{LEGAL_DISCLAIMERS.forwardLooking.title}</span>
-      <span className="disclaimer-text">{LEGAL_DISCLAIMERS.forwardLooking.body}</span>
+    <div className={`disclaimer-banner${isCollapsed ? ' disclaimer-collapsed' : ''}`}>
+      {isCollapsed ? (
+        <span className="disclaimer-title">⚠️ Legal Disclaimers</span>
+      ) : (
+        <>
+          <span className="disclaimer-title">⚠️ {LEGAL_DISCLAIMERS.notInvestmentAdvice.title}</span>
+          <span className="disclaimer-text">{LEGAL_DISCLAIMERS.notInvestmentAdvice.body}</span>
+          <span className="disclaimer-divider">|</span>
+          <span className="disclaimer-title">{LEGAL_DISCLAIMERS.forwardLooking.title}</span>
+          <span className="disclaimer-text">{LEGAL_DISCLAIMERS.forwardLooking.body}</span>
+        </>
+      )}
+      <button
+        className="disclaimer-toggle"
+        onClick={toggle}
+        title={isCollapsed ? 'Expand disclaimers' : 'Collapse disclaimers'}
+        aria-label={isCollapsed ? 'Expand disclaimers' : 'Collapse disclaimers'}
+      >
+        {isCollapsed ? '▸ Show' : '▾ Hide'}
+      </button>
     </div>
   );
 }

@@ -456,13 +456,9 @@ const SourceArticleRow: React.FC<{
               disabled={analyzing}
               title={aiAnalysis ? 'Close AI analysis' : 'Analyze with AI'}
               className="sm-ed-action-btn-sm"
-              style={{
-                '--ed-btn-color': aiAnalysis ? 'var(--accent)' : 'rgba(130,200,130,0.5)',
-                textTransform: 'uppercase', letterSpacing: '0.08em',
-                border: `1px solid ${aiAnalysis ? 'color-mix(in srgb, var(--accent) 30%, transparent)' : 'rgba(130,200,130,0.15)'}`,
-                cursor: analyzing ? 'wait' : 'pointer',
-                opacity: analyzing ? 0.5 : 1,
-              } as React.CSSProperties}
+              data-active={aiAnalysis ? 'true' : undefined}
+              data-variant={!aiAnalysis ? 'mint' : undefined}
+              data-loading={analyzing ? 'true' : undefined}
             >
               {analyzing ? '...' : 'AI'}
             </button>
@@ -472,14 +468,10 @@ const SourceArticleRow: React.FC<{
                 disabled={recheckLoading}
                 title="Re-check tracked/untracked status"
                 className="sm-ed-action-btn-sm"
-                style={{
-                  '--ed-btn-color': recheckLoading ? 'var(--text3)' : 'rgba(130,180,220,0.5)',
-                  border: `1px solid ${recheckLoading ? 'var(--border)' : 'rgba(130,180,220,0.15)'}`,
-                  cursor: recheckLoading ? 'wait' : 'pointer',
-                  opacity: recheckLoading ? 0.5 : 1,
-                } as React.CSSProperties}
+                data-variant="blue"
+                data-loading={recheckLoading ? 'true' : undefined}
               >
-                <svg width={11} height={11} viewBox="0 0 16 16" fill="none" style={{ animation: recheckLoading ? 'spin 0.8s linear infinite' : 'none' }}>
+                <svg width={11} height={11} viewBox="0 0 16 16" fill="none">
                   <path d="M2 3h12M2 8h12M2 13h12" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
                   <path d="M13 11l2 2-2 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -489,7 +481,7 @@ const SourceArticleRow: React.FC<{
               onClick={() => onToggleHide?.()}
               title="Hide article"
               className="sm-ed-action-btn-sm"
-              style={{ opacity: 0.5 }}
+              data-muted=""
             >
               <svg width={10} height={10} viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" />
@@ -747,14 +739,10 @@ const CompanyFeedCard: React.FC<{
               aria-label={`Fetch ${label} press releases`}
               title="Fetch press releases"
               className="sm-ed-action-btn"
-              style={{
-                '--ed-btn-color': data.loadingPR ? 'var(--text3)' : 'var(--sky)',
-                border: `1px solid ${data.loadingPR ? 'var(--border)' : 'color-mix(in srgb, var(--sky) 25%, transparent)'}`,
-                cursor: data.loadingPR ? 'wait' : 'pointer',
-                opacity: data.loadingPR ? 0.5 : 0.6,
-              } as React.CSSProperties}
+              data-variant="sky"
+              data-state={data.loadingPR ? 'loading' : undefined}
             >
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: data.loadingPR ? 'spin 1s linear infinite' : 'none' }}>
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
                 <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -769,14 +757,10 @@ const CompanyFeedCard: React.FC<{
               aria-label={`Fetch ${label} news`}
               title="Fetch news articles"
               className="sm-ed-action-btn"
-              style={{
-                '--ed-btn-color': data.loadingNews ? 'var(--text3)' : 'var(--mint)',
-                border: `1px solid ${data.loadingNews ? 'var(--border)' : 'color-mix(in srgb, var(--mint) 25%, transparent)'}`,
-                cursor: data.loadingNews ? 'wait' : 'pointer',
-                opacity: data.loadingNews ? 0.5 : 0.6,
-              } as React.CSSProperties}
+              data-variant="mint"
+              data-state={data.loadingNews ? 'loading' : undefined}
             >
-              <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: data.loadingNews ? 'spin 1s linear infinite' : 'none' }}>
+              <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
                 <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -1429,16 +1413,11 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           onClick={loadAll}
           disabled={loadingAll}
           aria-label="AI Fetch all feeds"
-          className="sm-ed-action-btn"
-          style={{
-            '--ed-btn-color': loadingAll ? 'var(--text3)' : 'rgba(130,200,130,0.5)',
-            padding: '5px 14px',
-            border: `1px solid ${loadingAll ? 'var(--border)' : 'rgba(130,200,130,0.15)'}`,
-            cursor: loadingAll ? 'wait' : 'pointer',
-            opacity: loadingAll ? 0.5 : 1,
-          } as React.CSSProperties}
+          className="sm-ed-action-btn sm-p-5-14"
+          data-variant="mint"
+          data-state={loadingAll ? 'loading' : undefined}
         >
-          <svg width="10" height="10" viewBox="0 0 16 16" fill="none" style={{ animation: loadingAll ? 'spin 1s linear infinite' : 'none' }}>
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="none">
             <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>

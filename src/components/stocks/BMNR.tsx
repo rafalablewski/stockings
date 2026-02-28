@@ -617,10 +617,10 @@ const BMNRDilutionAnalysis = () => {
               <h1>BMNR Analysis</h1>
               <div className="ticker">NYSE American: BMNR · ETH Treasury</div>
               {/* H4: Data Freshness Timestamp */}
-              <div className="sm-bmnr-freshness-badge">
+              <div className="sm-data-freshness">
                 <span>📅</span>
                 <span>Data as of: {DATA_FRESHNESS.dataAsOf}</span>
-                <span className="sm-bmnr-freshness-sep">|</span>
+                <span className="sm-data-freshness-sep">|</span>
                 <span>{DATA_FRESHNESS.priceNote}</span>
               </div>
               <p className="desc">
@@ -661,7 +661,7 @@ const BMNRDilutionAnalysis = () => {
                 {calc.navPremium >= 0 ? '↑' : '↓'} {Math.abs(calc.navPremium).toFixed(1)}% vs NAV
               </div>
               {priceLastUpdated && (
-                <div className="sm-subtle-sm sm-fs-10 sm-mt-4">
+                <div className="price-updated">
                   Updated: {priceLastUpdated.toLocaleTimeString()}
                 </div>
               )}
