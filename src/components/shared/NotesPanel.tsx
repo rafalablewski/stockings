@@ -12,15 +12,11 @@ interface Note {
 
 type Category = 'article' | 'enhancement' | 'other';
 
-const CATEGORIES: { value: Category; label: string; color: string }[] = [
-  { value: 'article', label: 'Article', color: '34,211,238' },       // cyan
-  { value: 'enhancement', label: 'Enhancement', color: '52,211,153' }, // mint/emerald
-  { value: 'other', label: 'Other', color: '167,139,250' },           // violet
+const CATEGORIES: { value: Category; label: string }[] = [
+  { value: 'article', label: 'Article' },
+  { value: 'enhancement', label: 'Enhancement' },
+  { value: 'other', label: 'Other' },
 ];
-
-function categoryColor(cat: string): string {
-  return CATEGORIES.find((c) => c.value === cat)?.color ?? '167,139,250';
-}
 
 function timeAgo(dateStr: string): string {
   const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
@@ -193,12 +189,9 @@ export default function NotesPanel() {
                     <button
                       key={cat.value}
                       className="notes-cat-btn"
+                      data-cat={cat.value}
+                      data-active={isActive ? "true" : "false"}
                       onClick={() => setCategory(cat.value)}
-                      style={{
-                        border: `1px solid rgba(${cat.color}, ${isActive ? 0.3 : 0.08})`,
-                        background: isActive ? `rgba(${cat.color}, 0.12)` : 'rgba(255,255,255,0.03)',
-                        color: isActive ? `rgba(${cat.color}, 0.9)` : 'rgba(255,255,255,0.35)',
-                      }}
                     >
                       {cat.label}
                     </button>
@@ -239,18 +232,13 @@ export default function NotesPanel() {
               )}
 
               {notes.map((note) => {
-                const col = categoryColor(note.category);
                 return (
                   <div key={note.id} className="notes-card">
                     {/* Top row: badge + timestamp + delete */}
                     <div className="notes-card-meta">
                       <span
                         className="notes-card-badge"
-                        style={{
-                          color: `rgba(${col}, 0.8)`,
-                          background: `rgba(${col}, 0.08)`,
-                          border: `1px solid rgba(${col}, 0.15)`,
-                        }}
+                        data-cat={note.category}
                       >
                         {note.category}
                       </span>
