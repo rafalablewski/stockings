@@ -434,7 +434,7 @@ const dataArchitecture = [
 const breakpoints = [
   { width: "1200px", label: "Desktop",          changes: "Padding reduces to 32px. g4→2col, g5→3col." },
   { width: "900px",  label: "Tablet",           changes: "Padding 24px. g3/g4/g5→2col. Cards/highlights pad 20px." },
-  { width: "768px",  label: "Mobile",           changes: "All grids→1col. Hero stacks. Nav/stats horizontal scroll with fade mask. Touch targets 44px min. sm-* responsive overrides activate." },
+  { width: "768px",  label: "Mobile",           changes: "All grids→1col. Hero stacks. Nav/stats horizontal scroll with fade mask. Touch targets via wider padding (not min-height). sm-* responsive overrides activate." },
   { width: "480px",  label: "Small mobile",     changes: "Tighter padding (12px). Smaller type sizes. Minimal spacing." },
   { width: "360px",  label: "Extra small",      changes: "Hero 12px pad. price-big 32px. nav-btn 11px." },
 ];
@@ -656,7 +656,7 @@ const archive: ArchiveEntry[] = [];
 ];
 
 const changelogHeaderFixes: string[][] = [
-  ["1", "Nav Badge Heights", "Scoped @media (pointer: coarse) button rule to .stock-model-app; removed .nav-ai-badge/.nav-pin-badge 44px override. Badges stay 24px.", "stock-model-styles.css"],
+  ["1", "Nav Badge Heights", "Removed .nav-ai-badge/.nav-pin-badge 44px override. Badges stay 24px. Blanket button min-height removed in #10.", "stock-model-styles.css"],
   ["2", "Collapsible Disclaimer", "DisclaimerBanner now toggles collapse/expand with localStorage persistence (key: disclaimer-collapsed). New .disclaimer-collapsed, .disclaimer-toggle classes.", "DisclaimerBanner.tsx, CSS"],
   ["3", "Hero Header Spacing", "brand-block: flex column, gap 12px. price-block: flex column, align-items flex-end, gap 8px. Removed margin-bottom: 0 overrides.", "stock-model-styles.css"],
   ["4", "Unified .price-updated", "New CSS class replaces inconsistent sm-text-10/sm-mt-4 utilities and inline styles across all 3 stocks.", "ASTS, BMNR, CRCL, CSS"],
@@ -1037,7 +1037,7 @@ export default function DocsPage() {
         {/* ── 8. Responsive Breakpoints ───────────────────────────────────── */}
         <SectionHeader id="responsive" title="Responsive Breakpoints" count={breakpoints.length} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
-          Mobile-first overrides with touch-friendly 44px targets. Fade-mask scroll indicators on nav/stats.
+          Mobile-first overrides with touch-friendly padding (wider buttons, not taller). Fade-mask scroll indicators on nav/stats.
         </p>
         <SmallTable
           headers={["Breakpoint", "Label", "Key Changes"]}
@@ -1046,7 +1046,7 @@ export default function DocsPage() {
         <div className="mt-4 p-4 rounded-lg bg-white/[0.02] border border-white/[0.05]">
           <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25 mb-2">Additional Media Queries</div>
           <div className="grid gap-1.5 text-[11px] text-white/35">
-            <div><span className="font-mono text-white/45">@media (pointer: coarse)</span> — Touch targets: 44px min for buttons (scoped to .stock-model-app), sliders, pills. Nav badges excluded.</div>
+            <div><span className="font-mono text-white/45">@media (pointer: coarse)</span> — Touch targets via wider horizontal padding per button class. 44px min-height only on nav-btn and nav-dropdown-item. Sliders get 44px height.</div>
             <div><span className="font-mono text-white/45">@media (max-width: 900px) and (orientation: landscape)</span> — 2-col hero grid, tighter padding</div>
             <div><span className="font-mono text-white/45">@media (-webkit-min-device-pixel-ratio: 2)</span> — Retina: 0.5px borders</div>
             <div><span className="font-mono text-white/45">@media (prefers-reduced-motion: reduce)</span> — Kills all animation/transition</div>
@@ -1413,7 +1413,7 @@ export default function DocsPage() {
         />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
           <span className="text-white/40 font-semibold">How to verify:</span>{" "}
-          Visual inspection on all 3 stock pages, responsive test at 375px (no horizontal scroll, 44px touch targets),
+          Visual inspection on all 3 stock pages, responsive test at 375px (no horizontal scroll, wide touch targets),
           consistency check (ASTS / BMNR / CRCL render identically), <span className="font-mono text-white/40">npm run build</span> — zero errors.
         </p>
 
