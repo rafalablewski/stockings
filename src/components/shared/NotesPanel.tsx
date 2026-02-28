@@ -18,6 +18,38 @@ const CATEGORIES: { value: Category; label: string }[] = [
   { value: 'other', label: 'Other' },
 ];
 
+function linkifyContent(text: string): (string | React.ReactElement)[] {
+  const urlRegex = /(https?:\/\/[^\s<]+)/g;
+  const parts: (string | React.ReactElement)[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = urlRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    const url = match[1];
+    parts.push(
+      <a
+        key={match.index}
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="notes-card-link"
+      >
+        {url}
+      </a>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts;
+}
+
 function timeAgo(dateStr: string): string {
   const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
   if (seconds < 60) return 'just now';
@@ -259,7 +291,7 @@ export default function NotesPanel() {
 
                     {/* Content */}
                     <div className="notes-card-content">
-                      {note.content}
+                      {linkifyContent(note.content)}
                     </div>
                   </div>
                 );

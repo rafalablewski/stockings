@@ -513,3 +513,11 @@ a, a:visited {
   white-space: pre-wrap;
   word-break: break-word;
 }
+.notes-card-link {
+  color: #58a6ff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.notes-card-link:hover {
+  color: #79b8ff;
+}
