@@ -3,7 +3,7 @@ import { neon } from '@neondatabase/serverless';
 import { db } from '@/lib/db';
 import { notes } from '@/lib/schema';
 import { eq, desc } from 'drizzle-orm';
-import { NOTES_CREATE_TABLE_SQL, NOTES_ADD_PREVIEW_COLUMNS_SQL } from '@/lib/notes-ddl';
+import { NOTES_CREATE_TABLE_SQL, NOTES_ADD_TITLE_SQL, NOTES_ADD_DESCRIPTION_SQL } from '@/lib/notes-ddl';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,10 +25,12 @@ async function ensureTable(): Promise<void> {
   const tsa = Object.assign([NOTES_CREATE_TABLE_SQL], { raw: [NOTES_CREATE_TABLE_SQL] }) as unknown as TemplateStringsArray;
   await rawSql(tsa);
 
-  // Run migration to add title/description columns (safe if they already exist)
-  const migSql = NOTES_ADD_PREVIEW_COLUMNS_SQL;
-  const tsaMig = Object.assign([migSql], { raw: [migSql] }) as unknown as TemplateStringsArray;
-  await rawSql(tsaMig);
+  // Migrate: add title & description columns (each as a separate call —
+  // neon() HTTP driver does not support multi-statement queries).
+  const tsaTitle = Object.assign([NOTES_ADD_TITLE_SQL], { raw: [NOTES_ADD_TITLE_SQL] }) as unknown as TemplateStringsArray;
+  await rawSql(tsaTitle);
+  const tsaDesc = Object.assign([NOTES_ADD_DESCRIPTION_SQL], { raw: [NOTES_ADD_DESCRIPTION_SQL] }) as unknown as TemplateStringsArray;
+  await rawSql(tsaDesc);
 
   tableVerified = true;
 }
