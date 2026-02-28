@@ -2396,6 +2396,9 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-ed-action-btn-sm[data-variant="accent"] { color: rgba(130,200,130,0.5); border-color: rgba(130,200,130,0.15); }
 .sm-ed-action-btn-sm[data-variant="mint"] { color: rgba(130,200,130,0.5); border-color: rgba(130,200,130,0.15); text-transform: uppercase; letter-spacing: 0.08em; }
 .sm-ed-action-btn-sm[data-variant="blue"] { color: rgba(130,180,220,0.5); border-color: rgba(130,180,220,0.15); }
+.sm-ed-action-btn-sm[data-variant="violet"] { color: rgba(168,130,230,0.5); border-color: rgba(168,130,230,0.15); }
+.sm-ed-action-btn-sm[data-variant="gold"] { color: rgba(234,179,8,0.5); border-color: rgba(234,179,8,0.15); }
+.sm-ed-action-btn-sm[data-variant="muted"] { color: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.06); }
 .sm-ed-action-btn-sm[data-state="loading"] { color: var(--text3); border-color: var(--border); cursor: wait; opacity: 0.5; }
 .sm-ed-action-btn-sm[data-state="success"] { color: var(--mint); border-color: rgba(130,200,130,0.15); }
 .sm-ed-action-btn-sm[data-muted] { opacity: 0.5; }
@@ -8819,8 +8822,16 @@ input[type="range"]::-webkit-slider-thumb {
   --ed-btn-color: rgba(130,180,220,0.5);
   border-color: rgba(130,180,220,0.15);
 }
+.sm-ed-action-btn[data-variant="violet"] {
+  --ed-btn-color: rgba(168,130,230,0.5);
+  border-color: rgba(168,130,230,0.15);
+}
+.sm-ed-action-btn[data-variant="gold"] {
+  --ed-btn-color: rgba(234,179,8,0.8);
+  border-color: rgba(234,179,8,0.3);
+}
 
-/* State overrides — loading, success, disabled */
+/* State overrides — loading, success, disabled, previewing, done */
 .sm-ed-action-btn[data-state="loading"] {
   --ed-btn-color: var(--text3);
   border-color: var(--border);
@@ -8841,6 +8852,16 @@ input[type="range"]::-webkit-slider-thumb {
   border-color: var(--border);
   cursor: not-allowed;
   opacity: 0.4;
+}
+.sm-ed-action-btn[data-state="previewing"] {
+  --ed-btn-color: var(--text3);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.sm-ed-action-btn[data-state="done"] {
+  --ed-btn-color: var(--mint);
+  border-color: rgba(130,200,130,0.15);
+  cursor: not-allowed;
 }
 
 /* ── Spin animation for loading icons ─────────────────────────────────── */

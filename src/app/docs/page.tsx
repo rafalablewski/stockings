@@ -662,8 +662,8 @@ const changelogHeaderFixes: string[][] = [
   ["4", "Unified .price-updated", "New CSS class replaces inconsistent sm-text-10/sm-mt-4 utilities and inline styles across all 3 stocks.", "ASTS, BMNR, CRCL, CSS"],
   ["5", "Accent-Aware Freshness Badge", ".sm-data-freshness uses var(--accent)/var(--accent-dim) instead of hardcoded colors. CRCL inline styles and BMNR .sm-bmnr-freshness-badge replaced.", "ASTS, BMNR, CRCL, CSS"],
   ["6", "WS Detail Button", ".sm-ws-detail-btn: added border, border-radius 99px (pill), padding 4px 12px (was 4px 0), hover state. Matches .sm-ai-gen-btn style.", "stock-model-styles.css"],
-  ["7", "Ed Button Inline Styles", "SharedEdgarTab ActionBtn: replaced inline opacity/cursor/borderColor/--ed-btn-color with data-active, data-variant, data-loading attributes.", "SharedEdgarTab.tsx, CSS"],
-  ["8", "AI Agents Inline Styles", "SharedAIAgentsTab: replaced inline marginLeft → .sm-ml-auto class; Copy btn inline borderColor → data-state='success'. New .sm-ml-auto utility.", "SharedAIAgentsTab.tsx, CSS"],
+  ["7", "Ed Button Inline Styles", "SharedEdgarTab: ActionBtn refactored + Applied indicator span → data-state='done'. Zero inline styles remain on action buttons.", "SharedEdgarTab.tsx, CSS"],
+  ["8", "AI Agents Inline Styles", "SharedAIAgentsTab: all action buttons converted — audit badge → data-variant (violet/gold/muted/mint), Preview/Commit/Confirm btns → data-state (previewing/done/loading/error/disabled) + data-variant (mint/violet/gold). Copy btn → data-state='success', marginLeft → .sm-ml-auto.", "SharedAIAgentsTab.tsx, CSS"],
   ["9", "Sources Tab Inline Styles", "SharedSourcesTab: 6 buttons converted from inline style objects to data-variant (sky/mint/blue), data-state (loading), data-loading, data-active, data-muted attributes. SVG spin now via CSS.", "SharedSourcesTab.tsx, CSS"],
 ];
 
@@ -1152,8 +1152,8 @@ export default function DocsPage() {
         <SmallTable
           headers={["Class", "Description"]}
           rows={[
-            [".sm-ed-action-btn", "Tiny action button (9px uppercase). Uses --ed-btn-color. States: data-loading, data-state (disabled/loading/success), data-variant (mint/coral/blue)."],
-            [".sm-ed-action-btn-sm", "Smaller inline variant. States: data-loading, data-active, data-variant (accent/mint/blue), data-state (loading/success), data-muted."],
+            [".sm-ed-action-btn", "Tiny action button (9px uppercase). Uses --ed-btn-color. data-variant: mint/coral/blue/sky/violet/gold. data-state: loading/success/error/disabled/previewing/done."],
+            [".sm-ed-action-btn-sm", "Smaller inline variant. data-variant: accent/mint/blue/violet/gold/muted. data-state: loading/success. data-loading, data-active, data-muted."],
             [".sm-ed-filing-row", "Filing row with flex layout and hover highlight."],
             [".sm-ed-form-badge", "Form type badge (10-K, 8-K etc). Uses --badge-bg, --badge-text."],
             [".sm-ed-status-dot", "7px status indicator dot. Uses --dot-color."],

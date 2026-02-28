@@ -877,7 +877,7 @@ const FilingRow: React.FC<{
 
                 {/* 3. Preview Changes / Applied indicator */}
                 {applyStep === 'applied' ? (
-                  <span className="sm-ed-action-btn" style={{ '--ed-btn-color': 'var(--mint)', borderColor: 'rgba(130,200,130,0.15)', cursor: 'default' } as React.CSSProperties}>
+                  <span className="sm-ed-action-btn" data-state="done">
                     <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>

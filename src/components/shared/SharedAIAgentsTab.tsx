@@ -236,10 +236,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
             <span className="sm-fw-500" style={{ fontSize: 13, fontFamily: "var(--font-mono, monospace)", color: "rgba(255,255,255,0.85)" }}>
               {workflow.name}
             </span>
-            <span className="sm-ed-action-btn-sm" style={{
-              color: workflow.auditType === 'code' ? "rgba(168,130,230,0.5)" : workflow.auditType === 'data' ? "rgba(234,179,8,0.5)" : workflow.requiresUserData ? "rgba(255,255,255,0.2)" : "rgba(130,200,130,0.5)",
-              borderColor: workflow.auditType === 'code' ? "rgba(168,130,230,0.15)" : workflow.auditType === 'data' ? "rgba(234,179,8,0.15)" : workflow.requiresUserData ? "rgba(255,255,255,0.06)" : "rgba(130,200,130,0.15)",
-            }}>
+            <span className="sm-ed-action-btn-sm" data-variant={workflow.auditType === 'code' ? "violet" : workflow.auditType === 'data' ? "gold" : workflow.requiresUserData ? "muted" : "mint"}>
               {workflow.auditType === 'code' ? "Code Audit" : workflow.auditType === 'data' ? "Data Audit" : workflow.requiresUserData ? "Paste data" : "Database"}
             </span>
           </div>
@@ -379,7 +376,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 
                     {/* 3. Preview Changes / Applied indicator */}
                     {applyStep === "applied" ? (
-                      <span className="sm-ed-action-btn" style={{ '--ed-btn-color': "var(--mint)", borderColor: "rgba(130,200,130,0.15)", cursor: "default" } as React.CSSProperties}>
+                      <span className="sm-ed-action-btn" data-state="done">
                         <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                           <polyline points="20 6 9 17 4 12" />
                         </svg>
@@ -391,12 +388,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                         onClick={handlePreview}
                         disabled={applyStep === "previewing" || applyStep === "previewed" || applyStep === "applying"}
                         className="sm-ed-action-btn"
-                        style={{
-                          '--ed-btn-color': applyStep === "previewing" ? "var(--text3)" : applyStep === "error" ? "var(--coral)" : "rgba(130,200,130,0.5)",
-                          borderColor: applyStep === "error" ? "color-mix(in srgb, var(--coral) 25%, transparent)" : "rgba(130,200,130,0.15)",
-                          opacity: applyStep === "previewing" ? 0.6 : 1,
-                          cursor: applyStep === "previewing" || applyStep === "previewed" || applyStep === "applying" ? "not-allowed" : "pointer",
-                        } as React.CSSProperties}
+                        data-variant={applyStep === "error" ? undefined : "mint"}
+                        data-state={applyStep === "previewing" ? "previewing" : applyStep === "error" ? "error" : undefined}
                       >
                         <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -412,12 +405,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                       onClick={handleCommit}
                       disabled={commitStatus === "committing" || commitStatus === "done" || applyStep !== "applied"}
                       className="sm-ed-action-btn"
-                      style={{
-                        '--ed-btn-color': commitStatus === "done" ? "var(--mint)" : commitStatus === "error" ? "var(--coral)" : applyStep !== "applied" ? "var(--text3)" : "rgba(168,130,230,0.5)",
-                        borderColor: commitStatus === "done" ? "rgba(130,200,130,0.15)" : applyStep !== "applied" ? undefined : "rgba(168,130,230,0.15)",
-                        opacity: applyStep !== "applied" ? 0.3 : commitStatus === "committing" ? 0.6 : 1,
-                        cursor: commitStatus === "committing" || commitStatus === "done" || applyStep !== "applied" ? "not-allowed" : "pointer",
-                      } as React.CSSProperties}
+                      data-variant={applyStep === "applied" && !commitStatus ? "violet" : undefined}
+                      data-state={commitStatus === "done" ? "done" : commitStatus === "error" ? "error" : commitStatus === "committing" ? "loading" : applyStep !== "applied" ? "disabled" : undefined}
                     >
                       <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                         <circle cx={12} cy={12} r={4} />
@@ -491,12 +480,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                             onClick={handleConfirmApply}
                             disabled={!patchPreview.validCount}
                             className="sm-ed-action-btn sm-fw-600"
-                            style={{
-                              '--ed-btn-color': patchPreview.validCount ? "rgba(234,179,8,0.8)" : "var(--text3)",
-                              borderColor: patchPreview.validCount ? "rgba(234,179,8,0.3)" : undefined,
-                              cursor: patchPreview.validCount ? "pointer" : "not-allowed",
-                              opacity: patchPreview.validCount ? 1 : 0.4,
-                            } as React.CSSProperties}
+                            data-variant={patchPreview.validCount ? "gold" : undefined}
+                            data-state={!patchPreview.validCount ? "disabled" : undefined}
                           >
                             <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                               <path d="M12 5v14M5 12h14" />
