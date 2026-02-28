@@ -664,6 +664,7 @@ const changelogHeaderFixes: string[][] = [
   ["6", "WS Detail Button", ".sm-ws-detail-btn: added border, border-radius 99px (pill), padding 4px 12px (was 4px 0), hover state. Matches .sm-ai-gen-btn style.", "stock-model-styles.css"],
   ["7", "Ed Button Inline Styles", "SharedEdgarTab ActionBtn: replaced inline opacity/cursor/borderColor/--ed-btn-color with data-active, data-variant, data-loading attributes.", "SharedEdgarTab.tsx, CSS"],
   ["8", "AI Agents Inline Styles", "SharedAIAgentsTab: replaced inline marginLeft → .sm-ml-auto class; Copy btn inline borderColor → data-state='success'. New .sm-ml-auto utility.", "SharedAIAgentsTab.tsx, CSS"],
+  ["9", "Sources Tab Inline Styles", "SharedSourcesTab: 6 buttons converted from inline style objects to data-variant (sky/mint/blue), data-state (loading), data-loading, data-active, data-muted attributes. SVG spin now via CSS.", "SharedSourcesTab.tsx, CSS"],
 ];
 
 const changelogDesignUnification: string[][] = [
@@ -1152,7 +1153,7 @@ export default function DocsPage() {
           headers={["Class", "Description"]}
           rows={[
             [".sm-ed-action-btn", "Tiny action button (9px uppercase). Uses --ed-btn-color. States: data-loading, data-state (disabled/loading/success), data-variant (mint/coral/blue)."],
-            [".sm-ed-action-btn-sm", "Smaller inline variant. States: data-loading, data-active, data-variant (accent), data-state (success)."],
+            [".sm-ed-action-btn-sm", "Smaller inline variant. States: data-loading, data-active, data-variant (accent/mint/blue), data-state (loading/success), data-muted."],
             [".sm-ed-filing-row", "Filing row with flex layout and hover highlight."],
             [".sm-ed-form-badge", "Form type badge (10-K, 8-K etc). Uses --badge-bg, --badge-text."],
             [".sm-ed-status-dot", "7px status indicator dot. Uses --dot-color."],
@@ -1384,7 +1385,7 @@ export default function DocsPage() {
         {/* Header & Disclaimer Fixes — Feb 28 2026 */}
         <div className="mt-6 mb-2">
           <h3 className="text-[13px] font-semibold text-white/60">Header, Disclaimer & Nav Badge Fixes <span className="text-white/20 font-normal ml-2">Feb 28, 2026</span></h3>
-          <p className="text-[11px] text-white/25 mt-1">8 fixes: nav badge heights, collapsible disclaimer, hero spacing, unified price-updated class, accent-aware freshness badge, WS detail button, Ed/AI inline style cleanup.</p>
+          <p className="text-[11px] text-white/25 mt-1">9 fixes: nav badge heights, collapsible disclaimer, hero spacing, unified price-updated class, accent-aware freshness badge, WS detail button, Ed/AI/Sources inline style cleanup.</p>
         </div>
         <SmallTable
           headers={["#", "Task", "What Changed", "Files"]}
