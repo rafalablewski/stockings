@@ -10,6 +10,7 @@ interface Note {
   category: string;
   title: string | null;
   description: string | null;
+  hidden: boolean;
   createdAt: string;
 }
 
@@ -88,6 +89,8 @@ export default function NotesPanel() {
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
   // Track which note IDs are currently generating AI previews
   const [generating, setGenerating] = useState<Set<number>>(new Set());
+  // Whether the hidden notes section is expanded
+  const [showHidden, setShowHidden] = useState(false);
 
   const close = useCallback(() => setOpen(false), []);
 
@@ -167,6 +170,26 @@ export default function NotesPanel() {
     } catch {
       setNotes(prev);
       setError('Failed to delete note — check your connection');
+    }
+  }
+
+  async function handleToggleHidden(id: number, hide: boolean) {
+    const prev = notes;
+    // Optimistic update
+    setNotes(cur => cur.map(n => n.id === id ? { ...n, hidden: hide } : n));
+    try {
+      const res = await fetch(`/api/notes?id=${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hidden: hide }),
+      });
+      if (!res.ok) {
+        setNotes(prev);
+        setError('Failed to update note');
+      }
+    } catch {
+      setNotes(prev);
+      setError('Failed to update note — check your connection');
     }
   }
 
@@ -446,13 +469,14 @@ export default function NotesPanel() {
                 </div>
               )}
 
-              {notes.map((note) => {
+              {/* Visible notes */}
+              {notes.filter(n => !n.hidden).map((note) => {
                 const isGenerating = generating.has(note.id);
                 const hasPreview = !!(note.title || note.description);
 
                 return (
                   <div key={note.id} className="notes-card">
-                    {/* Top row: badge + timestamp + AI generate + delete */}
+                    {/* Top row: badge + timestamp + AI + hide + delete */}
                     <div className="notes-card-meta">
                       <span
                         className="notes-card-badge"
@@ -463,7 +487,7 @@ export default function NotesPanel() {
                       <span className="notes-card-time">
                         {timeAgo(note.createdAt)}
                       </span>
-                      {/* Single AI button — shown for every note without a preview */}
+                      {/* AI button — shown for every note without a preview */}
                       {!hasPreview && !isGenerating && (
                         <button
                           className={`notes-card-ai-btn${!isAiEnabled() ? ' notes-card-ai-btn--disabled' : ''}`}
@@ -478,6 +502,19 @@ export default function NotesPanel() {
                       {isGenerating && (
                         <span className="notes-card-generating-badge">AI...</span>
                       )}
+                      {/* Hide button */}
+                      <button
+                        className="notes-hide-btn"
+                        onClick={() => handleToggleHidden(note.id, true)}
+                        title="Hide note"
+                      >
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                          <line x1={1} y1={1} x2={23} y2={23} />
+                        </svg>
+                      </button>
+                      {/* Delete button */}
                       <button
                         className="notes-delete-btn"
                         onClick={() => handleDelete(note.id)}
@@ -495,6 +532,71 @@ export default function NotesPanel() {
                   </div>
                 );
               })}
+
+              {/* Hidden notes section */}
+              {notes.some(n => n.hidden) && (
+                <div className="notes-hidden-section">
+                  <button
+                    className="notes-hidden-toggle"
+                    onClick={() => setShowHidden(prev => !prev)}
+                  >
+                    <svg
+                      className={`notes-card-chevron${showHidden ? ' notes-card-chevron--open' : ''}`}
+                      width={10}
+                      height={6}
+                      viewBox="0 0 10 6"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M1 1L5 5L9 1" />
+                    </svg>
+                    Hidden ({notes.filter(n => n.hidden).length})
+                  </button>
+
+                  {showHidden && notes.filter(n => n.hidden).map((note) => (
+                    <div key={note.id} className="notes-card notes-card--hidden">
+                      <div className="notes-card-meta">
+                        <span
+                          className="notes-card-badge"
+                          data-cat={note.category}
+                        >
+                          {note.category}
+                        </span>
+                        <span className="notes-card-time">
+                          {timeAgo(note.createdAt)}
+                        </span>
+                        {/* Unhide button */}
+                        <button
+                          className="notes-unhide-btn"
+                          onClick={() => handleToggleHidden(note.id, false)}
+                          title="Unhide note"
+                        >
+                          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx={12} cy={12} r={3} />
+                          </svg>
+                        </button>
+                        <button
+                          className="notes-delete-btn"
+                          onClick={() => handleDelete(note.id)}
+                          title="Delete note"
+                        >
+                          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                            <line x1={18} y1={6} x2={6} y2={18} />
+                            <line x1={6} y1={6} x2={18} y2={18} />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="notes-card-content notes-card-content--hidden">
+                        {note.title || (note.content.length > 80 ? note.content.slice(0, 80) + '...' : note.content)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </>,

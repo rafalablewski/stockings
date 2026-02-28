@@ -3,7 +3,7 @@ import { neon } from '@neondatabase/serverless';
 import { db } from '@/lib/db';
 import { notes } from '@/lib/schema';
 import { eq, desc } from 'drizzle-orm';
-import { NOTES_CREATE_TABLE_SQL, NOTES_ADD_TITLE_SQL, NOTES_ADD_DESCRIPTION_SQL } from '@/lib/notes-ddl';
+import { NOTES_CREATE_TABLE_SQL, NOTES_ADD_TITLE_SQL, NOTES_ADD_DESCRIPTION_SQL, NOTES_ADD_HIDDEN_SQL } from '@/lib/notes-ddl';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,6 +31,8 @@ async function ensureTable(): Promise<void> {
   await rawSql(tsaTitle);
   const tsaDesc = Object.assign([NOTES_ADD_DESCRIPTION_SQL], { raw: [NOTES_ADD_DESCRIPTION_SQL] }) as unknown as TemplateStringsArray;
   await rawSql(tsaDesc);
+  const tsaHidden = Object.assign([NOTES_ADD_HIDDEN_SQL], { raw: [NOTES_ADD_HIDDEN_SQL] }) as unknown as TemplateStringsArray;
+  await rawSql(tsaHidden);
 
   tableVerified = true;
 }
@@ -127,8 +129,8 @@ export async function POST(request: NextRequest) {
 // ---------------------------------------------------------------------------
 // PATCH /api/notes?id=123
 //
-// Updates title/description on an existing note (used after AI generation).
-// Body: { title?: string, description?: string }
+// Updates fields on an existing note (AI preview, hide/unhide).
+// Body: { title?: string, description?: string, hidden?: boolean }
 // Response: { ok: true, note: { ... } }
 // ---------------------------------------------------------------------------
 export async function PATCH(request: NextRequest) {
@@ -143,7 +145,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'id must be a number' }, { status: 400 });
     }
 
-    const { title, description } = await request.json();
+    const { title, description, hidden } = await request.json();
 
     try {
       await ensureTable();
@@ -152,9 +154,10 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Table creation failed' }, { status: 500 });
     }
 
-    const updates: Record<string, string | null> = {};
+    const updates: Record<string, string | boolean | null> = {};
     if (title !== undefined) updates.title = title ? String(title).trim() : null;
     if (description !== undefined) updates.description = description ? String(description).trim() : null;
+    if (hidden !== undefined) updates.hidden = !!hidden;
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ error: 'Nothing to update' }, { status: 400 });

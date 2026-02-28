@@ -369,7 +369,7 @@ const apiRoutes = [
   { group: "Infra",     routes: [
     { method: "POST", path: "/api/db/setup",                    auth: "—",   note: "Seed database from .ts data files" },
     { method: "POST", path: "/api/audit-checks",                auth: "—",   note: "Persist audit findings" },
-    { method: "GET/POST/PATCH/DELETE", path: "/api/notes",      auth: "—",   note: "Global notes CRUD (PATCH updates AI title/description)" },
+    { method: "GET/POST/PATCH/DELETE", path: "/api/notes",      auth: "—",   note: "Global notes CRUD (PATCH updates AI title/description, hidden)" },
     { method: "POST", path: "/api/notes/generate",              auth: "PIN", note: "AI-generate title & description for a note (Claude, AI-gated)" },
     { method: "POST", path: "/api/workflow/run",                auth: "—",   note: "Execute AI agent workflow" },
     { method: "POST", path: "/api/workflow/apply",              auth: "—",   note: "Apply workflow output as patch" },
@@ -1431,11 +1431,12 @@ export default function DocsPage() {
         />
 
         {/* ── Notes Panel Classes ─────────────────────────────────────── */}
-        <SectionHeader id="notes-classes" title="Notes Panel Classes (notes-*)" count={16} />
+        <SectionHeader id="notes-classes" title="Notes Panel Classes (notes-*)" count={22} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
           Global notes drawer — slide-over panel with collapsible article preview cards.
           Single AI bolt button per note (in meta row) generates title &amp; description via Claude.
-          Respects global AI toggle — shows .notes-ai-status bar when AI is off.
+          Hide/unhide support with collapsible hidden section. Respects global AI toggle —
+          shows .notes-ai-status bar when AI is off.
           Zero inline styles — category colors via data-cat, AI state via BEM modifiers.
         </p>
         <SmallTable
@@ -1452,6 +1453,12 @@ export default function DocsPage() {
             [".notes-card-ai-btn--disabled", "Disabled state when global AI toggle is off — muted colors, cursor: not-allowed."],
             [".notes-ai-status", "AI-off indicator bar below form — 10px, bolt icon + message, subtle background, flex-shrink: 0."],
             [".notes-card-generating-badge", "Generating indicator in meta row — 9px uppercase, mint pulse animation."],
+            [".notes-hide-btn", "Eye-off icon button — 24x24px, margin-left: auto, hidden until card hover."],
+            [".notes-unhide-btn", "Eye icon button in hidden section — 24x24px, mint green, always visible."],
+            [".notes-hidden-section", "Collapsible section wrapper for hidden notes — top border separator."],
+            [".notes-hidden-toggle", "Section toggle button — 10px uppercase, full width, chevron + \"Hidden (N)\" label."],
+            [".notes-card--hidden", "Hidden card modifier — opacity 0.5, hover 0.7."],
+            [".notes-card-content--hidden", "Truncated single-line content in hidden cards — 12px, ellipsis, muted."],
             [".notes-form-actions", "Flex row for save button — gap 6px, margin-top 10px."],
             ["@keyframes notesPulse", "Pulse animation for AI generating state — opacity 0.4 ↔ 1, 1.2s ease-in-out infinite."],
             ["data-cat (on .notes-card-badge)", "Category coloring via --cat-rgb: article=cyan, enhancement=mint, other=violet."],
