@@ -665,6 +665,7 @@ const changelogHeaderFixes: string[][] = [
   ["7", "Ed Button Inline Styles", "SharedEdgarTab: ActionBtn refactored + Applied indicator span → data-state='done'. Zero inline styles remain on action buttons.", "SharedEdgarTab.tsx, CSS"],
   ["8", "AI Agents Inline Styles", "SharedAIAgentsTab: all action buttons converted — audit badge → data-variant (violet/gold/muted/mint), Preview/Commit/Confirm btns → data-state (previewing/done/loading/error/disabled) + data-variant (mint/violet/gold). Copy btn → data-state='success', marginLeft → .sm-ml-auto.", "SharedAIAgentsTab.tsx, CSS"],
   ["9", "Sources Tab Inline Styles", "SharedSourcesTab: 6 buttons converted from inline style objects to data-variant (sky/mint/blue), data-state (loading), data-loading, data-active, data-muted attributes. SVG spin now via CSS.", "SharedSourcesTab.tsx, CSS"],
+  ["10", "Mobile Button Touch Targets", "Removed blanket min-height: 44px on all .stock-model-app buttons (caused tall narrow buttons on mobile). Replaced with per-class horizontal padding increases — buttons are now wider but short. Affects sm-ed-action-btn, sm-pill-toggle, sm-action-btn, sm-ai-gen-btn, sm-ws-detail-btn, sm-filter-pill, sm-expand-btn.", "stock-model-styles.css"],
 ];
 
 const changelogDesignUnification: string[][] = [
