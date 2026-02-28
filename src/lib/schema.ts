@@ -175,5 +175,7 @@ export const notes = pgTable('notes', {
   id: serial('id').primaryKey(),
   content: text('content').notNull(),
   category: text('category').notNull(),   // 'article' | 'enhancement' | 'other'
+  title: text('title'),                   // AI-generated title (nullable)
+  description: text('description'),       // AI-generated summary (nullable)
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });

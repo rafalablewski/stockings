@@ -3,12 +3,13 @@ import { neon } from '@neondatabase/serverless';
 import { db } from '@/lib/db';
 import { notes } from '@/lib/schema';
 import { eq, desc } from 'drizzle-orm';
-import { NOTES_CREATE_TABLE_SQL } from '@/lib/notes-ddl';
+import { NOTES_CREATE_TABLE_SQL, NOTES_ADD_PREVIEW_COLUMNS_SQL } from '@/lib/notes-ddl';
 
 export const dynamic = 'force-dynamic';
 
 // ---------------------------------------------------------------------------
-// ensureTable — creates notes table if it doesn't exist.
+// ensureTable — creates notes table if it doesn't exist, and adds
+// title/description columns if they're missing (migration).
 // Uses the raw neon() HTTP driver (same pattern as seen-articles, audit-checks).
 // ---------------------------------------------------------------------------
 let tableVerified = false;
@@ -24,6 +25,11 @@ async function ensureTable(): Promise<void> {
   const tsa = Object.assign([NOTES_CREATE_TABLE_SQL], { raw: [NOTES_CREATE_TABLE_SQL] }) as unknown as TemplateStringsArray;
   await rawSql(tsa);
 
+  // Run migration to add title/description columns (safe if they already exist)
+  const migSql = NOTES_ADD_PREVIEW_COLUMNS_SQL;
+  const tsaMig = Object.assign([migSql], { raw: [migSql] }) as unknown as TemplateStringsArray;
+  await rawSql(tsaMig);
+
   tableVerified = true;
 }
 
@@ -38,7 +44,7 @@ const VALID_CATEGORIES = new Set(['article', 'enhancement', 'other']);
 // GET /api/notes
 //
 // Returns all notes, newest first.
-// Response: { notes: [{ id, content, category, createdAt }] }
+// Response: { notes: [{ id, content, category, title, description, createdAt }] }
 // ---------------------------------------------------------------------------
 export async function GET() {
   try {
@@ -72,12 +78,13 @@ export async function GET() {
 // POST /api/notes
 //
 // Creates a new note.
-// Body: { content: string, category: 'article' | 'enhancement' | 'other' }
-// Response: { ok: true, note: { id, content, category, createdAt } }
+// Body: { content: string, category: 'article' | 'enhancement' | 'other',
+//         title?: string, description?: string }
+// Response: { ok: true, note: { id, content, category, title, description, createdAt } }
 // ---------------------------------------------------------------------------
 export async function POST(request: NextRequest) {
   try {
-    const { content, category } = await request.json();
+    const { content, category, title, description } = await request.json();
 
     if (!content || typeof content !== 'string' || !content.trim()) {
       return NextResponse.json({ error: 'content is required' }, { status: 400 });
@@ -98,12 +105,72 @@ export async function POST(request: NextRequest) {
 
     const [inserted] = await db
       .insert(notes)
-      .values({ content: content.trim(), category })
+      .values({
+        content: content.trim(),
+        category,
+        title: title && typeof title === 'string' ? title.trim() : null,
+        description: description && typeof description === 'string' ? description.trim() : null,
+      })
       .returning();
 
     return NextResponse.json({ ok: true, note: inserted });
   } catch (error) {
     console.error('[notes] POST error:', error);
+    if (isTableMissing(error)) tableVerified = false;
+    const msg = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// PATCH /api/notes?id=123
+//
+// Updates title/description on an existing note (used after AI generation).
+// Body: { title?: string, description?: string }
+// Response: { ok: true, note: { ... } }
+// ---------------------------------------------------------------------------
+export async function PATCH(request: NextRequest) {
+  try {
+    const idStr = request.nextUrl.searchParams.get('id');
+    if (!idStr) {
+      return NextResponse.json({ error: 'id query parameter is required' }, { status: 400 });
+    }
+
+    const id = parseInt(idStr, 10);
+    if (isNaN(id)) {
+      return NextResponse.json({ error: 'id must be a number' }, { status: 400 });
+    }
+
+    const { title, description } = await request.json();
+
+    try {
+      await ensureTable();
+    } catch (e) {
+      console.error('[notes] ensureTable failed in PATCH:', e);
+      return NextResponse.json({ error: 'Table creation failed' }, { status: 500 });
+    }
+
+    const updates: Record<string, string | null> = {};
+    if (title !== undefined) updates.title = title ? String(title).trim() : null;
+    if (description !== undefined) updates.description = description ? String(description).trim() : null;
+
+    if (Object.keys(updates).length === 0) {
+      return NextResponse.json({ error: 'Nothing to update' }, { status: 400 });
+    }
+
+    const [updated] = await db
+      .update(notes)
+      .set(updates)
+      .where(eq(notes.id, id))
+      .returning();
+
+    if (!updated) {
+      return NextResponse.json({ error: 'Note not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ ok: true, note: updated });
+  } catch (error) {
+    console.error('[notes] PATCH error:', error);
     if (isTableMissing(error)) tableVerified = false;
     const msg = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ error: msg }, { status: 500 });
