@@ -382,8 +382,8 @@ const componentHierarchy = [
   { depth: 2, name: "Navigation",                     file: "app/layout.tsx",         note: "Fixed top nav — dropdowns + mobile hamburger" },
   { depth: 3, name: "PinStatus",                      file: "components/shared/PinStatus.tsx",  note: "Auth indicator badge (desktop nav; mobile → inside MobileNav drawer)" },
   { depth: 3, name: "AiToggle",                       file: "components/shared/AiToggle.tsx",   note: "AI on/off toggle (desktop nav; mobile → inside MobileNav drawer)" },
-  { depth: 3, name: "NotesPanel",                     file: "components/shared/NotesPanel.tsx",  note: "Global notes drawer (desktop nav; mobile → inside MobileNav drawer)" },
-  { depth: 3, name: "MobileNav",                      file: "components/shared/MobileNav.tsx",  note: "Drawer nav for mobile — receives badges as children" },
+  { depth: 3, name: "NotesPanel",                     file: "components/shared/NotesPanel.tsx",  note: "Global notes drawer (desktop nav; mobile → inside MobileNav drawer); portaled to document.body via createPortal" },
+  { depth: 3, name: "MobileNav",                      file: "components/shared/MobileNav.tsx",  note: "Drawer nav for mobile — receives badges as children; drawer portaled to document.body via createPortal" },
   { depth: 2, name: "main → [Page]",                  file: "",                       note: "Dynamic content area (pt-14)" },
   { depth: 2, name: "Footer",                         file: "app/layout.tsx",         note: "Disclaimer footer" },
 ];
@@ -479,6 +479,41 @@ const conventions = [
     code: `// Acceptable — computed value
 <div className="sm-bar" style={{ height: \`\${percentage}%\` }} />
 <div className="sm-progress-fill" style={{ width: \`\${pct}%\` }} />`,
+  },
+  {
+    title: "Portal Fixed Overlays Out of backdrop-filter Parents",
+    description: "CSS backdrop-filter (and filter, transform, perspective) creates a new containing block — position:fixed children are trapped inside the parent's box instead of the viewport. Any full-screen overlay (drawer, backdrop, modal) rendered inside the nav bar or another backdrop-filter parent MUST use createPortal(jsx, document.body) to escape the stacking context. Both MobileNav and NotesPanel use this pattern.",
+    code: `// Bad — drawer trapped inside nav's 56px height
+function MobileNav() {
+  return (
+    <>
+      <button onClick={toggle}>☰</button>
+      <div className="mobile-nav-drawer">…</div>  {/* position:fixed but clipped! */}
+    </>
+  );
+}
+
+// Good — portal to body
+import { createPortal } from 'react-dom';
+
+function MobileNav() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const drawer = (
+    <>
+      <div className="mobile-nav-backdrop" />
+      <div className="mobile-nav-drawer">…</div>
+    </>
+  );
+
+  return (
+    <>
+      <button onClick={toggle}>☰</button>
+      {mounted && createPortal(drawer, document.body)}
+    </>
+  );
+}`,
   },
   {
     title: "Accent Theming via data-accent",
