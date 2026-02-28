@@ -23,13 +23,15 @@ export const LEGAL_DISCLAIMERS = {
 const STORAGE_KEY = 'disclaimer-collapsed';
 
 export function DisclaimerBanner() {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === 'true') setCollapsed(true);
     setMounted(true);
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === 'false') {
+      setCollapsed(false);
+    }
   }, []);
 
   function toggle() {
@@ -38,7 +40,7 @@ export function DisclaimerBanner() {
     localStorage.setItem(STORAGE_KEY, next ? 'true' : 'false');
   }
 
-  const isCollapsed = mounted && collapsed;
+  const isCollapsed = !mounted || collapsed;
 
   return (
     <div className={`disclaimer-banner${isCollapsed ? ' disclaimer-collapsed' : ''}`}>
