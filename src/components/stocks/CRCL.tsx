@@ -3011,20 +3011,10 @@ function CRCLModel() {
               <h1>Circle Internet Group</h1>
               <div className="ticker">◉ NYSE: CRCL</div>
               {/* H4: Data Freshness Timestamp */}
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                background: 'color-mix(in srgb, var(--mint) 10%, transparent)',
-                border: '1px solid color-mix(in srgb, var(--mint) 30%, transparent)',
-                borderRadius: 6,
-                padding: '4px 12px',
-                fontSize: 11,
-                color: '#34d399',
-              }}>
+              <div className="sm-data-freshness">
                 <span>📅</span>
                 <span>Data as of: {MODEL_METADATA.priceAsOf}</span>
-                <span style={{ color: 'color-mix(in srgb, var(--mint) 50%, transparent)' }}>|</span>
+                <span className="sm-data-freshness-sep">|</span>
                 <span>Source: {MODEL_METADATA.dataSource}</span>
               </div>
               <p className="desc">
@@ -3077,7 +3067,7 @@ function CRCLModel() {
                 {ipoReturn >= 0 ? '↑' : '↓'} {Math.abs(ipoReturn).toFixed(0)}% since IPO
               </span>
               {priceLastUpdated && (
-                <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 4 }}>
+                <div className="price-updated">
                   Updated: {priceLastUpdated.toLocaleTimeString()}
                 </div>
               )}

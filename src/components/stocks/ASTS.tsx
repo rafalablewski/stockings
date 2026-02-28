@@ -590,7 +590,7 @@ const ASTSAnalysis = () => {
                 🛰️ {calc.totalSats}/{targetSats2026} Satellites
               </div>
               {priceLastUpdated && (
-                <div className="sm-text-10 sm-text3 sm-mt-4">
+                <div className="price-updated">
                   Updated: {priceLastUpdated.toLocaleTimeString()}
                 </div>
               )}
