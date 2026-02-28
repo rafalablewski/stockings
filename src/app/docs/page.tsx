@@ -322,7 +322,7 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/PinUnlock.tsx",                     type: "Component", description: "iOS-style 6-digit PIN entry keypad" },
   { path: "src/components/shared/PinStatus.tsx",              type: "Component", description: "Nav badge showing PIN/Closed status" },
   { path: "src/components/shared/AiToggle.tsx",               type: "Component", description: "AI analysis on/off toggle in nav" },
-  { path: "src/components/shared/NotesPanel.tsx",             type: "Component", description: "Global notes scratch-pad — slide-over drawer with create/view/delete; zero inline styles (category colors via data-cat attribute)" },
+  { path: "src/components/shared/NotesPanel.tsx",             type: "Component", description: "Global notes scratch-pad — slide-over drawer with create/view/delete; collapsible article preview with AI-generated title & description; zero inline styles (category colors via data-cat attribute)" },
   { path: "src/lib/stocks.ts",                                type: "Data",      description: "Stock registry — tickers, names, sectors" },
   { path: "src/lib/schema.ts",                                type: "Data",      description: "Drizzle ORM schema — DB tables" },
   { path: "src/lib/auth-fetch.ts",                            type: "Utility",   description: "PIN-authenticated fetch wrapper" },
@@ -369,7 +369,8 @@ const apiRoutes = [
   { group: "Infra",     routes: [
     { method: "POST", path: "/api/db/setup",                    auth: "—",   note: "Seed database from .ts data files" },
     { method: "POST", path: "/api/audit-checks",                auth: "—",   note: "Persist audit findings" },
-    { method: "GET/POST/DELETE", path: "/api/notes",            auth: "—",   note: "Global notes CRUD" },
+    { method: "GET/POST/PATCH/DELETE", path: "/api/notes",      auth: "—",   note: "Global notes CRUD (PATCH updates AI title/description)" },
+    { method: "POST", path: "/api/notes/generate",              auth: "PIN", note: "AI-generate title & description for a note (Claude, AI-gated)" },
     { method: "POST", path: "/api/workflow/run",                auth: "—",   note: "Execute AI agent workflow" },
     { method: "POST", path: "/api/workflow/apply",              auth: "—",   note: "Apply workflow output as patch" },
     { method: "POST", path: "/api/workflow/commit",             auth: "—",   note: "Commit applied workflow changes" },
@@ -382,7 +383,7 @@ const componentHierarchy = [
   { depth: 2, name: "Navigation",                     file: "app/layout.tsx",         note: "Fixed top nav — dropdowns + mobile hamburger" },
   { depth: 3, name: "PinStatus",                      file: "components/shared/PinStatus.tsx",  note: "Auth indicator badge (desktop nav; mobile → inside MobileNav drawer)" },
   { depth: 3, name: "AiToggle",                       file: "components/shared/AiToggle.tsx",   note: "AI on/off toggle (desktop nav; mobile → inside MobileNav drawer)" },
-  { depth: 3, name: "NotesPanel",                     file: "components/shared/NotesPanel.tsx",  note: "Global notes drawer (desktop nav; mobile → inside MobileNav drawer); portaled to document.body via createPortal" },
+  { depth: 3, name: "NotesPanel",                     file: "components/shared/NotesPanel.tsx",  note: "Global notes drawer with collapsible AI preview cards (desktop nav; mobile → inside MobileNav drawer); portaled to document.body via createPortal; uses authFetch for AI-gated generate endpoint" },
   { depth: 3, name: "MobileNav",                      file: "components/shared/MobileNav.tsx",  note: "Drawer nav for mobile — receives badges as children; drawer portaled to document.body via createPortal" },
   { depth: 2, name: "main → [Page]",                  file: "",                       note: "Dynamic content area (pt-14)" },
   { depth: 2, name: "Footer",                         file: "app/layout.tsx",         note: "Disclaimer footer" },
@@ -1426,6 +1427,37 @@ export default function DocsPage() {
             [".mc-chart / .mc-bar", "Monte Carlo simulation chart bars."],
             [".filter-btn / .filter-btn.active", "Inline filter buttons (competitor filters)."],
             [".g2 / .g3 / .g4 / .g5", "Grid layouts — 2 to 5 columns."],
+          ]}
+        />
+
+        {/* ── Notes Panel Classes ─────────────────────────────────────── */}
+        <SectionHeader id="notes-classes" title="Notes Panel Classes (notes-*)" count={18} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Global notes drawer — slide-over panel with collapsible article preview cards.
+          AI-generated title &amp; description via bolt button (respects global AI toggle).
+          Zero inline styles — category colors via data-cat, AI state via BEM modifiers.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".notes-card-title", "AI-generated title — 13px, font-weight 600, single-line ellipsis truncation."],
+            [".notes-card-desc", "AI-generated description — 12px, muted (0.45 alpha), 2-line clamp via -webkit-line-clamp."],
+            [".notes-card-content--clamped", "3-line clamp modifier for long notes without AI preview — -webkit-line-clamp: 3."],
+            [".notes-card-toggle", "Expand/collapse button — 10px uppercase, violet accent, inline-flex with chevron icon."],
+            [".notes-card-chevron", "SVG chevron in toggle — transition: transform 0.2s."],
+            [".notes-card-chevron--open", "Rotated state — transform: rotate(180deg)."],
+            [".notes-card-body", "Expanded full text — 13px, pre-wrap, top border separator (0.05 alpha)."],
+            [".notes-card-actions-row", "Flex row for toggle + inline AI button — gap 8px, margin-top 4px."],
+            [".notes-card-ai-btn", "Compact bolt icon button in card meta row — 22x22px, mint green accent border, rounded-4."],
+            [".notes-card-ai-btn--disabled", "Disabled state when global AI toggle is off — muted colors, cursor: not-allowed."],
+            [".notes-card-ai-inline", "Inline AI pill button in actions row — 9px uppercase label with bolt icon."],
+            [".notes-card-ai-inline--disabled", "Disabled inline AI pill — same muted treatment as ai-btn--disabled."],
+            [".notes-card-generating", "Generating indicator text — 9px uppercase, mint pulse animation."],
+            [".notes-card-generating-badge", "Badge variant of generating indicator — same pulse animation."],
+            [".notes-form-actions", "Flex row for save button — gap 6px, margin-top 10px."],
+            ["@keyframes notesPulse", "Pulse animation for AI generating state — opacity 0.4 ↔ 1, 1.2s ease-in-out infinite."],
+            ["data-cat (on .notes-card-badge)", "Category coloring via --cat-rgb: article=cyan, enhancement=mint, other=violet."],
+            ["data-cat / data-active (on .notes-cat-btn)", "Category selector buttons — same --cat-rgb pattern with active state border/bg."],
           ]}
         />
 
