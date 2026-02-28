@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 interface Note {
   id: number;
@@ -194,306 +195,313 @@ export default function NotesPanel() {
         Notes
       </button>
 
-      {/* Backdrop */}
-      {open && (
-        <div
-          onClick={close}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.6)',
-            zIndex: 110,
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
-          }}
-        />
-      )}
-
-      {/* Drawer */}
-      <div
-        role="dialog"
-        aria-modal={open}
-        aria-label="Notes panel"
-        style={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: 'min(400px, calc(100vw - 24px))',
-          background: 'rgba(10,10,10,0.98)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderLeft: '1px solid rgba(255,255,255,0.06)',
-          zIndex: 120,
-          transform: open ? 'translateX(0)' : 'translateX(100%)',
-          transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflowY: 'hidden',
-        }}
-      >
-        {/* Header */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '0 20px',
-            paddingTop: 'max(20px, env(safe-area-inset-top))',
-            minHeight: 56,
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
-            flexShrink: 0,
-          }}
-        >
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: 'uppercase' as const,
-              letterSpacing: '0.15em',
-              color: 'rgba(255,255,255,0.5)',
-            }}
-          >
-            Notes
-          </span>
-          <button
-            onClick={close}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 32,
-              height: 32,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'rgba(255,255,255,0.3)',
-              borderRadius: 6,
-            }}
-          >
-            <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-              <line x1={18} y1={6} x2={6} y2={18} />
-              <line x1={6} y1={6} x2={18} y2={18} />
-            </svg>
-          </button>
-        </div>
-
-        {/* Create form */}
-        <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Add a note..."
-            rows={3}
-            style={{
-              width: '100%',
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 12,
-              padding: '10px 14px',
-              fontSize: 13,
-              color: 'rgba(255,255,255,0.8)',
-              resize: 'vertical',
-              outline: 'none',
-              fontFamily: 'inherit',
-              lineHeight: 1.5,
-            }}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                handleCreate();
-              }
-            }}
-          />
-
-          {/* Category selector */}
-          <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
-            {CATEGORIES.map((cat) => {
-              const isActive = category === cat.value;
-              return (
-                <button
-                  key={cat.value}
-                  onClick={() => setCategory(cat.value)}
-                  style={{
-                    fontSize: 10,
-                    fontWeight: 600,
-                    textTransform: 'uppercase' as const,
-                    letterSpacing: '0.08em',
-                    padding: '4px 10px',
-                    borderRadius: 20,
-                    cursor: 'pointer',
-                    border: `1px solid rgba(${cat.color}, ${isActive ? 0.3 : 0.08})`,
-                    background: isActive ? `rgba(${cat.color}, 0.12)` : 'rgba(255,255,255,0.03)',
-                    color: isActive ? `rgba(${cat.color}, 0.9)` : 'rgba(255,255,255,0.35)',
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  {cat.label}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Save button */}
-          <button
-            onClick={handleCreate}
-            disabled={!content.trim() || saving}
-            style={{
-              marginTop: 10,
-              width: '100%',
-              fontSize: 12,
-              fontWeight: 600,
-              padding: '8px 0',
-              borderRadius: 8,
-              cursor: !content.trim() || saving ? 'default' : 'pointer',
-              border: 'none',
-              background: !content.trim() ? 'rgba(255,255,255,0.03)' : 'rgba(167,139,250,0.12)',
-              color: !content.trim() ? 'rgba(255,255,255,0.2)' : 'rgba(167,139,250,0.8)',
-              transition: 'all 0.15s',
-              opacity: saving ? 0.5 : 1,
-            }}
-          >
-            {saving ? 'Saving...' : 'Save note'}
-          </button>
-        </div>
-
-        {/* Error banner */}
-        {error && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 8,
-              padding: '8px 20px',
-              fontSize: 12,
-              color: 'rgba(255,123,114,0.9)',
-              background: 'rgba(255,123,114,0.06)',
-              borderBottom: '1px solid rgba(255,123,114,0.1)',
-              flexShrink: 0,
-            }}
-          >
-            <span>{error}</span>
-            <button
-              onClick={() => setError(null)}
+      {/* Portal the backdrop + drawer to document.body so they escape
+           MobileNav's stacking context (backdrop-filter creates one). */}
+      {typeof document !== 'undefined' && createPortal(
+        <>
+          {/* Backdrop */}
+          {open && (
+            <div
+              onClick={close}
               style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: 'rgba(255,123,114,0.5)',
-                fontSize: 16,
-                lineHeight: 1,
-                padding: 0,
+                position: 'fixed',
+                inset: 0,
+                background: 'rgba(0,0,0,0.6)',
+                zIndex: 110,
+                backdropFilter: 'blur(4px)',
+                WebkitBackdropFilter: 'blur(4px)',
+              }}
+            />
+          )}
+
+          {/* Drawer */}
+          <div
+            role="dialog"
+            aria-modal={open}
+            aria-label="Notes panel"
+            style={{
+              position: 'fixed',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              width: 'min(400px, calc(100vw - 24px))',
+              background: 'rgba(10,10,10,0.98)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              borderLeft: '1px solid rgba(255,255,255,0.06)',
+              zIndex: 120,
+              transform: open ? 'translateX(0)' : 'translateX(100%)',
+              transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+              display: 'flex',
+              flexDirection: 'column',
+              overflowY: 'hidden',
+            }}
+          >
+            {/* Header */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 20px',
+                paddingTop: 'max(20px, env(safe-area-inset-top))',
+                minHeight: 56,
+                borderBottom: '1px solid rgba(255,255,255,0.06)',
                 flexShrink: 0,
               }}
             >
-              ×
-            </button>
-          </div>
-        )}
-
-        {/* Notes list */}
-        <div
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            WebkitOverflowScrolling: 'touch',
-            paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
-          }}
-        >
-          {loading && (
-            <div style={{ padding: '24px 20px', fontSize: 12, color: 'rgba(255,255,255,0.25)', textAlign: 'center' }}>
-              Loading...
-            </div>
-          )}
-
-          {!loading && notes.length === 0 && (
-            <div style={{ padding: '24px 20px', fontSize: 12, color: 'rgba(255,255,255,0.2)', textAlign: 'center' }}>
-              No notes yet. Add your first note above.
-            </div>
-          )}
-
-          {notes.map((note) => {
-            const col = categoryColor(note.category);
-            return (
-              <div
-                key={note.id}
-                className="notes-card"
+              <span
                 style={{
-                  padding: '12px 20px',
-                  borderBottom: '1px solid rgba(255,255,255,0.04)',
-                  position: 'relative',
+                  fontSize: 11,
+                  fontWeight: 600,
+                  textTransform: 'uppercase' as const,
+                  letterSpacing: '0.15em',
+                  color: 'rgba(255,255,255,0.5)',
                 }}
               >
-                {/* Top row: badge + timestamp + delete */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                  <span
-                    style={{
-                      fontSize: 9,
-                      fontWeight: 700,
-                      textTransform: 'uppercase' as const,
-                      letterSpacing: '0.08em',
-                      fontFamily: 'var(--font-mono, monospace)',
-                      color: `rgba(${col}, 0.8)`,
-                      background: `rgba(${col}, 0.08)`,
-                      border: `1px solid rgba(${col}, 0.15)`,
-                      padding: '2px 6px',
-                      borderRadius: 4,
-                    }}
-                  >
-                    {note.category}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 10,
-                      fontFamily: 'var(--font-mono, monospace)',
-                      color: 'rgba(255,255,255,0.2)',
-                    }}
-                  >
-                    {timeAgo(note.createdAt)}
-                  </span>
-                  <button
-                    className="notes-delete-btn"
-                    onClick={() => handleDelete(note.id)}
-                    title="Delete note"
-                    style={{
-                      marginLeft: 'auto',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: 24,
-                      height: 24,
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      color: 'rgba(255,255,255,0.2)',
-                      borderRadius: 4,
-                      flexShrink: 0,
-                    }}
-                  >
-                    <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      <line x1={18} y1={6} x2={6} y2={18} />
-                      <line x1={6} y1={6} x2={18} y2={18} />
-                    </svg>
-                  </button>
-                </div>
+                Notes
+              </span>
+              <button
+                onClick={close}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 32,
+                  height: 32,
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'rgba(255,255,255,0.3)',
+                  borderRadius: 6,
+                }}
+              >
+                <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <line x1={18} y1={6} x2={6} y2={18} />
+                  <line x1={6} y1={6} x2={18} y2={18} />
+                </svg>
+              </button>
+            </div>
 
-                {/* Content */}
-                <div
+            {/* Create form */}
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="Add a note..."
+                rows={3}
+                style={{
+                  width: '100%',
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 12,
+                  padding: '10px 14px',
+                  fontSize: 13,
+                  color: 'rgba(255,255,255,0.8)',
+                  resize: 'vertical',
+                  outline: 'none',
+                  fontFamily: 'inherit',
+                  lineHeight: 1.5,
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                    handleCreate();
+                  }
+                }}
+              />
+
+              {/* Category selector */}
+              <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+                {CATEGORIES.map((cat) => {
+                  const isActive = category === cat.value;
+                  return (
+                    <button
+                      key={cat.value}
+                      onClick={() => setCategory(cat.value)}
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 600,
+                        textTransform: 'uppercase' as const,
+                        letterSpacing: '0.08em',
+                        padding: '4px 10px',
+                        borderRadius: 20,
+                        cursor: 'pointer',
+                        border: `1px solid rgba(${cat.color}, ${isActive ? 0.3 : 0.08})`,
+                        background: isActive ? `rgba(${cat.color}, 0.12)` : 'rgba(255,255,255,0.03)',
+                        color: isActive ? `rgba(${cat.color}, 0.9)` : 'rgba(255,255,255,0.35)',
+                        transition: 'all 0.15s',
+                      }}
+                    >
+                      {cat.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Save button */}
+              <button
+                onClick={handleCreate}
+                disabled={!content.trim() || saving}
+                style={{
+                  marginTop: 10,
+                  width: '100%',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  padding: '8px 0',
+                  borderRadius: 8,
+                  cursor: !content.trim() || saving ? 'default' : 'pointer',
+                  border: 'none',
+                  background: !content.trim() ? 'rgba(255,255,255,0.03)' : 'rgba(167,139,250,0.12)',
+                  color: !content.trim() ? 'rgba(255,255,255,0.2)' : 'rgba(167,139,250,0.8)',
+                  transition: 'all 0.15s',
+                  opacity: saving ? 0.5 : 1,
+                }}
+              >
+                {saving ? 'Saving...' : 'Save note'}
+              </button>
+            </div>
+
+            {/* Error banner */}
+            {error && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 8,
+                  padding: '8px 20px',
+                  fontSize: 12,
+                  color: 'rgba(255,123,114,0.9)',
+                  background: 'rgba(255,123,114,0.06)',
+                  borderBottom: '1px solid rgba(255,123,114,0.1)',
+                  flexShrink: 0,
+                }}
+              >
+                <span>{error}</span>
+                <button
+                  onClick={() => setError(null)}
                   style={{
-                    fontSize: 13,
-                    color: 'rgba(255,255,255,0.7)',
-                    lineHeight: 1.55,
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: 'rgba(255,123,114,0.5)',
+                    fontSize: 16,
+                    lineHeight: 1,
+                    padding: 0,
+                    flexShrink: 0,
                   }}
                 >
-                  {note.content}
-                </div>
+                  ×
+                </button>
               </div>
-            );
-          })}
-        </div>
-      </div>
+            )}
+
+            {/* Notes list */}
+            <div
+              style={{
+                flex: 1,
+                overflowY: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
+              }}
+            >
+              {loading && (
+                <div style={{ padding: '24px 20px', fontSize: 12, color: 'rgba(255,255,255,0.25)', textAlign: 'center' }}>
+                  Loading...
+                </div>
+              )}
+
+              {!loading && notes.length === 0 && (
+                <div style={{ padding: '24px 20px', fontSize: 12, color: 'rgba(255,255,255,0.2)', textAlign: 'center' }}>
+                  No notes yet. Add your first note above.
+                </div>
+              )}
+
+              {notes.map((note) => {
+                const col = categoryColor(note.category);
+                return (
+                  <div
+                    key={note.id}
+                    className="notes-card"
+                    style={{
+                      padding: '12px 20px',
+                      borderBottom: '1px solid rgba(255,255,255,0.04)',
+                      position: 'relative',
+                    }}
+                  >
+                    {/* Top row: badge + timestamp + delete */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                      <span
+                        style={{
+                          fontSize: 9,
+                          fontWeight: 700,
+                          textTransform: 'uppercase' as const,
+                          letterSpacing: '0.08em',
+                          fontFamily: 'var(--font-mono, monospace)',
+                          color: `rgba(${col}, 0.8)`,
+                          background: `rgba(${col}, 0.08)`,
+                          border: `1px solid rgba(${col}, 0.15)`,
+                          padding: '2px 6px',
+                          borderRadius: 4,
+                        }}
+                      >
+                        {note.category}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 10,
+                          fontFamily: 'var(--font-mono, monospace)',
+                          color: 'rgba(255,255,255,0.2)',
+                        }}
+                      >
+                        {timeAgo(note.createdAt)}
+                      </span>
+                      <button
+                        className="notes-delete-btn"
+                        onClick={() => handleDelete(note.id)}
+                        title="Delete note"
+                        style={{
+                          marginLeft: 'auto',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: 24,
+                          height: 24,
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: 'rgba(255,255,255,0.2)',
+                          borderRadius: 4,
+                          flexShrink: 0,
+                        }}
+                      >
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                          <line x1={18} y1={6} x2={6} y2={18} />
+                          <line x1={6} y1={6} x2={18} y2={18} />
+                        </svg>
+                      </button>
+                    </div>
+
+                    {/* Content */}
+                    <div
+                      style={{
+                        fontSize: 13,
+                        color: 'rgba(255,255,255,0.7)',
+                        lineHeight: 1.55,
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word',
+                      }}
+                    >
+                      {note.content}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </>,
+        document.body,
+      )}
     </>
   );
 }
