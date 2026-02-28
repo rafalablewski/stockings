@@ -487,12 +487,12 @@ export default function NotesPanel() {
                       <span className="notes-card-time">
                         {timeAgo(note.createdAt)}
                       </span>
-                      {/* AI button — shown for every note without a preview */}
-                      {!hasPreview && !isGenerating && (
+                      {/* AI button — shown for every note (generate or re-generate) */}
+                      {!isGenerating && (
                         <button
                           className={`notes-card-ai-btn${!isAiEnabled() ? ' notes-card-ai-btn--disabled' : ''}`}
                           onClick={() => handleGeneratePreview(note)}
-                          title={isAiEnabled() ? 'Generate AI title & summary' : 'AI features are disabled'}
+                          title={isAiEnabled() ? (hasPreview ? 'Re-generate AI title & summary' : 'Generate AI title & summary') : 'AI features are disabled'}
                         >
                           <svg width={9} height={9} viewBox="0 0 24 24" fill="currentColor" stroke="none">
                             <path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z" />
