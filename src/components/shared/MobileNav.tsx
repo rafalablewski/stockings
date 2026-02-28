@@ -11,6 +11,7 @@ interface NavItem {
 
 interface MobileNavProps {
   items: NavItem[];
+  children?: React.ReactNode;
 }
 
 /**
@@ -23,7 +24,7 @@ interface MobileNavProps {
  * Stock-agnostic: receives items as props from layout.tsx,
  * so adding a new stock to stockList propagates automatically.
  */
-export default function MobileNav({ items }: MobileNavProps) {
+export default function MobileNav({ items, children }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -139,6 +140,22 @@ export default function MobileNav({ items }: MobileNavProps) {
           paddingRight: 'max(20px, env(safe-area-inset-right))',
         }}
       >
+        {/* Toolbar badges (PinStatus, AiToggle, Notes) — only visible on mobile */}
+        {children && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              paddingBottom: 16,
+              marginBottom: 8,
+              borderBottom: '1px solid rgba(255,255,255,0.06)',
+            }}
+          >
+            {children}
+          </div>
+        )}
+
         {items.map((item) =>
           item.children ? (
             <div key={item.label} style={{ marginBottom: 4 }}>

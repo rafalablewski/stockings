@@ -87,9 +87,12 @@ function Navigation() {
             >
               a b i s o n
             </Link>
-            <PinStatus />
-            <AiToggle />
-            <NotesPanel />
+            {/* Desktop only — on mobile these live inside the hamburger drawer */}
+            <div className="hidden md:flex items-center gap-3">
+              <PinStatus />
+              <AiToggle />
+              <NotesPanel />
+            </div>
           </div>
 
           {/* Desktop navigation — hidden on mobile */}
@@ -187,7 +190,11 @@ function Navigation() {
 
           {/* Mobile navigation — hamburger drawer, hidden on desktop */}
           <div className="md:hidden">
-            <MobileNav items={mobileNavItems} />
+            <MobileNav items={mobileNavItems}>
+              <PinStatus />
+              <AiToggle />
+              <NotesPanel />
+            </MobileNav>
           </div>
         </div>
       </div>
