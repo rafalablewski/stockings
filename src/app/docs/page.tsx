@@ -316,7 +316,7 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/shared/SharedAIAgentsTab.tsx",      type: "Component", description: "AI analysis agents status tab" },
   { path: "src/components/shared/UpdateIndicators.tsx",       type: "Component", description: "Colored dot indicators for data freshness" },
   { path: "src/components/shared/LivePrice.tsx",              type: "Component", description: "Real-time stock price display" },
-  { path: "src/components/shared/DisclaimerBanner.tsx",       type: "Component", description: "Legal disclaimer bar" },
+  { path: "src/components/shared/DisclaimerBanner.tsx",       type: "Component", description: "Collapsible legal disclaimer bar (localStorage-persisted)" },
   { path: "src/components/PinGate.tsx",                       type: "Component", description: "PIN authentication gate — wraps entire app" },
   { path: "src/components/PinUnlock.tsx",                     type: "Component", description: "iOS-style 6-digit PIN entry keypad" },
   { path: "src/components/shared/PinStatus.tsx",              type: "Component", description: "Nav badge showing PIN/Closed status" },
@@ -400,7 +400,7 @@ const stockPageTree = [
   { depth: 3, name: "SharedSourcesTab",                    note: "Press releases & news with AI analysis" },
   { depth: 3, name: "SharedEdgarTab",                      note: "SEC filings browser with DB tracking" },
   { depth: 3, name: "SharedAIAgentsTab",                   note: "Workflow execution & diff preview" },
-  { depth: 2, name: "DisclaimerBanner",                    note: "Not financial advice" },
+  { depth: 2, name: "DisclaimerBanner",                    note: "Collapsible — localStorage key: disclaimer-collapsed" },
 ];
 
 interface DBTable {
@@ -652,6 +652,14 @@ const archive: ArchiveEntry[] = [];
 //    Only style={{}} allowed: CSS custom property pass-throughs
 //    e.g. style={{ '--inv-accent': 'var(--mint)' } as React.CSSProperties}`,
   },
+];
+
+const changelogHeaderFixes: string[][] = [
+  ["1", "Nav Badge Heights", "Scoped @media (pointer: coarse) button rule to .stock-model-app; removed .nav-ai-badge/.nav-pin-badge 44px override. Badges stay 24px.", "stock-model-styles.css"],
+  ["2", "Collapsible Disclaimer", "DisclaimerBanner now toggles collapse/expand with localStorage persistence (key: disclaimer-collapsed). New .disclaimer-collapsed, .disclaimer-toggle classes.", "DisclaimerBanner.tsx, CSS"],
+  ["3", "Hero Header Spacing", "brand-block: flex column, gap 12px. price-block: flex column, align-items flex-end, gap 8px. Removed margin-bottom: 0 overrides.", "stock-model-styles.css"],
+  ["4", "Unified .price-updated", "New CSS class replaces inconsistent sm-text-10/sm-mt-4 utilities and inline styles across all 3 stocks.", "ASTS, BMNR, CRCL, CSS"],
+  ["5", "Accent-Aware Freshness Badge", ".sm-data-freshness uses var(--accent)/var(--accent-dim) instead of hardcoded colors. CRCL inline styles and BMNR .sm-bmnr-freshness-badge replaced.", "ASTS, BMNR, CRCL, CSS"],
 ];
 
 const changelogDesignUnification: string[][] = [
@@ -1032,7 +1040,7 @@ export default function DocsPage() {
         <div className="mt-4 p-4 rounded-lg bg-white/[0.02] border border-white/[0.05]">
           <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25 mb-2">Additional Media Queries</div>
           <div className="grid gap-1.5 text-[11px] text-white/35">
-            <div><span className="font-mono text-white/45">@media (pointer: coarse)</span> — Touch targets: 44px min for buttons, sliders, pills</div>
+            <div><span className="font-mono text-white/45">@media (pointer: coarse)</span> — Touch targets: 44px min for buttons (scoped to .stock-model-app), sliders, pills. Nav badges excluded.</div>
             <div><span className="font-mono text-white/45">@media (max-width: 900px) and (orientation: landscape)</span> — 2-col hero grid, tighter padding</div>
             <div><span className="font-mono text-white/45">@media (-webkit-min-device-pixel-ratio: 2)</span> — Retina: 0.5px borders</div>
             <div><span className="font-mono text-white/45">@media (prefers-reduced-motion: reduce)</span> — Kills all animation/transition</div>
@@ -1305,6 +1313,22 @@ export default function DocsPage() {
           ]}
         />
 
+        {/* ── Hero Data Freshness & Disclaimer ──────────────────────────── */}
+        <SectionHeader id="hero-freshness-classes" title="Hero Freshness & Disclaimer Classes" count={5} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Data freshness badge in hero section and collapsible legal disclaimer banner.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".sm-data-freshness", "Accent-aware freshness badge — uses var(--accent) / var(--accent-dim). Inline-flex, 11px, align-self: flex-start."],
+            [".sm-data-freshness-sep", "Separator inside freshness badge — accent at 50% via color-mix."],
+            [".disclaimer-banner / .disclaimer-collapsed", "Legal disclaimer bar. Flex row with wrap. .disclaimer-collapsed reduces padding for compact view."],
+            [".disclaimer-toggle", "Show/Hide toggle button — auto margin-left, coral accent on hover. Uppercase 10px."],
+            [".price-updated", "Updated timestamp below price — 10px, text3, letter-spacing 0.03em."],
+          ]}
+        />
+
         {/* ── Error Boundary Classes ──────────────────────────────────────── */}
         <SectionHeader id="error-classes" title="Error Boundary Classes" count={3} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
@@ -1328,8 +1352,8 @@ export default function DocsPage() {
         <SmallTable
           headers={["Class", "Description"]}
           rows={[
-            [".hero / .hero-grid / .brand-block / .price-block", "Stock page hero header with gradient background."],
-            [".price-big / .price-badge", "Large price display and change badge."],
+            [".hero / .hero-grid / .brand-block / .price-block", "Stock page hero header. brand-block: flex column, gap 12px. price-block: flex column, align-items flex-end, gap 8px."],
+            [".price-big / .price-badge / .price-updated", "Large price display, change badge, and 10px updated timestamp."],
             [".stats-row / .stat-item", "Horizontal stats bar below hero."],
             [".nav / .nav-btn / .nav-btn.active", "Tab navigation with accent-colored active state."],
             [".nav-dropdown / .nav-dropdown-trigger", "Expandable dropdown tab groups."],
@@ -1348,10 +1372,20 @@ export default function DocsPage() {
         />
 
         {/* ── Changelog ─────────────────────────────────────────────────── */}
-        <SectionHeader id="changelog" title="Changelog" count={changelogDesignUnification.length + changelogEarlierFixes.length} />
+        <SectionHeader id="changelog" title="Changelog" count={changelogHeaderFixes.length + changelogDesignUnification.length + changelogEarlierFixes.length} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
           UI/UX fixes and design unification history. Newest first.
         </p>
+
+        {/* Header & Disclaimer Fixes — Feb 28 2026 */}
+        <div className="mt-6 mb-2">
+          <h3 className="text-[13px] font-semibold text-white/60">Header, Disclaimer & Nav Badge Fixes <span className="text-white/20 font-normal ml-2">Feb 28, 2026</span></h3>
+          <p className="text-[11px] text-white/25 mt-1">5 fixes: nav badge heights, collapsible disclaimer, hero spacing, unified price-updated class, accent-aware freshness badge.</p>
+        </div>
+        <SmallTable
+          headers={["#", "Task", "What Changed", "Files"]}
+          rows={changelogHeaderFixes}
+        />
 
         {/* Design Unification — Feb 27 2026 */}
         <div className="mt-6 mb-2">
