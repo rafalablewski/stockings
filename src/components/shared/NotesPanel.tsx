@@ -119,61 +119,11 @@ export default function NotesPanel() {
 
   return (
     <>
-      <style>{`
-        @keyframes navBadgeFadeIn {
-          from { opacity: 0; transform: scale(0.85); }
-          to   { opacity: 1; transform: scale(1); }
-        }
-        .nav-notes-badge {
-          animation: navBadgeFadeIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-          animation-delay: 0.09s;
-        }
-        .nav-notes-badge:hover {
-          background: rgba(167,139,250, 0.16) !important;
-          border-color: rgba(167,139,250, 0.32) !important;
-          transform: scale(1.04);
-        }
-        .nav-notes-badge:active {
-          transform: scale(0.96);
-        }
-        .nav-notes-badge .nav-notes-icon {
-          transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .nav-notes-badge:hover .nav-notes-icon {
-          transform: rotate(-8deg) scale(1.15);
-        }
-        .notes-delete-btn {
-          opacity: 0;
-          transition: opacity 0.15s;
-        }
-        .notes-card:hover .notes-delete-btn {
-          opacity: 1;
-        }
-      `}</style>
-
       {/* Trigger badge button */}
       <button
         className="nav-notes-badge"
         onClick={() => setOpen(true)}
         title="Open notes"
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 5,
-          fontSize: 9,
-          fontWeight: 600,
-          textTransform: 'uppercase' as const,
-          letterSpacing: '0.1em',
-          padding: '4px 10px',
-          borderRadius: 6,
-          height: 24,
-          lineHeight: 1,
-          cursor: 'pointer',
-          background: 'rgba(167,139,250,0.08)',
-          color: 'rgba(167,139,250,0.7)',
-          border: '1px solid rgba(167,139,250,0.18)',
-          transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-        }}
       >
         <svg
           className="nav-notes-icon"
@@ -200,82 +150,19 @@ export default function NotesPanel() {
       {typeof document !== 'undefined' && createPortal(
         <>
           {/* Backdrop */}
-          {open && (
-            <div
-              onClick={close}
-              style={{
-                position: 'fixed',
-                inset: 0,
-                background: 'rgba(0,0,0,0.6)',
-                zIndex: 110,
-                backdropFilter: 'blur(4px)',
-                WebkitBackdropFilter: 'blur(4px)',
-              }}
-            />
-          )}
+          {open && <div className="notes-backdrop" onClick={close} />}
 
           {/* Drawer */}
           <div
+            className={`notes-drawer${open ? ' notes-drawer--open' : ''}`}
             role="dialog"
             aria-modal={open}
             aria-label="Notes panel"
-            style={{
-              position: 'fixed',
-              top: 0,
-              right: 0,
-              bottom: 0,
-              width: 'min(400px, calc(100vw - 24px))',
-              background: 'rgba(10,10,10,0.98)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              borderLeft: '1px solid rgba(255,255,255,0.06)',
-              zIndex: 120,
-              transform: open ? 'translateX(0)' : 'translateX(100%)',
-              transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-              display: 'flex',
-              flexDirection: 'column',
-              overflowY: 'hidden',
-            }}
           >
             {/* Header */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0 20px',
-                paddingTop: 'max(20px, env(safe-area-inset-top))',
-                minHeight: 56,
-                borderBottom: '1px solid rgba(255,255,255,0.06)',
-                flexShrink: 0,
-              }}
-            >
-              <span
-                style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  textTransform: 'uppercase' as const,
-                  letterSpacing: '0.15em',
-                  color: 'rgba(255,255,255,0.5)',
-                }}
-              >
-                Notes
-              </span>
-              <button
-                onClick={close}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 32,
-                  height: 32,
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'rgba(255,255,255,0.3)',
-                  borderRadius: 6,
-                }}
-              >
+            <div className="notes-header">
+              <span className="notes-header-title">Notes</span>
+              <button className="notes-close-btn" onClick={close}>
                 <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <line x1={18} y1={6} x2={6} y2={18} />
                   <line x1={6} y1={6} x2={18} y2={18} />
@@ -284,25 +171,13 @@ export default function NotesPanel() {
             </div>
 
             {/* Create form */}
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
+            <div className="notes-form">
               <textarea
+                className="notes-textarea"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Add a note..."
                 rows={3}
-                style={{
-                  width: '100%',
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 12,
-                  padding: '10px 14px',
-                  fontSize: 13,
-                  color: 'rgba(255,255,255,0.8)',
-                  resize: 'vertical',
-                  outline: 'none',
-                  fontFamily: 'inherit',
-                  lineHeight: 1.5,
-                }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
                     handleCreate();
@@ -311,25 +186,18 @@ export default function NotesPanel() {
               />
 
               {/* Category selector */}
-              <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
+              <div className="notes-categories">
                 {CATEGORIES.map((cat) => {
                   const isActive = category === cat.value;
                   return (
                     <button
                       key={cat.value}
+                      className="notes-cat-btn"
                       onClick={() => setCategory(cat.value)}
                       style={{
-                        fontSize: 10,
-                        fontWeight: 600,
-                        textTransform: 'uppercase' as const,
-                        letterSpacing: '0.08em',
-                        padding: '4px 10px',
-                        borderRadius: 20,
-                        cursor: 'pointer',
                         border: `1px solid rgba(${cat.color}, ${isActive ? 0.3 : 0.08})`,
                         background: isActive ? `rgba(${cat.color}, 0.12)` : 'rgba(255,255,255,0.03)',
                         color: isActive ? `rgba(${cat.color}, 0.9)` : 'rgba(255,255,255,0.35)',
-                        transition: 'all 0.15s',
                       }}
                     >
                       {cat.label}
@@ -340,22 +208,9 @@ export default function NotesPanel() {
 
               {/* Save button */}
               <button
+                className={`notes-save-btn${saving ? ' notes-save-btn--saving' : ''}`}
                 onClick={handleCreate}
                 disabled={!content.trim() || saving}
-                style={{
-                  marginTop: 10,
-                  width: '100%',
-                  fontSize: 12,
-                  fontWeight: 600,
-                  padding: '8px 0',
-                  borderRadius: 8,
-                  cursor: !content.trim() || saving ? 'default' : 'pointer',
-                  border: 'none',
-                  background: !content.trim() ? 'rgba(255,255,255,0.03)' : 'rgba(167,139,250,0.12)',
-                  color: !content.trim() ? 'rgba(255,255,255,0.2)' : 'rgba(167,139,250,0.8)',
-                  transition: 'all 0.15s',
-                  opacity: saving ? 0.5 : 1,
-                }}
               >
                 {saving ? 'Saving...' : 'Save note'}
               </button>
@@ -363,56 +218,22 @@ export default function NotesPanel() {
 
             {/* Error banner */}
             {error && (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 8,
-                  padding: '8px 20px',
-                  fontSize: 12,
-                  color: 'rgba(255,123,114,0.9)',
-                  background: 'rgba(255,123,114,0.06)',
-                  borderBottom: '1px solid rgba(255,123,114,0.1)',
-                  flexShrink: 0,
-                }}
-              >
+              <div className="notes-error">
                 <span>{error}</span>
-                <button
-                  onClick={() => setError(null)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: 'rgba(255,123,114,0.5)',
-                    fontSize: 16,
-                    lineHeight: 1,
-                    padding: 0,
-                    flexShrink: 0,
-                  }}
-                >
+                <button className="notes-error-dismiss" onClick={() => setError(null)}>
                   ×
                 </button>
               </div>
             )}
 
             {/* Notes list */}
-            <div
-              style={{
-                flex: 1,
-                overflowY: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                paddingBottom: 'max(20px, env(safe-area-inset-bottom))',
-              }}
-            >
+            <div className="notes-list">
               {loading && (
-                <div style={{ padding: '24px 20px', fontSize: 12, color: 'rgba(255,255,255,0.25)', textAlign: 'center' }}>
-                  Loading...
-                </div>
+                <div className="notes-status">Loading...</div>
               )}
 
               {!loading && notes.length === 0 && (
-                <div style={{ padding: '24px 20px', fontSize: 12, color: 'rgba(255,255,255,0.2)', textAlign: 'center' }}>
+                <div className="notes-status notes-status--empty">
                   No notes yet. Add your first note above.
                 </div>
               )}
@@ -420,60 +241,26 @@ export default function NotesPanel() {
               {notes.map((note) => {
                 const col = categoryColor(note.category);
                 return (
-                  <div
-                    key={note.id}
-                    className="notes-card"
-                    style={{
-                      padding: '12px 20px',
-                      borderBottom: '1px solid rgba(255,255,255,0.04)',
-                      position: 'relative',
-                    }}
-                  >
+                  <div key={note.id} className="notes-card">
                     {/* Top row: badge + timestamp + delete */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                    <div className="notes-card-meta">
                       <span
+                        className="notes-card-badge"
                         style={{
-                          fontSize: 9,
-                          fontWeight: 700,
-                          textTransform: 'uppercase' as const,
-                          letterSpacing: '0.08em',
-                          fontFamily: 'var(--font-mono, monospace)',
                           color: `rgba(${col}, 0.8)`,
                           background: `rgba(${col}, 0.08)`,
                           border: `1px solid rgba(${col}, 0.15)`,
-                          padding: '2px 6px',
-                          borderRadius: 4,
                         }}
                       >
                         {note.category}
                       </span>
-                      <span
-                        style={{
-                          fontSize: 10,
-                          fontFamily: 'var(--font-mono, monospace)',
-                          color: 'rgba(255,255,255,0.2)',
-                        }}
-                      >
+                      <span className="notes-card-time">
                         {timeAgo(note.createdAt)}
                       </span>
                       <button
                         className="notes-delete-btn"
                         onClick={() => handleDelete(note.id)}
                         title="Delete note"
-                        style={{
-                          marginLeft: 'auto',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: 24,
-                          height: 24,
-                          background: 'none',
-                          border: 'none',
-                          cursor: 'pointer',
-                          color: 'rgba(255,255,255,0.2)',
-                          borderRadius: 4,
-                          flexShrink: 0,
-                        }}
                       >
                         <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                           <line x1={18} y1={6} x2={6} y2={18} />
@@ -483,15 +270,7 @@ export default function NotesPanel() {
                     </div>
 
                     {/* Content */}
-                    <div
-                      style={{
-                        fontSize: 13,
-                        color: 'rgba(255,255,255,0.7)',
-                        lineHeight: 1.55,
-                        whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-word',
-                      }}
-                    >
+                    <div className="notes-card-content">
                       {note.content}
                     </div>
                   </div>
