@@ -202,7 +202,7 @@ export default function NotesPanel() {
             position: 'fixed',
             inset: 0,
             background: 'rgba(0,0,0,0.6)',
-            zIndex: 90,
+            zIndex: 110,
             backdropFilter: 'blur(4px)',
             WebkitBackdropFilter: 'blur(4px)',
           }}
@@ -224,7 +224,7 @@ export default function NotesPanel() {
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
           borderLeft: '1px solid rgba(255,255,255,0.06)',
-          zIndex: 100,
+          zIndex: 120,
           transform: open ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
           display: 'flex',
