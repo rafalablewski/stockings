@@ -174,6 +174,13 @@ CREATE TABLE IF NOT EXISTS audit_checks (
 
 CREATE UNIQUE INDEX IF NOT EXISTS audit_checks_finding_id_idx
   ON audit_checks (finding_id);
+
+CREATE TABLE IF NOT EXISTS notes (
+  id SERIAL PRIMARY KEY,
+  content TEXT NOT NULL,
+  category TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
 `;
 
 // ── Main handler ─────────────────────────────────────────────────────────────

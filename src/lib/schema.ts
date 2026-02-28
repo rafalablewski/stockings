@@ -166,3 +166,14 @@ export const auditChecks = pgTable('audit_checks', {
 }, (table) => [
   uniqueIndex('audit_checks_finding_id_idx').on(table.findingId),
 ]);
+
+// ============================================================================
+// NOTES — user scratch-pad for article ideas, enhancements, and other thoughts
+// ============================================================================
+
+export const notes = pgTable('notes', {
+  id: serial('id').primaryKey(),
+  content: text('content').notNull(),
+  category: text('category').notNull(),   // 'article' | 'enhancement' | 'other'
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { stockList } from "@/lib/stocks";
 import PinStatus from "@/components/shared/PinStatus";
 import AiToggle from "@/components/shared/AiToggle";
+import NotesPanel from "@/components/shared/NotesPanel";
 import MobileNav from "@/components/shared/MobileNav";
 import PinGate from "@/components/PinGate";
 import "./globals.css";
@@ -88,6 +89,7 @@ function Navigation() {
             </Link>
             <PinStatus />
             <AiToggle />
+            <NotesPanel />
           </div>
 
           {/* Desktop navigation — hidden on mobile */}
