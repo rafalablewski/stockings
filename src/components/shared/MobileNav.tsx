@@ -34,7 +34,6 @@ export default function MobileNav({ items, children }: MobileNavProps) {
     setExpanded(null);
   }, []);
 
-  // Close on route change (link click)
   // Close on Escape key
   useEffect(() => {
     if (!open) return;
@@ -59,18 +58,6 @@ export default function MobileNav({ items, children }: MobileNavProps) {
         aria-label={open ? 'Close menu' : 'Open menu'}
         aria-expanded={open}
         className="mobile-nav-toggle"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 44,
-          height: 44,
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          padding: 0,
-          marginLeft: -8,
-        }}
       >
         <svg
           width={24}
@@ -81,7 +68,6 @@ export default function MobileNav({ items, children }: MobileNavProps) {
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          style={{ transition: 'transform 0.2s' }}
         >
           {open ? (
             <>
@@ -100,17 +86,7 @@ export default function MobileNav({ items, children }: MobileNavProps) {
 
       {/* Backdrop */}
       {open && (
-        <div
-          onClick={close}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.6)',
-            zIndex: 90,
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
-          }}
-        />
+        <div className="mobile-nav-backdrop" onClick={close} />
       )}
 
       {/* Drawer */}
@@ -119,65 +95,23 @@ export default function MobileNav({ items, children }: MobileNavProps) {
         role="dialog"
         aria-modal={open}
         aria-label="Navigation menu"
-        style={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: 'min(300px, calc(100vw - 56px))',
-          background: 'rgba(10,10,10,0.98)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          borderLeft: '1px solid rgba(255,255,255,0.06)',
-          zIndex: 100,
-          transform: open ? 'translateX(0)' : 'translateX(100%)',
-          transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-          overflowY: 'auto',
-          WebkitOverflowScrolling: 'touch',
-          paddingTop: 'max(72px, calc(env(safe-area-inset-top) + 56px))',
-          paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
-          paddingLeft: 'max(20px, env(safe-area-inset-left))',
-          paddingRight: 'max(20px, env(safe-area-inset-right))',
-        }}
+        className={`mobile-nav-drawer${open ? ' mobile-nav-drawer--open' : ''}`}
       >
         {/* Toolbar badges (PinStatus, AiToggle, Notes) — only visible on mobile */}
         {children && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              paddingBottom: 16,
-              marginBottom: 8,
-              borderBottom: '1px solid rgba(255,255,255,0.06)',
-            }}
-          >
+          <div className="mobile-nav-badges">
             {children}
           </div>
         )}
 
         {items.map((item) =>
           item.children ? (
-            <div key={item.label} style={{ marginBottom: 4 }}>
+            <div key={item.label} className="mobile-nav-section">
               {/* Section header (expandable) */}
               <button
                 type="button"
                 onClick={() => setExpanded(expanded === item.label ? null : item.label)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  padding: '14px 0',
-                  background: 'none',
-                  border: 'none',
-                  borderBottom: '1px solid rgba(255,255,255,0.04)',
-                  cursor: 'pointer',
-                  color: 'rgba(255,255,255,0.7)',
-                  fontSize: 14,
-                  fontWeight: 500,
-                  letterSpacing: '0.02em',
-                }}
+                className="mobile-nav-section-header"
               >
                 {item.label}
                 <svg
@@ -189,11 +123,7 @@ export default function MobileNav({ items, children }: MobileNavProps) {
                   strokeWidth={2}
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  style={{
-                    transition: 'transform 0.2s',
-                    transform: expanded === item.label ? 'rotate(180deg)' : 'rotate(0)',
-                    opacity: 0.4,
-                  }}
+                  className={`mobile-nav-chevron${expanded === item.label ? ' mobile-nav-chevron--expanded' : ''}`}
                 >
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
@@ -201,32 +131,19 @@ export default function MobileNav({ items, children }: MobileNavProps) {
 
               {/* Children */}
               <div
-                style={{
-                  maxHeight: expanded === item.label ? `${item.children.length * 52}px` : '0px',
-                  overflow: 'hidden',
-                  transition: 'max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
-                }}
+                className="mobile-nav-children"
+                style={{ maxHeight: expanded === item.label ? `${item.children.length * 52}px` : undefined }}
               >
                 {item.children.map((child) => (
                   <Link
                     key={child.href}
                     href={child.href}
                     onClick={close}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '12px 16px',
-                      fontSize: 13,
-                      color: 'rgba(255,255,255,0.6)',
-                      textDecoration: 'none',
-                      minHeight: 44,
-                      borderBottom: '1px solid rgba(255,255,255,0.02)',
-                    }}
+                    className="mobile-nav-child-link"
                   >
                     <span>{child.label}</span>
                     {child.meta && (
-                      <span style={{ fontSize: 9, fontFamily: 'monospace', color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase' }}>
+                      <span className="mobile-nav-child-meta">
                         {child.meta}
                       </span>
                     )}
@@ -239,17 +156,7 @@ export default function MobileNav({ items, children }: MobileNavProps) {
               key={item.label}
               href={item.href!}
               onClick={close}
-              style={{
-                display: 'block',
-                padding: '14px 0',
-                fontSize: 14,
-                fontWeight: 500,
-                color: 'rgba(255,255,255,0.7)',
-                textDecoration: 'none',
-                borderBottom: '1px solid rgba(255,255,255,0.04)',
-                minHeight: 44,
-                letterSpacing: '0.02em',
-              }}
+              className="mobile-nav-top-link"
             >
               {item.label}
             </Link>
