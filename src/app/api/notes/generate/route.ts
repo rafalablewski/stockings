@@ -45,7 +45,7 @@ Respond in this exact JSON format and nothing else:
 
 Rules:
 - Title: max 60 characters, concise, capture the main topic
-- Description: max 160 characters, summarize the key point(s)
+- Description: max 50 words, one sentence, summarize the key point(s)
 - Do NOT wrap in markdown code blocks
 - Respond with raw JSON only`;
 
@@ -81,9 +81,16 @@ Rules:
     // Parse the JSON response
     try {
       const parsed = JSON.parse(rawText.trim());
+      // Clamp description to 50 words max
+      const rawDesc = String(parsed.description || '');
+      const words = rawDesc.split(/\s+/);
+      const clampedDesc = words.length > 50
+        ? words.slice(0, 50).join(' ') + '...'
+        : rawDesc;
+
       return NextResponse.json({
         title: String(parsed.title || '').slice(0, 80),
-        description: String(parsed.description || '').slice(0, 200),
+        description: clampedDesc,
       });
     } catch {
       console.error('[notes/generate] Failed to parse Claude response:', rawText);
