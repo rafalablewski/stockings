@@ -2357,15 +2357,7 @@ input[type="range"]::-webkit-slider-thumb {
   opacity: 0.5;
 }
 
-/* ── Action button data-variant color presets ── */
-.sm-ed-action-btn[data-variant="mint"] { --ed-btn-color: rgba(130,200,130,0.5); border-color: rgba(130,200,130,0.15); }
-.sm-ed-action-btn[data-variant="coral"] { --ed-btn-color: var(--coral); border-color: color-mix(in srgb, var(--coral) 25%, transparent); }
-.sm-ed-action-btn[data-variant="blue"] { --ed-btn-color: rgba(130,180,220,0.5); border-color: rgba(130,180,220,0.15); }
-
-/* ── Action button data-state overrides ── */
-.sm-ed-action-btn[data-state="disabled"] { --ed-btn-color: var(--text3); border-color: var(--border); cursor: not-allowed; opacity: 0.4; }
-.sm-ed-action-btn[data-state="loading"] { --ed-btn-color: var(--text3); border-color: var(--border); cursor: wait; opacity: 0.5; }
-.sm-ed-action-btn[data-state="success"] { --ed-btn-color: var(--mint); border-color: rgba(130,200,130,0.15); }
+/* ── Action button data-variant & data-state ── see §unified-action-btn below line 8800 ── */
 
 /* Small inline action button variant */
 .sm-ed-action-btn-sm {
@@ -8803,10 +8795,6 @@ input[type="range"]::-webkit-slider-thumb {
 /* Variant colors — defines the accent color for the button */
 .sm-ed-action-btn[data-variant="mint"] {
   --ed-btn-color: rgba(130,200,130,0.5);
-  border-color: rgba(130,200,130,0.15);
-}
-.sm-ed-action-btn[data-variant="mint-solid"] {
-  --ed-btn-color: var(--mint);
   border-color: rgba(130,200,130,0.15);
 }
 .sm-ed-action-btn[data-variant="sky"] {
