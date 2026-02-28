@@ -322,7 +322,7 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/PinUnlock.tsx",                     type: "Component", description: "iOS-style 6-digit PIN entry keypad" },
   { path: "src/components/shared/PinStatus.tsx",              type: "Component", description: "Nav badge showing PIN/Closed status" },
   { path: "src/components/shared/AiToggle.tsx",               type: "Component", description: "AI analysis on/off toggle in nav" },
-  { path: "src/components/shared/NotesPanel.tsx",             type: "Component", description: "Global notes scratch-pad — slide-over drawer with create/view/delete" },
+  { path: "src/components/shared/NotesPanel.tsx",             type: "Component", description: "Global notes scratch-pad — slide-over drawer with create/view/delete; zero inline styles (category colors via data-cat attribute)" },
   { path: "src/lib/stocks.ts",                                type: "Data",      description: "Stock registry — tickers, names, sectors" },
   { path: "src/lib/schema.ts",                                type: "Data",      description: "Drizzle ORM schema — DB tables" },
   { path: "src/lib/auth-fetch.ts",                            type: "Utility",   description: "PIN-authenticated fetch wrapper" },
@@ -457,9 +457,22 @@ const conventions = [
   },
   {
     title: "data-* Attributes for State",
-    description: "Use data attributes instead of conditional inline styles. CSS selectors handle the visual state.",
-    code: `// Good — data attribute
+    description: "Use data attributes instead of conditional inline styles. CSS selectors handle the visual state. For category/variant coloring, use a data-cat (or data-variant) attribute with a --cat-rgb CSS variable resolved per-value — eliminates all runtime rgba() inline styles.",
+    code: `// Good — data attribute for boolean state
 <div className="sm-preset-btn" data-active={isActive ? "true" : "false"}>
+
+// Good — data-cat for category coloring (NotesPanel pattern)
+<button className="notes-cat-btn" data-cat={cat.value} data-active={isActive ? "true" : "false"}>
+<span className="notes-card-badge" data-cat={note.category}>
+
+// CSS — each selector sets --cat-rgb, one rule consumes it
+.notes-cat-btn[data-cat="article"]     { --cat-rgb: 34,211,238; }
+.notes-cat-btn[data-cat="enhancement"] { --cat-rgb: 52,211,153; }
+.notes-cat-btn[data-active="true"] {
+  border-color: rgba(var(--cat-rgb), 0.3);
+  background: rgba(var(--cat-rgb), 0.12);
+  color: rgba(var(--cat-rgb), 0.9);
+}
 
 // Bad — ternary in style
 <div style={{ background: isActive ? '...' : '...' }}>`,
