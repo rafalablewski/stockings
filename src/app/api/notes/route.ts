@@ -3,6 +3,7 @@ import { neon } from '@neondatabase/serverless';
 import { db } from '@/lib/db';
 import { notes } from '@/lib/schema';
 import { eq, desc } from 'drizzle-orm';
+import { NOTES_CREATE_TABLE_SQL } from '@/lib/notes-ddl';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,12 +21,8 @@ async function ensureTable(): Promise<void> {
 
   const rawSql = neon(connStr);
 
-  await rawSql`CREATE TABLE IF NOT EXISTS notes (
-    id SERIAL PRIMARY KEY,
-    content TEXT NOT NULL,
-    category TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW() NOT NULL
-  )`;
+  const tsa = Object.assign([NOTES_CREATE_TABLE_SQL], { raw: [NOTES_CREATE_TABLE_SQL] }) as unknown as TemplateStringsArray;
+  await rawSql(tsa);
 
   tableVerified = true;
 }

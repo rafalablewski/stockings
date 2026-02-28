@@ -41,6 +41,7 @@ export default function NotesPanel() {
   const [content, setContent] = useState('');
   const [category, setCategory] = useState<Category>('other');
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const hasFetched = useRef(false);
 
   const close = useCallback(() => setOpen(false), []);
@@ -51,8 +52,11 @@ export default function NotesPanel() {
     setLoading(true);
     fetch('/api/notes')
       .then((res) => res.json())
-      .then((data) => setNotes(data.notes || []))
-      .catch(() => {})
+      .then((data) => {
+        setNotes(data.notes || []);
+        setError(null);
+      })
+      .catch(() => setError('Failed to load notes'))
       .finally(() => {
         setLoading(false);
         hasFetched.current = true;
@@ -76,6 +80,7 @@ export default function NotesPanel() {
   async function handleCreate() {
     if (!content.trim() || saving) return;
     setSaving(true);
+    setError(null);
     try {
       const res = await fetch('/api/notes', {
         method: 'POST',
@@ -86,20 +91,28 @@ export default function NotesPanel() {
       if (data.ok && data.note) {
         setNotes((prev) => [data.note, ...prev]);
         setContent('');
+      } else {
+        setError(data.error || 'Failed to save note');
       }
     } catch {
-      // silently fail — the user can retry
+      setError('Failed to save note — check your connection');
     } finally {
       setSaving(false);
     }
   }
 
   async function handleDelete(id: number) {
-    setNotes((prev) => prev.filter((n) => n.id !== id));
+    const prev = notes;
+    setNotes((cur) => cur.filter((n) => n.id !== id));
     try {
-      await fetch(`/api/notes?id=${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/notes?id=${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        setNotes(prev);
+        setError('Failed to delete note');
+      }
     } catch {
-      // optimistic — if delete fails the note is already removed from UI
+      setNotes(prev);
+      setError('Failed to delete note — check your connection');
     }
   }
 
@@ -342,6 +355,41 @@ export default function NotesPanel() {
             {saving ? 'Saving...' : 'Save note'}
           </button>
         </div>
+
+        {/* Error banner */}
+        {error && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 8,
+              padding: '8px 20px',
+              fontSize: 12,
+              color: 'rgba(255,123,114,0.9)',
+              background: 'rgba(255,123,114,0.06)',
+              borderBottom: '1px solid rgba(255,123,114,0.1)',
+              flexShrink: 0,
+            }}
+          >
+            <span>{error}</span>
+            <button
+              onClick={() => setError(null)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'rgba(255,123,114,0.5)',
+                fontSize: 16,
+                lineHeight: 1,
+                padding: 0,
+                flexShrink: 0,
+              }}
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         {/* Notes list */}
         <div
