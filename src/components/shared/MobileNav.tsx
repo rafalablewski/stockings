@@ -73,12 +73,12 @@ export default function MobileNav({ items, children }: MobileNavProps) {
         }}
       >
         <svg
-          width={20}
-          height={20}
+          width={24}
+          height={24}
           viewBox="0 0 24 24"
           fill="none"
-          stroke="rgba(255,255,255,0.7)"
-          strokeWidth={1.5}
+          stroke="rgba(255,255,255,0.95)"
+          strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
           style={{ transition: 'transform 0.2s' }}
