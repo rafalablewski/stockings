@@ -1431,10 +1431,11 @@ export default function DocsPage() {
         />
 
         {/* ── Notes Panel Classes ─────────────────────────────────────── */}
-        <SectionHeader id="notes-classes" title="Notes Panel Classes (notes-*)" count={18} />
+        <SectionHeader id="notes-classes" title="Notes Panel Classes (notes-*)" count={16} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
           Global notes drawer — slide-over panel with collapsible article preview cards.
-          AI-generated title &amp; description via bolt button (respects global AI toggle).
+          Single AI bolt button per note (in meta row) generates title &amp; description via Claude.
+          Respects global AI toggle — shows .notes-ai-status bar when AI is off.
           Zero inline styles — category colors via data-cat, AI state via BEM modifiers.
         </p>
         <SmallTable
@@ -1447,13 +1448,10 @@ export default function DocsPage() {
             [".notes-card-chevron", "SVG chevron in toggle — transition: transform 0.2s."],
             [".notes-card-chevron--open", "Rotated state — transform: rotate(180deg)."],
             [".notes-card-body", "Expanded full text — 13px, pre-wrap, top border separator (0.05 alpha)."],
-            [".notes-card-actions-row", "Flex row for toggle + inline AI button — gap 8px, margin-top 4px."],
-            [".notes-card-ai-btn", "Compact bolt icon button in card meta row — 22x22px, mint green accent border, rounded-4."],
+            [".notes-card-ai-btn", "Single AI bolt button in card meta row — 22x22px, mint green accent, shown for every note without a preview."],
             [".notes-card-ai-btn--disabled", "Disabled state when global AI toggle is off — muted colors, cursor: not-allowed."],
-            [".notes-card-ai-inline", "Inline AI pill button in actions row — 9px uppercase label with bolt icon."],
-            [".notes-card-ai-inline--disabled", "Disabled inline AI pill — same muted treatment as ai-btn--disabled."],
-            [".notes-card-generating", "Generating indicator text — 9px uppercase, mint pulse animation."],
-            [".notes-card-generating-badge", "Badge variant of generating indicator — same pulse animation."],
+            [".notes-ai-status", "AI-off indicator bar below form — 10px, bolt icon + message, subtle background, flex-shrink: 0."],
+            [".notes-card-generating-badge", "Generating indicator in meta row — 9px uppercase, mint pulse animation."],
             [".notes-form-actions", "Flex row for save button — gap 6px, margin-top 10px."],
             ["@keyframes notesPulse", "Pulse animation for AI generating state — opacity 0.4 ↔ 1, 1.2s ease-in-out infinite."],
             ["data-cat (on .notes-card-badge)", "Category coloring via --cat-rgb: article=cyan, enhancement=mint, other=violet."],

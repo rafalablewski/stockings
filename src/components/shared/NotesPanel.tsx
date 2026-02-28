@@ -228,12 +228,11 @@ export default function NotesPanel() {
     }
   }
 
-  /** Decide how to render a note card */
+  /** Render collapsible content for a note card */
   function renderNoteContent(note: Note) {
     const isShort = note.content.length <= SHORT_NOTE_THRESHOLD;
     const hasPreview = !!(note.title || note.description);
     const isExpanded = expanded.has(note.id);
-    const isGenerating = generating.has(note.id);
 
     // Short notes without preview: show inline (no collapse)
     if (isShort && !hasPreview) {
@@ -294,42 +293,25 @@ export default function NotesPanel() {
             {linkifyContent(note.content)}
           </div>
         )}
-        <div className="notes-card-actions-row">
-          <button
-            className="notes-card-toggle"
-            onClick={() => toggleExpanded(note.id)}
+        <button
+          className="notes-card-toggle"
+          onClick={() => toggleExpanded(note.id)}
+        >
+          <svg
+            className={`notes-card-chevron${isExpanded ? ' notes-card-chevron--open' : ''}`}
+            width={10}
+            height={6}
+            viewBox="0 0 10 6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            <svg
-              className={`notes-card-chevron${isExpanded ? ' notes-card-chevron--open' : ''}`}
-              width={10}
-              height={6}
-              viewBox="0 0 10 6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.5}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M1 1L5 5L9 1" />
-            </svg>
-            {isExpanded ? 'Show less' : 'Show more'}
-          </button>
-          {!hasPreview && !isGenerating && (
-            <button
-              className={`notes-card-ai-inline${!isAiEnabled() ? ' notes-card-ai-inline--disabled' : ''}`}
-              onClick={() => handleGeneratePreview(note)}
-              title={isAiEnabled() ? 'Generate AI title & summary' : 'AI features are disabled'}
-            >
-              <svg width={10} height={10} viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                <path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z" />
-              </svg>
-              AI
-            </button>
-          )}
-          {isGenerating && (
-            <span className="notes-card-generating">Generating...</span>
-          )}
-        </div>
+            <path d="M1 1L5 5L9 1" />
+          </svg>
+          {isExpanded ? 'Show less' : 'Show more'}
+        </button>
       </>
     );
   }
@@ -420,7 +402,7 @@ export default function NotesPanel() {
                 })}
               </div>
 
-              {/* Save + AI buttons */}
+              {/* Save button */}
               <div className="notes-form-actions">
                 <button
                   className={`notes-save-btn${saving ? ' notes-save-btn--saving' : ''}`}
@@ -431,6 +413,16 @@ export default function NotesPanel() {
                 </button>
               </div>
             </div>
+
+            {/* AI status indicator — shown when global AI toggle is off */}
+            {!isAiEnabled() && (
+              <div className="notes-ai-status">
+                <svg width={10} height={10} viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <path d="M13 2L4.5 13.5H11L10 22L19.5 10.5H13L13 2Z" />
+                </svg>
+                AI features disabled — enable via the AI toggle in the nav bar
+              </div>
+            )}
 
             {/* Error banner */}
             {error && (
@@ -457,7 +449,6 @@ export default function NotesPanel() {
               {notes.map((note) => {
                 const isGenerating = generating.has(note.id);
                 const hasPreview = !!(note.title || note.description);
-                const isLong = note.content.length > SHORT_NOTE_THRESHOLD;
 
                 return (
                   <div key={note.id} className="notes-card">
@@ -472,8 +463,8 @@ export default function NotesPanel() {
                       <span className="notes-card-time">
                         {timeAgo(note.createdAt)}
                       </span>
-                      {/* AI generate button — shown for long notes without preview */}
-                      {isLong && !hasPreview && !isGenerating && (
+                      {/* Single AI button — shown for every note without a preview */}
+                      {!hasPreview && !isGenerating && (
                         <button
                           className={`notes-card-ai-btn${!isAiEnabled() ? ' notes-card-ai-btn--disabled' : ''}`}
                           onClick={() => handleGeneratePreview(note)}
