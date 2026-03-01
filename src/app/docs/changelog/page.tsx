@@ -12,5 +12,11 @@ export const metadata: Metadata = {
 
 export default function ChangelogPage() {
   const content = readFileSync(join(process.cwd(), "docs/changelog.md"), "utf-8");
-  return <MarkdownPage title="Changelog" content={content} />;
+  return (
+    <MarkdownPage
+      title="Changelog"
+      subtitle="Commit history and feature timeline for the ABISON platform."
+      content={content}
+    />
+  );
 }

@@ -743,25 +743,27 @@ a, a:visited {
 }
 
 /* ── Markdown page styles ─────────────────────────────────────────────────── */
-.markdown-body { color: rgba(240,246,252,0.85); font-size: 13px; line-height: 1.7; }
-.markdown-body h1 { font-size: 20px; font-weight: 300; letter-spacing: 0.08em; color: rgba(255,255,255,0.9); margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
-.markdown-body h2 { font-size: 16px; font-weight: 400; color: rgba(255,255,255,0.8); margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
-.markdown-body h3 { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.7); margin: 1.5rem 0 0.5rem; }
+/* Unified with /docs golden standard: Jony Ive × Tesla aesthetic.            */
+/* Headings: tight tracking, semibold. Body: muted editorial tone.            */
+.markdown-body { color: rgba(240,246,252,0.55); font-size: 13px; line-height: 1.7; }
+.markdown-body h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; color: rgba(255,255,255,0.9); margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.markdown-body h2 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; color: rgba(255,255,255,0.85); margin: 2rem 0 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.markdown-body h3 { font-size: 14px; font-weight: 600; letter-spacing: -0.005em; color: rgba(255,255,255,0.7); margin: 1.5rem 0 0.5rem; }
 .markdown-body h4 { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.6); margin: 1.2rem 0 0.4rem; }
 .markdown-body p { margin: 0.6rem 0; }
 .markdown-body ul, .markdown-body ol { margin: 0.5rem 0; padding-left: 1.5rem; }
 .markdown-body li { margin: 0.25rem 0; }
-.markdown-body li::marker { color: rgba(255,255,255,0.25); }
-.markdown-body strong { color: rgba(255,255,255,0.95); font-weight: 600; }
-.markdown-body em { color: rgba(255,255,255,0.6); }
+.markdown-body li::marker { color: rgba(255,255,255,0.2); }
+.markdown-body strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+.markdown-body em { color: rgba(255,255,255,0.45); }
 .markdown-body a { color: var(--sky, #79C0FF); text-decoration: none; }
 .markdown-body a:hover { text-decoration: underline; }
-.markdown-body code { font-family: 'Space Mono', monospace; font-size: 12px; background: rgba(255,255,255,0.06); padding: 0.15em 0.4em; border-radius: 4px; color: rgba(255,255,255,0.8); }
-.markdown-body pre { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 1rem; margin: 1rem 0; overflow-x: auto; }
+.markdown-body code { font-family: 'Space Mono', monospace; font-size: 12px; background: rgba(255,255,255,0.05); padding: 0.15em 0.4em; border-radius: 4px; color: rgba(255,255,255,0.7); }
+.markdown-body pre { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 1rem; margin: 1rem 0; overflow-x: auto; }
 .markdown-body pre code { background: none; padding: 0; font-size: 11px; line-height: 1.6; }
-.markdown-body blockquote { border-left: 3px solid rgba(255,255,255,0.1); padding-left: 1rem; margin: 1rem 0; color: rgba(255,255,255,0.5); }
+.markdown-body blockquote { border-left: 3px solid rgba(255,255,255,0.08); padding-left: 1rem; margin: 1rem 0; color: rgba(255,255,255,0.4); }
 .markdown-body hr { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 2rem 0; }
 .markdown-body table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 12px; }
-.markdown-body th { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+.markdown-body th { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
 .markdown-body td { padding: 0.4rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
 .markdown-body tr:hover td { background: rgba(255,255,255,0.02); }
