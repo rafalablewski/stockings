@@ -207,7 +207,7 @@
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import './stock-model-styles.css';
-import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab } from '../shared';
+import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab, StockHeader, buildHudMarkers } from '../shared';
 import type { UpdateSource } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
@@ -437,11 +437,13 @@ const BMNRDilutionAnalysis = () => {
   const [chartRefreshKey, setChartRefreshKey] = useState(0);
 
   // Live price refresh hook - gets price from chart's API response
-  const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice } = useLiveStockPrice(
+  const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice, previousClose, marketData } = useLiveStockPrice(
     'BMNR',
     DEFAULTS.currentStockPrice,
     { onPriceUpdate: (price) => setCurrentStockPrice(price) }
   );
+  const changePct = previousClose ? ((currentStockPrice - previousClose) / previousClose) * 100 : null;
+  const hudMarkers = useMemo(() => buildHudMarkers(marketData), [marketData]);
 
   // Combined refresh handler - updates both price and chart
   const handleRefreshAll = useCallback(async () => {
@@ -609,68 +611,29 @@ const BMNRDilutionAnalysis = () => {
         <DisclaimerBanner />
         
         {/* ============================================================================
-            HERO HEADER - CRCL-Style Premium Design
+            11C EDGE MARKERS HEADER
             ============================================================================ */}
-        <header className="hero">
-          <div className="hero-grid">
-            <div className="brand-block">
-              <h1>BMNR Analysis</h1>
-              <div className="ticker">NYSE American: BMNR · ETH Treasury</div>
-              {/* H4: Data Freshness Timestamp */}
-              <div className="sm-data-freshness">
-                <span>📅</span>
-                <span>Data as of: {DATA_FRESHNESS.dataAsOf}</span>
-                <span className="sm-data-freshness-sep">|</span>
-                <span>{DATA_FRESHNESS.priceNote}</span>
-              </div>
-              <p className="desc">
-                Institutional-grade ETH exposure through a publicly traded vehicle. 
-                Largest single-entity ETH holder with {(currentETH / 120000000 * 100).toFixed(2)}% of total supply.
-              </p>
+        <StockHeader
+          exchange="NYSE AMERICAN"
+          ticker="BMNR"
+          companyName="BitMine Immersion Technologies"
+          metadata={[
+            { label: 'SECTOR', value: 'Digital Assets' },
+            { label: 'INDUSTRY', value: 'ETH Treasury' },
+            { label: 'DATA', value: DATA_FRESHNESS.dataAsOf },
+          ]}
+          price={currentStockPrice}
+          changePct={changePct}
+          onRefresh={handleRefreshAll}
+          isRefreshing={priceLoading}
+          lastUpdated={priceLastUpdated}
+          badge={
+            <div className={`price-badge ${calc.navPremium >= 0 ? 'up' : 'down'}`}>
+              {calc.navPremium >= 0 ? '↑' : '↓'} {Math.abs(calc.navPremium).toFixed(1)}% vs NAV
             </div>
-            <div className="price-block">
-              <div className="price-big sm-flex">
-                ${currentStockPrice.toFixed(2)}
-                <button
-                  onClick={handleRefreshAll}
-                  disabled={priceLoading}
-                  title={priceLastUpdated ? `Last updated: ${priceLastUpdated.toLocaleTimeString()}` : 'Click to refresh price & chart'}
-                  className="sm-bmnr-refresh-btn"
-                  data-loading={priceLoading}
-                >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="sm-refresh-icon"
-                    data-loading={priceLoading ? 'true' : undefined}
-                  >
-                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                    <path d="M3 3v5h5" />
-                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-                    <path d="M16 21h5v-5" />
-                  </svg>
-                </button>
-              </div>
-              <div className={`price-badge ${calc.navPremium >= 0 ? 'up' : 'down'}`}>
-                {calc.navPremium >= 0 ? '↑' : '↓'} {Math.abs(calc.navPremium).toFixed(1)}% vs NAV
-              </div>
-              {priceLastUpdated && (
-                <div className="price-updated">
-                  Updated: {priceLastUpdated.toLocaleTimeString()}
-                </div>
-              )}
-            </div>
-          </div>
-        </header>
-
-        {/* Stats Row */}
-        <div className="stats-row">
+          }
+          hudMarkers={hudMarkers}
+        >
           <Stat label="NAV/Share" value={`$${calc.currentNAV.toFixed(2)}`} color="violet" updateSource={['PR', 'MARKET']} />
           <Stat label="Market Cap" value={`$${(calc.marketCap / 1e9).toFixed(1)}B`} updateSource="MARKET" />
           <Stat label="ETH Holdings" value={`${(currentETH / 1e6).toFixed(2)}M (${(currentETH / 120700000 * 100).toFixed(2)}% / 5%)`} color="violet" updateSource="PR" />
@@ -678,7 +641,7 @@ const BMNRDilutionAnalysis = () => {
           <Stat label="Staking Yield" value={`${calc.effectiveAPY.toFixed(2)}%`} color="mint" updateSource="PR" />
           <Stat label="Dividend Yield" value={`${calc.dividendYield.toFixed(2)}%`} color="sky" updateSource="PR" />
           <Stat label="Total Value" value={`$${((currentETH * ethPrice) / 1e9).toFixed(1)}B`} updateSource={['PR', 'MARKET']} />
-        </div>
+        </StockHeader>
 
         {/* Navigation */}
         <StockNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} stockGroupName="BMNR Analysis" />

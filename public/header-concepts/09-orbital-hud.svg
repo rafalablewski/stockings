@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 520" width="1440" height="520">
+  <defs>
+    <linearGradient id="bg9" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#050810"/>
+      <stop offset="100%" stop-color="#030508"/>
+    </linearGradient>
+    <radialGradient id="coreGlow9" cx="50%" cy="50%" r="35%">
+      <stop offset="0%" stop-color="rgba(34,211,238,0.06)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <linearGradient id="arcGrad9" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="rgba(34,211,238,0.4)"/>
+      <stop offset="50%" stop-color="rgba(126,231,135,0.4)"/>
+      <stop offset="100%" stop-color="rgba(167,139,250,0.4)"/>
+    </linearGradient>
+    <filter id="blur9">
+      <feGaussianBlur stdDeviation="30"/>
+    </filter>
+  </defs>
+
+  <!-- Background — deep space -->
+  <rect width="1440" height="520" fill="url(#bg9)"/>
+  <rect width="1440" height="520" fill="url(#coreGlow9)"/>
+
+  <!-- Subtle star field -->
+  <g opacity="0.15">
+    <circle cx="120" cy="80" r="0.5" fill="#fff"/>
+    <circle cx="340" cy="45" r="0.7" fill="#fff"/>
+    <circle cx="560" cy="90" r="0.4" fill="#fff"/>
+    <circle cx="780" cy="30" r="0.6" fill="#fff"/>
+    <circle cx="990" cy="70" r="0.5" fill="#fff"/>
+    <circle cx="1200" cy="55" r="0.4" fill="#fff"/>
+    <circle cx="1350" cy="95" r="0.6" fill="#fff"/>
+    <circle cx="200" cy="450" r="0.5" fill="#fff"/>
+    <circle cx="450" cy="480" r="0.4" fill="#fff"/>
+    <circle cx="1000" cy="470" r="0.6" fill="#fff"/>
+    <circle cx="1300" cy="440" r="0.4" fill="#fff"/>
+    <circle cx="80" cy="300" r="0.3" fill="#fff"/>
+    <circle cx="1380" cy="250" r="0.5" fill="#fff"/>
+  </g>
+
+  <!-- ═══ ORBITAL HUD ═══ -->
+  <!-- Space-themed: orbital rings around a central price display, satellite tracking aesthetic -->
+
+  <!-- Orbital rings -->
+  <g transform="translate(720, 260)">
+    <!-- Outer orbit -->
+    <ellipse cx="0" cy="0" rx="360" ry="180" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="1" transform="rotate(-5)"/>
+    <!-- Middle orbit -->
+    <ellipse cx="0" cy="0" rx="280" ry="140" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="0.75" transform="rotate(3)"/>
+    <!-- Inner orbit -->
+    <ellipse cx="0" cy="0" rx="200" ry="100" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="0.5" transform="rotate(-2)"/>
+
+    <!-- Satellite dots on orbits -->
+    <circle cx="340" cy="-40" r="3" fill="#22D3EE" opacity="0.5"/>
+    <circle cx="340" cy="-40" r="8" fill="rgba(34,211,238,0.1)"/>
+    <circle cx="-260" cy="80" r="2.5" fill="#7EE787" opacity="0.5"/>
+    <circle cx="-260" cy="80" r="7" fill="rgba(126,231,135,0.1)"/>
+    <circle cx="180" cy="90" r="2" fill="#A78BFA" opacity="0.4"/>
+    <circle cx="180" cy="90" r="6" fill="rgba(167,139,250,0.1)"/>
+    <circle cx="-150" cy="-85" r="2" fill="#22D3EE" opacity="0.3"/>
+    <circle cx="50" cy="-98" r="1.5" fill="#7EE787" opacity="0.3"/>
+  </g>
+
+  <!-- Center content -->
+  <g transform="translate(720, 260)">
+    <!-- Central backdrop circle -->
+    <circle cx="0" cy="0" r="150" fill="rgba(13,17,23,0.8)" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+
+    <!-- Ticker -->
+    <text text-anchor="middle" y="-100" font-family="'SF Mono', monospace" font-size="10" font-weight="600" fill="rgba(34,211,238,0.5)" letter-spacing="0.2em">NASDAQ: ASTS</text>
+
+    <!-- Price — the core -->
+    <text text-anchor="middle" y="-20" font-family="'SF Mono', monospace" font-size="56" font-weight="700" fill="#F0F6FC" letter-spacing="-2">$26.42</text>
+
+    <!-- Change -->
+    <text text-anchor="middle" y="10" font-family="'SF Mono', monospace" font-size="14" font-weight="600" fill="rgba(126,231,135,0.6)">+2.34%</text>
+
+    <!-- Company name below price -->
+    <text text-anchor="middle" y="50" font-family="-apple-system, 'SF Pro Display', sans-serif" font-size="18" font-weight="500" fill="rgba(255,255,255,0.4)" letter-spacing="0.02em">AST SpaceMobile</text>
+
+    <!-- Updated -->
+    <text text-anchor="middle" y="80" font-family="monospace" font-size="9" fill="rgba(255,255,255,0.12)" letter-spacing="0.06em">LIVE · 10:42 AM EST</text>
+  </g>
+
+  <!-- HUD corners -->
+  <!-- Top-left data readout -->
+  <g transform="translate(80, 50)">
+    <line x1="0" y1="0" x2="30" y2="0" stroke="rgba(34,211,238,0.2)" stroke-width="1"/>
+    <line x1="0" y1="0" x2="0" y2="30" stroke="rgba(34,211,238,0.2)" stroke-width="1"/>
+
+    <text x="12" y="24" font-family="monospace" font-size="8" fill="rgba(34,211,238,0.3)" letter-spacing="0.12em">CONSTELLATION STATUS</text>
+
+    <g transform="translate(12, 40)">
+      <text font-family="'SF Mono', monospace" font-size="28" font-weight="700" fill="#22D3EE" opacity="0.7">5</text>
+      <text x="28" y="0" font-family="monospace" font-size="12" fill="rgba(255,255,255,0.15)">/ 168</text>
+      <text y="20" font-family="monospace" font-size="9" fill="rgba(255,255,255,0.1)">SATELLITES DEPLOYED</text>
+    </g>
+
+    <!-- Progress bar -->
+    <g transform="translate(12, 90)">
+      <rect width="200" height="2" rx="1" fill="rgba(255,255,255,0.03)"/>
+      <rect width="6" height="2" rx="1" fill="rgba(34,211,238,0.5)"/>
+    </g>
+  </g>
+
+  <!-- Top-right data readout -->
+  <g transform="translate(1160, 50)">
+    <line x1="200" y1="0" x2="170" y2="0" stroke="rgba(167,139,250,0.2)" stroke-width="1"/>
+    <line x1="200" y1="0" x2="200" y2="30" stroke="rgba(167,139,250,0.2)" stroke-width="1"/>
+
+    <text x="188" text-anchor="end" y="24" font-family="monospace" font-size="8" fill="rgba(167,139,250,0.3)" letter-spacing="0.12em">MARKET DATA</text>
+
+    <g transform="translate(0, 40)">
+      <text font-family="monospace" font-size="9" fill="rgba(255,255,255,0.1)" letter-spacing="0.08em">MARKET CAP</text>
+      <text y="18" font-family="'SF Mono', monospace" font-size="18" font-weight="600" fill="rgba(255,255,255,0.5)">$8.2B</text>
+    </g>
+    <g transform="translate(0, 80)">
+      <text font-family="monospace" font-size="9" fill="rgba(255,255,255,0.1)" letter-spacing="0.08em">EV / REV FWD</text>
+      <text y="18" font-family="'SF Mono', monospace" font-size="18" font-weight="600" fill="rgba(255,255,255,0.5)">42.1x</text>
+    </g>
+  </g>
+
+  <!-- Bottom-left -->
+  <g transform="translate(80, 420)">
+    <line x1="0" y1="50" x2="30" y2="50" stroke="rgba(126,231,135,0.2)" stroke-width="1"/>
+    <line x1="0" y1="20" x2="0" y2="50" stroke="rgba(126,231,135,0.2)" stroke-width="1"/>
+    <text x="12" y="40" font-family="monospace" font-size="8" fill="rgba(126,231,135,0.3)" letter-spacing="0.12em">MNO PARTNERS: 53+ · REACH: 1.8B</text>
+  </g>
+
+  <!-- Bottom-right -->
+  <g transform="translate(1060, 420)">
+    <line x1="300" y1="50" x2="270" y2="50" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <line x1="300" y1="20" x2="300" y2="50" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    <text x="288" text-anchor="end" y="40" font-family="monospace" font-size="8" fill="rgba(255,255,255,0.15)" letter-spacing="0.08em">DATA AS OF: MAR 01 2026</text>
+  </g>
+
+  <!-- Label -->
+  <text x="720" y="508" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6E7681" letter-spacing="0.15em">CONCEPT 09 — ORBITAL HUD</text>
+</svg>

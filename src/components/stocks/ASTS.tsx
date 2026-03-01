@@ -115,7 +115,7 @@
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import './stock-model-styles.css';
-import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab } from '../shared';
+import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab, StockHeader, buildHudMarkers } from '../shared';
 import type { UpdateSource } from '../shared';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
@@ -458,11 +458,13 @@ const ASTSAnalysis = () => {
   ];
 
   // Live price refresh hook - gets price from chart's API response
-  const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice } = useLiveStockPrice(
+  const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice, previousClose, marketData } = useLiveStockPrice(
     'ASTS',
     DEFAULTS.currentStockPrice,
     { onPriceUpdate: (price) => setCurrentStockPrice(price) }
   );
+  const changePct = previousClose ? ((currentStockPrice - previousClose) / previousClose) * 100 : null;
+  const hudMarkers = useMemo(() => buildHudMarkers(marketData), [marketData]);
 
   // Combined refresh handler - updates both price and chart
   const handleRefreshAll = useCallback(async () => {
@@ -538,68 +540,25 @@ const ASTSAnalysis = () => {
         <DisclaimerBanner />
         
         {/* ============================================================================
-            HERO HEADER - CRCL-Style Premium Design
+            11C EDGE MARKERS HEADER
             ============================================================================ */}
-        <header className="hero">
-          <div className="hero-grid">
-            <div className="brand-block">
-              <h1>ASTS SpaceMobile</h1>
-              <div className="ticker">NASDAQ: ASTS · Direct-to-Device Cellular</div>
-              {/* H4: Data Freshness Timestamp */}
-              <div className="sm-data-freshness">
-                <span>📅</span>
-                <span>Data as of: {DATA_FRESHNESS.dataAsOf}</span>
-                <span className="sm-data-freshness-sep">|</span>
-                <span>{DATA_FRESHNESS.priceNote}</span>
-              </div>
-              <p className="desc">
-                First space-based cellular broadband for standard smartphones. 
-                53+ MNO partnerships reaching {(partnerReach / 1000).toFixed(1)}B subscribers globally.
-              </p>
-            </div>
-            <div className="price-block">
-              <div className="price-big sm-flex">
-                ${currentStockPrice.toFixed(2)}
-                <button
-                  onClick={handleRefreshAll}
-                  disabled={priceLoading}
-                  title={priceLastUpdated ? `Last updated: ${priceLastUpdated.toLocaleTimeString()}` : 'Click to refresh price & chart'}
-                  className="sm-refresh-btn"
-                  data-loading={priceLoading ? "true" : undefined}
-                >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="sm-text3"
-                    data-spin={priceLoading ? "true" : undefined}
-                  >
-                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                    <path d="M3 3v5h5" />
-                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-                    <path d="M16 21h5v-5" />
-                  </svg>
-                </button>
-              </div>
-              <div className="price-badge up">
-                🛰️ {calc.totalSats}/{targetSats2026} Satellites
-              </div>
-              {priceLastUpdated && (
-                <div className="price-updated">
-                  Updated: {priceLastUpdated.toLocaleTimeString()}
-                </div>
-              )}
-            </div>
-          </div>
-        </header>
-
-        {/* Stats Row */}
-        <div className="stats-row">
+        <StockHeader
+          exchange="NASDAQ"
+          ticker="ASTS"
+          companyName="AST SpaceMobile"
+          metadata={[
+            { label: 'SECTOR', value: 'Satellite Communications' },
+            { label: 'INDUSTRY', value: 'Direct-to-Device Cellular' },
+            { label: 'DATA', value: DATA_FRESHNESS.dataAsOf },
+          ]}
+          price={currentStockPrice}
+          changePct={changePct}
+          onRefresh={handleRefreshAll}
+          isRefreshing={priceLoading}
+          lastUpdated={priceLastUpdated}
+          badge={<div className="price-badge up">🛰️ {calc.totalSats}/{targetSats2026} Satellites</div>}
+          hudMarkers={hudMarkers}
+        >
           <Stat label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} updateSource="MARKET" />
           <Stat label="Enterprise Value" value={`$${(calc.enterpriseValue / 1000).toFixed(1)}B`} updateSource="MARKET" />
           <Stat label="Constellation" value={`${calc.totalSats}/${targetSats2026}`} color="cyan" updateSource="PR" />
@@ -607,7 +566,7 @@ const ASTSAnalysis = () => {
           <Stat label="Cash" value={`$${(cashOnHand / 1000).toFixed(1)}B`} color="mint" updateSource="SEC" />
           <Stat label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} color="mint" updateSource="SEC" />
           <Stat label="Contracted Rev" value={`$${contractedRevenue}M+`} color="sky" updateSource="PR" />
-        </div>
+        </StockHeader>
 
         {/* Navigation */}
         <StockNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} stockGroupName="ASTS Analysis" />

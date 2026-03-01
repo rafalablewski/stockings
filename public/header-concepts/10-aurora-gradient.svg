@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 520" width="1440" height="520">
+  <defs>
+    <linearGradient id="bg10" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#06080D"/>
+      <stop offset="100%" stop-color="#040507"/>
+    </linearGradient>
+    <!-- Aurora gradient mesh -->
+    <radialGradient id="aurora10a" cx="30%" cy="20%" r="50%">
+      <stop offset="0%" stop-color="rgba(126,231,135,0.06)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <radialGradient id="aurora10b" cx="60%" cy="40%" r="40%">
+      <stop offset="0%" stop-color="rgba(34,211,238,0.05)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <radialGradient id="aurora10c" cx="80%" cy="25%" r="35%">
+      <stop offset="0%" stop-color="rgba(167,139,250,0.05)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <radialGradient id="aurora10d" cx="45%" cy="70%" r="40%">
+      <stop offset="0%" stop-color="rgba(210,153,34,0.03)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <!-- Glass card -->
+    <linearGradient id="glass10" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.06)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.01)"/>
+    </linearGradient>
+    <linearGradient id="border10" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(126,231,135,0.12)"/>
+      <stop offset="33%" stop-color="rgba(34,211,238,0.08)"/>
+      <stop offset="66%" stop-color="rgba(167,139,250,0.12)"/>
+      <stop offset="100%" stop-color="rgba(126,231,135,0.06)"/>
+    </linearGradient>
+    <!-- Price gradient -->
+    <linearGradient id="priceGrad10" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7EE787"/>
+      <stop offset="50%" stop-color="#F0F6FC"/>
+      <stop offset="100%" stop-color="#22D3EE"/>
+    </linearGradient>
+    <filter id="blur10">
+      <feGaussianBlur stdDeviation="60"/>
+    </filter>
+    <filter id="blur10sm">
+      <feGaussianBlur stdDeviation="20"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="520" fill="url(#bg10)"/>
+
+  <!-- Aurora layers -->
+  <rect width="1440" height="520" fill="url(#aurora10a)"/>
+  <rect width="1440" height="520" fill="url(#aurora10b)"/>
+  <rect width="1440" height="520" fill="url(#aurora10c)"/>
+  <rect width="1440" height="520" fill="url(#aurora10d)"/>
+
+  <!-- Flowing aurora wisps -->
+  <path d="M0,200 Q200,150 400,180 Q600,210 800,170 Q1000,130 1200,160 Q1400,190 1440,175" fill="none" stroke="rgba(126,231,135,0.04)" stroke-width="80" filter="url(#blur10)"/>
+  <path d="M0,280 Q300,240 500,270 Q700,300 900,260 Q1100,220 1300,250 Q1440,270 1440,260" fill="none" stroke="rgba(34,211,238,0.03)" stroke-width="60" filter="url(#blur10)"/>
+  <path d="M0,160 Q250,130 500,150 Q750,170 1000,140 Q1250,110 1440,130" fill="none" stroke="rgba(167,139,250,0.03)" stroke-width="40" filter="url(#blur10)"/>
+
+  <!-- ═══ AURORA GRADIENT — Centered hero with colorful atmosphere ═══ -->
+
+  <!-- Central glass card -->
+  <g transform="translate(180, 50)">
+    <rect width="1080" height="420" rx="28" fill="url(#glass10)"/>
+    <rect width="1080" height="420" rx="28" fill="none" stroke="url(#border10)" stroke-width="0.75"/>
+
+    <!-- Inner aurora bleed (very subtle) -->
+    <g opacity="0.3">
+      <circle cx="300" cy="200" r="150" fill="rgba(126,231,135,0.02)" filter="url(#blur10sm)"/>
+      <circle cx="780" cy="200" r="150" fill="rgba(167,139,250,0.02)" filter="url(#blur10sm)"/>
+    </g>
+
+    <!-- Top bar -->
+    <g transform="translate(48, 36)">
+      <!-- Ticker -->
+      <rect width="150" height="26" rx="13" fill="rgba(126,231,135,0.06)" stroke="rgba(126,231,135,0.12)" stroke-width="0.5"/>
+      <text x="14" y="17" font-family="'SF Mono', monospace" font-size="10" font-weight="600" fill="#7EE787" letter-spacing="0.08em">NASDAQ: ASTS</text>
+
+      <!-- Right: data freshness -->
+      <text x="986" text-anchor="end" y="17" font-family="monospace" font-size="9" fill="rgba(255,255,255,0.15)" letter-spacing="0.04em">Data as of Mar 01, 2026</text>
+    </g>
+
+    <!-- Center content -->
+    <g transform="translate(540, 100)">
+      <!-- Company name -->
+      <text text-anchor="middle" y="40" font-family="-apple-system, 'SF Pro Display', sans-serif" font-size="48" font-weight="700" fill="#F0F6FC" letter-spacing="-1.5">AST SpaceMobile</text>
+
+      <!-- Tagline -->
+      <text text-anchor="middle" y="70" font-family="-apple-system, sans-serif" font-size="14" fill="rgba(255,255,255,0.25)" letter-spacing="0.04em">Direct-to-device cellular broadband from space</text>
+
+      <!-- Price with aurora gradient -->
+      <text text-anchor="middle" y="160" font-family="'SF Mono', monospace" font-size="88" font-weight="700" fill="url(#priceGrad10)" letter-spacing="-4">$26.42</text>
+
+      <!-- Change + Updated row -->
+      <g transform="translate(0, 185)">
+        <rect x="-130" y="0" width="260" height="34" rx="17" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+
+        <text x="-60" y="22" text-anchor="middle" font-family="'SF Mono', monospace" font-size="13" font-weight="600" fill="rgba(126,231,135,0.7)">▲ +2.34%</text>
+
+        <circle cx="0" cy="17" r="1.5" fill="rgba(255,255,255,0.08)"/>
+
+        <text x="60" y="22" text-anchor="middle" font-family="monospace" font-size="10" fill="rgba(255,255,255,0.2)">10:42 AM</text>
+      </g>
+    </g>
+
+    <!-- Bottom stats row inside card -->
+    <g transform="translate(48, 360)">
+      <line x1="0" y1="0" x2="984" y2="0" stroke="rgba(255,255,255,0.03)"/>
+
+      <g transform="translate(80, 24)">
+        <text text-anchor="middle" font-family="monospace" font-size="8" fill="rgba(255,255,255,0.12)" letter-spacing="0.1em">MKT CAP</text>
+        <text text-anchor="middle" y="20" font-family="'SF Mono', monospace" font-size="16" font-weight="600" fill="rgba(255,255,255,0.5)">$8.2B</text>
+      </g>
+      <g transform="translate(280, 24)">
+        <text text-anchor="middle" font-family="monospace" font-size="8" fill="rgba(255,255,255,0.12)" letter-spacing="0.1em">EV / REV</text>
+        <text text-anchor="middle" y="20" font-family="'SF Mono', monospace" font-size="16" font-weight="600" fill="rgba(255,255,255,0.5)">42.1x</text>
+      </g>
+      <g transform="translate(480, 24)">
+        <text text-anchor="middle" font-family="monospace" font-size="8" fill="rgba(126,231,135,0.2)" letter-spacing="0.1em">CONSTELLATION</text>
+        <text text-anchor="middle" y="20" font-family="'SF Mono', monospace" font-size="16" font-weight="600" fill="rgba(126,231,135,0.5)">5/168</text>
+      </g>
+      <g transform="translate(680, 24)">
+        <text text-anchor="middle" font-family="monospace" font-size="8" fill="rgba(255,255,255,0.12)" letter-spacing="0.1em">PARTNERS</text>
+        <text text-anchor="middle" y="20" font-family="'SF Mono', monospace" font-size="16" font-weight="600" fill="rgba(255,255,255,0.5)">53+</text>
+      </g>
+      <g transform="translate(880, 24)">
+        <text text-anchor="middle" font-family="monospace" font-size="8" fill="rgba(167,139,250,0.2)" letter-spacing="0.1em">REACH</text>
+        <text text-anchor="middle" y="20" font-family="'SF Mono', monospace" font-size="16" font-weight="600" fill="rgba(167,139,250,0.5)">1.8B</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Label -->
+  <text x="720" y="508" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6E7681" letter-spacing="0.15em">CONCEPT 10 — AURORA GRADIENT</text>
+</svg>

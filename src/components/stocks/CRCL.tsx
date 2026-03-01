@@ -111,7 +111,7 @@
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import './stock-model-styles.css';
-import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab } from '../shared';
+import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab, StockHeader, buildHudMarkers } from '../shared';
 import type { UpdateSource } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
@@ -2826,11 +2826,13 @@ function CRCLModel() {
   const [chartRefreshKey, setChartRefreshKey] = useState(0);
 
   // Live price refresh hook - gets price from chart's API response
-  const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice } = useLiveStockPrice(
+  const { isLoading: priceLoading, lastUpdated: priceLastUpdated, refresh: refreshPrice, previousClose, marketData } = useLiveStockPrice(
     'CRCL',
     MARKET.price,
     { onPriceUpdate: (price) => setCurrentStockPrice(price) }
   );
+  const changePct = previousClose ? ((currentStockPrice - previousClose) / previousClose) * 100 : null;
+  const hudMarkers = useMemo(() => buildHudMarkers(marketData), [marketData]);
 
   // Combined refresh handler - updates both price and chart
   const handleRefreshAll = useCallback(async () => {
@@ -3004,79 +3006,30 @@ function CRCLModel() {
             ============================================================================ */}
         <DisclaimerBanner />
         
-        {/* Hero */}
-        <header className="hero">
-          <div className="hero-grid">
-            <div className="brand-block">
-              <h1>Circle Internet Group</h1>
-              <div className="ticker">◉ NYSE: CRCL</div>
-              {/* H4: Data Freshness Timestamp */}
-              <div className="sm-data-freshness">
-                <span>📅</span>
-                <span>Data as of: {MODEL_METADATA.priceAsOf}</span>
-                <span className="sm-data-freshness-sep">|</span>
-                <span>Source: {MODEL_METADATA.dataSource}</span>
-              </div>
-              <p className="desc">
-                Global financial technology company powering USDC, the world's second-largest stablecoin 
-                with ${latest.usdcCirculation}B in circulation.
-              </p>
-            </div>
-            <div className="price-block">
-              <div className="price-big sm-flex">
-                ${currentStockPrice.toFixed(2)}
-                <button
-                  onClick={handleRefreshAll}
-                  disabled={priceLoading}
-                  title={priceLastUpdated ? `Last updated: ${priceLastUpdated.toLocaleTimeString()}` : 'Click to refresh price & chart'}
-                  style={{
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: priceLoading ? 'wait' : 'pointer',
-                    padding: 8,
-                    borderRadius: 8,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.2s',
-                    opacity: priceLoading ? 0.5 : 0.6,
-                  }}
-                >
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    style={{
-                      color: 'var(--text3)',
-                      animation: priceLoading ? 'spin 1s linear infinite' : 'none',
-                    }}
-                  >
-                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                    <path d="M3 3v5h5" />
-                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-                    <path d="M16 21h5v-5" />
-                  </svg>
-                </button>
-              </div>
-              <span className={`price-badge ${ipoReturn >= 0 ? 'up' : 'down'}`}>
-                {ipoReturn >= 0 ? '↑' : '↓'} {Math.abs(ipoReturn).toFixed(0)}% since IPO
-              </span>
-              {priceLastUpdated && (
-                <div className="price-updated">
-                  Updated: {priceLastUpdated.toLocaleTimeString()}
-                </div>
-              )}
-            </div>
-          </div>
-        </header>
-
-        {/* Stats */}
-        <div className="stats-row">
+        {/* ============================================================================
+            11C EDGE MARKERS HEADER
+            ============================================================================ */}
+        <StockHeader
+          exchange="NYSE"
+          ticker="CRCL"
+          companyName="Circle Internet Group"
+          metadata={[
+            { label: 'SECTOR', value: 'Financial Technology' },
+            { label: 'INDUSTRY', value: 'Stablecoins & Payments' },
+            { label: 'DATA', value: MODEL_METADATA.priceAsOf },
+          ]}
+          price={currentStockPrice}
+          changePct={changePct}
+          onRefresh={handleRefreshAll}
+          isRefreshing={priceLoading}
+          lastUpdated={priceLastUpdated}
+          badge={
+            <span className={`price-badge ${ipoReturn >= 0 ? 'up' : 'down'}`}>
+              {ipoReturn >= 0 ? '↑' : '↓'} {Math.abs(ipoReturn).toFixed(0)}% since IPO
+            </span>
+          }
+          hudMarkers={hudMarkers}
+        >
           <Stat label="Market Cap" value={`$${(MARKET.marketCap / 1000).toFixed(1)}B`} updateSource="MARKET" />
           <Stat label="USDC Circulation" value={`$${latest.usdcCirculation.toFixed(1)}B`} color="mint" updateSource="PR" />
           <Stat label="Q3 Revenue" value={`$${latest.totalRevenue}M`} updateSource="SEC" />
@@ -3084,7 +3037,7 @@ function CRCLModel() {
           <Stat label="Market Share" value={`${latest.marketShare}%`} color="sky" updateSource="PR" />
           <Stat label="Reserve Rate" value={`${latest.reserveReturnRate.toFixed(2)}%`} updateSource="SEC" />
           <Stat label="P/E Ratio" value={`${MARKET.pe.toFixed(0)}x`} updateSource="MARKET" />
-        </div>
+        </StockHeader>
 
         {/* Nav */}
         <StockNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} stockGroupName="CRCL Analysis" />

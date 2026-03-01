@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 520" width="1440" height="520">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0A0D12"/>
+      <stop offset="100%" stop-color="#05070A"/>
+    </linearGradient>
+    <radialGradient id="orb3a" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(126,231,135,0.12)"/>
+      <stop offset="40%" stop-color="rgba(126,231,135,0.04)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <radialGradient id="orb3b" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(167,139,250,0.10)"/>
+      <stop offset="40%" stop-color="rgba(167,139,250,0.03)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <radialGradient id="orb3c" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(34,211,238,0.08)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <linearGradient id="glassPanel3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.08)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.01)"/>
+    </linearGradient>
+    <linearGradient id="glassBorder3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.18)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.03)"/>
+    </linearGradient>
+    <filter id="blur3">
+      <feGaussianBlur stdDeviation="50"/>
+    </filter>
+    <filter id="blur3sm">
+      <feGaussianBlur stdDeviation="20"/>
+    </filter>
+    <clipPath id="cardClip3">
+      <rect x="220" y="60" width="1000" height="400" rx="32"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="520" fill="url(#bg3)"/>
+
+  <!-- Floating orbs (behind glass) -->
+  <circle cx="580" cy="200" r="220" fill="url(#orb3a)" filter="url(#blur3)"/>
+  <circle cx="900" cy="280" r="180" fill="url(#orb3b)" filter="url(#blur3)"/>
+  <circle cx="720" cy="350" r="140" fill="url(#orb3c)" filter="url(#blur3)"/>
+
+  <!-- ═══ MAIN GLASS PANEL ═══ -->
+  <!-- The glass panel that "blurs" the orbs behind it -->
+  <g clip-path="url(#cardClip3)">
+    <!-- Frosted layer simulation -->
+    <rect x="220" y="60" width="1000" height="400" fill="rgba(13,17,23,0.65)"/>
+    <!-- Orbs bleeding through (dimmed) -->
+    <circle cx="580" cy="200" r="220" fill="url(#orb3a)" opacity="0.3" filter="url(#blur3sm)"/>
+    <circle cx="900" cy="280" r="180" fill="url(#orb3b)" opacity="0.3" filter="url(#blur3sm)"/>
+  </g>
+
+  <!-- Glass surface -->
+  <rect x="220" y="60" width="1000" height="400" rx="32" fill="url(#glassPanel3)"/>
+  <rect x="220" y="60" width="1000" height="400" rx="32" fill="none" stroke="url(#glassBorder3)" stroke-width="1"/>
+
+  <!-- Top edge highlight (light refraction) -->
+  <rect x="320" y="60" width="800" height="1" fill="rgba(255,255,255,0.12)" rx="0.5"/>
+
+  <!-- ═══ CONTENT INSIDE GLASS ═══ -->
+  <g transform="translate(720, 0)">
+    <!-- Ticker pill -->
+    <g transform="translate(0, 108)">
+      <rect x="-85" y="-14" width="170" height="28" rx="14" fill="rgba(126,231,135,0.08)" stroke="rgba(126,231,135,0.2)" stroke-width="0.5"/>
+      <text text-anchor="middle" y="3" font-family="'SF Mono', monospace" font-size="11" font-weight="600" fill="#7EE787" letter-spacing="0.1em">NASDAQ: ASTS</text>
+    </g>
+
+    <!-- Company name — huge centered -->
+    <text x="0" y="178" text-anchor="middle" font-family="-apple-system, 'SF Pro Display', sans-serif" font-size="52" font-weight="700" fill="#F0F6FC" letter-spacing="-2">AST SpaceMobile</text>
+
+    <!-- Thin separator -->
+    <line x1="-200" y1="200" x2="200" y2="200" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+
+    <!-- Price — glowing -->
+    <text x="0" y="280" text-anchor="middle" font-family="'SF Mono', monospace" font-size="80" font-weight="700" fill="#F0F6FC" letter-spacing="-4">$26.42</text>
+
+    <!-- Change + Updated row -->
+    <g transform="translate(0, 310)">
+      <!-- Change pill -->
+      <rect x="-145" y="0" width="130" height="28" rx="14" fill="rgba(126,231,135,0.08)"/>
+      <text x="-80" y="19" text-anchor="middle" font-family="monospace" font-size="12" font-weight="600" fill="#7EE787">▲ +2.34%</text>
+
+      <!-- Separator dot -->
+      <circle cx="0" cy="14" r="2" fill="rgba(255,255,255,0.1)"/>
+
+      <!-- Updated -->
+      <text x="15" y="19" font-family="monospace" font-size="10" fill="#6E7681" letter-spacing="0.04em">Updated 10:42 AM</text>
+    </g>
+
+    <!-- Bottom stats inside glass -->
+    <g transform="translate(0, 380)">
+      <g transform="translate(-240, 0)">
+        <text text-anchor="center" font-family="monospace" font-size="9" fill="rgba(255,255,255,0.25)" letter-spacing="0.1em">MKT CAP</text>
+        <text text-anchor="center" y="18" font-family="monospace" font-size="15" font-weight="600" fill="rgba(255,255,255,0.7)">$8.2B</text>
+      </g>
+      <g transform="translate(-80, 0)">
+        <text text-anchor="center" font-family="monospace" font-size="9" fill="rgba(255,255,255,0.25)" letter-spacing="0.1em">EV / REV</text>
+        <text text-anchor="center" y="18" font-family="monospace" font-size="15" font-weight="600" fill="rgba(255,255,255,0.7)">42.1x</text>
+      </g>
+      <g transform="translate(80, 0)">
+        <text text-anchor="center" font-family="monospace" font-size="9" fill="rgba(255,255,255,0.25)" letter-spacing="0.1em">SATS</text>
+        <text text-anchor="center" y="18" font-family="monospace" font-size="15" font-weight="600" fill="#7EE787">5/168</text>
+      </g>
+      <g transform="translate(240, 0)">
+        <text text-anchor="center" font-family="monospace" font-size="9" fill="rgba(255,255,255,0.25)" letter-spacing="0.1em">REACH</text>
+        <text text-anchor="center" y="18" font-family="monospace" font-size="15" font-weight="600" fill="#A78BFA">1.8B</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Label -->
+  <text x="720" y="505" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6E7681" letter-spacing="0.15em">CONCEPT 03 — GLASSMORPHISM ORB PANEL</text>
+</svg>

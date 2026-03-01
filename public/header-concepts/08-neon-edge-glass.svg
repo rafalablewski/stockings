@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 520" width="1440" height="520">
+  <defs>
+    <linearGradient id="bg8" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#070A0E"/>
+      <stop offset="100%" stop-color="#040608"/>
+    </linearGradient>
+    <!-- Neon accent gradients -->
+    <linearGradient id="neonEdge8" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7EE787"/>
+      <stop offset="50%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#A78BFA"/>
+    </linearGradient>
+    <linearGradient id="neonEdge8dim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(126,231,135,0.2)"/>
+      <stop offset="50%" stop-color="rgba(34,211,238,0.15)"/>
+      <stop offset="100%" stop-color="rgba(167,139,250,0.2)"/>
+    </linearGradient>
+    <linearGradient id="glassFill8" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.04)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.01)"/>
+    </linearGradient>
+    <filter id="neonGlow8">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="blur8">
+      <feGaussianBlur stdDeviation="50"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="520" fill="url(#bg8)"/>
+
+  <!-- Neon ambient glows -->
+  <circle cx="300" cy="260" r="200" fill="rgba(126,231,135,0.02)" filter="url(#blur8)"/>
+  <circle cx="720" cy="260" r="250" fill="rgba(34,211,238,0.015)" filter="url(#blur8)"/>
+  <circle cx="1140" cy="260" r="200" fill="rgba(167,139,250,0.02)" filter="url(#blur8)"/>
+
+  <!-- ═══ NEON EDGE GLASS ═══ -->
+  <!-- Glass card with subtle neon gradient border — futuristic premium -->
+
+  <!-- Main card -->
+  <g transform="translate(100, 50)">
+    <!-- Neon border glow (blurred version behind) -->
+    <rect x="-2" y="-2" width="1244" height="424" rx="26" fill="none" stroke="url(#neonEdge8dim)" stroke-width="2" filter="url(#neonGlow8)"/>
+
+    <!-- Glass fill -->
+    <rect width="1240" height="420" rx="24" fill="url(#glassFill8)"/>
+
+    <!-- Crisp neon border -->
+    <rect width="1240" height="420" rx="24" fill="none" stroke="url(#neonEdge8dim)" stroke-width="1"/>
+
+    <!-- Top neon accent line (brighter) -->
+    <rect x="80" y="0" width="1080" height="1" rx="0.5" fill="url(#neonEdge8)" opacity="0.15"/>
+
+    <!-- Inner layout -->
+    <!-- Top bar: ticker + status -->
+    <g transform="translate(48, 32)">
+      <rect width="160" height="26" rx="13" fill="rgba(126,231,135,0.06)" stroke="rgba(126,231,135,0.15)" stroke-width="0.5"/>
+      <text x="14" y="17" font-family="'SF Mono', monospace" font-size="10" font-weight="600" fill="#7EE787" letter-spacing="0.1em">NASDAQ: ASTS</text>
+
+      <!-- Live indicator -->
+      <g transform="translate(180, 0)">
+        <circle cx="8" cy="13" r="3" fill="#7EE787" opacity="0.6"/>
+        <text x="18" y="17" font-family="monospace" font-size="9" fill="rgba(126,231,135,0.4)" letter-spacing="0.1em">LIVE</text>
+      </g>
+
+      <!-- Right-aligned: Updated time -->
+      <text x="1146" text-anchor="end" y="17" font-family="monospace" font-size="9" fill="rgba(255,255,255,0.15)" letter-spacing="0.04em">Updated 10:42:18 AM EST · Mar 01 2026</text>
+    </g>
+
+    <!-- Main content: two-column -->
+    <!-- LEFT: Brand -->
+    <g transform="translate(48, 88)">
+      <!-- Company name — large, clean -->
+      <text y="42" font-family="-apple-system, 'SF Pro Display', sans-serif" font-size="46" font-weight="700" fill="#F0F6FC" letter-spacing="-1.5">AST SpaceMobile</text>
+
+      <!-- Description -->
+      <text y="72" font-family="-apple-system, sans-serif" font-size="15" fill="rgba(255,255,255,0.3)">Space-based cellular broadband · 53+ MNO partners · 1.8B reach</text>
+
+      <!-- Thin separator with gradient -->
+      <rect y="94" width="500" height="1" rx="0.5" fill="rgba(255,255,255,0.03)"/>
+
+      <!-- Stats row -->
+      <g transform="translate(0, 120)">
+        <g>
+          <text font-family="monospace" font-size="8" fill="rgba(255,255,255,0.12)" letter-spacing="0.12em">MARKET CAP</text>
+          <text y="22" font-family="'SF Mono', monospace" font-size="20" font-weight="600" fill="rgba(255,255,255,0.6)">$8.2B</text>
+        </g>
+        <g transform="translate(160, 0)">
+          <text font-family="monospace" font-size="8" fill="rgba(255,255,255,0.12)" letter-spacing="0.12em">EV / REV</text>
+          <text y="22" font-family="'SF Mono', monospace" font-size="20" font-weight="600" fill="rgba(255,255,255,0.6)">42.1x</text>
+        </g>
+        <g transform="translate(320, 0)">
+          <text font-family="monospace" font-size="8" fill="rgba(255,255,255,0.12)" letter-spacing="0.12em">CONSTELLATION</text>
+          <text y="22" font-family="'SF Mono', monospace" font-size="20" font-weight="600" fill="#7EE787">5/168</text>
+        </g>
+      </g>
+
+      <!-- Progress bar with neon -->
+      <g transform="translate(0, 180)">
+        <rect width="500" height="3" rx="1.5" fill="rgba(255,255,255,0.03)"/>
+        <rect width="15" height="3" rx="1.5" fill="url(#neonEdge8)" opacity="0.5"/>
+      </g>
+    </g>
+
+    <!-- RIGHT: Price block -->
+    <g transform="translate(700, 88)">
+      <!-- Inner glass price panel -->
+      <rect width="492" height="280" rx="20" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+
+      <g transform="translate(40, 32)">
+        <text font-family="monospace" font-size="9" fill="rgba(255,255,255,0.15)" letter-spacing="0.2em">CURRENT PRICE</text>
+
+        <!-- Price with subtle neon tint -->
+        <text y="72" font-family="'SF Mono', monospace" font-size="72" font-weight="700" fill="#F0F6FC" letter-spacing="-3">$26.42</text>
+
+        <!-- Change -->
+        <g transform="translate(0, 100)">
+          <rect width="150" height="32" rx="10" fill="rgba(126,231,135,0.06)" stroke="rgba(126,231,135,0.1)" stroke-width="0.5"/>
+          <text x="16" y="21" font-family="'SF Mono', monospace" font-size="14" font-weight="600" fill="rgba(126,231,135,0.7)">▲ +$0.61 (2.34%)</text>
+        </g>
+
+        <!-- Session info -->
+        <g transform="translate(0, 160)">
+          <text font-family="monospace" font-size="9" fill="rgba(255,255,255,0.1)" letter-spacing="0.06em">Pre-market · NYSE Arca</text>
+        </g>
+
+        <!-- Mini sparkline placeholder -->
+        <g transform="translate(0, 190)">
+          <polyline points="0,20 30,18 60,15 90,19 120,12 150,14 180,10 210,8 240,12 270,6 300,4 330,7 360,2" fill="none" stroke="rgba(126,231,135,0.2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="0,20 30,18 60,15 90,19 120,12 150,14 180,10 210,8 240,12 270,6 300,4 330,7 360,2" fill="none" stroke="rgba(126,231,135,0.05)" stroke-width="8" filter="url(#neonGlow8)"/>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- Label -->
+  <text x="720" y="508" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6E7681" letter-spacing="0.15em">CONCEPT 08 — NEON EDGE GLASS</text>
+</svg>

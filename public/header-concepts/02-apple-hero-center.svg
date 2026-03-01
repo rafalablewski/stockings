@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 520" width="1440" height="520">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#08090C"/>
+      <stop offset="100%" stop-color="#05070A"/>
+    </linearGradient>
+    <radialGradient id="centerGlow2" cx="50%" cy="40%" r="45%">
+      <stop offset="0%" stop-color="rgba(167,139,250,0.06)"/>
+      <stop offset="50%" stop-color="rgba(126,231,135,0.03)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <linearGradient id="priceGrad2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.6)"/>
+    </linearGradient>
+    <linearGradient id="nameGrad2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8B949E"/>
+      <stop offset="30%" stop-color="#F0F6FC"/>
+      <stop offset="70%" stop-color="#F0F6FC"/>
+      <stop offset="100%" stop-color="#8B949E"/>
+    </linearGradient>
+    <filter id="heroBlur2">
+      <feGaussianBlur stdDeviation="60"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="520" fill="url(#bg2)"/>
+  <rect width="1440" height="520" fill="url(#centerGlow2)"/>
+
+  <!-- Ambient light spots -->
+  <circle cx="720" cy="180" r="300" fill="rgba(126,231,135,0.015)" filter="url(#heroBlur2)"/>
+  <circle cx="500" cy="300" r="200" fill="rgba(167,139,250,0.012)" filter="url(#heroBlur2)"/>
+
+  <!-- Top edge light -->
+  <rect x="300" y="0" width="840" height="1" fill="rgba(255,255,255,0.03)"/>
+  <rect x="500" y="0" width="440" height="1" fill="rgba(255,255,255,0.05)"/>
+
+  <!-- ═══ APPLE-STYLE CENTERED HERO ═══ -->
+  <!-- Everything centered, dramatic typography, vertical flow -->
+
+  <!-- Ticker pill — small, elegant, top center -->
+  <g transform="translate(720, 60)">
+    <rect x="-70" y="-12" width="140" height="24" rx="12" fill="rgba(126,231,135,0.06)" stroke="rgba(126,231,135,0.15)" stroke-width="0.5"/>
+    <text text-anchor="middle" y="4" font-family="'SF Mono', monospace" font-size="10" font-weight="600" fill="#7EE787" letter-spacing="0.12em">NASDAQ: ASTS</text>
+  </g>
+
+  <!-- Company name — massive, Apple keynote style -->
+  <text x="720" y="148" text-anchor="middle" font-family="-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif" font-size="64" font-weight="700" fill="url(#nameGrad2)" letter-spacing="-2.5">AST SpaceMobile</text>
+
+  <!-- Tagline -->
+  <text x="720" y="185" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="18" fill="#8B949E" letter-spacing="0.02em">The future of space-based cellular broadband</text>
+
+  <!-- Dramatic price — the hero moment -->
+  <text x="720" y="310" text-anchor="middle" font-family="'SF Mono', 'Space Mono', monospace" font-size="120" font-weight="700" fill="url(#priceGrad2)" letter-spacing="-6">$26.42</text>
+
+  <!-- Change badge — centered below price -->
+  <g transform="translate(720, 340)">
+    <rect x="-72" y="0" width="144" height="36" rx="18" fill="rgba(126,231,135,0.08)" stroke="rgba(126,231,135,0.18)" stroke-width="0.5"/>
+    <text text-anchor="middle" y="24" font-family="'SF Mono', monospace" font-size="14" font-weight="600" fill="#7EE787">▲ $0.61 (2.34%)</text>
+  </g>
+
+  <!-- Updated timestamp — whisper quiet -->
+  <text x="720" y="412" text-anchor="middle" font-family="monospace" font-size="10" fill="#6E7681" letter-spacing="0.06em">LIVE · UPDATED 10:42 AM EST</text>
+
+  <!-- Bottom stats bar — minimal horizontal line of stats -->
+  <g transform="translate(0, 440)">
+    <line x1="200" y1="0" x2="1240" y2="0" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+
+    <g transform="translate(360, 24)">
+      <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">MKT CAP</text>
+      <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#F0F6FC" y="20">$8.2B</text>
+    </g>
+    <g transform="translate(560, 24)">
+      <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">SATELLITES</text>
+      <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#7EE787" y="20">5 / 168</text>
+    </g>
+    <g transform="translate(760, 24)">
+      <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">PARTNERS</text>
+      <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#F0F6FC" y="20">53+</text>
+    </g>
+    <g transform="translate(960, 24)">
+      <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">GLOBAL REACH</text>
+      <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#A78BFA" y="20">1.8B</text>
+    </g>
+  </g>
+
+  <!-- Concept label -->
+  <text x="720" y="510" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6E7681" letter-spacing="0.15em">CONCEPT 02 — APPLE HERO CENTER</text>
+</svg>

@@ -1,0 +1,241 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 580" width="1440" height="580">
+  <defs>
+    <!-- Backgrounds -->
+    <linearGradient id="bg11" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0A0A0A"/>
+      <stop offset="100%" stop-color="#050505"/>
+    </linearGradient>
+    <linearGradient id="redLine11" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="20%" stop-color="rgba(239,68,68,0.6)"/>
+      <stop offset="50%" stop-color="rgba(239,68,68,0.8)"/>
+      <stop offset="80%" stop-color="rgba(239,68,68,0.6)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+    <linearGradient id="gaugeGrad11" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="rgba(126,231,135,0.6)"/>
+      <stop offset="100%" stop-color="rgba(34,211,238,0.6)"/>
+    </linearGradient>
+
+    <!-- Glassmorphism fills -->
+    <linearGradient id="glassFill11" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.06)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.02)"/>
+    </linearGradient>
+
+    <!-- Radial ring gradient -->
+    <linearGradient id="ringGrad11" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7EE787"/>
+      <stop offset="50%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#A78BFA"/>
+    </linearGradient>
+
+    <!-- Neon glow border for glass cards -->
+    <linearGradient id="glassBorder11" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(126,231,135,0.2)"/>
+      <stop offset="50%" stop-color="rgba(34,211,238,0.12)"/>
+      <stop offset="100%" stop-color="rgba(167,139,250,0.2)"/>
+    </linearGradient>
+
+    <filter id="glow11">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+    <filter id="softGlow11">
+      <feGaussianBlur stdDeviation="20"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="580" fill="url(#bg11)"/>
+
+  <!-- Tesla-style red accent line top -->
+  <rect x="0" y="0" width="1440" height="2" fill="url(#redLine11)"/>
+
+  <!-- Subtle HUD grid -->
+  <g opacity="0.02" stroke="#fff" stroke-width="0.5">
+    <line x1="120" y1="0" x2="120" y2="580"/>
+    <line x1="1320" y1="0" x2="1320" y2="580"/>
+    <line x1="120" y1="60" x2="1320" y2="60"/>
+    <line x1="120" y1="440" x2="1320" y2="440"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- LEFT COLUMN: Identity (stock-agnostic)  -->
+  <!-- ═══════════════════════════════════════ -->
+  <g transform="translate(120, 60)">
+    <!-- System status -->
+    <circle cx="6" cy="6" r="3" fill="#7EE787"/>
+    <text x="16" y="10" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.12em">SYSTEM ONLINE</text>
+
+    <!-- Exchange label -->
+    <text y="64" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="14" font-weight="700" fill="rgba(255,255,255,0.3)" letter-spacing="0.3em">NASDAQ</text>
+
+    <!-- Ticker — large monospace -->
+    <text y="110" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="56" font-weight="700" fill="#F0F6FC" letter-spacing="0.05em">AAPL</text>
+
+    <!-- Company name -->
+    <text y="140" font-family="-apple-system, sans-serif" font-size="15" fill="#8B949E" letter-spacing="0.02em">Apple Inc.</text>
+
+    <!-- Sector & Industry (stock-agnostic labels) -->
+    <g transform="translate(0, 180)">
+      <line x1="0" y1="0" x2="300" y2="0" stroke="rgba(255,255,255,0.04)"/>
+      <g transform="translate(0, 16)">
+        <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.15em">SECTOR</text>
+        <text x="100" font-family="monospace" font-size="11" fill="#8B949E">Technology</text>
+      </g>
+      <g transform="translate(0, 40)">
+        <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.15em">INDUSTRY</text>
+        <text x="100" font-family="monospace" font-size="11" fill="#8B949E">Consumer Electronics</text>
+      </g>
+      <g transform="translate(0, 64)">
+        <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.15em">DATA</text>
+        <text x="100" font-family="monospace" font-size="11" fill="#6E7681">Mar 01 2026</text>
+      </g>
+    </g>
+  </g>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- CENTER COLUMN: Price gauge              -->
+  <!-- ═══════════════════════════════════════ -->
+  <g transform="translate(720, 0)">
+    <!-- Circular arc gauge (decorative) -->
+    <g transform="translate(0, 240)">
+      <path d="M-140,-100 A160,160 0 0,1 140,-100" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="3"/>
+      <path d="M-140,-100 A160,160 0 0,1 80,-130" fill="none" stroke="url(#gaugeGrad11)" stroke-width="3" stroke-linecap="round"/>
+    </g>
+
+    <!-- Price label -->
+    <text text-anchor="middle" y="100" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.2em">MARKET PRICE</text>
+
+    <!-- Price -->
+    <text text-anchor="middle" y="215" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="96" font-weight="700" fill="#F0F6FC" letter-spacing="-4">$242.58</text>
+
+    <!-- USD -->
+    <text text-anchor="middle" y="244" font-family="monospace" font-size="11" fill="#6E7681" letter-spacing="0.15em">USD</text>
+
+    <!-- Change badge -->
+    <g transform="translate(0, 280)">
+      <rect x="-60" y="-14" width="120" height="28" rx="4" fill="rgba(126,231,135,0.06)" stroke="rgba(126,231,135,0.15)" stroke-width="0.5"/>
+      <text text-anchor="middle" y="3" font-family="monospace" font-size="13" font-weight="700" fill="#7EE787">+1.24%</text>
+    </g>
+
+    <!-- Live timestamp -->
+    <g transform="translate(0, 324)">
+      <circle cx="-50" cy="0" r="3" fill="#7EE787" opacity="0.5"/>
+      <text x="-40" y="4" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.05em">LIVE · 10:42:18 EST</text>
+    </g>
+  </g>
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- RIGHT COLUMN: Glassmorphism — Ring + Ticker Tape   -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <g transform="translate(1010, 56)">
+
+    <!-- ── 52-Week Range Radial Ring (Glass Card) ── -->
+    <g>
+      <!-- Glass card background -->
+      <rect x="0" y="0" width="310" height="190" rx="14" fill="url(#glassFill11)" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+      <!-- Subtle inner glow -->
+      <rect x="1" y="1" width="308" height="188" rx="13" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="0.5"/>
+
+      <!-- Card label -->
+      <text x="20" y="26" font-family="monospace" font-size="8" fill="rgba(255,255,255,0.25)" letter-spacing="0.15em">52-WEEK RANGE</text>
+
+      <!-- Radial ring -->
+      <g transform="translate(90, 112)">
+        <!-- Background ring -->
+        <circle cx="0" cy="0" r="52" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="5"/>
+        <!-- Progress arc — 72% through 52-week range -->
+        <circle cx="0" cy="0" r="52" fill="none" stroke="url(#ringGrad11)" stroke-width="5" stroke-linecap="round"
+                stroke-dasharray="235 327" stroke-dashoffset="82" opacity="0.7"/>
+        <!-- Center price position -->
+        <text text-anchor="middle" y="-6" font-family="'SF Mono', monospace" font-size="18" font-weight="700" fill="#F0F6FC">72%</text>
+        <text text-anchor="middle" y="10" font-family="monospace" font-size="7" fill="#6E7681" letter-spacing="0.08em">PERCENTILE</text>
+      </g>
+
+      <!-- Low / High labels -->
+      <g transform="translate(170, 72)">
+        <text font-family="monospace" font-size="7" fill="#6E7681" letter-spacing="0.1em">52W LOW</text>
+        <text y="16" font-family="'SF Mono', monospace" font-size="14" font-weight="600" fill="rgba(239,68,68,0.6)">$164.08</text>
+      </g>
+      <g transform="translate(170, 120)">
+        <text font-family="monospace" font-size="7" fill="#6E7681" letter-spacing="0.1em">52W HIGH</text>
+        <text y="16" font-family="'SF Mono', monospace" font-size="14" font-weight="600" fill="rgba(126,231,135,0.6)">$260.10</text>
+      </g>
+      <g transform="translate(170, 160)">
+        <text font-family="monospace" font-size="7" fill="#6E7681" letter-spacing="0.1em">CURRENT</text>
+        <text y="12" font-family="'SF Mono', monospace" font-size="11" font-weight="600" fill="#F0F6FC">$242.58</text>
+      </g>
+    </g>
+
+    <!-- ── Live Ticker Tape (Glass Card) ── -->
+    <g transform="translate(0, 206)">
+      <!-- Glass card background -->
+      <rect x="0" y="0" width="310" height="178" rx="14" fill="url(#glassFill11)" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+      <rect x="1" y="1" width="308" height="176" rx="13" fill="none" stroke="rgba(255,255,255,0.02)" stroke-width="0.5"/>
+
+      <!-- Card label -->
+      <text x="20" y="26" font-family="monospace" font-size="8" fill="rgba(255,255,255,0.25)" letter-spacing="0.15em">LIVE FEED</text>
+      <!-- Pulsing dot -->
+      <circle cx="286" cy="20" r="3" fill="#7EE787" opacity="0.5"/>
+
+      <!-- Ticker item 1 -->
+      <g transform="translate(16, 44)">
+        <rect x="0" y="0" width="278" height="30" rx="8" fill="rgba(126,231,135,0.03)" stroke="rgba(126,231,135,0.08)" stroke-width="0.5"/>
+        <text x="10" y="12" font-family="monospace" font-size="7" fill="#7EE787" letter-spacing="0.08em">ANALYST</text>
+        <text x="10" y="24" font-family="monospace" font-size="9" fill="#8B949E">Upgraded → Overweight · Morgan Stanley</text>
+      </g>
+
+      <!-- Ticker item 2 -->
+      <g transform="translate(16, 82)">
+        <rect x="0" y="0" width="278" height="30" rx="8" fill="rgba(34,211,238,0.03)" stroke="rgba(34,211,238,0.08)" stroke-width="0.5"/>
+        <text x="10" y="12" font-family="monospace" font-size="7" fill="#22D3EE" letter-spacing="0.08em">VOLUME</text>
+        <text x="10" y="24" font-family="monospace" font-size="9" fill="#8B949E">2.4x avg volume · 48.2M shares traded</text>
+      </g>
+
+      <!-- Ticker item 3 -->
+      <g transform="translate(16, 120)">
+        <rect x="0" y="0" width="278" height="30" rx="8" fill="rgba(167,139,250,0.03)" stroke="rgba(167,139,250,0.08)" stroke-width="0.5"/>
+        <text x="10" y="12" font-family="monospace" font-size="7" fill="#A78BFA" letter-spacing="0.08em">EARNINGS</text>
+        <text x="10" y="24" font-family="monospace" font-size="9" fill="#8B949E">Q1 Report in 14 days · Est. $2.36 EPS</text>
+      </g>
+    </g>
+  </g>
+
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- BOTTOM ROW: Metrics — 1:1 Apple Hero Center style     -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <g transform="translate(0, 460)">
+    <line x1="220" y1="0" x2="1220" y2="0" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+
+    <g transform="translate(320, 24)">
+      <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">MKT CAP</text>
+      <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#F0F6FC" y="20">$3.74T</text>
+    </g>
+    <g transform="translate(520, 24)">
+      <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">VOLUME</text>
+      <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#F0F6FC" y="20">48.2M</text>
+    </g>
+    <g transform="translate(720, 24)">
+      <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">P/E RATIO</text>
+      <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#A78BFA" y="20">33.8x</text>
+    </g>
+    <g transform="translate(920, 24)">
+      <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">EPS (TTM)</text>
+      <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#F0F6FC" y="20">$7.18</text>
+    </g>
+    <g transform="translate(1120, 24)">
+      <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">DIV YIELD</text>
+      <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#7EE787" y="20">0.44%</text>
+    </g>
+  </g>
+
+  <!-- Concept label -->
+  <text x="720" y="540" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6E7681" letter-spacing="0.15em">CONCEPT 11 — DASHBOARD FUSION</text>
+
+  <!-- Subtitle -->
+  <text x="720" y="562" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" fill="rgba(255,255,255,0.1)" letter-spacing="0.08em">04 TESLA DASHBOARD × GLASSMORPHISM × LIVE FEED</text>
+</svg>

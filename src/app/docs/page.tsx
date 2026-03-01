@@ -145,6 +145,19 @@ const componentClasses: CSSClass[] = [
   { name: ".sm-note-panel",      description: "Muted info/footnote box — surface bg, border, rounded-16, 14px padding",   usage: "className=\"sm-note-panel sm-text-11\"" },
   { name: ".sm-model-grid",      description: "Responsive grid with CSS var --cols. Auto-adjusts at breakpoints",          usage: "style={{ '--cols': 3 }}" },
   { name: ".sm-overflow-x",      description: "Horizontal scroll container (overflow-x: auto)",                            usage: "className=\"sm-overflow-x sm-scroll-hint\"" },
+  // ── Stock Header (Concept 11c — Edge Markers) ──
+  { name: ".hdr",                description: "11c header container — gradient bg, red accent line, HUD grid overlay",    usage: "Rendered by <StockHeader />" },
+  { name: ".hdr-grid",           description: "Three-column grid (1fr auto 1fr) — identity | price | HUD spine",          usage: "grid-template-columns: 1fr auto 1fr" },
+  { name: ".hdr-identity",       description: "Left column — status dot, exchange, ticker (h1), company, metadata",       usage: "Flex column, gap 4px" },
+  { name: ".hdr-ticker",         description: "Big ticker symbol — Space Mono 56px/700, 0.05em tracking",                 usage: "<h1 className=\"hdr-ticker\">" },
+  { name: ".hdr-meta",           description: "Metadata section — sector, industry, data date in monospace rows",         usage: "Below company name, after separator line" },
+  { name: ".hdr-price",          description: "Center column — MARKET PRICE label, gauge arc, big price, change badge",   usage: "Flex column, centered, text-align center" },
+  { name: ".hdr-arc-wrap",       description: "Decorative gauge arc container — 280×60px, inline SVG",                    usage: "Uses accent color via .hdr-arc-fill" },
+  { name: ".hdr-price-value",    description: "Price number — Space Mono 72px/700, with refresh button",                  usage: "Flex row, gap 12px" },
+  { name: ".hdr-change",         description: "Change percentage pill — .up (mint) or .down (coral)",                     usage: "className=\"hdr-change up\"" },
+  { name: ".hdr-spine",          description: "Right column — vertical HUD markers with spine line (::before)",           usage: "Flex column, gap 32px, pills on mobile" },
+  { name: ".hdr-marker",         description: "Individual HUD marker — label + value, tick mark via ::before",            usage: "data-sentiment=\"positive|negative|neutral\"" },
+  { name: ".hdr-stats",          description: "Bottom stats row — centered, 11c style (14px values, 9px labels)",         usage: "Wraps <Stat /> children" },
 ];
 
 const investmentClasses: CSSClass[] = [
@@ -232,6 +245,7 @@ const dataAttributes: DataAttr[] = [
   { attribute: "data-direction", values: "up | down",                              effect: "On .sm-price-change: mint (up) or coral (down) text color" },
   { attribute: "data-expanded",  values: "true | false",                           effect: "On .sm-ed-chevron: rotates 0° ↔ 90° with transition" },
   { attribute: "data-spin",      values: "true",                                   effect: "spin animation 1s linear infinite" },
+  { attribute: "data-sentiment", values: "positive | negative | neutral",          effect: "On .hdr-marker: tick color (mint/coral/white) and value text color" },
 ];
 
 interface CSSVarDynamic {
@@ -316,7 +330,8 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/shared/SharedSourcesTab.tsx",       type: "Component", description: "Research sources / news feed tab" },
   { path: "src/components/shared/SharedAIAgentsTab.tsx",      type: "Component", description: "AI analysis agents status tab" },
   { path: "src/components/shared/UpdateIndicators.tsx",       type: "Component", description: "Colored dot indicators for data freshness" },
-  { path: "src/components/shared/LivePrice.tsx",              type: "Component", description: "Real-time stock price display" },
+  { path: "src/components/shared/StockHeader.tsx",             type: "Component", description: "Concept 11c Edge Markers header — three-column cockpit layout (identity · price gauge · HUD spine), buildHudMarkers helper, responsive pills on mobile" },
+  { path: "src/components/shared/LivePrice.tsx",              type: "Component", description: "Real-time stock price display + MarketData (open, dayHigh/Low, 52W high/low)" },
   { path: "src/components/shared/DisclaimerBanner.tsx",       type: "Component", description: "Collapsible legal disclaimer bar (localStorage-persisted)" },
   { path: "src/components/PinGate.tsx",                       type: "Component", description: "PIN authentication gate — wraps entire app" },
   { path: "src/components/PinUnlock.tsx",                     type: "Component", description: "iOS-style 6-digit PIN entry keypad" },

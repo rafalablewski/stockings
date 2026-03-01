@@ -31,6 +31,11 @@ export * from './timelineTypes';
 
 // Live Price Hook and Component
 export { useLiveStockPrice, LivePriceDisplay } from './LivePrice';
+export type { MarketData } from './LivePrice';
+
+// Stock Header (Concept 11c — Edge Markers)
+export { StockHeader, buildHudMarkers } from './StockHeader';
+export type { HudMarker, StockHeaderProps } from './StockHeader';
 
 // Shared Model Utilities (types, constants, helpers)
 export * from './modelUtils';

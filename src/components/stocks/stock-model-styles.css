@@ -8865,3 +8865,441 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--coral);
   border-color: transparent;
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONCEPT 11C — EDGE MARKERS HEADER
+   Three-column cockpit layout · gauge arc · HUD spine · merged stats row
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Container ── */
+.hdr {
+  position: relative;
+  padding: 48px 64px 32px;
+  background: linear-gradient(180deg, #0D1117 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.hdr::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  right: -100px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--accent-dim) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Red accent line */
+.hdr-accent-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, rgba(239,68,68,0.6) 20%, rgba(239,68,68,0.8) 50%, rgba(239,68,68,0.6) 80%, transparent 100%);
+}
+
+/* Subtle HUD grid */
+.hdr::after {
+  content: '';
+  position: absolute;
+  inset: 60px 120px;
+  border: 0.5px solid rgba(255,255,255,0.02);
+  pointer-events: none;
+}
+
+/* ── Three-column grid ── */
+.hdr-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 48px;
+  align-items: start;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── LEFT: Identity ── */
+.hdr-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.hdr-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hdr-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mint);
+}
+.hdr-status-text {
+  font-family: monospace;
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 0.12em;
+}
+.hdr-exchange {
+  font-family: 'Space Mono', 'Roboto Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.3em;
+  margin-top: 20px;
+}
+.hdr-ticker {
+  font-family: 'Space Mono', 'Roboto Mono', monospace;
+  font-size: 56px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.05em;
+  line-height: 1;
+  margin: 0;
+}
+.hdr-company {
+  font-family: -apple-system, sans-serif;
+  font-size: 15px;
+  color: var(--text2);
+  letter-spacing: 0.02em;
+}
+.hdr-meta {
+  margin-top: 16px;
+}
+.hdr-meta-sep {
+  height: 1px;
+  background: rgba(255,255,255,0.04);
+  margin-bottom: 16px;
+  max-width: 300px;
+}
+.hdr-meta-row {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  padding: 4px 0;
+}
+.hdr-meta-label {
+  font-family: monospace;
+  font-size: 8px;
+  color: var(--text3);
+  letter-spacing: 0.15em;
+  width: 80px;
+  flex-shrink: 0;
+}
+.hdr-meta-value {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text2);
+}
+
+/* ── CENTER: Price ── */
+.hdr-price {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+.hdr-price-label {
+  font-family: monospace;
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 0.2em;
+}
+.hdr-arc-wrap {
+  width: 280px;
+  height: 60px;
+  margin-bottom: -20px;
+}
+.hdr-arc {
+  width: 100%;
+  height: 100%;
+}
+.hdr-arc-track {
+  stroke: rgba(255,255,255,0.03);
+}
+.hdr-arc-fill {
+  stroke: var(--accent);
+  opacity: 0.4;
+}
+.hdr-price-value {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Space Mono', 'Roboto Mono', monospace;
+  font-size: 72px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -3px;
+  line-height: 1;
+}
+.hdr-refresh-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text3);
+  transition: all 0.2s;
+  opacity: 0.6;
+}
+.hdr-refresh-btn:hover { opacity: 1; }
+.hdr-refresh-btn[data-loading="true"] { cursor: wait; opacity: 0.3; }
+.hdr-refresh-btn svg[data-spin="true"] { animation: spin 1s linear infinite; }
+.hdr-currency {
+  font-family: monospace;
+  font-size: 11px;
+  color: var(--text3);
+  letter-spacing: 0.15em;
+}
+.hdr-change {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 20px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 8px;
+}
+.hdr-change.up {
+  background: rgba(126,231,135,0.06);
+  border: 0.5px solid rgba(126,231,135,0.15);
+  color: var(--mint);
+}
+.hdr-change.down {
+  background: rgba(255,123,114,0.06);
+  border: 0.5px solid rgba(255,123,114,0.15);
+  color: var(--coral);
+}
+.hdr-badge {
+  margin-top: 4px;
+}
+.hdr-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+.hdr-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mint);
+  opacity: 0.5;
+}
+.hdr-live span:last-child {
+  font-family: monospace;
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 0.05em;
+}
+
+/* ── RIGHT: HUD Spine ── */
+.hdr-spine {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  position: relative;
+  padding-left: 20px;
+  justify-self: end;
+}
+.hdr-spine::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0.5px;
+  background: rgba(255,255,255,0.03);
+}
+.hdr-marker {
+  position: relative;
+}
+.hdr-marker::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 0;
+  width: 10px;
+  height: 0.5px;
+  background: rgba(255,255,255,0.06);
+}
+.hdr-marker[data-sentiment="positive"]::before { background: rgba(126,231,135,0.25); }
+.hdr-marker[data-sentiment="negative"]::before { background: rgba(239,68,68,0.25); }
+.hdr-marker-label {
+  font-family: monospace;
+  font-size: 7px;
+  color: rgba(255,255,255,0.15);
+  letter-spacing: 0.1em;
+}
+.hdr-marker-value {
+  font-family: 'Space Mono', 'Roboto Mono', monospace;
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.25);
+  margin-top: 2px;
+}
+.hdr-marker[data-sentiment="positive"] .hdr-marker-value { color: rgba(126,231,135,0.35); }
+.hdr-marker[data-sentiment="negative"] .hdr-marker-value { color: rgba(239,68,68,0.35); }
+
+/* ── BOTTOM: Stats Row (11c merged style) ── */
+.hdr-stats {
+  display: flex;
+  gap: 32px;
+  padding: 24px 64px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  justify-content: center;
+}
+.hdr-stats .stat-item {
+  flex-shrink: 0;
+  text-align: center;
+}
+.hdr-stats .stat-item .label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text3);
+  margin-bottom: 0;
+}
+.hdr-stats .stat-item .val {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE — 11C HEADER
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1200px) {
+  .hdr-price-value { font-size: 60px; letter-spacing: -2px; }
+  .hdr-ticker { font-size: 48px; }
+}
+
+@media (max-width: 900px) {
+  .hdr { padding: 32px 24px 24px; }
+  .hdr-grid { gap: 32px; }
+  .hdr-price-value { font-size: 48px; }
+  .hdr-ticker { font-size: 40px; }
+  .hdr-arc-wrap { width: 220px; height: 50px; }
+  .hdr-stats { padding: 20px 24px; gap: 24px; }
+}
+
+@media (max-width: 768px) {
+  .hdr { padding: 20px 16px 16px; }
+  .hdr::after { display: none; }
+  .hdr-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* Identity */
+  .hdr-ticker { font-size: 32px; }
+  .hdr-exchange { font-size: 12px; margin-top: 12px; }
+  .hdr-company { font-size: 13px; }
+  .hdr-meta { margin-top: 12px; }
+
+  /* Price — left-aligned on mobile */
+  .hdr-price { align-items: flex-start; text-align: left; }
+  .hdr-arc-wrap { display: none; }
+  .hdr-price-value { font-size: 40px; letter-spacing: -2px; }
+  .hdr-currency { display: none; }
+  .hdr-price-label { display: none; }
+
+  /* Spine → horizontal pills */
+  .hdr-spine {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-left: 0;
+    justify-self: stretch;
+  }
+  .hdr-spine::before { display: none; }
+  .hdr-marker {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 8px;
+    flex: 1;
+    min-width: 100px;
+    text-align: center;
+  }
+  .hdr-marker::before { display: none; }
+  .hdr-marker-label { font-size: 8px; }
+  .hdr-marker-value { font-size: 13px; }
+
+  /* Stats */
+  .hdr-stats {
+    padding: 16px;
+    gap: 16px;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+  }
+  .hdr-stats::-webkit-scrollbar { display: none; }
+  .hdr-stats .stat-item { min-width: 80px; }
+  .hdr-stats .stat-item .val { font-size: 14px; }
+  .hdr-stats .stat-item .label { font-size: 8px; letter-spacing: 0.8px; }
+}
+
+@media (max-width: 480px) {
+  .hdr { padding: 16px 12px 12px; }
+  .hdr-ticker { font-size: 28px; }
+  .hdr-price-value { font-size: 36px; }
+  .hdr-status-text { font-size: 8px; }
+  .hdr-marker { min-width: 80px; padding: 6px 8px; }
+  .hdr-marker-value { font-size: 12px; }
+  .hdr-stats { padding: 12px; gap: 12px; }
+  .hdr-stats .stat-item .val { font-size: 13px; }
+}
+
+@media (max-width: 360px) {
+  .hdr { padding: 12px; }
+  .hdr-ticker { font-size: 24px; }
+  .hdr-exchange { font-size: 11px; }
+  .hdr-price-value { font-size: 32px; }
+  .hdr-marker { min-width: 70px; }
+  .hdr-stats { padding: 10px; gap: 10px; }
+  .hdr-stats .stat-item .val { font-size: 12px; }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+  .hdr-grid {
+    grid-template-columns: 1fr auto auto;
+    gap: 24px;
+  }
+  .hdr-price { align-items: center; text-align: center; }
+  .hdr-arc-wrap { display: block; width: 180px; height: 40px; }
+  .hdr-price-label { display: block; }
+  .hdr-spine {
+    flex-direction: column;
+    padding-left: 16px;
+    justify-self: end;
+  }
+  .hdr-spine::before { display: block; }
+  .hdr-marker {
+    background: none;
+    border: none;
+    padding: 0;
+    text-align: left;
+    min-width: auto;
+    flex: unset;
+  }
+  .hdr-marker::before { display: block; }
+}
+
+@media (pointer: coarse) {
+  .hdr-refresh-btn { min-height: 44px; min-width: 44px; }
+}
