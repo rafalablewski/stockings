@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { readFileSync } from "fs";
 import { join } from "path";
 import AuditDashboard from "@/components/AuditDashboard";
-import AuditReportSection from "./AuditReportSection";
 import { workflows } from "@/data/workflows";
 
 export const metadata: Metadata = {
@@ -54,15 +53,7 @@ export default function ComprehensiveCodeAuditPage() {
             CWE and OWASP mapping.
           </p>
         </div>
-        <AuditDashboard />
-
-        {/* ── Unified Audit Report (AUDIT.md) ────────────────────────── */}
-        <div className="mt-20 pt-16 border-t border-white/[0.06]">
-          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-8">
-            Unified Audit Report
-          </h2>
-          <AuditReportSection content={auditMd} />
-        </div>
+        <AuditDashboard auditMd={auditMd} />
 
         {/* ── All Audits ───────────────────────────────────────────────── */}
         <div className="mt-20 pt-16 border-t border-white/[0.06]">

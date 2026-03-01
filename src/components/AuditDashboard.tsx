@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
+import { useState, useMemo, useRef, useCallback, useEffect, lazy, Suspense } from 'react';
 import { authFetch } from '@/lib/auth-fetch';
 import {
   AUDIT_FINDINGS,
@@ -10,6 +10,8 @@ import {
   type Severity,
 } from '@/data/audit-findings';
 import { workflows } from '@/data/workflows';
+
+const AuditReportSection = lazy(() => import('@/app/audit/comprehensive-code-audit/AuditReportSection'));
 
 // ── Re-check Types ───────────────────────────────────────────────────────────
 
@@ -544,9 +546,10 @@ Then provide a 1-3 sentence explanation of what you found. Be specific — cite 
 
 type FilterSeverity = 'ALL' | Severity;
 
-export default function AuditDashboard() {
+export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [filterSeverity, setFilterSeverity] = useState<FilterSeverity>('ALL');
+  const [activeView, setActiveView] = useState<string>('findings');
   const stats = useMemo(() => getAuditStats(), []);
 
   // ── Per-finding re-check state ──
@@ -996,6 +999,62 @@ export default function AuditDashboard() {
       {/* ── Severity Distribution Bar ──────────────────────────────────── */}
       <SeverityBar bySeverity={stats.bySeverity} />
 
+      {/* ── View Tabs ──────────────────────────────────────────────────── */}
+      {auditMd && (
+        <div
+          style={{
+            display: 'flex',
+            gap: 0,
+            marginTop: 28,
+            marginBottom: 0,
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            overflowX: 'auto',
+          }}
+        >
+          {[
+            { key: 'findings', label: 'Findings' },
+            { key: 'cca10', label: 'CCA-1.0 (35 Categories)' },
+            { key: 'exec', label: 'Executive Summary' },
+            { key: 'vibe', label: 'Vibe-Code Bomb' },
+            { key: 'financial', label: 'Financial & UX' },
+            { key: 'formula', label: 'Formula & Math' },
+            { key: 'registry', label: 'Audit Programs' },
+          ].map(t => (
+            <button
+              key={t.key}
+              onClick={() => setActiveView(t.key)}
+              style={{
+                padding: '10px 16px',
+                fontSize: 11,
+                fontWeight: 600,
+                fontFamily: 'Space Mono, monospace',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+                background: 'none',
+                border: 'none',
+                borderBottom: activeView === t.key ? '2px solid rgba(121,192,255,0.7)' : '2px solid transparent',
+                color: activeView === t.key ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.35)',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.15s',
+              }}
+            >{t.label}</button>
+          ))}
+        </div>
+      )}
+
+      {/* ── Report Tabs (non-findings views) ───────────────────────────── */}
+      {auditMd && activeView !== 'findings' && (
+        <div style={{ marginTop: 24 }}>
+          <Suspense fallback={<div style={{ padding: 24, fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>Loading report…</div>}>
+            <AuditReportSection content={auditMd} initialTab={activeView} />
+          </Suspense>
+        </div>
+      )}
+
+      {/* ── Findings View ──────────────────────────────────────────────── */}
+      {(activeView === 'findings' || !auditMd) && <>
+
       {/* ── Filter Controls ────────────────────────────────────────────── */}
       <div
         style={{
@@ -1269,6 +1328,8 @@ export default function AuditDashboard() {
           )}
         </div>
       )}
+
+      </>}
     </div>
   );
 }

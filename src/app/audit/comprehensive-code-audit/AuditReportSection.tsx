@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -372,9 +372,16 @@ const TAB_LABELS: { key: TabKey; label: string }[] = [
 
 // ── Main Component ───────────────────────────────────────────────────────────
 
-export default function AuditReportSection({ content }: { content: string }) {
-  const [tab, setTab] = useState<TabKey>('cca10');
+export default function AuditReportSection({ content, initialTab }: { content: string; initialTab?: string }) {
+  const [tab, setTab] = useState<TabKey>((initialTab as TabKey) || 'cca10');
   const [expandedIssues, setExpandedIssues] = useState<Set<string>>(new Set());
+
+  // Sync tab from parent when initialTab changes
+  const prevInitialTab = useRef(initialTab);
+  if (initialTab && initialTab !== prevInitialTab.current) {
+    prevInitialTab.current = initialTab;
+    if (initialTab !== tab) setTab(initialTab as TabKey);
+  }
 
   const sections = useMemo(() => parseCCA10Sections(content), [content]);
   const vibeChecks = useMemo(() => parseVibeBomb(content), [content]);
@@ -403,20 +410,24 @@ export default function AuditReportSection({ content }: { content: string }) {
   const vibePartial = vibeChecks.filter(c => c.verdict === 'PARTIAL').length;
   const vibeNotGuilty = vibeChecks.filter(c => c.verdict === 'NOT GUILTY').length;
 
+  const embedded = !!initialTab;
+
   return (
     <div>
-      {/* ── Stat Cards ─────────────────────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 32 }}>
-        <StatBox label="CCA-1.0 Categories" value={35} accent="#79C0FF" />
-        <StatBox label="Issues Found" value={totalIssues} accent={bySev.critical ? '#FF4D4F' : '#D29922'} />
-        <StatBox label="Critical" value={bySev.critical || 0} accent="#FF4D4F" />
-        <StatBox label="High" value={bySev.high || 0} accent="#FF7B72" />
-        <StatBox label="Vibe Score" value={`${vibeGuilty + vibePartial * 0.5}/${vibeChecks.length}`} accent="#D29922" />
-        <StatBox label="Financial" value="7.8/10" accent="#7EE787" />
-      </div>
+      {/* ── Stat Cards (standalone mode only) ──────────────────────────── */}
+      {!embedded && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12, marginBottom: 32 }}>
+          <StatBox label="CCA-1.0 Categories" value={35} accent="#79C0FF" />
+          <StatBox label="Issues Found" value={totalIssues} accent={bySev.critical ? '#FF4D4F' : '#D29922'} />
+          <StatBox label="Critical" value={bySev.critical || 0} accent="#FF4D4F" />
+          <StatBox label="High" value={bySev.high || 0} accent="#FF7B72" />
+          <StatBox label="Vibe Score" value={`${vibeGuilty + vibePartial * 0.5}/${vibeChecks.length}`} accent="#D29922" />
+          <StatBox label="Financial" value="7.8/10" accent="#7EE787" />
+        </div>
+      )}
 
-      {/* ── Severity Bar ───────────────────────────────────────────────── */}
-      {totalIssues > 0 && (
+      {/* ── Severity Bar (standalone mode only) ────────────────────────── */}
+      {!embedded && totalIssues > 0 && (
         <div style={{ marginBottom: 32 }}>
           <div style={{ display: 'flex', height: 6, borderRadius: 3, overflow: 'hidden', background: 'rgba(255,255,255,0.04)' }}>
             {(['critical', 'high', 'medium', 'low', 'info'] as const).filter(s => bySev[s]).map(s => (
@@ -436,28 +447,30 @@ export default function AuditReportSection({ content }: { content: string }) {
         </div>
       )}
 
-      {/* ── Tab Navigation ─────────────────────────────────────────────── */}
-      <div style={{
-        display: 'flex', gap: 0, marginBottom: 24,
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
-        overflowX: 'auto',
-      }}>
-        {TAB_LABELS.map(t => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            style={{
-              padding: '10px 16px',
-              fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace',
-              letterSpacing: '0.04em', textTransform: 'uppercase',
-              background: 'none', border: 'none',
-              borderBottom: tab === t.key ? '2px solid rgba(121,192,255,0.7)' : '2px solid transparent',
-              color: tab === t.key ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.35)',
-              cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s',
-            }}
-          >{t.label}</button>
-        ))}
-      </div>
+      {/* ── Tab Navigation (standalone mode only) ──────────────────────── */}
+      {!embedded && (
+        <div style={{
+          display: 'flex', gap: 0, marginBottom: 24,
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          overflowX: 'auto',
+        }}>
+          {TAB_LABELS.map(t => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              style={{
+                padding: '10px 16px',
+                fontSize: 11, fontWeight: 600, fontFamily: 'Space Mono, monospace',
+                letterSpacing: '0.04em', textTransform: 'uppercase',
+                background: 'none', border: 'none',
+                borderBottom: tab === t.key ? '2px solid rgba(121,192,255,0.7)' : '2px solid transparent',
+                color: tab === t.key ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.35)',
+                cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s',
+              }}
+            >{t.label}</button>
+          ))}
+        </div>
+      )}
 
       {/* ── CCA-1.0 Tab ────────────────────────────────────────────────── */}
       {tab === 'cca10' && (
