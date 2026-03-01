@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 520" width="1440" height="520">
+  <defs>
+    <linearGradient id="bg7" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#06080C"/>
+      <stop offset="100%" stop-color="#030405"/>
+    </linearGradient>
+    <!-- Dramatic cinematic light from top-center -->
+    <radialGradient id="spotlight7" cx="50%" cy="0%" r="60%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.04)"/>
+      <stop offset="40%" stop-color="rgba(255,255,255,0.01)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <!-- Accent rim light -->
+    <radialGradient id="rimLight7" cx="50%" cy="100%" r="60%">
+      <stop offset="0%" stop-color="rgba(126,231,135,0.04)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <linearGradient id="priceGrad7" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="60%" stop-color="rgba(255,255,255,0.7)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.3)"/>
+    </linearGradient>
+    <linearGradient id="nameGrad7" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.9)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.4)"/>
+    </linearGradient>
+    <filter id="blur7">
+      <feGaussianBlur stdDeviation="30"/>
+    </filter>
+    <filter id="softShadow7">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+  </defs>
+
+  <!-- Background — cinematic dark -->
+  <rect width="1440" height="520" fill="url(#bg7)"/>
+  <rect width="1440" height="520" fill="url(#spotlight7)"/>
+  <rect width="1440" height="520" fill="url(#rimLight7)"/>
+
+  <!-- Cinematic top light bar -->
+  <rect x="400" y="0" width="640" height="1" fill="rgba(255,255,255,0.06)"/>
+  <rect x="550" y="0" width="340" height="1" fill="rgba(255,255,255,0.1)"/>
+
+  <!-- ═══ CINEMATIC DEPTH LAYOUT ═══ -->
+  <!-- Layered z-depth: background text → mid content → foreground price -->
+
+  <!-- LAYER 1 (Background): Giant faded company name -->
+  <text x="720" y="320" text-anchor="middle" font-family="-apple-system, 'SF Pro Display', sans-serif" font-size="200" font-weight="800" fill="rgba(255,255,255,0.015)" letter-spacing="-8">ASTS</text>
+
+  <!-- LAYER 2 (Mid): Ticker and company info — top zone -->
+  <g transform="translate(720, 0)">
+    <!-- Ticker pill -->
+    <g transform="translate(0, 56)">
+      <rect x="-90" y="-14" width="180" height="28" rx="14" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+      <text text-anchor="middle" y="4" font-family="'SF Mono', monospace" font-size="10" font-weight="500" fill="rgba(255,255,255,0.35)" letter-spacing="0.15em">NASDAQ : ASTS</text>
+    </g>
+
+    <!-- Company name — dramatic gradient -->
+    <text text-anchor="middle" y="130" font-family="-apple-system, 'SF Pro Display', sans-serif" font-size="52" font-weight="600" fill="url(#nameGrad7)" letter-spacing="-1.5">AST SpaceMobile</text>
+
+    <!-- Subtitle — cinematic tagline style -->
+    <text text-anchor="middle" y="165" font-family="-apple-system, 'SF Pro Text', sans-serif" font-size="15" font-weight="300" fill="rgba(255,255,255,0.2)" letter-spacing="0.08em">DIRECT-TO-DEVICE CELLULAR FROM SPACE</text>
+  </g>
+
+  <!-- LAYER 3 (Foreground): Price — the dramatic reveal -->
+  <g transform="translate(720, 200)">
+    <!-- Subtle glow behind price -->
+    <text text-anchor="middle" y="80" font-family="'SF Mono', monospace" font-size="96" font-weight="700" fill="rgba(255,255,255,0.03)" filter="url(#blur7)" letter-spacing="-4">$26.42</text>
+
+    <!-- Price -->
+    <text text-anchor="middle" y="80" font-family="'SF Mono', 'Space Mono', monospace" font-size="96" font-weight="700" fill="url(#priceGrad7)" letter-spacing="-4">$26.42</text>
+
+    <!-- Change + timestamp in floating glass pill -->
+    <g transform="translate(0, 110)">
+      <rect x="-160" y="0" width="320" height="40" rx="20" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+
+      <!-- Change -->
+      <text x="-80" y="26" text-anchor="middle" font-family="'SF Mono', monospace" font-size="13" font-weight="600" fill="rgba(126,231,135,0.7)">▲ +2.34%</text>
+
+      <!-- Separator -->
+      <circle cx="0" cy="20" r="1.5" fill="rgba(255,255,255,0.08)"/>
+
+      <!-- Updated -->
+      <text x="80" y="26" text-anchor="middle" font-family="monospace" font-size="10" fill="rgba(255,255,255,0.2)">10:42 AM EST</text>
+    </g>
+  </g>
+
+  <!-- Bottom floating metric cards -->
+  <g transform="translate(0, 420)">
+    <g transform="translate(320, 0)">
+      <rect x="-60" y="-8" width="120" height="48" rx="12" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+      <text text-anchor="middle" y="6" font-family="monospace" font-size="8" fill="rgba(255,255,255,0.15)" letter-spacing="0.1em">MKT CAP</text>
+      <text text-anchor="middle" y="28" font-family="'SF Mono', monospace" font-size="16" font-weight="600" fill="rgba(255,255,255,0.5)">$8.2B</text>
+    </g>
+    <g transform="translate(530, 0)">
+      <rect x="-60" y="-8" width="120" height="48" rx="12" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+      <text text-anchor="middle" y="6" font-family="monospace" font-size="8" fill="rgba(255,255,255,0.15)" letter-spacing="0.1em">EV / REV</text>
+      <text text-anchor="middle" y="28" font-family="'SF Mono', monospace" font-size="16" font-weight="600" fill="rgba(255,255,255,0.5)">42.1x</text>
+    </g>
+    <g transform="translate(740, 0)">
+      <rect x="-60" y="-8" width="120" height="48" rx="12" fill="rgba(126,231,135,0.02)" stroke="rgba(126,231,135,0.06)" stroke-width="0.5"/>
+      <text text-anchor="middle" y="6" font-family="monospace" font-size="8" fill="rgba(126,231,135,0.2)" letter-spacing="0.1em">SATS</text>
+      <text text-anchor="middle" y="28" font-family="'SF Mono', monospace" font-size="16" font-weight="600" fill="rgba(126,231,135,0.5)">5/168</text>
+    </g>
+    <g transform="translate(950, 0)">
+      <rect x="-60" y="-8" width="120" height="48" rx="12" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+      <text text-anchor="middle" y="6" font-family="monospace" font-size="8" fill="rgba(255,255,255,0.15)" letter-spacing="0.1em">REACH</text>
+      <text text-anchor="middle" y="28" font-family="'SF Mono', monospace" font-size="16" font-weight="600" fill="rgba(167,139,250,0.5)">1.8B</text>
+    </g>
+    <g transform="translate(1120, 0)">
+      <rect x="-60" y="-8" width="120" height="48" rx="12" fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+      <text text-anchor="middle" y="6" font-family="monospace" font-size="8" fill="rgba(255,255,255,0.15)" letter-spacing="0.1em">DATA</text>
+      <text text-anchor="middle" y="28" font-family="monospace" font-size="11" fill="rgba(255,255,255,0.2)">MAR 2026</text>
+    </g>
+  </g>
+
+  <!-- Label -->
+  <text x="720" y="508" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6E7681" letter-spacing="0.15em">CONCEPT 07 — CINEMATIC DEPTH</text>
+</svg>

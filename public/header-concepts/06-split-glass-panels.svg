@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 520" width="1440" height="520">
+  <defs>
+    <linearGradient id="bg6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0A0C10"/>
+      <stop offset="100%" stop-color="#05070A"/>
+    </linearGradient>
+    <linearGradient id="glass6L" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.06)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.01)"/>
+    </linearGradient>
+    <linearGradient id="glass6R" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(126,231,135,0.06)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.01)"/>
+    </linearGradient>
+    <linearGradient id="border6L" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.12)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.03)"/>
+    </linearGradient>
+    <linearGradient id="border6R" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(126,231,135,0.2)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.03)"/>
+    </linearGradient>
+    <filter id="blur6">
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+    <linearGradient id="nameGrad6" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#8B949E"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="520" fill="url(#bg6)"/>
+
+  <!-- Ambient glow -->
+  <ellipse cx="500" cy="260" rx="300" ry="250" fill="rgba(167,139,250,0.02)" filter="url(#blur6)"/>
+  <ellipse cx="960" cy="260" rx="300" ry="250" fill="rgba(126,231,135,0.02)" filter="url(#blur6)"/>
+
+  <!-- ═══ SPLIT GLASS PANELS — Two floating cards side by side ═══ -->
+
+  <!-- LEFT PANEL: Identity / Brand -->
+  <g transform="translate(80, 60)">
+    <rect width="620" height="400" rx="24" fill="url(#glass6L)"/>
+    <rect width="620" height="400" rx="24" fill="none" stroke="url(#border6L)" stroke-width="0.75"/>
+
+    <!-- Top highlight -->
+    <rect x="60" y="0" width="500" height="1" rx="0.5" fill="rgba(255,255,255,0.08)"/>
+
+    <!-- Content -->
+    <g transform="translate(48, 44)">
+      <!-- Status -->
+      <g>
+        <circle cx="5" cy="5" r="3" fill="rgba(126,231,135,0.5)"/>
+        <text x="14" y="9" font-family="monospace" font-size="9" fill="rgba(255,255,255,0.2)" letter-spacing="0.12em">LIVE TRACKING</text>
+      </g>
+
+      <!-- Ticker -->
+      <g transform="translate(0, 36)">
+        <rect width="180" height="30" rx="8" fill="rgba(126,231,135,0.06)" stroke="rgba(126,231,135,0.12)" stroke-width="0.5"/>
+        <text x="14" y="20" font-family="'SF Mono', monospace" font-size="12" font-weight="600" fill="#7EE787" letter-spacing="0.1em">NASDAQ: ASTS</text>
+      </g>
+
+      <!-- Company name -->
+      <text y="114" font-family="-apple-system, 'SF Pro Display', sans-serif" font-size="40" font-weight="700" fill="url(#nameGrad6)" letter-spacing="-1">AST SpaceMobile</text>
+
+      <!-- Description -->
+      <text y="148" font-family="-apple-system, sans-serif" font-size="14" fill="rgba(255,255,255,0.35)">Direct-to-device cellular broadband from space</text>
+
+      <!-- Divider -->
+      <line x1="0" y1="176" x2="520" y2="176" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+
+      <!-- Quick stats in left panel -->
+      <g transform="translate(0, 200)">
+        <g>
+          <text font-family="monospace" font-size="8" fill="rgba(255,255,255,0.15)" letter-spacing="0.12em">SECTOR</text>
+          <text y="18" font-family="-apple-system, sans-serif" font-size="13" fill="rgba(255,255,255,0.5)">Communication Services</text>
+        </g>
+        <g transform="translate(0, 48)">
+          <text font-family="monospace" font-size="8" fill="rgba(255,255,255,0.15)" letter-spacing="0.12em">PARTNERS</text>
+          <text y="18" font-family="-apple-system, sans-serif" font-size="13" fill="rgba(255,255,255,0.5)">53+ MNOs · 1.8B reach</text>
+        </g>
+        <g transform="translate(0, 96)">
+          <text font-family="monospace" font-size="8" fill="rgba(255,255,255,0.15)" letter-spacing="0.12em">DATA FRESHNESS</text>
+          <text y="18" font-family="-apple-system, sans-serif" font-size="13" fill="rgba(255,255,255,0.3)">March 01, 2026</text>
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- RIGHT PANEL: Price / Metrics -->
+  <g transform="translate(740, 60)">
+    <rect width="620" height="400" rx="24" fill="url(#glass6R)"/>
+    <rect width="620" height="400" rx="24" fill="none" stroke="url(#border6R)" stroke-width="0.75"/>
+
+    <!-- Top highlight with accent -->
+    <rect x="60" y="0" width="500" height="1" rx="0.5" fill="rgba(126,231,135,0.1)"/>
+
+    <!-- Content -->
+    <g transform="translate(48, 44)">
+      <!-- Label -->
+      <text font-family="monospace" font-size="9" fill="rgba(255,255,255,0.2)" letter-spacing="0.2em">MARKET PRICE</text>
+
+      <!-- Big price -->
+      <text y="80" font-family="'SF Mono', monospace" font-size="72" font-weight="700" fill="#F0F6FC" letter-spacing="-3">$26.42</text>
+
+      <!-- Change badge -->
+      <g transform="translate(0, 100)">
+        <rect width="140" height="32" rx="10" fill="rgba(126,231,135,0.08)" stroke="rgba(126,231,135,0.15)" stroke-width="0.5"/>
+        <text x="16" y="21" font-family="'SF Mono', monospace" font-size="13" font-weight="600" fill="#7EE787">▲ +$0.61 (2.34%)</text>
+      </g>
+
+      <!-- Updated -->
+      <text y="158" font-family="monospace" font-size="10" fill="rgba(255,255,255,0.15)" letter-spacing="0.04em">Updated: 10:42:18 AM EST</text>
+
+      <!-- Divider -->
+      <line x1="0" y1="180" x2="520" y2="180" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+
+      <!-- Key metrics grid -->
+      <g transform="translate(0, 204)">
+        <g>
+          <text font-family="monospace" font-size="8" fill="rgba(255,255,255,0.15)" letter-spacing="0.12em">MARKET CAP</text>
+          <text y="24" font-family="'SF Mono', monospace" font-size="22" font-weight="600" fill="rgba(255,255,255,0.7)">$8.2B</text>
+        </g>
+        <g transform="translate(180, 0)">
+          <text font-family="monospace" font-size="8" fill="rgba(255,255,255,0.15)" letter-spacing="0.12em">EV / REV FWD</text>
+          <text y="24" font-family="'SF Mono', monospace" font-size="22" font-weight="600" fill="rgba(255,255,255,0.7)">42.1x</text>
+        </g>
+        <g transform="translate(360, 0)">
+          <text font-family="monospace" font-size="8" fill="rgba(255,255,255,0.15)" letter-spacing="0.12em">CONSTELLATION</text>
+          <text y="24" font-family="'SF Mono', monospace" font-size="22" font-weight="600" fill="#7EE787">5/168</text>
+        </g>
+      </g>
+
+      <!-- Constellation progress bar -->
+      <g transform="translate(0, 268)">
+        <rect width="520" height="4" rx="2" fill="rgba(255,255,255,0.04)"/>
+        <rect width="16" height="4" rx="2" fill="rgba(126,231,135,0.5)"/>
+        <text x="530" y="8" font-family="monospace" font-size="8" fill="rgba(255,255,255,0.15)">3%</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Gap glow between panels -->
+  <rect x="708" y="160" width="24" height="200" fill="rgba(255,255,255,0.005)" rx="12"/>
+
+  <!-- Label -->
+  <text x="720" y="505" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6E7681" letter-spacing="0.15em">CONCEPT 06 — SPLIT GLASS PANELS</text>
+</svg>

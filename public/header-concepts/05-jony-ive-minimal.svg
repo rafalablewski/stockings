@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 520" width="1440" height="520">
+  <defs>
+    <linearGradient id="bg5" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0B0B0B"/>
+      <stop offset="100%" stop-color="#060606"/>
+    </linearGradient>
+    <linearGradient id="nameGrad5" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#666666"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background — pure Ive minimal: near-black -->
+  <rect width="1440" height="520" fill="url(#bg5)"/>
+
+  <!-- Single, almost invisible accent line — the Ive signature detail -->
+  <line x1="120" y1="260" x2="1320" y2="260" stroke="rgba(255,255,255,0.02)" stroke-width="0.5"/>
+
+  <!-- ═══ PURE IVE MINIMALISM ═══ -->
+  <!-- Extreme whitespace, zero ornamentation, typography is everything -->
+
+  <!-- Left-aligned content with vast breathing room -->
+  <g transform="translate(120, 0)">
+
+    <!-- Small ticker — barely there, whisper quiet -->
+    <text y="120" font-family="-apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif" font-size="11" font-weight="500" fill="rgba(255,255,255,0.2)" letter-spacing="0.25em">ASTS · NASDAQ</text>
+
+    <!-- Company name — the centerpiece, pure weight -->
+    <text y="200" font-family="-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif" font-size="72" font-weight="300" fill="url(#nameGrad5)" letter-spacing="-2">AST SpaceMobile</text>
+
+    <!-- One-line description — light as air -->
+    <text y="240" font-family="-apple-system, 'SF Pro Text', sans-serif" font-size="17" font-weight="300" fill="rgba(255,255,255,0.3)" letter-spacing="0.01em">Space-based cellular broadband for unmodified smartphones</text>
+
+  </g>
+
+  <!-- Right-aligned price — separated by vast whitespace -->
+  <g transform="translate(1320, 0)">
+    <!-- Price label -->
+    <text text-anchor="end" y="120" font-family="-apple-system, 'SF Pro Text', sans-serif" font-size="11" font-weight="500" fill="rgba(255,255,255,0.2)" letter-spacing="0.25em">PRICE</text>
+
+    <!-- Price — refined, not screaming -->
+    <text text-anchor="end" y="200" font-family="-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif" font-size="72" font-weight="200" fill="rgba(255,255,255,0.9)" letter-spacing="-2">$26.42</text>
+
+    <!-- Change — understated -->
+    <text text-anchor="end" y="240" font-family="-apple-system, 'SF Pro Text', sans-serif" font-size="17" font-weight="400" fill="rgba(126,231,135,0.6)">+2.34%</text>
+
+    <!-- Updated — barely visible -->
+    <text text-anchor="end" y="270" font-family="-apple-system, 'SF Pro Text', sans-serif" font-size="11" font-weight="300" fill="rgba(255,255,255,0.12)" letter-spacing="0.05em">Updated 10:42 AM</text>
+  </g>
+
+  <!-- Bottom metric strip — Ive-style: metric as decoration -->
+  <g transform="translate(0, 360)">
+    <!-- The thinnest possible divider -->
+    <line x1="120" y1="0" x2="1320" y2="0" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+
+    <g transform="translate(120, 40)">
+      <text font-family="-apple-system, sans-serif" font-size="10" font-weight="400" fill="rgba(255,255,255,0.12)" letter-spacing="0.2em">MARKET CAP</text>
+      <text y="28" font-family="-apple-system, 'SF Pro Display', sans-serif" font-size="24" font-weight="200" fill="rgba(255,255,255,0.5)">$8.2B</text>
+    </g>
+
+    <g transform="translate(380, 40)">
+      <text font-family="-apple-system, sans-serif" font-size="10" font-weight="400" fill="rgba(255,255,255,0.12)" letter-spacing="0.2em">ENTERPRISE VALUE</text>
+      <text y="28" font-family="-apple-system, 'SF Pro Display', sans-serif" font-size="24" font-weight="200" fill="rgba(255,255,255,0.5)">$9.1B</text>
+    </g>
+
+    <g transform="translate(680, 40)">
+      <text font-family="-apple-system, sans-serif" font-size="10" font-weight="400" fill="rgba(255,255,255,0.12)" letter-spacing="0.2em">CONSTELLATION</text>
+      <text y="28" font-family="-apple-system, 'SF Pro Display', sans-serif" font-size="24" font-weight="200" fill="rgba(126,231,135,0.4)">5 of 168</text>
+    </g>
+
+    <g transform="translate(980, 40)">
+      <text font-family="-apple-system, sans-serif" font-size="10" font-weight="400" fill="rgba(255,255,255,0.12)" letter-spacing="0.2em">DATA AS OF</text>
+      <text y="28" font-family="-apple-system, 'SF Pro Display', sans-serif" font-size="24" font-weight="200" fill="rgba(255,255,255,0.25)">Mar 2026</text>
+    </g>
+  </g>
+
+  <!-- Label -->
+  <text x="720" y="505" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6E7681" letter-spacing="0.15em">CONCEPT 05 — JONY IVE MINIMAL</text>
+</svg>

@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 520" width="1440" height="520">
+  <defs>
+    <linearGradient id="bg4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0A0A0A"/>
+      <stop offset="100%" stop-color="#050505"/>
+    </linearGradient>
+    <linearGradient id="redLine4" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="20%" stop-color="rgba(239,68,68,0.6)"/>
+      <stop offset="50%" stop-color="rgba(239,68,68,0.8)"/>
+      <stop offset="80%" stop-color="rgba(239,68,68,0.6)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+    <linearGradient id="telemetryGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="rgba(126,231,135,0.6)"/>
+      <stop offset="100%" stop-color="rgba(34,211,238,0.6)"/>
+    </linearGradient>
+    <filter id="glow4">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+
+  <!-- Background — pure dark, Tesla style -->
+  <rect width="1440" height="520" fill="url(#bg4)"/>
+
+  <!-- Tesla-style horizontal red accent line -->
+  <rect x="0" y="0" width="1440" height="2" fill="url(#redLine4)"/>
+
+  <!-- Subtle HUD grid -->
+  <g opacity="0.02" stroke="#fff" stroke-width="0.5">
+    <line x1="96" y1="0" x2="96" y2="520"/>
+    <line x1="1344" y1="0" x2="1344" y2="520"/>
+    <line x1="96" y1="60" x2="1344" y2="60"/>
+    <line x1="96" y1="460" x2="1344" y2="460"/>
+  </g>
+
+  <!-- ═══ TESLA DASHBOARD LAYOUT ═══ -->
+  <!-- Split into 3 vertical columns like a car instrument cluster -->
+
+  <!-- LEFT COLUMN: Telemetry / Identity -->
+  <g transform="translate(96, 60)">
+    <!-- System status indicator -->
+    <circle cx="6" cy="6" r="3" fill="#7EE787"/>
+    <text x="16" y="10" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.12em">SYSTEM ONLINE</text>
+
+    <!-- Ticker — large monospace -->
+    <text y="64" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="14" font-weight="700" fill="rgba(255,255,255,0.3)" letter-spacing="0.3em">NASDAQ</text>
+    <text y="110" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="56" font-weight="700" fill="#F0F6FC" letter-spacing="0.05em">ASTS</text>
+
+    <!-- Company name — secondary -->
+    <text y="140" font-family="-apple-system, sans-serif" font-size="15" fill="#8B949E" letter-spacing="0.02em">AST SpaceMobile Inc.</text>
+
+    <!-- Vertical telemetry readout -->
+    <g transform="translate(0, 180)">
+      <line x1="0" y1="0" x2="300" y2="0" stroke="rgba(255,255,255,0.04)"/>
+
+      <g transform="translate(0, 16)">
+        <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.15em">SECTOR</text>
+        <text x="120" font-family="monospace" font-size="11" fill="#8B949E">Communication Services</text>
+      </g>
+      <g transform="translate(0, 40)">
+        <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.15em">TYPE</text>
+        <text x="120" font-family="monospace" font-size="11" fill="#8B949E">Direct-to-Device</text>
+      </g>
+      <g transform="translate(0, 64)">
+        <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.15em">CLASS</text>
+        <text x="120" font-family="monospace" font-size="11" fill="#8B949E">Speculative Growth</text>
+      </g>
+      <g transform="translate(0, 88)">
+        <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.15em">DATA</text>
+        <text x="120" font-family="monospace" font-size="11" fill="#6E7681">Mar 01 2026</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- CENTER COLUMN: Price — the main gauge -->
+  <g transform="translate(720, 0)">
+    <!-- Circular arc gauge (decorative) -->
+    <g transform="translate(0, 250)">
+      <path d="M-140,-100 A160,160 0 0,1 140,-100" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="3"/>
+      <path d="M-140,-100 A160,160 0 0,1 80,-130" fill="none" stroke="url(#telemetryGrad)" stroke-width="3" stroke-linecap="round"/>
+    </g>
+
+    <!-- Price label -->
+    <text text-anchor="middle" y="100" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.2em">MARKET PRICE</text>
+
+    <!-- Price — massive, instrument-like -->
+    <text text-anchor="middle" y="220" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="100" font-weight="700" fill="#F0F6FC" letter-spacing="-4">$26.42</text>
+
+    <!-- USD label -->
+    <text text-anchor="middle" y="250" font-family="monospace" font-size="11" fill="#6E7681" letter-spacing="0.15em">USD</text>
+
+    <!-- Change indicator -->
+    <g transform="translate(0, 290)">
+      <rect x="-60" y="-14" width="120" height="28" rx="4" fill="rgba(126,231,135,0.06)" stroke="rgba(126,231,135,0.15)" stroke-width="0.5"/>
+      <text text-anchor="middle" y="3" font-family="monospace" font-size="13" font-weight="700" fill="#7EE787">+2.34%</text>
+    </g>
+
+    <!-- Updated -->
+    <g transform="translate(0, 340)">
+      <circle cx="-50" cy="0" r="3" fill="#7EE787" opacity="0.5"/>
+      <text x="-40" y="4" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.05em">LIVE · 10:42:18 EST</text>
+    </g>
+  </g>
+
+  <!-- RIGHT COLUMN: Key metrics — vertical instrument readouts -->
+  <g transform="translate(1080, 60)">
+    <text font-family="monospace" font-size="9" fill="rgba(255,255,255,0.2)" letter-spacing="0.2em">TELEMETRY</text>
+
+    <line x1="0" y1="20" x2="264" y2="20" stroke="rgba(255,255,255,0.04)"/>
+
+    <!-- Metric bars -->
+    <g transform="translate(0, 48)">
+      <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.12em">MARKET CAP</text>
+      <text x="264" text-anchor="end" font-family="'SF Mono', monospace" font-size="20" font-weight="700" fill="#F0F6FC">$8.2B</text>
+      <rect y="30" width="264" height="2" rx="1" fill="rgba(255,255,255,0.04)"/>
+      <rect y="30" width="180" height="2" rx="1" fill="rgba(126,231,135,0.3)"/>
+    </g>
+
+    <g transform="translate(0, 118)">
+      <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.12em">CONSTELLATION</text>
+      <text x="264" text-anchor="end" font-family="'SF Mono', monospace" font-size="20" font-weight="700" fill="#7EE787">5/168</text>
+      <rect y="30" width="264" height="2" rx="1" fill="rgba(255,255,255,0.04)"/>
+      <rect y="30" width="8" height="2" rx="1" fill="rgba(126,231,135,0.6)"/>
+    </g>
+
+    <g transform="translate(0, 188)">
+      <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.12em">MNO PARTNERS</text>
+      <text x="264" text-anchor="end" font-family="'SF Mono', monospace" font-size="20" font-weight="700" fill="#A78BFA">53+</text>
+      <rect y="30" width="264" height="2" rx="1" fill="rgba(255,255,255,0.04)"/>
+      <rect y="30" width="200" height="2" rx="1" fill="rgba(167,139,250,0.3)"/>
+    </g>
+
+    <g transform="translate(0, 258)">
+      <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.12em">GLOBAL REACH</text>
+      <text x="264" text-anchor="end" font-family="'SF Mono', monospace" font-size="20" font-weight="700" fill="#22D3EE">1.8B</text>
+      <rect y="30" width="264" height="2" rx="1" fill="rgba(255,255,255,0.04)"/>
+      <rect y="30" width="230" height="2" rx="1" fill="rgba(34,211,238,0.3)"/>
+    </g>
+
+    <g transform="translate(0, 328)">
+      <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.12em">EV / REV FWD</text>
+      <text x="264" text-anchor="end" font-family="'SF Mono', monospace" font-size="20" font-weight="700" fill="#D29922">42.1x</text>
+      <rect y="30" width="264" height="2" rx="1" fill="rgba(255,255,255,0.04)"/>
+      <rect y="30" width="130" height="2" rx="1" fill="rgba(210,153,34,0.3)"/>
+    </g>
+  </g>
+
+  <!-- Bottom border -->
+  <rect x="0" y="518" width="1440" height="2" fill="rgba(255,255,255,0.02)"/>
+
+  <!-- Label -->
+  <text x="720" y="500" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6E7681" letter-spacing="0.15em">CONCEPT 04 — TESLA INSTRUMENT DASHBOARD</text>
+</svg>
