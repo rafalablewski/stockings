@@ -8,7 +8,7 @@
  * Each finding includes severity, CVSS score, affected assets,
  * remediation guidance with estimated effort, and compliance mapping.
  *
- * See also: audit/AUDIT.md for the unified audit report.
+ * See also: docs/AUDIT.md for the unified audit report.
  */
 
 // ── Severity Taxonomy ────────────────────────────────────────────────────────
@@ -2555,11 +2555,11 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
       'Systematic check against the "27 Signs Your Vibe-Coded App Is a Ticking Bomb" checklist resulted in 16 GUILTY verdicts, 6 PARTIAL verdicts, and 5 NOT GUILTY verdicts. The application passes on secret management, API architecture, and query patterns, but fails on operational maturity: no CI/CD, no monitoring, no logging infrastructure, no staging environment, no documentation, and massive god components. The security posture is mixed — secrets are properly managed but the database is functionally exposed.',
     severity: 'HIGH',
     cvss: 7.0,
-    affectedAssets: ['Entire codebase — see Appendix A in audit/AUDIT.md'],
+    affectedAssets: ['Entire codebase — see Appendix A in docs/AUDIT.md'],
     impact:
       'The 70% failure rate indicates significant operational risk. While the financial models and data layer are well-engineered, the surrounding infrastructure (CI/CD, monitoring, documentation, environment management) is absent. This creates a fragile deployment pipeline where issues are detected reactively rather than proactively.',
     remediation:
-      'Address the 16 GUILTY items in priority order: (1) Add CI/CD pipeline, (2) Add monitoring/alerting, (3) Add structured logging, (4) Break up god components, (5) Document environment setup, (6) Add health check endpoint, (7) Add staging environment, (8) Add rate limiting, (9) Add input validation, (10) Test database restore procedure. See Appendix A in audit/AUDIT.md for full verdicts.',
+      'Address the 16 GUILTY items in priority order: (1) Add CI/CD pipeline, (2) Add monitoring/alerting, (3) Add structured logging, (4) Break up god components, (5) Document environment setup, (6) Add health check endpoint, (7) Add staging environment, (8) Add rate limiting, (9) Add input validation, (10) Test database restore procedure. See Appendix A in docs/AUDIT.md for full verdicts.',
     effort: 'Medium-term',
     compliance: ['SOC2', 'ISO-27001'],
     status: 'Open',
