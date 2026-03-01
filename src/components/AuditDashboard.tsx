@@ -1142,6 +1142,18 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
             saveFailed={saveFailedIds.has(finding.id)}
           />
         ))}
+
+        {/* ── CCA-1.0 Category Breakdown (inline) ────────────────────── */}
+        {auditMd && (
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', padding: '20px 16px 16px' }}>
+            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.25)', marginBottom: 12 }}>
+              35-Category Breakdown
+            </div>
+            <Suspense fallback={<div style={{ padding: 12, fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>Loading…</div>}>
+              <AuditReportSection content={auditMd} initialTab="cca10" />
+            </Suspense>
+          </div>
+        )}
       </div>
 
       {/* ── Compliance Coverage ─────────────────────────────────────────── */}
@@ -1244,18 +1256,6 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
         High (7.0–8.9), Medium (4.0–6.9), Low (0.1–3.9). Remediation effort estimates assume
         a single engineer with codebase familiarity.
       </div>
-
-      {/* ── CCA-1.0 Category Breakdown (from AUDIT.md) ────────────────── */}
-      {auditMd && (
-        <div style={{ marginTop: 32 }}>
-          <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.25)', marginBottom: 12 }}>
-            35-Category Breakdown
-          </div>
-          <Suspense fallback={<div style={{ padding: 24, fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>Loading categories…</div>}>
-            <AuditReportSection content={auditMd} initialTab="cca10" />
-          </Suspense>
-        </div>
-      )}
 
       {/* ── Re-run Results ────────────────────────────────────────────── */}
       {(rerunResult || rerunRunning || rerunError) && (
