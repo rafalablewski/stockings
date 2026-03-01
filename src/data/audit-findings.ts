@@ -2493,12 +2493,12 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
     status: 'Open',
   },
   // ═══════════════════════════════════════════════════════════════════════════
-  // VIBE-CODE BOMB AUDIT — 27-Point Checklist (2026-03-01)
+  // CCA-1.1 — OPERATIONAL MATURITY ASSESSMENT (2026-03-01)
   // ═══════════════════════════════════════════════════════════════════════════
 
   {
-    id: 'VIBE-001',
-    title: 'No Health Check Endpoint',
+    id: 'OMA-001',
+    title: 'Absent Service Health Verification Endpoint',
     category: '18. Network Security',
     description:
       'No /health, /healthz, /status, or /ping endpoint exists. There is no lightweight endpoint for load balancers, monitoring tools, or uptime checkers to verify the application is running and its dependencies (database, external APIs) are reachable.',
@@ -2514,11 +2514,11 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
     status: 'Open',
   },
   {
-    id: 'VIBE-002',
-    title: 'No Staging Environment',
+    id: 'OMA-002',
+    title: 'No Environment Isolation — Missing Staging Tier',
     category: '21. Configuration Management',
     description:
-      'No staging environment exists. A single DATABASE_URL is used across all contexts with no environment-specific configuration. No .env.staging, no Vercel Preview environment documentation, no separate staging database. The application has two implicit modes: "local dev" and "whatever Vercel does" with no intermediate tier for pre-production validation.',
+      'No staging environment exists. A single DATABASE_URL is used across all contexts with no environment-specific configuration. No .env.staging, no Vercel Preview environment documentation, no separate staging database. The application has two implicit modes: local development and production with no intermediate tier for pre-production validation.',
     severity: 'MEDIUM',
     cvss: 3.5,
     affectedAssets: ['.env.example', 'next.config.ts'],
@@ -2531,8 +2531,8 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
     status: 'Open',
   },
   {
-    id: 'VIBE-003',
-    title: 'No Feature Flag System',
+    id: 'OMA-003',
+    title: 'Absent Release Control — No Feature Flag Infrastructure',
     category: '22. Build & Deployment Processes',
     description:
       'No formal feature flag system exists — no LaunchDarkly, Unleash, Flagsmith, or even environment-variable-based feature flags. The only runtime gate is a single AI kill-switch in src/lib/ai-gate.ts that checks an x-ai-disabled header. No progressive rollout, A/B testing, or per-user targeting capability. Feature releases are all-or-nothing deploys.',
@@ -2548,18 +2548,18 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
     status: 'Open',
   },
   {
-    id: 'VIBE-004',
-    title: 'Vibe-Code Bomb Score: 19/27 (70%)',
+    id: 'OMA-004',
+    title: 'Operational Maturity Score: 19/27 Controls Deficient (70%)',
     category: '35. Overall Architectural Soundness',
     description:
-      'Systematic check against the "27 Signs Your Vibe-Coded App Is a Ticking Bomb" checklist resulted in 16 GUILTY verdicts, 6 PARTIAL verdicts, and 5 NOT GUILTY verdicts. The application passes on secret management, API architecture, and query patterns, but fails on operational maturity: no CI/CD, no monitoring, no logging infrastructure, no staging environment, no documentation, and massive god components. The security posture is mixed — secrets are properly managed but the database is functionally exposed.',
+      'Systematic evaluation against a 27-point operational maturity checklist resulted in 16 FAIL verdicts, 6 PARTIAL verdicts, and 5 PASS verdicts. The application satisfies controls for credential management, API abstraction, and query discipline, but fails across operational domains: no CI/CD pipeline, no production monitoring, no structured logging, no staging environment, no onboarding documentation, and monolithic component architecture.',
     severity: 'HIGH',
     cvss: 7.0,
     affectedAssets: ['Entire codebase — see Appendix A in audit/AUDIT.md'],
     impact:
       'The 70% failure rate indicates significant operational risk. While the financial models and data layer are well-engineered, the surrounding infrastructure (CI/CD, monitoring, documentation, environment management) is absent. This creates a fragile deployment pipeline where issues are detected reactively rather than proactively.',
     remediation:
-      'Address the 16 GUILTY items in priority order: (1) Add CI/CD pipeline, (2) Add monitoring/alerting, (3) Add structured logging, (4) Break up god components, (5) Document environment setup, (6) Add health check endpoint, (7) Add staging environment, (8) Add rate limiting, (9) Add input validation, (10) Test database restore procedure. See Appendix A in audit/AUDIT.md for full verdicts.',
+      'Address the 16 failed controls in priority order: (1) Add CI/CD pipeline, (2) Add monitoring/alerting, (3) Add structured logging, (4) Decompose monolithic components, (5) Document environment setup, (6) Add health check endpoint, (7) Add staging environment, (8) Add rate limiting, (9) Add input validation, (10) Verify database restore procedure. See Appendix A in audit/AUDIT.md for full verdicts.',
     effort: 'Medium-term',
     compliance: ['SOC2', 'ISO-27001'],
     status: 'Open',
