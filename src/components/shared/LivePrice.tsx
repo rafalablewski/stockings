@@ -2,6 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
+export interface MarketData {
+  open: number | null;
+  dayHigh: number | null;
+  dayLow: number | null;
+  fiftyTwoWeekHigh: number | null;
+  fiftyTwoWeekLow: number | null;
+}
+
 interface UseLiveStockPriceOptions {
   autoRefresh?: boolean;
   refreshInterval?: number; // in milliseconds
@@ -11,6 +19,7 @@ interface UseLiveStockPriceOptions {
 interface UseLiveStockPriceReturn {
   price: number | null;
   previousClose: number | null;
+  marketData: MarketData;
   isLoading: boolean;
   error: string | null;
   lastUpdated: Date | null;
@@ -29,6 +38,7 @@ export const useLiveStockPrice = (
 
   const [price, setPrice] = useState<number | null>(initialPrice);
   const [previousClose, setPreviousClose] = useState<number | null>(null);
+  const [marketData, setMarketData] = useState<MarketData>({ open: null, dayHigh: null, dayLow: null, fiftyTwoWeekHigh: null, fiftyTwoWeekLow: null });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -48,6 +58,13 @@ export const useLiveStockPrice = (
         const newPrice = data.regularMarketPrice;
         setPrice(newPrice);
         setPreviousClose(data.previousClose || null);
+        setMarketData({
+          open: data.regularMarketOpen ?? null,
+          dayHigh: data.regularMarketDayHigh ?? null,
+          dayLow: data.regularMarketDayLow ?? null,
+          fiftyTwoWeekHigh: data.fiftyTwoWeekHigh ?? null,
+          fiftyTwoWeekLow: data.fiftyTwoWeekLow ?? null,
+        });
         setLastUpdated(new Date());
 
         if (onPriceUpdate) {
@@ -72,6 +89,7 @@ export const useLiveStockPrice = (
   return {
     price,
     previousClose,
+    marketData,
     isLoading,
     error,
     lastUpdated,

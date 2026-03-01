@@ -91,12 +91,21 @@ export async function GET(
       );
     }
 
+    // Compute day high/low/open from chart data as fallback
+    const highs = chartData.map((d: { high: number | null }) => d.high).filter((v: number | null): v is number => v !== null);
+    const lows = chartData.map((d: { low: number | null }) => d.low).filter((v: number | null): v is number => v !== null);
+
     return NextResponse.json({
       symbol: meta.symbol || symbol.toUpperCase(),
       currency: meta.currency || 'USD',
       regularMarketPrice: meta.regularMarketPrice ?? null,
       previousClose: meta.previousClose ?? null,
       chartPreviousClose: meta.chartPreviousClose ?? null,
+      regularMarketOpen: meta.regularMarketOpen ?? (chartData.length > 0 ? chartData[0].open : null),
+      regularMarketDayHigh: meta.regularMarketDayHigh ?? (highs.length > 0 ? Math.max(...highs) : null),
+      regularMarketDayLow: meta.regularMarketDayLow ?? (lows.length > 0 ? Math.min(...lows) : null),
+      fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh ?? null,
+      fiftyTwoWeekLow: meta.fiftyTwoWeekLow ?? null,
       data: chartData,
     });
   } catch (error) {
