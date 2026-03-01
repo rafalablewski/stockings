@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { authFetch } from '@/lib/auth-fetch';
 import { workflows } from '@/data/workflows';
 import '@/components/stocks/stock-model-styles.css';
@@ -87,6 +87,18 @@ export default function RunAuditButton() {
     setRunning(false);
   };
 
+  const handleCopyPrompt = useCallback(() => {
+    navigator.clipboard.writeText(prompt);
+    setCopiedPrompt(true);
+  }, [prompt]);
+
+  useEffect(() => {
+    if (copiedPrompt) {
+      const timerId = setTimeout(() => setCopiedPrompt(false), 2000);
+      return () => clearTimeout(timerId);
+    }
+  }, [copiedPrompt]);
+
   return (
     <div>
       <div className="sm-flex sm-gap-6" style={{ marginBottom: 16 }}>
@@ -95,7 +107,7 @@ export default function RunAuditButton() {
         </button>
         <button
           type="button"
-          onClick={async () => { await navigator.clipboard.writeText(prompt); setCopiedPrompt(true); setTimeout(() => setCopiedPrompt(false), 2000); }}
+          onClick={handleCopyPrompt}
           className="sm-ed-action-btn-sm"
           data-state={copiedPrompt ? "success" : undefined}
         >
