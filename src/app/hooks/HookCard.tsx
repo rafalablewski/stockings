@@ -87,8 +87,8 @@ export default function HookCard({ plugin }: HookCardProps) {
       </div>
 
       {/* View / Copy prompt */}
-      <div className="sm-flex sm-gap-6" style={{ marginBottom: 16 }}>
-        <button type="button" onClick={() => setShowPrompt(!showPrompt)} className="sm-ed-action-btn-sm">
+      <div className="sm-flex sm-gap-6 sm-mb-16">
+        <button type="button" onClick={() => setShowPrompt(!showPrompt)} className="sm-ed-action-btn-sm sm-ml-auto">
           {showPrompt ? "Hide prompt" : "View prompt"}
         </button>
         <button
