@@ -565,7 +565,6 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
   const secFinancialsAgents = availableWorkflows.filter((w) => w.requiresUserData && w.category !== 'audit' && SEC_FINANCIALS_IDS.has(w.id));
   const ownershipAgents = availableWorkflows.filter((w) => w.requiresUserData && w.category !== 'audit' && OWNERSHIP_IDS.has(w.id));
   const intelAgents = availableWorkflows.filter((w) => w.requiresUserData && w.category !== 'audit' && !SEC_FINANCIALS_IDS.has(w.id) && !OWNERSHIP_IDS.has(w.id) && w.id !== "ask-agent");
-  const codeAuditAgents = availableWorkflows.filter((w) => w.category === 'audit' && CODE_AUDIT_IDS.has(w.id));
   const dataAuditAgents = availableWorkflows.filter((w) => w.category === 'audit' && !CODE_AUDIT_IDS.has(w.id) && !w.requiresUserData);
   const dataInputAuditAgents = availableWorkflows.filter((w) => w.category === 'audit' && !CODE_AUDIT_IDS.has(w.id) && w.requiresUserData);
   const askAgent = availableWorkflows.find((w) => w.id === "ask-agent");
@@ -643,20 +642,11 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
       )}
 
       {/* ── Audits ────────────────────────────────────────────────── */}
-      {(codeAuditAgents.length > 0 || dataAuditAgents.length > 0 || dataInputAuditAgents.length > 0) && (
+      {(dataAuditAgents.length > 0 || dataInputAuditAgents.length > 0) && (
         <div>
           <div className="sm-divider">
             <span className="sm-section-label" style={{ marginBottom: 0 }}>Audits</span>
           </div>
-
-          {codeAuditAgents.length > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <CategoryLabel color="rgba(168,130,230,0.5)">Code &amp; Security</CategoryLabel>
-              <div className="sm-flex-col sm-gap-8">
-                {codeAuditAgents.map((wf) => <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />)}
-              </div>
-            </div>
-          )}
 
           {dataAuditAgents.length > 0 && (
             <div style={{ marginBottom: 20 }}>

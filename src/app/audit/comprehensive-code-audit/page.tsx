@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { readFileSync } from "fs";
 import { join } from "path";
 import AuditDashboard from "@/components/AuditDashboard";
+import RunAuditButton from "./RunAuditButton";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,9 @@ export default function ComprehensiveCodeAuditPage() {
             accessibility, compliance, and architecture. CVSS v3.1 scoring with
             CWE and OWASP mapping.
           </p>
+          <div className="mt-4">
+            <RunAuditButton />
+          </div>
         </div>
         <AuditDashboard auditMd={auditMd} />
       </div>
