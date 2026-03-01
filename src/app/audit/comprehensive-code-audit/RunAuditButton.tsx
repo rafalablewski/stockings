@@ -9,6 +9,8 @@ export default function RunAuditButton() {
   const [result, setResult] = useState('');
   const [error, setError] = useState('');
   const [expanded, setExpanded] = useState(false);
+  const [showPrompt, setShowPrompt] = useState(false);
+  const [copiedPrompt, setCopiedPrompt] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   const prompt = workflows.find(w => w.id === 'code-audit')?.variants[0]?.prompt ?? '';
@@ -86,23 +88,53 @@ export default function RunAuditButton() {
 
   return (
     <div>
-      {!running ? (
-        <button
-          onClick={handleRun}
-          className="sm-ed-action-btn sm-p-5-14"
-          data-variant="mint"
-        >
-          Run Audit
+      <div className="sm-flex sm-gap-6" style={{ marginBottom: 16 }}>
+        <button type="button" onClick={() => setShowPrompt(!showPrompt)} className="sm-ed-action-btn-sm">
+          {showPrompt ? "Hide prompt" : "View prompt"}
         </button>
-      ) : (
         <button
-          onClick={handleStop}
-          className="sm-ed-action-btn sm-p-5-14"
-          data-variant="coral"
+          type="button"
+          onClick={async () => { await navigator.clipboard.writeText(prompt); setCopiedPrompt(true); setTimeout(() => setCopiedPrompt(false), 2000); }}
+          className="sm-ed-action-btn-sm"
+          data-state={copiedPrompt ? "success" : undefined}
         >
-          Stop
+          {copiedPrompt ? "Copied!" : "Copy prompt"}
         </button>
+      </div>
+
+      {showPrompt && (
+        <div className="sm-scrollbox-short sm-mb-16 sm-rounded-8 sm-bg-surface2 sm-p-16" style={{ borderLeft: "2px solid var(--border)" }}>
+          <pre className="sm-subtle-sm" style={{ fontFamily: "var(--font-mono, monospace)", lineHeight: 1.7, whiteSpace: "pre-wrap", margin: 0 }}>
+            {prompt}
+          </pre>
+        </div>
       )}
+
+      <div className="sm-flex" style={{ gap: 10 }}>
+        {!running ? (
+          <button
+            onClick={handleRun}
+            className="sm-ed-action-btn sm-p-5-14"
+            data-variant="mint"
+          >
+            Run Audit
+          </button>
+        ) : (
+          <button
+            onClick={handleStop}
+            className="sm-ed-action-btn sm-p-5-14"
+            data-variant="coral"
+          >
+            Stop
+          </button>
+        )}
+        {running && (
+          <div className="sm-flex sm-gap-8">
+            <div style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--text3)", animation: "pulse 2s infinite" }} />
+            <span className="sm-text3 sm-uppercase sm-fw-500" style={{ fontSize: 9, letterSpacing: "0.08em" }}>Analyzing...</span>
+          </div>
+        )}
+      </div>
 
       {(result || running || error) && (
         <div className="mt-6">
