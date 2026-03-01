@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Header Concepts Gallery — Stockings</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #05070A;
+      color: #F0F6FC;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .gallery-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(5,7,10,0.85);
+      border-bottom: 1px solid rgba(240,246,252,0.06);
+      padding: 20px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .gallery-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .gallery-subtitle {
+      font-size: 11px;
+      color: rgba(255,255,255,0.15);
+      letter-spacing: 0.04em;
+    }
+
+    .gallery-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .gallery-btn {
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.4);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .gallery-btn:hover {
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.7);
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    .gallery-btn.active {
+      background: rgba(126,231,135,0.08);
+      color: rgba(126,231,135,0.8);
+      border-color: rgba(126,231,135,0.2);
+    }
+
+    /* ── Grid ── */
+    .gallery-grid {
+      padding: 32px 48px 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    .gallery-grid.compact {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    /* ── Card ── */
+    .concept-card {
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .concept-card:hover {
+      border-color: rgba(126,231,135,0.15);
+      transform: translateY(-2px);
+    }
+
+    .concept-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .concept-number {
+      font-family: 'SF Mono', 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(126,231,135,0.5);
+      letter-spacing: 0.1em;
+    }
+
+    .concept-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.06em;
+    }
+
+    .concept-tags {
+      display: flex;
+      gap: 6px;
+    }
+
+    .concept-tag {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .concept-tag.glass { color: rgba(34,211,238,0.5); border-color: rgba(34,211,238,0.1); background: rgba(34,211,238,0.04); }
+    .concept-tag.centered { color: rgba(167,139,250,0.5); border-color: rgba(167,139,250,0.1); background: rgba(167,139,250,0.04); }
+    .concept-tag.minimal { color: rgba(255,255,255,0.3); border-color: rgba(255,255,255,0.06); }
+    .concept-tag.bold { color: rgba(126,231,135,0.5); border-color: rgba(126,231,135,0.1); background: rgba(126,231,135,0.04); }
+    .concept-tag.split { color: rgba(210,153,34,0.5); border-color: rgba(210,153,34,0.1); background: rgba(210,153,34,0.04); }
+    .concept-tag.neon { color: rgba(126,231,135,0.5); border-color: rgba(126,231,135,0.1); background: rgba(126,231,135,0.04); }
+    .concept-tag.space { color: rgba(34,211,238,0.5); border-color: rgba(34,211,238,0.1); background: rgba(34,211,238,0.04); }
+
+    .concept-svg {
+      width: 100%;
+      display: block;
+      background: #05070A;
+    }
+
+    .concept-card-footer {
+      padding: 12px 20px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      font-size: 11px;
+      color: rgba(255,255,255,0.15);
+      line-height: 1.5;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1200px) {
+      .gallery-grid.compact { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      .gallery-header { padding: 16px 20px; }
+      .gallery-grid { padding: 20px 20px 48px; gap: 32px; }
+      .gallery-grid.compact { gap: 16px; }
+      .concept-tags { display: none; }
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+  </style>
+</head>
+<body>
+
+  <div class="gallery-header">
+    <div>
+      <div class="gallery-title">Header Concepts Gallery</div>
+      <div class="gallery-subtitle">10 sketches · Ive×Tesla · Stock name → Price → Updated</div>
+    </div>
+    <div class="gallery-controls">
+      <button class="gallery-btn active" onclick="setLayout('full')">Full</button>
+      <button class="gallery-btn" onclick="setLayout('compact')">Grid</button>
+    </div>
+  </div>
+
+  <div class="gallery-grid" id="grid">
+
+    <!-- 01 -->
+    <div class="concept-card">
+      <div class="concept-card-header">
+        <div><span class="concept-number">01</span> <span class="concept-name">Floating Glass Card</span></div>
+        <div class="concept-tags">
+          <span class="concept-tag glass">Glass</span>
+          <span class="concept-tag split">Two-Column</span>
+        </div>
+      </div>
+      <img class="concept-svg" src="01-floating-glass-card.svg" alt="Concept 01 — Floating Glass Card" loading="lazy">
+      <div class="concept-card-footer">Frosted glass panel floating over radial glow. Brand left, price in nested glass sub-panel right. Mini stats row at bottom.</div>
+    </div>
+
+    <!-- 02 -->
+    <div class="concept-card">
+      <div class="concept-card-header">
+        <div><span class="concept-number">02</span> <span class="concept-name">Apple Hero Center</span></div>
+        <div class="concept-tags">
+          <span class="concept-tag centered">Centered</span>
+          <span class="concept-tag bold">Drama</span>
+        </div>
+      </div>
+      <img class="concept-svg" src="02-apple-hero-center.svg" alt="Concept 02 — Apple Hero Center" loading="lazy">
+      <div class="concept-card-footer">Full Apple keynote drama. Everything vertically centered — ticker pill, massive name, enormous 120px price as the hero moment.</div>
+    </div>
+
+    <!-- 03 -->
+    <div class="concept-card">
+      <div class="concept-card-header">
+        <div><span class="concept-number">03</span> <span class="concept-name">Glassmorphism Orb Panel</span></div>
+        <div class="concept-tags">
+          <span class="concept-tag glass">Glass</span>
+          <span class="concept-tag centered">Centered</span>
+        </div>
+      </div>
+      <img class="concept-svg" src="03-glassmorphism-orb.svg" alt="Concept 03 — Glassmorphism Orb Panel" loading="lazy">
+      <div class="concept-card-footer">Mint, violet, and cyan orbs float behind a frosted glass card. Orbs bleed through at reduced opacity. True glassmorphism depth.</div>
+    </div>
+
+    <!-- 04 -->
+    <div class="concept-card">
+      <div class="concept-card-header">
+        <div><span class="concept-number">04</span> <span class="concept-name">Tesla Instrument Dashboard</span></div>
+        <div class="concept-tags">
+          <span class="concept-tag bold">Tesla</span>
+          <span class="concept-tag split">Three-Column</span>
+        </div>
+      </div>
+      <img class="concept-svg" src="04-tesla-dashboard.svg" alt="Concept 04 — Tesla Instrument Dashboard" loading="lazy">
+      <div class="concept-card-footer">Three-column instrument cluster. Left: identity telemetry. Center: price as gauge with arc. Right: vertical metric bars with progress fills.</div>
+    </div>
+
+    <!-- 05 -->
+    <div class="concept-card">
+      <div class="concept-card-header">
+        <div><span class="concept-number">05</span> <span class="concept-name">Jony Ive Minimal</span></div>
+        <div class="concept-tags">
+          <span class="concept-tag minimal">Minimal</span>
+          <span class="concept-tag split">Two-Column</span>
+        </div>
+      </div>
+      <img class="concept-svg" src="05-jony-ive-minimal.svg" alt="Concept 05 — Jony Ive Minimal" loading="lazy">
+      <div class="concept-card-footer">Extreme restraint. font-weight 200–300. Vast whitespace. Zero ornamentation, zero glass — typography and spacing are the entire design.</div>
+    </div>
+
+    <!-- 06 -->
+    <div class="concept-card">
+      <div class="concept-card-header">
+        <div><span class="concept-number">06</span> <span class="concept-name">Split Glass Panels</span></div>
+        <div class="concept-tags">
+          <span class="concept-tag glass">Glass</span>
+          <span class="concept-tag split">Dual Card</span>
+        </div>
+      </div>
+      <img class="concept-svg" src="06-split-glass-panels.svg" alt="Concept 06 — Split Glass Panels" loading="lazy">
+      <div class="concept-card-footer">Two side-by-side floating glass cards. Left: white-tinted identity panel. Right: mint-tinted price panel. Gap glow between them.</div>
+    </div>
+
+    <!-- 07 -->
+    <div class="concept-card">
+      <div class="concept-card-header">
+        <div><span class="concept-number">07</span> <span class="concept-name">Cinematic Depth</span></div>
+        <div class="concept-tags">
+          <span class="concept-tag centered">Centered</span>
+          <span class="concept-tag bold">Layered</span>
+        </div>
+      </div>
+      <img class="concept-svg" src="07-cinematic-depth.svg" alt="Concept 07 — Cinematic Depth" loading="lazy">
+      <div class="concept-card-footer">z-layered parallax: giant faded ASTS in background, company name mid-layer, price foreground with blur glow. Floating metric pills at bottom.</div>
+    </div>
+
+    <!-- 08 -->
+    <div class="concept-card">
+      <div class="concept-card-header">
+        <div><span class="concept-number">08</span> <span class="concept-name">Neon Edge Glass</span></div>
+        <div class="concept-tags">
+          <span class="concept-tag neon">Neon</span>
+          <span class="concept-tag glass">Glass</span>
+        </div>
+      </div>
+      <img class="concept-svg" src="08-neon-edge-glass.svg" alt="Concept 08 — Neon Edge Glass" loading="lazy">
+      <div class="concept-card-footer">Gradient neon border (mint→cyan→violet) on glass card with glow bleed. Includes mini sparkline chart in price panel. Edge-lit premium feel.</div>
+    </div>
+
+    <!-- 09 -->
+    <div class="concept-card">
+      <div class="concept-card-header">
+        <div><span class="concept-number">09</span> <span class="concept-name">Orbital HUD</span></div>
+        <div class="concept-tags">
+          <span class="concept-tag space">Space</span>
+          <span class="concept-tag centered">HUD</span>
+        </div>
+      </div>
+      <img class="concept-svg" src="09-orbital-hud.svg" alt="Concept 09 — Orbital HUD" loading="lazy">
+      <div class="concept-card-footer">Space-themed with orbital ellipse rings, satellite dots, and central circular price display. HUD corner readouts for constellation and market data.</div>
+    </div>
+
+    <!-- 10 -->
+    <div class="concept-card">
+      <div class="concept-card-header">
+        <div><span class="concept-number">10</span> <span class="concept-name">Aurora Gradient</span></div>
+        <div class="concept-tags">
+          <span class="concept-tag glass">Glass</span>
+          <span class="concept-tag neon">Aurora</span>
+          <span class="concept-tag centered">Centered</span>
+        </div>
+      </div>
+      <img class="concept-svg" src="10-aurora-gradient.svg" alt="Concept 10 — Aurora Gradient" loading="lazy">
+      <div class="concept-card-footer">Flowing aurora borealis wisps behind a centered glass card. Price text uses a mint→white→cyan gradient. Atmospheric and futuristic.</div>
+    </div>
+
+  </div>
+
+  <script>
+    function setLayout(mode) {
+      const grid = document.getElementById('grid');
+      const btns = document.querySelectorAll('.gallery-btn');
+      btns.forEach(b => b.classList.remove('active'));
+
+      if (mode === 'compact') {
+        grid.classList.add('compact');
+        btns[1].classList.add('active');
+      } else {
+        grid.classList.remove('compact');
+        btns[0].classList.add('active');
+      }
+    }
+  </script>
+
+</body>
+</html>
