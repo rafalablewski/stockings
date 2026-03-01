@@ -14,9 +14,9 @@ export default function MarkdownPage({
   title: string;
 }) {
   return (
-    <div className="min-h-screen py-12 px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-[22px] font-light tracking-[0.15em] text-white/90 mb-8">
+    <div className="min-h-screen py-20 px-6">
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-2xl font-semibold tracking-tight text-white mb-3">
           {title}
         </h1>
         <article className="markdown-body">
