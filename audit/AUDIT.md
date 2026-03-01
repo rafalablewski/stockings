@@ -2004,7 +2004,7 @@ When adding a new audit, register it here first.
 **Scope:** Full codebase — 27-point operational maturity checklist
 **Methodology:** Systematic verification of each indicator against the codebase with traffic-light verdicts
 **Findings:** 4 new structured findings (VIBE-001 through VIBE-004) + 16 GUILTY / 6 PARTIAL / 5 NOT GUILTY verdicts
-**Report:** `docs/AUDIT.md` (Appendix A)
+**Report:** `audit/AUDIT.md` (Appendix A)
 **Dashboard:** `/audit/comprehensive-code-audit`
 
 ### Prompt
@@ -2051,7 +2051,7 @@ cross-references to existing CCA-1.0 findings, and severity assessment.
 **Scope:** Full codebase — 108 files across Next.js 16 / TypeScript / Neon PostgreSQL / Drizzle ORM
 **Methodology:** Automated static analysis + manual code review across 35 categories
 **Findings:** 128 structured findings (see `src/data/audit-findings.ts`)
-**Report:** `docs/AUDIT.md`
+**Report:** `audit/AUDIT.md`
 **Dashboard:** `/audit/comprehensive-code-audit`
 
 ### Prompt
