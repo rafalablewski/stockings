@@ -1,12 +1,22 @@
-# Comprehensive Code Audit Report — Stockings (ABISON)
+# Stockings (ABISON) — Unified Audit Report
 
-**Date:** 2026-02-22
-**Scope:** Full codebase — 108 files across Next.js 16 / TypeScript / Neon PostgreSQL / Drizzle ORM
-**Auditor:** Automated deep-analysis (Claude)
+> Single source of truth for all audit findings, scores, and program definitions.
+
+| Audit | Date | Scope | Status |
+|-------|------|-------|--------|
+| CCA-1.0 — 35-Category Code Audit | 2026-02-22 | 108 files, 132 structured findings | Active |
+| CCA-1.1 — Vibe-Code Bomb 27-Point Check | 2026-03-01 | 27-point operational maturity checklist | Active |
+| Financial Model & UX Audit | 2026-02-13 | DCF, Monte Carlo, UI/UX, branding | Historical |
+| Formula & Math Audit | 2026-02-13 | RSI, staking, risk factors, technicals | Historical (all fixed) |
+| DBV-CP/XR/SC/DF — Database Validation | Ongoing | Per-ticker data quality | Active |
+
+**Platform:** Next.js 16 / TypeScript / Neon PostgreSQL / Drizzle ORM
 
 ---
 
 ## Table of Contents
+
+**Part I — CCA-1.0: 35-Category Code Audit (2026-02-22)**
 
 1. [Hardcoded Data](#1-hardcoded-data)
 2. [Database / API Connections](#2-database--api-connections)
@@ -43,6 +53,13 @@
 33. [File Handling Security](#33-file-handling-security)
 34. [Compliance with Industry Standards](#34-compliance-with-industry-standards)
 35. [Overall Architectural Soundness](#35-overall-architectural-soundness)
+
+**Appendices**
+
+- [Appendix A — Vibe-Code Bomb 27-Point Audit (CCA-1.1)](#appendix-a--27-signs-your-vibe-coded-app-is-a-ticking-bomb-audit)
+- [Appendix B — Financial Model & UX Audit (Feb 13)](#appendix-b--financial-model--ux-audit)
+- [Appendix C — Formula & Math Audit (Feb 13)](#appendix-c--formula--math-audit)
+- [Appendix D — Audit Program Registry & Prompts](#appendix-d--audit-program-registry--prompts)
 
 ---
 
@@ -1132,3 +1149,1362 @@ This is a duplicate of #16, confirmed across the full codebase. The only logging
 **Ticking Bomb Score: 16 + (6 × 0.5) = 19 / 27 (70%)**
 
 The application passes on the fundamentals of secret management (#1, #25), API architecture (#4, #14, #21), and database query patterns (#4). However, it fails decisively on operational maturity: no CI/CD, no monitoring, no logging infrastructure, no staging environment, no documentation, and massive god components. The security posture is mixed — secrets are properly managed but the database is functionally exposed due to missing authentication on most endpoints.
+
+---
+---
+
+# Appendices
+
+---
+
+## Appendix B — Financial Model & UX Audit
+
+**Date:** February 13, 2026
+**Scope:** Full-stack code review, financial model verification, UI/UX audit, consistency analysis
+**Overall Score: 7.8 / 10**
+
+| Category | Score | Weight | Weighted |
+|----------|-------|--------|----------|
+| Consistency & Branding | 8.5/10 | 15% | 1.28 |
+| Content & Writing | 8.0/10 | 10% | 0.80 |
+| Financial Logic & Math | 8.5/10 | 25% | 2.13 |
+| UI/UX & Architecture | 8.0/10 | 15% | 1.20 |
+| Visual Design | 9.0/10 | 10% | 0.90 |
+| Code Quality | 6.0/10 | 15% | 0.90 |
+| Professional Polish | 7.5/10 | 10% | 0.75 |
+| **TOTAL** | | **100%** | **7.96** |
+
+## 1. OVERALL CONSISTENCY & BRANDING
+
+### 1.1 Cross-Stock Structural Consistency
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| All three models share identical Unified Model Maintenance Protocol header comments | **Praise** | ASTS.tsx:34-113, BMNR.tsx:62-141, CRCL.tsx:30-109 |
+| Shared `stock-model-styles.ts` provides unified CSS with accent color variants (cyan/violet/mint) | **Praise** | stock-model-styles.ts:1-1690 |
+| ASTS version is 2.1.0, BMNR is 2.5.0, CRCL is 1.1.0 -- inconsistent versioning scheme | **Low** | ASTS.tsx:23, BMNR.tsx:17, CRCL.tsx:18 |
+| ASTS has 15+ tabs, BMNR has 15 tabs, CRCL has a different tab composition -- tab parity is not fully achieved | **Medium** | All three model files |
+| Header comment style differs: ASTS uses `/** */` block, BMNR uses `/* */`, CRCL uses `//` style for the "MUST DO" banner | **Cosmetic** | ASTS.tsx:1-17, BMNR.tsx:1-60, CRCL.tsx:1-12 |
+
+**Recommendation:** Synchronize version numbering across all three models (e.g., all 2.x.y). Ensure CRCL adopts the same `/** */` comment style for the "MUST DO" banner as ASTS and BMNR for visual consistency.
+
+### 1.2 Terminology Consistency
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| All three models use identical `UpdateSource` type (`'PR' | 'SEC' | 'WS' | 'MARKET'`) | **Praise** | ASTS.tsx:199, BMNR.tsx:249, CRCL.tsx:167 |
+| All three define identical `RATING_NORMALIZATION` map for analyst ratings | **Praise** | ASTS.tsx:296-312, BMNR.tsx:343-358, CRCL.tsx:229-245 |
+| Identical `LEGAL_DISCLAIMERS` text across all three models | **Praise** | ASTS.tsx:340-343, BMNR.tsx:393-396, CRCL.tsx:273-276 |
+| "EV/EBITDA" terminology is consistent across models | **Praise** | Throughout |
+| ASTS uses "bull case" / "bear case" while CRCL scenarios use "Bull" / "Bear" / "Moon" / "Worst" naming | **Low** | ASTS.tsx SCENARIO_PRESETS vs CRCL SCENARIO_SIMULATIONS |
+
+### 1.3 Date/Number Formatting
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| ASTS data freshness: `'2026-02-12'` ISO format | **Praise** | src/data/asts/company.ts:31 |
+| BMNR data freshness: `'2026-02-12'` ISO format | **Praise** | src/data/bmnr/company.ts:31 |
+| CRCL data freshness: `'2025-12-31'` -- notably older than ASTS/BMNR | **Medium** | src/data/crcl/company.ts:29 |
+| Currency formatting: ASTS uses `$2,780M` style in comments, `$96.92` for prices | **Praise** | src/data/asts/company.ts:79 |
+| All three use millions (M) for shares, billions (B) for enterprise value | **Praise** | Throughout |
+| CRCL stock price `$80.05` is dated Dec 31, 2025 -- 6+ weeks stale | **High** | src/data/crcl/company.ts:67 |
+
+**Recommendation:** Update CRCL data to Feb 2026 to match ASTS and BMNR freshness. This stale data is a significant consistency gap.
+
+---
+
+## 2. CONTENT & WRITING QUALITY
+
+### 2.1 Grammar, Spelling, Punctuation
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| ASTS.tsx line 152: "2025 Creative Professional Design (CRCL-Style UI/UX)" -- references another stock's style in ASTS file header | **Low** | ASTS.tsx:152 |
+| BMNR.tsx line 235: "2025 Creative Professional Design (CRCL-Style UI/UX)" -- same cross-reference issue | **Low** | BMNR.tsx:235 |
+| All disclaimer text is grammatically correct and professionally written | **Praise** | LEGAL_DISCLAIMERS across all files |
+| AI Agent instruction blocks in data files are clear, well-structured, and actionable | **Praise** | All data/*.ts files |
+
+### 2.2 Professional Tone & Balance
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| BMNR changelog uses specific metrics: "4.285M ETH, $10.7B total, staking hits 2.897M (67.6%)" -- data-driven, not hyperbolic | **Praise** | BMNR.tsx:22 |
+| CRCL "Moon" scenario projects USDC at $2,850B by 2035 and share price of $7,834 | **High** | CRCL.tsx:576-615 |
+| CRCL "Moon" scenario assumes 53% stablecoin market share and $99.8B gross revenue by 2035 | **High** | CRCL.tsx:577 |
+| ASTS "Moon" scenario uses 10% penetration rate -- aggressive but labeled as such | **Medium** | ASTS.tsx SCENARIO_PRESETS |
+| All models include both bull AND bear cases with explicit risk catalysts | **Praise** | All three models |
+| Footer disclaimer: "Not financial advice" is present | **Praise** | layout.tsx:49 |
+
+**Recommendation:** The CRCL "Moon" scenario ($2,850B USDC, $7,834/share) strains credibility. Total stablecoin market was ~$220B in late 2025. Projecting $5,400B+ total market (2,850B / 53%) by 2035 would require stablecoins to exceed M2 money supply of several G7 nations. Consider capping at more defensible levels or adding explicit caveats about the extreme nature of this scenario.
+
+### 2.3 Sourcing & Factual Accuracy
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| ASTS data explicitly cites "8-K Feb 11, 2026", "424B5", "DEF 14A" filings | **Praise** | ASTS.tsx:176-184 |
+| BMNR data cites "CIK: 0001829311", "EIN: 84-3986354" -- SEC-verifiable | **Praise** | BMNR.tsx:39-44 |
+| CRCL data cites "Q3 2025 10-Q (Nov 12, 2025)" | **Praise** | src/data/crcl/company.ts:30 |
+| ASTS debt rate of 2.15% weighted average is documented with breakdown | **Praise** | src/data/asts/company.ts:82 |
+| BMNR uses CESR rate of 3.11% for staking APY -- verifiable on-chain | **Praise** | BMNR.tsx model defaults |
+
+---
+
+## 3. FINANCIAL LOGIC, MATHEMATICS & CALCULATIONS
+
+### 3.1 DCF Models (All Three Stocks)
+
+#### ASTS DCF (Lines 3795-3896)
+
+| Step | Formula | Verification | Severity |
+|------|---------|--------------|----------|
+| Terminal Subscribers | `partnerReach * (penetrationRate/100) * (1 - competitionDiscount/100)` | Correct: 3,200M * 3% * 80% = 76.8M subs | **Praise** |
+| Terminal Gross Revenue | `terminalSubs * blendedARPU * 12 / 1000` | Correct: M * $/mo * 12 / 1000 = $B | **Praise** |
+| Revenue Share | `terminalGrossRev * (revenueShare / 100)` | Correct | **Praise** |
+| Terminal EBITDA | `terminalRev * (terminalMargin / 100)` | Correct | **Praise** |
+| Terminal FCF | `terminalRev * ((terminalMargin - terminalCapex) / 100)` | Simplified -- ignores taxes, working capital | **Medium** |
+| Gordon Growth TV | `terminalFCF / spread` where `spread = discount - growth` | Correct; protected with `spread > 0.01` | **Praise** |
+| PV Discount | `terminalEV / (1 + r)^n` | Correct | **Praise** |
+| Risk Factor | `(1 - reg/100) * (1 - tech/100) * (1 - comp/100)` | Assumes independent risks (documented) | **Medium** |
+| Equity Value | `riskAdjustedEV - netDebtB` | Correct; properly handles net cash | **Praise** |
+| Target Price | `(equityValue * 1000) / dilutedShares` | Correct unit conversion: $B*1000/M = $/share | **Praise** |
+
+**Issue F3.1a -- FCF Simplification:**
+In ASTS.tsx line ~3821: `const terminalFCF = terminalRev * ((terminalMargin - terminalCapex) / 100);`
+This treats FCF as Revenue * (EBITDA margin% - CapEx%) which ignores taxes (~21% federal) and working capital. For a pre-revenue company this is acceptable as a rough model, but should be labeled clearly.
+
+**Fix:** Add comment: `// Simplified: ignores taxes and working capital. For refined model, use: EBITDA * (1 - taxRate) + D&A * taxRate - CapEx - deltaWC`
+
+#### BMNR DCF (Lines 4354-4405)
+
+| Step | Formula | Verification | Severity |
+|------|---------|--------------|----------|
+| Compound ETH | `eth += eth * (APY/100)` per year | Correct annual compounding | **Praise** |
+| Future ETH Price | `ethPrice * (1 + growth%)^y` | Correct CAGR formula | **Praise** |
+| NAV per share | `(eth * futurePrice) / (shares * 1e6)` | Correct: ETH * $/ETH / total_shares | **Praise** |
+| PV per share | `nav / (1 + discount%)^y` | Correct standard DCF | **Praise** |
+| CF per share | `(yieldETH * price) * (payout%) / (shares * 1e6)` | Correct | **Praise** |
+| Terminal Value | `finalNAV * terminalMultiple` | Correct terminal NAV approach | **Praise** |
+| IRR | `(impliedValue / currentNAV)^(1/years) - 1` | Correct | **Praise** |
+
+**Verdict:** BMNR DCF is mathematically sound. All unit conversions verified correct.
+
+#### CRCL DCF (Lines 1373-1441)
+
+| Step | Formula | Verification | Severity |
+|------|---------|--------------|----------|
+| Gross Revenue | `USDC_circ * (reserveYield / 100)` | Correct: $62.5B * 4% = $2.5B | **Praise** |
+| Net Revenue | `grossRev * (1 - distributionCost/100)` | Correct | **Praise** |
+| EBITDA | `netRev * (operatingMargin/100)` | Correct | **Praise** |
+| FCF | `EBITDA * 0.85` (85% conversion) | Reasonable for asset-light business | **Praise** |
+| Gordon Growth TV | `terminalFCF / (discount - growth)` | Correct; protected with `spread > 0.01` | **Praise** |
+| Hardcoded net debt | `netDebt = 0.2` ($200M) | Should be configurable | **Medium** |
+| Target Price | `(equityValue * 1000) / terminalShares` | Correct unit conversion | **Praise** |
+
+**Issue F3.1b -- Hardcoded Debt/Cash in CRCL Monte Carlo:**
+In CRCL.tsx line ~3280: `res.push(safe((pv + 1349 - 149) / MARKET.shares));`
+The values 1349 and 149 are hardcoded magic numbers representing cash and debt adjustments in millions. These should be extracted to named constants or imported from `company.ts`.
+
+### 3.2 Monte Carlo Simulations
+
+#### ASTS Monte Carlo (Lines 4333-4475)
+
+| Component | Formula | Verification | Severity |
+|-----------|---------|--------------|----------|
+| Box-Muller | `sqrt(-2*ln(u)) * cos(2*pi*v)` | Standard algorithm, rejection for log(0) | **Praise** |
+| Log-normal factor | `exp(-0.5*sigma^2 + sigma*Z)` | Correct: E[factor] = 1 (mean-preserving) | **Praise** |
+| Operating leverage | -15% margin if revenue < $2B, -5% if < $4B | Economically sound | **Praise** |
+| Multiple compression | -4x if revenue < $2B, -2x if < $4B, floor at 4x | Sound | **Praise** |
+| Sharpe Ratio | `(avgReturn - riskFreeRate) / stdDev` | Correct | **Praise** |
+| Sortino Ratio | Uses `negativeReturns.length` instead of `n` for denominator | Biases downside dev estimate | **Medium** |
+
+**Issue F3.2a -- Sortino Ratio Denominator (ASTS):**
+In ASTS.tsx line ~4443: `negativeReturns.reduce((...), 0) / negativeReturns.length`
+Standard Sortino should use all returns but only square downside deviations. Current approach divides by the subset size, biasing the downside deviation upward.
+
+**Fix:**
+```typescript
+const downsideVariance = returns.reduce((a, r) => a + (r < riskFreeRate ? Math.pow(r - riskFreeRate, 2) : 0), 0) / n;
+```
+
+#### BMNR Monte Carlo -- GBM (Lines 4715-4783)
+
+| Component | Formula | Verification | Severity |
+|-----------|---------|--------------|----------|
+| GBM Price | `price * exp((mu + yield - slash - op - 0.5*sigma^2)*dt + sigma*sqrt(dt)*z)` | Correct Ito's lemma correction | **Praise** |
+| NAV Multiple Mean Reversion | `mult * exp(kappa*(mult-1)*dt + m_sigma*sqrt(dt)*z)` bounded [0.3, 2.5] | Correct log-normal mean reversion | **Praise** |
+| Correlated normals | Uses Cholesky decomposition for (z1, z2) | Correct | **Praise** |
+| VaR/CVaR | 5th percentile and average of bottom 5% | Correct | **Praise** |
+
+**Verdict:** BMNR's GBM Monte Carlo is the most sophisticated of the three. Implementation is mathematically sound.
+
+#### CRCL Monte Carlo (Lines 3251-3321)
+
+| Component | Formula | Verification | Severity |
+|-----------|---------|--------------|----------|
+| Box-Muller | `sqrt(-2*ln(u)) * cos(2*pi*v)` | Correct | **Praise** |
+| Revenue growth | Normal distribution: `mean + z * std` where std = (max-min)/4 | Reasonable parametric assumption | **Praise** |
+| Reserve rate | Uniform [3%, 5%] via `3 + Math.random() * 2` | Different distribution than growth -- should document why | **Low** |
+| Terminal value | `rldcY * 1000 * multiple` | Correct | **Praise** |
+| Sharpe/Sortino | Both implemented | Correct | **Praise** |
+
+**Issue F3.2b -- Mixed Distribution Types (CRCL):**
+Revenue growth uses normal distribution (Box-Muller), but the reserve rate uses uniform distribution (`3 + Math.random() * 2`). This mixing is not inherently wrong but should be documented.
+
+### 3.3 Scenario Projection Verification (CRCL)
+
+**BASE Scenario 2025:**
+- USDC: $80B, Reserve Rate: 4.0%
+- Expected Gross Revenue: 80 * 4% = $3.2B -- **MATCHES** field `grossRevenue: 3.2`
+- Distribution Cost: $1.7B -- implies 53.1% distribution rate (field says `rldcMargin: 39`)
+- Net Revenue: 3.2 - 1.7 = $1.5B -- **MATCHES** field `netRevenue: 1.5`
+- RLDC Margin: 1.5/3.2 = 46.9% -- **DOES NOT MATCH** field `rldcMargin: 39`
+
+**Issue F3.3a -- CRCL RLDC Margin Inconsistency:**
+In CRCL.tsx BASE scenario 2025: `rldcMargin: 39` but `netRevenue / grossRevenue = 1.5/3.2 = 46.9%`. The `rldcMargin` field appears to represent something different (possibly RLDC as % of gross rev minus distribution only, or net income margin). This creates confusion for anyone reading the raw data.
+
+**Severity: High** -- Financial metric definitions must be unambiguous in investor-facing content.
+
+**BASE Scenario 2035 verification:**
+- USDC: $680B, Rate: 3.0%
+- Gross Revenue: 680 * 3% = $20.4B -- **MATCHES** `grossRevenue: 20.4`
+- Distribution: $9.2B (45.1%) -- distribution cost improving from 53% to 45%
+- Net Revenue: 20.4 - 9.2 = $11.2B -- **MATCHES** `netRevenue: 11.2`
+- EBITDA: $4.20B -- `ebitda / netRevenue = 37.5%` -- reasonable operating margin
+- Share Price: $882 -- `equityValue: 202, shares: ~229M, 202B*1000/229 = $882` -- **MATCHES**
+
+### 3.4 Technical Indicator Calculations (StockChart.tsx)
+
+| Indicator | Status | Notes |
+|-----------|--------|-------|
+| RSI (Wilder's smoothing) | **Fixed & Correct** | Uses `prevAvgGain/prevAvgLoss` state variables properly |
+| SMA | **Correct** | Standard simple moving average |
+| EMA | **Correct** | Standard exponential moving average with 2/(n+1) multiplier |
+| Bollinger Bands | **Correct** | Population standard deviation (appropriate per Bollinger's definition) |
+| VWAP | **Correct** | `sum(TP*Vol) / sum(Vol)` where TP = (H+L+C)/3 |
+| MACD | **Mostly Correct** | Null-to-0 conversion at line 254 may distort early signal line |
+| ATR | **Bug** | `slice(0, period + 1)` should be `slice(0, period)` -- off-by-one |
+
+**Issue F3.4a -- ATR Off-by-One (StockChart.tsx:304):**
+```typescript
+const sum = trueRanges.slice(0, period + 1).reduce((a, b) => a + b, 0);
+result.push(sum / (period + 1));
+```
+First ATR averages `period + 1` values instead of `period`. This biases the initial ATR.
+
+**Fix:** `trueRanges.slice(0, period)` and divide by `period`.
+
+**Issue F3.4b -- Bollinger Bands Loop Bug (StockChart.tsx:195-198):**
+`continue` inside nested `for` loop breaks array alignment. If `closePrice` is null mid-way through the inner period loop, `upper.push(null)` and `lower.push(null)` are called, but the outer loop index advances, causing the Bollinger arrays to become longer than `data.length`.
+
+**Severity: Medium** -- Produces incorrect output if any `close` value is null within the lookback window.
+
+---
+
+## 4. UI/UX & INFORMATION ARCHITECTURE
+
+### 4.1 Navigation & Scannability
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| Home page provides clear coverage grid with ticker, sector, and name | **Praise** | page.tsx:33-69 |
+| Stock detail page uses dynamic imports with loading spinner | **Praise** | stocks/[ticker]/page.tsx:8-21 |
+| Each stock model has sticky navigation tabs with scroll-on-mobile | **Praise** | stock-model-styles.ts:188-203 |
+| Tab navigation uses left-border color coding: mint=tracking, accent=projection | **Praise** | stock-model-styles.ts:238-255 |
+| No cross-stock comparison view -- users cannot view ASTS vs BMNR side-by-side | **Medium** | Architecture gap |
+
+### 4.2 Readability
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| Body font is system sans-serif fallback (`-apple-system, BlinkMacSystemFont, 'Segoe UI'`) but stock models use Outfit | **Low** | globals.css:52 vs stock-model-styles.ts:60 |
+| Line height set to 1.5 globally, 1.7 for detail text -- good readability | **Praise** | globals.css:53, stock-model-styles.ts:1277 |
+| Table text uses Space Mono at 14px -- compact but readable | **Praise** | stock-model-styles.ts:561-563 |
+| Mobile breakpoints at 768px, 480px, 360px provide smooth degradation | **Praise** | stock-model-styles.ts:753-1128 |
+
+### 4.3 Data Presentation
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| Table header styling: 11px uppercase with 1px letter-spacing | **Praise** | stock-model-styles.ts:549-555 |
+| Chart implementation uses Recharts `ResponsiveContainer` | **Praise** | StockChart.tsx |
+| Monte Carlo histogram uses custom CSS bars (.mc-chart) | **Praise** | stock-model-styles.ts:643-660 |
+| Stats row uses horizontal scroll with fade masks on mobile | **Praise** | stock-model-styles.ts:800-813 |
+| Touch targets enforce 44px minimum on touch devices | **Praise** | stock-model-styles.ts:726-733 |
+
+### 4.4 Accessibility
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| `html lang="en"` is set | **Praise** | layout.tsx:62 |
+| No ARIA labels on interactive elements (tabs, sliders, buttons) | **Medium** | All model files |
+| Color-only indicators (red/green for up/down) lack text alternatives | **Medium** | LivePrice.tsx:164 |
+| `prefers-reduced-motion` media query properly disables animations | **Praise** | stock-model-styles.ts:1154-1163 |
+| `prefers-color-scheme: dark` handled (already dark theme) | **Praise** | stock-model-styles.ts:1166-1171 |
+| Viewport allows zooming up to 5x (`maximumScale: 5`) | **Praise** | layout.tsx:13 |
+| Tab navigation hidden scrollbar may confuse screen readers | **Low** | stock-model-styles.ts:204 |
+
+---
+
+## 5. VISUAL DESIGN & STYLING
+
+### 5.1 Color Palette
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| Dark theme with professional finance palette: #05070A (bg), #0D1117 (surface) | **Praise** | stock-model-styles.ts:27-28 |
+| Three accent colors properly differentiate stocks: Cyan (#22D3EE) ASTS, Violet (#A78BFA) BMNR, Mint (#7EE787) CRCL | **Praise** | stock-model-styles.ts:52-54 |
+| Semantic colors for sentiment: Mint (positive), Coral (negative), Gold (warning) | **Praise** | stock-model-styles.ts:43-50 |
+| `--text2` and `--text3` both map to `#8B949E` -- these should be different values for hierarchy | **Low** | stock-model-styles.ts:35-36 |
+
+**Recommendation:** Differentiate `--text2` and `--text3`. Suggested: `--text2: #8B949E` (secondary text), `--text3: #6E7681` (tertiary/muted text).
+
+### 5.2 Typography
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| Heading font: Outfit (weights 300-800) -- modern, clean geometric sans | **Praise** | stock-model-styles.ts:22 |
+| Monospace font: Space Mono for financial data -- excellent choice | **Praise** | stock-model-styles.ts:22 |
+| Hero heading: 42px / 700 weight with gradient fill | **Praise** | stock-model-styles.ts:97-106 |
+| Price display: 56px Space Mono / 700 weight | **Praise** | stock-model-styles.ts:133-139 |
+| Card labels: 11px uppercase with 2.5px letter-spacing | **Praise** | stock-model-styles.ts:374-380 |
+| Font loaded via Google Fonts `@import` in CSS string -- renders twice (globals.css AND stock-model-styles.ts) | **Low** | globals.css:1, stock-model-styles.ts:22 |
+
+### 5.3 Spacing & Alignment
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| Consistent 64px horizontal padding on desktop for hero, stats, nav, main | **Praise** | stock-model-styles.ts:70,156,192,342 |
+| 4-tier responsive padding: 64px > 32px > 24px > 16px > 12px | **Praise** | stock-model-styles.ts:737-1128 |
+| `margin-bottom: 0` used extensively -- relies on parent flex/grid gap | **Praise** | Throughout stock-model-styles.ts |
+| Card border-radius: 16px consistently | **Praise** | stock-model-styles.ts:368 |
+| Grid gaps: 24px for desktop, 12px for mobile | **Praise** | stock-model-styles.ts:383-386,797 |
+
+### 5.4 Chart & Table Aesthetics
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| Bar charts use gradient fill with hover brightness effect | **Praise** | stock-model-styles.ts:483-496 |
+| Tables use rounded header corners and hover row highlight | **Praise** | stock-model-styles.ts:557-558,565-567 |
+| Competitor cards use left-border threat indicators (coral/gold/mint) | **Praise** | stock-model-styles.ts:1454-1456 |
+| Timeline items use expandable accordion with smooth transitions | **Praise** | stock-model-styles.ts:1174-1347 |
+
+### 5.5 Responsiveness Issues
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| Landscape mobile properly shows 2-column hero grid | **Praise** | stock-model-styles.ts:1131-1141 |
+| Retina displays get 0.5px borders and 3px nav borders | **Praise** | stock-model-styles.ts:1144-1151 |
+| Timeline hides date and category columns on small screens (< 600px) | **Praise** | stock-model-styles.ts:1340-1347 |
+| `globals.css` uses `!important` overrides for grid columns on mobile -- fragile approach | **Low** | globals.css:97 |
+
+---
+
+## 6. CODE QUALITY & TECHNICAL SOUNDNESS
+
+### 6.1 TypeScript & Type Safety
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| All three model files use `// @ts-nocheck` at line 1 | **Critical** | ASTS.tsx:1, BMNR.tsx:1, CRCL.tsx:1 |
+| Shared types in `data/shared/types.ts` are well-defined with JSDoc | **Praise** | data/shared/types.ts |
+| `UpdateSource`, `StatProps`, `CardProps`, `RowProps` interfaces duplicated in all 3 files instead of shared | **Medium** | ASTS/BMNR/CRCL .tsx files |
+| `safeDivide`, `safeNumber`, `clamp` utility functions duplicated in all 3 files | **Medium** | ASTS.tsx:412-421, BMNR.tsx:464-474, CRCL.tsx:344-354 |
+
+**Issue C6.1a -- `@ts-nocheck` on All Model Files:**
+The `// @ts-nocheck` directive disables ALL TypeScript checking on files totaling ~14,000+ lines of financial calculation code. This is the single highest-risk code quality issue in the entire codebase. Any typo in a formula, wrong variable name, or type mismatch will silently pass compilation.
+
+**Severity: Critical**
+
+**Recommendation:** Remove `@ts-nocheck` and fix type errors. At minimum, use `@ts-expect-error` on specific lines that need it rather than blanket suppression.
+
+### 6.2 Component Architecture
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| `FinancialModelErrorBoundary` class component duplicated in all 3 files | **Medium** | ASTS.tsx:349-405, BMNR.tsx:402-458, CRCL.tsx:282-338 |
+| Error boundary button color differs: ASTS=#22D3EE (cyan), BMNR=#A78BFA (violet), CRCL=#34d399 (mint) -- intentional per accent | **Praise** | Respective files |
+| CRCL error boundary uses `color-mix()` for background while ASTS/BMNR use `rgba()` | **Low** | CRCL.tsx:301 vs ASTS.tsx:368 |
+| `React.memo` used on `Stat`, `Card`, `Row`, `Guide`, `Panel` components | **Praise** | ASTS.tsx:435-462 |
+| Stock models use dynamic imports with `ssr: false` to avoid SSR issues | **Praise** | stocks/[ticker]/page.tsx:9-20 |
+| ASTS model is 4,500+ lines in a single file | **High** | ASTS.tsx |
+
+**Issue C6.2a -- Monolithic Model Files:**
+Each stock model is a single massive file (ASTS: ~4,500 lines, BMNR: ~8,100 lines, CRCL: ~5,000 lines). This makes maintenance difficult and increases the likelihood of merge conflicts, stale code, and missed updates.
+
+**Recommendation:** Consider splitting each model into sub-modules: `ASTSOverview.tsx`, `ASTSDcf.tsx`, `ASTSMonteCarlo.tsx`, etc. This would also allow selective `@ts-nocheck` removal.
+
+### 6.3 CSS Architecture
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| Unified `getStockModelCSS()` function generates CSS string with accent color injection | **Praise** | stock-model-styles.ts:21-1690 |
+| CSS is injected via `<style>` tags (CSS-in-JS string) -- not ideal for performance | **Medium** | Each model file |
+| `* { box-sizing: border-box; margin: 0; padding: 0; }` in model CSS overrides Tailwind's `:where()` selectors | **High** | stock-model-styles.ts:57 |
+| `globals.css` has specificity workarounds with `.stock-model-app` prefix | **Praise** (workaround) | globals.css:79-87 |
+| `:root` CSS variables are re-declared in both `globals.css` and the generated model CSS | **Low** | globals.css:7-35, stock-model-styles.ts:24-55 |
+
+**Issue C6.3a -- Global Reset Conflicts:**
+The `* { margin: 0; padding: 0; }` in `stock-model-styles.ts:57` conflicts with Tailwind CSS utilities. The `globals.css` file already contains workarounds (lines 79-87) to boost specificity for `.space-y-*` and `.gap-*` classes. This fragile arrangement will break as new Tailwind utilities are used.
+
+**Recommendation:** Remove the global `*` reset from model CSS and rely on Tailwind's reset or apply resets only to `.stock-model-app` descendant selectors.
+
+### 6.4 API Routes
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| Yahoo Finance proxy at `/api/stock/[symbol]` with 5-minute caching | **Praise** | src/app/api/stock/[symbol]/route.ts |
+| `encodeURIComponent(symbol)` used in LivePrice fetch | **Praise** | LivePrice.tsx:41 |
+| No rate limiting on API routes | **Medium** | API routes |
+| No input validation on symbol parameter | **Medium** | API routes |
+
+### 6.5 Performance Concerns
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| `useMemo` properly used for expensive calculations (DCF, Monte Carlo) | **Praise** | All model files |
+| Monte Carlo capped at 10,000 simulations | **Praise** | CRCL.tsx:3263 |
+| Max Drawdown uses O(n^2) `data.find()` inside loop | **Low** | StockChart.tsx:412 |
+| Google Fonts loaded twice (globals.css AND model CSS) | **Low** | globals.css:1, stock-model-styles.ts:22 |
+
+### 6.6 Duplicated Code
+
+| Item | Duplicated In | Lines Each |
+|------|---------------|------------|
+| `UpdateSource` type | ASTS, BMNR, CRCL | ~1 |
+| `StatProps`, `CardProps`, `RowProps`, `InputProps` | ASTS, BMNR, CRCL | ~30 |
+| `FinancialModelErrorBoundary` class | ASTS, BMNR, CRCL | ~55 |
+| `RATING_NORMALIZATION` map | ASTS, BMNR, CRCL | ~15 |
+| `LEGAL_DISCLAIMERS` object | ASTS, BMNR, CRCL | ~4 |
+| `safeDivide`, `safeNumber`, `clamp` utilities | ASTS, BMNR, CRCL | ~8 |
+| `Stat`, `Card`, `Row`, `Panel`, `Guide` components | ASTS, BMNR, CRCL | ~80 |
+
+**Total estimated duplicated code: ~580 lines x 3 = ~1,740 lines** that could be in shared modules.
+
+**Severity: Medium** -- Not a functional issue but significantly impacts maintainability and consistency risk.
+
+---
+
+## 7. PROFESSIONAL POLISH & RED FLAGS
+
+### 7.1 Institutional-Grade Assessment
+
+| Aspect | Rating | Notes |
+|--------|--------|-------|
+| Data sourcing rigor | 9/10 | SEC filings, on-chain data, press releases all cited |
+| Disclaimer coverage | 8/10 | "Not financial advice" present but could be more prominent |
+| Model documentation | 9/10 | Exceptional AI agent instructions, changelog, maintenance protocol |
+| Visual professionalism | 9/10 | Dark theme with Seeking Alpha/Bloomberg aesthetic |
+| Mathematical rigor | 8/10 | Sound formulas with a few simplifications acknowledged |
+| Code reliability | 6/10 | `@ts-nocheck` on all model files is a major concern |
+
+### 7.2 Investor Misleading Risk
+
+| Finding | Severity | Location |
+|---------|----------|----------|
+| CRCL "Moon" scenario: $7,834/share by 2035 (98x from current) | **High** | CRCL.tsx:615 |
+| ASTS "Moon" scenario uses -2 deployment delay (ahead of schedule) and 10% penetration | **Medium** | ASTS.tsx SCENARIO_PRESETS |
+| Disclaimer placement is in footer (small text) rather than at top of each analysis | **Medium** | layout.tsx:49 |
+| Each model HAS a disclaimer banner component but placement varies | **Low** | stock-model-styles.ts:662-695 |
+| Probability weights: CRCL Moon at 8%, Bull at 22% -- combined 30% for extreme upside | **Medium** | CRCL.tsx scenarios |
+| All three models clearly label scenarios and include bear/worst cases | **Praise** | All models |
+
+**Recommendation:** Add a prominent disclaimer banner at the TOP of each stock analysis page (before any financial data). The current footer placement is insufficient for investor protection. The `disclaimer-banner` CSS class already exists in stock-model-styles.ts but may not be used prominently.
+
+### 7.3 Data Staleness
+
+| Stock | Last Updated | Age (as of Feb 13, 2026) | Severity |
+|-------|--------------|--------------------------|----------|
+| ASTS | Feb 12, 2026 | 1 day | **Praise** |
+| BMNR | Feb 12, 2026 | 1 day | **Praise** |
+| CRCL | Dec 31, 2025 | 44 days | **High** |
+
+CRCL's stale data means the stock price ($80.05), USDC circulation ($62.5B), and market metrics may be significantly outdated.
+
+---
+
+## 8. SCORING & SUMMARY
+
+### Overall Score: 7.8 / 10
+
+| Category | Score | Weight | Weighted |
+|----------|-------|--------|----------|
+| Consistency & Branding | 8.5/10 | 15% | 1.28 |
+| Content & Writing | 8.0/10 | 10% | 0.80 |
+| Financial Logic & Math | 8.5/10 | 25% | 2.13 |
+| UI/UX & Architecture | 8.0/10 | 15% | 1.20 |
+| Visual Design | 9.0/10 | 10% | 0.90 |
+| Code Quality | 6.0/10 | 15% | 0.90 |
+| Professional Polish | 7.5/10 | 10% | 0.75 |
+| **TOTAL** | | **100%** | **7.96** |
+
+### TOP 5 MOST URGENT FIXES
+
+1. **[Critical] Remove `@ts-nocheck` from all three model files** (ASTS.tsx:1, BMNR.tsx:1, CRCL.tsx:1). This single directive disables type checking on 14,000+ lines of financial calculation code. Any formula typo, wrong variable reference, or type mismatch is invisible. Fix type errors incrementally or use targeted `@ts-expect-error`.
+
+2. **[High] Update CRCL data to February 2026** (src/data/crcl/company.ts, financials.ts). The CRCL model is 44 days stale while ASTS and BMNR were updated yesterday. Stock price, USDC circulation, and all market metrics need refreshing.
+
+3. **[High] Fix CRCL RLDC margin field inconsistency** (CRCL.tsx BASE scenario 2025). `rldcMargin: 39` does not match computed `netRevenue/grossRevenue = 46.9%`. Clarify the metric definition or correct the values.
+
+4. **[High] Fix ATR off-by-one bug** (StockChart.tsx:304). `trueRanges.slice(0, period + 1)` should be `trueRanges.slice(0, period)`. This biases the initial ATR calculation and affects all downstream technical analysis that depends on ATR.
+
+5. **[High] Cap CRCL "Moon" scenario or add stronger caveats** (CRCL.tsx:576-615). $2,850B USDC and $7,834/share by 2035 implies a stablecoin market larger than global M2 supply growth. This undermines the model's credibility for sophisticated investors.
+
+### TOP 3 THINGS DONE REALLY WELL
+
+1. **Unified Model Maintenance Protocol** -- The shared header comment block across all three models (ASTS/BMNR/CRCL) with explicit AI agent instructions, update checklists, and archival rules is exceptional. The BMNR press release checklist (10 sections to update) is particularly thorough. This is better documentation than most institutional-grade codebases.
+
+2. **Financial Model Architecture** -- The DCF implementations across all three stocks are mathematically sound with proper Gordon Growth Model, present value discounting, risk adjustments, and unit conversions. The BMNR Monte Carlo uses genuine Geometric Brownian Motion with Ito's lemma correction and correlated normal random variables. The code includes `safeDivide`, `safeNumber`, and `clamp` utilities to prevent NaN/Infinity in financial calculations.
+
+3. **Visual Design System** -- The unified `stock-model-styles.ts` with accent color parameterization (cyan/violet/mint) creates a cohesive, professional aesthetic across all three stocks. The responsive design covers 5 breakpoints (1200px, 900px, 768px, 480px, 360px) plus landscape mode. Touch targets enforce 44px minimums. `prefers-reduced-motion` is respected. The dark theme with glass morphism effects and gradient overlays achieves a Bloomberg/Seeking Alpha tier of visual polish.
+
+---
+
+**End of Audit Report**
+**Auditor:** Claude AI (Senior Full-Stack / Financial Analyst / UI/UX)
+**Date:** February 13, 2026
+
+---
+
+## Appendix C — Formula & Math Audit
+
+**Date:** February 13, 2026
+**Scope:** Mathematics, Logic, Formulas, Code, Visual
+**Status: All findings resolved.**
+
+
+## 🔴 CRITICAL ISSUES
+
+### 1. RSI Calculation Bug (StockChart.tsx:137-140)
+**Location:** `src/components/shared/StockChart.tsx:137-140`
+
+**Issue:** The RSI smoothed average calculation is incorrect. After the first period, it recalculates the simple average instead of using the exponential smoothing formula.
+
+**Current Code:**
+```typescript
+} else {
+  // Subsequent RSI uses smoothed average
+  const prevAvgGain = gains.slice(i - period, i).reduce((a, b) => a + b, 0) / period;
+  const prevAvgLoss = losses.slice(i - period, i).reduce((a, b) => a + b, 0) / period;
+  avgGain = (prevAvgGain * (period - 1) + gains[i]) / period;
+  avgLoss = (prevAvgLoss * (period - 1) + losses[i]) / period;
+}
+```
+
+**Problem:** Lines 137-138 recalculate simple averages instead of using the previous smoothed averages from `result[i-1]`. This breaks the exponential smoothing chain.
+
+**Correct Formula:** RSI uses Wilder's smoothing:
+- First period: Simple average
+- Subsequent: `EMA = (Previous EMA × (period - 1) + Current Value) / period`
+
+**Fix Required:** Store previous EMA values and use them directly.
+
+---
+
+### 2. BMNR Annual Staking Revenue Uses Wrong ETH Value (BMNR.tsx:1400)
+**Location:** `src/components/stocks/BMNR.tsx:1400`
+
+**Issue:** Annual staking revenue calculation uses `currentETH` instead of `terminalETH` for terminal year projections.
+
+**Current Code:**
+```typescript
+const annualStakingRevenue = (currentETH * ethPrice * stakingYield / 100) / 1_000_000; // $M/year
+```
+
+**Problem:** This calculates revenue based on current holdings, but it's in the terminal value section. Should use `terminalETH` for consistency with terminal year projections.
+
+**Impact:** Terminal year cash flow projections are underestimated if ETH holdings grow.
+
+---
+
+### 3. ASTS Monte Carlo Log-Normal Mean Calculation (ASTS.tsx:4364)
+**Location:** `src/components/stocks/ASTS.tsx:4364`
+
+**Issue:** The log-normal distribution mean adjustment comment says it ensures `E[X] = baseRev`, but the formula doesn't match.
+
+**Current Code:**
+```typescript
+const sigma = revVol / 100;
+const mu = -0.5 * sigma * sigma; // Adjustment so E[exp(μ + σZ)] = 1
+const logNormalFactor = Math.exp(mu + sigma * randn());
+const revenue = baseRev * revenueMultiplier * logNormalFactor;
+```
+
+**Analysis:** 
+- For log-normal: `E[X] = exp(μ + σ²/2)`
+- Current: `μ = -σ²/2`, so `E[exp(μ + σZ)] = exp(-σ²/2 + σ²/2) = 1` ✓
+- But then: `E[baseRev × multiplier × factor] = baseRev × multiplier × 1 = baseRev × multiplier`
+
+**Verdict:** The math is correct IF `revenueMultiplier` averages to 1. However, the comment is misleading - it should clarify that this ensures the factor has mean 1, not that revenue equals baseRev.
+
+---
+
+## ⚠️ MODERATE ISSUES
+
+### 4. Division by Zero Protection Inconsistencies
+**Locations:** Multiple files
+
+**Issues Found:**
+- `BMNR.tsx:786-811` - Good: Uses ternary checks (`totalShares > 0 ? ... : 0`)
+- `ASTS.tsx:3830` - Good: Checks `spread > 0.01`
+- `CRCL.tsx:1398` - Good: Checks `spread > 0.01`
+- `LivePrice.tsx:112` - Good: Checks `previousClose && priceChange`
+
+**Recommendation:** All division operations are properly protected. ✅
+
+---
+
+### 5. Percentage Calculation Consistency
+**Location:** Multiple files
+
+**Pattern Found:** Some calculations divide by 100, others multiply by 100 for percentages.
+
+**Examples:**
+- `BMNR.tsx:790`: `((currentStockPrice / currentNAV) - 1) * 100` ✓ Correct
+- `BMNR.tsx:806`: `(annualDividend / currentStockPrice) * 100` ✓ Correct
+- `LivePrice.tsx:112`: `(priceChange / previousClose) * 100` ✓ Correct
+
+**Verdict:** All percentage calculations are consistent. ✅
+
+---
+
+### 6. Unit Conversion Clarity
+**Location:** Multiple files
+
+**Issues:**
+- `BMNR.tsx:785`: `totalShares = currentShares * 1e6` - Converts M shares to shares
+- `BMNR.tsx:1400`: Divides by `1_000_000` to convert $ to $M
+- `ASTS.tsx:3856`: `netDebtB = (totalDebt - cashOnHand) / 1000` - Converts $M to $B
+- `CRCL.tsx:1418`: `(equityValue * 1000) / terminalShares` - Converts $B to $M, then divides by M shares
+
+**Verdict:** Unit conversions are correct but could benefit from clearer comments explaining the conversion chain.
+
+---
+
+### 7. Risk Factor Calculation Logic
+**Location:** `ASTS.tsx:3845`, `CRCL.tsx:1405`, `BMNR.tsx` (implied)
+
+**Formula:** `riskFactor = (1 - risk1/100) × (1 - risk2/100) × (1 - risk3/100)`
+
+**Analysis:** This assumes risks are independent. If risks are correlated, this overestimates success probability.
+
+**Example:** If regulatory risk = 20% and tech risk = 20%, factor = 0.8 × 0.8 = 0.64 (36% failure). But if they're correlated (e.g., regulatory delays cause tech delays), actual failure rate could be higher.
+
+**Recommendation:** Add comment explaining independence assumption, or consider correlation adjustment.
+
+---
+
+## 📊 CODE QUALITY ISSUES
+
+### 8. Magic Numbers
+**Locations:** Multiple files
+
+**Examples:**
+- `BMNR.tsx:1400`: `1_000_000` - Should be `MILLION = 1_000_000` constant
+- `ASTS.tsx:3830`: `0.01` threshold - Should be `MIN_SPREAD = 0.01` constant
+- `ASTS.tsx:4364`: `-0.5` - Should be `LOG_NORMAL_ADJUSTMENT = -0.5` constant
+
+**Recommendation:** Extract magic numbers to named constants for clarity.
+
+---
+
+### 9. Type Safety - Potential Null/Undefined Issues
+**Location:** `StockChart.tsx`, various calculations
+
+**Issues:**
+- `StockChart.tsx:173`: Uses `middle[i]!` non-null assertion - Could fail if data is malformed
+- Array access without bounds checking in some loops
+
+**Recommendation:** Add defensive checks or use optional chaining where appropriate.
+
+---
+
+### 10. Error Handling in API Routes
+**Location:** `src/app/api/stock/[symbol]/route.ts`
+
+**Current:** Basic try-catch with generic error message
+
+**Recommendation:** 
+- Add specific error handling for:
+  - Invalid symbols
+  - Network timeouts
+  - Malformed Yahoo Finance responses
+  - Rate limiting
+
+---
+
+## 🎨 VISUAL/UI ISSUES
+
+### 11. Chart Responsiveness
+**Location:** `StockChart.tsx`
+
+**Status:** Uses `ResponsiveContainer` from recharts ✅
+
+**Recommendation:** Test on mobile devices to ensure charts render correctly.
+
+---
+
+### 12. Number Formatting Consistency
+**Locations:** Multiple components
+
+**Patterns Found:**
+- `toFixed(0)` for prices
+- `toFixed(1)` for percentages
+- `toFixed(2)` for currency
+
+**Verdict:** Generally consistent, but some variations exist. Consider standardizing:
+- Prices: 2 decimals
+- Percentages: 1 decimal
+- Large numbers: 1-2 decimals with B/M suffixes
+
+---
+
+### 13. Color Coding for Positive/Negative Values
+**Location:** `LivePrice.tsx:164`, various components
+
+**Pattern:** Uses `var(--mint)` for positive, `var(--coral)` for negative
+
+**Verdict:** Consistent across codebase ✅
+
+---
+
+## ✅ VERIFIED CORRECT IMPLEMENTATIONS
+
+### 14. Gordon Growth Model (Terminal Value)
+**Locations:** `ASTS.tsx:3824-3830`, `CRCL.tsx:1394-1398`
+
+**Formula:** `TV = FCF / (r - g)`
+
+**Verification:** ✅ Correct implementation with spread check
+
+---
+
+### 15. Present Value Discounting
+**Locations:** Multiple files
+
+**Formula:** `PV = FV / (1 + r)^n`
+
+**Verification:** ✅ Correct implementation
+
+---
+
+### 16. Dilution Calculations
+**Locations:** `BMNR.tsx:1408`, `ASTS.tsx:3867`, `CRCL.tsx:1416`
+
+**Formula:** `terminalShares = currentShares × (1 + rate)^years`
+
+**Verification:** ✅ Correct implementation
+
+---
+
+### 17. Bollinger Bands Calculation
+**Location:** `StockChart.tsx:154-183`
+
+**Formula:** 
+- Middle = SMA
+- Upper = Middle + (stdDev × σ)
+- Lower = Middle - (stdDev × σ)
+
+**Verification:** ✅ Correct implementation
+
+---
+
+### 18. VWAP Calculation
+**Location:** `StockChart.tsx:186-200`
+
+**Formula:** `VWAP = Σ(TP × Volume) / Σ(Volume)` where TP = (High + Low + Close)/3
+
+**Verification:** ✅ Correct implementation
+
+---
+
+## 📋 SUMMARY
+
+### Critical Issues: 2 ✅ ALL FIXED
+1. ✅ RSI smoothed average calculation bug - FIXED
+2. ✅ BMNR terminal staking revenue uses wrong ETH value - FIXED
+
+### Moderate Issues: 4 ✅ ALL FIXED
+3. ✅ Log-normal comment clarity - FIXED (improved comment explaining formula)
+4. ✅ Risk factor independence assumption - FIXED (added comments explaining assumption)
+5. ✅ Magic numbers - FIXED (extracted to `src/lib/constants.ts`)
+6. ✅ Unit conversion comments - FIXED (added clear conversion explanations)
+
+### Code Quality: 3 ✅ ALL FIXED
+7. ✅ Type safety improvements - FIXED (added defensive null checks)
+8. ✅ Error handling enhancements - FIXED (comprehensive API error handling)
+9. ✅ Number formatting standardization - VERIFIED (already consistent)
+
+### Visual: 0
+All visual aspects are consistent and well-implemented.
+
+---
+
+## 🔧 RECOMMENDED FIXES PRIORITY
+
+**High Priority:** ✅ ALL FIXED
+1. ✅ Fix RSI calculation (affects technical analysis accuracy) - FIXED
+2. ✅ Fix BMNR terminal revenue calculation (affects valuation accuracy) - FIXED
+
+**Medium Priority:** ✅ ALL FIXED
+3. ✅ Add constants for magic numbers - FIXED (created `src/lib/constants.ts`)
+4. ✅ Enhance error handling in API routes - FIXED (added validation, timeouts, specific error messages)
+5. ✅ Add correlation adjustment option for risk factors - FIXED (added comments explaining independence assumption)
+
+**Low Priority:** ✅ ALL FIXED
+6. ✅ Improve code comments for unit conversions - FIXED (added clear conversion comments)
+7. ✅ Standardize number formatting - VERIFIED (already consistent: 2 decimals for prices/percentages)
+8. ✅ Add defensive null checks - FIXED (added null checks in Bollinger Bands and API route)
+
+---
+
+## 📝 TESTING RECOMMENDATIONS
+
+1. **Unit Tests:**
+   - RSI calculation with known data
+   - Terminal value calculations
+   - Risk factor combinations
+
+2. **Integration Tests:**
+   - API route error handling
+   - Chart rendering with edge cases (empty data, single point)
+
+3. **Visual Regression:**
+   - Chart rendering across screen sizes
+   - Number formatting consistency
+
+---
+
+**End of Audit Report**
+
+---
+
+## Appendix D — Audit Program Registry & Prompts
+
+Unified index of all audit programs. Each audit has a unique ID, scope, and prompt.
+When adding a new audit, register it here first.
+
+---
+
+## Audit Index
+
+| ID | Name | Type | Scope | Status |
+|---|---|---|---|---|
+| `CCA-1.0` | Stockings Comprehensive Code Audit v1.0 | Code Quality | Full codebase (108 files) | Active |
+| `CCA-1.1` | Vibe-Code Bomb 27-Point Audit | Operational Maturity | Full codebase — 27-point checklist | Active |
+| `DBV-CP` | Capital Section Parity Audit | Database Validation | Per-ticker capital data | Active |
+| `DBV-XR` | Cross-Reference Integrity Audit | Database Validation | Per-ticker filing cross-refs | Active |
+| `DBV-SC` | Sources Completeness Audit | Database Validation | Per-ticker source citations | Active |
+| `DBV-DF` | Data Freshness Audit | Database Validation | Per-ticker staleness detection | Active |
+
+---
+
+## CCA-1.1 — Vibe-Code Bomb 27-Point Audit
+
+**Date:** 2026-03-01
+**Scope:** Full codebase — 27-point operational maturity checklist
+**Methodology:** Systematic verification of each indicator against the codebase with traffic-light verdicts
+**Findings:** 4 new structured findings (VIBE-001 through VIBE-004) + 16 GUILTY / 6 PARTIAL / 5 NOT GUILTY verdicts
+**Report:** `audit/AUDIT.md` (Appendix A)
+**Dashboard:** `/audit/comprehensive-code-audit`
+
+### Prompt
+
+```
+Check the following 27 "vibe-coded app ticking bomb" indicators against the codebase.
+For each, provide a GUILTY / NOT GUILTY / PARTIAL verdict with evidence, affected files,
+cross-references to existing CCA-1.0 findings, and severity assessment.
+
+1. API keys hardcoded "for now"
+2. No /health endpoint
+3. Schema changes in your head, not migrations
+4. Every query is SELECT * and vibes
+5. Error handling = console.log(e) and hope
+6. No rate limit on auth or writes
+7. UTC, local time, and "JS default" all mixed
+8. README is empty or wrong
+9. No staging env
+10. One god component owns the whole screen
+11. No analytics
+12. "We'll clean this up after launch" every week
+13. Env vars undocumented
+14. Frontend talks directly to 5 different third-party APIs
+15. No monitoring or alerts
+16. Logs only in local terminal history
+17. DB backups are "automatic" but never tested
+18. Feature flags = commenting code in and out
+19. Deploys from local machine
+20. No input validation
+21. CORS is set to *
+22. CI is "I ran it once locally"
+23. Same API token across staging, prod, and local
+24. Only one person knows how to run or deploy
+25. API keys / JWT secrets in client-side code or .env committed to git
+26. Database exposed publicly with no RLS
+27. Zero logging beyond console.log
+```
+
+---
+
+## CCA-1.0 — Stockings Comprehensive Code Audit v1.0
+
+**Date:** 2026-02-22
+**Scope:** Full codebase — 108 files across Next.js 16 / TypeScript / Neon PostgreSQL / Drizzle ORM
+**Methodology:** Automated static analysis + manual code review across 35 categories
+**Findings:** 128 structured findings (see `src/data/audit-findings.ts`)
+**Report:** `audit/AUDIT.md`
+**Dashboard:** `/audit/comprehensive-code-audit`
+
+### Prompt
+
+```
+Please conduct a comprehensive audit of the attached file, performing 35 independent analyses
+across a wide range of categories. Focus on identifying potential issues, inefficiencies, risks,
+and areas for improvement in the following aspects, among others:
+
+1. Unnecessarily hardcoded data (e.g., constants, credentials, or configurations that should be externalized).
+2. Database or API connections (e.g., insecure handling, lack of connection pooling, or improper error management).
+3. Programming language-specific best practices (e.g., adherence to idioms, efficient use of features, or deprecated elements).
+4. Security vulnerabilities (e.g., injection risks, cross-site scripting, or weak encryption).
+5. Authentication and authorization issues (e.g., improper session management or role-based access control).
+6. Data privacy compliance (e.g., alignment with GDPR, CCPA, or handling of sensitive information).
+7. Performance bottlenecks (e.g., inefficient algorithms, resource leaks, or scalability concerns).
+8. Error handling and logging (e.g., incomplete try-catch blocks or insufficient debug information).
+9. Code maintainability (e.g., modularity, readability, or excessive complexity).
+10. Dependency management (e.g., outdated libraries, version conflicts, or unlicensed components).
+11. Testing coverage (e.g., unit tests, integration tests, or edge case handling).
+12. Styling consistency (e.g., CSS/SCSS adherence to standards or redundant styles).
+13. UI/UX design flaws (e.g., intuitive navigation, responsive layouts, or user flow inefficiencies).
+14. Accessibility compliance (e.g., WCAG standards, ARIA attributes, or keyboard navigation).
+15. Internationalization and localization (e.g., support for multiple languages or cultural adaptations).
+16. Mobile responsiveness (e.g., viewport issues or touch-friendly elements).
+17. Browser compatibility (e.g., cross-browser rendering differences).
+18. Network security (e.g., HTTPS enforcement or CORS misconfigurations).
+19. Input validation (e.g., sanitization of user inputs or file uploads).
+20. Output encoding (e.g., prevention of XSS in rendered content).
+21. Configuration management (e.g., environment-specific settings or secret handling).
+22. Build and deployment processes (e.g., automation scripts or CI/CD integration).
+23. Documentation quality (e.g., inline comments, README completeness, or API docs).
+24. Licensing and intellectual property (e.g., open-source compliance or attribution requirements).
+25. Environmental impact (e.g., energy-efficient code or sustainable practices).
+26. Scalability architecture (e.g., horizontal scaling readiness or load balancing).
+27. Backup and recovery mechanisms (e.g., data redundancy or disaster recovery plans).
+28. Monitoring and analytics (e.g., integration with tools like Sentry or Google Analytics).
+29. Third-party integrations (e.g., API rate limiting or vendor-specific security).
+30. Code duplication (e.g., repeated logic that could be refactored).
+31. Memory management (e.g., garbage collection issues or leaks).
+32. Threading and concurrency (e.g., race conditions or deadlocks).
+33. File handling security (e.g., path traversal vulnerabilities).
+34. Compliance with industry standards (e.g., OWASP Top 10 or ISO norms).
+35. Overall architectural soundness (e.g., adherence to design patterns like MVC or SOLID principles).
+
+For each analysis, provide a detailed report including: the specific issue identified (if any),
+its location in the file (e.g., line numbers or sections), severity level (low, medium, high,
+critical), potential impact, and recommended remediation steps. If no issues are found in a
+category, note that explicitly. Structure the final report clearly, using sections for each
+analysis, and conclude with a summary of key findings and overall recommendations.
+```
+
+---
+
+## DBV-CP — Capital Section Parity Audit
+
+**Workflow ID:** `capital-parity` (in `src/data/workflows.ts`)
+**Scope:** Per-ticker capital structure data
+**Trigger:** Run when onboarding a new company or periodically to catch drift
+**Variants:** ASTS, BMNR
+
+### Prompt
+
+```
+You are a capital structure data quality auditor for an institutional investment database (ABISON)
+covering {TICKER}. Your job is to audit the capital section for completeness, consistency, and
+cross-reference coverage.
+
+════════════════════════════════════════
+SECTION 1: CAPITAL SECTION PARITY CHECKLIST
+════════════════════════════════════════
+
+Audit EACH of the 7 standard capital sections. For each, determine status and provide evidence:
+
+┌────────────────────────────────────────────────────────────────────┐
+│ #  Section              Status                Evidence / Notes    │
+├────────────────────────────────────────────────────────────────────┤
+│ 1  Structure            [IMPLEMENTED/TODO/N/A] [share classes,    │
+│    (share classes,       with reason]          voting, authorized │
+│    voting, authorized)                         vs outstanding]    │
+│                                                                    │
+│ 2  Shareholders         [IMPLEMENTED/TODO/N/A] [major holders,   │
+│    (major holders,       with reason]          % ownership,      │
+│    institutional, insider)                      13F/D/G dates]   │
+│                                                                    │
+│ 3  Offerings            [IMPLEMENTED/TODO/N/A] [equity offerings │
+│    (equity, convertible, with reason]          history, ATM      │
+│    ATM, shelf)                                 programs, shelf   │
+│                                                capacity]          │
+│                                                                    │
+│ 4  Warrants & Plans     [IMPLEMENTED/TODO/N/A] [warrants, SBC,  │
+│    (warrants, SBC,       with reason]          RSU grants,      │
+│    options, RSUs)                               option pools]    │
+│                                                                    │
+│ 5  Dilution             [IMPLEMENTED/TODO/N/A] [dilution history │
+│    (history, scenarios,  with reason]          waterfall,        │
+│    waterfall)                                   FD calculations] │
+│                                                                    │
+│ 6  Liquidity            [IMPLEMENTED/TODO/N/A] [cash position,  │
+│    (cash, runway,        with reason]          burn rate,        │
+│    debt schedule)                               runway scenarios]│
+│                                                                    │
+│ 7  Insiders             [IMPLEMENTED/TODO/N/A] [Form 4 sales,   │
+│    (Form 4 activity,     with reason]          purchases, RSU   │
+│    sales, purchases)                            vestings, plans] │
+└────────────────────────────────────────────────────────────────────┘
+
+For each section:
+- IMPLEMENTED = exports exist with substantive data (not placeholder/empty arrays)
+- TODO = section is missing or has only skeleton/placeholder data — list specific data points needed
+- N/A = section does not apply to this company — state why
+
+════════════════════════════════════════
+SECTION 2: CROSS-REFERENCE COVERAGE AUDIT
+════════════════════════════════════════
+
+For EVERY filing entry in the local database (sec-filings.ts) that has status "IN DB":
+- Does it have corresponding cross-reference entries in {TICKER}_FILING_CROSS_REFS?
+- If not, flag as: "MISSING CROSS-REF: [Form]|[Date] — no cross-ref entries"
+- If yes, assess quality: does each cross-ref accurately describe data captured?
+
+Coverage metrics:
+- Total filings in database: X
+- Filings WITH cross-refs: Y
+- Filings WITHOUT cross-refs: Z
+- Coverage rate: Y/X = XX%
+
+════════════════════════════════════════
+SECTION 3: STALENESS DETECTION
+════════════════════════════════════════
+
+Check metadata for each data file:
+- CAPITAL_METADATA.lastUpdated — is it older than 30 days from current date?
+- FINANCIALS_METADATA.lastUpdated — same check
+- CATALYSTS_METADATA.lastUpdated — same check
+- nextExpectedUpdate — is it in the past?
+
+For each stale section:
+  → "STALE: [section] last updated [date] — [X] days ago. Next expected: [date]. Action: check [filing type]."
+
+════════════════════════════════════════
+SECTION 4: DATA CONSISTENCY CHECKS
+════════════════════════════════════════
+
+Cross-validate:
+1. Share counts: TOTAL_BASIC_SHARES = sum of SHARE_CLASSES shares? FD count consistent with dilution waterfall?
+2. Offering totals: sum of EQUITY_OFFERINGS amounts vs. total raised in financial context
+3. Shareholder percentages: do major shareholder % sum to a reasonable total? Any > 100%?
+4. Convertible math: conversion price × rate = correct shares at conversion?
+5. Timeline consistency: offering dates in EQUITY_OFFERINGS align with sec-filings.ts entries?
+
+For each inconsistency:
+  → "INCONSISTENCY: [description] — Expected: [X], Found: [Y]. Resolution: [action]."
+
+════════════════════════════════════════
+SECTION 5: PARITY REPORT
+════════════════════════════════════════
+
+PARITY SCORE: X/7 sections implemented
+CROSS-REF COVERAGE: XX%
+STALENESS: X stale sections
+INCONSISTENCIES: X found
+
+TODO LIST (prioritized by impact):
+1. [HIGH] [description — specific data to add/fix]
+2. [HIGH] [description]
+3. [MEDIUM] [description]
+
+SUGGESTED NEXT ACTIONS:
+- Which SEC filings to review to fill gaps
+- Which agents to run
+- Specific data points to verify in next 10-Q/10-K
+
+Rules: Report facts only. Do not hallucinate data values. Flag uncertainty explicitly.
+```
+
+---
+
+## DBV-XR — Cross-Reference Integrity Audit
+
+**Workflow ID:** `crossref-integrity` (in `src/data/workflows.ts`)
+**Scope:** Per-ticker filing-to-cross-reference mappings
+**Trigger:** Run after batch filing updates
+**Variants:** ASTS, BMNR
+
+### Prompt
+
+```
+You are a data integrity auditor for the ABISON investment database covering {TICKER}.
+Your job is to audit the cross-reference system that links SEC filings to the data they
+populated across the database.
+
+════════════════════════════════════════
+PHASE 1: FILING → CROSS-REF COVERAGE
+════════════════════════════════════════
+
+For EVERY entry in {TICKER}_SEC_FILINGS (sec-filings.ts):
+1. Construct the expected cross-ref key: "[type]|[YYYY-MM-DD]"
+2. Check if that key exists in {TICKER}_FILING_CROSS_REFS
+3. Classify:
+   - COVERED: Key exists with 1+ cross-ref entries
+   - MISSING: Key does not exist — filing data was never cross-referenced
+   - EXEMPT: Filing type unlikely to generate database updates (e.g., CORRESP, NT 10-K)
+
+Output table:
+| Filing Date | Type | Description (truncated) | Cross-Ref Status | # Refs |
+
+Coverage metrics:
+- Total filings: X
+- Covered: Y (XX%)
+- Missing: Z (list each)
+- Exempt: W
+
+════════════════════════════════════════
+PHASE 2: ORPHAN CROSS-REF DETECTION
+════════════════════════════════════════
+
+For EVERY key in {TICKER}_FILING_CROSS_REFS:
+1. Parse the key: "[type]|[YYYY-MM-DD]"
+2. Check if a matching filing exists in {TICKER}_SEC_FILINGS
+3. Flag orphans: cross-ref keys that point to filings NOT in the local database
+
+Orphan list:
+- "[key]" — no matching filing. Action: [add filing or remove cross-ref]
+
+════════════════════════════════════════
+PHASE 3: CROSS-REF QUALITY ASSESSMENT
+════════════════════════════════════════
+
+For each covered filing, assess cross-ref quality:
+- Does the 'source' field match the correct database file?
+- Is the 'data' field specific enough to locate the actual database entry?
+- Are important data points from the filing captured?
+
+Quality grades:
+- COMPLETE: All material data points cross-referenced
+- PARTIAL: Some data captured but material items missing
+- SHALLOW: Cross-ref exists but is too vague to be useful
+
+════════════════════════════════════════
+PHASE 4: INTEGRITY REPORT
+════════════════════════════════════════
+
+COVERAGE: XX% (Y/X filings cross-referenced)
+ORPHANS: X cross-ref keys with no matching filing
+QUALITY: X complete, Y partial, Z shallow
+
+PRIORITY FIXES:
+1. [HIGH] Missing cross-refs for material filings: [list]
+2. [MEDIUM] Orphan keys to resolve: [list]
+3. [LOW] Shallow cross-refs to enrich: [list]
+
+Rules: Report facts only. Do not hallucinate cross-ref entries or filing data.
+```
+
+---
+
+## DBV-SC — Sources Completeness Audit
+
+**Workflow ID:** `sources-completeness` (in `src/data/workflows.ts`)
+**Scope:** Per-ticker source citation coverage
+**Trigger:** Run after adding new entries to any tab
+**Variants:** ASTS, BMNR
+
+### Prompt
+
+```
+You are a source citation auditor for the ABISON investment database covering {TICKER}.
+Your job is to verify that every material data entry across the database has proper source
+documentation in the Sources tab.
+
+════════════════════════════════════════
+PHASE 1: SEC FILING SOURCE COVERAGE
+════════════════════════════════════════
+
+For EVERY filing in {TICKER}_SEC_FILINGS:
+1. Check if the filing has a corresponding Sources tab entry (match by date + form type)
+2. For filings WITH source entries: verify the URL is present and points to SEC EDGAR
+3. For filings WITHOUT source entries: flag as MISSING
+
+Filing source coverage:
+| Filing Date | Type | In Sources Tab? | URL Present? | Status |
+
+Metrics:
+- Total filings: X
+- With source entry: Y (XX%)
+- Missing source entry: Z
+
+════════════════════════════════════════
+PHASE 2: DATABASE ENTRY SOURCE TRACING
+════════════════════════════════════════
+
+Scan ALL database tabs for entries that reference specific events or data points:
+- Company/Core tab: press releases, earnings, leadership changes
+- Partners/Ecosystem tab: MNO announcements, deals, trials
+- Comps tab: competitor news with dates
+- Catalysts tab: milestone events with dates
+
+For each dated entry, check:
+1. Does the Sources tab have a corresponding source with matching date?
+2. If the entry references a URL or document — is it in Sources?
+3. Flag entries with NO traceable source as: "UNSOURCED: [tab] — [entry] — [date]"
+
+════════════════════════════════════════
+PHASE 3: SOURCES TAB QUALITY CHECK
+════════════════════════════════════════
+
+For each Sources tab entry:
+- Is the date format consistent (YYYY-MM-DD)?
+- Is the source type classified (PR / SEC / Analyst / News / Other)?
+- Is the URL present and well-formed?
+- Is the 1-line description meaningful?
+
+Quality flags:
+- MISSING_URL: Source entry has no URL
+- MISSING_TYPE: Source type not classified
+- VAGUE_DESC: Description too generic
+- DATE_FORMAT: Inconsistent date format
+
+════════════════════════════════════════
+PHASE 4: COMPLETENESS REPORT
+════════════════════════════════════════
+
+FILING SOURCE COVERAGE: XX%
+UNSOURCED DATABASE ENTRIES: X
+SOURCE QUALITY ISSUES: X
+
+PRIORITY FIXES:
+1. [HIGH] Material entries with no source: [list top 10]
+2. [MEDIUM] Filings missing from Sources tab: [list]
+3. [LOW] Quality issues to clean up: [count by type]
+
+Rules: Report facts only. Do not fabricate URLs or source entries.
+```
+
+---
+
+## DBV-DF — Data Freshness Audit
+
+**Workflow ID:** `data-freshness` (in `src/data/workflows.ts`)
+**Scope:** Per-ticker staleness detection across all tabs
+**Trigger:** Run weekly or before earnings
+**Variants:** ASTS, BMNR
+
+### Prompt
+
+```
+You are a data freshness auditor for the ABISON investment database covering {TICKER}.
+Your job is to detect stale, outdated, or missing data across all tabs and flag what
+needs refreshing.
+
+Current date: {CURRENT_DATE}.
+
+════════════════════════════════════════
+PHASE 1: METADATA STALENESS SCAN
+════════════════════════════════════════
+
+Check lastUpdated and nextExpectedUpdate in EVERY metadata export:
+- CAPITAL_METADATA
+- FINANCIALS_METADATA (or equivalent)
+- CATALYSTS_METADATA
+- SEC_META
+- Any other *_METADATA exports
+
+For each:
+| Section | Last Updated | Days Ago | Next Expected | Status |
+
+Status:
+- CURRENT: Updated within expected window
+- STALE: Past nextExpectedUpdate or > 30 days old
+- CRITICAL: Past nextExpectedUpdate by > 14 days
+
+════════════════════════════════════════
+PHASE 2: QUARTERLY DATA GAPS
+════════════════════════════════════════
+
+Check for expected quarterly filings/data:
+- 10-Q: Should have data for each quarter. Identify missing quarters.
+- 10-K: Annual report. Is the latest fiscal year covered?
+- Earnings: Are all recent earnings calls processed?
+
+Expected quarterly cadence:
+| Period | 10-Q/10-K Filed? | In Database? | Financials Tab? | Gap? |
+
+Flag: "QUARTERLY GAP: [period] — [filing exists but not processed / not in DB / overdue]"
+
+════════════════════════════════════════
+PHASE 3: TAB-BY-TAB FRESHNESS AUDIT
+════════════════════════════════════════
+
+For each database tab, find the MOST RECENT entry date and assess:
+
+Company/Core:
+- Latest entry date, days since last update, expected refresh trigger, status
+
+Partners/Ecosystem:
+- Any partner with no updates in > 90 days? Flag stale partners.
+
+Comps:
+- Latest entry per competitor. Flag any with no update in > 60 days.
+
+Catalysts:
+- Past target dates not updated with actual results?
+- Forward catalysts still valid or dates shifted?
+
+Capital:
+- Share count last updated. Pre/post latest offering?
+- Cash position last updated. Pre/post latest quarter?
+
+Sources:
+- Latest source entry date. Gap between latest source and latest database entry?
+
+════════════════════════════════════════
+PHASE 4: FRESHNESS REPORT
+════════════════════════════════════════
+
+FRESHNESS HEATMAP:
+| Tab | Last Updated | Staleness | Priority |
+
+QUARTERLY GAPS: X missing periods
+STALE METADATA: X sections past expected update
+STALE COMPETITORS: X with no update > 60 days
+STALE PARTNERS: X with no update > 90 days
+PAST-DUE CATALYSTS: X not updated with results
+
+REFRESH PRIORITY LIST:
+1. [CRITICAL] [description — what to update and which filing/source to use]
+2. [HIGH] [description]
+3. [MEDIUM] [description]
+
+SUGGESTED AGENT RUNS:
+- "Run [agent name] to refresh [section] using [filing/source]"
+
+Rules: Report facts only. Use actual dates from the database. Do not estimate or infer
+dates not present in the data.
+```
+
+---
+
+## Adding a New Audit
+
+To register a new audit:
+
+1. **Assign an ID** following the convention:
+   - Code/infrastructure audits: `CCA-{version}` (Comprehensive Code Audit)
+   - Database validation audits: `DBV-{2-letter code}`
+   - Security-focused audits: `SEC-{2-letter code}`
+   - Performance audits: `PERF-{2-letter code}`
+
+2. **Add to the index table** at the top of this file
+
+3. **Add the full prompt** in a new section below
+
+4. **If it's an AI agent workflow:** Add the workflow to `src/data/workflows.ts` with `category: 'audit'`
+
+5. **If it produces structured findings:** Add findings to `src/data/audit-findings.ts`
