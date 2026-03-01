@@ -2564,6 +2564,227 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
     compliance: ['SOC2', 'ISO-27001'],
     status: 'Open',
   },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // CCA-1.2 — GAP ANALYSIS (10 Missing Findings)
+  // Date: 2026-03-01
+  // Cross-referenced codebase against CCA-1.0 + CCA-1.1 to identify compound
+  // vulnerabilities, HTTP-layer gaps, and operational blind spots.
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'GAP-001',
+    title: 'PIN Authentication Is Brute-Forceable (Compound Vulnerability)',
+    category: '5. Authentication & Authorization',
+    description:
+      'The middleware (src/middleware.ts:9-16) uses constant-time comparison (good), but there is no rate limiting or lockout on PIN-protected routes or /api/auth/verify-pin. An attacker can brute-force the x-auth-pin header at unlimited speed. For a short numeric PIN, this is trivially crackable. This finding connects two separately-documented issues (NET-002: no rate limiting + AUTH-002: PIN-based auth) into a compound vulnerability that neither addresses alone.',
+    severity: 'HIGH',
+    cvss: 7.5,
+    cwe: 'CWE-307',
+    affectedAssets: [
+      'src/middleware.ts',
+      'src/app/api/auth/verify-pin/route.ts',
+      'src/app/api/edgar/analyze/route.ts',
+      'src/app/api/sources/analyze/route.ts',
+    ],
+    impact:
+      'The two PIN-protected routes (/api/edgar/analyze, /api/sources/analyze) are effectively unprotected. An attacker can enumerate the PIN at thousands of attempts per second with no lockout, gaining access to AI analysis endpoints and consuming Anthropic API credits.',
+    remediation:
+      'Add rate limiting middleware (e.g., @upstash/ratelimit) with aggressive limits (5 req/min) on auth-related endpoints. Consider replacing the PIN with a proper auth token (JWT or session cookie) after initial verification. Add exponential delay after 5 failed PIN attempts.',
+    effort: 'Short-term',
+    compliance: ['OWASP-A07', 'SOC2'],
+    status: 'Open',
+  },
+  {
+    id: 'GAP-002',
+    title: 'No Request Body Size Limits on Any POST Endpoint',
+    category: '19. Input Validation',
+    description:
+      'All 15 request.json() call sites across API routes accept arbitrarily large POST bodies. Next.js App Router in serverless mode has no built-in body size limit. A 500MB JSON payload could exhaust serverless function memory before any field-level validation runs. Existing finding INP-002 covers the storage angle (unbounded text in analysis-cache) but not the parsing/memory exhaustion vector that affects every POST route.',
+    severity: 'MEDIUM',
+    cvss: 5.3,
+    cwe: 'CWE-400',
+    affectedAssets: [
+      'src/app/api/analysis-cache/route.ts',
+      'src/app/api/seen-articles/route.ts',
+      'src/app/api/seen-filings/route.ts',
+      'src/app/api/workflow/run/route.ts',
+      'src/app/api/workflow/apply/route.ts',
+      'src/app/api/workflow/commit/route.ts',
+      'src/app/api/edgar/analyze/route.ts',
+      'src/app/api/sources/analyze/route.ts',
+      'src/app/api/check-analyzed/route.ts',
+      'src/app/api/notes/route.ts',
+      'src/app/api/notes/generate/route.ts',
+      'src/app/api/audit-checks/route.ts',
+      'src/app/api/edgar/refresh-local/route.ts',
+      'src/app/api/auth/verify-pin/route.ts',
+    ],
+    impact:
+      'Denial of Service via memory exhaustion. A single oversized request can crash a serverless function. Repeated attacks could exhaust function concurrency limits, causing downtime for legitimate users.',
+    remediation:
+      'Add a shared middleware or utility that checks Content-Length before parsing: reject requests over 1MB with HTTP 413. Set per-route limits where appropriate (e.g., 10KB for /api/auth/verify-pin, 1MB for /api/workflow/apply).',
+    effort: 'Short-term',
+    compliance: ['OWASP-A05'],
+    status: 'Open',
+  },
+  {
+    id: 'GAP-003',
+    title: 'No Content-Type Validation on POST Routes',
+    category: '19. Input Validation',
+    description:
+      'None of the 15 POST endpoints validate that the incoming Content-Type is application/json before calling request.json(). If a request arrives with Content-Type: text/plain or multipart/form-data, request.json() throws an unhandled exception that leaks error details in the response.',
+    severity: 'LOW',
+    cvss: 3.5,
+    affectedAssets: [
+      'All POST/PATCH routes in src/app/api/',
+    ],
+    impact:
+      'Unhandled exceptions on malformed Content-Type headers leak internal error messages. Minor denial-of-service vector via unexpected content types.',
+    remediation:
+      'Add Content-Type validation in middleware or a shared utility: reject requests without application/json with HTTP 415 Unsupported Media Type.',
+    effort: 'Short-term',
+    compliance: ['OWASP-A05'],
+    status: 'Open',
+  },
+  {
+    id: 'GAP-004',
+    title: 'Unvalidated JSON.parse on Scraped External HTML',
+    category: '19. Input Validation',
+    description:
+      'The press-releases route (press-releases/[symbol]/route.ts:149) calls JSON.parse(jsonMatch[1]) on JSON embedded in scraped investor relations HTML pages without a try/catch. If an IR page changes format, this throws an unhandled exception that crashes the request and leaks error details. Other JSON.parse calls on external data (workflow/run SSE stream, workflow/apply AI output, notes/generate) are properly wrapped in try/catch.',
+    severity: 'MEDIUM',
+    cvss: 4.5,
+    cwe: 'CWE-20',
+    affectedAssets: [
+      'src/app/api/press-releases/[symbol]/route.ts:149',
+    ],
+    impact:
+      'Unhandled exception when investor relations page format changes, crashing the press-releases endpoint. Error response leaks internal paths and stack trace information.',
+    remediation:
+      'Wrap JSON.parse in press-releases/[symbol]/route.ts:149 in try/catch with a graceful fallback (return empty array or skip the entry). Consider a shared safeParse() utility for all external JSON parsing.',
+    effort: 'Immediate',
+    compliance: ['OWASP-A05'],
+    status: 'Open',
+  },
+  {
+    id: 'GAP-005',
+    title: 'No robots.txt — Destructive Pages Indexable by Search Engines',
+    category: '18. Network Security',
+    description:
+      'No robots.txt, sitemap.xml, or metadata-based crawl directives exist. Search engines can discover and index all pages including /db-setup, which has a "Run Setup" button that wipes the entire database with a single POST. Combined with the unauthenticated destructive endpoint (SEC-001), search engine indexing makes this page more discoverable to attackers.',
+    severity: 'LOW',
+    cvss: 2.5,
+    affectedAssets: [
+      'public/ (missing robots.txt)',
+      'src/app/db-setup/page.tsx',
+    ],
+    impact:
+      'Increased attack surface via search engine discoverability of administrative pages. The /db-setup page appears in search results, making the unauthenticated database wipe endpoint easier to find.',
+    remediation:
+      'Add src/app/robots.ts using the Next.js metadata API to disallow /api/ and /db-setup. Add noindex meta tag to /db-setup page as defense-in-depth.',
+    effort: 'Immediate',
+    compliance: ['OWASP-A05'],
+    status: 'Open',
+  },
+  {
+    id: 'GAP-006',
+    title: 'No Subresource Integrity (SRI) on External Resources',
+    category: '18. Network Security',
+    description:
+      'Google Fonts are loaded via @import in src/app/globals.css:1 from fonts.googleapis.com. The audit flags the GDPR angle (finding PRIV-002) but not the supply chain risk: if Google\'s CDN is compromised or DNS-hijacked, malicious CSS could be injected. No SRI hashes are used. The existing recommendation to switch to next/font would also solve this since next/font self-hosts font files.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: [
+      'src/app/globals.css:1',
+    ],
+    impact:
+      'CSS injection via compromised CDN. Malicious CSS could exfiltrate data via CSS selectors, deface the application, or enable phishing overlays.',
+    remediation:
+      'Switch to next/font (already recommended for GDPR and performance — this adds a security rationale). The next/font package self-hosts font files, eliminating the external dependency entirely.',
+    effort: 'Short-term',
+    compliance: ['OWASP-A08'],
+    status: 'Open',
+  },
+  {
+    id: 'GAP-007',
+    title: 'Source Maps Not Explicitly Disabled in Production',
+    category: '21. Configuration Management',
+    description:
+      'next.config.ts is essentially empty — productionBrowserSourceMaps is not set. Next.js defaults to not shipping browser source maps, but server-side source maps are generated. On Vercel, server source maps could aid attackers in understanding code paths if error stack traces are leaked (which they are — see ERR-002).',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: [
+      'next.config.ts',
+    ],
+    impact:
+      'Information disclosure. Server-side source maps combined with leaked stack traces (ERR-002) give attackers a detailed view of server code structure, making targeted exploitation easier.',
+    remediation:
+      'Explicitly set productionBrowserSourceMaps: false in next.config.ts. While browser source maps are off by default, being explicit prevents accidental enablement.',
+    effort: 'Immediate',
+    compliance: ['OWASP-A05'],
+    status: 'Open',
+  },
+  {
+    id: 'GAP-008',
+    title: 'No Idempotency on Write Endpoints',
+    category: '32. Threading & Concurrency',
+    description:
+      'POST endpoints like /api/analysis-cache, /api/seen-articles, and /api/seen-filings have no idempotency protection. Network retries or double-clicks can create duplicate records. The analysis-cache route uses onConflictDoUpdate (good), but seen-articles and seen-filings use bulk inserts with onConflictDoNothing — meaning partial duplicates are silently dropped, which could mask data integrity issues.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: [
+      'src/app/api/analysis-cache/route.ts',
+      'src/app/api/seen-articles/route.ts',
+      'src/app/api/seen-filings/route.ts',
+    ],
+    impact:
+      'Duplicate records from network retries. Silent data loss from onConflictDoNothing masking integrity issues. Inconsistent state between client and server.',
+    remediation:
+      'Add idempotency keys (client-generated UUID in request header) for critical write endpoints. Or add client-side deduplication with debounced submit buttons.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'GAP-009',
+    title: 'db:push Runs Against Production Without Safeguards',
+    category: '22. Build & Deployment Processes',
+    description:
+      'package.json exposes "db:push": "npx drizzle-kit push" which directly mutates the production schema when DATABASE_URL points to production. Drizzle\'s push mode can silently drop columns, alter types, or remove indexes on the live database with no migration file, no confirmation prompt, and no rollback capability. The audit covers the lack of migrations (CCA-1.1 #3) but doesn\'t flag that db:push itself is an active footgun — a one-command path to production data loss.',
+    severity: 'MEDIUM',
+    cvss: 5.0,
+    cwe: 'CWE-269',
+    affectedAssets: [
+      'package.json:12 (db:push script)',
+      'drizzle.config.ts',
+    ],
+    impact:
+      'A developer running npm run db:push with a production DATABASE_URL can irreversibly drop columns, change types, or destroy indexes. No migration history, no rollback, no confirmation step.',
+    remediation:
+      'Replace db:push with drizzle-kit generate + drizzle-kit migrate for versioned migrations. If db:push is retained for development, add a guard script that blocks execution when DATABASE_URL contains production hostnames (e.g., neon.tech).',
+    effort: 'Short-term',
+    compliance: ['SOC2'],
+    status: 'Open',
+  },
+  {
+    id: 'GAP-010',
+    title: 'No Graceful Shutdown / Request Draining',
+    category: '26. Scalability Architecture',
+    description:
+      'Serverless (Vercel) handles request draining automatically, so this is a non-issue today. However, PLAN.md discusses a potential migration off Vercel. If the app moves to a long-running server (Docker, EC2, etc.), there is no process.on("SIGTERM") handler, no graceful shutdown logic, and no request draining. In-flight database writes or AI API calls would be abruptly terminated.',
+    severity: 'INFO',
+    cvss: 0.0,
+    affectedAssets: [
+      'Entire application (no shutdown handler)',
+    ],
+    impact:
+      'No impact while on Vercel. If migrated to a long-running server, in-flight requests would be killed on deploy, potentially leaving database in inconsistent state or wasting Anthropic API credits on aborted analyses.',
+    remediation:
+      'No action needed while on Vercel. If migrating to a long-running server, add a SIGTERM handler that finishes in-flight requests before exiting.',
+    effort: 'Long-term',
+    compliance: [],
+    status: 'Accepted Risk',
+  },
 ];
 
 // ── Computed Statistics ──────────────────────────────────────────────────────
