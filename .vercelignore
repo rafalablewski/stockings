@@ -1,6 +1,5 @@
 # Exclude dev-only files from the Vercel deployment bundle.
-# NOTE: audit/ and docs/ are NOT excluded — they are read at
-# request time by force-dynamic Server Components.
+# NOTE: docs/ is NOT excluded — read at request time by force-dynamic Server Components.
 
 # Dev scripts (not needed at runtime on Vercel)
 scripts/

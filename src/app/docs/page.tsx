@@ -311,7 +311,6 @@ const projectStructure: FileEntry[] = [
   { path: "src/app/stocks/[ticker]/page.tsx",            type: "Page",      description: "Dynamic stock route — loads ASTS/BMNR/CRCL components" },
   { path: "src/app/hooks/page.tsx",                      type: "Page",      description: "Agent Hooks documentation page" },
   { path: "src/app/docs/page.tsx",                       type: "Page",      description: "This documentation page" },
-  { path: "src/app/audit/comprehensive-code-audit/page.tsx", type: "Page", description: "Code audit report page" },
   { path: "src/components/stocks/stock-model-styles.css", type: "Styles",    description: "Central CSS file — all sm-* utilities, design tokens, responsive breakpoints" },
   { path: "src/components/stocks/stock-model-styles.ts", type: "Types",     description: "AccentColor type export ('cyan' | 'violet' | 'mint')" },
   { path: "src/components/stocks/ASTS.tsx",              type: "Component", description: "AST SpaceMobile model — golden standard" },
@@ -350,12 +349,11 @@ const projectStructure: FileEntry[] = [
    ───────────────────────────────────────────────────────────────────────────── */
 
 const routingTree = [
-  { path: "/",                                     label: "Home",              file: "app/page.tsx",                          note: "Coverage grid, audits, workflows" },
+  { path: "/",                                     label: "Home",              file: "app/page.tsx",                          note: "Coverage grid, workflows" },
   { path: "/stocks",                               label: "Stock List",        file: "app/stocks/page.tsx",                   note: "Tracked companies index" },
   { path: "/stocks/[ticker]",                      label: "Stock Detail",      file: "app/stocks/[ticker]/page.tsx",          note: "Loads ASTS / BMNR / CRCL component" },
   { path: "/docs",                                 label: "Docs",             file: "app/docs/page.tsx",                     note: "This page — design system + architecture" },
   { path: "/hooks",                                label: "Hooks",            file: "app/hooks/page.tsx",                    note: "Agent hooks documentation" },
-  { path: "/audit/comprehensive-code-audit",       label: "Code Audit",       file: "app/audit/comprehensive-code-audit/page.tsx", note: "35-category audit results" },
   { path: "/db-setup",                             label: "DB Setup",         file: "app/db-setup/page.tsx",                 note: "Browser-based database initialization" },
 ];
 
@@ -383,7 +381,6 @@ const apiRoutes = [
   ]},
   { group: "Infra",     routes: [
     { method: "POST", path: "/api/db/setup",                    auth: "—",   note: "Seed database from .ts data files" },
-    { method: "POST", path: "/api/audit-checks",                auth: "—",   note: "Persist audit findings" },
     { method: "GET/POST/PATCH/DELETE", path: "/api/notes",      auth: "—",   note: "Global notes CRUD (PATCH updates AI title/description, hidden)" },
     { method: "POST", path: "/api/notes/generate",              auth: "PIN", note: "AI-generate title & description for a note (Claude, AI-gated)" },
     { method: "POST", path: "/api/workflow/run",                auth: "—",   note: "Execute AI agent workflow" },
@@ -438,7 +435,6 @@ const dbTables: DBTable[] = [
   { name: "seen_filings",        purpose: "User-viewed filings (NEW/SEEN badge state)",       key: "ticker + accession_number" },
   { name: "seen_articles",       purpose: "User-viewed articles (dismissed state)",           key: "ticker + cache_key" },
   { name: "analysis_cache",      purpose: "AI analysis results (EDGAR + Sources)",            key: "ticker + type + key" },
-  { name: "audit_checks",        purpose: "Code audit finding verdicts",                      key: "finding_id" },
   { name: "notes",               purpose: "User notes scratch-pad (article ideas, enhancements, other)", key: "id (auto)" },
 ];
 
