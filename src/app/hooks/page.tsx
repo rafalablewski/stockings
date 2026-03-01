@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import fs from "fs";
+import path from "path";
+import HookCard from "./HookCard";
 
 export const metadata: Metadata = {
   title: "Agent Hooks | ABISON",
@@ -23,6 +26,7 @@ const plugins = [
       { key: "autoFixOnSave", value: "false" },
       { key: "blockOnError", value: "false" },
     ],
+    scriptFile: "review-hook.sh",
   },
   {
     id: "claude-md-management",
@@ -37,6 +41,7 @@ const plugins = [
       { key: "enforceRequiredSections", value: "true" },
       { key: "warnOnConventionDrift", value: "true" },
     ],
+    scriptFile: "md-hook.sh",
   },
   {
     id: "code-simplifier",
@@ -52,6 +57,7 @@ const plugins = [
       { key: "maxParameters", value: "5" },
       { key: "maxConditionClauses", value: "3" },
     ],
+    scriptFile: "simplifier-hook.sh",
   },
   {
     id: "agent-impact-detector",
@@ -69,6 +75,7 @@ const plugins = [
       { key: "Prompt Data", value: "MEDIUM" },
       { key: "MCP Config", value: "HIGH" },
     ],
+    scriptFile: "impact-hook.sh",
   },
   {
     id: "methodology-sync-checker",
@@ -84,32 +91,25 @@ const plugins = [
       { key: "Data globs", value: "research-sources, sec-filings" },
       { key: "Schema files", value: "schema.ts (both)" },
     ],
+    scriptFile: "sync-hook.sh",
   },
 ];
 
-function PhaseBadge({ phase }: { phase: string }) {
-  const colors = phase.includes("Pre")
-    ? "bg-sky-500/10 text-sky-400/70 border-sky-500/20"
-    : "bg-emerald-500/10 text-emerald-400/70 border-emerald-500/20";
-
-  return (
-    <span
-      className={`text-[9px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded border ${colors}`}
-    >
-      {phase}
-    </span>
-  );
-}
-
-function MatcherPill({ matcher }: { matcher: string }) {
-  return (
-    <span className="text-[10px] font-mono text-white/20 px-1.5 py-0.5 rounded bg-white/[0.03]">
-      {matcher}
-    </span>
-  );
+function readScript(pluginId: string, scriptFile: string): string {
+  try {
+    const scriptPath = path.join(process.cwd(), ".claude", "plugins", pluginId, scriptFile);
+    return fs.readFileSync(scriptPath, "utf-8");
+  } catch {
+    return "";
+  }
 }
 
 export default function HooksPage() {
+  const pluginsWithScripts = plugins.map(({ scriptFile, ...plugin }) => ({
+    ...plugin,
+    script: readScript(plugin.id, scriptFile),
+  }));
+
   return (
     <div className="min-h-screen py-20 px-6">
       <div className="max-w-5xl mx-auto">
@@ -159,59 +159,8 @@ export default function HooksPage() {
 
         {/* Plugin cards */}
         <div className="grid gap-4">
-          {plugins.map((plugin) => (
-            <div
-              key={plugin.id}
-              id={plugin.id}
-              className="relative p-6 rounded-xl bg-white/[0.02] border border-white/[0.06] scroll-mt-20"
-            >
-              <div className="flex items-start justify-between gap-4 mb-3">
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-[14px] font-medium text-white tracking-wide">
-                    {plugin.name}
-                  </span>
-                  <PhaseBadge phase={plugin.phase} />
-                  <span className="text-[10px] font-mono text-white/15">
-                    v{plugin.version}
-                  </span>
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-amber-400/70 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
-                    Turned off
-                  </span>
-                </div>
-              </div>
-              <p className="text-[12px] text-white/35 leading-relaxed mb-4">
-                {plugin.description}
-              </p>
-
-              {/* Matchers */}
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-[10px] uppercase tracking-[0.12em] text-white/20 mr-1">
-                  Triggers
-                </span>
-                {plugin.matchers.map((m) => (
-                  <MatcherPill key={m} matcher={m} />
-                ))}
-              </div>
-
-              {/* Config */}
-              <div className="bg-white/[0.015] rounded-lg border border-white/[0.04] p-4">
-                <span className="text-[10px] uppercase tracking-[0.12em] text-white/20 block mb-2">
-                  Configuration
-                </span>
-                <div className="grid grid-cols-2 gap-x-8 gap-y-1.5">
-                  {plugin.config.map((c) => (
-                    <div key={c.key} className="flex items-center justify-between">
-                      <span className="text-[11px] text-white/30 font-mono">
-                        {c.key}
-                      </span>
-                      <span className="text-[11px] text-white/50 font-mono">
-                        {c.value}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+          {pluginsWithScripts.map((plugin) => (
+            <HookCard key={plugin.id} plugin={plugin} />
           ))}
         </div>
 

@@ -310,6 +310,7 @@ const projectStructure: FileEntry[] = [
   { path: "src/app/page.tsx",                            type: "Page",      description: "Landing page — stock list" },
   { path: "src/app/stocks/[ticker]/page.tsx",            type: "Page",      description: "Dynamic stock route — loads ASTS/BMNR/CRCL components" },
   { path: "src/app/hooks/page.tsx",                      type: "Page",      description: "Agent Hooks documentation page" },
+  { path: "src/app/hooks/HookCard.tsx",                  type: "Component", description: "Hook card — View/Copy prompt, config display" },
   { path: "src/app/docs/page.tsx",                       type: "Page",      description: "This documentation page" },
   { path: "src/app/audit/comprehensive-code-audit/page.tsx", type: "Page", description: "Code audit report page" },
   { path: "src/components/stocks/stock-model-styles.css", type: "Styles",    description: "Central CSS file — all sm-* utilities, design tokens, responsive breakpoints" },

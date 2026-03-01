@@ -2,6 +2,8 @@
 
 ## 2026-03-01
 
+- feat: add View prompt / Copy prompt buttons to each hook card on /hooks
+- fix: extract copy-prompt setTimeout into useEffect with cleanup (memory leak fix per review)
 - refactor: move AUDIT.md from audit/ to docs/
 - refactor: consolidate 4 audit files into single audit/AUDIT.md
 - refactor: move audit files from docs/ to dedicated audit/ directory
