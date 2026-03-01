@@ -8,7 +8,7 @@
  * Each finding includes severity, CVSS score, affected assets,
  * remediation guidance with estimated effort, and compliance mapping.
  *
- * See also: docs/AUDIT_REGISTRY.md for the unified audit index.
+ * See also: audit/AUDIT_REGISTRY.md for the unified audit index.
  */
 
 // ── Severity Taxonomy ────────────────────────────────────────────────────────
@@ -2559,7 +2559,7 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
     impact:
       'The 70% failure rate indicates significant operational risk. While the financial models and data layer are well-engineered, the surrounding infrastructure (CI/CD, monitoring, documentation, environment management) is absent. This creates a fragile deployment pipeline where issues are detected reactively rather than proactively.',
     remediation:
-      'Address the 16 GUILTY items in priority order: (1) Add CI/CD pipeline, (2) Add monitoring/alerting, (3) Add structured logging, (4) Break up god components, (5) Document environment setup, (6) Add health check endpoint, (7) Add staging environment, (8) Add rate limiting, (9) Add input validation, (10) Test database restore procedure. See Appendix A in docs/COMPREHENSIVE_CODE_AUDIT.md for full verdicts.',
+      'Address the 16 GUILTY items in priority order: (1) Add CI/CD pipeline, (2) Add monitoring/alerting, (3) Add structured logging, (4) Break up god components, (5) Document environment setup, (6) Add health check endpoint, (7) Add staging environment, (8) Add rate limiting, (9) Add input validation, (10) Test database restore procedure. See Appendix A in audit/COMPREHENSIVE_CODE_AUDIT.md for full verdicts.',
     effort: 'Medium-term',
     compliance: ['SOC2', 'ISO-27001'],
     status: 'Open',
