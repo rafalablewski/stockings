@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="bg5" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0D1117"/>
+      <stop offset="100%" stop-color="#05070A"/>
+    </linearGradient>
+    <linearGradient id="dotLine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.4"/>
+      <stop offset="50%" stop-color="#22D3EE" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0.4"/>
+    </linearGradient>
+    <linearGradient id="progressBar" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#7EE787"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="660" fill="url(#bg5)"/>
+
+  <!-- Title -->
+  <text x="600" y="36" text-anchor="middle" fill="#6E7681" font-size="13" font-weight="500" letter-spacing="3">SKETCH 5 — MINIMAL STRIP</text>
+  <line x1="200" y1="48" x2="1000" y2="48" stroke="#21262D" stroke-width="1"/>
+  <text x="600" y="72" text-anchor="middle" fill="#8B949E" font-size="12" font-style="italic">Ultra-minimal. Two anchor points connected by a data line. Full-width accent bar below for at-a-glance status.</text>
+
+  <!-- ═══ HEADER MOCKUP ═══ -->
+  <rect x="40" y="100" width="1120" height="230" rx="16" fill="#0D1117" stroke="rgba(240,246,252,0.06)" stroke-width="1"/>
+
+  <!-- ═══ TOP ROW: Name ←→ Price ═══ -->
+
+  <!-- Left anchor: Company -->
+  <text x="80" y="162" fill="#F0F6FC" font-size="36" font-weight="700" letter-spacing="-1.5">ASTS SpaceMobile</text>
+  <rect x="80" y="174" width="148" height="22" rx="11" fill="rgba(34,211,238,0.1)"/>
+  <text x="90" y="189" fill="#22D3EE" font-size="10" font-family="monospace" font-weight="600">NASDAQ: ASTS</text>
+
+  <!-- Connecting dot line -->
+  <line x1="340" y1="155" x2="880" y2="155" stroke="url(#dotLine)" stroke-width="1" stroke-dasharray="2,6"/>
+  <!-- Center label on the line -->
+  <rect x="555" y="143" width="90" height="22" rx="11" fill="#0D1117" stroke="rgba(34,211,238,0.2)" stroke-width="1"/>
+  <text x="600" y="158" text-anchor="middle" fill="#22D3EE" font-size="9" font-weight="500">D2D CELLULAR</text>
+
+  <!-- Right anchor: Price -->
+  <text x="1120" y="162" text-anchor="end" fill="#F0F6FC" font-size="42" font-weight="800" font-family="monospace" letter-spacing="-2">$52.49</text>
+  <text x="1120" y="186" text-anchor="end" fill="#7EE787" font-size="14" font-weight="600">▲ +2.34 (4.67%)</text>
+
+  <!-- ═══ MIDDLE: Minimal meta row ═══ -->
+  <line x1="80" y1="215" x2="1120" y2="215" stroke="rgba(240,246,252,0.06)" stroke-width="1"/>
+
+  <text x="80" y="240" fill="#6E7681" font-size="11">First space-based cellular broadband · 53+ MNO partnerships · 2.8B subscribers</text>
+
+  <text x="1120" y="240" text-anchor="end" fill="#6E7681" font-size="11">📅 Feb 28, 2026 · Updated 3:45 PM · <tspan fill="#8B949E">↻</tspan></text>
+
+  <!-- ═══ BOTTOM: Full-width accent progress bar ═══ -->
+  <!-- Background bar -->
+  <rect x="80" y="262" width="1040" height="6" rx="3" fill="rgba(240,246,252,0.06)"/>
+  <!-- Progress fill (constellation progress ~12%) -->
+  <rect x="80" y="262" width="121" height="6" rx="3" fill="url(#progressBar)"/>
+  <!-- Milestone markers -->
+  <circle cx="253" cy="265" r="3" fill="none" stroke="rgba(240,246,252,0.15)" stroke-width="1"/>
+  <circle cx="600" cy="265" r="3" fill="none" stroke="rgba(240,246,252,0.15)" stroke-width="1"/>
+  <circle cx="860" cy="265" r="3" fill="none" stroke="rgba(240,246,252,0.15)" stroke-width="1"/>
+  <circle cx="1120" cy="265" r="3" fill="none" stroke="rgba(240,246,252,0.15)" stroke-width="1"/>
+
+  <!-- Progress labels -->
+  <text x="80" y="288" fill="#22D3EE" font-size="9" font-weight="500">7 SATS</text>
+  <text x="253" y="288" text-anchor="middle" fill="#6E7681" font-size="8">20</text>
+  <text x="600" y="288" text-anchor="middle" fill="#6E7681" font-size="8">40</text>
+  <text x="860" y="288" text-anchor="middle" fill="#6E7681" font-size="8">50</text>
+  <text x="1120" y="288" text-anchor="end" fill="#6E7681" font-size="9">60 TARGET</text>
+
+  <!-- Thin bottom border -->
+  <rect x="40" y="320" width="1120" height="2" rx="1" fill="#22D3EE" opacity="0.15"/>
+
+  <!-- ═══ ANNOTATION: Design Notes ═══ -->
+  <line x1="40" y1="355" x2="1160" y2="355" stroke="#21262D" stroke-width="1" stroke-dasharray="4,4"/>
+  <text x="60" y="385" fill="#22D3EE" font-size="13" font-weight="600">Design Rationale</text>
+
+  <rect x="60" y="400" width="250" height="80" rx="8" fill="#161B22" stroke="#21262D" stroke-width="1"/>
+  <text x="80" y="423" fill="#F0F6FC" font-size="12" font-weight="600">Maximum whitespace</text>
+  <text x="80" y="441" fill="#8B949E" font-size="11">Only two visual anchors: name</text>
+  <text x="80" y="457" fill="#8B949E" font-size="11">and price. Everything else fades.</text>
+
+  <rect x="330" y="400" width="250" height="80" rx="8" fill="#161B22" stroke="#21262D" stroke-width="1"/>
+  <text x="350" y="423" fill="#F0F6FC" font-size="12" font-weight="600">Connected by tension</text>
+  <text x="350" y="441" fill="#8B949E" font-size="11">The dotted line creates a visual</text>
+  <text x="350" y="457" fill="#8B949E" font-size="11">relationship between name ↔ price.</text>
+
+  <rect x="600" y="400" width="250" height="80" rx="8" fill="#161B22" stroke="#21262D" stroke-width="1"/>
+  <text x="620" y="423" fill="#F0F6FC" font-size="12" font-weight="600">Progress as decoration</text>
+  <text x="620" y="441" fill="#8B949E" font-size="11">The constellation bar doubles as</text>
+  <text x="620" y="457" fill="#8B949E" font-size="11">visual separator AND data display.</text>
+
+  <rect x="870" y="400" width="260" height="80" rx="8" fill="#161B22" stroke="#21262D" stroke-width="1"/>
+  <text x="890" y="423" fill="#F0F6FC" font-size="12" font-weight="600">Scannable in 0.5 seconds</text>
+  <text x="890" y="441" fill="#8B949E" font-size="11">Eyes naturally sweep left→right:</text>
+  <text x="890" y="457" fill="#8B949E" font-size="11">name, category, price. Done.</text>
+
+  <!-- Layout wireframe -->
+  <text x="60" y="520" fill="#22D3EE" font-size="13" font-weight="600">Layout Structure</text>
+
+  <rect x="60" y="535" width="160" height="28" rx="4" fill="none" stroke="#F0F6FC" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+  <text x="140" y="553" text-anchor="middle" fill="#F0F6FC" font-size="9" opacity="0.7">NAME</text>
+
+  <line x1="225" y1="549" x2="420" y2="549" stroke="#22D3EE" stroke-width="1" stroke-dasharray="2,4" opacity="0.3"/>
+  <rect x="300" y="540" width="50" height="18" rx="9" fill="none" stroke="#22D3EE" stroke-width="1" stroke-dasharray="3,3" opacity="0.3"/>
+  <text x="325" y="553" text-anchor="middle" fill="#22D3EE" font-size="7" opacity="0.5">TAG</text>
+
+  <rect x="430" y="535" width="120" height="28" rx="4" fill="none" stroke="#F0F6FC" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>
+  <text x="490" y="553" text-anchor="middle" fill="#F0F6FC" font-size="9" opacity="0.7">PRICE</text>
+
+  <!-- Row 2: meta -->
+  <rect x="60" y="570" width="500" height="18" rx="4" fill="none" stroke="#6E7681" stroke-width="1" stroke-dasharray="3,3" opacity="0.3"/>
+  <text x="310" y="583" text-anchor="middle" fill="#6E7681" font-size="8" opacity="0.5">DESCRIPTION + META (single line)</text>
+
+  <!-- Row 3: progress bar -->
+  <rect x="60" y="595" width="500" height="8" rx="4" fill="none" stroke="#22D3EE" stroke-width="1" stroke-dasharray="3,3" opacity="0.3"/>
+  <text x="310" y="620" text-anchor="middle" fill="#22D3EE" font-size="8" opacity="0.5">PROGRESS BAR (constellation / milestones)</text>
+
+  <text x="60" y="650" fill="#6E7681" font-size="10">📱 Mobile: Name stacks above price. Dot-line hidden. Progress bar stays full-width below.</text>
+</svg>
