@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" font-family="'Outfit', system-ui, sans-serif">
+  <defs>
+    <linearGradient id="textGrad9" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#8B949E"/>
+    </linearGradient>
+    <radialGradient id="glow9r" cx="88%" cy="40%" r="25%">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="beacon9" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.3"/>
+      <stop offset="30%" stop-color="#22D3EE" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="pulseLine9" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0"/>
+      <stop offset="30%" stop-color="#22D3EE" stop-opacity="0.4"/>
+      <stop offset="50%" stop-color="#22D3EE" stop-opacity="0.8"/>
+      <stop offset="70%" stop-color="#22D3EE" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="720" fill="#05070A"/>
+  <text x="600" y="32" text-anchor="middle" fill="#6E7681" font-size="11" font-weight="500" letter-spacing="3">SKETCH 9 — PULSE BEACON</text>
+  <text x="600" y="52" text-anchor="middle" fill="#8B949E" font-size="11" font-style="italic">A living header. Accent pulse line connects name↔price. Beacon dot breathes at center. Futuristic life-sign monitor.</text>
+  <line x1="160" y1="64" x2="1040" y2="64" stroke="rgba(240,246,252,0.06)" stroke-width="1"/>
+
+  <!-- ═══ HERO CONTAINER ═══ -->
+  <rect x="40" y="84" width="1120" height="280" rx="16" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <rect x="40" y="84" width="1120" height="280" rx="16" fill="url(#glow9r)"/>
+
+  <!-- ═══ PULSE LINE (the living connection) ═══ -->
+  <!-- Background trace line (glass-edge) -->
+  <line x1="88" y1="210" x2="1112" y2="210" stroke="rgba(240,246,252,0.04)" stroke-width="1"/>
+
+  <!-- Pulse wave (accent gradient, the heartbeat) -->
+  <polyline
+    points="88,210 180,210 220,210 240,210 280,210 320,210 360,210 400,210 440,210 480,210 500,198 510,224 520,194 530,228 540,196 548,210 560,210 600,210 640,210 680,210 720,210 760,210 800,210 840,210 880,210 920,210 960,210 1000,210 1040,210 1080,210 1112,210"
+    fill="none"
+    stroke="url(#pulseLine9)"
+    stroke-width="1.5"
+    stroke-linecap="round"
+  />
+
+  <!-- Beacon dot at pulse center (where the heartbeat peaks) -->
+  <circle cx="530" cy="210" r="20" fill="url(#beacon9)"/>
+  <circle cx="530" cy="210" r="4" fill="#22D3EE" opacity="0.9"/>
+  <circle cx="530" cy="210" r="8" fill="none" stroke="#22D3EE" stroke-width="0.5" opacity="0.3"/>
+
+  <!-- ═══ ABOVE THE LINE: Company Name (left) + Price (right) ═══ -->
+
+  <!-- Company name block -->
+  <text x="88" y="148" fill="url(#textGrad9)" font-size="36" font-weight="700" letter-spacing="-1.5">ASTS SpaceMobile</text>
+  <!-- Ticker badge -->
+  <rect x="88" y="160" width="148" height="24" rx="6" fill="rgba(34,211,238,0.15)"/>
+  <text x="100" y="177" fill="#22D3EE" font-size="10" font-family="'Space Mono', monospace" font-weight="600">NASDAQ: ASTS</text>
+  <!-- Category -->
+  <rect x="248" y="160" width="104" height="24" rx="6" fill="rgba(240,246,252,0.04)" stroke="rgba(240,246,252,0.08)" stroke-width="1"/>
+  <text x="262" y="177" fill="#8B949E" font-size="10" font-weight="500">D2D Cellular</text>
+
+  <!-- Price block (right) -->
+  <text x="1112" y="150" text-anchor="end" fill="#F0F6FC" font-size="52" font-weight="700" font-family="'Space Mono', monospace" letter-spacing="-2">$52.49</text>
+  <!-- Change -->
+  <rect x="1024" y="162" width="88" height="24" rx="12" fill="rgba(126,231,135,0.15)"/>
+  <text x="1068" y="179" text-anchor="middle" fill="#7EE787" font-size="11" font-weight="600">▲ 4.67%</text>
+  <!-- Refresh -->
+  <circle cx="1004" cy="140" r="14" fill="rgba(240,246,252,0.04)" stroke="rgba(240,246,252,0.08)" stroke-width="1"/>
+  <text x="1004" y="145" text-anchor="middle" fill="#6E7681" font-size="11">↻</text>
+
+  <!-- ═══ BELOW THE LINE: Meta data (subtle, --text3) ═══ -->
+  <!-- Description -->
+  <text x="88" y="248" fill="#8B949E" font-size="13" font-weight="400">First space-based cellular broadband for standard smartphones.</text>
+  <text x="88" y="266" fill="#8B949E" font-size="13" font-weight="400">53+ MNO partnerships · 2.8B subscribers globally.</text>
+
+  <!-- Data freshness -->
+  <rect x="88" y="278" width="232" height="20" rx="4" fill="rgba(34,211,238,0.08)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
+  <text x="100" y="292" fill="#22D3EE" font-size="9" font-weight="500">📅 Feb 28, 2026 · Live price</text>
+
+  <!-- Right-side below line: sats + stats -->
+  <rect x="944" y="232" width="168" height="30" rx="8" fill="rgba(126,231,135,0.1)" stroke="rgba(126,231,135,0.15)" stroke-width="1"/>
+  <text x="960" y="252" fill="#7EE787" font-size="12" font-weight="600">🛰 7/60 Satellites</text>
+
+  <text x="1112" y="284" text-anchor="end" fill="#6E7681" font-size="10" letter-spacing="0.03em">Updated: 3:45:22 PM</text>
+
+  <!-- ═══ STATS ROW (glass-list, 1px gaps) ═══ -->
+  <rect x="40" y="376" width="1120" height="56" rx="0" fill="rgba(240,246,252,0.08)"/>
+
+  <rect x="40" y="376" width="159" height="56" fill="#0D1117"/>
+  <text x="119" y="396" text-anchor="middle" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1">MKT CAP</text>
+  <text x="119" y="418" text-anchor="middle" fill="#F0F6FC" font-size="16" font-weight="600" font-family="'Space Mono', monospace">$11.2B</text>
+
+  <rect x="200" y="376" width="153" height="56" fill="#0D1117"/>
+  <text x="276" y="396" text-anchor="middle" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1">EV</text>
+  <text x="276" y="418" text-anchor="middle" fill="#F0F6FC" font-size="16" font-weight="600" font-family="'Space Mono', monospace">$12.8B</text>
+
+  <rect x="354" y="376" width="153" height="56" fill="#0D1117"/>
+  <text x="430" y="396" text-anchor="middle" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1">SATS</text>
+  <text x="430" y="418" text-anchor="middle" fill="#22D3EE" font-size="16" font-weight="600" font-family="'Space Mono', monospace">7/60</text>
+
+  <rect x="508" y="376" width="153" height="56" fill="#0D1117"/>
+  <text x="584" y="396" text-anchor="middle" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1">PROGRESS</text>
+  <text x="584" y="418" text-anchor="middle" fill="#22D3EE" font-size="16" font-weight="600" font-family="'Space Mono', monospace">12%</text>
+
+  <rect x="662" y="376" width="153" height="56" fill="#0D1117"/>
+  <text x="738" y="396" text-anchor="middle" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1">CASH</text>
+  <text x="738" y="418" text-anchor="middle" fill="#7EE787" font-size="16" font-weight="600" font-family="'Space Mono', monospace">$0.7B</text>
+
+  <rect x="816" y="376" width="153" height="56" fill="#0D1117"/>
+  <text x="892" y="396" text-anchor="middle" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1">RUNWAY</text>
+  <text x="892" y="418" text-anchor="middle" fill="#7EE787" font-size="16" font-weight="600" font-family="'Space Mono', monospace">5.2Q</text>
+
+  <rect x="970" y="376" width="190" height="56" fill="#0D1117"/>
+  <text x="1065" y="396" text-anchor="middle" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1">CONTRACTED REV</text>
+  <text x="1065" y="418" text-anchor="middle" fill="#79C0FF" font-size="16" font-weight="600" font-family="'Space Mono', monospace">$260M+</text>
+
+  <!-- ═══ DESIGN NOTES ═══ -->
+  <line x1="40" y1="458" x2="1160" y2="458" stroke="rgba(240,246,252,0.06)" stroke-width="1" stroke-dasharray="4,4"/>
+  <text x="60" y="486" fill="#22D3EE" font-size="12" font-weight="600" letter-spacing="2">DESIGN NOTES</text>
+
+  <rect x="60" y="500" width="260" height="90" rx="12" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="84" y="524" fill="#F0F6FC" font-size="12" font-weight="600">Pulse = alive data</text>
+  <text x="84" y="542" fill="#8B949E" font-size="11">The heartbeat wave shows this</text>
+  <text x="84" y="558" fill="#8B949E" font-size="11">is live, breathing data. Pulses</text>
+  <text x="84" y="574" fill="#8B949E" font-size="11">every few seconds with CSS anim.</text>
+
+  <rect x="340" y="500" width="260" height="90" rx="12" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="364" y="524" fill="#F0F6FC" font-size="12" font-weight="600">Above/below the line</text>
+  <text x="364" y="542" fill="#8B949E" font-size="11">Core data (name, price) above.</text>
+  <text x="364" y="558" fill="#8B949E" font-size="11">Supporting data (desc, meta)</text>
+  <text x="364" y="574" fill="#8B949E" font-size="11">below. Line is the threshold.</text>
+
+  <rect x="620" y="500" width="260" height="90" rx="12" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="644" y="524" fill="#F0F6FC" font-size="12" font-weight="600">Beacon = visual anchor</text>
+  <text x="644" y="542" fill="#8B949E" font-size="11">Radial glow dot at pulse center</text>
+  <text x="644" y="558" fill="#8B949E" font-size="11">draws the eye. Uses same radial</text>
+  <text x="644" y="574" fill="#8B949E" font-size="11">gradient pattern as hero::before.</text>
+
+  <rect x="900" y="500" width="260" height="90" rx="12" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="924" y="524" fill="#F0F6FC" font-size="12" font-weight="600">Minimal but alive</text>
+  <text x="924" y="542" fill="#8B949E" font-size="11">Tesla's UI is minimal but never</text>
+  <text x="924" y="558" fill="#8B949E" font-size="11">static. The pulse + beacon give</text>
+  <text x="924" y="574" fill="#8B949E" font-size="11">it life without clutter.</text>
+
+  <rect x="60" y="610" width="1100" height="44" rx="8" fill="rgba(34,211,238,0.06)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
+  <text x="84" y="628" fill="#22D3EE" font-size="11" font-weight="500">KEY CHANGE:</text>
+  <text x="190" y="628" fill="#8B949E" font-size="11">A horizontal accent pulse line divides the header into "primary" (above) and "supporting" (below) zones. Beacon dot breathes at center. Creates spatial hierarchy + visual life.</text>
+  <text x="84" y="644" fill="#6E7681" font-size="10">📱 Mobile: Pulse line becomes a horizontal divider between stacked name/price. Beacon dot animates at the line center. Stats unchanged.</text>
+
+  <text x="60" y="686" fill="#6E7681" font-size="10" letter-spacing="0.5">ANIMATION: Pulse wave shifts left→right (3s ease infinite). Beacon dot: opacity 0.4→1.0 (2s pulse infinite). On price refresh, pulse spikes.</text>
+  <text x="60" y="704" fill="#6E7681" font-size="10" letter-spacing="0.5">TOKENS: pulse stroke: accent gradient 0→0.4→0.8→0.4→0 · beacon: radial accent 30%→0% · glass-edge: rgba(240,246,252,0.1)</text>
+</svg>

@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 740" font-family="'Outfit', system-ui, sans-serif">
+  <defs>
+    <linearGradient id="textGrad10" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#8B949E"/>
+    </linearGradient>
+    <radialGradient id="glow10" cx="50%" cy="50%" r="35%">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="outlineGrad10" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="rgba(240,246,252,0.15)"/>
+      <stop offset="50%" stop-color="rgba(34,211,238,0.2)"/>
+      <stop offset="100%" stop-color="rgba(240,246,252,0.08)"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="740" fill="#05070A"/>
+  <text x="600" y="32" text-anchor="middle" fill="#6E7681" font-size="11" font-weight="500" letter-spacing="3">SKETCH 10 — NEGATIVE SPACE</text>
+  <text x="600" y="52" text-anchor="middle" fill="#8B949E" font-size="11" font-style="italic">Pure Jony Ive: Enormous outlined price as negative space. Metadata positioned precisely around it. Maximum restraint.</text>
+  <line x1="160" y1="64" x2="1040" y2="64" stroke="rgba(240,246,252,0.06)" stroke-width="1"/>
+
+  <!-- ═══ HERO CONTAINER ═══ -->
+  <rect x="40" y="84" width="1120" height="360" rx="16" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <rect x="40" y="84" width="1120" height="360" rx="16" fill="url(#glow10)"/>
+
+  <!-- ═══ THE PRICE: Massive outlined text (negative space) ═══ -->
+  <!-- This is the hero: huge, outlined, not filled — the space IS the design -->
+  <text x="600" y="310" text-anchor="middle"
+    fill="none"
+    stroke="url(#outlineGrad10)"
+    stroke-width="1.5"
+    font-size="160"
+    font-weight="800"
+    font-family="'Space Mono', monospace"
+    letter-spacing="-8"
+    opacity="0.7"
+  >$52.49</text>
+
+  <!-- Subtle filled version behind at lower opacity for depth -->
+  <text x="600" y="310" text-anchor="middle"
+    fill="rgba(240,246,252,0.02)"
+    font-size="160"
+    font-weight="800"
+    font-family="'Space Mono', monospace"
+    letter-spacing="-8"
+  >$52.49</text>
+
+  <!-- ═══ METADATA: Precisely positioned around the price ═══ -->
+
+  <!-- TOP-LEFT: Company name (gradient text) -->
+  <text x="88" y="130" fill="url(#textGrad10)" font-size="28" font-weight="700" letter-spacing="-1">ASTS SpaceMobile</text>
+  <!-- Ticker badge -->
+  <rect x="88" y="142" width="148" height="22" rx="6" fill="rgba(34,211,238,0.15)"/>
+  <text x="100" y="158" fill="#22D3EE" font-size="10" font-family="'Space Mono', monospace" font-weight="600">NASDAQ: ASTS</text>
+  <rect x="248" y="142" width="90" height="22" rx="6" fill="rgba(240,246,252,0.04)" stroke="rgba(240,246,252,0.08)" stroke-width="1"/>
+  <text x="260" y="158" fill="#8B949E" font-size="10">D2D Cellular</text>
+
+  <!-- TOP-RIGHT: Change badge + refresh -->
+  <rect x="1022" y="110" width="90" height="28" rx="14" fill="rgba(126,231,135,0.15)"/>
+  <text x="1067" y="129" text-anchor="middle" fill="#7EE787" font-size="13" font-weight="600">▲ 4.67%</text>
+  <circle cx="1002" cy="124" r="14" fill="rgba(240,246,252,0.04)" stroke="rgba(240,246,252,0.08)" stroke-width="1"/>
+  <text x="1002" y="129" text-anchor="middle" fill="#6E7681" font-size="11">↻</text>
+
+  <!-- LEFT EDGE: Description (vertically centered alongside the big price) -->
+  <text x="88" y="256" fill="#8B949E" font-size="12" font-weight="400">First space-based cellular</text>
+  <text x="88" y="274" fill="#8B949E" font-size="12" font-weight="400">broadband for smartphones.</text>
+  <text x="88" y="292" fill="#8B949E" font-size="12" font-weight="400">53+ MNO partnerships.</text>
+
+  <!-- RIGHT EDGE: Satellites -->
+  <text x="1112" y="250" text-anchor="end" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1.2">CONSTELLATION</text>
+  <text x="1112" y="278" text-anchor="end" fill="#F0F6FC" font-size="24" font-weight="700" font-family="'Space Mono', monospace">7<tspan fill="#6E7681" font-size="16">/60</tspan></text>
+  <rect x="1054" y="290" width="58" height="20" rx="4" fill="rgba(126,231,135,0.15)"/>
+  <text x="1064" y="304" fill="#7EE787" font-size="9" font-weight="600">🛰 Live</text>
+
+  <!-- BOTTOM-LEFT: Data freshness -->
+  <rect x="88" y="380" width="232" height="20" rx="4" fill="rgba(34,211,238,0.08)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
+  <text x="100" y="394" fill="#22D3EE" font-size="9" font-weight="500">📅 Data as of: Feb 28, 2026 · Live price</text>
+
+  <!-- BOTTOM-RIGHT: Updated -->
+  <text x="1112" y="394" text-anchor="end" fill="#6E7681" font-size="10" letter-spacing="0.03em">Updated: 3:45:22 PM</text>
+
+  <!-- ═══ GLASS ACCENT LINE (bottom separator) ═══ -->
+  <rect x="88" y="420" width="1024" height="1" fill="rgba(240,246,252,0.06)"/>
+
+  <!-- ═══ STATS ROW (glass-list, 1px gaps) ═══ -->
+  <rect x="40" y="456" width="1120" height="56" rx="0" fill="rgba(240,246,252,0.08)"/>
+
+  <rect x="40" y="456" width="159" height="56" fill="#0D1117"/>
+  <text x="119" y="476" text-anchor="middle" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1">MKT CAP</text>
+  <text x="119" y="498" text-anchor="middle" fill="#F0F6FC" font-size="16" font-weight="600" font-family="'Space Mono', monospace">$11.2B</text>
+
+  <rect x="200" y="456" width="153" height="56" fill="#0D1117"/>
+  <text x="276" y="476" text-anchor="middle" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1">EV</text>
+  <text x="276" y="498" text-anchor="middle" fill="#F0F6FC" font-size="16" font-weight="600" font-family="'Space Mono', monospace">$12.8B</text>
+
+  <rect x="354" y="456" width="153" height="56" fill="#0D1117"/>
+  <text x="430" y="476" text-anchor="middle" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1">SATS</text>
+  <text x="430" y="498" text-anchor="middle" fill="#22D3EE" font-size="16" font-weight="600" font-family="'Space Mono', monospace">7/60</text>
+
+  <rect x="508" y="456" width="153" height="56" fill="#0D1117"/>
+  <text x="584" y="476" text-anchor="middle" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1">PROGRESS</text>
+  <text x="584" y="498" text-anchor="middle" fill="#22D3EE" font-size="16" font-weight="600" font-family="'Space Mono', monospace">12%</text>
+
+  <rect x="662" y="456" width="153" height="56" fill="#0D1117"/>
+  <text x="738" y="476" text-anchor="middle" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1">CASH</text>
+  <text x="738" y="498" text-anchor="middle" fill="#7EE787" font-size="16" font-weight="600" font-family="'Space Mono', monospace">$0.7B</text>
+
+  <rect x="816" y="456" width="153" height="56" fill="#0D1117"/>
+  <text x="892" y="476" text-anchor="middle" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1">RUNWAY</text>
+  <text x="892" y="498" text-anchor="middle" fill="#7EE787" font-size="16" font-weight="600" font-family="'Space Mono', monospace">5.2Q</text>
+
+  <rect x="970" y="456" width="190" height="56" fill="#0D1117"/>
+  <text x="1065" y="476" text-anchor="middle" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1">CONTRACTED</text>
+  <text x="1065" y="498" text-anchor="middle" fill="#79C0FF" font-size="16" font-weight="600" font-family="'Space Mono', monospace">$260M+</text>
+
+  <!-- ═══ DESIGN NOTES ═══ -->
+  <line x1="40" y1="536" x2="1160" y2="536" stroke="rgba(240,246,252,0.06)" stroke-width="1" stroke-dasharray="4,4"/>
+  <text x="60" y="564" fill="#22D3EE" font-size="12" font-weight="600" letter-spacing="2">DESIGN NOTES</text>
+
+  <rect x="60" y="578" width="260" height="90" rx="12" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="84" y="602" fill="#F0F6FC" font-size="12" font-weight="600">Price as architecture</text>
+  <text x="84" y="620" fill="#8B949E" font-size="11">160px outlined price IS the</text>
+  <text x="84" y="636" fill="#8B949E" font-size="11">header. Not a label — a space.</text>
+  <text x="84" y="652" fill="#8B949E" font-size="11">Metadata orbits around it.</text>
+
+  <rect x="340" y="578" width="260" height="90" rx="12" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="364" y="602" fill="#F0F6FC" font-size="12" font-weight="600">Outline, not fill</text>
+  <text x="364" y="620" fill="#8B949E" font-size="11">1.5px stroke with gradient</text>
+  <text x="364" y="636" fill="#8B949E" font-size="11">(white→cyan→white). The price</text>
+  <text x="364" y="652" fill="#8B949E" font-size="11">is felt, not shouted.</text>
+
+  <rect x="620" y="578" width="260" height="90" rx="12" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="644" y="602" fill="#F0F6FC" font-size="12" font-weight="600">Corner data placement</text>
+  <text x="644" y="620" fill="#8B949E" font-size="11">Name (TL), Change (TR),</text>
+  <text x="644" y="636" fill="#8B949E" font-size="11">Desc (ML), Sats (MR),</text>
+  <text x="644" y="652" fill="#8B949E" font-size="11">Freshness (BL), Time (BR).</text>
+
+  <rect x="900" y="578" width="260" height="90" rx="12" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="924" y="602" fill="#F0F6FC" font-size="12" font-weight="600">Maximum Ive restraint</text>
+  <text x="924" y="620" fill="#8B949E" font-size="11">The less you show, the more</text>
+  <text x="924" y="636" fill="#8B949E" font-size="11">powerful it feels. The outlined</text>
+  <text x="924" y="652" fill="#8B949E" font-size="11">price is barely there — yet dominant.</text>
+
+  <rect x="60" y="686" width="1100" height="36" rx="8" fill="rgba(34,211,238,0.06)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
+  <text x="84" y="704" fill="#22D3EE" font-size="11" font-weight="500">KEY CHANGE:</text>
+  <text x="190" y="704" fill="#8B949E" font-size="11">Price becomes a 160px outlined architectural element — the header IS the price. All metadata is precisely positioned around the negative space. Zero noise. Pure signal.</text>
+  <text x="84" y="720" fill="#6E7681" font-size="10">📱 Mobile: Outlined price shrinks to 80px. Metadata stacks below. The outline effect remains the visual signature. Stats unchanged.</text>
+</svg>

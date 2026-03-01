@@ -1,0 +1,119 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 740" font-family="'Outfit', system-ui, sans-serif">
+  <defs>
+    <linearGradient id="textGrad7" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#8B949E"/>
+    </linearGradient>
+    <radialGradient id="orbGlow7" cx="50%" cy="45%" r="28%">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.1"/>
+      <stop offset="50%" stop-color="#22D3EE" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ringGlow7" cx="50%" cy="45%" r="18%">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0"/>
+      <stop offset="80%" stop-color="#22D3EE" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Page -->
+  <rect width="1200" height="740" fill="#05070A"/>
+  <text x="600" y="32" text-anchor="middle" fill="#6E7681" font-size="11" font-weight="500" letter-spacing="3">SKETCH 7 — ORBITAL HUD</text>
+  <text x="600" y="52" text-anchor="middle" fill="#8B949E" font-size="11" font-style="italic">Tesla instrument cluster meets space mission control. Price at center. Data orbits around it.</text>
+  <line x1="160" y1="64" x2="1040" y2="64" stroke="rgba(240,246,252,0.06)" stroke-width="1"/>
+
+  <!-- ═══ HERO CONTAINER ═══ -->
+  <rect x="40" y="84" width="1120" height="360" rx="16" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+
+  <!-- Radial glows -->
+  <rect x="40" y="84" width="1120" height="360" rx="16" fill="url(#orbGlow7)"/>
+  <rect x="40" y="84" width="1120" height="360" rx="16" fill="url(#ringGlow7)"/>
+
+  <!-- ═══ ORBITAL RING (thin glass-edge circle) ═══ -->
+  <circle cx="600" cy="250" r="140" fill="none" stroke="rgba(240,246,252,0.06)" stroke-width="1"/>
+  <circle cx="600" cy="250" r="120" fill="none" stroke="rgba(240,246,252,0.04)" stroke-width="1"/>
+  <!-- Accent arc (top portion, representing progress ~12%) -->
+  <circle cx="600" cy="250" r="140" fill="none" stroke="#22D3EE" stroke-width="2" stroke-dasharray="105 775" stroke-dashoffset="-220" opacity="0.6" stroke-linecap="round"/>
+
+  <!-- Small orbital dots on the ring -->
+  <circle cx="600" cy="110" r="3" fill="#22D3EE" opacity="0.8"/>
+  <circle cx="697" cy="131" r="2" fill="#22D3EE" opacity="0.4"/>
+  <circle cx="740" cy="250" r="2" fill="rgba(240,246,252,0.2)"/>
+  <circle cx="697" cy="369" r="2" fill="rgba(240,246,252,0.15)"/>
+  <circle cx="600" cy="390" r="2" fill="rgba(240,246,252,0.1)"/>
+  <circle cx="503" cy="369" r="2" fill="rgba(240,246,252,0.1)"/>
+  <circle cx="460" cy="250" r="2" fill="rgba(240,246,252,0.15)"/>
+
+  <!-- ═══ CENTER: Price (the focal point) ═══ -->
+  <text x="600" y="240" text-anchor="middle" fill="#F0F6FC" font-size="52" font-weight="700" font-family="'Space Mono', monospace" letter-spacing="-2">$52.49</text>
+  <!-- Change -->
+  <text x="600" y="270" text-anchor="middle" fill="#7EE787" font-size="14" font-weight="600">▲ +2.34 (4.67%)</text>
+  <!-- Refresh -->
+  <circle cx="600" cy="295" r="12" fill="rgba(240,246,252,0.04)" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="600" y="300" text-anchor="middle" fill="#6E7681" font-size="10">↻</text>
+
+  <!-- ═══ TOP-LEFT: Company Name ═══ -->
+  <text x="88" y="140" fill="url(#textGrad7)" font-size="34" font-weight="700" letter-spacing="-1.5">ASTS</text>
+  <text x="88" y="166" fill="#8B949E" font-size="16" font-weight="300">SpaceMobile</text>
+  <!-- Ticker badge -->
+  <rect x="88" y="178" width="172" height="24" rx="6" fill="rgba(34,211,238,0.15)"/>
+  <text x="100" y="195" fill="#22D3EE" font-size="11" font-family="'Space Mono', monospace" font-weight="600">NASDAQ · D2D Cellular</text>
+
+  <!-- ═══ TOP-RIGHT: Constellation ═══ -->
+  <text x="1112" y="140" text-anchor="end" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1.2">CONSTELLATION</text>
+  <text x="1112" y="174" text-anchor="end" fill="#F0F6FC" font-size="36" font-weight="700" font-family="'Space Mono', monospace">7<tspan fill="#6E7681" font-size="20">/60</tspan></text>
+  <rect x="1010" y="186" width="102" height="22" rx="6" fill="rgba(126,231,135,0.15)"/>
+  <text x="1021" y="201" fill="#7EE787" font-size="10" font-weight="600">🛰 Launched</text>
+
+  <!-- ═══ BOTTOM-LEFT: Description ═══ -->
+  <text x="88" y="340" fill="#8B949E" font-size="13" font-weight="400">First space-based cellular broadband</text>
+  <text x="88" y="358" fill="#8B949E" font-size="13" font-weight="400">for standard smartphones.</text>
+  <!-- Data freshness -->
+  <rect x="88" y="374" width="232" height="20" rx="4" fill="rgba(34,211,238,0.08)" stroke="rgba(34,211,238,0.2)" stroke-width="1"/>
+  <text x="100" y="388" fill="#22D3EE" font-size="9" font-weight="500">📅 Feb 28, 2026 · Live price</text>
+
+  <!-- ═══ BOTTOM-RIGHT: Quick stats ═══ -->
+  <text x="1112" y="330" text-anchor="end" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1.2">MARKET CAP</text>
+  <text x="1112" y="352" text-anchor="end" fill="#F0F6FC" font-size="18" font-weight="600" font-family="'Space Mono', monospace">$11.2B</text>
+  <text x="1112" y="378" text-anchor="end" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1.2">CASH</text>
+  <text x="1112" y="400" text-anchor="end" fill="#7EE787" font-size="18" font-weight="600" font-family="'Space Mono', monospace">$0.7B</text>
+
+  <!-- Updated timestamp -->
+  <text x="600" y="420" text-anchor="middle" fill="#6E7681" font-size="10" letter-spacing="0.03em">Updated: 3:45:22 PM</text>
+
+  <!-- ═══ DESIGN NOTES ═══ -->
+  <line x1="40" y1="470" x2="1160" y2="470" stroke="rgba(240,246,252,0.06)" stroke-width="1" stroke-dasharray="4,4"/>
+  <text x="60" y="498" fill="#22D3EE" font-size="12" font-weight="600" letter-spacing="2">DESIGN NOTES</text>
+
+  <rect x="60" y="512" width="260" height="90" rx="12" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="84" y="536" fill="#F0F6FC" font-size="12" font-weight="600">Orbital ring = progress</text>
+  <text x="84" y="554" fill="#8B949E" font-size="11">Cyan arc shows constellation</text>
+  <text x="84" y="570" fill="#8B949E" font-size="11">progress (12%). Dots = satellites.</text>
+  <text x="84" y="586" fill="#8B949E" font-size="11">Tesla instrument cluster energy.</text>
+
+  <rect x="340" y="512" width="260" height="90" rx="12" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="364" y="536" fill="#F0F6FC" font-size="12" font-weight="600">Four-corner data placement</text>
+  <text x="364" y="554" fill="#8B949E" font-size="11">Name (TL), Sats (TR), Desc (BL),</text>
+  <text x="364" y="570" fill="#8B949E" font-size="11">Stats (BR). Price floats center.</text>
+  <text x="364" y="586" fill="#8B949E" font-size="11">Eyes scan in Z-pattern naturally.</text>
+
+  <rect x="620" y="512" width="260" height="90" rx="12" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="644" y="536" fill="#F0F6FC" font-size="12" font-weight="600">Glass-edge ring, not shadow</text>
+  <text x="644" y="554" fill="#8B949E" font-size="11">Ring uses rgba(240,246,252,0.06)</text>
+  <text x="644" y="570" fill="#8B949E" font-size="11">— same glass-edge token as</text>
+  <text x="644" y="586" fill="#8B949E" font-size="11">all borders in the system.</text>
+
+  <rect x="900" y="512" width="260" height="90" rx="12" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="924" y="536" fill="#F0F6FC" font-size="12" font-weight="600">Space-themed for ASTS</text>
+  <text x="924" y="554" fill="#8B949E" font-size="11">The orbital metaphor is natural</text>
+  <text x="924" y="570" fill="#8B949E" font-size="11">for a satellite company. Adapts</text>
+  <text x="924" y="586" fill="#8B949E" font-size="11">to other stocks with different shapes.</text>
+
+  <rect x="60" y="622" width="1100" height="44" rx="8" fill="rgba(34,211,238,0.06)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
+  <text x="84" y="640" fill="#22D3EE" font-size="11" font-weight="500">KEY CHANGE:</text>
+  <text x="190" y="640" fill="#8B949E" font-size="11">Price becomes the gravitational center. Data orbits outward. Constellation progress is visualized as a ring arc — functional decoration. ASTS-specific, could become a different visual for BMNR/CRCL.</text>
+  <text x="84" y="656" fill="#6E7681" font-size="10">📱 Mobile: Ring shrinks. Four corners collapse to vertical stack: Name → Price (with mini ring) → Stats → Description.</text>
+
+  <text x="60" y="700" fill="#6E7681" font-size="10" letter-spacing="0.5">TOKENS: --border rgba(240,246,252,0.1) · ring stroke: 0.06 opacity · accent arc: #22D3EE 60% opacity · radial glow: 10% accent-dim · corners: 16px</text>
+  <text x="60" y="718" fill="#6E7681" font-size="10" letter-spacing="0.5">ANIMATION: Ring arc animates on load (0→12%). Orbital dots pulse slowly (2s infinite, opacity 0.4→1.0). Accent glow breathes subtly.</text>
+</svg>
