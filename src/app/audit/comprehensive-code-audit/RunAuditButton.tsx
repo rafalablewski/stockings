@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { authFetch } from '@/lib/auth-fetch';
 import { workflows } from '@/data/workflows';
+import '@/components/stocks/stock-model-styles.css';
 
 export default function RunAuditButton() {
   const [running, setRunning] = useState(false);
