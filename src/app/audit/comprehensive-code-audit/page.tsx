@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { readFileSync } from "fs";
+import { join } from "path";
 import AuditDashboard from "@/components/AuditDashboard";
+import AuditReportSection from "./AuditReportSection";
 import { workflows } from "@/data/workflows";
 
 export const metadata: Metadata = {
@@ -35,6 +38,8 @@ const AUDIT_BADGE: Record<string, string> = {
 const auditWorkflows = workflows.filter((w) => w.category === "audit");
 
 export default function ComprehensiveCodeAuditPage() {
+  const auditMd = readFileSync(join(process.cwd(), "audit/AUDIT.md"), "utf-8");
+
   return (
     <div className="min-h-screen py-20 px-6">
       <div className="max-w-5xl mx-auto">
@@ -50,6 +55,14 @@ export default function ComprehensiveCodeAuditPage() {
           </p>
         </div>
         <AuditDashboard />
+
+        {/* ── Unified Audit Report (AUDIT.md) ────────────────────────── */}
+        <div className="mt-20 pt-16 border-t border-white/[0.06]">
+          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-8">
+            Unified Audit Report
+          </h2>
+          <AuditReportSection content={auditMd} />
+        </div>
 
         {/* ── All Audits ───────────────────────────────────────────────── */}
         <div className="mt-20 pt-16 border-t border-white/[0.06]">

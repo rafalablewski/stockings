@@ -58,7 +58,6 @@ const hooks = [
 // When stockList or hooks or audits change, mobile nav updates automatically.
 const docs = [
   { slug: "design-system", label: "Design System", href: "/docs" },
-  { slug: "documentation", label: "Documentation", href: "/docs/documentation" },
   { slug: "changelog", label: "Changelog", href: "/docs/changelog" },
 ];
 
@@ -82,7 +81,6 @@ const mobileNavItems = [
     label: 'Audit',
     children: [
       ...audits.map((a) => ({ label: a.label, href: `/audit/${a.slug}` })),
-      { label: 'Audit Report', href: '/audit/report' },
     ],
   },
 ];
@@ -209,16 +207,6 @@ function Navigation() {
                       </span>
                     </Link>
                   ))}
-                  <div className="border-t border-white/[0.06] mt-1 pt-1">
-                    <Link
-                      href="/audit/report"
-                      className="block px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
-                    >
-                      <span className="text-[12px] text-white/80">
-                        Audit Report
-                      </span>
-                    </Link>
-                  </div>
                 </div>
               </div>
             </div>
