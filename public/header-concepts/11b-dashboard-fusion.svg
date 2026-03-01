@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 580" width="1440" height="580">
+  <defs>
+    <linearGradient id="bg11b" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0A0A0A"/>
+      <stop offset="100%" stop-color="#050505"/>
+    </linearGradient>
+    <linearGradient id="redLine11b" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="transparent"/>
+      <stop offset="20%" stop-color="rgba(239,68,68,0.6)"/>
+      <stop offset="50%" stop-color="rgba(239,68,68,0.8)"/>
+      <stop offset="80%" stop-color="rgba(239,68,68,0.6)"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </linearGradient>
+    <linearGradient id="gaugeGrad11b" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="rgba(126,231,135,0.6)"/>
+      <stop offset="100%" stop-color="rgba(34,211,238,0.6)"/>
+    </linearGradient>
+    <linearGradient id="glassFill11b" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.05)"/>
+      <stop offset="100%" stop-color="rgba(255,255,255,0.015)"/>
+    </linearGradient>
+    <linearGradient id="trackGrad11b" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="rgba(239,68,68,0.35)"/>
+      <stop offset="50%" stop-color="rgba(167,139,250,0.35)"/>
+      <stop offset="100%" stop-color="rgba(126,231,135,0.35)"/>
+    </linearGradient>
+    <filter id="glow11b">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+    <filter id="markerGlow11b">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1440" height="580" fill="url(#bg11b)"/>
+
+  <!-- Red accent line top -->
+  <rect x="0" y="0" width="1440" height="2" fill="url(#redLine11b)"/>
+
+  <!-- Subtle HUD grid -->
+  <g opacity="0.02" stroke="#fff" stroke-width="0.5">
+    <line x1="120" y1="0" x2="120" y2="580"/>
+    <line x1="1320" y1="0" x2="1320" y2="580"/>
+    <line x1="120" y1="60" x2="1320" y2="60"/>
+    <line x1="120" y1="440" x2="1320" y2="440"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- LEFT COLUMN: Identity                   -->
+  <!-- ═══════════════════════════════════════ -->
+  <g transform="translate(120, 60)">
+    <circle cx="6" cy="6" r="3" fill="#7EE787"/>
+    <text x="16" y="10" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.12em">SYSTEM ONLINE</text>
+
+    <text y="64" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="14" font-weight="700" fill="rgba(255,255,255,0.3)" letter-spacing="0.3em">NASDAQ</text>
+    <text y="110" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="56" font-weight="700" fill="#F0F6FC" letter-spacing="0.05em">AAPL</text>
+    <text y="140" font-family="-apple-system, sans-serif" font-size="15" fill="#8B949E" letter-spacing="0.02em">Apple Inc.</text>
+
+    <g transform="translate(0, 180)">
+      <line x1="0" y1="0" x2="300" y2="0" stroke="rgba(255,255,255,0.04)"/>
+      <g transform="translate(0, 16)">
+        <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.15em">SECTOR</text>
+        <text x="100" font-family="monospace" font-size="11" fill="#8B949E">Technology</text>
+      </g>
+      <g transform="translate(0, 40)">
+        <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.15em">INDUSTRY</text>
+        <text x="100" font-family="monospace" font-size="11" fill="#8B949E">Consumer Electronics</text>
+      </g>
+      <g transform="translate(0, 64)">
+        <text font-family="monospace" font-size="8" fill="#6E7681" letter-spacing="0.15em">DATA</text>
+        <text x="100" font-family="monospace" font-size="11" fill="#6E7681">Mar 01 2026</text>
+      </g>
+    </g>
+  </g>
+
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- CENTER COLUMN: Price gauge              -->
+  <!-- ═══════════════════════════════════════ -->
+  <g transform="translate(720, 0)">
+    <g transform="translate(0, 240)">
+      <path d="M-140,-100 A160,160 0 0,1 140,-100" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="3"/>
+      <path d="M-140,-100 A160,160 0 0,1 80,-130" fill="none" stroke="url(#gaugeGrad11b)" stroke-width="3" stroke-linecap="round"/>
+    </g>
+
+    <text text-anchor="middle" y="100" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.2em">MARKET PRICE</text>
+    <text text-anchor="middle" y="215" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="96" font-weight="700" fill="#F0F6FC" letter-spacing="-4">$242.58</text>
+    <text text-anchor="middle" y="244" font-family="monospace" font-size="11" fill="#6E7681" letter-spacing="0.15em">USD</text>
+
+    <g transform="translate(0, 280)">
+      <rect x="-60" y="-14" width="120" height="28" rx="4" fill="rgba(126,231,135,0.06)" stroke="rgba(126,231,135,0.15)" stroke-width="0.5"/>
+      <text text-anchor="middle" y="3" font-family="monospace" font-size="13" font-weight="700" fill="#7EE787">+1.24%</text>
+    </g>
+
+    <g transform="translate(0, 324)">
+      <circle cx="-50" cy="0" r="3" fill="#7EE787" opacity="0.5"/>
+      <text x="-40" y="4" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.05em">LIVE · 10:42:18 EST</text>
+    </g>
+  </g>
+
+
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- RIGHT COLUMN: Single glass card — horizontal range bar  -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <g transform="translate(1020, 100)">
+
+    <!-- Glass card — single, restrained -->
+    <rect x="0" y="0" width="280" height="240" rx="14" fill="url(#glassFill11b)" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+
+    <!-- Label -->
+    <text x="24" y="32" font-family="monospace" font-size="8" fill="rgba(255,255,255,0.2)" letter-spacing="0.15em">52-WEEK RANGE</text>
+
+    <!-- Low value -->
+    <g transform="translate(24, 68)">
+      <text font-family="monospace" font-size="7" fill="#6E7681" letter-spacing="0.1em">LOW</text>
+      <text y="18" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="17" font-weight="600" fill="rgba(239,68,68,0.5)">$164.08</text>
+    </g>
+
+    <!-- Horizontal range bar -->
+    <g transform="translate(24, 118)">
+      <!-- Track background -->
+      <rect x="0" y="0" width="232" height="3" rx="1.5" fill="rgba(255,255,255,0.04)"/>
+      <!-- Filled gradient portion — 72% -->
+      <rect x="0" y="0" width="167" height="3" rx="1.5" fill="url(#trackGrad11b)"/>
+      <!-- Current position dot -->
+      <circle cx="167" cy="1.5" r="5" fill="#F0F6FC" opacity="0.15" filter="url(#markerGlow11b)"/>
+      <circle cx="167" cy="1.5" r="3" fill="#F0F6FC" opacity="0.9"/>
+    </g>
+
+    <!-- Current value — larger, emphasized -->
+    <g transform="translate(24, 148)">
+      <text font-family="monospace" font-size="7" fill="#6E7681" letter-spacing="0.1em">CURRENT</text>
+      <text y="20" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="20" font-weight="700" fill="#F0F6FC">$242.58</text>
+    </g>
+
+    <!-- High value -->
+    <g transform="translate(24, 198)">
+      <text font-family="monospace" font-size="7" fill="#6E7681" letter-spacing="0.1em">HIGH</text>
+      <text y="18" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="17" font-weight="600" fill="rgba(126,231,135,0.5)">$260.10</text>
+    </g>
+  </g>
+
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- BOTTOM ROW: Metrics                                    -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <g transform="translate(0, 460)">
+    <line x1="220" y1="0" x2="1220" y2="0" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+
+    <g transform="translate(320, 24)">
+      <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">MKT CAP</text>
+      <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#F0F6FC" y="20">$3.74T</text>
+    </g>
+    <g transform="translate(520, 24)">
+      <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">VOLUME</text>
+      <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#F0F6FC" y="20">48.2M</text>
+    </g>
+    <g transform="translate(720, 24)">
+      <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">P/E RATIO</text>
+      <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#A78BFA" y="20">33.8x</text>
+    </g>
+    <g transform="translate(920, 24)">
+      <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">EPS (TTM)</text>
+      <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#F0F6FC" y="20">$7.18</text>
+    </g>
+    <g transform="translate(1120, 24)">
+      <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">DIV YIELD</text>
+      <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#7EE787" y="20">0.44%</text>
+    </g>
+  </g>
+
+  <!-- Concept label -->
+  <text x="720" y="540" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" fill="#6E7681" letter-spacing="0.15em">CONCEPT 11B — SINGLE GLASS</text>
+  <text x="720" y="562" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="9" fill="rgba(255,255,255,0.1)" letter-spacing="0.08em">ONE CARD · RANGE BAR · NO RING · NO TICKER TAPE</text>
+</svg>
