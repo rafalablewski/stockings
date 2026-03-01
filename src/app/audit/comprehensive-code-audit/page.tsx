@@ -4,6 +4,8 @@ import { join } from "path";
 import AuditDashboard from "@/components/AuditDashboard";
 import { workflows } from "@/data/workflows";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Stockings Comprehensive Code Audit v1.0 | ABISON",
   description:

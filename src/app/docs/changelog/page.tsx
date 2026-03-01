@@ -3,6 +3,8 @@ import { readFileSync } from "fs";
 import { join } from "path";
 import MarkdownPage from "@/components/shared/MarkdownPage";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Changelog | ABISON",
   description: "ABISON changelog — commit history and feature timeline",
