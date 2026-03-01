@@ -46,23 +46,23 @@
   </defs>
 
   <!-- Background -->
-  <rect width="1440" height="640" fill="url(#bg11)"/>
+  <rect width="1440" height="580" fill="url(#bg11)"/>
 
   <!-- Tesla-style red accent line top -->
   <rect x="0" y="0" width="1440" height="2" fill="url(#redLine11)"/>
 
   <!-- Subtle HUD grid -->
   <g opacity="0.02" stroke="#fff" stroke-width="0.5">
-    <line x1="96" y1="0" x2="96" y2="640"/>
-    <line x1="1344" y1="0" x2="1344" y2="640"/>
-    <line x1="96" y1="60" x2="1344" y2="60"/>
-    <line x1="96" y1="440" x2="1344" y2="440"/>
+    <line x1="120" y1="0" x2="120" y2="580"/>
+    <line x1="1320" y1="0" x2="1320" y2="580"/>
+    <line x1="120" y1="60" x2="1320" y2="60"/>
+    <line x1="120" y1="440" x2="1320" y2="440"/>
   </g>
 
   <!-- ═══════════════════════════════════════ -->
   <!-- LEFT COLUMN: Identity (stock-agnostic)  -->
   <!-- ═══════════════════════════════════════ -->
-  <g transform="translate(96, 60)">
+  <g transform="translate(120, 60)">
     <!-- System status -->
     <circle cx="6" cy="6" r="3" fill="#7EE787"/>
     <text x="16" y="10" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.12em">SYSTEM ONLINE</text>
@@ -98,7 +98,7 @@
   <!-- ═══════════════════════════════════════ -->
   <!-- CENTER COLUMN: Price gauge              -->
   <!-- ═══════════════════════════════════════ -->
-  <g transform="translate(620, 0)">
+  <g transform="translate(720, 0)">
     <!-- Circular arc gauge (decorative) -->
     <g transform="translate(0, 240)">
       <path d="M-140,-100 A160,160 0 0,1 140,-100" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="3"/>
@@ -131,7 +131,7 @@
   <!-- ═══════════════════════════════════════════════════ -->
   <!-- RIGHT COLUMN: Glassmorphism — Ring + Ticker Tape   -->
   <!-- ═══════════════════════════════════════════════════ -->
-  <g transform="translate(940, 56)">
+  <g transform="translate(1010, 56)">
 
     <!-- ── 52-Week Range Radial Ring (Glass Card) ── -->
     <g>
@@ -209,25 +209,25 @@
   <!-- BOTTOM ROW: Metrics — 1:1 Apple Hero Center style     -->
   <!-- ══════════════════════════════════════════════════════ -->
   <g transform="translate(0, 460)">
-    <line x1="200" y1="0" x2="1240" y2="0" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    <line x1="220" y1="0" x2="1220" y2="0" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
 
-    <g transform="translate(280, 24)">
+    <g transform="translate(320, 24)">
       <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">MKT CAP</text>
       <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#F0F6FC" y="20">$3.74T</text>
     </g>
-    <g transform="translate(480, 24)">
+    <g transform="translate(520, 24)">
       <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">VOLUME</text>
       <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#F0F6FC" y="20">48.2M</text>
     </g>
-    <g transform="translate(680, 24)">
+    <g transform="translate(720, 24)">
       <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">P/E RATIO</text>
       <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#A78BFA" y="20">33.8x</text>
     </g>
-    <g transform="translate(880, 24)">
+    <g transform="translate(920, 24)">
       <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">EPS (TTM)</text>
       <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#F0F6FC" y="20">$7.18</text>
     </g>
-    <g transform="translate(1080, 24)">
+    <g transform="translate(1120, 24)">
       <text text-anchor="middle" font-family="monospace" font-size="9" fill="#6E7681" letter-spacing="0.1em" y="0">DIV YIELD</text>
       <text text-anchor="middle" font-family="monospace" font-size="14" font-weight="600" fill="#7EE787" y="20">0.44%</text>
     </g>
