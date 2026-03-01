@@ -6,6 +6,7 @@
 |-------|------|-------|--------|
 | CCA-1.0 — 35-Category Code Audit | 2026-02-22 | 108 files, 132 structured findings | Active |
 | CCA-1.1 — Vibe-Code Bomb 27-Point Check | 2026-03-01 | 27-point operational maturity checklist | Active |
+| CCA-1.2 — Gap Analysis (10 Missing Findings) | 2026-03-01 | Compound vulnerabilities, HTTP-layer gaps, operational blind spots | Active |
 | Financial Model & UX Audit | 2026-02-13 | DCF, Monte Carlo, UI/UX, branding | Historical |
 | Formula & Math Audit | 2026-02-13 | RSI, staking, risk factors, technicals | Historical (all fixed) |
 | DBV-CP/XR/SC/DF — Database Validation | Ongoing | Per-ticker data quality | Active |
@@ -57,6 +58,7 @@
 **Appendices**
 
 - [Appendix A — Vibe-Code Bomb 27-Point Audit (CCA-1.1)](#appendix-a--27-signs-your-vibe-coded-app-is-a-ticking-bomb-audit)
+- [Appendix A-2 — Gap Analysis: 10 Missing Findings (CCA-1.2)](#appendix-a-2--gap-analysis-10-missing-findings-cca-12)
 - [Appendix B — Financial Model & UX Audit (Feb 13)](#appendix-b--financial-model--ux-audit)
 - [Appendix C — Formula & Math Audit (Feb 13)](#appendix-c--formula--math-audit)
 - [Appendix D — Audit Program Registry & Prompts](#appendix-d--audit-program-registry--prompts)
@@ -1149,6 +1151,247 @@ This is a duplicate of #16, confirmed across the full codebase. The only logging
 **Ticking Bomb Score: 16 + (6 × 0.5) = 19 / 27 (70%)**
 
 The application passes on the fundamentals of secret management (#1, #25), API architecture (#4, #14, #21), and database query patterns (#4). However, it fails decisively on operational maturity: no CI/CD, no monitoring, no logging infrastructure, no staging environment, no documentation, and massive god components. The security posture is mixed — secrets are properly managed but the database is functionally exposed due to missing authentication on most endpoints.
+
+---
+
+## Appendix A-2 — Gap Analysis: 10 Missing Findings (CCA-1.2)
+
+**Date:** 2026-03-01
+**Methodology:** Cross-referenced the full codebase against CCA-1.0 (35 categories) and CCA-1.1 (27-point vibe-code check) to identify compound vulnerabilities, HTTP-layer gaps, and operational blind spots not covered by either audit. Each finding is either net-new or a compound issue that connects two separately-documented findings into a higher-severity result.
+
+---
+
+### 1. PIN Authentication Is Brute-Forceable (Compound Vulnerability)
+
+**Severity: High** | **CVSS: 7.5** | **New Finding: GAP-001**
+
+The middleware (`src/middleware.ts:9-16`) uses constant-time comparison (good), but there is **no rate limiting or lockout** on PIN-protected routes or `/api/auth/verify-pin`. An attacker can brute-force the `x-auth-pin` header at unlimited speed. For a short numeric PIN, this is trivially crackable.
+
+The audit notes "no rate limiting" (NET-002, CVSS 5.9) and "PIN-based auth" (5.2) separately, but never connects them: **the combination of a weak auth factor + zero rate limiting = no effective authentication on the 2 protected routes**.
+
+| Factor | Status |
+|--------|--------|
+| Rate limiting on PIN attempts | **Missing** |
+| Account lockout after N failures | **Missing** |
+| Exponential backoff | **Missing** |
+| PIN complexity requirements | **Unknown** (env var, no enforcement) |
+
+**Cross-refs:** NET-002, SEC-001, AUTH-002
+
+**Recommendations:**
+- Add rate limiting middleware (e.g., `@upstash/ratelimit`) on all `/api/*` routes, with aggressive limits (5 req/min) on auth-related endpoints.
+- Consider replacing the PIN with a proper auth token (JWT or session cookie) after initial PIN verification.
+- Add an account lockout or exponential delay after 5 failed PIN attempts.
+
+---
+
+### 2. No Request Body Size Limits (Net-New)
+
+**Severity: Medium** | **CVSS: 5.3** | **New Finding: GAP-002**
+
+All 15 `request.json()` call sites across API routes accept arbitrarily large POST bodies. Next.js App Router in serverless mode has no built-in body size limit. A 500MB JSON payload could exhaust serverless function memory before any field-level validation runs.
+
+| Route | `request.json()` call | Size check |
+|-------|-----------------------|------------|
+| `POST /api/analysis-cache` | `route.ts:57` | **None** |
+| `POST /api/seen-articles` | `route.ts:151` | **None** |
+| `POST /api/seen-filings` | `route.ts:163` | **None** |
+| `POST /api/workflow/run` | `route.ts:20` | **None** |
+| `POST /api/workflow/apply` | `route.ts:359` | **None** |
+| `POST /api/workflow/commit` | `route.ts:37` | **None** |
+| `POST /api/edgar/analyze` | `route.ts:19` | **None** |
+| `POST /api/sources/analyze` | `route.ts:19` | **None** |
+| `POST /api/check-analyzed` | `route.ts:268` | **None** |
+| `POST /api/notes` | `route.ts:91` | **None** |
+| `POST /api/notes/generate` | `route.ts:20` | **None** |
+| `POST /api/audit-checks` | `route.ts:104` | **None** |
+| `POST /api/edgar/refresh-local` | `route.ts:20` | **None** |
+| `POST /api/auth/verify-pin` | `route.ts:26` | **None** |
+| `PATCH /api/notes` | `route.ts:148` | **None** |
+
+The existing finding INP-002 (unbounded `text` field in analysis-cache) covers the *storage* angle but not the *parsing/memory exhaustion* angle that affects every route.
+
+**Recommendations:**
+- Add a shared middleware or utility that checks `Content-Length` before parsing:
+  ```typescript
+  const MAX_BODY = 1_000_000; // 1MB
+  const len = parseInt(request.headers.get('content-length') || '0', 10);
+  if (len > MAX_BODY) return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
+  ```
+- Set per-route limits where appropriate (e.g., 10KB for `/api/auth/verify-pin`, 1MB for `/api/workflow/apply`).
+
+---
+
+### 3. No Content-Type Validation on POST Routes (Net-New)
+
+**Severity: Low-Medium** | **CVSS: 3.5** | **New Finding: GAP-003**
+
+None of the 15 POST endpoints validate that the incoming `Content-Type` is `application/json` before calling `request.json()`. If a request arrives with `Content-Type: text/plain` or `multipart/form-data`, `request.json()` will throw an unhandled exception that leaks error details in the response.
+
+**Affected:** Every POST/PATCH route in `src/app/api/`.
+
+**Recommendations:**
+- Add shared validation in middleware or a utility:
+  ```typescript
+  const ct = request.headers.get('content-type');
+  if (!ct?.includes('application/json')) {
+    return NextResponse.json({ error: 'Content-Type must be application/json' }, { status: 415 });
+  }
+  ```
+
+---
+
+### 4. Unvalidated JSON.parse on Scraped External Content (Net-New)
+
+**Severity: Medium** | **CVSS: 4.5** | **New Finding: GAP-004**
+
+The existing finding 4.5 catches `JSON.parse(row.crossRefs)` on DB data, but several other `JSON.parse` calls operate on untrusted external content without try/catch:
+
+| Location | Source of data | try/catch |
+|----------|---------------|-----------|
+| `press-releases/[symbol]/route.ts:149` | `JSON.parse(jsonMatch[1])` on scraped IR HTML | **No** |
+| `workflow/run/route.ts:97` | `JSON.parse(jsonStr)` on Anthropic SSE stream | Yes |
+| `workflow/apply/route.ts:556` | `JSON.parse(jsonStr)` on AI-generated content | Yes |
+| `notes/generate/route.ts:83` | `JSON.parse(rawText.trim())` on Claude response | Yes |
+
+The press-releases route is the critical gap — it parses JSON embedded in scraped investor relations pages. If an IR page changes format, this throws an unhandled exception that crashes the request and leaks error details.
+
+**Cross-refs:** SEC-005, ERR-002
+
+**Recommendations:**
+- Wrap the `JSON.parse` in `press-releases/[symbol]/route.ts:149` in try/catch with a graceful fallback.
+- Add a shared `safeParse()` utility for all external JSON parsing.
+
+---
+
+### 5. No robots.txt or Crawl Control (Net-New)
+
+**Severity: Low** | **CVSS: 2.5** | **New Finding: GAP-005**
+
+No `robots.txt`, no `sitemap.xml`, no metadata-based crawl directives exist. Search engines can discover and index all pages, including `/db-setup` — which has a "Run Setup" button that wipes the entire database with a single POST. Combined with the unauthenticated destructive endpoint (SEC-001), search engine indexing makes this page more discoverable to attackers.
+
+**Recommendations:**
+- Add `src/app/robots.ts` (Next.js metadata API):
+  ```typescript
+  export default function robots() {
+    return {
+      rules: { userAgent: '*', disallow: ['/api/', '/db-setup'] },
+    };
+  }
+  ```
+- Add `noindex` meta tag to `/db-setup` page as defense-in-depth.
+
+---
+
+### 6. No Subresource Integrity (SRI) for External Resources (Net-New)
+
+**Severity: Low** | **CVSS: 2.0** | **New Finding: GAP-006**
+
+Google Fonts are loaded via `@import` in `src/app/globals.css:1` from `fonts.googleapis.com`. The audit flags the GDPR angle (finding 6.2) but not the **supply chain risk**: if Google's CDN is compromised or DNS-hijacked, malicious CSS could be injected. No SRI hashes are used anywhere in the application.
+
+The existing recommendation to switch to `next/font` (findings 7.6, 6.2) would also solve this issue, since `next/font` self-hosts font files.
+
+**Cross-refs:** PRIV-002, PERF-006
+
+**Recommendations:**
+- Switch to `next/font` (already recommended — this adds a security rationale alongside the GDPR and performance rationales).
+
+---
+
+### 7. Source Maps Not Explicitly Disabled in Production (Net-New)
+
+**Severity: Low** | **CVSS: 2.0** | **New Finding: GAP-007**
+
+`next.config.ts` is essentially empty — `productionBrowserSourceMaps` is not set. Next.js defaults to not shipping *browser* source maps, but server-side source maps are generated. On Vercel, server source maps could aid attackers in understanding code paths if error stack traces are leaked (which they are — see ERR-002).
+
+**Recommendations:**
+- Explicitly disable in `next.config.ts`:
+  ```typescript
+  const nextConfig: NextConfig = {
+    productionBrowserSourceMaps: false,
+  };
+  ```
+- While browser source maps are off by default, being explicit prevents accidental enablement.
+
+---
+
+### 8. No Idempotency on Write Endpoints (Net-New)
+
+**Severity: Low** | **CVSS: 2.0** | **New Finding: GAP-008**
+
+POST endpoints like `/api/analysis-cache`, `/api/seen-articles`, and `/api/seen-filings` have no idempotency protection. Network retries or double-clicks can create duplicate records. The analysis-cache route uses `onConflictDoUpdate` (good), but seen-articles and seen-filings use bulk inserts with `onConflictDoNothing` — meaning partial duplicates are silently dropped, which could mask data integrity issues.
+
+The audit covers concurrency at the database/thread level (Category 32) but not at the HTTP request level.
+
+**Recommendations:**
+- Add idempotency keys (client-generated UUID in request header) for critical write endpoints.
+- Or add client-side deduplication with debounced submit buttons.
+
+---
+
+### 9. db:push Runs Against Production Without Safeguards (Net-New)
+
+**Severity: Medium** | **CVSS: 5.0** | **New Finding: GAP-009**
+
+`package.json` exposes `"db:push": "npx drizzle-kit push"` which directly mutates the production schema when `DATABASE_URL` points to production. Drizzle's push mode can silently drop columns, alter types, or remove indexes on the live database with no migration file, no confirmation prompt, and no rollback capability.
+
+The audit covers the *lack of migrations* (CCA-1.1 #3) but doesn't flag that `db:push` itself is an active footgun — it's not just a missing best practice, it's a one-command path to production data loss.
+
+**Cross-refs:** CCA-1.1 #3, DB-003, DB-004
+
+**Recommendations:**
+- Replace `db:push` with `drizzle-kit generate` + `drizzle-kit migrate` for versioned migrations.
+- If `db:push` is retained for development, add a guard script:
+  ```bash
+  if [[ "$DATABASE_URL" == *"neon.tech"* ]]; then
+    echo "ERROR: db:push blocked against production. Use migrations."
+    exit 1
+  fi
+  ```
+
+---
+
+### 10. No Graceful Shutdown / Request Draining (Info)
+
+**Severity: Info** | **CVSS: N/A** | **New Finding: GAP-010**
+
+Serverless (Vercel) handles request draining automatically, so this is a non-issue today. However, `PLAN.md` discusses a potential migration off Vercel. If the app moves to a long-running server (Docker, EC2, etc.), there is no `process.on('SIGTERM')` handler, no graceful shutdown logic, and no request draining. In-flight database writes or AI API calls would be abruptly terminated.
+
+**Recommendations:**
+- No action needed while on Vercel.
+- If migrating to a long-running server, add a shutdown handler that finishes in-flight requests before exiting.
+
+---
+
+### Gap Analysis Scorecard
+
+| # | Finding | Severity | Type | CVSS |
+|---|---------|----------|------|------|
+| GAP-001 | PIN brute-forceable (compound: NET-002 + AUTH-002) | **High** | Compound | 7.5 |
+| GAP-002 | No request body size limits | **Medium** | Net-new | 5.3 |
+| GAP-003 | No Content-Type validation on POST routes | **Low-Medium** | Net-new | 3.5 |
+| GAP-004 | Unvalidated JSON.parse on scraped HTML | **Medium** | Net-new | 4.5 |
+| GAP-005 | No robots.txt (destructive pages indexable) | **Low** | Net-new | 2.5 |
+| GAP-006 | No SRI on external resources | **Low** | Net-new | 2.0 |
+| GAP-007 | Source maps not explicitly disabled | **Low** | Net-new | 2.0 |
+| GAP-008 | No idempotency on write endpoints | **Low** | Net-new | 2.0 |
+| GAP-009 | db:push runs against production unsafely | **Medium** | Net-new | 5.0 |
+| GAP-010 | No graceful shutdown (info — Vercel handles) | **Info** | Net-new | N/A |
+
+### Summary
+
+| Category | Count |
+|----------|-------|
+| **High** | 1 |
+| **Medium** | 3 |
+| **Low-Medium** | 1 |
+| **Low** | 4 |
+| **Info** | 1 |
+| **Total** | **10** |
+
+**Compound finding GAP-001 is the most critical**: it connects two separately-documented findings (weak auth factor + no rate limiting) into a vulnerability that neither finding addresses alone. The PIN-protected routes (`/api/edgar/analyze`, `/api/sources/analyze`) are effectively unprotected.
+
+**Net-new findings GAP-002 and GAP-009 are the next priority**: body size limits protect against memory exhaustion across all POST routes, and `db:push` is a one-command path to production data loss.
 
 ---
 ---
