@@ -89,21 +89,17 @@ export default function RunAuditButton() {
       {!running ? (
         <button
           onClick={handleRun}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-semibold uppercase tracking-[0.1em] bg-violet-500/10 border border-violet-500/25 text-violet-400 hover:bg-violet-500/20 transition-all cursor-pointer"
+          className="sm-ed-action-btn sm-p-5-14"
+          data-variant="mint"
         >
-          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="5 3 19 12 5 21 5 3" />
-          </svg>
           Run Audit
         </button>
       ) : (
         <button
           onClick={handleStop}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-[11px] font-semibold uppercase tracking-[0.1em] bg-red-500/10 border border-red-500/25 text-red-400 hover:bg-red-500/20 transition-all cursor-pointer"
+          className="sm-ed-action-btn sm-p-5-14"
+          data-variant="coral"
         >
-          <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-            <rect x={6} y={6} width={12} height={12} />
-          </svg>
           Stop
         </button>
       )}
