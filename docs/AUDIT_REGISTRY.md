@@ -10,10 +10,58 @@ When adding a new audit, register it here first.
 | ID | Name | Type | Scope | Status |
 |---|---|---|---|---|
 | `CCA-1.0` | Stockings Comprehensive Code Audit v1.0 | Code Quality | Full codebase (108 files) | Active |
+| `CCA-1.1` | Vibe-Code Bomb 27-Point Audit | Operational Maturity | Full codebase — 27-point checklist | Active |
 | `DBV-CP` | Capital Section Parity Audit | Database Validation | Per-ticker capital data | Active |
 | `DBV-XR` | Cross-Reference Integrity Audit | Database Validation | Per-ticker filing cross-refs | Active |
 | `DBV-SC` | Sources Completeness Audit | Database Validation | Per-ticker source citations | Active |
 | `DBV-DF` | Data Freshness Audit | Database Validation | Per-ticker staleness detection | Active |
+
+---
+
+## CCA-1.1 — Vibe-Code Bomb 27-Point Audit
+
+**Date:** 2026-03-01
+**Scope:** Full codebase — 27-point operational maturity checklist
+**Methodology:** Systematic verification of each indicator against the codebase with traffic-light verdicts
+**Findings:** 4 new structured findings (VIBE-001 through VIBE-004) + 16 GUILTY / 6 PARTIAL / 5 NOT GUILTY verdicts
+**Report:** `docs/COMPREHENSIVE_CODE_AUDIT.md` (Appendix A)
+**Dashboard:** `/audit/comprehensive-code-audit`
+
+### Prompt
+
+```
+Check the following 27 "vibe-coded app ticking bomb" indicators against the codebase.
+For each, provide a GUILTY / NOT GUILTY / PARTIAL verdict with evidence, affected files,
+cross-references to existing CCA-1.0 findings, and severity assessment.
+
+1. API keys hardcoded "for now"
+2. No /health endpoint
+3. Schema changes in your head, not migrations
+4. Every query is SELECT * and vibes
+5. Error handling = console.log(e) and hope
+6. No rate limit on auth or writes
+7. UTC, local time, and "JS default" all mixed
+8. README is empty or wrong
+9. No staging env
+10. One god component owns the whole screen
+11. No analytics
+12. "We'll clean this up after launch" every week
+13. Env vars undocumented
+14. Frontend talks directly to 5 different third-party APIs
+15. No monitoring or alerts
+16. Logs only in local terminal history
+17. DB backups are "automatic" but never tested
+18. Feature flags = commenting code in and out
+19. Deploys from local machine
+20. No input validation
+21. CORS is set to *
+22. CI is "I ran it once locally"
+23. Same API token across staging, prod, and local
+24. Only one person knows how to run or deploy
+25. API keys / JWT secrets in client-side code or .env committed to git
+26. Database exposed publicly with no RLS
+27. Zero logging beyond console.log
+```
 
 ---
 

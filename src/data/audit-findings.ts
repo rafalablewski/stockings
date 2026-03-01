@@ -64,7 +64,7 @@ export const AUDIT_METADATA = {
   stack: 'Next.js 16 / TypeScript 5.9 / Neon PostgreSQL / Drizzle ORM',
   methodology: 'Automated static analysis + manual code review across 35 categories',
   auditor: 'Claude Deep-Analysis Engine',
-  version: '1.0.0',
+  version: '1.1.0',
 } as const;
 
 // ── Findings ─────────────────────────────────────────────────────────────────
@@ -2490,6 +2490,78 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
       'Break monolithic components per MAINT-001. Create a stock registration system per SCALE-002. Consider a service layer between API routes and the database for testability.',
     effort: 'Long-term',
     compliance: [],
+    status: 'Open',
+  },
+  // ═══════════════════════════════════════════════════════════════════════════
+  // VIBE-CODE BOMB AUDIT — 27-Point Checklist (2026-03-01)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  {
+    id: 'VIBE-001',
+    title: 'No Health Check Endpoint',
+    category: '18. Network Security',
+    description:
+      'No /health, /healthz, /status, or /ping endpoint exists. There is no lightweight endpoint for load balancers, monitoring tools, or uptime checkers to verify the application is running and its dependencies (database, external APIs) are reachable.',
+    severity: 'MEDIUM',
+    cvss: 4.0,
+    affectedAssets: ['src/app/api/ (missing health route)'],
+    impact:
+      'Monitoring tools and load balancers have no way to programmatically verify application health. Downtime detection relies on users reporting issues. Zero-downtime deployments cannot verify new instances are healthy before routing traffic.',
+    remediation:
+      'Create src/app/api/health/route.ts that returns HTTP 200 with { status: "ok", db: true/false, uptime: process.uptime() }. Include a lightweight database ping (SELECT 1) and check that ANTHROPIC_API_KEY is configured. Use this for Vercel health checks and external uptime monitoring.',
+    effort: 'Immediate',
+    compliance: ['SOC2'],
+    status: 'Open',
+  },
+  {
+    id: 'VIBE-002',
+    title: 'No Staging Environment',
+    category: '21. Configuration Management',
+    description:
+      'No staging environment exists. A single DATABASE_URL is used across all contexts with no environment-specific configuration. No .env.staging, no Vercel Preview environment documentation, no separate staging database. The application has two implicit modes: "local dev" and "whatever Vercel does" with no intermediate tier for pre-production validation.',
+    severity: 'MEDIUM',
+    cvss: 3.5,
+    affectedAssets: ['.env.example', 'next.config.ts'],
+    impact:
+      'Code changes go from a developer laptop directly to production with no intermediate validation environment. Database schema changes, data migrations, and feature releases cannot be tested in a production-like environment before going live.',
+    remediation:
+      'Configure a Vercel Preview environment with a separate Neon branch database. Document environment-specific settings. Add a NEXT_PUBLIC_ENV variable to distinguish dev/staging/prod in the UI.',
+    effort: 'Short-term',
+    compliance: ['SOC2', 'ISO-27001'],
+    status: 'Open',
+  },
+  {
+    id: 'VIBE-003',
+    title: 'No Feature Flag System',
+    category: '22. Build & Deployment Processes',
+    description:
+      'No formal feature flag system exists — no LaunchDarkly, Unleash, Flagsmith, or even environment-variable-based feature flags. The only runtime gate is a single AI kill-switch in src/lib/ai-gate.ts that checks an x-ai-disabled header. No progressive rollout, A/B testing, or per-user targeting capability. Feature releases are all-or-nothing deploys.',
+    severity: 'LOW',
+    cvss: 2.0,
+    affectedAssets: ['src/lib/ai-gate.ts', 'Entire deployment process'],
+    impact:
+      'Cannot selectively enable features for testing or gradual rollout. Every deployment is a full release to all users. No ability to quickly disable a broken feature without a full rollback.',
+    remediation:
+      'For current scale, environment-variable-based feature flags are sufficient. Add a FEATURE_FLAGS object in src/lib/config.ts that reads from process.env. For growth: adopt Vercel Edge Config or an open-source solution like Unleash.',
+    effort: 'Medium-term',
+    compliance: [],
+    status: 'Open',
+  },
+  {
+    id: 'VIBE-004',
+    title: 'Vibe-Code Bomb Score: 19/27 (70%)',
+    category: '35. Overall Architectural Soundness',
+    description:
+      'Systematic check against the "27 Signs Your Vibe-Coded App Is a Ticking Bomb" checklist resulted in 16 GUILTY verdicts, 6 PARTIAL verdicts, and 5 NOT GUILTY verdicts. The application passes on secret management, API architecture, and query patterns, but fails on operational maturity: no CI/CD, no monitoring, no logging infrastructure, no staging environment, no documentation, and massive god components. The security posture is mixed — secrets are properly managed but the database is functionally exposed.',
+    severity: 'HIGH',
+    cvss: 7.0,
+    affectedAssets: ['Entire codebase — see Appendix A in COMPREHENSIVE_CODE_AUDIT.md'],
+    impact:
+      'The 70% failure rate indicates significant operational risk. While the financial models and data layer are well-engineered, the surrounding infrastructure (CI/CD, monitoring, documentation, environment management) is absent. This creates a fragile deployment pipeline where issues are detected reactively rather than proactively.',
+    remediation:
+      'Address the 16 GUILTY items in priority order: (1) Add CI/CD pipeline, (2) Add monitoring/alerting, (3) Add structured logging, (4) Break up god components, (5) Document environment setup, (6) Add health check endpoint, (7) Add staging environment, (8) Add rate limiting, (9) Add input validation, (10) Test database restore procedure. See Appendix A in docs/COMPREHENSIVE_CODE_AUDIT.md for full verdicts.',
+    effort: 'Medium-term',
+    compliance: ['SOC2', 'ISO-27001'],
     status: 'Open',
   },
 ];

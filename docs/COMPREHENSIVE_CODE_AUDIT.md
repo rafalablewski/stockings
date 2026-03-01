@@ -786,3 +786,349 @@ Hardcoded constants, missing i18n, empty prompts section, no license file, dead 
 8. **Add monitoring** (Sentry + Vercel Analytics)
 9. **Update README** with proper documentation
 10. **Add rate limiting** middleware
+
+---
+
+## Appendix A — "27 Signs Your Vibe-Coded App Is a Ticking Bomb" Audit
+
+**Date:** 2026-03-01
+**Methodology:** Each of the 27 red-flag indicators was systematically verified against the codebase. Verdicts use the standard traffic-light system:
+
+| Verdict | Meaning |
+|---------|---------|
+| **GUILTY** | The codebase exhibits this anti-pattern |
+| **NOT GUILTY** | The codebase does NOT exhibit this anti-pattern |
+| **PARTIAL** | Partially applies — some mitigations exist but gaps remain |
+
+Cross-references to existing CCA-1.0 findings (e.g., `SEC-001`, `DOC-001`) are provided where applicable.
+
+---
+
+### 1. API keys hardcoded "for now"
+
+**Verdict: NOT GUILTY**
+
+All API keys and secrets (`ANTHROPIC_API_KEY`, `DATABASE_URL`, `AUTH_PIN`) are loaded from environment variables at runtime. No actual credentials are hardcoded in source code or committed to git. The `.gitignore` properly excludes all `.env*` files. Only `.env.example` exists in the repo with placeholder values.
+
+**Minor issue:** Inconsistent `process.env` access pattern — `sources/analyze` and `notes/generate` use direct `process.env.ANTHROPIC_API_KEY` which risks Next.js build-time inlining, while other routes use safe bracket notation. See existing finding **SEC-005** (CVSS 6.5).
+
+---
+
+### 2. No /health endpoint, you just hit the homepage
+
+**Verdict: GUILTY**
+
+No `/health`, `/healthz`, `/status`, or `/ping` endpoint exists. There is no way to programmatically verify that the application is running, that the database is connected, or that external dependencies (Anthropic API, Yahoo Finance, SEC EDGAR) are reachable. Monitoring tools and load balancers have no lightweight endpoint to probe.
+
+**New finding: VIBE-001** | Severity: MEDIUM | CVSS: 4.0
+
+---
+
+### 3. Schema changes live in your head, not migrations
+
+**Verdict: GUILTY**
+
+Drizzle ORM is installed and the schema is defined in `src/lib/schema.ts`, but **no migration directory exists** (`/drizzle/` and `/migrations/` are both empty or absent). Schema changes are pushed directly via `npm run db:push` (Drizzle push mode) which modifies the database without versioned migration files. Additionally, the `/api/db/setup` route contains 127 lines of raw SQL DDL that duplicates the Drizzle schema — changes in one are easily forgotten in the other.
+
+**Cross-refs:** DB-003, DB-004, DUP-001, MAINT-002
+
+---
+
+### 4. Every query is SELECT * and vibes
+
+**Verdict: NOT GUILTY**
+
+The application uses Drizzle ORM for all database queries. Drizzle's `.select()` generates SQL with explicit column names, not `SELECT *`. No raw `SELECT *` queries were found anywhere in the codebase. Query patterns are well-structured with proper `.where()` clauses.
+
+---
+
+### 5. Error handling = console.log(e) and hope
+
+**Verdict: GUILTY**
+
+All API routes rely exclusively on `console.error()` for error logging. In production on Vercel, these produce ephemeral, unstructured logs with no correlation IDs, no severity levels, and no alerting integration. Multiple routes leak internal error details (`String(error)`) to clients including stack traces and database connection info. The `edgar/analyze` route embeds error messages directly into AI prompts when fetches fail, producing nonsensical "analysis" of error text.
+
+**Cross-refs:** ERR-001 (CVSS 5.3), ERR-002 (CVSS 4.0), ERR-003, ERR-004, ERR-005
+
+---
+
+### 6. No rate limit on auth or writes
+
+**Verdict: GUILTY**
+
+Zero rate limiting exists on any endpoint. All 15+ API routes can be called at unlimited frequency. The AI-powered endpoints (`/api/edgar/analyze`, `/api/sources/analyze`, `/api/workflow/run`, `/api/check-analyzed`) forward requests to the paid Anthropic API with no throttling. The `/api/db/setup` endpoint can wipe the entire database with unlimited POST requests. A basic PIN-based auth middleware exists but only protects 2 of 15+ routes.
+
+**Cross-refs:** NET-002 (CVSS 5.9), SEC-001, SEC-002
+
+---
+
+### 7. UTC, local time, and "JS default" all mixed
+
+**Verdict: PARTIAL**
+
+Date handling is inconsistent across the codebase:
+- API routes use `new Date().toISOString()` (UTC — correct) for some timestamps
+- `Date.now()` (epoch ms — timezone-agnostic) used for backup filenames and cache timestamps
+- `new Date(pubDate).toISOString().split('T')[0]` for date-only strings (correct)
+- Client-side uses `toLocaleTimeString()` (local timezone, varies by browser/OS)
+- No timezone library (moment, dayjs, luxon) is used
+- No explicit UTC enforcement policy
+
+No critical timezone bugs were found, but the lack of a standardized approach creates drift risk.
+
+**Cross-refs:** I18N-001, I18N-003
+
+---
+
+### 8. README is empty or wrong
+
+**Verdict: GUILTY**
+
+`README.md` is the verbatim default Next.js `create-next-app` boilerplate. Zero project-specific content: no architecture overview, no setup instructions, no environment variable documentation, no API reference, no deployment guide. A new developer cannot onboard without oral knowledge transfer.
+
+**Cross-ref:** DOC-001 (CVSS 2.0)
+
+---
+
+### 9. No staging env, just "dev" and "prod-ish"
+
+**Verdict: GUILTY**
+
+No staging environment exists. A single `DATABASE_URL` environment variable is used with no environment-specific configuration. No `.env.staging`, no `NEXT_PUBLIC_API_URL` branching, no Vercel Preview environment documentation. The application has two implicit modes: "local dev" and "whatever Vercel does" — there is no documented or configured staging tier.
+
+**New finding: VIBE-002** | Severity: MEDIUM | CVSS: 3.5
+
+---
+
+### 10. One god component owns the whole screen
+
+**Verdict: GUILTY**
+
+Three god components dominate the codebase:
+- `BMNR.tsx` — **7,426 lines** (single React component)
+- `ASTS.tsx` — **6,824 lines** (single React component)
+- `CRCL.tsx` — **5,848 lines** (single React component)
+
+Each contains all tabs, all financial calculations, all state management, all inline styles, and all rendering logic in a single monolithic file. Total: **20,098 lines** across 3 files. These are among the largest React components ever audited. Each disables eslint with file-wide `@typescript-eslint/no-explicit-any` suppression.
+
+Additional large components: `StockChart.tsx` (2,339 lines), `SharedEdgarTab.tsx` (2,059 lines), `SharedSourcesTab.tsx` (1,903 lines).
+
+**Cross-refs:** MAINT-001 (CVSS 6.0), TS-001 (CVSS 4.0), PERF-004 (CVSS 3.5)
+
+---
+
+### 11. No analytics, just "feels like people use it"
+
+**Verdict: GUILTY**
+
+Zero analytics integration. No Google Analytics, no Vercel Analytics, no Mixpanel, no PostHog, no Plausible, no Umami. No way to measure page views, feature usage, user engagement, or drop-off points. Product decisions are made without data.
+
+**Cross-ref:** MON-002 (CVSS 1.5)
+
+---
+
+### 12. You say "we'll clean this up after launch" every week
+
+**Verdict: PARTIAL**
+
+No explicit `TODO`, `FIXME`, or `HACK` comments were found in application source code (only in audit/workflow template strings). However, the audit itself catalogues 128 findings — most with status "Open" — representing a significant backlog of known technical debt. The existence of a `PLAN.md` (605-line 10-phase refactoring plan) that has not been executed yet is further evidence of deferred cleanup.
+
+---
+
+### 13. Env vars live only on your laptop, nowhere else documented
+
+**Verdict: GUILTY**
+
+`.env.example` documents only 2 of 5+ environment variables used in code:
+- **Documented:** `DATABASE_URL`, `AUTH_PIN`
+- **Undocumented:** `ANTHROPIC_API_KEY` (required for AI features), `DISABLE_AI_MATCHING` (optional), `MAX_PROMPT_TOKENS` (optional, defaults to 40000)
+
+The README provides zero guidance on environment setup. Knowledge of required env vars requires reading source code.
+
+**Cross-refs:** CONF-001, CONF-002
+
+---
+
+### 14. Frontend talks directly to 5 different third-party APIs with no wrapper
+
+**Verdict: NOT GUILTY**
+
+All third-party API calls (Anthropic Claude, Yahoo Finance, SEC EDGAR, Google News RSS) are routed through backend API routes in `src/app/api/`. The frontend only communicates with its own `/api/*` endpoints. A shared `auth-fetch.ts` wrapper handles authenticated requests from client components. This is the correct architecture — no API keys are exposed to the browser.
+
+---
+
+### 15. No monitoring or alerts — you find out it's down from a DM
+
+**Verdict: GUILTY**
+
+Zero monitoring infrastructure. No Sentry (error tracking), no Datadog/New Relic (APM), no Vercel Analytics/Speed Insights, no custom alerting. No uptime monitoring. No P50/P95/P99 latency tracking. The only "monitoring" is ephemeral `console.error` output in Vercel logs (which auto-purge). Production errors are completely invisible.
+
+**Cross-refs:** MON-001 (CVSS 4.0), MON-003 (CVSS 1.5), COMP-003
+
+---
+
+### 16. Logs only exist in your local terminal history
+
+**Verdict: GUILTY**
+
+All logging uses `console.log` / `console.error` / `console.warn`. On Vercel, these produce ephemeral, unstructured logs in the Functions tab that are not persistent, not searchable, and not alertable. No structured logging library (Pino, Winston), no correlation IDs, no log levels, no JSON formatting for machine parsing. Debugging production issues requires real-time log tailing.
+
+**Cross-refs:** ERR-002 (CVSS 4.0), COMP-003
+
+---
+
+### 17. DB backups are "automatic"... but you've never tested a restore
+
+**Verdict: GUILTY**
+
+No backup strategy exists for the Neon PostgreSQL database. The only "backup" is Neon's managed PITR (Point-in-Time Recovery), but it has never been documented, configured, or tested. The `/api/db/setup` endpoint can wipe all 5 core tables with a single unauthenticated POST. The seed operation is not wrapped in a transaction — a crash mid-seed leaves the database in a partially populated state. No data export API exists. The file-level `.bak` files from `workflow/apply` are local-only and not database backups.
+
+**Cross-refs:** DATA-001 (CVSS 7.5), DATA-002 (CVSS 3.0), CONC-001 (CVSS 5.5)
+
+---
+
+### 18. Feature flags = commenting code in and out
+
+**Verdict: PARTIAL**
+
+No formal feature flag system exists (no LaunchDarkly, Unleash, or even env-var flags). However, the codebase does NOT use the anti-pattern of commenting code in/out. There is a single runtime gate mechanism (`src/lib/ai-gate.ts`) that disables AI features via an `x-ai-disabled` header. This is not a feature flag system — it's a kill switch with no progressive rollout, targeting, or A/B testing capability.
+
+**New finding: VIBE-003** | Severity: LOW | CVSS: 2.0
+
+---
+
+### 19. Deploys are done from your local machine with one random script
+
+**Verdict: GUILTY**
+
+No CI/CD pipeline exists. No `.github/workflows/` directory, no GitHub Actions, no Jenkinsfile, no automated build/test/deploy. The application deploys to Vercel automatically on push (Vercel's default git integration), but with zero quality gates — no lint check, no type check, no data validation, no test suite. The `db:push` command runs from a developer's local machine. Database seeding is done via `npm run seed` locally.
+
+**Cross-refs:** CICD-001 (CVSS 7.0), CICD-002, CICD-003, CICD-004
+
+---
+
+### 20. No input validation, you trust whatever the client sends
+
+**Verdict: PARTIAL**
+
+Input validation is minimal but not entirely absent:
+- **Present:** Ticker validation against `VALID_TICKERS` enum, basic field existence checks, `SAFE_PATH_PATTERN` regex for git operations, commit message sanitization
+- **Missing:** No Zod schemas on API request bodies (only on static data files), unbounded `TEXT` storage in analysis cache, unvalidated prompt length in workflow/run, unvalidated Yahoo Finance interval parameter, no URL allowlisting on analyze endpoints (SSRF risk)
+
+The Zod validation library is installed but only used for offline data validation scripts, not for runtime API request validation.
+
+**Cross-refs:** INP-001 (CVSS 5.3), INP-002 (CVSS 5.9), INP-003, INP-004, SEC-004 (CVSS 7.5)
+
+---
+
+### 21. CORS is set to * because "it fixed the error"
+
+**Verdict: NOT GUILTY**
+
+CORS is NOT set to `*`. No explicit CORS configuration exists — the application relies on Next.js default same-origin behavior, which blocks cross-origin requests. While the lack of explicit CORS headers is documented (NET-003), it defaults to the secure option (deny cross-origin) rather than the insecure wildcard.
+
+**Cross-ref:** NET-003 (Accepted Risk)
+
+---
+
+### 22. CI is "I ran it once locally and it worked"
+
+**Verdict: GUILTY**
+
+Zero CI/CD infrastructure. No GitHub Actions, no automated linting, no type-checking, no data validation in the build process. The `npm run validate` script (Zod schema checks) is not wired into `npm run build`. A pre-commit hook (`scripts/check-docs.sh`) exists for documentation freshness but does not run tests, lint, or type-check. Code is deployed with zero automated quality assurance.
+
+**Cross-refs:** CICD-001 (CVSS 7.0), CICD-002, QA-001 (CVSS 8.0), QA-002
+
+---
+
+### 23. Same API token reused across staging, prod, and local
+
+**Verdict: PARTIAL**
+
+There is no staging environment (see #9), so the question is moot in the narrow sense. However, there is no mechanism for API key rotation or environment-specific key management. A single `ANTHROPIC_API_KEY` is shared across all contexts where the app runs. No key rotation capability exists. If the key is compromised, every AI endpoint breaks simultaneously.
+
+**Cross-ref:** VENDOR-002 (CVSS 4.0)
+
+---
+
+### 24. Only one person actually knows how to run or deploy the app
+
+**Verdict: GUILTY**
+
+The README is default boilerplate. Environment variables are undocumented. There is no architecture overview, no deployment guide, no API reference. The database setup procedure requires knowing about `/api/db/setup` or `npm run seed`. The 605-line `PLAN.md` references internal decisions without context. Knowledge of how to run, configure, and deploy the application exists only in the head of the original developer.
+
+**Cross-refs:** DOC-001 (CVSS 2.0), CONF-001, CICD-004
+
+---
+
+### 25. API keys / JWT secrets stored in client-side code or .env committed to git
+
+**Verdict: NOT GUILTY**
+
+No API keys, JWT secrets, or credentials are present in client-side code. No `.env` files are committed to git (`.gitignore` blocks `.env*`). All secrets are loaded from server-side `process.env` at runtime. The `src/lib/auth-fetch.ts` wrapper only sends a PIN header (not API keys) from the client. Git history shows no prior credential commits. No JWT implementation exists in the codebase (authentication is PIN-based via middleware).
+
+---
+
+### 26. Supabase/Firebase/Postgres exposed publicly with no RLS — full database readable via /rest/v1/ endpoint
+
+**Verdict: PARTIAL**
+
+The application uses Neon PostgreSQL (not Supabase/Firebase), so there is no public REST API endpoint like `/rest/v1/`. However, the Neon database has **no Row Level Security (RLS)** policies. More critically, all API routes that read/write the database have no authentication (only 2 routes are PIN-protected via middleware). The `/api/db/setup` endpoint can wipe the entire database with an unauthenticated POST. The `/api/analysis-cache` endpoint allows arbitrary writes. This is functionally equivalent to an exposed database — any HTTP client can read and write all data.
+
+**Cross-refs:** SEC-001 (CVSS 9.8), SEC-002 (CVSS 9.1), OWASP-001 (CVSS 9.8)
+
+---
+
+### 27. Zero logging beyond console.log — good luck debugging
+
+**Verdict: GUILTY**
+
+This is a duplicate of #16, confirmed across the full codebase. The only logging mechanisms are `console.log()`, `console.error()`, and `console.warn()`. Zero structured logging libraries. Zero log persistence. Zero alerting. Zero request tracing. The `workflow/apply` route has the most logging (8+ console.log calls for debugging file operations) but even these are ephemeral on serverless.
+
+**Cross-refs:** ERR-002 (CVSS 4.0), MON-001 (CVSS 4.0), COMP-003 (CVSS 4.0)
+
+---
+
+### Vibe-Code Bomb Scorecard
+
+| # | Check | Verdict | Severity |
+|---|-------|---------|----------|
+| 1 | API keys hardcoded "for now" | **NOT GUILTY** | — |
+| 2 | No /health endpoint | **GUILTY** | Medium |
+| 3 | Schema changes in your head, not migrations | **GUILTY** | Medium |
+| 4 | Every query is SELECT * | **NOT GUILTY** | — |
+| 5 | Error handling = console.log(e) | **GUILTY** | High |
+| 6 | No rate limit on auth or writes | **GUILTY** | High |
+| 7 | UTC/local time mixed | **PARTIAL** | Low |
+| 8 | README is empty or wrong | **GUILTY** | Low |
+| 9 | No staging env | **GUILTY** | Medium |
+| 10 | One god component | **GUILTY** | High |
+| 11 | No analytics | **GUILTY** | Low |
+| 12 | "Clean up after launch" | **PARTIAL** | Medium |
+| 13 | Env vars undocumented | **GUILTY** | Low |
+| 14 | Frontend talks to 5 APIs directly | **NOT GUILTY** | — |
+| 15 | No monitoring or alerts | **GUILTY** | High |
+| 16 | Logs only in terminal | **GUILTY** | High |
+| 17 | DB backups untested | **GUILTY** | High |
+| 18 | Feature flags = commenting code | **PARTIAL** | Low |
+| 19 | Deploys from local machine | **GUILTY** | High |
+| 20 | No input validation | **PARTIAL** | High |
+| 21 | CORS set to * | **NOT GUILTY** | — |
+| 22 | CI = "ran locally once" | **GUILTY** | Critical |
+| 23 | Same token across envs | **PARTIAL** | Medium |
+| 24 | Only one person knows deployment | **GUILTY** | Medium |
+| 25 | Secrets in client code or .env in git | **NOT GUILTY** | — |
+| 26 | Database exposed publicly with no RLS | **PARTIAL** | Critical |
+| 27 | Zero logging beyond console.log | **GUILTY** | High |
+
+### Summary
+
+| Category | Count |
+|----------|-------|
+| **GUILTY** | 16 / 27 (59%) |
+| **PARTIAL** | 6 / 27 (22%) |
+| **NOT GUILTY** | 5 / 27 (19%) |
+
+**Ticking Bomb Score: 16 + (6 × 0.5) = 19 / 27 (70%)**
+
+The application passes on the fundamentals of secret management (#1, #25), API architecture (#4, #14, #21), and database query patterns (#4). However, it fails decisively on operational maturity: no CI/CD, no monitoring, no logging infrastructure, no staging environment, no documentation, and massive god components. The security posture is mixed — secrets are properly managed but the database is functionally exposed due to missing authentication on most endpoints.
