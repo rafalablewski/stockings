@@ -57,7 +57,7 @@ const hooks = [
 // Build mobile nav items from the same data sources — stock-agnostic.
 // When stockList or hooks or audits change, mobile nav updates automatically.
 const docs = [
-  { slug: "design-system", label: "Design System", href: "/docs" },
+  { slug: "documentation", label: "Documentation", href: "/docs" },
   { slug: "changelog", label: "Changelog", href: "/docs/changelog" },
 ];
 

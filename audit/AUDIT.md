@@ -5,7 +5,8 @@
 | Audit | Date | Scope | Status |
 |-------|------|-------|--------|
 | CCA-1.0 — 35-Category Code Audit | 2026-02-22 | 108 files, 132 structured findings | Active |
-| CCA-1.1 — Vibe-Code Bomb 27-Point Check | 2026-03-01 | 27-point operational maturity checklist | Active |
+| CCA-1.1 — Operational Maturity Assessment | 2026-03-01 | 27-point operational maturity checklist | Active |
+| CCA-1.2 — Gap Analysis (10 Missing Findings) | 2026-03-01 | Compound vulnerabilities, HTTP-layer gaps, operational blind spots | Active |
 | Financial Model & UX Audit | 2026-02-13 | DCF, Monte Carlo, UI/UX, branding | Historical |
 | Formula & Math Audit | 2026-02-13 | RSI, staking, risk factors, technicals | Historical (all fixed) |
 | DBV-CP/XR/SC/DF — Database Validation | Ongoing | Per-ticker data quality | Active |
@@ -56,7 +57,8 @@
 
 **Appendices**
 
-- [Appendix A — Vibe-Code Bomb 27-Point Audit (CCA-1.1)](#appendix-a--27-signs-your-vibe-coded-app-is-a-ticking-bomb-audit)
+- [Appendix A — Operational Maturity Assessment (CCA-1.1)](#appendix-a--cca-11-operational-maturity-assessment-27-point)
+- [Appendix A-2 — Gap Analysis: 10 Missing Findings (CCA-1.2)](#appendix-a-2--gap-analysis-10-missing-findings-cca-12)
 - [Appendix B — Financial Model & UX Audit (Feb 13)](#appendix-b--financial-model--ux-audit)
 - [Appendix C — Formula & Math Audit (Feb 13)](#appendix-c--formula--math-audit)
 - [Appendix D — Audit Program Registry & Prompts](#appendix-d--audit-program-registry--prompts)
@@ -806,10 +808,10 @@ Hardcoded constants, missing i18n, empty prompts section, no license file, dead 
 
 ---
 
-## Appendix A — "27 Signs Your Vibe-Coded App Is a Ticking Bomb" Audit
+## Appendix A — CCA-1.1: Operational Maturity Assessment (27-Point)
 
 **Date:** 2026-03-01
-**Methodology:** Each of the 27 red-flag indicators was systematically verified against the codebase. Verdicts use the standard traffic-light system:
+**Methodology:** A 27-point operational maturity checklist was evaluated against the codebase, covering secret management, observability, deployment practices, environment isolation, data protection, and access control. Each control was verified through static analysis and configuration review. Verdicts use the standard traffic-light system:
 
 | Verdict | Meaning |
 |---------|---------|
@@ -821,7 +823,7 @@ Cross-references to existing CCA-1.0 findings (e.g., `SEC-001`, `DOC-001`) are p
 
 ---
 
-### 1. API keys hardcoded "for now"
+### 1. Credential Management — Hardcoded Secrets in Source
 
 **Verdict: NOT GUILTY**
 
@@ -831,7 +833,7 @@ All API keys and secrets (`ANTHROPIC_API_KEY`, `DATABASE_URL`, `AUTH_PIN`) are l
 
 ---
 
-### 2. No /health endpoint, you just hit the homepage
+### 2. Service Health Verification — Dedicated Health Endpoint
 
 **Verdict: GUILTY**
 
@@ -841,7 +843,7 @@ No `/health`, `/healthz`, `/status`, or `/ping` endpoint exists. There is no way
 
 ---
 
-### 3. Schema changes live in your head, not migrations
+### 3. Schema Governance — Versioned Database Migrations
 
 **Verdict: GUILTY**
 
@@ -851,7 +853,7 @@ Drizzle ORM is installed and the schema is defined in `src/lib/schema.ts`, but *
 
 ---
 
-### 4. Every query is SELECT * and vibes
+### 4. Query Discipline — Explicit Column Selection
 
 **Verdict: NOT GUILTY**
 
@@ -859,7 +861,7 @@ The application uses Drizzle ORM for all database queries. Drizzle's `.select()`
 
 ---
 
-### 5. Error handling = console.log(e) and hope
+### 5. Error Handling — Structured Logging and Recovery
 
 **Verdict: GUILTY**
 
@@ -869,7 +871,7 @@ All API routes rely exclusively on `console.error()` for error logging. In produ
 
 ---
 
-### 6. No rate limit on auth or writes
+### 6. Rate Limiting — Throttling on Authentication and Write Endpoints
 
 **Verdict: GUILTY**
 
@@ -879,7 +881,7 @@ Zero rate limiting exists on any endpoint. All 15+ API routes can be called at u
 
 ---
 
-### 7. UTC, local time, and "JS default" all mixed
+### 7. Temporal Consistency — Standardized Timezone Handling
 
 **Verdict: PARTIAL**
 
@@ -897,7 +899,7 @@ No critical timezone bugs were found, but the lack of a standardized approach cr
 
 ---
 
-### 8. README is empty or wrong
+### 8. Onboarding Documentation — Repository README Completeness
 
 **Verdict: GUILTY**
 
@@ -907,7 +909,7 @@ No critical timezone bugs were found, but the lack of a standardized approach cr
 
 ---
 
-### 9. No staging env, just "dev" and "prod-ish"
+### 9. Environment Isolation — Staging Tier Existence
 
 **Verdict: GUILTY**
 
@@ -917,7 +919,7 @@ No staging environment exists. A single `DATABASE_URL` environment variable is u
 
 ---
 
-### 10. One god component owns the whole screen
+### 10. Component Architecture — Single Responsibility Adherence
 
 **Verdict: GUILTY**
 
@@ -934,7 +936,7 @@ Additional large components: `StockChart.tsx` (2,339 lines), `SharedEdgarTab.tsx
 
 ---
 
-### 11. No analytics, just "feels like people use it"
+### 11. Product Analytics — Usage Measurement and Telemetry
 
 **Verdict: GUILTY**
 
@@ -944,7 +946,7 @@ Zero analytics integration. No Google Analytics, no Vercel Analytics, no Mixpane
 
 ---
 
-### 12. You say "we'll clean this up after launch" every week
+### 12. Technical Debt Management — Backlog Tracking and Remediation
 
 **Verdict: PARTIAL**
 
@@ -952,7 +954,7 @@ No explicit `TODO`, `FIXME`, or `HACK` comments were found in application source
 
 ---
 
-### 13. Env vars live only on your laptop, nowhere else documented
+### 13. Configuration Documentation — Environment Variable Registry
 
 **Verdict: GUILTY**
 
@@ -966,7 +968,7 @@ The README provides zero guidance on environment setup. Knowledge of required en
 
 ---
 
-### 14. Frontend talks directly to 5 different third-party APIs with no wrapper
+### 14. API Abstraction — Backend Proxy for Third-Party Services
 
 **Verdict: NOT GUILTY**
 
@@ -974,7 +976,7 @@ All third-party API calls (Anthropic Claude, Yahoo Finance, SEC EDGAR, Google Ne
 
 ---
 
-### 15. No monitoring or alerts — you find out it's down from a DM
+### 15. Observability — Production Monitoring and Alerting Infrastructure
 
 **Verdict: GUILTY**
 
@@ -984,7 +986,7 @@ Zero monitoring infrastructure. No Sentry (error tracking), no Datadog/New Relic
 
 ---
 
-### 16. Logs only exist in your local terminal history
+### 16. Log Persistence — Durable, Structured Log Aggregation
 
 **Verdict: GUILTY**
 
@@ -994,7 +996,7 @@ All logging uses `console.log` / `console.error` / `console.warn`. On Vercel, th
 
 ---
 
-### 17. DB backups are "automatic"... but you've never tested a restore
+### 17. Data Protection — Backup Strategy and Restore Verification
 
 **Verdict: GUILTY**
 
@@ -1004,7 +1006,7 @@ No backup strategy exists for the Neon PostgreSQL database. The only "backup" is
 
 ---
 
-### 18. Feature flags = commenting code in and out
+### 18. Release Control — Feature Flag Infrastructure
 
 **Verdict: PARTIAL**
 
@@ -1014,7 +1016,7 @@ No formal feature flag system exists (no LaunchDarkly, Unleash, or even env-var 
 
 ---
 
-### 19. Deploys are done from your local machine with one random script
+### 19. Deployment Pipeline — Automated Build and Release Process
 
 **Verdict: GUILTY**
 
@@ -1024,7 +1026,7 @@ No CI/CD pipeline exists. No `.github/workflows/` directory, no GitHub Actions, 
 
 ---
 
-### 20. No input validation, you trust whatever the client sends
+### 20. Input Validation — Server-Side Request Schema Enforcement
 
 **Verdict: PARTIAL**
 
@@ -1038,7 +1040,7 @@ The Zod validation library is installed but only used for offline data validatio
 
 ---
 
-### 21. CORS is set to * because "it fixed the error"
+### 21. Cross-Origin Policy — CORS Configuration Review
 
 **Verdict: NOT GUILTY**
 
@@ -1048,7 +1050,7 @@ CORS is NOT set to `*`. No explicit CORS configuration exists — the applicatio
 
 ---
 
-### 22. CI is "I ran it once locally and it worked"
+### 22. Continuous Integration — Automated Quality Gates
 
 **Verdict: GUILTY**
 
@@ -1058,7 +1060,7 @@ Zero CI/CD infrastructure. No GitHub Actions, no automated linting, no type-chec
 
 ---
 
-### 23. Same API token reused across staging, prod, and local
+### 23. Secret Isolation — Per-Environment Credential Separation
 
 **Verdict: PARTIAL**
 
@@ -1068,7 +1070,7 @@ There is no staging environment (see #9), so the question is moot in the narrow 
 
 ---
 
-### 24. Only one person actually knows how to run or deploy the app
+### 24. Knowledge Distribution — Bus Factor and Runbook Coverage
 
 **Verdict: GUILTY**
 
@@ -1078,7 +1080,7 @@ The README is default boilerplate. Environment variables are undocumented. There
 
 ---
 
-### 25. API keys / JWT secrets stored in client-side code or .env committed to git
+### 25. Secret Exposure — Client-Side Credential Leakage Review
 
 **Verdict: NOT GUILTY**
 
@@ -1086,7 +1088,7 @@ No API keys, JWT secrets, or credentials are present in client-side code. No `.e
 
 ---
 
-### 26. Supabase/Firebase/Postgres exposed publicly with no RLS — full database readable via /rest/v1/ endpoint
+### 26. Data Access Control — Row-Level Security and API Authentication
 
 **Verdict: PARTIAL**
 
@@ -1096,7 +1098,7 @@ The application uses Neon PostgreSQL (not Supabase/Firebase), so there is no pub
 
 ---
 
-### 27. Zero logging beyond console.log — good luck debugging
+### 27. Production Diagnostics — Logging Infrastructure Beyond Console Output
 
 **Verdict: GUILTY**
 
@@ -1106,49 +1108,290 @@ This is a duplicate of #16, confirmed across the full codebase. The only logging
 
 ---
 
-### Vibe-Code Bomb Scorecard
+### Operational Maturity Scorecard
 
-| # | Check | Verdict | Severity |
-|---|-------|---------|----------|
-| 1 | API keys hardcoded "for now" | **NOT GUILTY** | — |
-| 2 | No /health endpoint | **GUILTY** | Medium |
-| 3 | Schema changes in your head, not migrations | **GUILTY** | Medium |
-| 4 | Every query is SELECT * | **NOT GUILTY** | — |
-| 5 | Error handling = console.log(e) | **GUILTY** | High |
-| 6 | No rate limit on auth or writes | **GUILTY** | High |
-| 7 | UTC/local time mixed | **PARTIAL** | Low |
-| 8 | README is empty or wrong | **GUILTY** | Low |
-| 9 | No staging env | **GUILTY** | Medium |
-| 10 | One god component | **GUILTY** | High |
-| 11 | No analytics | **GUILTY** | Low |
-| 12 | "Clean up after launch" | **PARTIAL** | Medium |
-| 13 | Env vars undocumented | **GUILTY** | Low |
-| 14 | Frontend talks to 5 APIs directly | **NOT GUILTY** | — |
-| 15 | No monitoring or alerts | **GUILTY** | High |
-| 16 | Logs only in terminal | **GUILTY** | High |
-| 17 | DB backups untested | **GUILTY** | High |
-| 18 | Feature flags = commenting code | **PARTIAL** | Low |
-| 19 | Deploys from local machine | **GUILTY** | High |
-| 20 | No input validation | **PARTIAL** | High |
-| 21 | CORS set to * | **NOT GUILTY** | — |
-| 22 | CI = "ran locally once" | **GUILTY** | Critical |
-| 23 | Same token across envs | **PARTIAL** | Medium |
-| 24 | Only one person knows deployment | **GUILTY** | Medium |
-| 25 | Secrets in client code or .env in git | **NOT GUILTY** | — |
-| 26 | Database exposed publicly with no RLS | **PARTIAL** | Critical |
-| 27 | Zero logging beyond console.log | **GUILTY** | High |
+| # | Control | Verdict | Severity |
+|---|---------|---------|----------|
+| 1 | Credential management — hardcoded secrets | **PASS** | — |
+| 2 | Service health verification endpoint | **FAIL** | Medium |
+| 3 | Schema governance — versioned migrations | **FAIL** | Medium |
+| 4 | Query discipline — explicit column selection | **PASS** | — |
+| 5 | Error handling — structured logging and recovery | **FAIL** | High |
+| 6 | Rate limiting on authentication and writes | **FAIL** | High |
+| 7 | Temporal consistency — timezone standardization | **PARTIAL** | Low |
+| 8 | Onboarding documentation — README completeness | **FAIL** | Low |
+| 9 | Environment isolation — staging tier | **FAIL** | Medium |
+| 10 | Component architecture — single responsibility | **FAIL** | High |
+| 11 | Product analytics — usage telemetry | **FAIL** | Low |
+| 12 | Technical debt management — backlog tracking | **PARTIAL** | Medium |
+| 13 | Configuration documentation — env var registry | **FAIL** | Low |
+| 14 | API abstraction — backend proxy for third parties | **PASS** | — |
+| 15 | Observability — monitoring and alerting | **FAIL** | High |
+| 16 | Log persistence — durable aggregation | **FAIL** | High |
+| 17 | Data protection — backup and restore verification | **FAIL** | High |
+| 18 | Release control — feature flag infrastructure | **PARTIAL** | Low |
+| 19 | Deployment pipeline — automated build and release | **FAIL** | High |
+| 20 | Input validation — server-side schema enforcement | **PARTIAL** | High |
+| 21 | Cross-origin policy — CORS configuration | **PASS** | — |
+| 22 | Continuous integration — automated quality gates | **FAIL** | Critical |
+| 23 | Secret isolation — per-environment credentials | **PARTIAL** | Medium |
+| 24 | Knowledge distribution — bus factor and runbooks | **FAIL** | Medium |
+| 25 | Secret exposure — client-side credential leakage | **PASS** | — |
+| 26 | Data access control — RLS and API authentication | **PARTIAL** | Critical |
+| 27 | Production diagnostics — logging infrastructure | **FAIL** | High |
+
+### Summary
+
+| Verdict | Count |
+|---------|-------|
+| **FAIL** | 16 / 27 (59%) |
+| **PARTIAL** | 6 / 27 (22%) |
+| **PASS** | 5 / 27 (19%) |
+
+**Operational Maturity Score: 19 / 27 controls deficient (70%)**
+
+The application satisfies fundamental controls for secret management (#1, #25), API abstraction (#14), query discipline (#4), and cross-origin policy (#21). However, it fails decisively across operational maturity domains: no CI/CD pipeline, no production monitoring, no structured logging, no staging environment, no onboarding documentation, and monolithic component architecture. The security posture is mixed — credentials are properly externalized but the database is functionally exposed due to insufficient authentication coverage across API endpoints.
+
+---
+
+## Appendix A-2 — Gap Analysis: 10 Missing Findings (CCA-1.2)
+
+**Date:** 2026-03-01
+**Methodology:** Cross-referenced the full codebase against CCA-1.0 (35 categories) and CCA-1.1 (27-point vibe-code check) to identify compound vulnerabilities, HTTP-layer gaps, and operational blind spots not covered by either audit. Each finding is either net-new or a compound issue that connects two separately-documented findings into a higher-severity result.
+
+---
+
+### 1. PIN Authentication Is Brute-Forceable (Compound Vulnerability)
+
+**Severity: High** | **CVSS: 7.5** | **New Finding: GAP-001**
+
+The middleware (`src/middleware.ts:9-16`) uses constant-time comparison (good), but there is **no rate limiting or lockout** on PIN-protected routes or `/api/auth/verify-pin`. An attacker can brute-force the `x-auth-pin` header at unlimited speed. For a short numeric PIN, this is trivially crackable.
+
+The audit notes "no rate limiting" (NET-002, CVSS 5.9) and "PIN-based auth" (5.2) separately, but never connects them: **the combination of a weak auth factor + zero rate limiting = no effective authentication on the 2 protected routes**.
+
+| Factor | Status |
+|--------|--------|
+| Rate limiting on PIN attempts | **Missing** |
+| Account lockout after N failures | **Missing** |
+| Exponential backoff | **Missing** |
+| PIN complexity requirements | **Unknown** (env var, no enforcement) |
+
+**Cross-refs:** NET-002, SEC-001, AUTH-002
+
+**Recommendations:**
+- Add rate limiting middleware (e.g., `@upstash/ratelimit`) on all `/api/*` routes, with aggressive limits (5 req/min) on auth-related endpoints.
+- Consider replacing the PIN with a proper auth token (JWT or session cookie) after initial PIN verification.
+- Add an account lockout or exponential delay after 5 failed PIN attempts.
+
+---
+
+### 2. No Request Body Size Limits (Net-New)
+
+**Severity: Medium** | **CVSS: 5.3** | **New Finding: GAP-002**
+
+All 15 `request.json()` call sites across API routes accept arbitrarily large POST bodies. Next.js App Router in serverless mode has no built-in body size limit. A 500MB JSON payload could exhaust serverless function memory before any field-level validation runs.
+
+| Route | `request.json()` call | Size check |
+|-------|-----------------------|------------|
+| `POST /api/analysis-cache` | `route.ts:57` | **None** |
+| `POST /api/seen-articles` | `route.ts:151` | **None** |
+| `POST /api/seen-filings` | `route.ts:163` | **None** |
+| `POST /api/workflow/run` | `route.ts:20` | **None** |
+| `POST /api/workflow/apply` | `route.ts:359` | **None** |
+| `POST /api/workflow/commit` | `route.ts:37` | **None** |
+| `POST /api/edgar/analyze` | `route.ts:19` | **None** |
+| `POST /api/sources/analyze` | `route.ts:19` | **None** |
+| `POST /api/check-analyzed` | `route.ts:268` | **None** |
+| `POST /api/notes` | `route.ts:91` | **None** |
+| `POST /api/notes/generate` | `route.ts:20` | **None** |
+| `POST /api/audit-checks` | `route.ts:104` | **None** |
+| `POST /api/edgar/refresh-local` | `route.ts:20` | **None** |
+| `POST /api/auth/verify-pin` | `route.ts:26` | **None** |
+| `PATCH /api/notes` | `route.ts:148` | **None** |
+
+The existing finding INP-002 (unbounded `text` field in analysis-cache) covers the *storage* angle but not the *parsing/memory exhaustion* angle that affects every route.
+
+**Recommendations:**
+- Add a shared middleware or utility that checks `Content-Length` before parsing:
+  ```typescript
+  const MAX_BODY = 1_000_000; // 1MB
+  const len = parseInt(request.headers.get('content-length') || '0', 10);
+  if (len > MAX_BODY) return NextResponse.json({ error: 'Payload too large' }, { status: 413 });
+  ```
+- Set per-route limits where appropriate (e.g., 10KB for `/api/auth/verify-pin`, 1MB for `/api/workflow/apply`).
+
+---
+
+### 3. No Content-Type Validation on POST Routes (Net-New)
+
+**Severity: Low-Medium** | **CVSS: 3.5** | **New Finding: GAP-003**
+
+None of the 15 POST endpoints validate that the incoming `Content-Type` is `application/json` before calling `request.json()`. If a request arrives with `Content-Type: text/plain` or `multipart/form-data`, `request.json()` will throw an unhandled exception that leaks error details in the response.
+
+**Affected:** Every POST/PATCH route in `src/app/api/`.
+
+**Recommendations:**
+- Add shared validation in middleware or a utility:
+  ```typescript
+  const ct = request.headers.get('content-type');
+  if (!ct?.includes('application/json')) {
+    return NextResponse.json({ error: 'Content-Type must be application/json' }, { status: 415 });
+  }
+  ```
+
+---
+
+### 4. Unvalidated JSON.parse on Scraped External Content (Net-New)
+
+**Severity: Medium** | **CVSS: 4.5** | **New Finding: GAP-004**
+
+The existing finding 4.5 catches `JSON.parse(row.crossRefs)` on DB data, but several other `JSON.parse` calls operate on untrusted external content without try/catch:
+
+| Location | Source of data | try/catch |
+|----------|---------------|-----------|
+| `press-releases/[symbol]/route.ts:149` | `JSON.parse(jsonMatch[1])` on scraped IR HTML | **No** |
+| `workflow/run/route.ts:97` | `JSON.parse(jsonStr)` on Anthropic SSE stream | Yes |
+| `workflow/apply/route.ts:556` | `JSON.parse(jsonStr)` on AI-generated content | Yes |
+| `notes/generate/route.ts:83` | `JSON.parse(rawText.trim())` on Claude response | Yes |
+
+The press-releases route is the critical gap — it parses JSON embedded in scraped investor relations pages. If an IR page changes format, this throws an unhandled exception that crashes the request and leaks error details.
+
+**Cross-refs:** SEC-005, ERR-002
+
+**Recommendations:**
+- Wrap the `JSON.parse` in `press-releases/[symbol]/route.ts:149` in try/catch with a graceful fallback.
+- Add a shared `safeParse()` utility for all external JSON parsing.
+
+---
+
+### 5. No robots.txt or Crawl Control (Net-New)
+
+**Severity: Low** | **CVSS: 2.5** | **New Finding: GAP-005**
+
+No `robots.txt`, no `sitemap.xml`, no metadata-based crawl directives exist. Search engines can discover and index all pages, including `/db-setup` — which has a "Run Setup" button that wipes the entire database with a single POST. Combined with the unauthenticated destructive endpoint (SEC-001), search engine indexing makes this page more discoverable to attackers.
+
+**Recommendations:**
+- Add `src/app/robots.ts` (Next.js metadata API):
+  ```typescript
+  export default function robots() {
+    return {
+      rules: { userAgent: '*', disallow: ['/api/', '/db-setup'] },
+    };
+  }
+  ```
+- Add `noindex` meta tag to `/db-setup` page as defense-in-depth.
+
+---
+
+### 6. No Subresource Integrity (SRI) for External Resources (Net-New)
+
+**Severity: Low** | **CVSS: 2.0** | **New Finding: GAP-006**
+
+Google Fonts are loaded via `@import` in `src/app/globals.css:1` from `fonts.googleapis.com`. The audit flags the GDPR angle (finding 6.2) but not the **supply chain risk**: if Google's CDN is compromised or DNS-hijacked, malicious CSS could be injected. No SRI hashes are used anywhere in the application.
+
+The existing recommendation to switch to `next/font` (findings 7.6, 6.2) would also solve this issue, since `next/font` self-hosts font files.
+
+**Cross-refs:** PRIV-002, PERF-006
+
+**Recommendations:**
+- Switch to `next/font` (already recommended — this adds a security rationale alongside the GDPR and performance rationales).
+
+---
+
+### 7. Source Maps Not Explicitly Disabled in Production (Net-New)
+
+**Severity: Low** | **CVSS: 2.0** | **New Finding: GAP-007**
+
+`next.config.ts` is essentially empty — `productionBrowserSourceMaps` is not set. Next.js defaults to not shipping *browser* source maps, but server-side source maps are generated. On Vercel, server source maps could aid attackers in understanding code paths if error stack traces are leaked (which they are — see ERR-002).
+
+**Recommendations:**
+- Explicitly disable in `next.config.ts`:
+  ```typescript
+  const nextConfig: NextConfig = {
+    productionBrowserSourceMaps: false,
+  };
+  ```
+- While browser source maps are off by default, being explicit prevents accidental enablement.
+
+---
+
+### 8. No Idempotency on Write Endpoints (Net-New)
+
+**Severity: Low** | **CVSS: 2.0** | **New Finding: GAP-008**
+
+POST endpoints like `/api/analysis-cache`, `/api/seen-articles`, and `/api/seen-filings` have no idempotency protection. Network retries or double-clicks can create duplicate records. The analysis-cache route uses `onConflictDoUpdate` (good), but seen-articles and seen-filings use bulk inserts with `onConflictDoNothing` — meaning partial duplicates are silently dropped, which could mask data integrity issues.
+
+The audit covers concurrency at the database/thread level (Category 32) but not at the HTTP request level.
+
+**Recommendations:**
+- Add idempotency keys (client-generated UUID in request header) for critical write endpoints.
+- Or add client-side deduplication with debounced submit buttons.
+
+---
+
+### 9. db:push Runs Against Production Without Safeguards (Net-New)
+
+**Severity: Medium** | **CVSS: 5.0** | **New Finding: GAP-009**
+
+`package.json` exposes `"db:push": "npx drizzle-kit push"` which directly mutates the production schema when `DATABASE_URL` points to production. Drizzle's push mode can silently drop columns, alter types, or remove indexes on the live database with no migration file, no confirmation prompt, and no rollback capability.
+
+The audit covers the *lack of migrations* (CCA-1.1 #3) but doesn't flag that `db:push` itself is an active footgun — it's not just a missing best practice, it's a one-command path to production data loss.
+
+**Cross-refs:** CCA-1.1 #3, DB-003, DB-004
+
+**Recommendations:**
+- Replace `db:push` with `drizzle-kit generate` + `drizzle-kit migrate` for versioned migrations.
+- If `db:push` is retained for development, add a guard script:
+  ```bash
+  if [[ "$DATABASE_URL" == *"neon.tech"* ]]; then
+    echo "ERROR: db:push blocked against production. Use migrations."
+    exit 1
+  fi
+  ```
+
+---
+
+### 10. No Graceful Shutdown / Request Draining (Info)
+
+**Severity: Info** | **CVSS: N/A** | **New Finding: GAP-010**
+
+Serverless (Vercel) handles request draining automatically, so this is a non-issue today. However, `PLAN.md` discusses a potential migration off Vercel. If the app moves to a long-running server (Docker, EC2, etc.), there is no `process.on('SIGTERM')` handler, no graceful shutdown logic, and no request draining. In-flight database writes or AI API calls would be abruptly terminated.
+
+**Recommendations:**
+- No action needed while on Vercel.
+- If migrating to a long-running server, add a shutdown handler that finishes in-flight requests before exiting.
+
+---
+
+### Gap Analysis Scorecard
+
+| # | Finding | Severity | Type | CVSS |
+|---|---------|----------|------|------|
+| GAP-001 | PIN brute-forceable (compound: NET-002 + AUTH-002) | **High** | Compound | 7.5 |
+| GAP-002 | No request body size limits | **Medium** | Net-new | 5.3 |
+| GAP-003 | No Content-Type validation on POST routes | **Low-Medium** | Net-new | 3.5 |
+| GAP-004 | Unvalidated JSON.parse on scraped HTML | **Medium** | Net-new | 4.5 |
+| GAP-005 | No robots.txt (destructive pages indexable) | **Low** | Net-new | 2.5 |
+| GAP-006 | No SRI on external resources | **Low** | Net-new | 2.0 |
+| GAP-007 | Source maps not explicitly disabled | **Low** | Net-new | 2.0 |
+| GAP-008 | No idempotency on write endpoints | **Low** | Net-new | 2.0 |
+| GAP-009 | db:push runs against production unsafely | **Medium** | Net-new | 5.0 |
+| GAP-010 | No graceful shutdown (info — Vercel handles) | **Info** | Net-new | N/A |
 
 ### Summary
 
 | Category | Count |
 |----------|-------|
-| **GUILTY** | 16 / 27 (59%) |
-| **PARTIAL** | 6 / 27 (22%) |
-| **NOT GUILTY** | 5 / 27 (19%) |
+| **High** | 1 |
+| **Medium** | 3 |
+| **Low-Medium** | 1 |
+| **Low** | 4 |
+| **Info** | 1 |
+| **Total** | **10** |
 
-**Ticking Bomb Score: 16 + (6 × 0.5) = 19 / 27 (70%)**
+**Compound finding GAP-001 is the most critical**: it connects two separately-documented findings (weak auth factor + no rate limiting) into a vulnerability that neither finding addresses alone. The PIN-protected routes (`/api/edgar/analyze`, `/api/sources/analyze`) are effectively unprotected.
 
-The application passes on the fundamentals of secret management (#1, #25), API architecture (#4, #14, #21), and database query patterns (#4). However, it fails decisively on operational maturity: no CI/CD, no monitoring, no logging infrastructure, no staging environment, no documentation, and massive god components. The security posture is mixed — secrets are properly managed but the database is functionally exposed due to missing authentication on most endpoints.
+**Net-new findings GAP-002 and GAP-009 are the next priority**: body size limits protect against memory exhaustion across all POST routes, and `db:push` is a one-command path to production data loss.
 
 ---
 ---
