@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+import '@/components/stocks/stock-model-styles.css';
 
 interface HookCardProps {
   plugin: {
