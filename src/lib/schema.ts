@@ -152,6 +152,21 @@ export const seenArticles = pgTable('seen_articles', {
 ]);
 
 // ============================================================================
+// AUDIT CHECKS — persists per-finding re-check verdicts so results survive
+// across page refreshes and can be referenced in future audit runs.
+// ============================================================================
+
+export const auditChecks = pgTable('audit_checks', {
+  id: serial('id').primaryKey(),
+  findingId: text('finding_id').notNull(),       // e.g. 'CRIT-001'
+  verdict: text('verdict').notNull(),            // 'passed' | 'failed'
+  summary: text('summary').notNull(),            // AI explanation
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex('audit_checks_finding_id_idx').on(table.findingId),
+]);
+
 // ============================================================================
 // NOTES — user scratch-pad for article ideas, enhancements, and other thoughts
 // ============================================================================
