@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 820" font-family="'Outfit', system-ui, sans-serif">
+  <defs>
+    <linearGradient id="bg7" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0D1117"/>
+      <stop offset="100%" stop-color="#05070A"/>
+    </linearGradient>
+    <!-- Gradient text for massive price -->
+    <linearGradient id="priceGrad7" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="60%" stop-color="#F0F6FC"/>
+      <stop offset="100%" stop-color="#8B949E"/>
+    </linearGradient>
+    <!-- Radial glow: accent-dim centered -->
+    <radialGradient id="centerGlow7" cx="50%" cy="40%" r="35%">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.12"/>
+      <stop offset="50%" stop-color="#22D3EE" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Subtle top glow -->
+    <radialGradient id="topGlow7" cx="50%" cy="0%" r="50%">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Page bg -->
+  <rect width="1200" height="820" fill="#05070A"/>
+
+  <!-- Title -->
+  <text x="600" y="32" text-anchor="middle" fill="#6E7681" font-size="11" font-weight="500" letter-spacing="2.5">SKETCH 7 — FLOATING PRISM</text>
+  <line x1="240" y1="44" x2="960" y2="44" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="600" y="64" text-anchor="middle" fill="#8B949E" font-size="12" font-weight="300">Center-aligned glass prism. Price dominates as gradient text. Ticker pill floats above. Name in tracked uppercase below.</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       HERO — Floating Prism
+       ═══════════════════════════════════════════════════════════ -->
+
+  <!-- Hero background -->
+  <rect x="0" y="84" width="1200" height="340" fill="url(#bg7)"/>
+  <rect x="0" y="84" width="1200" height="340" fill="url(#centerGlow7)"/>
+  <rect x="0" y="84" width="1200" height="340" fill="url(#topGlow7)"/>
+  <!-- Bottom glass-edge border -->
+  <line x1="0" y1="424" x2="1200" y2="424" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+
+  <!-- The glass prism container -->
+  <rect x="200" y="104" width="800" height="290" rx="16" fill="rgba(13,17,23,0.5)" stroke="rgba(240,246,252,0.08)" stroke-width="1"/>
+
+  <!-- Ticker pill: 99px radius (full pill), accent-dim bg, accent border -->
+  <rect x="530" y="124" width="140" height="28" rx="14" fill="rgba(34,211,238,0.15)" stroke="rgba(34,211,238,0.25)" stroke-width="1"/>
+  <text x="600" y="143" text-anchor="middle" fill="#22D3EE" font-size="11" font-family="'Space Mono', monospace" font-weight="600">NASDAQ: ASTS</text>
+
+  <!-- MASSIVE PRICE: gradient text, Space Mono, 80px -->
+  <text x="600" y="230" text-anchor="middle" fill="url(#priceGrad7)" font-size="84" font-weight="700" font-family="'Space Mono', monospace" letter-spacing="-4">$52.49</text>
+
+  <!-- Change pill: mint-dim bg -->
+  <rect x="527" y="248" width="146" height="30" rx="15" fill="rgba(126,231,135,0.15)" stroke="rgba(126,231,135,0.2)" stroke-width="1"/>
+  <text x="600" y="268" text-anchor="middle" fill="#7EE787" font-size="14" font-weight="600" font-family="'Space Mono', monospace">▲ +2.34 (4.67%)</text>
+
+  <!-- Company name: uppercase, tracked, text2 weight 300 -->
+  <text x="600" y="316" text-anchor="middle" fill="#8B949E" font-size="16" font-weight="300" letter-spacing="8">ASTS SPACEMOBILE</text>
+
+  <!-- Thin glass separator -->
+  <line x1="440" y1="332" x2="760" y2="332" stroke="rgba(240,246,252,0.08)" stroke-width="1"/>
+
+  <!-- Sector tag + Satellites + Timestamp — all in text3 -->
+  <text x="600" y="354" text-anchor="middle" fill="#6E7681" font-size="11" font-weight="400" letter-spacing="0.5">Direct-to-Device Cellular · 🛰 7/60 Satellites · Updated 3:45 PM</text>
+
+  <!-- Refresh button: glass circle -->
+  <circle cx="780" y="354" r="0" fill="none"/>
+  <rect x="760" y="362" width="28" height="22" rx="8" fill="rgba(240,246,252,0.04)" stroke="rgba(240,246,252,0.08)" stroke-width="1"/>
+  <text x="774" y="378" text-anchor="middle" fill="#6E7681" font-size="11">↻</text>
+
+  <!-- Data freshness badge -->
+  <rect x="490" y="362" width="180" height="22" rx="6" fill="rgba(34,211,238,0.06)" stroke="rgba(34,211,238,0.12)" stroke-width="1"/>
+  <text x="580" y="377" text-anchor="middle" fill="#22D3EE" font-size="9" font-weight="500">📅 Data as of: Feb 28, 2026</text>
+
+  <!-- Description: text2, 16px, max-width, weight 300 -->
+  <text x="600" y="406" text-anchor="middle" fill="#6E7681" font-size="12" font-weight="300">First space-based cellular broadband for standard smartphones. 53+ MNO partnerships reaching 2.8B subscribers globally.</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       DESIGN NOTES
+       ═══════════════════════════════════════════════════════════ -->
+  <line x1="48" y1="445" x2="1152" y2="445" stroke="rgba(240,246,252,0.1)" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <rect x="48" y="462" width="6" height="20" rx="3" fill="#22D3EE"/>
+  <text x="66" y="477" fill="#F0F6FC" font-size="14" font-weight="600" letter-spacing="-0.5">Design Rationale</text>
+
+  <rect x="48" y="497" width="260" height="120" rx="16" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="72" y="524" fill="#F0F6FC" font-size="13" font-weight="600">Price-first hierarchy</text>
+  <text x="72" y="544" fill="#8B949E" font-size="11" font-weight="300">84px gradient-text price is the</text>
+  <text x="72" y="560" fill="#8B949E" font-size="11" font-weight="300">single focal point. Users come for</text>
+  <text x="72" y="576" fill="#8B949E" font-size="11" font-weight="300">the number — give it to them big.</text>
+  <text x="72" y="596" fill="#6E7681" font-size="10" font-family="'Space Mono', monospace">font-size: 84px; letter-spacing: -4px</text>
+
+  <rect x="324" y="497" width="260" height="120" rx="16" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="348" y="524" fill="#F0F6FC" font-size="13" font-weight="600">Inverted name hierarchy</text>
+  <text x="348" y="544" fill="#8B949E" font-size="11" font-weight="300">Name appears BELOW price in</text>
+  <text x="348" y="560" fill="#8B949E" font-size="11" font-weight="300">tracked uppercase — like a luxury</text>
+  <text x="348" y="576" fill="#8B949E" font-size="11" font-weight="300">brand below its product hero shot.</text>
+  <text x="348" y="596" fill="#6E7681" font-size="10" font-family="'Space Mono', monospace">letter-spacing: 8px; weight: 300</text>
+
+  <rect x="600" y="497" width="260" height="120" rx="16" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="624" y="524" fill="#F0F6FC" font-size="13" font-weight="600">Glass prism container</text>
+  <text x="624" y="544" fill="#8B949E" font-size="11" font-weight="300">Semi-transparent card (50% bg)</text>
+  <text x="624" y="560" fill="#8B949E" font-size="11" font-weight="300">with glass-edge border. Centered</text>
+  <text x="624" y="576" fill="#8B949E" font-size="11" font-weight="300">radial glow creates depth behind.</text>
+  <text x="624" y="596" fill="#6E7681" font-size="10" font-family="'Space Mono', monospace">rgba(13,17,23,0.5); r: 16px</text>
+
+  <rect x="876" y="497" width="276" height="120" rx="16" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="900" y="524" fill="#F0F6FC" font-size="13" font-weight="600">Pill badges (99px radius)</text>
+  <text x="900" y="544" fill="#8B949E" font-size="11" font-weight="300">Ticker + change use pill shape per</text>
+  <text x="900" y="560" fill="#8B949E" font-size="11" font-weight="300">our filter-pill pattern. accent-dim</text>
+  <text x="900" y="576" fill="#8B949E" font-size="11" font-weight="300">bg with accent stroke at 25%.</text>
+  <text x="900" y="596" fill="#6E7681" font-size="10" font-family="'Space Mono', monospace">border-radius: 99px; stroke: 25%</text>
+
+  <!-- Visual hierarchy diagram -->
+  <rect x="48" y="637" width="1104" height="150" rx="16" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="72" y="660" fill="#22D3EE" font-size="11" font-weight="600" letter-spacing="2.5">VISUAL HIERARCHY (TOP → BOTTOM)</text>
+
+  <!-- Hierarchy visualization -->
+  <rect x="440" y="678" width="120" height="16" rx="8" fill="rgba(34,211,238,0.15)" stroke="rgba(34,211,238,0.2)" stroke-width="1"/>
+  <text x="500" y="690" text-anchor="middle" fill="#22D3EE" font-size="8" font-weight="500">TICKER PILL</text>
+  <text x="580" y="690" fill="#6E7681" font-size="9">← subtle entry, 11px mono</text>
+
+  <rect x="340" y="700" width="320" height="24" rx="4" fill="rgba(240,246,252,0.04)" stroke="rgba(240,246,252,0.06)" stroke-width="1"/>
+  <text x="500" y="716" text-anchor="middle" fill="#F0F6FC" font-size="10" font-weight="700" font-family="'Space Mono', monospace">$52.49 — 84px GRADIENT TEXT</text>
+  <text x="680" y="716" fill="#6E7681" font-size="9">← MAXIMUM WEIGHT</text>
+
+  <rect x="400" y="730" width="200" height="16" rx="4" fill="rgba(126,231,135,0.1)"/>
+  <text x="500" y="742" text-anchor="middle" fill="#7EE787" font-size="8" font-weight="500">▲ CHANGE PILL</text>
+  <text x="620" y="742" fill="#6E7681" font-size="9">← success/danger signal</text>
+
+  <text x="500" y="762" text-anchor="middle" fill="#8B949E" font-size="10" font-weight="300" letter-spacing="4">COMPANY NAME</text>
+  <text x="640" y="762" fill="#6E7681" font-size="9">← tracked uppercase, light</text>
+
+  <text x="500" y="778" text-anchor="middle" fill="#6E7681" font-size="9">sector · sats · timestamp</text>
+  <text x="620" y="778" fill="#6E7681" font-size="9">← text3, metadata</text>
+
+  <!-- Mobile note -->
+  <rect x="48" y="800" width="1104" height="28" rx="8" fill="rgba(34,211,238,0.06)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
+  <text x="72" y="818" fill="#22D3EE" font-size="11">📱 Mobile: Prism goes full-width. Price drops to 56px. Same hierarchy preserved. Pill badges stack.</text>
+</svg>

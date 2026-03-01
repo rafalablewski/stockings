@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" font-family="'Outfit', system-ui, sans-serif">
+  <defs>
+    <!-- Exact design tokens -->
+    <linearGradient id="bg6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0D1117"/>
+      <stop offset="100%" stop-color="#05070A"/>
+    </linearGradient>
+    <!-- Hero gradient: surface → bg (from .hero CSS) -->
+    <linearGradient id="heroGrad6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0D1117"/>
+      <stop offset="100%" stop-color="#05070A"/>
+    </linearGradient>
+    <!-- Gradient text: 135deg white → text2 (from .brand-block h1) -->
+    <linearGradient id="titleGrad6" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#8B949E"/>
+    </linearGradient>
+    <!-- Radial glow: accent-dim → transparent (from .hero::before) -->
+    <radialGradient id="accentGlow6" cx="82%" cy="30%" r="35%">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.15"/>
+      <stop offset="70%" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Secondary glow for price area -->
+    <radialGradient id="priceGlow6" cx="85%" cy="50%" r="25%">
+      <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Page background: --bg -->
+  <rect width="1200" height="780" fill="#05070A"/>
+
+  <!-- Title bar -->
+  <text x="600" y="32" text-anchor="middle" fill="#6E7681" font-size="11" font-weight="500" letter-spacing="2.5" text-transform="uppercase">SKETCH 6 — GLASS RIBBON</text>
+  <line x1="240" y1="44" x2="960" y2="44" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="600" y="64" text-anchor="middle" fill="#8B949E" font-size="12" font-weight="300">Single frosted glass panel. Two anchors: name ↔ price. Radial accent glow. Glass-edge borders. Stats integrated as glass-list.</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       HERO HEADER — Glass Ribbon
+       ═══════════════════════════════════════════════════════════ -->
+
+  <!-- Hero background: linear-gradient(180deg, surface → bg) -->
+  <rect x="0" y="84" width="1200" height="240" fill="url(#heroGrad6)"/>
+  <!-- Radial glow (from .hero::before — accent-dim, top-right) -->
+  <rect x="0" y="84" width="1200" height="240" fill="url(#accentGlow6)"/>
+  <!-- Bottom border: 1px solid var(--border) -->
+  <line x1="0" y1="324" x2="1200" y2="324" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+
+  <!-- ─── Main glass ribbon container ─── -->
+  <!-- backdrop-filter: blur(12px) simulated with subtle fill -->
+  <rect x="48" y="112" width="1104" height="100" rx="16" fill="rgba(13,17,23,0.7)" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <!-- Inner subtle glow near price -->
+  <rect x="48" y="112" width="1104" height="100" rx="16" fill="url(#priceGlow6)"/>
+
+  <!-- LEFT ANCHOR: Brand -->
+  <!-- h1: gradient text, 42px, 700, -1.5px tracking -->
+  <text x="80" y="158" fill="url(#titleGrad6)" font-size="32" font-weight="700" letter-spacing="-1.2">ASTS SpaceMobile</text>
+  <!-- Ticker badge: accent-dim bg, accent text, 6px radius, Space Mono -->
+  <rect x="80" y="170" width="195" height="24" rx="6" fill="rgba(34,211,238,0.15)"/>
+  <text x="92" y="186" fill="#22D3EE" font-size="11" font-family="'Space Mono', monospace" font-weight="600">NASDAQ: ASTS · D2D Cellular</text>
+
+  <!-- CENTER: Subtle description -->
+  <text x="600" y="172" text-anchor="middle" fill="#6E7681" font-size="12" font-weight="300">First space-based cellular broadband · 53+ MNO partnerships · 2.8B reach</text>
+
+  <!-- RIGHT ANCHOR: Price -->
+  <!-- price-big: Space Mono, 56px, 700, -2px tracking -->
+  <text x="1108" y="158" text-anchor="end" fill="#F0F6FC" font-size="44" font-weight="700" font-family="'Space Mono', monospace" letter-spacing="-2">$52.49</text>
+  <!-- Change badge: mint-dim bg, pill shape -->
+  <rect x="997" y="170" width="115" height="24" rx="12" fill="rgba(126,231,135,0.15)"/>
+  <text x="1054" y="186" text-anchor="middle" fill="#7EE787" font-size="12" font-weight="600">▲ +2.34</text>
+
+  <!-- ─── Stats glass-list (integrated below ribbon) ─── -->
+  <!-- glass-list: 1px gap, border bg, 12px radius, overflow hidden -->
+  <rect x="48" y="228" width="1104" height="48" rx="12" fill="rgba(240,246,252,0.1)"/>
+  <!-- Individual glass items with 1px gap between them -->
+  <!-- Item 1: Market Cap -->
+  <rect x="48" y="228" width="183" height="48" rx="0" fill="#0D1117"/>
+  <rect x="48" y="228" width="183" height="48" rx="12" fill="#0D1117"/>
+  <text x="80" y="248" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1.2">MKT CAP</text>
+  <text x="80" y="266" fill="#F0F6FC" font-size="16" font-weight="600" font-family="'Space Mono', monospace">$11.2B</text>
+
+  <!-- Item 2: Enterprise Value -->
+  <rect x="232" y="228" width="184" height="48" fill="#0D1117"/>
+  <text x="264" y="248" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1.2">ENTERPRISE VALUE</text>
+  <text x="264" y="266" fill="#F0F6FC" font-size="16" font-weight="600" font-family="'Space Mono', monospace">$12.8B</text>
+
+  <!-- Item 3: Constellation -->
+  <rect x="417" y="228" width="183" height="48" fill="#0D1117"/>
+  <text x="449" y="248" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1.2">CONSTELLATION</text>
+  <text x="449" y="266" fill="#22D3EE" font-size="16" font-weight="600" font-family="'Space Mono', monospace">7/60</text>
+
+  <!-- Item 4: Progress -->
+  <rect x="601" y="228" width="184" height="48" fill="#0D1117"/>
+  <text x="633" y="248" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1.2">PROGRESS</text>
+  <text x="633" y="266" fill="#22D3EE" font-size="16" font-weight="600" font-family="'Space Mono', monospace">12%</text>
+
+  <!-- Item 5: Cash -->
+  <rect x="786" y="228" width="183" height="48" fill="#0D1117"/>
+  <text x="818" y="248" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1.2">CASH</text>
+  <text x="818" y="266" fill="#7EE787" font-size="16" font-weight="600" font-family="'Space Mono', monospace">$0.7B</text>
+
+  <!-- Item 6: Satellites -->
+  <rect x="970" y="228" width="182" height="48" fill="#0D1117"/>
+  <rect x="1136" y="228" width="16" height="48" rx="0" fill="#0D1117"/>
+  <text x="1002" y="248" fill="#6E7681" font-size="9" font-weight="600" letter-spacing="1.2">SATELLITES</text>
+  <text x="1002" y="266" fill="#7EE787" font-size="16" font-weight="600" font-family="'Space Mono', monospace">🛰 7</text>
+
+  <!-- Timestamp & refresh -->
+  <text x="600" y="302" text-anchor="middle" fill="#6E7681" font-size="10" letter-spacing="0.03em">📅 Data as of: Feb 28, 2026 · Updated 3:45 PM · ↻</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       DESIGN NOTES
+       ═══════════════════════════════════════════════════════════ -->
+  <line x1="48" y1="352" x2="1152" y2="352" stroke="rgba(240,246,252,0.1)" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- Section label: 11px, 600, 2.5px letter-spacing, uppercase -->
+  <rect x="48" y="370" width="6" height="20" rx="3" fill="#22D3EE"/>
+  <text x="66" y="385" fill="#F0F6FC" font-size="14" font-weight="600" letter-spacing="-0.5">Design Rationale</text>
+
+  <!-- Note cards using exact card styling: 16px radius, border, surface bg, 24px padding -->
+  <rect x="48" y="405" width="260" height="110" rx="16" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="72" y="432" fill="#F0F6FC" font-size="13" font-weight="600">Frosted glass surface</text>
+  <text x="72" y="452" fill="#8B949E" font-size="11" font-weight="300">Single panel with backdrop-blur</text>
+  <text x="72" y="468" fill="#8B949E" font-size="11" font-weight="300">and rgba(240,246,252,0.1) glass-</text>
+  <text x="72" y="484" fill="#8B949E" font-size="11" font-weight="300">edge border. Exactly like our nav.</text>
+
+  <rect x="324" y="405" width="260" height="110" rx="16" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="348" y="432" fill="#F0F6FC" font-size="13" font-weight="600">Glass-list stats row</text>
+  <text x="348" y="452" fill="#8B949E" font-size="11" font-weight="300">Stats use 1px gap pattern with</text>
+  <text x="348" y="468" fill="#8B949E" font-size="11" font-weight="300">var(--border) showing through.</text>
+  <text x="348" y="484" fill="#8B949E" font-size="11" font-weight="300">Absorbed into the header itself.</text>
+
+  <rect x="600" y="405" width="260" height="110" rx="16" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="624" y="432" fill="#F0F6FC" font-size="13" font-weight="600">Radial accent glow</text>
+  <text x="624" y="452" fill="#8B949E" font-size="11" font-weight="300">accent-dim radial gradient in</text>
+  <text x="624" y="468" fill="#8B949E" font-size="11" font-weight="300">top-right corner — identical to</text>
+  <text x="624" y="484" fill="#8B949E" font-size="11" font-weight="300">current .hero::before pattern.</text>
+
+  <rect x="876" y="405" width="276" height="110" rx="16" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="900" y="432" fill="#F0F6FC" font-size="13" font-weight="600">Gradient text + Space Mono</text>
+  <text x="900" y="452" fill="#8B949E" font-size="11" font-weight="300">Title: 135deg #fff → #8B949E.</text>
+  <text x="900" y="468" fill="#8B949E" font-size="11" font-weight="300">Price: Space Mono 44px, -2px</text>
+  <text x="900" y="484" fill="#8B949E" font-size="11" font-weight="300">tracking. Exactly our tokens.</text>
+
+  <!-- CSS Token Reference -->
+  <rect x="48" y="535" width="1104" height="130" rx="16" fill="#0D1117" stroke="rgba(240,246,252,0.1)" stroke-width="1"/>
+  <text x="72" y="558" fill="#22D3EE" font-size="11" font-weight="600" letter-spacing="2.5">CSS TOKENS USED</text>
+
+  <text x="72" y="582" fill="#6E7681" font-size="11" font-family="'Space Mono', monospace">background:</text>
+  <text x="220" y="582" fill="#8B949E" font-size="11" font-family="'Space Mono', monospace">linear-gradient(180deg, #0D1117, #05070A)</text>
+
+  <text x="72" y="600" fill="#6E7681" font-size="11" font-family="'Space Mono', monospace">glow:</text>
+  <text x="220" y="600" fill="#8B949E" font-size="11" font-family="'Space Mono', monospace">radial-gradient(circle, var(--accent-dim) 0%, transparent 70%)</text>
+
+  <text x="72" y="618" fill="#6E7681" font-size="11" font-family="'Space Mono', monospace">border:</text>
+  <text x="220" y="618" fill="#8B949E" font-size="11" font-family="'Space Mono', monospace">1px solid rgba(240,246,252,0.1)  /* glass-edge */</text>
+
+  <text x="72" y="636" fill="#6E7681" font-size="11" font-family="'Space Mono', monospace">glass-list:</text>
+  <text x="220" y="636" fill="#8B949E" font-size="11" font-family="'Space Mono', monospace">gap: 1px; background: var(--border); border-radius: 12px;</text>
+
+  <text x="72" y="654" fill="#6E7681" font-size="11" font-family="'Space Mono', monospace">badge:</text>
+  <text x="220" y="654" fill="#8B949E" font-size="11" font-family="'Space Mono', monospace">color-mix(in srgb, var(--accent) 15%, transparent)</text>
+
+  <!-- Mobile note -->
+  <rect x="48" y="688" width="1104" height="34" rx="8" fill="rgba(34,211,238,0.06)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
+  <text x="72" y="710" fill="#22D3EE" font-size="11" font-weight="400">📱 Mobile: Ribbon splits — name row above, price row below. Glass-list scrolls horizontally with fade-mask.</text>
+
+  <!-- Accent left-bar for section (signature pattern) -->
+  <rect x="48" y="740" width="1104" height="28" rx="8" fill="rgba(240,246,252,0.03)"/>
+  <text x="600" y="759" text-anchor="middle" fill="#6E7681" font-size="10" font-weight="300" letter-spacing="0.5">backdrop-filter: blur(12px) · border-radius: 16px · font: Outfit + Space Mono · transitions: 0.15s ease</text>
+</svg>
