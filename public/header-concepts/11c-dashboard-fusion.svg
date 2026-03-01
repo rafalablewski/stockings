@@ -99,19 +99,18 @@
   <!-- Vertical rule — the spine -->
   <line x1="1100" y1="80" x2="1100" y2="400" stroke="rgba(255,255,255,0.03)" stroke-width="0.5"/>
 
-  <!-- Marker 1: 52W Low -->
+  <!-- Marker 1: 52W High -->
   <g transform="translate(1116, 94)">
-    <!-- Tick mark -->
-    <line x1="-20" y1="0" x2="-10" y2="0" stroke="rgba(239,68,68,0.25)" stroke-width="0.5"/>
-    <text font-family="monospace" font-size="7" fill="rgba(255,255,255,0.15)" letter-spacing="0.1em">52W LOW</text>
-    <text y="16" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="15" font-weight="600" fill="rgba(239,68,68,0.35)">$164.08</text>
-  </g>
-
-  <!-- Marker 2: 52W High -->
-  <g transform="translate(1116, 164)">
     <line x1="-20" y1="0" x2="-10" y2="0" stroke="rgba(126,231,135,0.25)" stroke-width="0.5"/>
     <text font-family="monospace" font-size="7" fill="rgba(255,255,255,0.15)" letter-spacing="0.1em">52W HIGH</text>
     <text y="16" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="15" font-weight="600" fill="rgba(126,231,135,0.35)">$260.10</text>
+  </g>
+
+  <!-- Marker 2: Day High -->
+  <g transform="translate(1116, 164)">
+    <line x1="-20" y1="0" x2="-10" y2="0" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
+    <text font-family="monospace" font-size="7" fill="rgba(255,255,255,0.15)" letter-spacing="0.1em">DAY HIGH</text>
+    <text y="16" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="15" font-weight="600" fill="rgba(255,255,255,0.25)">$244.12</text>
   </g>
 
   <!-- Marker 3: Open -->
@@ -121,18 +120,18 @@
     <text y="16" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="15" font-weight="600" fill="rgba(255,255,255,0.25)">$239.82</text>
   </g>
 
-  <!-- Marker 4: Day High -->
+  <!-- Marker 4: Day Low -->
   <g transform="translate(1116, 304)">
-    <line x1="-20" y1="0" x2="-10" y2="0" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
-    <text font-family="monospace" font-size="7" fill="rgba(255,255,255,0.15)" letter-spacing="0.1em">DAY HIGH</text>
-    <text y="16" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="15" font-weight="600" fill="rgba(255,255,255,0.25)">$244.12</text>
-  </g>
-
-  <!-- Marker 5: Day Low -->
-  <g transform="translate(1116, 374)">
     <line x1="-20" y1="0" x2="-10" y2="0" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"/>
     <text font-family="monospace" font-size="7" fill="rgba(255,255,255,0.15)" letter-spacing="0.1em">DAY LOW</text>
     <text y="16" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="15" font-weight="600" fill="rgba(255,255,255,0.25)">$238.40</text>
+  </g>
+
+  <!-- Marker 5: 52W Low -->
+  <g transform="translate(1116, 374)">
+    <line x1="-20" y1="0" x2="-10" y2="0" stroke="rgba(239,68,68,0.25)" stroke-width="0.5"/>
+    <text font-family="monospace" font-size="7" fill="rgba(255,255,255,0.15)" letter-spacing="0.1em">52W LOW</text>
+    <text y="16" font-family="'SF Mono', 'Roboto Mono', monospace" font-size="15" font-weight="600" fill="rgba(239,68,68,0.35)">$164.08</text>
   </g>
 
 
