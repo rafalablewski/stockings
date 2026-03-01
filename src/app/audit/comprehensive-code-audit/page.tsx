@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { readFileSync } from "fs";
+import { join } from "path";
 import AuditDashboard from "@/components/AuditDashboard";
 import { workflows } from "@/data/workflows";
 
@@ -35,6 +37,8 @@ const AUDIT_BADGE: Record<string, string> = {
 const auditWorkflows = workflows.filter((w) => w.category === "audit");
 
 export default function ComprehensiveCodeAuditPage() {
+  const auditMd = readFileSync(join(process.cwd(), "audit/AUDIT.md"), "utf-8");
+
   return (
     <div className="min-h-screen py-20 px-6">
       <div className="max-w-5xl mx-auto">
@@ -49,7 +53,7 @@ export default function ComprehensiveCodeAuditPage() {
             CWE and OWASP mapping.
           </p>
         </div>
-        <AuditDashboard />
+        <AuditDashboard auditMd={auditMd} />
 
         {/* ── All Audits ───────────────────────────────────────────────── */}
         <div className="mt-20 pt-16 border-t border-white/[0.06]">

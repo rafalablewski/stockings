@@ -56,8 +56,16 @@ const hooks = [
 
 // Build mobile nav items from the same data sources — stock-agnostic.
 // When stockList or hooks or audits change, mobile nav updates automatically.
+const docs = [
+  { slug: "design-system", label: "Design System", href: "/docs" },
+  { slug: "changelog", label: "Changelog", href: "/docs/changelog" },
+];
+
 const mobileNavItems = [
-  { label: 'Docs', href: '/docs' },
+  {
+    label: 'Docs',
+    children: docs.map((d) => ({ label: d.label, href: d.href })),
+  },
   {
     label: 'Hooks',
     children: [
@@ -71,7 +79,9 @@ const mobileNavItems = [
   },
   {
     label: 'Audit',
-    children: audits.map((a) => ({ label: a.label, href: `/audit/${a.slug}` })),
+    children: [
+      ...audits.map((a) => ({ label: a.label, href: `/audit/${a.slug}` })),
+    ],
   },
 ];
 
@@ -97,13 +107,27 @@ function Navigation() {
 
           {/* Desktop navigation — hidden on mobile */}
           <div className="hidden md:flex items-center gap-8">
-            {/* Docs link */}
-            <Link
-              href="/docs"
-              className="text-[13px] text-white/60 hover:text-white transition-colors"
-            >
-              Docs
-            </Link>
+            {/* Docs dropdown */}
+            <div className="relative group/docs">
+              <span className="text-[13px] text-white/60 group-hover/docs:text-white transition-colors cursor-default select-none">
+                Docs
+              </span>
+              <div className="absolute top-full right-0 pt-3 hidden group-hover/docs:block">
+                <div className="bg-black/95 backdrop-blur-xl border border-white/[0.08] rounded-xl py-2 min-w-[220px] shadow-2xl">
+                  {docs.map((doc) => (
+                    <Link
+                      key={doc.slug}
+                      href={doc.href}
+                      className="block px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
+                    >
+                      <span className="text-[12px] text-white/80">
+                        {doc.label}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
 
             {/* Hooks dropdown */}
             <div className="relative group/hooks">
