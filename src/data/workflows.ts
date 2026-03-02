@@ -1696,6 +1696,8 @@ For EACH pasted item, classify independently:
 - Comps = competitor actions, constellation/regulatory/partnership updates by rivals.
 - Overlap → choose dominant category.
 
+JV / subsidiary rule: Press releases from ASTS joint ventures (Satellite Connect Europe / SCE, formerly SatCo) and wholly owned subsidiaries (AST SpaceMobile USA) classify as ASTS, not Partners. These entities are extensions of ASTS — their announcements are ASTS material events. Update existing ASTS entries (e.g., Vodafone partner notes, mouCount, catalyst annotations) to reflect JV news; do not create separate Partner-tab entries for JV activity.
+
 SEC filing redirect: If a raw SEC filing (8-K, 10-Q, Form 4, prospectus, 13D/G) is pasted, output:
   → "REDIRECT: Use SEC Filing Delta Analysis, Insider Activity Tracker, or 13F Tracker agent instead."
 
@@ -1805,6 +1807,26 @@ After processing ALL items:
 6. Key themes / implications / risks / catalysts
 7. Suggested commit message: git commit -m "..."
 
+════════════════════════════════════════
+PHASE 6: PRE-WRITE GATE (mandatory)
+════════════════════════════════════════
+
+Before writing ANY database change, output this checklist. Every box must pass.
+
+PER-ITEM CHECKLIST (output for each proposed Add/Update):
+  [ ] ONE TAB: This item is written to exactly one tab. No duplicate entries across tabs.
+  [ ] DOMINANT CATEGORY: If overlap existed, I chose the dominant category per Phase 1 rules.
+  [ ] JV/SUBSIDIARY: If source is SCE, AST SpaceMobile USA, or other ASTS JV/subsidiary → classified as ASTS, not Partners.
+  [ ] ADD vs UPDATE: If "Add new" — confirmed no existing entry covers this. If "Update existing" — identified the specific entry being updated.
+  [ ] EXISTING FIELDS: Other tabs' existing entries (e.g., partner notes, mouCount, catalyst annotations) are updated to reflect new info — no stale fields left behind.
+
+GLOBAL CHECKLIST (output once after all items):
+  [ ] No item appears in more than one tab.
+  [ ] Every "Update existing" action names the specific field and old → new value.
+  [ ] Phase 4 conflicts are resolved (not just flagged).
+
+If any box fails, fix the proposed action before proceeding to database writes.
+
 Rules — non-negotiable:
 - Conservative: propose changes only for clearly incremental, contradictory, or materially relevant information.
 - No hallucination of facts, dates, or existing file content.
@@ -1838,6 +1860,8 @@ For EACH pasted item, classify independently:
 - Ethereum = ETH ecosystem developments NOT specific to BMNR's own holdings: protocol upgrades, staking yield changes, DeFi/restaking innovations, validator trends, ecosystem partnerships/RWA, stablecoin activities.
 - Comps = competitor actions, treasury/mining updates by rivals.
 - Overlap → choose dominant category.
+
+BMNR ownership rule: Any news about BMNR's own ETH/BTC treasury changes, ATM-funded purchases, staking deployments, or MAVAN (Made in America VAlidator Network) classifies as BMNR — never Ethereum. MAVAN is BMNR's wholly owned staking infrastructure; its announcements are BMNR material events. Ethereum tab is reserved for ecosystem-wide developments (protocol upgrades, yield changes, DeFi/RWA, competitor staking trends) that are NOT specific to BMNR's own operations. When BMNR news affects Ethereum-tab metrics (e.g., staking ratio, ETH price), update existing Ethereum entries — do not create duplicate BMNR entries there.
 
 SEC filing redirect: If a raw SEC filing (8-K, 10-Q, Form 4, prospectus, 13D/G) is pasted, output:
   → "REDIRECT: Use SEC Filing Delta Analysis, Insider Activity Tracker, or 13F Tracker agent instead."
@@ -1947,6 +1971,26 @@ After processing ALL items:
 5. Sources Tab: X proposed new entries
 6. Key themes / implications / risks / catalysts (treasury accretion vs. dilution/volatility, staking yield ramp, competitive pressure from ETHZilla)
 7. Suggested commit message: git commit -m "..."
+
+════════════════════════════════════════
+PHASE 6: PRE-WRITE GATE (mandatory)
+════════════════════════════════════════
+
+Before writing ANY database change, output this checklist. Every box must pass.
+
+PER-ITEM CHECKLIST (output for each proposed Add/Update):
+  [ ] ONE TAB: This item is written to exactly one tab. No duplicate entries across tabs.
+  [ ] DOMINANT CATEGORY: If overlap existed, I chose the dominant category per Phase 1 rules.
+  [ ] TREASURY/STAKING OWNERSHIP: If about BMNR's own ETH/BTC holdings, ATM purchases, staking deployments, or MAVAN → classified as BMNR, not Ethereum.
+  [ ] ADD vs UPDATE: If "Add new" — confirmed no existing entry covers this. If "Update existing" — identified the specific entry being updated.
+  [ ] EXISTING FIELDS: Other tabs' existing entries (e.g., ETH holdings, staking ratio, treasury value, Ethereum ecosystem metrics) are updated to reflect new info — no stale fields left behind.
+
+GLOBAL CHECKLIST (output once after all items):
+  [ ] No item appears in more than one tab.
+  [ ] Every "Update existing" action names the specific field and old → new value.
+  [ ] Phase 4 conflicts are resolved (not just flagged).
+
+If any box fails, fix the proposed action before proceeding to database writes.
 
 Rules — non-negotiable:
 - Conservative: propose changes only for clearly incremental, contradictory, or materially relevant information.
