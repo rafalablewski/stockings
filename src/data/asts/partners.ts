@@ -75,7 +75,7 @@ export const PARTNERS: Partner[] = [
     status: 'Definitive (2034)',
     prepay: 25,
     spectrum: '2GHz MSS',
-    notes: 'SatCo JV partner. Extended to 2034 Dec 2024.',
+    notes: 'SatCo JV partner. Extended to 2034 Dec 2024. JV rebranded as Satellite Connect Europe (SCE) Feb 27, 2026 — Luxembourg HQ, open-access D2D for European MNOs, 5 ground stations under construction.',
   },
   {
     name: 'Vodafone Idea',
@@ -120,7 +120,7 @@ export const PARTNERS: Partner[] = [
     status: 'MOU/LOI',
     prepay: 0,
     spectrum: 'Various',
-    notes: 'Orange, Telefonica, Etisalat + 40+ others',
+    notes: 'Telefonica, Etisalat + 40+ others. MWC 2026 named engagements via SCE: Orange (MOU, 310M subs, Romania demo H2 2026), Taiwan Mobile (MOU, Asia-Pacific), VodafoneThree (commercial agreement, UK trials summer 2026), Sunrise (demo, Switzerland), Vodafone Ireland (partnership, first Irish D2D test licence).',
   },
 ];
 
