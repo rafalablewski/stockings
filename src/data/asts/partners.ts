@@ -75,7 +75,7 @@ export const PARTNERS: Partner[] = [
     status: 'Definitive (2034)',
     prepay: 25,
     spectrum: '2GHz MSS',
-    notes: 'SatCo JV partner (rebranded "Satellite Connect Europe" Feb 2026). Extended to 2034 Dec 2024.',
+    notes: 'SatCo JV partner. Extended to 2034 Dec 2024.',
   },
   {
     name: 'Vodafone Idea',
@@ -120,7 +120,7 @@ export const PARTNERS: Partner[] = [
     status: 'MOU/LOI',
     prepay: 0,
     spectrum: 'Various',
-    notes: 'Orange, Taiwan Mobile, Sunrise, Telefonica, Etisalat + 40+ others. MWC 2026: Orange MOU (D2D broadband), Taiwan Mobile MOU (LEO D2D).',
+    notes: 'Orange, Telefonica, Etisalat + 40+ others',
   },
 ];
 
