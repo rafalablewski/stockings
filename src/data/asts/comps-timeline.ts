@@ -1221,7 +1221,7 @@ export const COMPS_TIMELINE: CompetitorNewsEntry[] = [
       thesisComparison: 'Samsung device ecosystem crystallizing around live D2C services (Starlink/T-Mobile, Starlink/KDDI, Skylo/Verizon) while ASTS MNO partners (AT&T, Vodafone, Rakuten) remain in "working with" pre-launch status. Samsung multi-provider strategy is provider-agnostic — ASTS will benefit once commercially live — but first-mover device integration advantage accrues to Starlink/Skylo. The AT&T/Vodafone/Rakuten "working with" mentions are encouraging confirmations of ASTS partner intent but underscore urgency of ASTS commercial launch to activate Samsung device support.',
       source: 'Samsung Mobile Press',
       storyId: 'starlink-d2c-device-ecosystem',
-      storyTitle: 'D2C Device Ecosystem Expansion',
+      storyTitle: 'Starlink D2C Device Ecosystem Expansion',
     },
     {
       date: '2026-02-26',
