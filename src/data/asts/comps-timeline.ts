@@ -82,6 +82,51 @@ export const COMPS_TIMELINE: CompetitorNewsEntry[] = [
       storyId: 'starlink-aviation-expansion',
       storyTitle: 'Starlink Aviation IFC Expansion',
     },
+    {
+      date: '2025-11-17',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Vallair and AeroX form alliance for Starlink IFC installation across commercial aircraft fleets',
+      details: [
+        'Strategic alliance between Vallair (aviation MRO) and AeroX (IFC specialist) for Starlink antenna installation on commercial aircraft',
+        'Vallair allocating dedicated night-shift modification capacity at Châteauroux, France maintenance centre',
+        'Covers narrow-body and wide-body aircraft operated by AeroX customers in Europe, Africa, and Middle East',
+        'Night-shift installation enables airlines to upgrade connectivity without disrupting scheduled operations',
+        'Starlink IFC delivers high-speed internet globally including areas without terrestrial coverage',
+        'Supports streaming, online gaming, cloud-based work, real-time operational data, crew comms, and EFB reliability',
+        'Enterprise terminal-based IFC (roof-mounted antenna), NOT Starlink Direct-to-Cell service',
+      ],
+      implication: 'neutral',
+      thesisComparison: 'Starlink aviation IFC installation capacity scaling up — dedicated MRO partnerships reduce airline adoption friction. Demonstrates growing Starlink enterprise revenue ecosystem. Terminal-based aviation broadband does not compete with ASTS handset-based D2D. However, each enterprise vertical Starlink captures strengthens SpaceX constellation economics and cross-subsidises D2C development.',
+      source: 'Vallair / AeroX',
+      storyId: 'starlink-aviation-expansion',
+      storyTitle: 'Starlink Aviation IFC Expansion',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STARLINK ENTERPRISE — INSTITUTIONAL RURAL BROADBAND (terminal-based, NOT D2C)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-24',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Microsoft partners with Starlink for rural connectivity — 299M people reached in digital access push',
+      details: [
+        'Microsoft announces collaboration with Starlink for rural, agricultural, and hard-to-reach community connectivity',
+        'Microsoft exceeded 250M connectivity goal: extended coverage to 299M+ people worldwide including 124M+ across Africa',
+        'Kenya deployment: Starlink + local ISP Mawingu Networks connecting 450 community hubs (farmer cooperatives, aggregation centres, digital hubs)',
+        'Terminal-based Starlink broadband for community institutions (schools, health facilities, cooperatives) — NOT D2D',
+        'Part of Microsoft AI-ready communities initiative: connectivity + energy + devices + digital skills + AI tools',
+        'Announced ahead of MWC 2026 by Microsoft Chief Sustainability Officer Melanie Nakagawa',
+        '2.2 billion people globally remain offline per Microsoft; AI adoption gap widening between Global North and South',
+        'Microsoft VP Brad Smith\'s AI Access Principles position connectivity as foundation for inclusive AI economy',
+      ],
+      implication: 'neutral',
+      thesisComparison: 'Big Tech institutional endorsement strengthens Starlink brand and enterprise/institutional revenue base. Microsoft partnership validates Starlink as preferred connectivity solution for large-scale rural deployments. Terminal-based community broadband does not compete with ASTS D2D smartphone service. However, Microsoft-Starlink collaboration in Africa overlaps with ASTS target geography (Vodafone Africa, stc MENA). Starlink\'s institutional relationships could create channel advantages if SpaceX later pushes D2C in same markets.',
+      source: 'Microsoft Blog',
+      storyId: 'starlink-enterprise-institutional',
+      storyTitle: 'Starlink Enterprise & Institutional Partnerships',
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // STARLINK ENTERPRISE — RAIL BROADBAND (terminal-based, NOT D2C)
