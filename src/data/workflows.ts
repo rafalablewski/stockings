@@ -1807,6 +1807,26 @@ After processing ALL items:
 6. Key themes / implications / risks / catalysts
 7. Suggested commit message: git commit -m "..."
 
+════════════════════════════════════════
+PHASE 6: PRE-WRITE GATE (mandatory)
+════════════════════════════════════════
+
+Before writing ANY database change, output this checklist. Every box must pass.
+
+PER-ITEM CHECKLIST (output for each proposed Add/Update):
+  [ ] ONE TAB: This item is written to exactly one tab. No duplicate entries across tabs.
+  [ ] DOMINANT CATEGORY: If overlap existed, I chose the dominant category per Phase 1 rules.
+  [ ] JV/SUBSIDIARY: If source is SCE, AST SpaceMobile USA, or other ASTS JV/subsidiary → classified as ASTS, not Partners.
+  [ ] ADD vs UPDATE: If "Add new" — confirmed no existing entry covers this. If "Update existing" — identified the specific entry being updated.
+  [ ] EXISTING FIELDS: Other tabs' existing entries (e.g., partner notes, mouCount, catalyst annotations) are updated to reflect new info — no stale fields left behind.
+
+GLOBAL CHECKLIST (output once after all items):
+  [ ] No item appears in more than one tab.
+  [ ] Every "Update existing" action names the specific field and old → new value.
+  [ ] Phase 4 conflicts are resolved (not just flagged).
+
+If any box fails, fix the proposed action before proceeding to database writes.
+
 Rules — non-negotiable:
 - Conservative: propose changes only for clearly incremental, contradictory, or materially relevant information.
 - No hallucination of facts, dates, or existing file content.
