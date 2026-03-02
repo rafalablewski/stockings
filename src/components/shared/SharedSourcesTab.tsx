@@ -1747,7 +1747,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <div className="sm-gold" style={{ fontWeight: 600 }}>Dollar-amount guard</div>
                 <div className="sm-micro-text" style={{ marginTop: 2, letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>Article has $ figure? &rarr; DB entry must also have $</div>
                 <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>Both have $? &rarr; numbers must overlap ($30M &ne; $50M)</div>
-                <div className="sm-text3" style={{ fontSize: 10, fontStyle: 'italic' }}>Prevents matching different awards/contracts from same entity</div>
+                <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>Recurring series (same template, different values)? &rarr; only match when key figures match and date within 3 days</div>
+                <div className="sm-text3" style={{ fontSize: 10, fontStyle: 'italic' }}>Prevents matching different awards/contracts or different weekly/quarterly updates</div>
               </div>
               <div className="sm-ed-vline" style={{ height: 12 }} />
               {/* Tier 1 row */}
@@ -1785,7 +1786,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <span className="sm-coral" style={{ fontSize: 11, fontFamily: 'Space Mono, monospace', fontWeight: 600 }}>UNTRACKED</span>
               </div>
               {/* Guard notes */}
-              <div className="sm-text3 sm-mt-8 sm-text-center" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', fontStyle: 'italic' }}>Date proximity guard: recurring reports require higher overlap when dates are &gt;30 days apart<br />Dollar-amount guard: $30M award &ne; $50M award even from the same entity &mdash; numbers must match</div>
+              <div className="sm-text3 sm-mt-8 sm-text-center" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', fontStyle: 'italic' }}>Dates: ISO (YYYY-MM-DD) and common formats parsed first so same-day/same-week comparison is correct.<br />Date proximity: Tier 1/2 require higher overlap when dates are &gt;30 days apart.<br />Dollar-amount: $30M &ne; $50M; recurring series (e.g. weekly holdings) only match when key figures and date (within 3 days) align.</div>
             </div>
 
             {/* Divider */}

@@ -60,15 +60,21 @@ function extractKeywords(text: string): Set<string> {
 // "Q1 2026" → Jan 2026, "Q2 2025" → Apr 2025, "2026" → Jan 1 2026, etc.
 function parseFlexibleDate(s: string): Date | null {
   if (!s) return null;
-  // Strip range suffixes: "Sep 3-15, 2025" → "Sep 3, 2025"
-  const cleaned = s.replace(/(\d+)-\d+/, '$1');
+  const trimmed = s.trim();
+  // ISO date first — do NOT run range regex on it (would corrupt "2026-02-23" → "2026-23")
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    const d = new Date(trimmed + 'T12:00:00Z');
+    return isNaN(d.getTime()) ? null : d;
+  }
+  // Strip range suffixes only for non-ISO: "Sep 3-15, 2025" → "Sep 3, 2025"
+  const cleaned = trimmed.replace(/(\d+)-\d+/, '$1');
   const d = new Date(cleaned);
   if (!isNaN(d.getTime())) return d;
   // Quarter format: "Q1 2026" → month 0, "Q2 2026" → month 3, etc.
-  const qMatch = s.match(/Q([1-4])\s+(\d{4})/);
+  const qMatch = trimmed.match(/Q([1-4])\s+(\d{4})/);
   if (qMatch) return new Date(+qMatch[2], (+qMatch[1] - 1) * 3, 1);
   // Plain year: "2026" → Jan 1
-  const yMatch = s.match(/^(\d{4})$/);
+  const yMatch = trimmed.match(/^(\d{4})$/);
   if (yMatch) return new Date(+yMatch[1], 0, 1);
   return null;
 }
@@ -152,12 +158,13 @@ function localMatch(articleHeadline: string, articleDate: string, analysisData: 
       // Both have dollar amounts but the numbers don't overlap →
       // different financial events (e.g. $30M vs $43M contract)
       if (numbersDisagree(articleHeadline, entryFullText)) continue;
-      // Recurring periodic announcements: even when some numbers overlap
-      // (e.g. "$9.6B"), if both headlines also have UNIQUE numbers
-      // (e.g. "4.423M" vs "4.371M") and dates are >3 days apart,
-      // these are distinct periodic updates (weekly holdings, quarterly earnings).
-      // Defer to AI matching for these instead of false-positive local match.
-      if (gap > 3 && hasDistinguishingNumbers(articleHeadline, entry.headline)) continue;
+      // Recurring periodic announcements (same template, different values + date):
+      // only match when the SAME occurrence — same key figures, date within 3 days.
+      // If the specific figures differ (e.g. "4.474M" vs "4.423M"), treat as different
+      // events so we don't false-positive across weekly holdings / quarterly earnings.
+      if (hasDistinguishingNumbers(articleHeadline, entry.headline)) continue;
+      // Same key figures: require date within 3 days (same reporting period)
+      if (gap > 3) continue;
     }
 
     // Tier 1: headline-only match (high confidence — headlines are short and focused)
@@ -397,13 +404,25 @@ Respond with ONLY a JSON array, one object per article, in order:
         results = [];
       }
 
-      // Merge AI results back into the output for unresolved articles only
+      // Merge AI results back into the output for unresolved articles only.
+      // IMPORTANT: For dollar-amount headlines we trust ONLY deterministic
+      // local matching (DB-based). AI cannot flip them to TRACKED — this avoids
+      // false positives on recurring numeric series (weekly holdings, earnings
+      // with different figures, etc.). For non-dollar headlines, AI may
+      // upgrade/downgrade analyzed status.
       for (let ai = 0; ai < unresolvedIndices.length; ai++) {
         const origIdx = unresolvedIndices[ai];
         const result = results.find(r => r.index === ai + 1);
-        if (result) {
-          output[origIdx] = { ...output[origIdx], analyzed: result.analyzed };
+        if (!result) continue;
+
+        const article = articles[origIdx];
+        if (hasDollarAmount(article.headline)) {
+          // Leave local result as-is (analyzed: false). Numeric series must be
+          // backed by an explicit DB entry; AI cannot mark them tracked.
+          continue;
         }
+
+        output[origIdx] = { ...output[origIdx], analyzed: result.analyzed };
       }
     } catch (claudeError) {
       console.error('Claude API call failed, using local matching only:', claudeError);
