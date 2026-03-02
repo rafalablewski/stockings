@@ -27,10 +27,10 @@ import type { Partner, RevenueSource, DataMetadata, PartnerNewsEntry } from '../
 // ============================================================================
 
 export const PARTNERS_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-12',
-  source: 'Q3 2025 10-Q, press releases, Jan 2026 8-K (Mikitani resignation)',
-  nextExpectedUpdate: 'After new partnership announcements',
-  notes: 'Verizon definitive Oct 2025, stc $1.8B agreement Q3 2025. Mikitani resigned from board Jan 13, 2026 (dilution); Rakuten retains observer.',
+  lastUpdated: '2026-03-02',
+  source: 'Q3 2025 10-Q, press releases, Jan 2026 8-K (Mikitani resignation), MWC 2026 announcements (Feb 27 - Mar 2)',
+  nextExpectedUpdate: 'After MWC follow-ups or new partnership announcements',
+  notes: 'MWC 2026: Orange, Taiwan Mobile, VodafoneThree, Sunrise, Vodafone Ireland elevated from Others to named partners. Verizon definitive Oct 2025, stc $1.8B agreement Q3 2025. Mikitani resigned from board Jan 13, 2026 (dilution); Rakuten retains observer.',
 };
 
 // ============================================================================
@@ -114,13 +114,58 @@ export const PARTNERS: Partner[] = [
     notes: 'Testing phase.',
   },
   {
-    name: 'Others (45+ MNOs)',
+    name: 'Orange',
+    region: 'EU/AF',
+    subs: 310,
+    status: 'Agreement in place (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'MOU signed with both ASTS and SCE at MWC 2026. Romania D2D demo (voice, SMS, data) H2 2026. 26 countries, €40.3B 2024 revenue. Also runs Skylo SMS in France (Dec 2025).',
+  },
+  {
+    name: 'Taiwan Mobile',
+    region: 'Asia-Pacific',
+    subs: 10,
+    status: 'Agreement in place (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'Strategic Cooperation Memorandum signed at MWC 2026. Use cases: mountainous terrain, maritime, disaster response.',
+  },
+  {
+    name: 'VodafoneThree',
+    region: 'UK',
+    subs: 27,
+    status: 'Commercial Agreement (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'Commercial agreement with SCE. Merged Vodafone UK + Three UK. Live customer trials summer 2026.',
+  },
+  {
+    name: 'Sunrise',
+    region: 'Switzerland',
+    subs: 3,
+    status: 'Demo Agreement (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'D2D demonstration with SCE commenced Mar 2026. Evaluating 4G/5G integration. Independent MNO (not Vodafone).',
+  },
+  {
+    name: 'Vodafone Ireland',
+    region: 'Ireland',
+    subs: 2,
+    status: 'Partnership (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'Partnership with SCE. Secured Ireland\'s first D2D Test and Trial licence. Preparing first satellite broadband video call.',
+  },
+  {
+    name: 'Others (40+ MNOs)',
     region: 'Global',
-    subs: 1997,
+    subs: 1645,
     status: 'MOU/LOI',
     prepay: 0,
     spectrum: 'Various',
-    notes: 'Telefonica, Etisalat + 40+ others. MWC 2026 named engagements via SCE: Orange (MOU, 310M subs, Romania demo H2 2026), Taiwan Mobile (MOU, Asia-Pacific), VodafoneThree (commercial agreement, UK trials summer 2026), Sunrise (demo, Switzerland), Vodafone Ireland (partnership, first Irish D2D test licence).',
+    notes: 'Telefonica, Etisalat + 40+ others.',
   },
 ];
 
