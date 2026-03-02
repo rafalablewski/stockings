@@ -1448,12 +1448,16 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
     { partner: 'Vodafone Idea', region: 'India', subs: 250, status: 'Definitive', spectrum: 'TBD', notes: 'June 2025 agreement' },
     { partner: 'Rakuten', region: 'Japan', subs: 5, status: 'Definitive', spectrum: 'LTE', notes: 'Investor. Video calls completed.' },
     { partner: 'Bell Canada', region: 'Canada', subs: 23, status: 'Definitive', spectrum: 'TBD', notes: 'First Canadian VoLTE call 2025' },
-    { partner: 'Orange', region: 'Europe/Africa', subs: 220, status: 'MOU', spectrum: 'TBD', notes: 'MoU Mar 2022. Testing in Africa post-BW3. 220M+ mobile customers. Note: Orange launched competing SMS D2D with Skylo (Dec 2025)' },
+    { partner: 'Orange', region: 'Europe/Africa', subs: 310, status: 'Agreement', spectrum: 'TBD', notes: 'MOU with ASTS and SCE at MWC 2026. Romania D2D demo H2 2026. 26 countries.' },
+    { partner: 'VodafoneThree', region: 'UK', subs: 27, status: 'Commercial', spectrum: 'TBD', notes: 'Commercial agreement with SCE. Live trials summer 2026.' },
+    { partner: 'Taiwan Mobile', region: 'Asia-Pacific', subs: 10, status: 'Agreement', spectrum: 'TBD', notes: 'Strategic Cooperation Memorandum signed at MWC 2026.' },
+    { partner: 'Sunrise', region: 'Switzerland', subs: 3, status: 'Demo', spectrum: 'TBD', notes: 'D2D demonstration with SCE commenced Mar 2026.' },
+    { partner: 'Vodafone Ireland', region: 'Ireland', subs: 2, status: 'Partnership', spectrum: 'TBD', notes: 'Partnership with SCE. Ireland\'s first D2D Test and Trial licence.' },
     { partner: 'Telefonica', region: 'Europe/LatAm', subs: 380, status: 'MOU', spectrum: 'TBD', notes: 'Agreement in place' },
     { partner: 'TIM', region: 'Italy/Brazil', subs: 100, status: 'MOU', spectrum: 'TBD', notes: 'Agreement in place' },
     { partner: 'MTN', region: 'Africa', subs: 280, status: 'MOU', spectrum: 'TBD', notes: 'Agreement in place' },
     { partner: 'Telstra', region: 'Australia', subs: 20, status: 'MOU', spectrum: 'TBD', notes: 'Agreement in place' },
-    { partner: 'Others (35+)', region: 'Global', subs: 1100, status: 'Various', spectrum: 'Various', notes: '50+ total MNO agreements' },
+    { partner: 'Others (35+)', region: 'Global', subs: 865, status: 'Various', spectrum: 'Various', notes: '50+ total MNO agreements' },
   ];
 
   // ASTS-Owned Spectrum Holdings
@@ -1710,7 +1714,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
               <span className="sm-text-13t sm-fw-500">{p.partner}</span>
               <span className="sm-text-12">{p.region}</span>
               <span className="sm-mono-val" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{p.subs}M</span>
-              <span className="sm-status-badge" style={{ '--badge-color': p.status === 'Definitive' ? 'var(--mint)' : 'var(--gold)' } as React.CSSProperties}>{p.status}</span>
+              <span className="sm-status-badge" style={{ '--badge-color': p.status === 'Definitive' ? 'var(--mint)' : p.status === 'MOU' || p.status === 'Various' ? 'var(--gold)' : 'var(--cyan)' } as React.CSSProperties}>{p.status}</span>
               <span className="sm-text-11">{p.notes}</span>
             </div>
           ))}
