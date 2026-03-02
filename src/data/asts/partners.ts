@@ -57,7 +57,7 @@ export const PARTNERS: Partner[] = [
     status: 'Definitive',
     prepay: 20,
     spectrum: '850 MHz',
-    notes: 'First VoLTE call. 6-year agreement.',
+    notes: 'First VoLTE call. 6-year agreement. Samsung "working with AT&T" for satellite comms on Galaxy smartphones (Feb 2026 MWC PR).',
   },
   {
     name: 'Verizon',
@@ -75,7 +75,7 @@ export const PARTNERS: Partner[] = [
     status: 'Definitive (2034)',
     prepay: 25,
     spectrum: '2GHz MSS',
-    notes: 'SatCo JV partner. Extended to 2034 Dec 2024. JV rebranded as Satellite Connect Europe (SCE) Feb 27, 2026 — Luxembourg HQ, open-access D2D for European MNOs, 5 ground stations under construction.',
+    notes: 'SatCo JV partner. Extended to 2034 Dec 2024. JV rebranded as Satellite Connect Europe (SCE) Feb 27, 2026 — Luxembourg HQ, open-access D2D for European MNOs, 5 ground stations under construction. Samsung "working with Vodafone" for satellite comms on Galaxy smartphones (Feb 2026 MWC PR).',
   },
   {
     name: 'Vodafone Idea',
@@ -93,7 +93,7 @@ export const PARTNERS: Partner[] = [
     status: 'Definitive',
     prepay: 0,
     spectrum: 'LTE',
-    notes: 'Video calls demonstrated. PIPE investor. Mikitani resigned from board Jan 13, 2026 (Rakuten diluted below designation threshold). Rakuten retains board observer. Not a disagreement per 8-K.',
+    notes: 'Video calls demonstrated. PIPE investor. Mikitani resigned from board Jan 13, 2026 (Rakuten diluted below designation threshold). Rakuten retains board observer. Not a disagreement per 8-K. Samsung "working with Rakuten Mobile" for satellite comms on Galaxy smartphones (Feb 2026 MWC PR).',
   },
   {
     name: 'stc Group',
