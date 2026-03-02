@@ -1696,6 +1696,8 @@ For EACH pasted item, classify independently:
 - Comps = competitor actions, constellation/regulatory/partnership updates by rivals.
 - Overlap → choose dominant category.
 
+JV / subsidiary rule: Press releases from ASTS joint ventures (Satellite Connect Europe / SCE, formerly SatCo) and wholly owned subsidiaries (AST SpaceMobile USA) classify as ASTS, not Partners. These entities are extensions of ASTS — their announcements are ASTS material events. Update existing ASTS entries (e.g., Vodafone partner notes, mouCount, catalyst annotations) to reflect JV news; do not create separate Partner-tab entries for JV activity.
+
 SEC filing redirect: If a raw SEC filing (8-K, 10-Q, Form 4, prospectus, 13D/G) is pasted, output:
   → "REDIRECT: Use SEC Filing Delta Analysis, Insider Activity Tracker, or 13F Tracker agent instead."
 
