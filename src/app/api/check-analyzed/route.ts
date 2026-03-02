@@ -404,13 +404,25 @@ Respond with ONLY a JSON array, one object per article, in order:
         results = [];
       }
 
-      // Merge AI results back into the output for unresolved articles only
+      // Merge AI results back into the output for unresolved articles only.
+      // IMPORTANT: For dollar-amount headlines we trust ONLY deterministic
+      // local matching (DB-based). AI cannot flip them to TRACKED — this avoids
+      // false positives on recurring numeric series (weekly holdings, earnings
+      // with different figures, etc.). For non-dollar headlines, AI may
+      // upgrade/downgrade analyzed status.
       for (let ai = 0; ai < unresolvedIndices.length; ai++) {
         const origIdx = unresolvedIndices[ai];
         const result = results.find(r => r.index === ai + 1);
-        if (result) {
-          output[origIdx] = { ...output[origIdx], analyzed: result.analyzed };
+        if (!result) continue;
+
+        const article = articles[origIdx];
+        if (hasDollarAmount(article.headline)) {
+          // Leave local result as-is (analyzed: false). Numeric series must be
+          // backed by an explicit DB entry; AI cannot mark them tracked.
+          continue;
         }
+
+        output[origIdx] = { ...output[origIdx], analyzed: result.analyzed };
       }
     } catch (claudeError) {
       console.error('Claude API call failed, using local matching only:', claudeError);
