@@ -30,10 +30,10 @@ import type { Catalyst, CompletedMilestone, DataMetadata } from '../shared/types
 // ============================================================================
 
 export const CATALYSTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-03-02',
-  source: 'MWC 2026 MNO announcements (Feb 27 - Mar 2), SDA $30M Europa PR (Feb 23), Feb 20/23 8-Ks (greenshoe/settlements), Q4 business update scheduling PR (Feb 19), Q3 2025 earnings call, Feb 2026 8-K, BB6 unfolding PR',
-  nextExpectedUpdate: 'After Q4 2025 business update results and MWC follow-up',
-  notes: 'MWC 2026: SCE launched Feb 27; Orange MOU, Taiwan Mobile MOU, VodafoneThree commercial agreement, Sunrise demo, Vodafone Ireland partnership Mar 2. VodafoneThree UK trials summer 2026, Orange Romania demo H2 2026. SDA $30M HALO Europa Feb 23. Gov contracts $93M+ (10 total).',
+  lastUpdated: '2026-02-23',
+  source: 'SDA $30M Europa PR (Feb 23), Feb 20/23 8-Ks (greenshoe/settlements), Q4 business update scheduling PR (Feb 19), Q3 2025 earnings call, Feb 2026 8-K, BB6 unfolding PR, Mar 2025 8-Ks/Form 4s/S-3ASR/S-8/13D-A, Jan-Feb 2025 8-Ks/13D/Form 3s/13D-A',
+  nextExpectedUpdate: 'After Q4 2025 business update (March 2, 2026)',
+  notes: 'SDA $30M HALO Europa contract Feb 23. $75M greenshoe exercised Feb 20 (total converts $1.075B). RD settlements completed. Q4 business update call March 2, 2026. BB6 unfolded Feb 10. Gov contracts now $93M+ (10 total).',
 };
 
 // ============================================================================
@@ -138,14 +138,8 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
     category: 'Commercial',
   },
   {
-    event: 'Bell Canada, Telefonica, Etisalat + 50 MNO Deals (MWC 2026: Orange, Taiwan Mobile, Sunrise MOUs signed)',
+    event: 'Bell Canada, Telefonica, Etisalat + 50 MNO Deals',
     timeline: '2026',
-    impact: 'High',
-    category: 'Commercial',
-  },
-  {
-    event: 'VodafoneThree UK Customer Trials (Summer 2026) + Orange Romania Demo (H2 2026)',
-    timeline: 'H2 2026',
     impact: 'High',
     category: 'Commercial',
   },
@@ -245,8 +239,6 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
  */
 export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   // === 2026 ===
-  { event: 'MWC 2026: Orange MOU, Taiwan Mobile MOU, VodafoneThree commercial agreement, Sunrise demo, Vodafone Ireland partnership — 5 new MNO engagements', date: 'Mar 2, 2026', category: 'Commercial' },
-  { event: 'Satellite Connect Europe (SCE) formally launched — SatCo JV rebranded with full leadership team and 5 European ground stations', date: 'Feb 27, 2026', category: 'Commercial' },
   { event: 'SDA $30M HALO Europa Track 2 Prime Contract (AST SpaceMobile USA defense subsidiary; 10th gov contract)', date: 'Feb 23, 2026', category: 'Government' },
   { event: 'Feb 2026 RD Settlements & $296.5M Notes Repurchases Completed (RD#1 Feb 20, RD#2 Feb 23)', date: 'Feb 23, 2026', category: 'Financing' },
   { event: '$75M Greenshoe Exercised — Total 2.25% Notes Now $1.075B ($75M of $150M option)', date: 'Feb 20, 2026', category: 'Financing' },
