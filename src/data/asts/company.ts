@@ -104,7 +104,7 @@ export const OPERATIONAL_METRICS = {
   // === PARTNERS & REACH ===
   partnerReach: 3000,         // ~3B subs across 50+ MNOs per Q3 PR
   definitiveAgreements: 6,    // AT&T, Vodafone, Verizon, stc, Rakuten, Bell
-  mouCount: 50,               // "over 50 MNOs" per earnings
+  mouCount: 50,               // "over 50 MNOs" per earnings. MWC 2026: +Orange, Taiwan Mobile, Sunrise MOUs; VodafoneThree commercial; Vodafone Ireland partnership
 
   // === REVENUE ===
   contractedRevenue: 1000,    // $1B+ contracted commercial revenue

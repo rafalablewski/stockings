@@ -27,10 +27,10 @@ import type { Partner, RevenueSource, DataMetadata, PartnerNewsEntry } from '../
 // ============================================================================
 
 export const PARTNERS_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-12',
-  source: 'Q3 2025 10-Q, press releases, Jan 2026 8-K (Mikitani resignation)',
-  nextExpectedUpdate: 'After new partnership announcements',
-  notes: 'Verizon definitive Oct 2025, stc $1.8B agreement Q3 2025. Mikitani resigned from board Jan 13, 2026 (dilution); Rakuten retains observer.',
+  lastUpdated: '2026-03-02',
+  source: 'Q3 2025 10-Q, press releases, Jan 2026 8-K (Mikitani resignation), MWC 2026 announcements (Feb 27 - Mar 2, 2026)',
+  nextExpectedUpdate: 'After new partnership announcements or MWC follow-ups',
+  notes: 'MWC 2026 wave: SCE launched Feb 27, Orange MOU, Taiwan Mobile MOU, VodafoneThree commercial agreement, Sunrise demo, Vodafone Ireland partnership (all Mar 2). Verizon definitive Oct 2025, stc $1.8B agreement Q3 2025. Mikitani resigned from board Jan 13, 2026 (dilution); Rakuten retains observer.',
 };
 
 // ============================================================================
@@ -75,7 +75,7 @@ export const PARTNERS: Partner[] = [
     status: 'Definitive (2034)',
     prepay: 25,
     spectrum: '2GHz MSS',
-    notes: 'SatCo JV partner. Extended to 2034 Dec 2024.',
+    notes: 'SatCo JV partner (rebranded "Satellite Connect Europe" Feb 2026). Extended to 2034 Dec 2024.',
   },
   {
     name: 'Vodafone Idea',
@@ -120,7 +120,7 @@ export const PARTNERS: Partner[] = [
     status: 'MOU/LOI',
     prepay: 0,
     spectrum: 'Various',
-    notes: 'Orange, Telefonica, Etisalat + 40+ others',
+    notes: 'Orange, Taiwan Mobile, Sunrise, Telefonica, Etisalat + 40+ others. MWC 2026: Orange MOU (D2D broadband), Taiwan Mobile MOU (LEO D2D).',
   },
 ];
 
@@ -177,7 +177,69 @@ export const REVENUE_SOURCES: RevenueSource[] = [
  * - Relevance: How does this news impact ASTS's commercial prospects?
  */
 export const PARTNER_NEWS: PartnerNewsEntry[] = [
+  // === MARCH 2026 ===
+  {
+    date: '2026-03-02',
+    partner: 'Orange',
+    category: 'Partnership',
+    headline: 'Orange Signs MOU with AST SpaceMobile and Satellite Connect Europe for D2D Broadband in European Markets',
+    summary: 'Orange announced MOU with AST SpaceMobile and Satellite Connect Europe (Vodafone-ASTS JV) for D2D technology collaboration in relevant Orange markets. D2D demonstration in Romania covering voice, SMS, and data planned for H2 2026. Collaboration includes exploring European security requirements and studying integration into Orange-managed Core Network. Orange CEO Christel Heydemann: "Direct-to-Device satellite connectivity is an essential complement to our mobile networks, ensuring 100% connectivity." Orange is the world\'s 4th largest telecom operator (310M customers, 26 countries, €40.3B 2024 revenue). Orange already launched "Satellite Message" SMS service with Skylo in France (Dec 2025) — this MOU adds broadband D2D capability via ASTS. Aligns with Orange "Trust the future" strategic plan. Abel Avellan: "Together with Orange, we are advancing space-based cellular broadband to support seamless connectivity for everyday smartphones."',
+    astsRelevance: 'Major European MNO (310M customers) signing with both ASTS and Satellite Connect Europe validates the European go-to-market vehicle. Orange choosing ASTS broadband D2D alongside existing Skylo narrowband SMS confirms ASTS offers differentiated value (voice + data + SMS vs SMS-only). Romania demonstration in H2 2026 aligns with European commercial launch timeline. Orange exploring Core Network integration suggests deeper technical commitment than typical MOU. This effectively upgrades Orange from "Others (45+ MNOs)" MOU category to an actively engaged D2D broadband partner.',
+    impact: 'Bullish',
+    source: 'Orange Press Release',
+  },
+  {
+    date: '2026-03-02',
+    partner: 'Taiwan Mobile',
+    category: 'Partnership',
+    headline: 'Taiwan Mobile Signs LEO Satellite D2D Strategic Cooperation Memorandum with AST SpaceMobile at MWC',
+    summary: 'Taiwan Mobile signed "Strategic Cooperation Memorandum for Low Earth Orbit Satellite Communication Services" with AST SpaceMobile at MWC 2026. Collaboration focuses on D2C (Direct-to-Cellular) technology using AST SpaceMobile BlueBird constellation, enabling standard smartphones to connect directly to satellites without hardware modification. Use cases: remote mountainous areas, maritime, disaster response, emergency communications resilience. Taiwan Mobile President Jamie Lin: advancing satellite-terrestrial integration roadmap, expanding applications across consumer, enterprise, and emergency response. Scott Wisniewski (ASTS President): "Taiwan is taking a forward-looking approach to communications resilience by integrating space-based cellular broadband into its national infrastructure." Taiwan\'s diverse topography (mountains, coast, offshore islands) and position in typhoon/earthquake belt creates strong D2D use case. AST SpaceMobile\'s strategic investors include Google; partnerships include AT&T, Verizon, Vodafone, Rakuten, Bell, stc Group, American Tower. Company has partnerships with US SDA, DoD, and Singapore DSTA.',
+    astsRelevance: 'New Asia-Pacific MNO partner expands ASTS geographic reach. Taiwan Mobile is a major Taiwanese carrier. Taiwan\'s challenging geography (mountainous terrain, frequent typhoons/earthquakes) is an ideal use case for D2D satellite connectivity. Adds to 50+ MNO partnership count. Signed at MWC 2026 — high-visibility venue. ASTS President Scott Wisniewski personally quoted — executive-level engagement. Taiwan is strategically important market for communications resilience given geopolitical dynamics.',
+    impact: 'Bullish',
+    source: 'Taiwan Mobile Press Release',
+  },
+  {
+    date: '2026-03-02',
+    partner: 'VodafoneThree',
+    category: 'Partnership',
+    headline: 'VodafoneThree Signs Commercial Agreement with Satellite Connect Europe for UK D2D Customer Trials',
+    summary: 'Satellite Connect Europe signed commercial agreement with VodafoneThree (merged Vodafone UK + Three UK) for D2D satellite mobile broadband customer trials in the UK. Live customer trials set to start summer 2026. D2D capability covers data, voice, and SMS via integration with existing 4G and 5G networks. Standard smartphones connect directly to satellite in areas with no mobile coverage. Andrea Donà (Chief Network Officer, VodafoneThree): "committed to connecting our customers in every nation, every community, and in every corner of the UK." Satellite Connect Europe MD Meredith Sharples: "VodafoneThree is making a huge step forward with this partnership." Initiative will support development of harmonised European D2D regulatory framework and simplified authorisation process.',
+    astsRelevance: 'This is a commercial agreement (not MOU) — the strongest commitment level among MWC 2026 announcements. VodafoneThree is the merged Vodafone UK + Three UK entity, representing the UK\'s largest mobile operator by subscribers. Live customer trials in summer 2026 validates commercial timeline and demonstrates progression from testing to customer-facing deployment. UK is a key European market. Supports EU 2GHz MSS spectrum harmonisation efforts which is an upcoming ASTS catalyst.',
+    impact: 'Bullish',
+    source: 'Satellite Connect Europe Press Release',
+  },
+  {
+    date: '2026-03-02',
+    partner: 'Sunrise',
+    category: 'Partnership',
+    headline: 'Sunrise Commences D2D Satellite Demonstration with Satellite Connect Europe in Switzerland',
+    summary: 'Sunrise is working with Satellite Connect Europe to evaluate how open access D2D satellite connectivity can complement terrestrial networks in Switzerland. Demonstration will evaluate integration of satellite capabilities with Sunrise\'s current 4G and 5G networks, enabling smartphones to transition between mobile and satellite signals in areas with limited or no coverage. Supports seamless connectivity for consumers, businesses, and public services. SCE approach ensures European-operated access with data sovereignty. SCE MD Meredith Sharples: "Our work with Sunrise will showcase the role that our European-operated access to direct-to-device satellite service can play in providing ubiquitous mobile broadband coverage."',
+    astsRelevance: 'New independent European MNO engagement — Sunrise is not a Vodafone subsidiary, demonstrating SCE\'s "open access" model attracting non-Vodafone operators. Switzerland is not EU but important European market with challenging Alpine terrain ideal for D2D satellite coverage. Integration evaluation with existing 4G/5G networks shows practical commercial path. Validates SCE\'s MNO-first approach beyond Vodafone family.',
+    impact: 'Bullish',
+    source: 'Satellite Connect Europe Press Release',
+  },
+  {
+    date: '2026-03-02',
+    partner: 'Vodafone Ireland',
+    category: 'Partnership',
+    headline: 'Vodafone Ireland Partners with SCE for Ireland\'s First D2D Satellite Mobile Broadband Video Call',
+    summary: 'Vodafone Ireland, in partnership with Satellite Connect Europe, is preparing Ireland\'s first D2D satellite mobile broadband video call to a standard smartphone. Vodafone secured Ireland\'s first Test and Trial licence. Integration of satellite capability into existing 4G/5G networks will enable smartphones to switch automatically between terrestrial and satellite signals. Focus areas: closing coverage gaps, safety, rural/remote communities, emergency services during severe weather and cross-border crises. Vodafone Ireland supports harmonised European D2D framework with simplified authorisation. Sheila Kavanagh (Network Director): "critical, resilient technology that will have a fundamental impact on how we communicate." SCE MD Sharples: "Vodafone Ireland\'s ambition will deliver a world-leading connectivity experience."',
+    astsRelevance: 'Regulatory progress: Ireland\'s first Test and Trial licence secured — demonstrates regulatory path in new European market. Video call capability (not just text/voice) showcases full broadband D2D. Ireland\'s exposure to extreme weather events (Atlantic storms) creates resilient communications use case. Supports harmonised EU D2D regulatory framework push. Part of broader MWC 2026 wave of SCE European MNO announcements.',
+    impact: 'Bullish',
+    source: 'Satellite Connect Europe Press Release',
+  },
+
   // === FEBRUARY 2026 ===
+  {
+    date: '2026-02-27',
+    partner: 'Vodafone',
+    category: 'Partnership',
+    headline: 'Satellite Connect Europe Formally Launches — SatCo JV Rebranded with Full Leadership Team and 5 Ground Stations',
+    summary: 'SatCo JV (Vodafone-AST SpaceMobile) formally relaunched as "Satellite Connect Europe" (SCE), headquartered in Luxembourg. Full leadership team announced: Chairman John Slamecka (ex-AT&T Business International President), Managing Director Meredith Sharples (ex-Digicel Caribbean CEO), Board Director Darren Ennis (Vodafone EU Affairs Director). Additional team: Florian Wopfner (Head of Finance, ex-Docler Holding CFO), Beki Muinde (General Counsel, ex-Helios Towers), Daniel Thomas (Head of Sales, from Vodafone Group). Progressing rollout of 5 European ground stations — build underway in Spain and UK, 3 more locations being finalised. Open access D2D broadband provider for European MNOs. Exclusive European access to AST SpaceMobile LEO constellation. Ben Wood (CCS Insight): "one of the biggest leaps forward for coverage in decades." Already working closely with European MNOs.',
+    astsRelevance: 'Major operational milestone: European go-to-market entity now fully staffed with experienced leadership team and active infrastructure build. Slamecka\'s AT&T International background brings US carrier perspective to European D2D market. 5 ground stations provide full European coverage backbone. "Open access" model positions SCE to serve all European MNOs, not just Vodafone. This transforms SatCo from a corporate announcement into an operational company with real people, real infrastructure, and real MNO engagement.',
+    impact: 'Bullish',
+    source: 'Vodafone / Satellite Connect Europe',
+  },
   {
     date: '2026-02-09',
     partner: 'Vodafone',
