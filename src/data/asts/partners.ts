@@ -122,6 +122,64 @@ export const PARTNERS: Partner[] = [
     spectrum: 'Various',
     notes: 'Orange, Telefonica, Etisalat + 40+ others',
   },
+
+  // === SATELLITE CONNECT EUROPE (JV ENTITY) — Added Mar 2, 2026 ===
+  {
+    name: 'Satellite Connect Europe',
+    region: 'EU',
+    subs: 0,
+    status: 'JV (Vodafone-ASTS)',
+    prepay: 0,
+    spectrum: 'EU 2GHz MSS (candidate)',
+    notes: 'Luxembourg-HQ JV between Vodafone and ASTS, launched Feb 27, 2026 (formerly "SatCo"). European open-access D2D broadband provider. Exclusive European access to ASTS LEO constellation. Chairman John Slamecka (ex-AT&T Intl President), MD Meredith Sharples (ex-Digicel). 5 ground stations under construction (Spain, UK + 3 TBD). Signing MNO agreements across Europe: VodafoneThree (commercial), Orange (MOU), Sunrise (demo), Vodafone Ireland (partnership).',
+  },
+
+  // === MWC 2026 NAMED PARTNERS — Added Mar 2, 2026 ===
+  {
+    name: 'Orange',
+    region: 'EU/AF',
+    subs: 310,
+    status: 'MOU (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'MOU signed with both AST SpaceMobile and Satellite Connect Europe at MWC 2026. Romania D2D demo (voice, SMS, data) planned H2 2026. 310M customers, 26 countries, €40.3B 2024 revenue. Also launched Skylo SMS service in France Dec 2025 — ASTS MOU adds broadband D2D.',
+  },
+  {
+    name: 'Taiwan Mobile',
+    region: 'Asia-Pacific',
+    subs: 10,
+    status: 'MOU (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'Strategic Cooperation Memorandum signed at MWC 2026. D2C technology focus. Use cases: mountainous terrain, maritime, disaster response. Taiwan typhoon/earthquake belt — strong D2D use case.',
+  },
+  {
+    name: 'VodafoneThree',
+    region: 'UK',
+    subs: 27,
+    status: 'Commercial Agreement (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'Commercial agreement with SCE (strongest commitment level among MWC 2026 announcements). Merged Vodafone UK + Three UK. Live customer trials set for summer 2026. D2D data, voice, SMS.',
+  },
+  {
+    name: 'Sunrise',
+    region: 'Switzerland',
+    subs: 3,
+    status: 'Demo (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'D2D satellite demonstration with SCE commenced Mar 2, 2026. Evaluating integration with existing 4G/5G networks. Independent MNO (not Vodafone subsidiary) — validates SCE open-access model. Alpine terrain ideal for D2D.',
+  },
+  {
+    name: 'Vodafone Ireland',
+    region: 'Ireland',
+    subs: 2,
+    status: 'Partnership (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'Partnership with SCE announced Mar 2, 2026. Preparing Ireland\'s first D2D satellite mobile broadband video call. Secured Ireland\'s first Test and Trial licence. Focus: rural communities, emergency services during severe weather.',
+  },
 ];
 
 // ============================================================================
