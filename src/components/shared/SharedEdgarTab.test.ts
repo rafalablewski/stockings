@@ -1,76 +1,11 @@
 /**
- * Tests for the merge helpers in SharedEdgarTab.tsx.
+ * Tests for the merge helpers used by SharedEdgarTab.
  *
- * The merge functions (mergeLocalFilings, mergeCrossRefs) are private to the
- * component, so we duplicate their logic here for unit testing. The helper
- * functions (normalizeDate, normalizeAccession) are also inlined since they
- * are small, pure functions.
+ * Functions are imported from edgarMergeHelpers.ts — the same module
+ * used by the production component, so no duplication.
  */
 import { describe, it, expect } from 'vitest';
-
-// ── Inlined helpers (mirrors SharedEdgarTab.tsx) ────────────────────────────
-
-function normalizeDate(dateStr: string): string {
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-  const rangeMatch = dateStr.match(/^(\w+ \d+)-\d+, (\d{4})$/);
-  if (rangeMatch) {
-    const d = new Date(`${rangeMatch[1]}, ${rangeMatch[2]}`);
-    if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
-  }
-  const d = new Date(dateStr);
-  if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
-  return dateStr;
-}
-
-const normalizeAccession = (a: string) => a.replace(/-/g, '');
-
-// ── Types (subset of SharedEdgarTab) ────────────────────────────────────────
-
-interface LocalFiling {
-  date: string;
-  type: string;
-  description: string;
-  period: string;
-  color?: string;
-  accessionNumber?: string;
-}
-
-// ── Functions under test (exact copy from SharedEdgarTab.tsx) ────────────────
-
-function mergeLocalFilings(
-  propsFilings: LocalFiling[],
-  dbFilings: LocalFiling[],
-): LocalFiling[] {
-  const propsKeys = new Set<string>();
-  const propsAccessions = new Set<string>();
-  for (const f of propsFilings) {
-    propsKeys.add(`${f.type}|${normalizeDate(f.date)}|${f.period}`);
-    if (f.accessionNumber) propsAccessions.add(normalizeAccession(f.accessionNumber));
-  }
-
-  const dbOnly: LocalFiling[] = [];
-  for (const dbf of dbFilings) {
-    const key = `${dbf.type}|${normalizeDate(dbf.date)}|${dbf.period}`;
-    const accNorm = dbf.accessionNumber ? normalizeAccession(dbf.accessionNumber) : '';
-    if (!propsKeys.has(key) && !(accNorm && propsAccessions.has(accNorm))) {
-      dbOnly.push(dbf);
-    }
-  }
-
-  return dbOnly.length > 0 ? [...propsFilings, ...dbOnly] : propsFilings;
-}
-
-function mergeCrossRefs(
-  propsRefs: Record<string, { source: string; data: string }[]> | undefined,
-  dbRefs: Record<string, { source: string; data: string }[]>,
-): Record<string, { source: string; data: string }[]> {
-  if (!propsRefs) return dbRefs;
-  const merged = { ...propsRefs };
-  for (const [key, entries] of Object.entries(dbRefs)) {
-    if (!merged[key]) merged[key] = entries;
-  }
-  return merged;
-}
+import { mergeLocalFilings, mergeCrossRefs, type LocalFiling } from './edgarMergeHelpers';
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 
