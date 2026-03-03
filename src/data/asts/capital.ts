@@ -28,10 +28,10 @@ import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata, Conver
 // ============================================================================
 
 export const CAPITAL_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-23',
-  source: 'Feb 23 8-K (RD settlements + notes repurchases), Feb 20 8-K ($75M greenshoe exercise), Feb 17 8-K (Indenture), Feb 17 SC 13D/A (Vodafone Amend. 3), Feb 17 Form 4 (Bernal RSU vest), Feb 13 424B5s, Feb 11 8-K, Dec 11 13D/A (AmTower), Dec 2-24 Form 4s/144s, 13G (Vanguard), Form 4/A (Gupta), Aug-Sep 2025 Form 4s/144s/8-K/10-Q/A/424B7, Jun-Aug 2025 8-Ks/424B5s/FWP/Form 4s/13D-A/10-Q, Mar 2025 Form 4s/144/S-3ASR/S-8/13D-A/8-K, Jan-Feb 2025 8-Ks/13D/Form 3s/Form 4/13D-A',
-  nextExpectedUpdate: 'Q4 2025 10-K (~March 2, 2026).',
-  notes: 'Feb 23 audit: 126 filings cross-referenced. Greenshoe $75M of $150M exercised Feb 20 — total 2.25% notes now $1.075B. RD#1 settled Feb 20, RD#2 settled Feb 23. $296.5M notes repurchased. Vodafone below 5%. AT&T 13D: 2.7%. Avellan 25%.',
+  lastUpdated: '2026-03-03',
+  source: 'FY2025 10-K (Mar 2, 2026), Feb 23 8-K (RD settlements), Feb 20 8-K (greenshoe), Feb 17 8-K/13D-A, Feb 13 424B5s, Feb 11 8-K, prior filings',
+  nextExpectedUpdate: 'Q1 2026 10-Q (~May 2026) or new proxy filing.',
+  notes: '10-K confirms: Class A 285,449,911 (Dec 31) / 292,637,039 (Feb 26). NCI 23.9%. Debt $2,264M face. FY SBC $47.5M. Total equity raises FY2025: $1.3B. Contract liabilities $227M.',
 };
 
 // ============================================================================
@@ -50,7 +50,7 @@ export const CAPITAL_METADATA: DataMetadata = {
 export const SHARE_CLASSES: ShareClass[] = [
   {
     classType: 'Class A',
-    shares: 290.4,            // ~272M (Q3 10-Q) + 2M (Oct RD) + 10.1M (ATM thru Feb 10) + 6.3M (Feb RDs)
+    shares: 292.6,            // 292,637,039 per 10-K cover page (Feb 26, 2026). Dec 31: 285,449,911.
     description: 'Public trading shares (NASDAQ: ASTS)',
     votingRights: '1 vote per share',
     conversion: 'N/A',
