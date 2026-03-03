@@ -38,9 +38,9 @@ import type { QuarterlyFinancials, DataMetadata } from '../shared/types';
 
 export const FINANCIALS_METADATA: DataMetadata = {
   lastUpdated: '2026-03-03',
-  source: 'Q4 2025 Business Update (Mar 2, 2026), Feb 11 8-K (preliminary FY 2025), Q3 2025 10-Q',
-  nextExpectedUpdate: 'Q4 2025 10-K filing (~March 2026)',
-  notes: 'All figures in millions USD unless noted. Q4 2025 rev $54.3M actual per earnings call. FY $70.9M. CapEx Q4 $407M. 2026 guidance $150-200M. 2027 target $1B. Backlog $1.2B.',
+  source: 'FY2025 10-K (filed March 2, 2026), Q3 2025 10-Q, Feb 11 8-K',
+  nextExpectedUpdate: 'Q1 2026 10-Q (~May 2026)',
+  notes: 'All figures in millions USD unless noted. FY2025 audited: Rev $70.9M, OpEx $358.6M, Net Loss -$461M. Cash $2,780M. Debt $2,264M. PPE $1,399M net. RPO $1.2B. 2026 guidance $150-200M. 2027 target $1B.',
 };
 
 // ============================================================================
@@ -61,28 +61,33 @@ export const QUARTERLY_DATA: Record<string, QuarterlyFinancials> = {
   // ========== 2025 ==========
   'Q4 2025': {
     quarter: 'Q4 2025',
-    filing: 'Q4 2025 Business Update (Mar 2, 2026). 10-K pending (~Mar 2026)',
-    cashAndEquiv: 2780,             // $2,780M total cash/restricted cash per 8-K. Pro forma: ~$3.9B
-    totalDebt: 2264,                // $2,264M: $50M 4.25%, $575M 2.375%, $1.15B 2.00%, $420M UBS, ~$69M secured
-    revenue: 54.3,                  // Q4 actual per earnings call (FY $70.9M - Q1-Q3 $16.6M = $54.3M). Beat consensus $42M.
-    opEx: 127,                      // Derived: FY $355-363M minus Q1-Q3 $232.1M → ~$123-131M, midpoint ~$127M. Pending 10-K.
-    opExSBC: null,                  // Pending 10-K
-    netIncome: null,                // Pending 10-K. EPS -$0.26 per BofA.
-    sharesOutstanding: 280.0,       // Estimated from Vanguard 13G (7.68% of Class A = ~280M)
-    impliedSharesOut: 369.4,        // Class A ~280 + B 11.2 + C 78.2
-    fullyDiluted: 400.0,            // Pre-Feb 2026 converts
+    filing: '10-K (March 2, 2026). Audited FY2025 figures. Q4 derived: FY minus Q1-Q3.',
+    cashAndEquiv: 2780,             // $2,779.960M total cash + restricted cash per 10-K balance sheet
+    totalDebt: 2264,                // $2,264.435M face: $50M 4.25%, $575M 2.375%, $1.15B 2.00%, $420M UBS, $52.6M Trinity, $16.8M Prosperity
+    revenue: 54.3,                  // Q4 derived: FY $70.918M - Q1-Q3 $16.6M = $54.3M. Confirmed by 10-K.
+    opEx: 126.5,                    // Q4 derived: FY $358.631M - Q1-Q3 $232.1M = $126.5M
+    opExEngineering: 45.9,          // Q4 derived: FY $142.510M - Q1-Q3 $96.6M
+    opExGandA: 26.3,                // Q4 derived: FY $101.679M - Q1-Q3 $75.4M
+    opExRandD: 9.1,                 // Q4 derived: FY $28.115M - Q1-Q3 $19.0M
+    opExDandA: 15.7,                // Q4 derived: FY $51.111M - Q1-Q3 $35.4M
+    opExSBC: 15.2,                  // Q4 derived: FY SBC $47.490M (per CF stmt) - Q1-Q3 $32.3M
+    opExCostOfRev: 29.7,            // Q4 derived: FY COGS $35.216M ($33.0M products + $2.2M services) - Q1-Q3 $5.5M
+    adjOpEx: 95.6,                  // Q4 opEx $126.5M - SBC $15.2M - D&A $15.7M = $95.6M (FY $260.0M - Q1-Q3 $164.3M = $95.7M crosscheck)
+    netIncome: -97.7,               // Q4 derived: FY net loss -$461.011M - Q1-Q3 (-$363.3M) = -$97.7M (before NCI)
+    sharesOutstanding: 285.4,       // 285,449,911 Class A per 10-K balance sheet (Dec 31, 2025)
+    impliedSharesOut: 374.8,        // Class A 285.4M + B 11.2M + C 78.2M = 374.8M
+    fullyDiluted: 400.0,            // Pre-Feb 2026 converts. Wtd avg basic FY: 255,982,592.
     stockPrice: 86.92,              // Mar 2, 2026 close
     satellites: 7,                  // BW3 + BB1-6
-    employees: null,
+    employees: null,                // Not disclosed in 10-K. ~450K sqft global footprint.
     definitiveAgreements: 6,
     mous: 57,                       // Updated post-MWC 2026
     spectrumOwned: 105,
-    grossPPE: 1600,                 // ~$1.6B per 8-K
-    accumulatedDA: 174,             // ~$174M per 8-K
-    adjOpEx: null,                  // FY adj opex $257-263M, Q4 derived ~$25-31M range pending 10-K
-    capEx: 407,                     // Q4 capex $407M per earnings (above $275-325M guidance)
-    contractedRevenue: 1200,        // $1.2B per UBS/Roth (was $1B)
-    note: 'Q4 rev $54.3M actual (+268% seq, beat consensus $42M). FY 2025: $70.9M (high end of $63-71M guidance). CapEx $407M above $275-325M guide (accelerated material purchases + launch payments). 15 gateways across 9 MNOs. Pro forma liquidity ~$3.9B. 2026 guidance: $150-200M. 2027 target: $1B.',
+    grossPPE: 1572.5,               // $1,572,472K per 10-K Note 4 (CIP: $1,122M sat materials + $39.2M other)
+    accumulatedDA: 173.7,           // $173,711K per 10-K Note 4
+    capEx: 358.9,                   // Q4 PPE-only: FY $1,064.741M - Q1-Q3 $705.8M. Excludes $420M Ligado + $56.4M spectrum.
+    contractedRevenue: 1200,        // RPO ~$1.2B per 10-K Note 2 (9% in next 12 months = ~$108M)
+    note: 'AUDITED 10-K (Mar 2, 2026). Q4 rev $54.3M (+268% seq). FY: Rev $70.9M, OpEx $358.6M, Net Loss -$461M (pre-NCI). Gross margin: Products ~26%, Services ~92%. Interest income $49.2M > interest expense $36.1M. Contract liabilities $227M. Class A: 285.4M (Dec 31) / 292.6M (Feb 26). NCI 23.9% (was 30.1%). Fully funded for ~90 sat constellation. Microns for 28 sats completed.',
   },
   'Q3 2025': {
     quarter: 'Q3 2025',
