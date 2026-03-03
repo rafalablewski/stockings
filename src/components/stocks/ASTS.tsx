@@ -337,7 +337,7 @@ const ASTSAnalysis = () => {
   const [blendedARPU, setBlendedARPU] = useState(18);
   const [revenueShare, setRevenueShare] = useState(50);
   const [govRevenue, setGovRevenue] = useState(100);
-  const [contractedRevenue] = useState(1000);  // $1B+ contracted commercial revenue per Q3 earnings
+  const [contractedRevenue] = useState(1200);  // $1.2B RPO per 10-K Note 2 (9% = ~$108M in next 12 months)
   const [regulatoryRisk, setRegulatoryRisk] = useState(5);
   const [techRisk, setTechRisk] = useState(8);
   const [competitionRisk, setCompetitionRisk] = useState(10);
@@ -766,7 +766,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     <div className="sm-tab-hero">
       <div className="sm-section-label">Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></div>
       <h2>Overview<span className="sm-accent">.</span></h2>
-      <p><strong className="sm-text2 sm-fw-500">AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 53+ MNO partnerships (3.2B subs). BB6 launched Dec 24. $3.2B cash. $1B+ contracted revenue.</p>
+      <p><strong className="sm-text2 sm-fw-500">AST SpaceMobile:</strong> First space-based cellular broadband for standard smartphones. 57 MNO partnerships (3.2B subs). 7 sats operational, 28 microns complete. $2.8B cash. FY2025 rev $70.9M. 2026 guide $150-200M. $1.2B RPO backlog.</p>
     </div>
 
     <div className="sm-model-grid" style={{ '--cols': 2 } as React.CSSProperties}>
@@ -776,12 +776,12 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
           <UpdateIndicators sources="PR" />
         </div>
         {[
-          'BB6 proving D2D technology works at scale',
-          '53+ MNO partners with 3.2B addressable subscribers',
-          '$1B+ contracted revenue locked in',
-          'First-mover advantage in direct-to-phone satellite',
-          'MDA SHIELD prime contractor + DoD/SDA contracts',
-          'Regulatory moat — licensed spectrum agreements',
+          'FY2025 rev $70.9M, Q4 $54.3M (+268% seq) — revenue inflection confirmed',
+          '57 MNO partners (3.2B subs), $1.2B RPO backlog',
+          '$2,780M cash — fully funded for ~90 sat constellation',
+          '2026 guide $150-200M, 2027 target $1B revenue',
+          'MDA SHIELD prime + DoD/SDA/DIU contracts diversify revenue',
+          '105 MHz spectrum + 3,000 patents + 95% vertical integration',
         ].map(item => (
           <div key={item} className="sm-case-item">
             <span className="sm-case-icon sm-mint">+</span>{item}
@@ -794,12 +794,12 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
           <UpdateIndicators sources="PR" />
         </div>
         {[
-          'Pre-revenue company, high execution risk',
-          'Dilution risk — $3.2B raised, may need more',
-          'Competition: Starlink/T-Mobile D2D partnership',
-          'Satellite launch/technology failure risk',
-          'Slow subscriber adoption by MNO partners',
-          'MNO partnership revenue share negotiations',
+          'FY2025 net loss -$461M, still burning ~$300M/quarter',
+          '$2,264M debt — converts create dilution overhang as stock rises',
+          'Competition: Starlink/T-Mobile expanding beyond messaging',
+          'Execution risk: need 6 sats/month sustained for beta timeline',
+          '$32B EV prices in significant execution — miss = severe compression',
+          '2027 $1B target is ambitious — requires 5-7x revenue growth in 2 years',
         ].map(item => (
           <div key={item} className="sm-case-item">
             <span className="sm-case-icon sm-coral">-</span>{item}
@@ -6281,43 +6281,45 @@ const InvestmentTab = () => {
   // All current investment data consolidated here (unified with BMNR/CRCL)
   // ═══════════════════════════════════════════════════════════════════════════
   const current: InvestmentCurrent = {
-    date: '2025-11-10',
-    source: 'Q3 2025 10-Q',
-    verdict: 'CONSTRUCTIVE',
+    date: '2026-03-03',
+    source: 'FY2025 10-K (March 2, 2026)',
+    verdict: 'STRONG BUY',
     verdictColor: 'mint',
-    tagline: "Technology Proven. Now It's About Execution.",
+    tagline: "Revenue Inflection Confirmed. Scaling to $1B.",
     
     // Investment Scorecard — Unified 8-category framework (matches BMNR/CRCL)
     scorecard: [
-      { category: 'Financial Strength', rating: 'A-', color: 'var(--mint)', detail: '$760M cash, runway to profitability secured' },
-      { category: 'Profitability', rating: 'C+', color: 'var(--gold)', detail: 'Pre-revenue; $50-75M H2 guidance, path to FCF by 2026' },
-      { category: 'Growth', rating: 'A', color: 'var(--mint)', detail: '$1B+ contracted revenue, 6 MNOs signed, 50+ pipeline' },
-      { category: 'Valuation', rating: 'B', color: 'var(--sky)', detail: 'Pre-revenue multiple; execution-dependent upside' },
-      { category: 'Competitive Position', rating: 'A', color: 'var(--mint)', detail: '3,000+ patents, licensed spectrum, 4yr lead, 95% vertical' },
-      { category: 'Execution', rating: 'A-', color: 'var(--mint)', detail: 'Block 1 operational, ASIC proven, 6 sats/month target' },
-      { category: 'Regulatory/External', rating: 'B', color: 'var(--sky)', detail: 'FCC approved, international pending, aviation concerns' },
-      { category: 'Capital Structure', rating: 'B-', color: 'var(--gold)', detail: '$707M converts outstanding, potential future dilution' },
+      { category: 'Financial Strength', rating: 'A+', color: 'var(--mint)', detail: '$2,780M cash, fully funded for ~90 sat constellation' },
+      { category: 'Profitability', rating: 'B-', color: 'var(--sky)', detail: 'FY2025 rev $70.9M (Q4 $54.3M +268% seq). 2026 guide $150-200M. 2027 target $1B' },
+      { category: 'Growth', rating: 'A+', color: 'var(--mint)', detail: '$1.2B RPO backlog, 6 definitive MNOs, 57 MOUs, 2026 rev 2-3x YoY' },
+      { category: 'Valuation', rating: 'B+', color: 'var(--sky)', detail: 'EV/2027E Rev ~30x on $1B target. Rich but justified by growth trajectory' },
+      { category: 'Competitive Position', rating: 'A', color: 'var(--mint)', detail: '3,000+ patents, 105 MHz licensed spectrum, 4yr lead, 95% vertical integration' },
+      { category: 'Execution', rating: 'A', color: 'var(--mint)', detail: 'BB1-6 operational, 28 sat microns complete, 6/month production, $1B+ capex deployed' },
+      { category: 'Regulatory/External', rating: 'B+', color: 'var(--sky)', detail: 'FCC STA granted TX/WA gateways, 3 more pending. International expanding post-MWC' },
+      { category: 'Capital Structure', rating: 'B', color: 'var(--sky)', detail: '$2,264M debt ($1.625B converts + $420M UBS + $69M secured). Interest income $49M > expense $36M' },
     ],
     
     // Executive Summary — Unified schema (matches BMNR/CRCL)
     executiveSummary: {
-      headline: "Technology Proven. Now It's About Execution.",
-      thesis: "ASTS has crossed the Rubicon. The technology works. Block 1 satellites are beaming real broadband to real phones. The only question now: can they build and launch fast enough?",
-      bottomLine: "This is no longer a science experiment. It's an industrial scaling challenge—and they're winning.",
+      headline: "Revenue Inflection Confirmed. Scaling to $1B.",
+      thesis: "The 10-K closes the book on FY2025: $70.9M revenue (Q4 alone $54.3M, +268% sequentially), $2,780M cash, fully funded for ~90 satellites, and $1.2B RPO backlog. This is no longer a pre-revenue story — it's a revenue-scaling infrastructure play with 2026 guidance of $150-200M and a 2027 target of $1B. The question has shifted from 'will they survive?' to 'how fast does revenue compound?'",
+      bottomLine: "Upgrade to Strong Buy. Fully funded constellation, proven revenue ramp, $1B 2027 target. Risk/reward is the best it's been since Block 1 launch.",
       whatsNew: [
-        '$1B+ contracted revenue milestone reached',
-        'BB6 launched successfully with fleet operational',
-        'Verizon definitive agreement signed',
-        'Vodafone SatCo JV announced for European expansion'
+        'FY2025 audited: Rev $70.9M, Q4 $54.3M (+268% seq), Net Loss -$461M',
+        '$2,780M cash — fully funded for ~90 satellite constellation',
+        '$1.2B RPO backlog (9% = ~$108M in next 12 months)',
+        '2026 guidance $150-200M, 2027 target $1B revenue',
+        '57 MOUs post-MWC 2026 (8 new: Orange, Telefonica, CK Hutchison, etc.)',
+        '28 satellite microns completed, BB7 launch imminent (March 2026)',
       ],
     },
     
     // Growth Drivers
     growthDrivers: [
-      { driver: 'Constellation Buildout', impact: 'Critical', description: 'Manufacturing 6 satellites per month. 40+ in production. Each launch expands coverage and revenue potential.', color: 'var(--mint)' },
-      { driver: 'MNO Partnerships', impact: 'High', description: 'Six carriers signed. Fifty more in pipeline. Every new deal multiplies the addressable market.', color: 'var(--mint)' },
-      { driver: 'Geographic Expansion', impact: 'High', description: 'US coverage first. Europe, India, Middle East following. 5 billion people without reliable coverage waiting.', color: 'var(--sky)' },
-      { driver: 'Government Contracts', impact: 'High', description: 'MDA SHIELD prime contractor (Jan 2026). Multiple DoD/SDA/DIU contracts. Defense sees strategic value in dual-use LEO constellation.', color: 'var(--mint)' },
+      { driver: 'Constellation Buildout', impact: 'Critical', description: '28 microns complete, 6 sats/month production. BB7 launching March 2026. ~25 sats needed for beta trials (late summer 2026). $1.06B PPE capex deployed in FY2025 alone.', color: 'var(--mint)' },
+      { driver: 'Revenue Ramp', impact: 'Critical', description: 'Q4 rev $54.3M (+268% seq). 2026 guidance $150-200M. 2027 target $1B. RPO $1.2B with $108M due in next 12 months. Products margin ~26%, Services margin ~92%.', color: 'var(--mint)' },
+      { driver: 'MNO Partnerships', impact: 'High', description: '6 definitive agreements, 57 MOUs post-MWC 2026. 8 new partners added at MWC (Orange, Telefonica, CK Hutchison, Sunrise, etc.). 3.2B+ addressable subs.', color: 'var(--mint)' },
+      { driver: 'Government & Defense', impact: 'High', description: 'MDA SHIELD prime (Jan 2026). SDA, DIU, NSF contracts. Defense sees strategic value in dual-use LEO constellation. Diversifies revenue beyond MNO.', color: 'var(--sky)' },
     ],
     
     // Competitive Moat
@@ -6337,47 +6339,47 @@ const InvestmentTab = () => {
     
     // Risk Matrix
     risks: [
-      { risk: 'Launch Failure', severity: 'Critical', likelihood: 'Low', impact: 'Severe', detail: 'A single catastrophic launch failure could delay the entire constellation by 6-12 months and destroy hundreds of millions in hardware. SpaceX has a good track record, but space is unforgiving.', mitigation: 'Multiple launch providers (SpaceX, ISRO), insurance coverage, phased deployment.' },
-      { risk: 'Revenue Disappointment', severity: 'High', likelihood: 'Medium', impact: 'Severe', detail: 'If H2 2025 revenue comes in below $50M guidance, or MNO integrations take longer than expected, the stock could face significant multiple compression. Market has priced in execution.', mitigation: 'Diversified MNO base, government contracts provide floor.' },
-      { risk: 'Manufacturing Bottleneck', severity: 'High', likelihood: 'Medium', impact: 'High', detail: 'Scaling from 1 satellite to 6/month is hard. Supply chain issues, quality problems, or workforce constraints could slow the buildout and delay continuous coverage.', mitigation: '95% vertical integration, Texas facility expansion, redundant suppliers.' },
-      { risk: 'Dilution Pressure', severity: 'Medium', likelihood: 'Medium', impact: 'Moderate', detail: '$707M in converts will eventually convert or need refinancing. While no near-term equity raise is expected, future growth initiatives could require additional capital.', mitigation: 'Strong cash position ($760M), path to cash flow positive.' },
-      { risk: 'Competitive Response', severity: 'Medium', likelihood: 'Medium', impact: 'Moderate', detail: 'Starlink/T-Mobile will expand beyond messaging. Other players (Lynk, Skylo) are pursuing D2D. Technology lead doesn\'t guarantee market lead.', mitigation: 'Spectrum moat, patent portfolio, first-mover MNO relationships.' },
-      { risk: 'Regulatory Delays', severity: 'Medium', likelihood: 'Low-Medium', impact: 'Moderate', detail: 'FCC approvals, international spectrum coordination, and aviation interference concerns could slow geographic expansion and limit addressable markets.', mitigation: 'Proactive engagement with regulators, experienced spectrum team.' },
+      { risk: 'Launch Failure', severity: 'Critical', likelihood: 'Low', impact: 'Severe', detail: 'With 28 microns complete and BB7+ launches accelerating, a catastrophic failure destroys hundreds of millions in hardware and delays the 25-sat beta threshold. SpaceX track record is strong but space is unforgiving.', mitigation: 'Multiple launch providers (SpaceX, ISRO), insurance coverage, phased deployment. 28 microns already built provides hardware redundancy.' },
+      { risk: 'Revenue Miss vs Guidance', severity: 'High', likelihood: 'Low-Medium', impact: 'Severe', detail: '2026 guidance is $150-200M and 2027 target is $1B. Missing guidance would compress multiples severely given $32B EV. Q4 $54.3M run rate annualizes to ~$217M, providing some cushion.', mitigation: '$1.2B RPO backlog with $108M due in 12 months. Diversified MNO + government revenue streams. Services margin at 92%.' },
+      { risk: 'Manufacturing Bottleneck', severity: 'High', likelihood: 'Medium', impact: 'High', detail: 'Need to sustain 6 sats/month to hit 25-sat beta by late summer 2026 and ~60 sats by year-end. Supply chain issues could delay continuous coverage timeline.', mitigation: '95% vertical integration, 28 microns already complete, Texas + global facilities (~450K sqft). $1B+ capex deployed in FY2025 proves manufacturing scale.' },
+      { risk: 'Debt Load', severity: 'Medium', likelihood: 'Medium', impact: 'Moderate', detail: '$2,264M total debt ($1.625B converts at $80-$180+ strikes, $420M UBS, $69M secured). Net interest positive ($49M income vs $36M expense) but converts create dilution overhang as stock rises above strike prices.', mitigation: '$2,780M cash provides massive cushion. Interest income exceeds interest expense. Path to cash flow positive by 2027. No near-term maturities requiring refinancing.' },
+      { risk: 'Competitive Response', severity: 'Medium', likelihood: 'Medium', impact: 'Moderate', detail: 'Starlink/T-Mobile expanding beyond messaging to voice/data. Apple/Globalstar evolving. But ASTS works with existing phones via MNO partnerships — fundamentally different model.', mitigation: '105 MHz licensed spectrum, 3,000+ patents, 4+ year technology lead, 6 carrier exclusives. MNO alignment vs Starlink competition with carriers.' },
+      { risk: 'Regulatory Delays', severity: 'Medium', likelihood: 'Low-Medium', impact: 'Moderate', detail: 'FCC STA granted for TX/WA gateways, 3 more pending. International spectrum coordination ongoing. Aviation interference concerns still being addressed.', mitigation: 'Proactive FCC engagement, STA progress, experienced spectrum team, MWC 2026 momentum with 8 new MNO partners.' },
     ],
     
     // Three Perspectives — Unified schema (matches BMNR/CRCL)
     perspectives: {
       cfa: {
         title: 'CFA Analyst',
-        assessment: 'CONSTRUCTIVE WITH VOLATILITY',
-        color: 'var(--sky)',
-        summary: 'Pre-revenue technology company transitioning to commercial operations. Strong balance sheet ($760M cash) and de-risked technology, but valuation assumes significant execution. Best suited for growth-oriented portfolios with 2-3 year horizon. High volatility expected.',
-        ecosystemView: 'LEO satellite connectivity market inflecting. 5B people lack reliable mobile coverage. MNO economics favor wholesale spectrum leasing over CAPEX. Government/defense spending on space communications accelerating. First-mover with working technology creates optionality.',
-        recommendation: 'Allocate 2-4% of growth portfolio. Rebalance on 30%+ moves.',
+        assessment: 'STRONG BUY — REVENUE INFLECTION',
+        color: 'var(--mint)',
+        summary: 'Revenue-stage infrastructure company with audited FY2025 results ($70.9M, Q4 $54.3M). Fortress balance sheet ($2,780M cash, net interest positive). $1.2B RPO backlog and 2026 guidance of $150-200M provide visibility. Upgrade from Constructive — the 10-K confirms the revenue inflection thesis.',
+        ecosystemView: 'LEO D2D market entering commercialization phase. ASTS first to demonstrate revenue at scale ($54.3M Q4). 5B people lack reliable coverage. MNO economics strongly favor wholesale model. $1B 2027 revenue target, if achieved, reprices the entire sector.',
+        recommendation: 'Allocate 3-5% of growth portfolio. Core position, not a trade. Rebalance on 25%+ moves.',
       },
       hedgeFund: {
         title: 'Hedge Fund PM',
-        assessment: 'HIGH CONVICTION LONG',
+        assessment: 'HIGH CONVICTION LONG — ADD',
         color: 'var(--mint)',
-        summary: 'Asymmetric setup: technology proven, binary execution risk remains. Event calendar stacked with launches, MNO announcements, and revenue recognition. Stock trades on sentiment — volatile but predictable patterns around catalysts.',
-        ecosystemView: 'Starlink/T-Mobile partnership validates D2D market. Apple Emergency SOS adoption proves consumer demand. MNO consolidation trends favor infrastructure partners. ASTS spectrum holdings are strategic assets in capacity-constrained environment.',
-        recommendation: 'Size 4-6% of book. Add on pullbacks to 50-day MA. Trim on 30%+ rips.',
+        summary: 'Revenue inflection confirmed by audited 10-K. Catalyst calendar stacked: BB7+ launches monthly, 25-sat beta (summer 2026), Q1 2026 earnings. Stock consolidating at $87 — next leg up on beta service confirmation. Converts create defined support levels.',
+        ecosystemView: 'Starlink/T-Mobile validates D2D market but different model (new terminals vs existing phones). $1.2B RPO is real contracted revenue, not projections. Convert strikes at $80-$180+ create structured flows. Short interest provides squeeze fuel on positive catalysts.',
+        recommendation: 'Size 4-6% of book. Add on pullbacks to $75 (200-day area). Trim at $120+ if no new catalysts.',
       },
       cio: {
         title: 'Family Office CIO',
-        assessment: 'SATELLITE POSITION',
-        color: 'var(--violet)',
-        summary: 'This is venture-style risk in a public equity wrapper. The market opportunity is massive (5B people), the technology works, and the team has executed through near-death experiences. Multi-bagger potential if thesis plays out, but size accordingly.',
-        ecosystemView: 'Telecom infrastructure is a multi-decade investment theme. ASTS addresses fundamental gap in global coverage. Strategic investors (AT&T, Verizon, Vodafone, Google) validate market opportunity. Defense applications provide revenue diversification and strategic importance.',
-        recommendation: '3-5% max portfolio weight. Hold for 2-3 year thesis.',
+        assessment: 'CORE INFRASTRUCTURE POSITION',
+        color: 'var(--mint)',
+        summary: 'No longer venture-style speculation — this is an infrastructure play with $70.9M audited revenue, $2.8B cash, and $1.2B backlog. AT&T, Verizon, Vodafone, Google backing validates the thesis. Multi-year compounder if $1B 2027 target tracks.',
+        ecosystemView: 'Telecom infrastructure is a multi-decade investment theme. ASTS now has audited revenue, contracted backlog, and 6 carrier partnerships. Defense diversification (SHIELD, SDA) adds strategic value. Comparable to early cell tower REIT investments when towers were being built.',
+        recommendation: '3-5% portfolio weight. Core hold for 3-5 year thesis. Add on any 25%+ pullback.',
       },
       technicalAnalyst: {
         title: 'Technical Analyst',
-        assessment: 'BULLISH — BREAKOUT WATCH',
-        color: 'var(--sky)',
-        summary: 'Classic catalyst-driven momentum stock. Price gaps on launch news create defined support/resistance zones. Currently consolidating above 50-day SMA with declining volatility — textbook bull flag formation. RSI reset from overbought provides fresh runway. Volume accumulation patterns evident on weekly timeframe.',
-        ecosystemView: 'ASTS trades on sentiment cycles tied to satellite launch calendar. Key technical levels: $25-30 support zone (prior breakout), $40-45 resistance (prior highs). MACD bullish crossover on weekly chart. Relative strength vs NASDAQ positive. Watch for volume surge above 20M shares as breakout confirmation signal.',
-        recommendation: 'Accumulate on pullbacks to 50-day SMA. Add on breakout above $45 with volume. Stop loss: close below $25.',
+        assessment: 'BULLISH — CONSOLIDATION BASE',
+        color: 'var(--mint)',
+        summary: 'Stock trading at $87, consolidating after the run from $25 (Block 1 launch) through $100+ (convert-driven highs). Holding above 50-day SMA. Volume profile constructive with institutional accumulation. RSI neutral, providing runway for next catalyst-driven move.',
+        ecosystemView: 'Key technical levels: Support zone at $70-75 (200-day SMA, prior breakout). Resistance at $100-105 (Feb convert highs). MACD neutral on weekly chart. Relative strength vs NASDAQ positive. Watch for breakout above $100 with volume >15M shares as confirmation of next leg.',
+        recommendation: 'Accumulate at $75-85 range. Add on breakout above $100 with volume. Stop loss: weekly close below $65.',
       },
     },
     
@@ -6391,9 +6393,9 @@ const InvestmentTab = () => {
     
     // Price Targets
     priceTargets: [
-      { period: '0-6 months', range: '$50-100', outlook: 'Volatile', detail: 'Swings ±20% on launch news, revenue updates, MNO announcements' },
-      { period: '6-18 months', range: '$100-150', outlook: 'Bullish', detail: '25-satellite threshold, cash flow positive milestone, continuous US coverage' },
-      { period: '18-36 months', range: '$150-250+', outlook: 'Very Bullish', detail: 'Global coverage, billion-dollar revenue run rate, potential M&A' },
+      { period: '0-6 months', range: '$75-120', outlook: 'Constructive', detail: 'BB7+ launches, 25-sat beta threshold, Q1 2026 earnings. ±25% swings on catalysts' },
+      { period: '6-18 months', range: '$120-200', outlook: 'Bullish', detail: 'Beta service launch, revenue tracking toward $150-200M guide, continuous US coverage. Analyst upgrades' },
+      { period: '18-36 months', range: '$200-350+', outlook: 'Very Bullish', detail: 'Full constellation, $1B revenue run rate, global coverage, potential $50B+ EV' },
     ],
   };
   
@@ -6404,10 +6406,20 @@ const InvestmentTab = () => {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   const archive: ArchiveEntry[] = [
     // ⬇️ ADD NEW ENTRIES HERE (most recent first) ⬇️
-    { 
-      date: '2025-11-10', 
-      filing: 'Q3 2025 10-Q', 
-      verdict: 'CONSTRUCTIVE', 
+    {
+      date: '2026-03-03',
+      filing: 'FY2025 10-K',
+      verdict: 'STRONG BUY',
+      headline: 'Revenue Inflection Confirmed — Upgrade to Strong Buy',
+      summary: 'Audited FY2025: Rev $70.9M (Q4 $54.3M, +268% seq), Net Loss -$461M. Cash $2,780M, fully funded for ~90 sats. $1.2B RPO backlog. 2026 guide $150-200M, 2027 target $1B. 28 microns complete. 57 MOUs post-MWC. The revenue inflection is real and accelerating.',
+      keyDevelopments: ['FY2025 audited: Rev $70.9M, Q4 alone $54.3M (+268% sequential)', '$2,780M cash — fully funded for ~90 satellite constellation', '$1.2B RPO backlog ($108M due in 12 months)', '2026 guidance $150-200M, 2027 target $1B', '28 satellite microns completed, BB7 imminent', '8 new MNO partners at MWC 2026 (Orange, Telefonica, CK Hutchison, etc.)', 'Gross PPE $1,572M, Net PPE $1,399M — massive real asset base', 'NCI reduced to 23.9% from 30.1%, Class A now 292.6M shares'],
+      whyItMatters: 'This 10-K transforms the thesis from "pre-revenue speculation" to "revenue-scaling infrastructure." Q4 $54.3M proves commercial traction. $2.8B cash eliminates funding risk. $1.2B backlog provides multi-year revenue visibility. The 2027 $1B target, if achieved, reprices the stock dramatically.',
+      lookingAhead: 'BB7+ monthly launches toward 25-sat beta threshold (late summer 2026). Q1 2026 earnings for first post-10-K quarterly validation. Beta service launch is the next major catalyst — proves continuous coverage and unlocks full MNO ramp.',
+    },
+    {
+      date: '2025-11-10',
+      filing: 'Q3 2025 10-Q',
+      verdict: 'CONSTRUCTIVE',
       headline: 'Inflection Point Reached',
       summary: 'Technology validated, commercial traction accelerating. The thesis has shifted from "will it work?" to "how fast can they scale?"',
       keyDevelopments: ['$1B+ contracted revenue milestone', 'BB6 launched successfully', 'Verizon definitive agreement signed', 'Vodafone SatCo JV announced'],
@@ -6535,7 +6547,7 @@ const InvestmentTab = () => {
         <div className="sm-flex sm-gap-24 sm-flex-wrap">
           <div className="sm-text-center">
             <div className="sm-text-11">Price Target</div>
-            <div className="sm-mono-lg sm-fw-700 sm-mint">$100-150</div>
+            <div className="sm-mono-lg sm-fw-700 sm-mint">$120-200</div>
             <div className="sm-micro-text sm-micro-text-normal">12-month</div>
           </div>
           <div className="sm-text-center">
@@ -6545,12 +6557,12 @@ const InvestmentTab = () => {
           </div>
           <div className="sm-text-center">
             <div className="sm-text-11">Cash Position</div>
-            <div className="sm-mono-lg sm-fw-700 sm-violet">$760M</div>
-            <div className="sm-text-11 sm-mint">Runway secured</div>
+            <div className="sm-mono-lg sm-fw-700 sm-violet">$2,780M</div>
+            <div className="sm-text-11 sm-mint">Fully funded ~90 sats</div>
           </div>
         </div>
       )}
-      moatDurabilityNote="A- (Strong). Spectrum + patents + manufacturing scale create defensible position. 4+ year technology lead is substantial. Key risk is well-funded competitors (Starlink) accelerating D2D efforts."
+      moatDurabilityNote="A (Strong). 105 MHz licensed spectrum + 3,000+ patents + 95% vertical integration + $1.4B net PPE create formidable barriers. 4+ year technology lead now backed by $70.9M audited revenue. Convert to A+ if beta service confirms continuous coverage. Key risk remains well-funded Starlink D2D expansion."
       renderStrategicAssessment={() => (
         <>
           {/* Section Header */}
@@ -6569,13 +6581,13 @@ const InvestmentTab = () => {
             </div>
             <div className="sm-body sm-lh-18">
               <p>
-                <strong>Factor Exposures:</strong> ASTS exhibits high beta (~1.8-2.2) to growth/momentum factors with significant idiosyncratic risk from execution milestones. Low correlation to traditional telcos (~0.2) and satellite peers (~0.4). This is a binary outcome investment — success yields 5-10x, failure yields 80%+ loss. Standard MPT optimization doesn&apos;t apply; treat as venture-like allocation within public markets sleeve.
+                <strong>Factor Exposures:</strong> ASTS exhibits high beta (~1.8-2.2) to growth/momentum factors with declining idiosyncratic risk as revenue scales. Low correlation to traditional telcos (~0.2) and satellite peers (~0.4). With audited $70.9M FY revenue and $1.2B RPO, this is transitioning from binary bet to revenue compounder. Standard DCF now applicable with 2026/2027 guidance as anchors.
               </p>
               <p>
-                <strong>Liquidity Analysis:</strong> Average daily volume ~$100-200M provides excellent liquidity for most institutional positions. Options market active with reasonable spreads. Convertible bonds provide additional hedging/exposure vehicles. Short interest ~15% creates squeeze potential but also overhang. Position sizing up to 3-5% of portfolio feasible without market impact.
+                <strong>Liquidity Analysis:</strong> Average daily volume ~$200-400M provides excellent liquidity. Options market deep and liquid with active convert arb flows. $2,264M in convertible bonds create structured support at conversion strikes ($80-$180+). Short interest ~12% — declining as thesis de-risks. Position sizing up to 5% of portfolio feasible without market impact.
               </p>
               <p>
-                <strong>Governance & ESG:</strong> Founder Abel Avellan controls ~73% voting via Class C shares — concentration risk but also alignment. Board includes telecom veterans. ESG profile positive: enabling connectivity for underserved populations, reducing need for physical infrastructure. Space debris concerns manageable with LEO orbit decay. Spectrum rights secured through MNO partnerships — regulatory moat.
+                <strong>Governance & ESG:</strong> Founder Abel Avellan controls ~73% voting via Class C shares (78.2M shares, 10x voting). NCI reduced to 23.9% from 30.1% — alignment improving. Board includes telecom veterans. ESG profile positive: enabling connectivity for 5B underserved. Space debris manageable with LEO decay. 105 MHz licensed spectrum is a strategic asset.
               </p>
             </div>
           </div>
@@ -6588,13 +6600,13 @@ const InvestmentTab = () => {
             </div>
             <div className="sm-body sm-lh-18">
               <p>
-                <strong>Event Calendar Alpha:</strong> ASTS is a catalyst machine — launches, FCC approvals, MNO activations, revenue recognition events provide defined trading opportunities. Strategy: size up 2-3 weeks before known catalysts, trim 50% into strength on positive outcomes, add on &quot;sell the news&quot; weakness if thesis intact. Each successful launch de-risks the next.
+                <strong>Event Calendar Alpha:</strong> ASTS catalyst calendar is stacked: BB7+ monthly launches, 25-sat beta threshold (summer 2026), Q1 2026 earnings, FCC STA approvals, new MNO announcements post-MWC. Revenue recognition quarterly now provides fundamental catalysts in addition to launch events. Strategy: maintain core position, add 2-3 weeks before launches, trim 25% into strength on pops above $100.
               </p>
               <p>
-                <strong>Short Squeeze Dynamics:</strong> ~15% short interest with high conviction longs creates squeeze potential on positive catalysts. Days to cover ~3-4. Monitor borrow rates for squeeze signals. Historical pattern: 20-40% moves on successful launches. Position accordingly — don&apos;t short this name, and size longs to benefit from squeezes.
+                <strong>Short Squeeze Dynamics:</strong> ~12% short interest declining as thesis de-risks. Days to cover ~3. Borrow rates elevated. Historical pattern: 20-40% moves on successful launches, 10-15% on MNO announcements. Feb 2026 convert activity created $80-$105 trading range — shorts squeezed on upside conversion flows.
               </p>
               <p>
-                <strong>Convertible Arbitrage:</strong> $1.625B in converts outstanding at various strikes ($80-$180+). As stock approaches conversion prices, arbitrage flows create support. Monitor convert pricing vs equity for relative value opportunities. Converts provide downside cushion narrative but also overhang concerns — net neutral to slightly positive for equity.
+                <strong>Convertible Arbitrage:</strong> $1.625B in converts outstanding at strikes ranging $80-$180+. Feb 2026 RD: $296.5M repurchased + 6.34M shares issued. Convert arb flows create structured support near strike prices. With stock at $87, near the $80 2034 convert strike — active delta hedging flows. Next strike cluster at $120-150. Converts are net positive: provide support floors and limit downside.
               </p>
             </div>
           </div>
@@ -6607,13 +6619,13 @@ const InvestmentTab = () => {
             </div>
             <div className="sm-body sm-lh-18">
               <p>
-                <strong>Strategic Thesis:</strong> ASTS represents &quot;infrastructure for the next billion connected users&quot; — a thematic play on global connectivity megatrend. Unlike Starlink (D2C, new devices), ASTS works with existing phones via MNO partnerships. This is picks-and-shovels for mobile connectivity expansion. The 50/50 revenue share model means MNOs are incentivized to push adoption.
+                <strong>Strategic Thesis:</strong> ASTS represents &quot;infrastructure for the next billion connected users&quot; — now backed by $70.9M audited revenue and $1.2B RPO. Unlike Starlink (D2C, new devices), ASTS works with existing phones via MNO partnerships. The 50/50 revenue share model means MNOs are incentivized to push adoption. With 2026 guide $150-200M and 2027 target $1B, the revenue trajectory is clear.
               </p>
               <p>
-                <strong>Portfolio Fit:</strong> Classify as &quot;thematic/disruptive innovation&quot; allocation, not traditional telecom. Appropriate for growth portfolios with 5-10 year horizons. Do not benchmark against telco index — this is a pre-revenue infrastructure buildout. Comparable to early-stage cloud or fiber investments. Size as venture-like position (1-3% max) given binary risk profile.
+                <strong>Portfolio Fit:</strong> Reclassify from &quot;thematic/speculative&quot; to &quot;growth infrastructure.&quot; With audited revenue, $2.8B cash, and $1.2B backlog, this is no longer venture-style. Appropriate for growth portfolios with 3-5 year horizons. Size 2-4% given improving risk profile. Comparable to cell tower REITs or early fiber investments at the inflection point.
               </p>
               <p>
-                <strong>Fiduciary Narrative:</strong> If questioned by stakeholders: &quot;We own the infrastructure layer enabling mobile operators to extend coverage without building towers — backed by AT&T, Verizon, Vodafone partnerships and $1B+ in contracted revenue.&quot; The blue-chip MNO partnerships provide institutional credibility. Comparable thesis to early investments in cell tower REITs.
+                <strong>Fiduciary Narrative:</strong> If questioned by stakeholders: &quot;We own the infrastructure layer enabling mobile operators to extend coverage without building towers — backed by AT&T, Verizon, Vodafone, with $70.9M FY2025 audited revenue, $1.2B contracted backlog, and a path to $1B revenue by 2027.&quot; Audited financials and blue-chip partnerships provide institutional credibility.
               </p>
             </div>
           </div>
@@ -6626,13 +6638,13 @@ const InvestmentTab = () => {
             </div>
             <div className="sm-body sm-lh-18">
               <p>
-                <strong>Trend Structure:</strong> Classic catalyst-driven momentum stock. Price gaps on launch news create defined support/resistance zones. Currently consolidating above 50-day SMA with declining volatility — textbook bull flag formation. RSI reset from overbought provides fresh runway for next leg up.
+                <strong>Trend Structure:</strong> Stock at $87, consolidating in $75-105 range after the run from $25 (Sept 2024 Block 1 launch) through $100+ (Feb 2026 convert peaks). Holding above 50-day SMA. Volume profile constructive with institutional accumulation on pullbacks. RSI neutral at ~50, providing runway for catalyst-driven move.
               </p>
               <p>
-                <strong>Key Levels:</strong> Support zone at $25-30 (prior breakout level, high volume node). Resistance at $40-45 (prior swing highs). MACD bullish crossover on weekly chart. Volume accumulation patterns evident — institutional buying on dips. Watch for breakout above $45 with volume &gt;20M shares as confirmation signal.
+                <strong>Key Levels:</strong> Support zone at $70-75 (200-day SMA, high volume node, prior breakout). Secondary support at $60-65 (gap fill from Nov 2025 rally). Resistance at $100-105 (Feb 2026 convert-driven highs). Breakout above $105 with volume &gt;15M shares targets $120-150 (next convert strike cluster). MACD neutral on weekly.
               </p>
               <p>
-                <strong>Catalyst Trading:</strong> Satellite launch dates provide predictable volatility windows. Build position 2-3 weeks before scheduled launches. Take partial profits into strength post-launch. Use RSI divergence to identify exhaustion after catalyst-driven rallies. Relative strength vs NASDAQ positive — outperforming growth cohort.
+                <strong>Catalyst Trading:</strong> Monthly launch cadence (BB7+) provides regular volatility windows. Beta service announcement (25 sats, summer 2026) is the next major technical event. Build position 2-3 weeks before launches. Quarterly earnings now provide fundamental catalysts. Relative strength vs NASDAQ positive — outperforming growth cohort. Convert strike prices ($80, $120, $150, $180) create defined price magnets.
               </p>
               <div className="sm-callout" style={{ '--callout-color': 'var(--mint)' } as React.CSSProperties}>
                 <strong className="sm-mint">Technical Outlook:</strong> {current.perspectives.technicalAnalyst.ecosystemView}
@@ -6651,13 +6663,13 @@ const InvestmentTab = () => {
             </div>
             <div className="sm-body sm-lh-18">
               <p>
-                <strong>The Case:</strong> Constellation deployment is accelerating (6 sats/month production), commercial service imminent in 2026, $1B+ contracted revenue provides visibility, and MNO partnerships de-risk go-to-market. The technology works (BW3 proved it). Valuation at ~$300/potential subscriber is cheap vs telco M&amp;A comps ($500+). Risk/reward is asymmetric to the upside.
+                <strong>The Case:</strong> Audited FY2025 revenue $70.9M (Q4 $54.3M, +268% seq) proves commercial traction. $2,780M cash fully funds ~90 sat constellation. $1.2B RPO backlog provides multi-year visibility. 2026 guide $150-200M, 2027 target $1B. 6 carrier exclusives + 57 MOUs. 28 microns complete. Risk/reward strongly asymmetric: $32B EV vs potential $50B+ at $1B revenue.
               </p>
               <p>
-                <strong>The Hesitation:</strong> Still pre-revenue with $300M+ annual burn. Execution risk on 40+ satellite launches. FCC/regulatory uncertainty in some markets. Starlink competition narrative (though different model). Stock has run significantly — buying at highs feels uncomfortable.
+                <strong>The Hesitation:</strong> $87 stock price reflects significant de-risking already. $2,264M debt creates dilution overhang as converts trigger. FY net loss still -$461M. Need to sustain 6 sats/month for beta timeline. Starlink/T-Mobile competition evolving. Stock has 4x&apos;d from launch — late entry risk if execution stumbles.
               </p>
               <p>
-                <strong>The Verdict:</strong> Yes, initiate or add to position. The de-risking from successful launches justifies higher prices. Use pullbacks on &quot;sell the news&quot; events to add. This is a 3-5 year hold — don&apos;t trade around short-term volatility. Size appropriately for binary outcome profile (1-3% of portfolio).
+                <strong>The Verdict:</strong> Yes — upgrade to Strong Buy. The 10-K confirms everything the market hoped for. Revenue inflection is real, not projected. $2.8B cash eliminates the #1 risk (funding). Use pullbacks to $75-80 to add aggressively. This is a 2-4 year infrastructure hold. Size 2-5% depending on portfolio risk tolerance.
               </p>
             </div>
           </div>
@@ -6669,19 +6681,19 @@ const InvestmentTab = () => {
               <div className="sm-callout" style={{ '--callout-color': 'var(--gold)' } as React.CSSProperties}>
                 <div className="sm-fw-600 sm-gold sm-text-13">Short-Term (0-6 months)</div>
                 <div className="sm-text-13 sm-lh-16">
-                  Catalyst-rich period: BB7-13 launches, US commercial service initiation, Q4 earnings. Expect 30-50% swings around events. Successful launches = 10-20% pops, then consolidation. Trading range likely $20-45 depending on execution. Volatility is your friend if sized correctly.
+                  Catalyst-dense: BB7+ monthly launches toward 25-sat beta, Q1 2026 earnings, FCC STA approvals, new MNO activations. Trading range $75-120. Successful launches = 5-10% pops. Beta service announcement = potential 20-30% breakout. Convert dynamics create defined support/resistance.
                 </div>
               </div>
               <div className="sm-callout" style={{ '--callout-color': 'var(--sky)' } as React.CSSProperties}>
                 <div className="sm-fw-600 sm-sky sm-text-13">Mid-Term (6-18 months)</div>
                 <div className="sm-text-13 sm-lh-16">
-                  Revenue recognition begins — first real P&amp;L validation. If penetration tracks to 1%+, narrative shifts from &quot;will it work?&quot; to &quot;how big can it get?&quot; Multiple expansion potential. Target range: $50-100 if execution continues. This is where the thesis gets proven or broken.
+                  Revenue scaling toward $150-200M 2026 guide. Beta service proving continuous coverage. Multiple expansion as market reclassifies from &quot;pre-revenue speculation&quot; to &quot;growth infrastructure.&quot; Target range $120-200. Analyst upgrades and institutional re-rating likely. This is the value creation sweet spot.
                 </div>
               </div>
               <div className="sm-callout" style={{ '--callout-color': 'var(--cyan)' } as React.CSSProperties}>
                 <div className="sm-fw-600 sm-cyan sm-text-13">Long-Term (3-5 years)</div>
                 <div className="sm-text-13 sm-lh-16">
-                  At scale (2%+ penetration, 60M+ subs), ASTS could generate $5-10B revenue at 50%+ EBITDA margins. At telco multiples (8-12x EBITDA), that&apos;s $40-120B EV vs ~$12B today. 3-10x return potential. But crypto-like volatility along the way — expect multiple 40%+ drawdowns.
+                  At scale (2%+ penetration, 60M+ subs), ASTS targets $5-10B revenue at 50%+ EBITDA margins. At infrastructure multiples (10-15x EBITDA), that&apos;s $50-150B EV vs ~$32B today. 2-5x return potential from current levels. Volatility will remain — expect 30%+ drawdowns — but the direction is up if execution continues.
                 </div>
               </div>
             </div>
@@ -6692,16 +6704,16 @@ const InvestmentTab = () => {
             <div className="sm-text sm-fw-600 sm-body-lg">What&apos;s My Strategy?</div>
             <div className="sm-body sm-lh-18">
               <p>
-                <strong className="sm-cyan">Position Sizing:</strong> 2-4% for aggressive growth portfolios, 1-2% for balanced growth, avoid for conservative/income. This is a high-conviction, high-volatility position. Size so you can hold through 50% drawdowns without losing sleep. Never bet the farm on binary outcomes.
+                <strong className="sm-cyan">Position Sizing:</strong> 3-5% for aggressive growth, 2-3% for balanced growth, 1% for conservative. With audited revenue and $2.8B cash, the risk profile has improved significantly. Size so you can hold through 30% drawdowns comfortably. This is now an infrastructure compounder, not a binary bet.
               </p>
               <p>
-                <strong className="sm-sky">Entry Approach:</strong> Accumulate on pullbacks, especially &quot;sell the news&quot; events after successful launches. Add on 15-20% dips from local highs. Don&apos;t chase parabolic moves. Use 4-8 week DCA for new positions. Options strategies (selling puts, bull call spreads) can enhance entry.
+                <strong className="sm-sky">Entry Approach:</strong> Accumulate at $75-85 (200-day SMA support). Add aggressively on any pullback below $75 (gap fill). Don&apos;t chase above $100 without catalyst. Use 4-6 week DCA for new positions. Selling puts at $70-75 strike provides income while waiting for entry. Convert strike prices ($80, $120, $150) create natural entry/exit levels.
               </p>
               <p>
-                <strong className="sm-gold">Exit Strategy:</strong> Trim 20% at 2x, another 20% at 3x, let 60% ride as &quot;house money.&quot; Full exit triggers: (1) launch failure pattern (2+ consecutive), (2) major MNO partnership cancellation, (3) competitive moat erosion, (4) management credibility issues. Take profits into strength, not weakness.
+                <strong className="sm-gold">Exit Strategy:</strong> First trim at $150 (20%), second at $200 (20%), let 60% ride for $1B revenue confirmation. Full exit triggers: (1) 2+ consecutive launch failures, (2) 2026 revenue below $100M (significant miss vs $150-200M guide), (3) major MNO cancellation, (4) competitive disruption. Take profits into strength on catalyst pops.
               </p>
               <p>
-                <strong className="sm-coral">Risk Management:</strong> No hard stop-losses — volatility will trigger them inappropriately. Instead, thesis-based exits: reassess on any launch failure, regulatory setback, or competitive threat. Maintain conviction through normal volatility. If thesis breaks, exit regardless of price. Time stops: if no commercial traction by end of 2026, reassess entire position.
+                <strong className="sm-coral">Risk Management:</strong> Weekly close below $65 warrants position review — structural breakdown. Thesis-based exits: reassess on any launch failure, guidance cut, or MNO defection. Normal volatility (±20%) is not a sell signal. The 10-K data provides fundamental anchoring that previous quarters lacked. Time stop: if 2027 revenue tracks below $500M, reassess entire thesis.
               </p>
             </div>
           </div>
