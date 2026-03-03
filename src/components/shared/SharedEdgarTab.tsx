@@ -249,6 +249,53 @@ function matchFilings(
   });
 }
 
+// ── Merge helpers ──────────────────────────────────────────────────────────
+/**
+ * Merge static props (primary) with database results (supplementary).
+ * Props are the baseline truth (always up-to-date with code).
+ * Database may contain additional entries added by AI agents at runtime.
+ * A DB entry is "already in props" if it matches on (type + normalizedDate + period)
+ * or accessionNumber.
+ */
+function mergeLocalFilings(
+  propsFilings: LocalFiling[],
+  dbFilings: LocalFiling[],
+): LocalFiling[] {
+  const propsKeys = new Set<string>();
+  const propsAccessions = new Set<string>();
+  for (const f of propsFilings) {
+    propsKeys.add(`${f.type}|${normalizeDate(f.date)}|${f.period}`);
+    if (f.accessionNumber) propsAccessions.add(normalizeAccession(f.accessionNumber));
+  }
+
+  const dbOnly: LocalFiling[] = [];
+  for (const dbf of dbFilings) {
+    const key = `${dbf.type}|${normalizeDate(dbf.date)}|${dbf.period}`;
+    const accNorm = dbf.accessionNumber ? normalizeAccession(dbf.accessionNumber) : '';
+    if (!propsKeys.has(key) && !(accNorm && propsAccessions.has(accNorm))) {
+      dbOnly.push(dbf);
+    }
+  }
+
+  return dbOnly.length > 0 ? [...propsFilings, ...dbOnly] : propsFilings;
+}
+
+/**
+ * Merge static cross-ref index (primary) with database cross-refs (supplementary).
+ * For each filing key, props entries take precedence. DB-only keys are added.
+ */
+function mergeCrossRefs(
+  propsRefs: Record<string, { source: string; data: string }[]> | undefined,
+  dbRefs: Record<string, { source: string; data: string }[]>,
+): Record<string, { source: string; data: string }[]> {
+  if (!propsRefs) return dbRefs;
+  const merged = { ...propsRefs };
+  for (const [key, entries] of Object.entries(dbRefs)) {
+    if (!merged[key]) merged[key] = entries;
+  }
+  return merged;
+}
+
 // ── Status helpers ──────────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<FilingStatus, { color: string; label: string; title: string; desc: string }> = {
   tracked:   { color: 'var(--mint)',  label: 'IN DB',     title: 'Tracked in database', desc: 'Indexed in sec-filings.ts — matched by accession number or closest form+date (within 14 days)' },
@@ -1317,7 +1364,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
   const [filter, setFilter] = useState('All');
 
-  // Refreshed local data (read from disk, bypassing bundler cache)
+  // Supplementary DB data (merged with static props — DB adds runtime AI-agent patches)
   const [refreshedLocalFilings, setRefreshedLocalFilings] = useState<LocalFiling[] | null>(null);
   const [refreshedCrossRefs, setRefreshedCrossRefs] = useState<Record<string, { source: string; data: string }[]> | null>(null);
 
@@ -1331,8 +1378,16 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   // Persistent analysis cache (survives page reloads — loaded from Postgres)
   const [persistedAnalyses, setPersistedAnalyses] = useState<Record<string, string>>({});
 
-  const effectiveLocalFilings = refreshedLocalFilings ?? localFilings;
-  const effectiveCrossRefs = refreshedCrossRefs ?? crossRefIndex;
+  // Merge: props (static imports) are the primary baseline; DB adds supplementary entries.
+  // This ensures code edits to sec-filings.ts are reflected without requiring a DB re-seed.
+  const effectiveLocalFilings = useMemo(() => {
+    if (!refreshedLocalFilings) return localFilings;
+    return mergeLocalFilings(localFilings, refreshedLocalFilings);
+  }, [localFilings, refreshedLocalFilings]);
+  const effectiveCrossRefs = useMemo(() => {
+    if (!refreshedCrossRefs) return crossRefIndex;
+    return mergeCrossRefs(crossRefIndex, refreshedCrossRefs);
+  }, [crossRefIndex, refreshedCrossRefs]);
 
   const results = useMemo(
     () => matchFilings(edgarFilings, effectiveLocalFilings, effectiveCrossRefs),
