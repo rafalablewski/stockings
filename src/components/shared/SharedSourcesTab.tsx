@@ -1209,6 +1209,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         const data = await res.json();
         const articles: { cacheKey: string; headline: string; date: string | null; url: string | null; source: string | null; articleType: string | null; dismissed: boolean; hidden: boolean }[] = data.articles || [];
 
+        if (articles.length === 0 && !cancelled) {
+          console.warn('[db-init] GET /api/seen-articles returned 0 articles. Response:', data._debug ?? data.error ?? data);
+        }
+
         if (cancelled) return;
 
         const prs: ArticleItem[] = [];
@@ -1869,6 +1873,17 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             </div>
 
             {/* Divider */}
+            <div className="sm-ed-hdivider" />
+
+            {/* ── HOW TO TEST PERSISTENCE ─────────────────────── */}
+            <div className="sm-ed-method-label">How to test: do PRs survive refresh?</div>
+            <div className="sm-ed-method-text">
+              <div>1. Open DevTools → Console. Click <strong>Fetch PRs</strong> and wait for the list to appear.</div>
+              <div>2. In Console, confirm no error. Refresh the page (F5).</div>
+              <div>3. If the list is empty: in Console look for <code>[db-init] GET /api/seen-articles returned 0 articles</code>. The logged response shows whether the API returned data or an error.</div>
+              <div>4. Or open a new tab and go to <code>/api/seen-articles?ticker=ASTS&debug=1</code> (same origin). Check <code>_debug.rowCount</code> and <code>articles.length</code> — if both are 0 after a successful Fetch PRs, the write is not persisting (check DATABASE_URL and server logs).</div>
+            </div>
+
             <div className="sm-ed-hdivider" />
 
             {/* ── BUTTON DISTINCTION ────────────────────────── */}

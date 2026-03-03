@@ -128,7 +128,10 @@ export async function GET(request: NextRequest) {
       hidden: row.hidden,
     }));
 
-    return NextResponse.json({ articles }, {
+    const debug = request.nextUrl.searchParams.get('debug');
+    const body = debug ? { articles, _debug: { ticker: t, rowCount: rows.length } } : { articles };
+    console.log(`[seen-articles] GET ticker=${t} → ${rows.length} rows`);
+    return NextResponse.json(body, {
       headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
     });
   } catch (error) {
