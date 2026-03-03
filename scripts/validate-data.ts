@@ -8,13 +8,8 @@
  */
 
 import { z } from 'zod';
+import { tickers } from '../src/lib/stocks';
 import { competitorNewsEntrySchema } from '../src/data/shared/competitor-schema';
-import { COMPS_TIMELINE } from '../src/data/asts/comps-timeline';
-import { BMNR_COMPETITOR_NEWS } from '../src/data/bmnr/competitor-news';
-import { CRCL_COMPETITOR_NEWS } from '../src/data/crcl/competitor-news';
-import { ASTS_SEC_FILINGS, ASTS_SEC_META, ASTS_FILING_CROSS_REFS } from '../src/data/asts/sec-filings';
-import { BMNR_SEC_FILINGS, BMNR_SEC_META, BMNR_FILING_CROSS_REFS } from '../src/data/bmnr/sec-filings';
-import { SEC_FILINGS as CRCL_SEC_FILINGS, SEC_META as CRCL_SEC_META } from '../src/data/crcl/financials';
 
 const arraySchema = z.array(competitorNewsEntrySchema);
 
@@ -110,7 +105,7 @@ function validateSecFilings(
 // Known competitor IDs and categories per stock (from data file headers).
 // These are NOT enforced — unknown values produce warnings, not errors.
 // Update these lists when new competitors or categories are added.
-const KNOWN = {
+const KNOWN: Record<string, { competitors: readonly string[]; categories: readonly string[] }> = {
   ASTS: {
     competitors: ['starlink-tmobile', 'lynk', 'apple-globalstar', 'skylo', 'iridium', 'amazon-leo', 'echostar', 'oq-technology', 'other'],
     categories: ['Launch', 'Partnership', 'Technology', 'Regulatory', 'Financial', 'Coverage', 'Product'],
@@ -123,7 +118,7 @@ const KNOWN = {
     competitors: ['kraken', 'tether', 'coinbase', 'paypal', 'fdusd', 'other'],
     categories: ['Partnership', 'Product', 'Regulatory', 'Technology', 'Financial', 'Strategy', 'Distribution'],
   },
-} as const;
+};
 
 let hasErrors = false;
 let warningCount = 0;
@@ -135,7 +130,7 @@ interface Entry {
   [key: string]: unknown;
 }
 
-function validate(name: string, data: unknown[], known: { competitors: readonly string[]; categories: readonly string[] }) {
+function validateCompetitorNews(name: string, data: unknown[], known: { competitors: readonly string[]; categories: readonly string[] }) {
   const result = arraySchema.safeParse(data);
   if (result.success) {
     console.log(`✓ ${name}: ${data.length} entries valid`);
@@ -145,10 +140,9 @@ function validate(name: string, data: unknown[], known: { competitors: readonly 
     for (const issue of result.error.issues) {
       console.error(`  → [${issue.path.join('.')}] ${issue.message}`);
     }
-    return; // Skip warnings if schema validation fails
+    return;
   }
 
-  // Warnings for unknown competitor IDs and categories
   const entries = data as Entry[];
   for (let i = 0; i < entries.length; i++) {
     const entry = entries[i];
@@ -163,35 +157,99 @@ function validate(name: string, data: unknown[], known: { competitors: readonly 
   }
 }
 
-console.log('Validating competitor news data...\n');
+// ── Dynamic module helpers ───────────────────────────────────────────────────
 
-validate('ASTS COMPS_TIMELINE', COMPS_TIMELINE, KNOWN.ASTS);
-validate('BMNR COMPETITOR_NEWS', BMNR_COMPETITOR_NEWS, KNOWN.BMNR);
-validate('CRCL COMPETITOR_NEWS', CRCL_COMPETITOR_NEWS, KNOWN.CRCL);
-
-// ── SEC filing cross-ref consistency ──────────────────────────────────────────
-
-console.log('\nValidating SEC filing consistency...\n');
-
-console.log('--- ASTS ---');
-validateSecFilings('ASTS', ASTS_SEC_FILINGS, ASTS_SEC_META, ASTS_FILING_CROSS_REFS);
-
-console.log('\n--- BMNR ---');
-validateSecFilings('BMNR', BMNR_SEC_FILINGS, BMNR_SEC_META, BMNR_FILING_CROSS_REFS);
-
-console.log('\n--- CRCL ---');
-validateSecFilings('CRCL', CRCL_SEC_FILINGS, CRCL_SEC_META);
-
-// ── Final summary ────────────────────────────────────────────────────────────
-
-console.log('');
-
-if (hasErrors) {
-  console.error('Validation FAILED — fix the errors above.');
-  process.exit(1);
-} else if (warningCount > 0) {
-  console.log(`All data structurally valid. ${warningCount} warning(s) detected.`);
-  console.log('Review warnings above — missing cross-refs and unknown IDs should be addressed.');
-} else {
-  console.log('All data validated successfully.');
+/** Try importing a module, return null on failure. */
+async function tryImport(path: string): Promise<Record<string, unknown> | null> {
+  try { return await import(path); } catch { return null; }
 }
+
+/**
+ * Resolve a named export from a module.
+ * Tries {TICKER}_NAME first (e.g., ASTS_SEC_FILINGS), then plain NAME (e.g., SEC_FILINGS).
+ */
+function resolve<T>(mod: Record<string, unknown>, ticker: string, name: string): T | undefined {
+  return (mod[`${ticker}_${name}`] ?? mod[name]) as T | undefined;
+}
+
+// ── Main (async for dynamic imports) ─────────────────────────────────────────
+
+async function main() {
+  const dir = `${__dirname}/../src/data`;
+
+  // ── 1. Competitor news ───────────────────────────────────────────────────
+  console.log('Validating competitor news data...\n');
+
+  for (const ticker of tickers) {
+    const t = ticker.toLowerCase();
+    // Try known competitor news file patterns
+    const mod =
+      await tryImport(`${dir}/${t}/comps-timeline`) ??
+      await tryImport(`${dir}/${t}/competitor-news`);
+    if (!mod) continue;
+
+    const data =
+      resolve<unknown[]>(mod, ticker, 'COMPS_TIMELINE') ??
+      resolve<unknown[]>(mod, ticker, 'COMPETITOR_NEWS');
+    if (!data) continue;
+
+    const known = KNOWN[ticker];
+    if (known) {
+      validateCompetitorNews(`${ticker} competitor news`, data, known);
+    } else {
+      // No known-list configured — still validate schema
+      const result = arraySchema.safeParse(data);
+      if (result.success) {
+        console.log(`✓ ${ticker} competitor news: ${data.length} entries valid (no known-list configured)`);
+      } else {
+        hasErrors = true;
+        console.error(`✗ ${ticker} competitor news: validation failed`);
+        for (const issue of result.error.issues) console.error(`  → [${issue.path.join('.')}] ${issue.message}`);
+      }
+    }
+  }
+
+  // ── 2. SEC filing cross-ref consistency ──────────────────────────────────
+  console.log('\nValidating SEC filing consistency...\n');
+
+  type Filing = { date: string; type: string; description: string; period: string; color?: string };
+  type Meta = { totalFilingsTracked?: number; [key: string]: unknown };
+  type CrossRefs = Record<string, { source: string; data: string }[]>;
+
+  for (const ticker of tickers) {
+    const t = ticker.toLowerCase();
+    const mod =
+      await tryImport(`${dir}/${t}/sec-filings`) ??
+      await tryImport(`${dir}/${t}/financials`);
+
+    console.log(`--- ${ticker} ---`);
+    if (!mod) {
+      console.log(`  ℹ No SEC filing data found (tried sec-filings.ts, financials.ts)\n`);
+      continue;
+    }
+
+    const filings = resolve<Filing[]>(mod, ticker, 'SEC_FILINGS');
+    const meta = resolve<Meta>(mod, ticker, 'SEC_META');
+    if (!filings || !meta) {
+      console.log(`  ℹ SEC_FILINGS or SEC_META export not found\n`);
+      continue;
+    }
+
+    const crossRefs = resolve<CrossRefs>(mod, ticker, 'FILING_CROSS_REFS');
+    validateSecFilings(ticker, filings, meta, crossRefs);
+    console.log('');
+  }
+
+  // ── 3. Final summary ────────────────────────────────────────────────────
+  if (hasErrors) {
+    console.error('Validation FAILED — fix the errors above.');
+    process.exit(1);
+  } else if (warningCount > 0) {
+    console.log(`All data structurally valid. ${warningCount} warning(s) detected.`);
+    console.log('Review warnings above — missing cross-refs and unknown IDs should be addressed.');
+  } else {
+    console.log('All data validated successfully.');
+  }
+}
+
+main();
