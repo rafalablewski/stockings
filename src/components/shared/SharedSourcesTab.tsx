@@ -579,6 +579,10 @@ const SourceArticleSection: React.FC<{
   const visibleCount = Math.min(visible.length, SECTION_MAX);
   const remainingHidden = hidden.length - HIDDEN_PREVIEW;
 
+  if (articles.length > 0 && visible.length === 0) {
+    console.warn(`[SourceArticleSection] "${label}": ${articles.length} items loaded but 0 visible (all hidden in dbRecords). dbRecords.size=${dbRecords.size}. Sample key: ${articleCacheKey(articles[0])} → hidden=${dbRecords.get(articleCacheKey(articles[0]))?.hidden}`);
+  }
+
   if (displayed.length === 0) return null;
 
   return (
@@ -586,6 +590,11 @@ const SourceArticleSection: React.FC<{
       <div className="sm-micro-label" style={{ padding: '8px 12px 4px', opacity: 0.7, letterSpacing: '1.5px' }}>
         {label} ({visibleCount}{hidden.length > 0 ? ` + ${hidden.length} hidden` : ''})
       </div>
+      {visible.length === 0 && articles.length > 0 && (
+        <div className="sm-text3" style={{ padding: '4px 12px', fontSize: 11 }}>
+          All {articles.length} items are in the hidden list. Expand below or unhide to see them.
+        </div>
+      )}
       {displayed.map((a) => {
         const key = articleCacheKey(a);
         return (
@@ -1261,14 +1270,13 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         }
 
         dbRecordsRef.current = records;
-        setDbRecords(new Map(records));
-        setNewArticleKeys(newKeys);
 
         // Deduplicate by normalized headline (DB may accumulate entries with different cache keys for the same article)
         const dedupedPrs = deduplicateByHeadline(prs);
         const prHeadlines = new Set(dedupedPrs.map(a => normalizeHeadline(a.headline)));
         const dedupedNews = deduplicateByHeadline(news).filter(a => !prHeadlines.has(normalizeHeadline(a.headline)));
-        console.log(`[db-init] loaded ${articles.length} articles from DB (${dedupedPrs.length} PR, ${dedupedNews.length} news after dedup, ${newKeys.size} NEW)`);
+        const prHiddenCount = dedupedPrs.filter(a => records.get(articleCacheKey(a))?.hidden).length;
+        console.log(`[db-init] loaded ${articles.length} articles from DB (${dedupedPrs.length} PR, ${dedupedNews.length} news after dedup, ${newKeys.size} NEW); PRs with hidden=true: ${prHiddenCount}`);
 
         // Run check-analyzed on DB articles, then show everything in one render
         const all = [...dedupedPrs, ...dedupedNews];
@@ -1282,7 +1290,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             finalNews = checked.slice(dedupedPrs.length);
           } catch { /* show articles with analyzed: null as fallback */ }
         }
+        // Batch all state updates so we never render with mainCard filled but dbRecords stale (avoids list disappearing after refresh)
         if (!cancelled) {
+          setDbRecords(new Map(records));
+          setNewArticleKeys(newKeys);
           setMainCard(prev => ({
             ...prev,
             loading: false,
@@ -1294,6 +1305,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             pressReleases: mergeArticles(finalPrs, prev.pressReleases),
             news: mergeArticles(finalNews, prev.news),
           }));
+          console.log(`[db-init] set state: ${finalPrs.length} PRs, ${finalNews.length} news`);
         }
       } catch (err) {
         console.error('[db-init] error:', err);
@@ -1882,6 +1894,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div>2. In Console, confirm no error. Refresh the page (F5).</div>
               <div>3. If the list is empty: in Console look for <code>[db-init] GET /api/seen-articles returned 0 articles</code>. The logged response shows whether the API returned data or an error.</div>
               <div>4. Or open a new tab and go to <code>/api/seen-articles?ticker=ASTS&debug=1</code> (same origin). Check <code>_debug.rowCount</code> and <code>articles.length</code> — if both are 0 after a successful Fetch PRs, the write is not persisting (check DATABASE_URL and server logs).</div>
+            </div>
+
+            <div className="sm-ed-method-label">How to check UI logic when the list disappears after refresh</div>
+            <div className="sm-ed-method-text">
+              <div>1. After refresh, in Console look for <code>[db-init] loaded N articles ... (X PR, Y news ...); PRs with hidden=true: Z</code>. If X &gt; 0 but Z = X, all PRs are marked hidden in the DB — they will show under “+ N hidden” (expand to see).</div>
+              <div>2. Look for <code>[db-init] set state: X PRs, Y news</code>. If X &gt; 0, PRs are in state; if the list is still empty, the next log explains why.</div>
+              <div>3. If you see <code>[SourceArticleSection] "Press Releases": N items loaded but 0 visible (all hidden in dbRecords)</code>, then <code>dbRecords</code> has <code>hidden: true</code> for those items (key mismatch or DB state). Check the sample key and <code>dbRecords.size</code> in that log.</div>
+              <div>4. If you see “All N items are in the hidden list” in the UI, those items are loaded but hidden; expand the hidden section or unhide to see them.</div>
             </div>
 
             <div className="sm-ed-hdivider" />
