@@ -18,6 +18,7 @@
 'use client';
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { flushSync } from 'react-dom';
 import { VERDICT_COLORS, parseVerdict, stripVerdict } from './verdictUtils';
 import { authFetch } from '@/lib/auth-fetch';
 
@@ -571,6 +572,10 @@ const SourceArticleSection: React.FC<{
   const visibleCount = Math.min(visible.length, SECTION_MAX);
   const remainingHidden = hidden.length - HIDDEN_PREVIEW;
 
+  if (articles.length > 0 && visible.length === 0) {
+    console.warn(`[SourceArticleSection] "${label}": ${articles.length} items loaded but 0 visible (all hidden in dbRecords). dbRecords.size=${dbRecords.size}. Sample key: ${articleCacheKey(articles[0])} → hidden=${dbRecords.get(articleCacheKey(articles[0]))?.hidden}`);
+  }
+
   if (displayed.length === 0) return null;
 
   return (
@@ -578,6 +583,11 @@ const SourceArticleSection: React.FC<{
       <div className="sm-micro-label" style={{ padding: '8px 12px 4px', opacity: 0.7, letterSpacing: '1.5px' }}>
         {label} ({visibleCount}{hidden.length > 0 ? ` + ${hidden.length} hidden` : ''})
       </div>
+      {visible.length === 0 && articles.length > 0 && (
+        <div className="sm-text3" style={{ padding: '4px 12px', fontSize: 11 }}>
+          All {articles.length} items are in the hidden list. Expand below or unhide to see them.
+        </div>
+      )}
       {displayed.map((a) => {
         const key = articleCacheKey(a);
         return (
@@ -633,6 +643,11 @@ const SourceArticleList: React.FC<{
   const prHeadlines = new Set(dedupedPRs.map(a => normalizeHeadline(a.headline)));
   const dedupedNews = deduplicateByHeadline(news).filter(a => !prHeadlines.has(normalizeHeadline(a.headline)));
 
+  // Debug: understand why list appears empty even when db-init logs show PRs
+  console.log(
+    `[SourceArticleList] render for ${ticker}: rawPR=${pressReleases.length}, dedupedPR=${dedupedPRs.length}, rawNews=${news.length}, dedupedNews=${dedupedNews.length}, dbRecords.size=${dbRecords.size}`
+  );
+
   if (dedupedPRs.length === 0 && dedupedNews.length === 0) {
     return (
       <div className="sm-body-sm sm-text3" style={{ padding: '16px 12px' }}>
@@ -675,6 +690,12 @@ const CompanyFeedCard: React.FC<{
 }> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onLoad, onLoadPR, onLoadNews, onRecheck, onDismissNew, onToggleHide }) => {
   const isActive = data.loading || data.loadingPR || data.loadingNews || (aiChecking ?? false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  if (isPrimary) {
+    console.log(
+      `[CompanyFeedCard] primary render: loaded=${data.loaded}, loading=${data.loading}, loadingPR=${data.loadingPR}, loadingNews=${data.loadingNews}, pr=${data.pressReleases.length}, news=${data.news.length}, dbRecords.size=${dbRecords.size}`
+    );
+  }
 
   return (
     <article
@@ -895,39 +916,27 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
   }, [ticker, forceLocal]);
 
-  // Helper: save articles to DB and update local state
+  // Helper: save articles to DB and update local state. Throws if save fails so callers can surface error.
   const saveArticlesToDb = useCallback(async (articles: { cacheKey: string; headline: string; date: string; url: string; source?: string; articleType: string }[], newKeys: Set<string>) => {
     if (articles.length === 0) return;
     console.log(`[ai-fetch] saving ${articles.length} articles to DB (${newKeys.size} NEW)...`);
-    try {
-      const saveRes = await fetch('/api/seen-articles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker, articles }),
-      });
-      const saveBody = await saveRes.json().catch(() => ({}));
-      if (saveRes.ok) {
-        console.log('[ai-fetch] save OK:', saveBody);
-        for (const a of articles) {
-          // Inherit hidden from same cache key OR any headline match (covers different URLs for same article)
-          const existingRec = dbRecordsRef.current.get(a.cacheKey);
-          let inheritHidden = existingRec?.hidden ?? false;
-          if (!inheritHidden) {
-            const nh = normalizeHeadline(a.headline);
-            for (const [, r] of dbRecordsRef.current) {
-              if (r.hidden && normalizeHeadline(r.headline) === nh) { inheritHidden = true; break; }
-            }
-          }
-          const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: newKeys.has(a.cacheKey) ? false : (existingRec?.dismissed ?? false), hidden: inheritHidden };
-          dbRecordsRef.current.set(a.cacheKey, rec);
-        }
-        setDbRecords(new Map(dbRecordsRef.current));
-      } else {
-        console.error('[ai-fetch] save FAILED:', saveRes.status, saveBody);
-      }
-    } catch (err) {
-      console.error('[ai-fetch] save error:', err);
+    const saveRes = await fetch('/api/seen-articles', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ticker, articles }),
+    });
+    const saveBody = await saveRes.json().catch(() => ({}));
+    if (!saveRes.ok) {
+      console.error('[ai-fetch] save FAILED:', saveRes.status, saveBody);
+      throw new Error(saveBody?.error || `Save failed: ${saveRes.status}`);
     }
+    console.log('[ai-fetch] save OK:', saveBody);
+    for (const a of articles) {
+      const existingRec = dbRecordsRef.current.get(a.cacheKey);
+      const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: newKeys.has(a.cacheKey) ? false : (existingRec?.dismissed ?? false), hidden: false };
+      dbRecordsRef.current.set(a.cacheKey, rec);
+    }
+    setDbRecords(new Map(dbRecordsRef.current));
   }, [ticker]);
 
   // Fetch Press Releases only
@@ -947,15 +956,15 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         if (!dbRecordsRef.current.has(key)) newKeys.add(key);
       }
 
+      const toSave = prs.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' }));
+      await saveArticlesToDb(toSave, newKeys);
+
       setMainCard(prev => ({
         ...prev, loadingPR: false, loaded: true,
         pressReleases: mergeArticles(prs, prev.pressReleases),
       }));
       setLastFetchedAt(Date.now());
       if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
-
-      const toSave = prs.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' }));
-      await saveArticlesToDb(toSave, newKeys);
 
       if (prs.length > 0) {
         setAiChecking(true);
@@ -965,8 +974,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         } catch { /* handled */ }
         finally { setAiChecking(false); }
       }
-    } catch {
-      setMainCard(prev => ({ ...prev, loadingPR: false, error: 'Could not fetch press releases' }));
+    } catch (err) {
+      setMainCard(prev => ({ ...prev, loadingPR: false, error: err instanceof Error ? err.message : 'Could not fetch or save press releases' }));
     }
   }, [ticker, checkAnalyzed, saveArticlesToDb]);
 
@@ -987,15 +996,15 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         if (!dbRecordsRef.current.has(key)) newKeys.add(key);
       }
 
+      const toSave = news.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'news' }));
+      await saveArticlesToDb(toSave, newKeys);
+
       setMainCard(prev => ({
         ...prev, loadingNews: false, loaded: true,
         news: mergeArticles(news, prev.news),
       }));
       setLastFetchedAt(Date.now());
       if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
-
-      const toSave = news.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'news' }));
-      await saveArticlesToDb(toSave, newKeys);
 
       if (news.length > 0) {
         setAiChecking(true);
@@ -1005,8 +1014,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         } catch { /* handled */ }
         finally { setAiChecking(false); }
       }
-    } catch {
-      setMainCard(prev => ({ ...prev, loadingNews: false, error: 'Could not fetch news' }));
+    } catch (err) {
+      setMainCard(prev => ({ ...prev, loadingNews: false, error: err instanceof Error ? err.message : 'Could not fetch or save news' }));
     }
   }, [ticker, checkAnalyzed, saveArticlesToDb]);
 
@@ -1035,41 +1044,48 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
     if (prResult.status === 'fulfilled') prs = prResult.value;
     if (newsResult.status === 'fulfilled') news = newsResult.value;
-    const error = (prResult.status === 'rejected' && newsResult.status === 'rejected') ? 'Could not fetch feeds' : null;
+    let fetchError: string | null = (prResult.status === 'rejected' && newsResult.status === 'rejected') ? 'Could not fetch feeds' : null;
 
-    const newKeys = new Set<string>();
-    for (const a of [...prs, ...news]) {
-      const key = articleCacheKey(a);
-      if (!dbRecordsRef.current.has(key)) newKeys.add(key);
-    }
+    try {
+      const newKeys = new Set<string>();
+      for (const a of [...prs, ...news]) {
+        const key = articleCacheKey(a);
+        if (!dbRecordsRef.current.has(key)) newKeys.add(key);
+      }
 
-    setMainCard(prev => ({
-      ...prev, loading: false, loadingPR: false, loadingNews: false, loaded: true, error,
-      pressReleases: mergeArticles(prs, prev.pressReleases),
-      news: mergeArticles(news, prev.news),
-    }));
-    setLastFetchedAt(Date.now());
-    if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
+      const allToSave = [
+        ...prs.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' })),
+        ...news.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'news' })),
+      ];
+      if (allToSave.length > 0) await saveArticlesToDb(allToSave, newKeys);
 
-    const allToSave = [
-      ...prs.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' })),
-      ...news.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'news' })),
-    ];
-    await saveArticlesToDb(allToSave, newKeys);
+      setMainCard(prev => ({
+        ...prev, loading: false, loadingPR: false, loadingNews: false, loaded: true, error: fetchError,
+        pressReleases: mergeArticles(prs, prev.pressReleases),
+        news: mergeArticles(news, prev.news),
+      }));
+      setLastFetchedAt(Date.now());
+      if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
 
-    const allArticles = [...prs, ...news];
-    if (allArticles.length > 0) {
-      initialRecheckDone.current = true;
-      setAiChecking(true);
-      try {
-        const checked = await checkAnalyzed(allArticles);
-        setMainCard(prev => ({
-          ...prev,
-          pressReleases: mergeArticles(checked.slice(0, prs.length), prev.pressReleases),
-          news: mergeArticles(checked.slice(prs.length), prev.news),
-        }));
-      } catch { /* handled */ }
-      finally { setAiChecking(false); }
+      const allArticles = [...prs, ...news];
+      if (allArticles.length > 0) {
+        initialRecheckDone.current = true;
+        setAiChecking(true);
+        try {
+          const checked = await checkAnalyzed(allArticles);
+          setMainCard(prev => ({
+            ...prev,
+            pressReleases: mergeArticles(checked.slice(0, prs.length), prev.pressReleases),
+            news: mergeArticles(checked.slice(prs.length), prev.news),
+          }));
+        } catch { /* handled */ }
+        finally { setAiChecking(false); }
+      }
+    } catch (err) {
+      setMainCard(prev => ({
+        ...prev, loading: false, loadingPR: false, loadingNews: false,
+        error: err instanceof Error ? err.message : (fetchError ?? 'Could not save to database'),
+      }));
     }
   }, [ticker, checkAnalyzed, saveArticlesToDb]);
 
@@ -1189,7 +1205,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
     async function init() {
       try {
-        const res = await fetch(`/api/seen-articles?ticker=${ticker}`);
+        const res = await fetch(`/api/seen-articles?ticker=${encodeURIComponent(ticker)}&_=${Date.now()}`, { cache: 'no-store' });
         if (!res.ok) {
           const errBody = await res.json().catch(() => ({}));
           console.error('[db-init] GET failed:', res.status, errBody);
@@ -1197,6 +1213,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         }
         const data = await res.json();
         const articles: { cacheKey: string; headline: string; date: string | null; url: string | null; source: string | null; articleType: string | null; dismissed: boolean; hidden: boolean }[] = data.articles || [];
+
+        if (articles.length === 0 && !cancelled) {
+          console.warn('[db-init] GET /api/seen-articles returned 0 articles. Response:', data._debug ?? data.error ?? data);
+        }
 
         if (cancelled) return;
 
@@ -1213,7 +1233,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             source: art.source || undefined,
             analyzed: null,
           };
-          if (art.articleType === 'pr') prs.push(item);
+          const isPr = (art.articleType ?? '').toLowerCase() === 'pr';
+          if (isPr) prs.push(item);
           else news.push(item);
 
           // Index by the key that articleCacheKey() will produce for this item —
@@ -1245,14 +1266,13 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         }
 
         dbRecordsRef.current = records;
-        setDbRecords(new Map(records));
-        setNewArticleKeys(newKeys);
 
         // Deduplicate by normalized headline (DB may accumulate entries with different cache keys for the same article)
         const dedupedPrs = deduplicateByHeadline(prs);
         const prHeadlines = new Set(dedupedPrs.map(a => normalizeHeadline(a.headline)));
         const dedupedNews = deduplicateByHeadline(news).filter(a => !prHeadlines.has(normalizeHeadline(a.headline)));
-        console.log(`[db-init] loaded ${articles.length} articles from DB (${dedupedPrs.length} PR, ${dedupedNews.length} news after dedup, ${newKeys.size} NEW)`);
+        const prHiddenCount = dedupedPrs.filter(a => records.get(articleCacheKey(a))?.hidden).length;
+        console.log(`[db-init] loaded ${articles.length} articles from DB (${dedupedPrs.length} PR, ${dedupedNews.length} news after dedup, ${newKeys.size} NEW); PRs with hidden=true: ${prHiddenCount}`);
 
         // Run check-analyzed on DB articles, then show everything in one render
         const all = [...dedupedPrs, ...dedupedNews];
@@ -1266,13 +1286,37 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             finalNews = checked.slice(dedupedPrs.length);
           } catch { /* show articles with analyzed: null as fallback */ }
         }
+        // Apply all state in one synchronous flush so we never render with mainCard filled but dbRecords stale (avoids list disappearing after refresh)
         if (!cancelled) {
-          setMainCard({ loading: false, loadingPR: false, loadingNews: false, loaded: true, error: null, activeTab: 'pr', pressReleases: finalPrs, news: finalNews });
+          flushSync(() => {
+            setDbRecords(new Map(records));
+            setNewArticleKeys(newKeys);
+            setMainCard(prev => ({
+              ...prev,
+              loading: false,
+              loadingPR: false,
+              loadingNews: false,
+              loaded: true,
+              error: null,
+              activeTab: 'pr',
+              pressReleases: mergeArticles(finalPrs, prev.pressReleases),
+              news: mergeArticles(finalNews, prev.news),
+            }));
+          });
+          console.log(`[db-init] set state: ${finalPrs.length} PRs, ${finalNews.length} news`);
         }
       } catch (err) {
         console.error('[db-init] error:', err);
         if (!cancelled) {
-          setMainCard({ loading: false, loadingPR: false, loadingNews: false, loaded: true, error: null, activeTab: 'pr', pressReleases: [], news: [] });
+          setMainCard(prev => ({
+            ...prev,
+            loading: false,
+            loadingPR: false,
+            loadingNews: false,
+            loaded: true,
+            error: null,
+            activeTab: 'pr',
+          }));
         }
       }
     }
@@ -1616,7 +1660,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div><span className="sm-text">Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_articles table</div>
               <div><span className="sm-text">Self-healing:</span> ensureTable() creates table + indexes on first request</div>
               <div><span className="sm-text">Graceful fallback:</span> returns empty array if table cannot be created</div>
-              <div><span className="sm-text">Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites url, source, headline, date, articleType</div>
+              <div><span className="sm-text">Merge on init:</span> DB load merges with existing state so Fetch PRs result is not overwritten when /api/seen-articles finishes</div>
+              <div><span className="sm-text">Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites url, source, headline, date, articleType; save-from-fetch also sets hidden=false so fetched articles show in the main list</div>
             </div>
 
             <div className="sm-ed-hdivider" />
@@ -1629,7 +1674,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <div style={{ width: 2, height: 10, background: 'var(--sky)' }} />
                 <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>GET /api/press-releases/[ticker]</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
-                <div className="sm-text3 sm-text-center" style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', lineHeight: 1.6 }}>Google News RSS filtered to wire services<br />(PRN, BusinessWire, GlobeNewsWire) + IR pages</div>
+                <div className="sm-text3 sm-text-center" style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', lineHeight: 1.6 }}>IR pages (with fallback for JS-rendered pages, e.g. ASTS) + direct Business Wire (newsroom, cheerio) + Google News RSS (company + ticker, wire sites). Returns up to 15; dedup by title.</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
                 <div className="sm-sky" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600 }}>articleType: &quot;pr&quot;</div>
               </div>
@@ -1645,8 +1690,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             </div>
             <div className="sm-ed-method-text sm-mt-12">
               <div><span className="sm-text">Independent:</span> each button fetches, saves, and checks independently</div>
-              <div><span className="sm-text">Max per type:</span> 10 articles (SECTION_MAX)</div>
-              <div><span className="sm-text">Save path:</span> POST /api/seen-articles &rarr; upsert with articleType tag</div>
+              <div><span className="sm-text">Display cap:</span> 10 articles per type (SECTION_MAX); API may return up to 15</div>
+              <div><span className="sm-text">Save path:</span> POST /api/seen-articles &rarr; upsert with articleType; hidden=false so fetched articles stay visible</div>
               <div><span className="sm-text">AI Fetch All:</span> fires both pipelines in parallel via Promise.allSettled</div>
             </div>
 
@@ -1824,8 +1869,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               </div>
             </div>
             <div className="sm-ed-method-text sm-mt-12">
-              <div><span className="sm-text">On mount:</span> loads articles from DB only &mdash; no external API calls</div>
-              <div><span className="sm-text">Fetch PRs / Fetch News:</span> independent buttons, each searches its own API</div>
+              <div><span className="sm-text">On mount:</span> loads articles from DB only &mdash; no external API calls; result merged with existing state so Fetch PRs is not overwritten</div>
+              <div><span className="sm-text">Fetch PRs / Fetch News:</span> independent buttons, each searches its own API; saved articles marked visible (hidden=false) so they show in the main list</div>
               <div><span className="sm-text">AI Fetch All:</span> fires both pipelines in parallel</div>
               <div><span className="sm-text">NEW badge:</span> bright clickable badge &mdash; article not yet acknowledged</div>
               <div><span className="sm-text">SEEN badge:</span> dimmed label after user clicks NEW &rarr; sets dismissed=true in DB</div>
@@ -1833,6 +1878,25 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             </div>
 
             {/* Divider */}
+            <div className="sm-ed-hdivider" />
+
+            {/* ── HOW TO TEST PERSISTENCE ─────────────────────── */}
+            <div className="sm-ed-method-label">How to test: do PRs survive refresh?</div>
+            <div className="sm-ed-method-text">
+              <div>1. Open DevTools → Console. Click <strong>Fetch PRs</strong> and wait for the list to appear.</div>
+              <div>2. In Console, confirm no error. Refresh the page (F5).</div>
+              <div>3. If the list is empty: in Console look for <code>[db-init] GET /api/seen-articles returned 0 articles</code>. The logged response shows whether the API returned data or an error.</div>
+              <div>4. Or open a new tab and go to <code>/api/seen-articles?ticker=ASTS&debug=1</code> (same origin). Check <code>_debug.rowCount</code> and <code>articles.length</code> — if both are 0 after a successful Fetch PRs, the write is not persisting (check DATABASE_URL and server logs).</div>
+            </div>
+
+            <div className="sm-ed-method-label">How to check UI logic when the list disappears after refresh</div>
+            <div className="sm-ed-method-text">
+              <div>1. After refresh, in Console look for <code>[db-init] loaded N articles ... (X PR, Y news ...); PRs with hidden=true: Z</code>. If X &gt; 0 but Z = X, all PRs are marked hidden in the DB — they will show under “+ N hidden” (expand to see).</div>
+              <div>2. Look for <code>[db-init] set state: X PRs, Y news</code>. If X &gt; 0, PRs are in state; if the list is still empty, the next log explains why.</div>
+              <div>3. If you see <code>[SourceArticleSection] "Press Releases": N items loaded but 0 visible (all hidden in dbRecords)</code>, then <code>dbRecords</code> has <code>hidden: true</code> for those items (key mismatch or DB state). Check the sample key and <code>dbRecords.size</code> in that log.</div>
+              <div>4. If you see “All N items are in the hidden list” in the UI, those items are loaded but hidden; expand the hidden section or unhide to see them.</div>
+            </div>
+
             <div className="sm-ed-hdivider" />
 
             {/* ── BUTTON DISTINCTION ────────────────────────── */}
