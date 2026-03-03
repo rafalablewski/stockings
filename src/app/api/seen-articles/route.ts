@@ -128,7 +128,9 @@ export async function GET(request: NextRequest) {
       hidden: row.hidden,
     }));
 
-    return NextResponse.json({ articles });
+    return NextResponse.json({ articles }, {
+      headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
+    });
   } catch (error) {
     console.error('[seen-articles] GET query error:', error);
 

@@ -1200,7 +1200,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
     async function init() {
       try {
-        const res = await fetch(`/api/seen-articles?ticker=${ticker}`);
+        const res = await fetch(`/api/seen-articles?ticker=${encodeURIComponent(ticker)}&_=${Date.now()}`, { cache: 'no-store' });
         if (!res.ok) {
           const errBody = await res.json().catch(() => ({}));
           console.error('[db-init] GET failed:', res.status, errBody);
@@ -1224,7 +1224,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             source: art.source || undefined,
             analyzed: null,
           };
-          if (art.articleType === 'pr') prs.push(item);
+          const isPr = (art.articleType ?? '').toLowerCase() === 'pr';
+          if (isPr) prs.push(item);
           else news.push(item);
 
           // Index by the key that articleCacheKey() will produce for this item —
