@@ -651,6 +651,11 @@ const SourceArticleList: React.FC<{
   const prHeadlines = new Set(dedupedPRs.map(a => normalizeHeadline(a.headline)));
   const dedupedNews = deduplicateByHeadline(news).filter(a => !prHeadlines.has(normalizeHeadline(a.headline)));
 
+  // Debug: understand why list appears empty even when db-init logs show PRs
+  console.log(
+    `[SourceArticleList] render for ${ticker}: rawPR=${pressReleases.length}, dedupedPR=${dedupedPRs.length}, rawNews=${news.length}, dedupedNews=${dedupedNews.length}, dbRecords.size=${dbRecords.size}`
+  );
+
   if (dedupedPRs.length === 0 && dedupedNews.length === 0) {
     return (
       <div className="sm-body-sm sm-text3" style={{ padding: '16px 12px' }}>
@@ -693,6 +698,12 @@ const CompanyFeedCard: React.FC<{
 }> = ({ label, url, data, showAnalysis, aiChecking, isPrimary, fetchedAt, ticker, newArticleKeys, dbRecords, persistedSourceAnalyses, onLoad, onLoadPR, onLoadNews, onRecheck, onDismissNew, onToggleHide }) => {
   const isActive = data.loading || data.loadingPR || data.loadingNews || (aiChecking ?? false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  if (isPrimary) {
+    console.log(
+      `[CompanyFeedCard] primary render: loaded=${data.loaded}, loading=${data.loading}, loadingPR=${data.loadingPR}, loadingNews=${data.loadingNews}, pr=${data.pressReleases.length}, news=${data.news.length}, dbRecords.size=${dbRecords.size}`
+    );
+  }
 
   return (
     <article
