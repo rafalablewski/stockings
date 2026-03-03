@@ -1283,12 +1283,30 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           } catch { /* show articles with analyzed: null as fallback */ }
         }
         if (!cancelled) {
-          setMainCard({ loading: false, loadingPR: false, loadingNews: false, loaded: true, error: null, activeTab: 'pr', pressReleases: finalPrs, news: finalNews });
+          setMainCard(prev => ({
+            ...prev,
+            loading: false,
+            loadingPR: false,
+            loadingNews: false,
+            loaded: true,
+            error: null,
+            activeTab: 'pr',
+            pressReleases: mergeArticles(finalPrs, prev.pressReleases),
+            news: mergeArticles(finalNews, prev.news),
+          }));
         }
       } catch (err) {
         console.error('[db-init] error:', err);
         if (!cancelled) {
-          setMainCard({ loading: false, loadingPR: false, loadingNews: false, loaded: true, error: null, activeTab: 'pr', pressReleases: [], news: [] });
+          setMainCard(prev => ({
+            ...prev,
+            loading: false,
+            loadingPR: false,
+            loadingNews: false,
+            loaded: true,
+            error: null,
+            activeTab: 'pr',
+          }));
         }
       }
     }

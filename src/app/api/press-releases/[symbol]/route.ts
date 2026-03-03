@@ -121,38 +121,48 @@ async function fetchBusinessWireDirect(companyName: string, ticker: string): Pro
   return all;
 }
 
+/** Extract headline from BW URL path: .../en/Headline-In-Words format. */
+function titleFromBusinessWireUrl(href: string): string {
+  const match = href.match(/\/en\/([^/?#]+)/);
+  if (!match) return '';
+  return decodeURIComponent(match[1]).replace(/-/g, ' ').trim();
+}
+
 function parseBusinessWireHTML(html: string, companyName: string, ticker: string): PressRelease[] {
   const items: PressRelease[] = [];
   const $ = cheerio.load(html);
   const seenUrls = new Set<string>();
-  // Business Wire article links: .../news/home/YYYYMMDD.../en/...
   const selector = 'a[href*="businesswire.com/news/home/"]';
 
   $(selector).each((_, el) => {
     if (items.length >= 15) return false;
-    const href = $(el).attr('href');
+    let href = $(el).attr('href');
     if (!href || seenUrls.has(href)) return;
+    href = href.startsWith('http') ? href : `https://www.businesswire.com${href.startsWith('/') ? '' : '/'}${href}`;
     seenUrls.add(href);
 
-    const rawText = $(el).text();
-    const title = safeTitleFromLinkText(rawText);
-    if (!title || title.length < 10) return;
+    const linkText = safeTitleFromLinkText($(el).text());
+    const slugTitle = titleFromBusinessWireUrl(href);
+    const title = (linkText && linkText.length >= 10) ? linkText : slugTitle;
+    if (!title || title.length < 5) return;
 
-    // Only include if title mentions company name or ticker (newsroom can show unfiltered results)
+    // Match company/ticker in title OR in URL slug (many BW pages use headline in path)
     const lowerTitle = title.toLowerCase();
+    const lowerHref = href.toLowerCase();
     const lowerName = companyName.toLowerCase();
     const nameWords = lowerName.split(/\s+/).filter(Boolean);
     const tickerWord = new RegExp(`\\b${ticker.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
-    const matchesName = nameWords.some(w => lowerTitle.includes(w)) || tickerWord.test(lowerTitle);
-    if (!matchesName) return;
+    const companySlug = lowerName.replace(/\s+/g, '-');
+    const slugHasCompany = lowerHref.includes(companySlug) || lowerHref.includes(`-${ticker.toLowerCase()}-`) || lowerHref.endsWith(`-${ticker.toLowerCase()}`);
+    const titleMatches = nameWords.some(w => lowerTitle.includes(w)) || tickerWord.test(lowerTitle);
+    if (!titleMatches && !slugHasCompany) return;
 
-    // Date from URL only (YYYYMMDD...) — avoid wrong date from unrelated page context
     const dateMatch = href.match(/\/news\/home\/(\d{4})(\d{2})(\d{2})\d*/);
     const date = dateMatch ? `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}` : '';
 
     items.push({
       title,
-      url: href.startsWith('http') ? href : `https://www.businesswire.com${href.startsWith('/') ? '' : '/'}${href}`,
+      url: href,
       date,
       source: 'Business Wire',
     });
@@ -344,28 +354,24 @@ export async function GET(
   }
 
   try {
-    // Fetch from all sources in parallel: IR page, Google News RSS (all wires), and direct Business Wire (freshest)
-    const [wireResults, irResults, businessWireResults] = await Promise.allSettled([
+    // Fetch from all sources in parallel: IR, BW direct, Google News (company name + ticker)
+    const [wireResults, wireTickerResults, irResults, businessWireResults] = await Promise.allSettled([
       fetchWireServiceRSS(stock.name, symbol),
+      fetchWireServiceRSS(symbol, symbol),
       fetchIRPage(symbol),
       fetchBusinessWireDirect(stock.name, symbol),
     ]);
 
     const wireArticles = wireResults.status === 'fulfilled' ? wireResults.value : [];
+    const wireTickerArticles = wireTickerResults.status === 'fulfilled' ? wireTickerResults.value : [];
     const irArticles = irResults.status === 'fulfilled' ? irResults.value : [];
     const businessWireArticles = businessWireResults.status === 'fulfilled' ? businessWireResults.value : [];
 
-    // Merge: IR first, then direct Business Wire (newest), then Google News RSS
-    const merged = [...irArticles, ...businessWireArticles, ...wireArticles];
-
-    // Deduplicate
+    const merged = [...irArticles, ...businessWireArticles, ...wireArticles, ...wireTickerArticles];
     const unique = deduplicateReleases(merged);
-
-    // Sort by date descending (newest first)
     unique.sort((a, b) => b.date.localeCompare(a.date));
 
-    // Return top 10
-    const releases = unique.slice(0, 10).map(a => ({
+    const releases = unique.slice(0, 15).map(a => ({
       date: a.date,
       headline: a.title,
       url: a.url,
