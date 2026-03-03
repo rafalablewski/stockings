@@ -640,6 +640,8 @@ const FilingRow: React.FC<{
       }
       setApplyStep("applied");
       setPatchPreview((prev: typeof patchPreview) => ({ ...prev, applySummary: data.summary }));
+      // Auto re-check DB so cross-refs + filing status update immediately
+      if (onRecheck) onRecheck();
     } catch (err) {
       setApplyStep("error");
       setApplyError((err as Error).message);
