@@ -72,7 +72,7 @@ export const QUARTERLY_DATA: Record<string, QuarterlyFinancials> = {
     opExDandA: 15.7,                // Q4 derived: FY $51.111M - Q1-Q3 $35.4M
     opExSBC: 15.2,                  // Q4 derived: FY SBC $47.490M (per CF stmt) - Q1-Q3 $32.3M
     opExCostOfRev: 29.7,            // Q4 derived: FY COGS $35.216M ($33.0M products + $2.2M services) - Q1-Q3 $5.5M
-    adjOpEx: 81.6,                  // Q4 opEx $126.5M - SBC $15.2M - COGS $29.7M = $81.6M
+    adjOpEx: 95.6,                  // Q4 opEx $126.5M - SBC $15.2M - D&A $15.7M = $95.6M (FY $260.0M - Q1-Q3 $164.3M = $95.7M crosscheck)
     netIncome: -97.7,               // Q4 derived: FY net loss -$461.011M - Q1-Q3 (-$363.3M) = -$97.7M (before NCI)
     sharesOutstanding: 285.4,       // 285,449,911 Class A per 10-K balance sheet (Dec 31, 2025)
     impliedSharesOut: 374.8,        // Class A 285.4M + B 11.2M + C 78.2M = 374.8M
