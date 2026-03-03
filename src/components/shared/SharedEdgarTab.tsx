@@ -249,6 +249,53 @@ function matchFilings(
   });
 }
 
+// ── Merge helpers ──────────────────────────────────────────────────────────
+/**
+ * Merge static props (primary) with database results (supplementary).
+ * Props are the baseline truth (always up-to-date with code).
+ * Database may contain additional entries added by AI agents at runtime.
+ * A DB entry is "already in props" if it matches on (type + normalizedDate + period)
+ * or accessionNumber.
+ */
+function mergeLocalFilings(
+  propsFilings: LocalFiling[],
+  dbFilings: LocalFiling[],
+): LocalFiling[] {
+  const propsKeys = new Set<string>();
+  const propsAccessions = new Set<string>();
+  for (const f of propsFilings) {
+    propsKeys.add(`${f.type}|${normalizeDate(f.date)}|${f.period}`);
+    if (f.accessionNumber) propsAccessions.add(normalizeAccession(f.accessionNumber));
+  }
+
+  const dbOnly: LocalFiling[] = [];
+  for (const dbf of dbFilings) {
+    const key = `${dbf.type}|${normalizeDate(dbf.date)}|${dbf.period}`;
+    const accNorm = dbf.accessionNumber ? normalizeAccession(dbf.accessionNumber) : '';
+    if (!propsKeys.has(key) && !(accNorm && propsAccessions.has(accNorm))) {
+      dbOnly.push(dbf);
+    }
+  }
+
+  return dbOnly.length > 0 ? [...propsFilings, ...dbOnly] : propsFilings;
+}
+
+/**
+ * Merge static cross-ref index (primary) with database cross-refs (supplementary).
+ * For each filing key, props entries take precedence. DB-only keys are added.
+ */
+function mergeCrossRefs(
+  propsRefs: Record<string, { source: string; data: string }[]> | undefined,
+  dbRefs: Record<string, { source: string; data: string }[]>,
+): Record<string, { source: string; data: string }[]> {
+  if (!propsRefs) return dbRefs;
+  const merged = { ...propsRefs };
+  for (const [key, entries] of Object.entries(dbRefs)) {
+    if (!merged[key]) merged[key] = entries;
+  }
+  return merged;
+}
+
 // ── Status helpers ──────────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<FilingStatus, { color: string; label: string; title: string; desc: string }> = {
   tracked:   { color: 'var(--mint)',  label: 'IN DB',     title: 'Tracked in database', desc: 'Indexed in sec-filings.ts — matched by accession number or closest form+date (within 14 days)' },
@@ -593,6 +640,8 @@ const FilingRow: React.FC<{
       }
       setApplyStep("applied");
       setPatchPreview((prev: typeof patchPreview) => ({ ...prev, applySummary: data.summary }));
+      // Auto re-check DB so cross-refs + filing status update immediately
+      if (onRecheck) onRecheck();
     } catch (err) {
       setApplyStep("error");
       setApplyError((err as Error).message);
@@ -1317,7 +1366,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
   const [filter, setFilter] = useState('All');
 
-  // Refreshed local data (read from disk, bypassing bundler cache)
+  // Supplementary DB data (merged with static props — DB adds runtime AI-agent patches)
   const [refreshedLocalFilings, setRefreshedLocalFilings] = useState<LocalFiling[] | null>(null);
   const [refreshedCrossRefs, setRefreshedCrossRefs] = useState<Record<string, { source: string; data: string }[]> | null>(null);
 
@@ -1331,8 +1380,16 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   // Persistent analysis cache (survives page reloads — loaded from Postgres)
   const [persistedAnalyses, setPersistedAnalyses] = useState<Record<string, string>>({});
 
-  const effectiveLocalFilings = refreshedLocalFilings ?? localFilings;
-  const effectiveCrossRefs = refreshedCrossRefs ?? crossRefIndex;
+  // Merge: props (static imports) are the primary baseline; DB adds supplementary entries.
+  // This ensures code edits to sec-filings.ts are reflected without requiring a DB re-seed.
+  const effectiveLocalFilings = useMemo(() => {
+    if (!refreshedLocalFilings) return localFilings;
+    return mergeLocalFilings(localFilings, refreshedLocalFilings);
+  }, [localFilings, refreshedLocalFilings]);
+  const effectiveCrossRefs = useMemo(() => {
+    if (!refreshedCrossRefs) return crossRefIndex;
+    return mergeCrossRefs(crossRefIndex, refreshedCrossRefs);
+  }, [crossRefIndex, refreshedCrossRefs]);
 
   const results = useMemo(
     () => matchFilings(edgarFilings, effectiveLocalFilings, effectiveCrossRefs),
@@ -1836,6 +1893,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div><span className="sm-text">Save path:</span> POST /api/seen-filings &rarr; upsert with status, crossRefs, form, filingDate, description, reportDate, fileUrl</div>
               <div><span className="sm-text">Re-check DB:</span> re-reads sec_filings + filing_cross_refs from Postgres to pick up new patches</div>
               <div><span className="sm-text">Analysis:</span> POST /api/edgar/analyze &rarr; Claude Haiku (15K chars) &rarr; persisted to analysis_cache table</div>
+              <div><span className="sm-text">Cross-refs:</span> auto-generated by ensureCrossRefPatches() if AI omits them &mdash; derived from sibling data-file patches</div>
             </div>
 
             <div className="sm-ed-hdivider" />
@@ -1934,6 +1992,34 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div><span className="sm-text">Storage:</span> filing_cross_refs table &mdash; keyed by ticker + filing_key (accession or FORM|DATE)</div>
               <div><span className="sm-text">Lookup:</span> accession number first, then closest FORM|YYYY-MM-DD (within 14 days, with aliases e.g. PRNEWS &rarr; 8-K)</div>
               <div><span className="sm-text">Display:</span> shown as <span style={{ opacity: 0.5 }}>{'// source → extracted data'}</span> lines below the filing row</div>
+            </div>
+
+            <div className="sm-ed-hdivider" />
+
+            {/* ── AUTO CROSS-REF GENERATION ──────────────────── */}
+            <div className="sm-ed-method-label">Auto Cross-Ref Generation</div>
+            <div className="sm-mono-sm sm-text3 sm-mb-12" style={{ fontSize: 10, lineHeight: 1.6 }}>
+              Cross-refs are generated <span className="sm-text">automatically</span> when the AI Agent adds a new filing. Two-layer enforcement ensures no filing entry is created without a matching cross-ref.
+            </div>
+            <div className="sm-flex-col" style={{ alignItems: 'center' }}>
+              <div className="sm-ed-flowbox-accent">AI Agent generates patches</div>
+              <div className="sm-ed-vline" style={{ height: 10 }} />
+              <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>Layer 1: Prompt enforcement</div>
+              <div className="sm-mono-sm sm-text3 sm-text-center" style={{ fontSize: 9, lineHeight: 1.6, maxWidth: 340 }}>MANDATORY rule in extraction prompt &mdash; Claude must produce FILING_CROSS_REFS patch for every new sec-filings.ts entry</div>
+              <div className="sm-ed-vline" style={{ height: 10 }} />
+              <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>Layer 2: Post-AI safety net</div>
+              <div className="sm-mono-sm sm-text3 sm-text-center" style={{ fontSize: 9, lineHeight: 1.6, maxWidth: 340 }}>ensureCrossRefPatches() scans patches after Claude responds &mdash; detects filing inserts missing a cross-ref and auto-generates one from sibling patches</div>
+              <div className="sm-ed-vline" style={{ height: 10 }} />
+              <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>Cross-ref key: FORM_TYPE|YYYY-MM-DD</div>
+              <div className="sm-ed-vline" style={{ height: 10 }} />
+              <div className="sm-mono-sm sm-mint sm-fw-600" style={{ padding: '4px 10px', fontSize: 10 }}>Cross-ref appears in preview &amp; gets applied with patches</div>
+            </div>
+            <div className="sm-ed-method-text sm-mt-12">
+              <div><span className="sm-text">Source derivation:</span> capital.ts &rarr; capital, financials.ts &rarr; financials, timeline-events.ts &rarr; timeline, catalysts.ts &rarr; catalysts, company.ts &rarr; company</div>
+              <div><span className="sm-text">Summary extraction:</span> description/event/title fields from sibling patches, or first 120 chars cleaned up</div>
+              <div><span className="sm-text">Dedup:</span> skips if Claude already generated the cross-ref, or if key exists in file</div>
+              <div><span className="sm-text">Stock-agnostic:</span> derives paths and anchors from ticker &mdash; works for any stock with FILING_CROSS_REFS</div>
+              <div><span className="sm-text">Preview tag:</span> auto-generated patches marked as <span style={{ opacity: 0.7 }}>[auto-generated cross-ref]</span> in diff view</div>
             </div>
 
             <div className="sm-ed-hdivider" />
