@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import * as cheerio from 'cheerio';
 import { stocks } from '@/lib/stocks';
 
 type RouteParams = Promise<{ symbol: string }>;
+
+// Shared fetch headers for IR and Business Wire (consistent UA, avoid some blocks)
+const FETCH_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+} as const;
 
 // IR page URLs per ticker (direct press release pages)
 const IR_URLS: Record<string, string> = {
@@ -32,6 +39,12 @@ function decodeHTMLEntities(text: string): string {
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&apos;/g, "'");
+}
+
+/** Decode entities first, then strip tags, to avoid XSS from escaped markup becoming raw HTML. */
+function safeTitleFromLinkText(raw: string): string {
+  const decoded = decodeHTMLEntities(raw.trim());
+  return decoded.replace(/<[^>]+>/g, '').trim();
 }
 
 interface PressRelease {
@@ -67,59 +80,83 @@ async function fetchWireServiceRSS(companyName: string, ticker: string): Promise
   }
 }
 
-// ─── Source 1b: Direct Business Wire search (fresher than Google News index) ───
+// ─── Source 1b: Direct Business Wire (fresher than Google News index) ───
+// /news/home/search?keyword= returns 404; use newsroom URL and filter by company name/ticker.
 
-async function fetchBusinessWireDirect(companyName: string): Promise<PressRelease[]> {
-  const searchQuery = encodeURIComponent(companyName);
-  const url = `https://www.businesswire.com/news/home/search?keyword=${searchQuery}`;
+async function fetchBusinessWireDirect(companyName: string, ticker: string): Promise<PressRelease[]> {
+  const seenUrls = new Set<string>();
+  const merge = (newItems: PressRelease[]) => {
+    for (const item of newItems) {
+      if (!seenUrls.has(item.url)) {
+        seenUrls.add(item.url);
+        all.push(item);
+      }
+    }
+  };
 
-  try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-      },
-      cache: 'no-store',
-      signal: AbortSignal.timeout(8000),
-    });
-
-    if (!response.ok) return [];
-
-    const html = await response.text();
-    return parseBusinessWireHTML(html);
-  } catch {
-    // Direct fetch may be throttled or blocked; fallback remains Google News RSS
-    return [];
+  const all: PressRelease[] = [];
+  // Try company name, ticker, and main newsroom (latest); server may not filter by ?q=, so we filter in parseBusinessWireHTML
+  const queries: string[] = [companyName, ticker];
+  const urls = [
+    ...queries.map(q => `https://www.businesswire.com/newsroom?q=${encodeURIComponent(q)}`),
+    'https://www.businesswire.com/newsroom',
+  ];
+  for (const url of urls) {
+    try {
+      const response = await fetch(url, {
+        headers: FETCH_HEADERS,
+        cache: 'no-store',
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!response.ok) {
+        console.warn(`[press-releases] Direct Business Wire fetch returned ${response.status} for "${url}"`);
+        continue;
+      }
+      const html = await response.text();
+      merge(parseBusinessWireHTML(html, companyName, ticker));
+    } catch (error) {
+      console.warn(`[press-releases] Direct Business Wire fetch failed for "${url}":`, error);
+    }
   }
+  return all;
 }
 
-function parseBusinessWireHTML(html: string): PressRelease[] {
+function parseBusinessWireHTML(html: string, companyName: string, ticker: string): PressRelease[] {
   const items: PressRelease[] = [];
-  // Business Wire article URLs: .../news/home/YYYYMMDDHHMMSS/en/Title-Slug or .../news/home/...
-  const linkRegex = /<a[^>]+href=["'](https?:\/\/[^"']*businesswire\.com\/news\/home\/[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
-  let match;
+  const $ = cheerio.load(html);
   const seenUrls = new Set<string>();
+  // Business Wire article links: .../news/home/YYYYMMDD.../en/...
+  const selector = 'a[href*="businesswire.com/news/home/"]';
 
-  while ((match = linkRegex.exec(html)) !== null && items.length < 15) {
-    const url = match[1];
-    if (seenUrls.has(url)) continue;
-    seenUrls.add(url);
+  $(selector).each((_, el) => {
+    if (items.length >= 15) return false;
+    const href = $(el).attr('href');
+    if (!href || seenUrls.has(href)) return;
+    seenUrls.add(href);
 
-    const rawText = match[2].replace(/<[^>]+>/g, '').trim();
-    const title = decodeHTMLEntities(rawText);
-    if (!title || title.length < 10) continue;
+    const rawText = $(el).text();
+    const title = safeTitleFromLinkText(rawText);
+    if (!title || title.length < 10) return;
 
-    // Date from URL: /news/home/YYYYMMDD... (e.g. 20260226276981 → 2026-02-26)
-    const dateMatch = url.match(/\/news\/home\/(\d{4})(\d{2})(\d{2})\d*/);
-    const date = dateMatch ? `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}` : extractDateFromContext(html, match.index);
+    // Only include if title mentions company name or ticker (newsroom can show unfiltered results)
+    const lowerTitle = title.toLowerCase();
+    const lowerName = companyName.toLowerCase();
+    const nameWords = lowerName.split(/\s+/).filter(Boolean);
+    const tickerWord = new RegExp(`\\b${ticker.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
+    const matchesName = nameWords.some(w => lowerTitle.includes(w)) || tickerWord.test(lowerTitle);
+    if (!matchesName) return;
+
+    // Date from URL only (YYYYMMDD...) — avoid wrong date from unrelated page context
+    const dateMatch = href.match(/\/news\/home\/(\d{4})(\d{2})(\d{2})\d*/);
+    const date = dateMatch ? `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}` : '';
 
     items.push({
       title,
-      url,
-      date: date || '',
+      url: href.startsWith('http') ? href : `https://www.businesswire.com${href.startsWith('/') ? '' : '/'}${href}`,
+      date,
       source: 'Business Wire',
     });
-  }
+  });
 
   return items;
 }
@@ -160,17 +197,15 @@ async function fetchIRPage(symbol: string): Promise<PressRelease[]> {
   const fetchOne = async (url: string): Promise<PressRelease[]> => {
     try {
       const response = await fetch(url, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        },
+        headers: FETCH_HEADERS,
         cache: 'no-store',
         signal: AbortSignal.timeout(10000),
       });
       if (!response.ok) return [];
       const html = await response.text();
       return parseIRPageHTML(html, url);
-    } catch {
+    } catch (error) {
+      console.warn(`[press-releases] Fetch failed for URL "${url}":`, error);
       return [];
     }
   };
@@ -199,7 +234,7 @@ function parseIRPageHTML(html: string, baseUrl: string): PressRelease[] {
 
   while ((match = linkRegex.exec(html)) !== null && items.length < 15) {
     const href = match[1];
-    const linkText = match[2].replace(/<[^>]+>/g, '').trim();
+    const linkText = safeTitleFromLinkText(match[2]);
     if (!linkText || linkText.length < 10) continue;
 
     const url = href.startsWith('http') ? href : `${origin}${href.startsWith('/') ? '' : '/'}${href}`;
@@ -208,7 +243,7 @@ function parseIRPageHTML(html: string, baseUrl: string): PressRelease[] {
     const date = extractDateFromContext(html, match.index) || extractDateFromURL(href);
 
     items.push({
-      title: decodeHTMLEntities(linkText),
+      title: linkText,
       url,
       date: date || '',
       source: 'Investor Relations',
@@ -313,7 +348,7 @@ export async function GET(
     const [wireResults, irResults, businessWireResults] = await Promise.allSettled([
       fetchWireServiceRSS(stock.name, symbol),
       fetchIRPage(symbol),
-      fetchBusinessWireDirect(stock.name),
+      fetchBusinessWireDirect(stock.name, symbol),
     ]);
 
     const wireArticles = wireResults.status === 'fulfilled' ? wireResults.value : [];
