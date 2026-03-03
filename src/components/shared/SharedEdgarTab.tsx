@@ -20,6 +20,14 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { VERDICT_COLORS, parseVerdict, stripVerdict } from './verdictUtils';
 import { authFetch } from '@/lib/auth-fetch';
+import {
+  normalizeDate,
+  normalizeAccession,
+  mergeLocalFilings,
+  mergeCrossRefs,
+} from './edgarMergeHelpers';
+export type { LocalFiling } from './edgarMergeHelpers';
+import type { LocalFiling } from './edgarMergeHelpers';
 
 export interface EdgarTabProps {
   ticker: string;
@@ -29,16 +37,6 @@ export interface EdgarTabProps {
   typeColors: Record<string, { bg: string; text: string }>;
   /** Cross-reference index: maps accession number OR "FORM|YYYY-MM-DD" to data captured in other files */
   crossRefIndex?: Record<string, { source: string; data: string }[]>;
-}
-
-export interface LocalFiling {
-  date: string;
-  type: string;
-  description: string;
-  period: string;
-  color?: string;
-  /** SEC accession number — the authoritative unique identifier for exact matching */
-  accessionNumber?: string;
 }
 
 interface EdgarFiling {
@@ -87,18 +85,7 @@ function formatTimeAgo(ts: number): string {
 }
 
 // ── Date helpers ────────────────────────────────────────────────────────────
-function normalizeDate(dateStr: string): string {
-  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-  // Handle date ranges like "Sep 3-15, 2025" or "Mar 17-18, 2025" — use start date
-  const rangeMatch = dateStr.match(/^(\w+ \d+)-\d+, (\d{4})$/);
-  if (rangeMatch) {
-    const d = new Date(`${rangeMatch[1]}, ${rangeMatch[2]}`);
-    if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
-  }
-  const d = new Date(dateStr);
-  if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
-  return dateStr;
-}
+// normalizeDate — imported from ./edgarMergeHelpers
 
 function formatEdgarDate(isoDate: string): string {
   if (!isoDate) return '';
@@ -140,8 +127,7 @@ const normalizeFormForMatch = (f: string) => {
   return FORM_MATCH_ALIASES[norm] || norm;
 };
 
-/** Normalize accession number by stripping dashes for comparison */
-const normalizeAccession = (a: string) => a.replace(/-/g, '');
+// normalizeAccession — imported from ./edgarMergeHelpers
 
 /**
  * Look up cross-refs by accession number first, then by form|date (legacy).
@@ -250,51 +236,7 @@ function matchFilings(
 }
 
 // ── Merge helpers ──────────────────────────────────────────────────────────
-/**
- * Merge static props (primary) with database results (supplementary).
- * Props are the baseline truth (always up-to-date with code).
- * Database may contain additional entries added by AI agents at runtime.
- * A DB entry is "already in props" if it matches on (type + normalizedDate + period)
- * or accessionNumber.
- */
-function mergeLocalFilings(
-  propsFilings: LocalFiling[],
-  dbFilings: LocalFiling[],
-): LocalFiling[] {
-  const propsKeys = new Set<string>();
-  const propsAccessions = new Set<string>();
-  for (const f of propsFilings) {
-    propsKeys.add(`${f.type}|${normalizeDate(f.date)}|${f.period}`);
-    if (f.accessionNumber) propsAccessions.add(normalizeAccession(f.accessionNumber));
-  }
-
-  const dbOnly: LocalFiling[] = [];
-  for (const dbf of dbFilings) {
-    const key = `${dbf.type}|${normalizeDate(dbf.date)}|${dbf.period}`;
-    const accNorm = dbf.accessionNumber ? normalizeAccession(dbf.accessionNumber) : '';
-    if (!propsKeys.has(key) && !(accNorm && propsAccessions.has(accNorm))) {
-      dbOnly.push(dbf);
-    }
-  }
-
-  return dbOnly.length > 0 ? [...propsFilings, ...dbOnly] : propsFilings;
-}
-
-/**
- * Merge static cross-ref index (primary) with database cross-refs (supplementary).
- * For each filing key, props entries take precedence. DB-only keys are added.
- */
-function mergeCrossRefs(
-  propsRefs: Record<string, { source: string; data: string }[]> | undefined,
-  dbRefs: Record<string, { source: string; data: string }[]>,
-): Record<string, { source: string; data: string }[]> {
-  if (!propsRefs) return dbRefs;
-  const merged = { ...propsRefs };
-  for (const [key, entries] of Object.entries(dbRefs)) {
-    if (!merged[key]) merged[key] = entries;
-  }
-  return merged;
-}
+// mergeLocalFilings, mergeCrossRefs — imported from ./edgarMergeHelpers
 
 // ── Status helpers ──────────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<FilingStatus, { color: string; label: string; title: string; desc: string }> = {
