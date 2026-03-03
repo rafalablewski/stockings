@@ -1648,7 +1648,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div><span className="sm-text">Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_articles table</div>
               <div><span className="sm-text">Self-healing:</span> ensureTable() creates table + indexes on first request</div>
               <div><span className="sm-text">Graceful fallback:</span> returns empty array if table cannot be created</div>
-              <div><span className="sm-text">Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites url, source, headline, date, articleType</div>
+              <div><span className="sm-text">Merge on init:</span> DB load merges with existing state so Fetch PRs result is not overwritten when /api/seen-articles finishes</div>
+              <div><span className="sm-text">Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites url, source, headline, date, articleType; save-from-fetch also sets hidden=false so fetched articles show in the main list</div>
             </div>
 
             <div className="sm-ed-hdivider" />
@@ -1661,7 +1662,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <div style={{ width: 2, height: 10, background: 'var(--sky)' }} />
                 <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>GET /api/press-releases/[ticker]</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
-                <div className="sm-text3 sm-text-center" style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', lineHeight: 1.6 }}>Google News RSS filtered to wire services<br />(PRN, BusinessWire, GlobeNewsWire) + IR pages</div>
+                <div className="sm-text3 sm-text-center" style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', lineHeight: 1.6 }}>IR pages (with fallback for JS-rendered pages, e.g. ASTS) + direct Business Wire (newsroom, cheerio) + Google News RSS (company + ticker, wire sites). Returns up to 15; dedup by title.</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
                 <div className="sm-sky" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600 }}>articleType: &quot;pr&quot;</div>
               </div>
@@ -1677,8 +1678,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             </div>
             <div className="sm-ed-method-text sm-mt-12">
               <div><span className="sm-text">Independent:</span> each button fetches, saves, and checks independently</div>
-              <div><span className="sm-text">Max per type:</span> 10 articles (SECTION_MAX)</div>
-              <div><span className="sm-text">Save path:</span> POST /api/seen-articles &rarr; upsert with articleType tag</div>
+              <div><span className="sm-text">Display cap:</span> 10 articles per type (SECTION_MAX); API may return up to 15</div>
+              <div><span className="sm-text">Save path:</span> POST /api/seen-articles &rarr; upsert with articleType; hidden=false so fetched articles stay visible</div>
               <div><span className="sm-text">AI Fetch All:</span> fires both pipelines in parallel via Promise.allSettled</div>
             </div>
 
@@ -1856,8 +1857,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               </div>
             </div>
             <div className="sm-ed-method-text sm-mt-12">
-              <div><span className="sm-text">On mount:</span> loads articles from DB only &mdash; no external API calls</div>
-              <div><span className="sm-text">Fetch PRs / Fetch News:</span> independent buttons, each searches its own API</div>
+              <div><span className="sm-text">On mount:</span> loads articles from DB only &mdash; no external API calls; result merged with existing state so Fetch PRs is not overwritten</div>
+              <div><span className="sm-text">Fetch PRs / Fetch News:</span> independent buttons, each searches its own API; saved articles marked visible (hidden=false) so they show in the main list</div>
               <div><span className="sm-text">AI Fetch All:</span> fires both pipelines in parallel</div>
               <div><span className="sm-text">NEW badge:</span> bright clickable badge &mdash; article not yet acknowledged</div>
               <div><span className="sm-text">SEEN badge:</span> dimmed label after user clicks NEW &rarr; sets dismissed=true in DB</div>
