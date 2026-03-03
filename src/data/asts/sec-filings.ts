@@ -17,7 +17,7 @@
  */
 
 export const ASTS_SEC_FILINGS = [
-  { date: 'Mar 2, 2026', type: '10-K', description: 'Annual Report', period: 'FY 2025', color: 'blue' },
+  { date: 'Mar 2, 2026', type: '10-K', description: 'Annual Report — FY2025 Audited. Rev $70.9M, OpEx $358.6M, Net Loss -$461M. Cash $2,780M. Debt $2,264M. PPE $1,399M. Intangibles $245M. RPO $1.2B. NCI 23.9%. Fully funded ~90 sats.', period: 'FY 2025', color: 'blue' },
   { date: 'Feb 23, 2026', type: '8-K', description: 'RD Settlements + Notes Repurchases Completed (RD#1 Feb 20: $46.5M 4.25%; RD#2 Feb 23: $250M 2.375%; Item 8.01)', period: '—', color: 'yellow' },
   { date: 'Feb 20, 2026', type: '8-K', description: '$75M Greenshoe Exercise — Total 2.25% Notes $1,075M (Option Notes; Item 2.03/3.02/8.01; Freshfields opinions)', period: '—', color: 'yellow' },
   { date: 'Feb 17, 2026', type: '8-K', description: 'Convertible Notes Indenture Completion ($1B 2.25% due 2036; settlement + Item 1.01/2.03/3.02/8.01)', period: '—', color: 'yellow' },
@@ -144,7 +144,14 @@ export const ASTS_FILING_CROSS_REFS: Record<string, { source: string; data: stri
 
   // ── Mar 2026 ──────────────────────────────────────────────────────────────
   '10-K|2026-03-02': [
-    { source: 'financials', data: "Q4 2025: cashAndEquiv: 2780, totalDebt: 2264, revenue: ~50 (derived); FY 2025: Revenue $63-71M, OpEx $355-363M, adj opex $257-263M" },
+    { source: 'financials', data: "FY2025 audited: Rev $70.918M (Products $44.4M + Services $26.5M), OpEx $358.6M, Net Loss -$461M. Q4 rev $54.3M confirmed." },
+    { source: 'financials', data: "Balance sheet: Cash $2,335.7M + Restricted $444.3M = $2,780M. Debt $2,264M. PPE net $1,399M. Intangibles $245M. Total Assets $5,014M." },
+    { source: 'financials', data: "Contract liabilities $227M (from $42M). RPO ~$1.2B (9% in 12 months). SBC $47.5M FY. OCF improved to -$71.5M (from -$126M)." },
+    { source: 'capital', data: "Class A: 285,449,911 (Dec 31) / 292,637,039 (Feb 26). Class B: 11,227,292 / 11,215,111. Class C: 78,163,078. NCI 23.9%." },
+    { source: 'capital', data: "Debt stack: $50M@4.25%, $575M@2.375%, $1.15B@2.00%, $420M UBS, $52.6M Trinity, $16.8M Prosperity. Net issuance costs $44.9M." },
+    { source: 'capital', data: "FY equity: ATM $1,270M (26.7M shares), RDs $347M (5.8M shares), 2034 convert settlement (25.8M shares), penny warrants (4.7M)." },
+    { source: 'company', data: "Microns for 28 BB sats completed. 6 Block 2/month capacity. 450K sqft. ~3,850 patent claims (~1,900 granted). First SOX 404(b) audit." },
+    { source: 'catalysts', data: "Ligado $100M due Mar 31 2026 (off-balance-sheet). Fully funded for ~90 sats. 45-60 Block 2 target by end-2026." },
   ],
 
   // ── Feb 2026 ──────────────────────────────────────────────────────────────

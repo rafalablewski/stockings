@@ -82,6 +82,51 @@ export const COMPS_TIMELINE: CompetitorNewsEntry[] = [
       storyId: 'starlink-aviation-expansion',
       storyTitle: 'Starlink Aviation IFC Expansion',
     },
+    {
+      date: '2025-11-17',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Vallair and AeroX form alliance for Starlink IFC installation across commercial aircraft fleets',
+      details: [
+        'Strategic alliance between Vallair (aviation MRO) and AeroX (IFC specialist) for Starlink antenna installation on commercial aircraft',
+        'Vallair allocating dedicated night-shift modification capacity at Châteauroux, France maintenance centre',
+        'Covers narrow-body and wide-body aircraft operated by AeroX customers in Europe, Africa, and Middle East',
+        'Night-shift installation enables airlines to upgrade connectivity without disrupting scheduled operations',
+        'Starlink IFC delivers high-speed internet globally including areas without terrestrial coverage',
+        'Supports streaming, online gaming, cloud-based work, real-time operational data, crew comms, and EFB reliability',
+        'Enterprise terminal-based IFC (roof-mounted antenna), NOT Starlink Direct-to-Cell service',
+      ],
+      implication: 'neutral',
+      thesisComparison: 'Starlink aviation IFC installation capacity scaling up — dedicated MRO partnerships reduce airline adoption friction. Demonstrates growing Starlink enterprise revenue ecosystem. Terminal-based aviation broadband does not compete with ASTS handset-based D2D. However, each enterprise vertical Starlink captures strengthens SpaceX constellation economics and cross-subsidises D2C development.',
+      source: 'Vallair / AeroX',
+      storyId: 'starlink-aviation-expansion',
+      storyTitle: 'Starlink Aviation IFC Expansion',
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STARLINK ENTERPRISE — INSTITUTIONAL RURAL BROADBAND (terminal-based, NOT D2C)
+    // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-24',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Microsoft partners with Starlink for rural connectivity — 299M people reached in digital access push',
+      details: [
+        'Microsoft announces collaboration with Starlink for rural, agricultural, and hard-to-reach community connectivity',
+        'Microsoft exceeded 250M connectivity goal: extended coverage to 299M+ people worldwide including 124M+ across Africa',
+        'Kenya deployment: Starlink + local ISP Mawingu Networks connecting 450 community hubs (farmer cooperatives, aggregation centres, digital hubs)',
+        'Terminal-based Starlink broadband for community institutions (schools, health facilities, cooperatives) — NOT D2D',
+        'Part of Microsoft AI-ready communities initiative: connectivity + energy + devices + digital skills + AI tools',
+        'Announced ahead of MWC 2026 by Microsoft Chief Sustainability Officer Melanie Nakagawa',
+        '2.2 billion people globally remain offline per Microsoft; AI adoption gap widening between Global North and South',
+        'Microsoft VP Brad Smith\'s AI Access Principles position connectivity as foundation for inclusive AI economy',
+      ],
+      implication: 'neutral',
+      thesisComparison: 'Big Tech institutional endorsement strengthens Starlink brand and enterprise/institutional revenue base. Microsoft partnership validates Starlink as preferred connectivity solution for large-scale rural deployments. Terminal-based community broadband does not compete with ASTS D2D smartphone service. However, Microsoft-Starlink collaboration in Africa overlaps with ASTS target geography (Vodafone Africa, stc MENA). Starlink\'s institutional relationships could create channel advantages if SpaceX later pushes D2C in same markets.',
+      source: 'Microsoft Blog',
+      storyId: 'starlink-enterprise-institutional',
+      storyTitle: 'Starlink Enterprise & Institutional Partnerships',
+    },
 
     // ═══════════════════════════════════════════════════════════════════════════
     // STARLINK ENTERPRISE — RAIL BROADBAND (terminal-based, NOT D2C)
@@ -1155,6 +1200,54 @@ export const COMPS_TIMELINE: CompetitorNewsEntry[] = [
     // ═══════════════════════════════════════════════════════════════════════════
     // STARLINK DIRECT-TO-CELL - CORE D2D COMPETITOR
     // ═══════════════════════════════════════════════════════════════════════════
+    {
+      date: '2026-02-27',
+      competitor: 'starlink-tmobile',
+      category: 'Partnership',
+      headline: 'Samsung expands Galaxy satellite comms globally — Starlink/Skylo live, ASTS partners in "working with" stage',
+      details: [
+        'Samsung Galaxy S26 series + S25 series + Galaxy A series support satellite comms across US, Europe, Japan',
+        'US: T-Mobile (T911, text, data via Starlink since 2025 on S21+), Verizon (eSOS + text on S25+)',
+        'Samsung "working with AT&T" to support satellite communication features on Galaxy smartphones',
+        'Europe: Virgin Media O2 live (Starlink D2C), MasOrange joint trials March 2026',
+        'Samsung "working with Vodafone" to support satellite communication features on Galaxy smartphones',
+        'Japan: KDDI (text, data, ETWS on S22+ since 2025 via Starlink), SoftBank + docomo satellite features in 2026',
+        'Samsung "working with Rakuten Mobile" to gradually support satellite communication features on Galaxy smartphones',
+        'Won-Joon Choi (Samsung COO): "open collaboration with global partners" — multi-provider, not exclusive strategy',
+        'Samsung expanding supported models and strengthening infrastructure for "seamless AI experience"',
+        'Announced at MWC 2026 — Samsung positioning satellite comms as standard Galaxy feature across product lines',
+      ],
+      implication: 'negative',
+      thesisComparison: 'Samsung device ecosystem crystallizing around live D2C services (Starlink/T-Mobile, Starlink/KDDI, Skylo/Verizon) while ASTS MNO partners (AT&T, Vodafone, Rakuten) remain in "working with" pre-launch status. Samsung multi-provider strategy is provider-agnostic — ASTS will benefit once commercially live — but first-mover device integration advantage accrues to Starlink/Skylo. The AT&T/Vodafone/Rakuten "working with" mentions are encouraging confirmations of ASTS partner intent but underscore urgency of ASTS commercial launch to activate Samsung device support.',
+      source: 'Samsung Mobile Press',
+      storyId: 'starlink-d2c-device-ecosystem',
+      storyTitle: 'Starlink D2C Device Ecosystem Expansion',
+    },
+    {
+      date: '2026-02-26',
+      competitor: 'starlink-tmobile',
+      category: 'Coverage',
+      headline: 'Virgin Media O2 launches O2 Satellite — first European D2C data service via Starlink in UK',
+      details: [
+        'MAJOR MILESTONE: First operator in UK and Europe to launch satellite-powered mobile data services (not just SMS)',
+        'Powered by Starlink Direct to Cell using O2\'s licensed mobile spectrum transmitted from space',
+        'Boosts UK landmass coverage from 89% to 95% — area equivalent to two-thirds the size of Wales',
+        'Supports messaging + data apps: WhatsApp (messages + calls), Google Maps, Facebook Messenger, X, Google Messages, AccuWeather, AllTrails, BBC Weather, Google Find Hub, Samsung Weather, Yahoo Mail',
+        'Pricing: £3/month bolt-on for Pay Monthly customers; free for Ultimate Plan customers "in the near future"',
+        'Compatible devices at launch: Samsung Galaxy S25, S25+, S25 Ultra, S25 Edge only',
+        'Automatic connection when terrestrial coverage unavailable — acts as network backup during local outages',
+        'Ofcom recently approved UK\'s first licence for satellite-to-smartphone services',
+        'UK Minister Baroness Lloyd: "first in Europe to launch direct-to-device satellite data services"',
+        'Starlink VP Stephanie Bednarek: "data, voice and video through apps, and messaging in remote areas"',
+        'VMO2 CEO Lutz Schüler: "first operator in Europe to launch a space-based mobile data service"',
+        'VMO2 also holds UK\'s largest 5G+ footprint; 5G SA reaches 87% UK outdoor population',
+      ],
+      implication: 'negative',
+      thesisComparison: 'HIGH MATERIALITY: Starlink D2C now commercially live with data services in the UK — the same market where ASTS\'s SCE JV partner VodafoneThree plans "live customer trials summer 2026." VMO2 is ~4-6 months ahead with a live commercial product. The curated-app data service (WhatsApp, Maps, Messenger) is "good enough" for most coverage-gap use cases, even if throughput is below ASTS\'s broadband capability. £3/month pricing sets consumer expectations. UK government endorsement gives Starlink regulatory momentum. ASTS/SCE must demonstrate clear broadband superiority (native VoLTE voice, video streaming, open internet) to justify premium positioning vs "good enough" curated-app D2C. Prior European D2C was SMS-only (Kyivstar Ukraine) — VMO2 data launch is a step-change.',
+      source: 'Virgin Media O2',
+      storyId: 'starlink-d2c-europe',
+      storyTitle: 'Starlink D2C European Expansion',
+    },
     {
       date: '2026-02-09',
       competitor: 'starlink-tmobile',

@@ -30,10 +30,10 @@ import type { Catalyst, CompletedMilestone, DataMetadata } from '../shared/types
 // ============================================================================
 
 export const CATALYSTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-23',
-  source: 'SDA $30M Europa PR (Feb 23), Feb 20/23 8-Ks (greenshoe/settlements), Q4 business update scheduling PR (Feb 19), Q3 2025 earnings call, Feb 2026 8-K, BB6 unfolding PR, Mar 2025 8-Ks/Form 4s/S-3ASR/S-8/13D-A, Jan-Feb 2025 8-Ks/13D/Form 3s/13D-A',
-  nextExpectedUpdate: 'After Q4 2025 business update (March 2, 2026)',
-  notes: 'SDA $30M HALO Europa contract Feb 23. $75M greenshoe exercised Feb 20 (total converts $1.075B). RD settlements completed. Q4 business update call March 2, 2026. BB6 unfolded Feb 10. Gov contracts now $93M+ (10 total).',
+  lastUpdated: '2026-03-03',
+  source: 'Q4 2025 Business Update (Mar 2, 2026), sell-side reports (Mar 3), MWC 2026 announcements',
+  nextExpectedUpdate: 'After Q4 2025 10-K filing or next launch (BB7 March)',
+  notes: 'Q4 rev $54.3M beat. FY $70.9M. 2026 guide $150-200M. 2027 target $1B. Backlog $1.2B. BB7 March. Beta trials late summer (after 25 sats). Pro forma $3.9B.',
 };
 
 // ============================================================================
@@ -56,8 +56,8 @@ export const CATALYSTS_METADATA: DataMetadata = {
 export const UPCOMING_CATALYSTS: Catalyst[] = [
   // === LAUNCHES & CONSTELLATION ===
   {
-    event: 'BB7 Launch (New Glenn, Cape Canaveral)',
-    timeline: 'Late Feb 2026',
+    event: 'BB7 Launch (March 2026)',
+    timeline: 'March 2026',
     impact: 'High',
     category: 'Constellation',
   },
@@ -138,14 +138,14 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
     category: 'Commercial',
   },
   {
-    event: 'Bell Canada, Telefonica, Etisalat + 50 MNO Deals',
+    event: 'Bell Canada, Etisalat + 50 MNO Deals → Definitive Upgrades',
     timeline: '2026',
     impact: 'High',
     category: 'Commercial',
   },
   {
-    event: 'AT&T/FirstNet Beta Testing',
-    timeline: '1H 2026',
+    event: 'AT&T/VZ/Bell Canada Beta Trials (after 25 sats in orbit)',
+    timeline: 'Late Summer 2026',
     impact: 'High',
     category: 'Commercial',
   },
@@ -176,10 +176,10 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
     category: 'Service',
   },
   {
-    event: 'Q4 2025 Business Update & Full Year Financials',
-    timeline: 'March 2, 2026',
-    impact: 'Medium',
-    category: 'Financing',
+    event: '$1B Revenue Target 2027 Execution — Commercial Service Activation',
+    timeline: '2027',
+    impact: 'Critical',
+    category: 'Service',
   },
 
   // === GOVERNMENT & DEFENSE ===
@@ -239,6 +239,8 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
  */
 export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   // === 2026 ===
+  { event: 'Q4 2025 Business Update: $54.3M rev (beat), FY $70.9M, 2026 guide $150-200M, 2027 target $1B, backlog $1.2B', date: 'Mar 2, 2026', category: 'Earnings' },
+  { event: 'MWC 2026: 8 new MNO partnerships (Orange, Taiwan Mobile, VodafoneThree, Sunrise, Vodafone Ireland, Telefónica, Vodafone Ukraine, CK Hutchison)', date: 'Mar 2, 2026', category: 'Partnership' },
   { event: 'SDA $30M HALO Europa Track 2 Prime Contract (AST SpaceMobile USA defense subsidiary; 10th gov contract)', date: 'Feb 23, 2026', category: 'Government' },
   { event: 'Feb 2026 RD Settlements & $296.5M Notes Repurchases Completed (RD#1 Feb 20, RD#2 Feb 23)', date: 'Feb 23, 2026', category: 'Financing' },
   { event: '$75M Greenshoe Exercised — Total 2.25% Notes Now $1.075B ($75M of $150M option)', date: 'Feb 20, 2026', category: 'Financing' },

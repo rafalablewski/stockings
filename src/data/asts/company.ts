@@ -28,10 +28,10 @@ import type { DataMetadata, StockDefaults } from '../shared/types';
 // ============================================================================
 
 export const ASTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-23',
-  source: 'SDA $30M Europa PR (Feb 23), Feb 20/23 8-Ks (greenshoe/settlements), Feb 19 business update scheduling PR, Feb 13 424B5s, Feb 11 8-K, BB6 unfolding PR',
-  nextExpectedUpdate: 'Q4 2025 business update (March 2, 2026).',
-  notes: 'Feb 23 audit: SDA $30M Europa contract (10th gov contract, $93M+ cumulative). $75M greenshoe exercised Feb 20 (total 2.25% notes $1.075B). RD settlements completed. Q4 call March 2. Price $82.51 post-financing. AST SpaceMobile USA defense subsidiary disclosed.',
+  lastUpdated: '2026-03-03',
+  source: 'FY2025 10-K (filed Mar 2, 2026), Q4 2025 Business Update (Mar 2), MWC 2026 (Mar 2), sell-side reports (Mar 3)',
+  nextExpectedUpdate: 'Q1 2026 10-Q (~May 2026)',
+  notes: 'FY2025 10-K audited: Rev $70.9M, Cash $2,780M, Debt $2,264M, Net Loss -$461M. RPO $1.2B. Fully funded ~90 sats. NCI 23.9%. Class A 285.4M (Dec 31) / 292.6M (Feb 26). Price $86.92.',
 };
 
 // ============================================================================
@@ -68,17 +68,17 @@ export const COMPANY_INFO = {
  */
 export const DEFAULTS: StockDefaults = {
   // === MARKET DATA ===
-  currentStockPrice: 82.51,   // UPDATE REGULARLY - Last: Feb 13, 2026
-  priceAsOf: '2026-02-13',    // Date of stock price above
+  currentStockPrice: 86.92,   // UPDATE REGULARLY - Last: Mar 2, 2026
+  priceAsOf: '2026-03-02',    // Date of stock price above
 
-  // === SHARE COUNT (post-Feb 2026 offerings) ===
-  // Class A: ~290M + Class B: 11.2M + Class C: 78.2M = ~379.4M
-  currentShares: 380,         // Total implied shares outstanding (M)
+  // === SHARE COUNT (per 10-K: Dec 31 285.4M Class A; Feb 26 292.6M) ===
+  // Class A: ~292.6M + Class B: 11.2M + Class C: 78.2M = ~382.0M
+  currentShares: 382,         // Total implied shares outstanding (M) per 10-K cover page (Feb 26, 2026)
 
-  // === BALANCE SHEET (8-K preliminary as of Dec 31, 2025) ===
-  cashOnHand: 2780,           // $2,780M total cash per 8-K. Pro forma post-Feb offerings: ~$3,834M (incl. $75M greenshoe)
+  // === BALANCE SHEET (10-K audited as of Dec 31, 2025) ===
+  cashOnHand: 2780,           // $2,779.960M total cash + restricted per 10-K. Pro forma post-Feb offerings: ~$3,834M
   quarterlyBurn: 300,         // Q3 guidance: CapEx + OpEx ~$300M/quarter
-  totalDebt: 2264,            // $2,264M per 8-K. Pro forma post-Feb converts: ~$3,043M ($1.075B new + $1.15B existing + $325M + $3.5M - repurchased)
+  totalDebt: 2264,            // $2,264.435M per 10-K. Pro forma post-Feb converts: ~$3,043M ($1.075B new + $1.15B existing + $325M + $3.5M - repurchased)
   debtRate: 2.15,             // Weighted avg: $3.5M@4.25%, $325M@2.375%, $1.15B@2.00%, $1.075B@2.25%
 };
 
@@ -104,10 +104,10 @@ export const OPERATIONAL_METRICS = {
   // === PARTNERS & REACH ===
   partnerReach: 3000,         // ~3B subs across 50+ MNOs per Q3 PR
   definitiveAgreements: 6,    // AT&T, Vodafone, Verizon, stc, Rakuten, Bell
-  mouCount: 50,               // "over 50 MNOs" per earnings
+  mouCount: 57,               // "over 50 MNOs" per earnings + MWC 2026: Orange, Taiwan Mobile, VodafoneThree, Sunrise, Vodafone Ireland, Vodafone Ukraine, CK Hutchison (Telefónica was already counted)
 
   // === REVENUE ===
-  contractedRevenue: 1000,    // $1B+ contracted commercial revenue
+  contractedRevenue: 1200,    // $1.2B contracted commercial revenue (per Q4 2025 earnings call)
 
   // === SPECTRUM ===
   spectrumOwned: 105,         // 45 L-band + 60 S-band (MHz)
@@ -142,8 +142,8 @@ export const MODEL_ASSUMPTIONS = {
  * For display in the UI data freshness badge
  */
 export const DATA_FRESHNESS = {
-  dataAsOf: 'Feb 23, 2026',
-  lastFiling: '8-K (Feb 23, 2026)',
-  nextFiling: 'Q4 2025 Business Update (March 2, 2026)',
-  priceNote: 'Post-financing: $96.92→$82.22 (-15.17% Feb 12, vol 30.2M) →$82.51 (+0.35% Feb 13)',
+  dataAsOf: 'Mar 3, 2026',
+  lastFiling: 'FY2025 10-K (Mar 2, 2026)',
+  nextFiling: 'Q1 2026 10-Q (~May 2026)',
+  priceNote: '$86.92 (Mar 2). 10-K audited: Rev $70.9M, Cash $2,780M, RPO $1.2B. Fully funded ~90 sats.',
 };

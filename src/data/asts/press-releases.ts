@@ -29,10 +29,10 @@ import type { PressRelease, DataMetadata } from '../shared/types';
 // ============================================================================
 
 export const PRESS_RELEASES_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-12',
+  lastUpdated: '2026-03-02',
   source: 'AST SpaceMobile Investor Relations, PR Newswire, Business Wire, SEC EDGAR',
   nextExpectedUpdate: 'After new press releases',
-  notes: 'Feb 2026: BB6 unfolding, $1B converts, registered directs, 8-K financials, Mikitani resignation',
+  notes: 'Mar 2, 2026: Vodafone Ukraine MoU joint PR. Feb 2026: BB6 unfolding, $1B converts, registered directs, 8-K financials, Mikitani resignation',
 };
 
 // ============================================================================
@@ -40,6 +40,12 @@ export const PRESS_RELEASES_METADATA: DataMetadata = {
 // ============================================================================
 
 export const PRESS_RELEASES: PressRelease[] = [
+  {
+    date: '2026-03-02',
+    headline: 'Vodafone Ukraine and AST SpaceMobile to Bring High-Speed LEO Satellite Broadband to Standard Smartphones Across Ukraine',
+    url: 'https://investors.ast-science.com',
+    tracked: true,
+  },
   {
     date: '2026-02-11',
     headline: 'AST SpaceMobile Announces Offering of $1.0 Billion Convertible Senior Notes Due 2036 and Concurrent Registered Direct Offerings',

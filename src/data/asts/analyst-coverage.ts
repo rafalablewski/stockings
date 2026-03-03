@@ -885,9 +885,58 @@ DISCLOSURE: B. Riley Securities, Inc. Mike Crawford, Senior Research Analyst. (3
     analyst: 'Christopher Schoell',
     coverageSince: 'March 2025',
     currentPT: 43,
-    currentRating: 'Neutral',
+    currentRating: 'Under Review',
     currentRatingNormalized: 'neutral',
     reports: [
+      // === Mar 3, 2026 - Under Review (Q4 2025 Earnings Note) ===
+      {
+        date: '2026-03-03',
+        action: 'Under Review',
+        priceTarget: null,
+        previousTarget: 43,
+        rating: 'Under Review',
+        ratingNormalized: 'neutral',
+        source: 'UBS Global Research',
+        isFullReport: true,
+        reportTitle: 'Expecting revenues to multiply as commercial launch nears',
+        thesis: 'PT, rating, and estimates placed under review following Q4 2025 earnings. 2026 guidance $150-200M below prior street est $227M but $1B 2027 target above prior street $814M. Q4 rev $54M beat consensus $42M. Constructive tone on revenue trajectory but notes 2H-weighted launch cadence and elevated capex ($407M vs $275-325M guide).',
+        reportSummary: `**Q4 RESULTS & GUIDANCE**
+4Q revenues $54M (FactSet consensus $42M). Adj. cash expenses $96M ($67M excl. gateway sales). FCF losses $331M (Street -$213M). Capex ~$400M (Street $280M, above $275-325M guide due to accelerated satellite material purchases and launch payment timing).
+
+**2026-2027 REVENUE OUTLOOK**
+2026 guided $150-200M (prior FactSet est. $227M). ~Half of 2026 revenue already contracted. 2027 target $1B (prior FactSet est. $814M). "Billions of annual revenue potential" for government use cases. Commercial backlog grew to $1.2B ($1B prior); annual revenue from commitments ~$100-300M range.
+
+**LAUNCH & MANUFACTURING**
+BB7 encapsulated, launching March. BB8-29 in various production stages. 3rd Block 2 payload: multiple satellites, shipping April. Targets launches every 1-2 months for 45-60 sats by YE26. New heavy launch vehicle agreement signed (standby). Exited 2025 at 6 sats/month production rate (microns/phased arrays); integration/assembly/testing reaching 6/month by mid-2026. ASIC chip integrating into Block 2 during 1H26: 10 GHz processing power, speeds >120 Mbps.
+
+**MARGINS & SPENDING**
+Q1 adj opex guidance: $70-80M. Q1 capex: $350-425M (launch payment timing). Long-term: high operating leverage with flow-through margins ~90%.
+
+DISCLOSURE: UBS does and seeks to do business with companies covered in its research reports.`,
+        assumptions: [
+          { label: 'Status', value: 'PT/Rating/Estimates Under Review' },
+          { label: 'Prior PT', value: '$43.00' },
+          { label: 'Prior Rating', value: 'Neutral' },
+          { label: '2026 Guidance', value: '$150-200M (below prior Street $227M)' },
+          { label: '2027 Target', value: '$1B (above prior Street $814M)' },
+          { label: 'Commercial Backlog', value: '$1.2B (was $1B)' },
+          { label: 'Flow-through Margins', value: '~90% long-term' },
+          { label: 'ASIC Chip', value: '10 GHz processing, >120 Mbps, 1H26 integration' },
+        ],
+        catalysts: [
+          'BB7 launch March 2026',
+          '3rd Block 2 payload shipping April (multiple satellites)',
+          'Production ramp to 6 sats/month integration by mid-2026',
+          'ASIC chip integration into Block 2 (1H26)',
+          'Commercial service activation driving $1B 2027 target',
+        ],
+        risks: [
+          'Q4 capex $407M ran above $275-325M guidance',
+          'FCF losses $331M vs street estimate -$213M',
+          '2026 guidance $150-200M below prior consensus $227M',
+          '2H-weighted launch cadence creates backend loading risk',
+        ],
+      },
       // === Sep 9, 2025 - Downgrade (FULL REPORT) ===
       {
         date: '2025-09-09',
@@ -1792,6 +1841,69 @@ DISCLOSURE: Scotiabank has managed/co-managed public offering in past 12 months,
     currentRating: 'Neutral',
     currentRatingNormalized: 'neutral',
     reports: [
+      // === Mar 3, 2026 - Reiterate Neutral $100 PO (Q4 2025 Earnings — FULL REPORT) ===
+      {
+        date: '2026-03-03',
+        action: 'Reiterate',
+        priceTarget: 100,
+        rating: 'Neutral',
+        ratingNormalized: 'neutral',
+        source: 'BofA Global Research',
+        isFullReport: true,
+        reportTitle: 'Launch cadence set to ramp',
+        thesis: 'Reiterate Neutral and $100 PO. Q4 rev $54M slightly above our $48M est. 2026E rev lowered $223→$169M on 2H-weighted launch cadence. 2027E/2028E raised significantly. DCF: WACC 12%, terminal growth ~9%. Await progress on producing/launching constellation, operating it, and capturing revenue subscribers before becoming more constructive.',
+        reportSummary: `**Q4 RESULTS**
+Q4 revenues $54M slightly above BofA $48M forecast. Q4 EPS -$0.26 missed our -$0.21 estimate. Capex $407M significantly above our $240M forecast and $275-325M guidance due to satellite material purchases and launch payments. 2026 revenue guided $150-200M.
+
+**ESTIMATE REVISIONS**
+2026E rev lowered $223→$169M reflecting 2H-weighted launch cadence. 2027E rev raised $656→$837M. 2028E rev raised $1,182→$1,471M. 2027E EPS raised $0.48→$0.88. 2028E EPS raised $2.26→$3.23. 2026E EPS worsened -$0.93→-$1.41 on higher spending.
+
+**LAUNCH CADENCE**
+BB7 in March. After BB7: 3, 4, 6, 8 sats per launch. 45 satellites in orbit by YE26. Partial service 2H26, full service early 2027. Exited 2025 with 6 sat/month production capacity (microns/phased arrays).
+
+**COMPETITIVE COMPARISON (EXHIBIT 1)**
+ASTS: 7 sats, ~50 MNOs (>2B subs), 45MHz mid-band, all-device D2D, data/text/voice tested
+Starlink: >9,000 sats, 4 MNOs (~166M subs), 50MHz AWS-4/H-Block, LTE-only D2D, text live
+Amazon LEO: 180 sats, couple MNOs (~500M subs), early stage
+TeraWave (Bezos): 0 sats, 5,408 planned (LEO+MEO), Q/V-band, enterprise/data center/gov focus, 4Q27 deployment
+
+**VALUATION**
+DCF: WACC 12%, terminal growth ~9%. Await: (1) fully producing and launching constellation, (2) operating it, (3) capturing revenue subscribers.
+
+DISCLOSURE: BofA Securities does and seeks to do business with companies covered in its research reports.`,
+        assumptions: [
+          { label: 'Price Objective', value: '$100.00 (unchanged)' },
+          { label: 'Rating', value: 'Neutral (unchanged)' },
+          { label: 'WACC', value: '12%' },
+          { label: 'Terminal Growth', value: '~9%' },
+          { label: '2026E Revenue', value: '$168.7M (was $223.3M)' },
+          { label: '2027E Revenue', value: '$836.8M (was $656.1M)' },
+          { label: '2028E Revenue', value: '$1,470.8M (was $1,182.4M)' },
+          { label: '2028E EPS', value: '$3.23 (was $2.26)' },
+        ],
+        estimates: [
+          { metric: 'Revenue ($M)', fy25: '70.9A', fy26: '168.7', fy27: '836.8', fy28: '1,470.8' },
+          { metric: 'Adj EBITDA ($M)', fy25: '-229.8A', fy26: '-205.7', fy27: '452.3', fy28: '1,104.4' },
+          { metric: 'Net Income Adj ($M)', fy25: '-321.4A', fy26: '-392.1', fy27: '239.3', fy28: '878.5' },
+          { metric: 'EPS', fy25: 'N/A', fy26: '-1.41', fy27: '0.88', fy28: '3.23' },
+          { metric: 'FCF Yield', fy25: '-4.01%', fy26: '-4.31%', fy27: '0.73%', fy28: '3.60%' },
+          { metric: 'EV/EBITDA', fy25: 'NM', fy26: 'NM', fy27: '64.7x', fy28: '26.5x' },
+        ],
+        catalysts: [
+          'BB7 launch March — ramp to 3/4/6/8 sats per launch',
+          'Partial service 2H26 with >25 satellites',
+          'Full service early 2027',
+          '>$1B contracted MNO revenue commitments',
+          'Additional government contracts (Golden Dome, SDA)',
+        ],
+        risks: [
+          'Q4 capex $407M ran significantly above $240M forecast and $275-325M guidance',
+          '2026 revenue 2H-weighted — backend loading risk',
+          'Requires 3 key gates before constructive stance: produce/launch, operate, capture revenue',
+          'EPS loss widening in 2026E (-$1.41 vs prior -$0.93)',
+        ],
+        methodology: 'DCF valuation: WACC 12%, terminal growth ~9%. Appropriate for ASTS due to early stage, high projected growth, and outyear FCF generation timeline.',
+      },
       // === Jan 8, 2026 - PT Raise to $100 (FULL REPORT) ===
       {
         date: '2026-01-08',
@@ -1878,7 +1990,50 @@ DISCLOSURE: Scotiabank has managed/co-managed public offering in past 12 months,
     currentRating: 'Market Perform',
     currentRatingNormalized: 'neutral',
     reports: [
-      { date: '2025-08-21', action: 'Initiation', priceTarget: null, rating: 'Market Perform', ratingNormalized: 'neutral', source: 'Investing.com', sourceUrl: 'https://www.investing.com/', isFullReport: true,
+      // === Mar 3, 2026 - Reiterate Market Perform (Q4 2025 Earnings — FULL REPORT) ===
+      {
+        date: '2026-03-03',
+        action: 'Reiterate',
+        priceTarget: null,
+        rating: 'Market Perform',
+        ratingNormalized: 'neutral',
+        source: 'William Blair Equity Research',
+        isFullReport: true,
+        reportTitle: 'Rosy $1 Billion Revenue Target Set for 2027',
+        thesis: 'Reiterate Market Perform. ASTS continues to gain traction as D2D alternative to Starlink. Q4 rev $54.3M above our $40M est driven by gov revenue and gateway deliveries. 2026 rev guidance $175M midpoint excludes commercial service activation. 2027 preliminary $1B target driven by SpaceMobile activation. Beta trials may commence late summer after 25 sats in orbit. Pro forma liquidity ~$3.9B funds 100+ satellites.',
+        reportSummary: `**Q4 RESULTS**
+Q4 revenue $54.3M above our $40M estimate driven by government revenue and gateway equipment deliveries. Revenue ended 2025 at the high end of guidance range. FY2025 revenue: $70.9M.
+
+**MWC 2026 PARTNERSHIPS**
+New MNO partnerships: Orange, Telefonica, CK Hutchison, Taiwan Mobile, Sunrise. Further announcements may come during the conference.
+
+**2026-2027 OUTLOOK**
+2026 revenue guidance: $175M at midpoint. Excludes contributions from commercial service activation. Preliminary 2027 target: $1B driven by SpaceMobile service being activated.
+
+**LAUNCH CADENCE**
+BB7 launching March. Next batch shipped April. Launch every 1-2 months avg. Minimum 45 sats in orbit and 60 built/ready to ship by YE26.
+
+**BETA TRIALS**
+North America carrier partners AT&T, Verizon, Bell Canada may launch beta trials after 25 satellites in orbit — targeting late summer.
+
+**LIQUIDITY**
+Pro forma ~$3.9B to fund construction and launch of first 100 satellites and further strategic actions.`,
+        assumptions: [
+          { label: 'Rating', value: 'Market Perform (no PT)' },
+          { label: '2025A Revenue', value: '$70.9M' },
+          { label: '2026E Revenue', value: '$175.0M (midpoint)' },
+          { label: '2027E Revenue', value: '$751.6M' },
+          { label: '2026E EBITDA', value: '$(152.0)M' },
+          { label: '2027E EBITDA', value: '$316.4M' },
+          { label: 'Pro Forma Liquidity', value: '~$3.9B' },
+          { label: 'Beta Trials', value: 'Late summer, after 25 sats in orbit' },
+        ],
+        estimates: [
+          { metric: 'Revenue ($M)', fy25: '70.9A', fy26: '175.0', fy27: '751.6' },
+          { metric: 'EBITDA ($M)', fy25: '-236.6A', fy26: '-152.0', fy27: '316.4' },
+        ],
+      },
+      { date: '2025-08-21', action: 'Initiation', priceTarget: null, rating: 'Market Perform', ratingNormalized: 'neutral', source: 'William Blair Equity Research', isFullReport: true,
         thesis: 'Initiating coverage with Market Perform rating. No price target provided.'
       }
     ]
@@ -1912,6 +2067,90 @@ DISCLOSURE: Scotiabank has managed/co-managed public offering in past 12 months,
     currentRating: 'Buy',
     currentRatingNormalized: 'bullish',
     reports: [
+      // === Mar 3, 2026 - Reiterate Buy $137 (Q4 2025 Earnings — FULL REPORT) ===
+      {
+        date: '2026-03-03',
+        action: 'Reiterate',
+        priceTarget: 137,
+        rating: 'Buy',
+        ratingNormalized: 'bullish',
+        reportTitle: 'MNO Gateway Spend in 2025 Positions for an Emerging D2D Story; Maintain Buy, $137 PT',
+        source: 'Clear Street Research',
+        isFullReport: true,
+        thesis: 'Maintain Buy and $137 PT. FY2025 revenue $70.9M hit high-end of $50-75M guidance, driven by MNO gateway spending — a key leading indicator of commercial deployment. BB8-29 in production with 40 Micron-equivalent satellites expected fully assembled by 1H26. Pro forma ~$3.9B liquidity supports 100+ satellites. Mgmt expects additional MNOs to sign in 2026, reinforcing the view that ASTS is becoming a critical D2D solution for MNOs competing with Starlink. 2029E EBITDA revised to $2.4B (from $2.5B).',
+        reportSummary: `**Q4 2025 RESULTS**
+FY2025 revenue $70.9M at high-end of $50-75M guidance. Growth driven primarily by MNO gateway spending — a key leading indicator of commercial deployment. Combined with mgmt expectation for additional MNOs to sign in 2026, reinforces ASTS as critical D2D solution vs. Starlink.
+
+**SATELLITE PRODUCTION**
+BlueBird satellites 8-29 in production. 40 Micron-equivalent satellites expected fully assembled by 1H26. BB7 is second satellite in next-generation campaign, identical to BB6 and compatible with all major launch vehicles. ASTS expects at least 45 satellites in orbit by YE26.
+
+**GOVERNMENT & DEFENSE**
+$30M HALO (Hybrid Acquisition for Proliferated LEO) prime contract win — separate program from SHIELD contract bidding. Government pipeline continues to build.
+
+**FINANCIAL OUTLOOK**
+Mgmt targets $1B in 2027E revenue, close to our $1.07B estimate and below $1.2B backlog. High 2025 gross margins (~50%) despite gateway revenue reliance strengthen confidence in projected margin growth: 46% (2026E) → 71% (2028E).
+
+**FINANCING**
+$1.0B of 2.250% convertible sr notes due 2036 (conversion price $116.30). Potential dilution not yet incorporated. Repurchased ~$300M of existing converts eliminating ~5.2M underlying shares, partially offset by ~6.3M shares issued to participating noteholders.
+
+**VALUATION**
+$137 PT implies ~20x 2029E adj EBITDA of $2.4B (from $2.5B) and cross-checks to ~12x 2029E revenue. DCF supports core valuation of $101/share; including projected spectrum value yields $125/share total valuation.`,
+        assumptions: [
+          { label: 'Price Target', value: '$137.00 (unchanged)' },
+          { label: 'Valuation Multiple', value: '~20x 2029E adj EBITDA' },
+          { label: '2029E adj EBITDA', value: '$2.4B (from $2.5B)' },
+          { label: 'DCF Core Value', value: '$101/share' },
+          { label: 'DCF + Spectrum', value: '$125/share' },
+          { label: 'Revenue Cross-Check', value: '~12x 2029E revenue' },
+          { label: '2025 Gross Margin', value: '~50%' },
+          { label: 'Projected Margin Growth', value: '46% (2026E) → 71% (2028E)' },
+        ],
+        catalysts: [
+          'MNO gateway spending as leading indicator of commercial deployment',
+          'BB8-29 in production; 40 Micron-equivalent satellites assembled by 1H26',
+          'At least 45 satellites in orbit by YE26',
+          '$30M HALO prime contract win; expanding government pipeline',
+          'Additional MNO signings expected in 2026',
+        ],
+        risks: [
+          'Convertible dilution not yet modeled ($1.0B at $116.30 conversion price)',
+          '2026E estimates significantly lowered (rev $175M vs prior $367M)',
+          'Near-term EBITDA outlook worse: 2026E $(271)M vs prior $(124)M',
+        ],
+        estimates: [
+          { metric: 'Revenue ($M)', fy25: '70.9A', fy26: '175', fy27: '1,075', fy28: '2,627' },
+          { metric: 'Revenue ($M) Prior', fy25: '52', fy26: '367', fy27: '-', fy28: '2,637' },
+          { metric: 'EBITDA ($M)', fy25: '-189', fy26: '-271', fy27: '329', fy28: '1,479' },
+          { metric: 'EBITDA ($M) Prior', fy25: '-197', fy26: '-124', fy27: '387', fy28: '1,539' },
+        ],
+        methodology: '~20x 2029E adj EBITDA of $2.4B (from $2.5B). Cross-checks to ~12x 2029E revenue. DCF supports core valuation of $101/share; $125/share including spectrum. Valuation period 2029E. Gross margin expansion from 50% (2025A) to 71% (2028E).',
+        fullNotes: `QUARTERLY REVENUE ESTIMATES:
+| Period | 1Q | 2Q | 3Q | 4Q | FY |
+| 2025E | $1A | $1A | $15A | $54 | $71 |
+| 2026E | $35 | $35 | $35 | $70 | $175 |
+| Prior 26E | $38 | $44 | $130 | $149 | $367 |
+| 2027E | $198 | $238 | $290 | $350 | $1,075 |
+| 2028E | $491 | $584 | $720 | $833 | $2,627 |
+
+QUARTERLY EBITDA ESTIMATES:
+| Period | 1Q | 2Q | 3Q | 4Q | FY |
+| 2025E | $(44)A | $(50)A | $(54)A | $(41) | $(189) |
+| 2026E | $(69) | $(78) | $(72) | $(52) | $(271) |
+| Prior 26E | $(55) | $(62) | $(11) | $5 | $(124) |
+| 2027E | $38 | $63 | $96 | $133 | $329 |
+| Prior 27E | $52 | $77 | $110 | $148 | $387 |
+| 2028E | $268 | $318 | $414 | $494 | $1,479 |
+| Prior 28E | - | $333 | $429 | $509 | $1,539 |
+
+CONVERTIBLE NOTE ACTIVITY:
+- Issued $1.0B of 2.250% convertible sr notes due 2036
+- Initial conversion price: $116.30/share
+- Repurchased ~$300M existing converts (eliminated ~5.2M shares)
+- Issued ~6.3M shares to participating noteholders
+- Net share impact: +1.1M shares (not yet modeled for dilution)
+
+DISCLOSURE: Clear Street does and seeks to do business with companies covered in its research reports. Analysts: Greg Pendy, Brian Dobson, Justin Pan. March 3, 2026.`
+      },
       // === Jan 2026 - PT Raise $87 → $137 (FULL REPORT - Golden Dome & DoD) ===
       {
         date: '2026-01-20',
@@ -1983,7 +2222,7 @@ DISCLOSURE: Clear Street does and seeks to do business with companies covered in
       { date: '2025-11-12', action: 'PT Raise', priceTarget: 87, previousTarget: 59, rating: 'Buy', ratingNormalized: 'bullish', source: 'TipRanks', sourceUrl: 'https://www.tipranks.com/', isFullReport: false,
         thesis: 'Raising price target post-Q3 results.'
       },
-      { date: '2025-07-10', action: 'Initiation', priceTarget: 59, rating: 'Buy', ratingNormalized: 'bullish', source: 'Investing.com', sourceUrl: 'https://www.investing.com/', isFullReport: true,
+      { date: '2025-07-10', action: 'Initiation', priceTarget: 59, rating: 'Buy', ratingNormalized: 'bullish', source: 'Clear Street Research', isFullReport: true,
         thesis: 'Initiating coverage with Buy rating and $59 price target.'
       }
     ]
@@ -1996,10 +2235,92 @@ DISCLOSURE: Clear Street does and seeks to do business with companies covered in
     firm: 'Roth Capital',
     analyst: 'Scott Searle',
     coverageSince: 'April 2025',
-    currentPT: 82.50,
+    currentPT: 108,
     currentRating: 'Buy',
     currentRatingNormalized: 'bullish',
     reports: [
+      // === Mar 3, 2026 - PT Raise to $108 (Q4 2025 Earnings — FULL REPORT) ===
+      {
+        date: '2026-03-03',
+        action: 'PT Raise',
+        priceTarget: 108,
+        previousTarget: 82.50,
+        rating: 'Buy',
+        ratingNormalized: 'bullish',
+        source: 'Roth Capital Research',
+        isFullReport: true,
+        reportTitle: 'MNO Momentum Drives $1B 2027 Target; Maintain Buy and Raising PT to $108',
+        thesis: 'Maintain Buy, raise PT to $108 (from $82.50). Q4 upside ($54.3M, +268% seq), anticipated launches on track for late 2026 commercialization, ~$3.9B cash fully funds 100+ sats, 2027 sales approaching $1B. Limited competitive landscape — only ASTS marries 5G RF with D2D broadband and MNO-friendly model. Starlink D2D narrowband-only near-term. Raising 2026-2030 estimates (still <3% penetration of top 10 MNOs).',
+        reportSummary: `**Q4 RESULTS**
+Q4 rev $54.3M (+268% seq), FY2025 $70.9M — hit high end of $63-71M guidance range. Strength: 15 gateway shipments across 9 MNOs + early government contract revenue. Gateway sales act as precursor to MNO interest and support commercialization expectations.
+
+**LAUNCHES ON TRACK**
+45+ satellites in orbit by YE26, 60 fully constructed. ~12 contracted launches across 3 providers, cadence up to 1 launch/month starting BB7 in March. Future launches: 3-8 satellites per launch. Timing risks remain but diversity of launch providers provides comfort.
+
+**MNO MOMENTUM**
+Orange, Telefonica, Taiwan Mobile, CK Hutchison join Verizon, AT&T, STC, Vodafone. Collectively >$1B contracted revenue. Multiple MNOs commercially launching services late 2026/early 2027. Mil/gov expanding (HALO, Golden Dome) — meaningful 2026/27 revenue portion.
+
+**2027 APPROACHING $1B**
+Post better-than-expected 2025 and anticipated 2026 doubling, ASTS targets ~$1B in 2027. Conservatively reflects ~10M+ commercial subs (~1% of addressable within top 10 MNOs). EBITDA positive in 2027, exiting year with positive EPS.
+
+**COMPETITIVE LANDSCAPE**
+Only ASTS marries existing RF (5G protocols) with D2D broadband + MNO-friendly model. Starlink D2D not ideal beyond narrowband/text near-term. Amazon LEO early stage (4Q27 commercialization). TeraWave (Bezos-owned) uses Q/V-band — not suitable for mobile devices. Iridium, Globalstar, Sateliot are IoT-focused. Supported by on-the-ground MWC checks.
+
+**2030 ESTIMATES**
+$2.8B revenue, ~80% EBITDA margins, $4+ EPS at ~2.4% penetration of top 10 MNOs.
+
+**FULLY FUNDED**
+~$3.9B on BS — adequate for initial 45-60 satellites and 100+ satellites over next several years.`,
+        assumptions: [
+          { label: 'Price Target', value: '$108.00' },
+          { label: 'Prior Target', value: '$82.50' },
+          { label: 'PT Change', value: '+31%' },
+          { label: '2026E Revenue', value: '$200.6M (was $159.8M)' },
+          { label: '2027E Revenue', value: '$788.5M (was $482.2M)' },
+          { label: '2027E EBITDA', value: '$373.0M (was $152.0M)' },
+          { label: '2030E Revenue', value: '$2.8B' },
+          { label: '2030E EBITDA Margin', value: '~80%' },
+          { label: '2030E EPS', value: '$4+' },
+          { label: 'Penetration', value: '~2.4% of top 10 MNOs (<3%)' },
+        ],
+        estimates: [
+          { metric: 'Revenue ($M)', fy25: '70.9A', fy26: '200.6', fy27: '788.5' },
+          { metric: 'EBITDA ($M)', fy25: '-189.0A', fy26: '-155.0', fy27: '373.0' },
+          { metric: 'EPS', fy25: '-1.01A', fy26: '-0.85', fy27: '-0.09' },
+        ],
+        catalysts: [
+          'Late 2026 commercialization with 45+ sats in orbit',
+          '~12 contracted launches across 3 providers, up to 1/month',
+          'MNO momentum: Orange, Telefonica, CK Hutchison, Taiwan Mobile added at MWC',
+          'Mil/gov expansion: HALO, Golden Dome driving meaningful 2026/27 revenue',
+          '$3.9B fully funds 100+ satellite constellation',
+        ],
+        risks: [
+          'Launch timing risks remain despite provider diversity',
+          'Early days — execution must prove out',
+          'Government revenue mix within $1B 2027 target needs clarification',
+        ],
+        methodology: '2030E estimates: $2.8B rev, ~80% EBITDA margins at ~2.4% penetration of top 10 MNOs. PT implied valuation on forward estimates.',
+        fullNotes: `ESTIMATE REVISIONS:
+| Metric | Q1 26E | Q2 26E | Q3 26E | Q4 26E | FY26E | Prior FY26E |
+| Revenue | $40.6 | $43.1 | $50.6 | $66.4 | $200.6 | $159.8 |
+| EBITDA | $(45.3) | $(44.6) | $(39.3) | $(25.3) | $(155.0) | $(144.0) |
+| EPS | $(0.19) | $(0.21) | $(0.23) | $(0.29) | $(0.85) | $(1.09) |
+
+| Metric | Q1 27E | Q2 27E | Q3 27E | Q4 27E | FY27E | Prior FY27E |
+| Revenue | $108.1 | $157.0 | $222.8 | $300.6 | $788.5 | $482.2 |
+| EBITDA | $8.6 | $55.4 | $116.7 | $192.2 | $373.0 | $152.0 |
+| EPS | $(0.18) | $(0.10) | $0.02 | $0.17 | $(0.09) | $(0.55) |
+
+COMPETITIVE ASSESSMENT (MWC field checks):
+- Starlink: narrowband D2D only (text), not ideal beyond that near-term
+- Amazon LEO: early stage, 4Q27 commercialization
+- TeraWave (Bezos): Q/V-band, not near-term suitable for mobile devices
+- Iridium, Globalstar, Sateliot: IoT-focused
+- Only ASTS combines 5G RF + D2D broadband + MNO-friendly model
+
+DISCLOSURE: Roth Capital Partners. Scott W. Searle, CFA, Managing Director, Sr. Research Analyst. March 3, 2026.`
+      },
       { date: '2025-11-11', action: 'PT Raise', priceTarget: 82.50, previousTarget: 56, rating: 'Buy', ratingNormalized: 'bullish', source: 'TipRanks', sourceUrl: 'https://www.tipranks.com/', isFullReport: false,
         thesis: 'Raising price target post-Q3 results.'
       },

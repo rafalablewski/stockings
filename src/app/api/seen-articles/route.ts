@@ -128,7 +128,12 @@ export async function GET(request: NextRequest) {
       hidden: row.hidden,
     }));
 
-    return NextResponse.json({ articles });
+    const debug = request.nextUrl.searchParams.get('debug');
+    const body = debug ? { articles, _debug: { ticker: t, rowCount: rows.length } } : { articles };
+    console.log(`[seen-articles] GET ticker=${t} → ${rows.length} rows`);
+    return NextResponse.json(body, {
+      headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' },
+    });
   } catch (error) {
     console.error('[seen-articles] GET query error:', error);
 
@@ -193,8 +198,8 @@ export async function POST(request: NextRequest) {
           set: { dismissed: true },
         });
       } else {
-        // Upsert: always overwrite articleType/url/source/headline/date
-        // dismissed is NOT touched — only the dismiss=true path sets it
+        // Upsert from fetch: overwrite articleType/url/source/headline/date and set hidden false
+        // so newly fetched (or re-fetched) articles show in the list instead of staying hidden
         await db.insert(seenArticles).values(values).onConflictDoUpdate({
           target: [seenArticles.ticker, seenArticles.cacheKey],
           set: {
@@ -203,6 +208,7 @@ export async function POST(request: NextRequest) {
             source: sql`excluded.source`,
             headline: sql`excluded.headline`,
             date: sql`excluded.date`,
+            hidden: false,
           },
         });
       }
