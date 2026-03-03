@@ -10,6 +10,12 @@ const IR_URLS: Record<string, string> = {
   CRCL: 'https://investors.circle.com/press-releases',
 };
 
+// Fallback IR URLs when primary page is JS-rendered and returns no links in initial HTML.
+// ASTS press-releases page is client-rendered; main IR page has server-rendered earnings release links.
+const IR_FALLBACK_URLS: Record<string, string> = {
+  ASTS: 'https://investors.ast-science.com/',
+};
+
 // Wire services we aggregate from
 const WIRE_SERVICES = [
   'prnewswire.com',
@@ -36,6 +42,7 @@ interface PressRelease {
 }
 
 // ─── Source 1: Google News RSS filtered to wire services ───
+// Note: Google News index can lag; newest wire PRs may appear with delay. We also fetch Business Wire directly below.
 
 async function fetchWireServiceRSS(companyName: string, ticker: string): Promise<PressRelease[]> {
   const wireSites = WIRE_SERVICES.map(s => `site:${s}`).join(' OR ');
@@ -58,6 +65,63 @@ async function fetchWireServiceRSS(companyName: string, ticker: string): Promise
     console.error(`[press-releases] Wire service RSS failed for ${ticker}`);
     return [];
   }
+}
+
+// ─── Source 1b: Direct Business Wire search (fresher than Google News index) ───
+
+async function fetchBusinessWireDirect(companyName: string): Promise<PressRelease[]> {
+  const searchQuery = encodeURIComponent(companyName);
+  const url = `https://www.businesswire.com/news/home/search?keyword=${searchQuery}`;
+
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      },
+      cache: 'no-store',
+      signal: AbortSignal.timeout(8000),
+    });
+
+    if (!response.ok) return [];
+
+    const html = await response.text();
+    return parseBusinessWireHTML(html);
+  } catch {
+    // Direct fetch may be throttled or blocked; fallback remains Google News RSS
+    return [];
+  }
+}
+
+function parseBusinessWireHTML(html: string): PressRelease[] {
+  const items: PressRelease[] = [];
+  // Business Wire article URLs: .../news/home/YYYYMMDDHHMMSS/en/Title-Slug or .../news/home/...
+  const linkRegex = /<a[^>]+href=["'](https?:\/\/[^"']*businesswire\.com\/news\/home\/[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  let match;
+  const seenUrls = new Set<string>();
+
+  while ((match = linkRegex.exec(html)) !== null && items.length < 15) {
+    const url = match[1];
+    if (seenUrls.has(url)) continue;
+    seenUrls.add(url);
+
+    const rawText = match[2].replace(/<[^>]+>/g, '').trim();
+    const title = decodeHTMLEntities(rawText);
+    if (!title || title.length < 10) continue;
+
+    // Date from URL: /news/home/YYYYMMDD... (e.g. 20260226276981 → 2026-02-26)
+    const dateMatch = url.match(/\/news\/home\/(\d{4})(\d{2})(\d{2})\d*/);
+    const date = dateMatch ? `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}` : extractDateFromContext(html, match.index);
+
+    items.push({
+      title,
+      url,
+      date: date || '',
+      source: 'Business Wire',
+    });
+  }
+
+  return items;
 }
 
 function parseRSSItems(xml: string, limit: number): PressRelease[] {
@@ -93,25 +157,35 @@ async function fetchIRPage(symbol: string): Promise<PressRelease[]> {
   const irUrl = IR_URLS[symbol];
   if (!irUrl) return [];
 
-  try {
-    const response = await fetch(irUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-      },
-      cache: 'no-store',
-      signal: AbortSignal.timeout(10000),
-    });
+  const fetchOne = async (url: string): Promise<PressRelease[]> => {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        },
+        cache: 'no-store',
+        signal: AbortSignal.timeout(10000),
+      });
+      if (!response.ok) return [];
+      const html = await response.text();
+      return parseIRPageHTML(html, url);
+    } catch {
+      return [];
+    }
+  };
 
-    if (!response.ok) return [];
-
-    const html = await response.text();
-    return parseIRPageHTML(html, irUrl);
-  } catch {
-    // IR page fetch may fail in restricted environments — graceful fallback
-    console.error(`[press-releases] IR page fetch failed for ${symbol}`);
-    return [];
+  let items = await fetchOne(irUrl);
+  // ASTS press-releases page is client-rendered (no links in initial HTML). Use main IR page as fallback (has earnings release links).
+  const fallbackUrl = IR_FALLBACK_URLS[symbol];
+  if (items.length === 0 && fallbackUrl) {
+    console.warn(`[press-releases] Primary IR page empty for ${symbol}, trying fallback`);
+    items = await fetchOne(fallbackUrl);
   }
+  if (items.length === 0 && (irUrl || fallbackUrl)) {
+    console.error(`[press-releases] IR page fetch failed or empty for ${symbol}`);
+  }
+  return items;
 }
 
 function parseIRPageHTML(html: string, baseUrl: string): PressRelease[] {
@@ -235,17 +309,19 @@ export async function GET(
   }
 
   try {
-    // Fetch from wire services and IR page in parallel
-    const [wireResults, irResults] = await Promise.allSettled([
+    // Fetch from all sources in parallel: IR page, Google News RSS (all wires), and direct Business Wire (freshest)
+    const [wireResults, irResults, businessWireResults] = await Promise.allSettled([
       fetchWireServiceRSS(stock.name, symbol),
       fetchIRPage(symbol),
+      fetchBusinessWireDirect(stock.name),
     ]);
 
     const wireArticles = wireResults.status === 'fulfilled' ? wireResults.value : [];
     const irArticles = irResults.status === 'fulfilled' ? irResults.value : [];
+    const businessWireArticles = businessWireResults.status === 'fulfilled' ? businessWireResults.value : [];
 
-    // Merge: IR page results first (most authoritative), then wire services
-    const merged = [...irArticles, ...wireArticles];
+    // Merge: IR first, then direct Business Wire (newest), then Google News RSS
+    const merged = [...irArticles, ...businessWireArticles, ...wireArticles];
 
     // Deduplicate
     const unique = deduplicateReleases(merged);
