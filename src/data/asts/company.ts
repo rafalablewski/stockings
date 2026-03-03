@@ -28,10 +28,10 @@ import type { DataMetadata, StockDefaults } from '../shared/types';
 // ============================================================================
 
 export const ASTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-23',
-  source: 'SDA $30M Europa PR (Feb 23), Feb 20/23 8-Ks (greenshoe/settlements), Feb 19 business update scheduling PR, Feb 13 424B5s, Feb 11 8-K, BB6 unfolding PR',
-  nextExpectedUpdate: 'Q4 2025 business update (March 2, 2026).',
-  notes: 'Feb 23 audit: SDA $30M Europa contract (10th gov contract, $93M+ cumulative). $75M greenshoe exercised Feb 20 (total 2.25% notes $1.075B). RD settlements completed. Q4 call March 2. Price $82.51 post-financing. AST SpaceMobile USA defense subsidiary disclosed.',
+  lastUpdated: '2026-03-03',
+  source: 'Q4 2025 Business Update (Mar 2), MWC 2026 announcements (Mar 2), sell-side reports (Mar 3), SDA $30M Europa PR (Feb 23)',
+  nextExpectedUpdate: 'Q4 2025 10-K filing (~March 2026)',
+  notes: 'Q4 rev $54.3M (FY $70.9M). 2026 guidance $150-200M. 2027 target $1B. Backlog $1.2B. Pro forma liquidity ~$3.9B. Price $86.92. mouCount 57 post-MWC. BB7 launching March.',
 };
 
 // ============================================================================
@@ -68,8 +68,8 @@ export const COMPANY_INFO = {
  */
 export const DEFAULTS: StockDefaults = {
   // === MARKET DATA ===
-  currentStockPrice: 82.51,   // UPDATE REGULARLY - Last: Feb 13, 2026
-  priceAsOf: '2026-02-13',    // Date of stock price above
+  currentStockPrice: 86.92,   // UPDATE REGULARLY - Last: Mar 2, 2026
+  priceAsOf: '2026-03-02',    // Date of stock price above
 
   // === SHARE COUNT (post-Feb 2026 offerings) ===
   // Class A: ~290M + Class B: 11.2M + Class C: 78.2M = ~379.4M
@@ -104,10 +104,10 @@ export const OPERATIONAL_METRICS = {
   // === PARTNERS & REACH ===
   partnerReach: 3000,         // ~3B subs across 50+ MNOs per Q3 PR
   definitiveAgreements: 6,    // AT&T, Vodafone, Verizon, stc, Rakuten, Bell
-  mouCount: 55,               // "over 50 MNOs" per earnings + MWC 2026: Orange, Taiwan Mobile, VodafoneThree, Sunrise, Vodafone Ireland
+  mouCount: 57,               // "over 50 MNOs" per earnings + MWC 2026: Orange, Taiwan Mobile, VodafoneThree, Sunrise, Vodafone Ireland, Vodafone Ukraine, CK Hutchison (Telefónica was already counted)
 
   // === REVENUE ===
-  contractedRevenue: 1000,    // $1B+ contracted commercial revenue
+  contractedRevenue: 1200,    // $1.2B contracted commercial revenue (per Q4 2025 earnings call)
 
   // === SPECTRUM ===
   spectrumOwned: 105,         // 45 L-band + 60 S-band (MHz)
@@ -142,8 +142,8 @@ export const MODEL_ASSUMPTIONS = {
  * For display in the UI data freshness badge
  */
 export const DATA_FRESHNESS = {
-  dataAsOf: 'Feb 23, 2026',
-  lastFiling: '8-K (Feb 23, 2026)',
-  nextFiling: 'Q4 2025 Business Update (March 2, 2026)',
-  priceNote: 'Post-financing: $96.92→$82.22 (-15.17% Feb 12, vol 30.2M) →$82.51 (+0.35% Feb 13)',
+  dataAsOf: 'Mar 3, 2026',
+  lastFiling: 'Q4 2025 Business Update (Mar 2, 2026)',
+  nextFiling: 'Q4 2025 10-K (~March 2026)',
+  priceNote: '$86.92 (Mar 2). Q4 rev $54.3M beat. 2026 guide $150-200M. 2027 target $1B.',
 };
