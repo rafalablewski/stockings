@@ -2033,7 +2033,7 @@ Pro forma ~$3.9B to fund construction and launch of first 100 satellites and fur
           { metric: 'EBITDA ($M)', fy25: '-236.6A', fy26: '-152.0', fy27: '316.4' },
         ],
       },
-      { date: '2025-08-21', action: 'Initiation', priceTarget: null, rating: 'Market Perform', ratingNormalized: 'neutral', source: 'Investing.com', sourceUrl: 'https://www.investing.com/', isFullReport: true,
+      { date: '2025-08-21', action: 'Initiation', priceTarget: null, rating: 'Market Perform', ratingNormalized: 'neutral', source: 'William Blair Equity Research', isFullReport: true,
         thesis: 'Initiating coverage with Market Perform rating. No price target provided.'
       }
     ]
@@ -2067,6 +2067,90 @@ Pro forma ~$3.9B to fund construction and launch of first 100 satellites and fur
     currentRating: 'Buy',
     currentRatingNormalized: 'bullish',
     reports: [
+      // === Mar 3, 2026 - Reiterate Buy $137 (Q4 2025 Earnings — FULL REPORT) ===
+      {
+        date: '2026-03-03',
+        action: 'Reiterate',
+        priceTarget: 137,
+        rating: 'Buy',
+        ratingNormalized: 'bullish',
+        reportTitle: 'MNO Gateway Spend in 2025 Positions for an Emerging D2D Story; Maintain Buy, $137 PT',
+        source: 'Clear Street Research',
+        isFullReport: true,
+        thesis: 'Maintain Buy and $137 PT. FY2025 revenue $70.9M hit high-end of $50-75M guidance, driven by MNO gateway spending — a key leading indicator of commercial deployment. BB8-29 in production with 40 Micron-equivalent satellites expected fully assembled by 1H26. Pro forma ~$3.9B liquidity supports 100+ satellites. Mgmt expects additional MNOs to sign in 2026, reinforcing the view that ASTS is becoming a critical D2D solution for MNOs competing with Starlink. 2029E EBITDA revised to $2.4B (from $2.5B).',
+        reportSummary: `**Q4 2025 RESULTS**
+FY2025 revenue $70.9M at high-end of $50-75M guidance. Growth driven primarily by MNO gateway spending — a key leading indicator of commercial deployment. Combined with mgmt expectation for additional MNOs to sign in 2026, reinforces ASTS as critical D2D solution vs. Starlink.
+
+**SATELLITE PRODUCTION**
+BlueBird satellites 8-29 in production. 40 Micron-equivalent satellites expected fully assembled by 1H26. BB7 is second satellite in next-generation campaign, identical to BB6 and compatible with all major launch vehicles. ASTS expects at least 45 satellites in orbit by YE26.
+
+**GOVERNMENT & DEFENSE**
+$30M HALO (Hybrid Acquisition for Proliferated LEO) prime contract win — separate program from SHIELD contract bidding. Government pipeline continues to build.
+
+**FINANCIAL OUTLOOK**
+Mgmt targets $1B in 2027E revenue, close to our $1.07B estimate and below $1.2B backlog. High 2025 gross margins (~50%) despite gateway revenue reliance strengthen confidence in projected margin growth: 46% (2026E) → 71% (2028E).
+
+**FINANCING**
+$1.0B of 2.250% convertible sr notes due 2036 (conversion price $116.30). Potential dilution not yet incorporated. Repurchased ~$300M of existing converts eliminating ~5.2M underlying shares, partially offset by ~6.3M shares issued to participating noteholders.
+
+**VALUATION**
+$137 PT implies ~20x 2029E adj EBITDA of $2.4B (from $2.5B) and cross-checks to ~12x 2029E revenue. DCF supports core valuation of $101/share; including projected spectrum value yields $125/share total valuation.`,
+        assumptions: [
+          { label: 'Price Target', value: '$137.00 (unchanged)' },
+          { label: 'Valuation Multiple', value: '~20x 2029E adj EBITDA' },
+          { label: '2029E adj EBITDA', value: '$2.4B (from $2.5B)' },
+          { label: 'DCF Core Value', value: '$101/share' },
+          { label: 'DCF + Spectrum', value: '$125/share' },
+          { label: 'Revenue Cross-Check', value: '~12x 2029E revenue' },
+          { label: '2025 Gross Margin', value: '~50%' },
+          { label: 'Projected Margin Growth', value: '46% (2026E) → 71% (2028E)' },
+        ],
+        catalysts: [
+          'MNO gateway spending as leading indicator of commercial deployment',
+          'BB8-29 in production; 40 Micron-equivalent satellites assembled by 1H26',
+          'At least 45 satellites in orbit by YE26',
+          '$30M HALO prime contract win; expanding government pipeline',
+          'Additional MNO signings expected in 2026',
+        ],
+        risks: [
+          'Convertible dilution not yet modeled ($1.0B at $116.30 conversion price)',
+          '2026E estimates significantly lowered (rev $175M vs prior $367M)',
+          'Near-term EBITDA outlook worse: 2026E $(271)M vs prior $(124)M',
+        ],
+        estimates: [
+          { metric: 'Revenue ($M)', fy25: '70.9A', fy26: '175', fy27: '1,075', fy28: '2,627' },
+          { metric: 'Revenue ($M) Prior', fy25: '52', fy26: '367', fy27: '-', fy28: '2,637' },
+          { metric: 'EBITDA ($M)', fy25: '-189', fy26: '-271', fy27: '329', fy28: '1,479' },
+          { metric: 'EBITDA ($M) Prior', fy25: '-197', fy26: '-124', fy27: '387', fy28: '1,539' },
+        ],
+        methodology: '~20x 2029E adj EBITDA of $2.4B (from $2.5B). Cross-checks to ~12x 2029E revenue. DCF supports core valuation of $101/share; $125/share including spectrum. Valuation period 2029E. Gross margin expansion from 50% (2025A) to 71% (2028E).',
+        fullNotes: `QUARTERLY REVENUE ESTIMATES:
+| Period | 1Q | 2Q | 3Q | 4Q | FY |
+| 2025E | $1A | $1A | $15A | $54 | $71 |
+| 2026E | $35 | $35 | $35 | $70 | $175 |
+| Prior 26E | $38 | $44 | $130 | $149 | $367 |
+| 2027E | $198 | $238 | $290 | $350 | $1,075 |
+| 2028E | $491 | $584 | $720 | $833 | $2,627 |
+
+QUARTERLY EBITDA ESTIMATES:
+| Period | 1Q | 2Q | 3Q | 4Q | FY |
+| 2025E | $(44)A | $(50)A | $(54)A | $(41) | $(189) |
+| 2026E | $(69) | $(78) | $(72) | $(52) | $(271) |
+| Prior 26E | $(55) | $(62) | $(11) | $5 | $(124) |
+| 2027E | $38 | $63 | $96 | $133 | $329 |
+| Prior 27E | $52 | $77 | $110 | $148 | $387 |
+| 2028E | $268 | $318 | $414 | $494 | $1,479 |
+| Prior 28E | - | $333 | $429 | $509 | $1,539 |
+
+CONVERTIBLE NOTE ACTIVITY:
+- Issued $1.0B of 2.250% convertible sr notes due 2036
+- Initial conversion price: $116.30/share
+- Repurchased ~$300M existing converts (eliminated ~5.2M shares)
+- Issued ~6.3M shares to participating noteholders
+- Net share impact: +1.1M shares (not yet modeled for dilution)
+
+DISCLOSURE: Clear Street does and seeks to do business with companies covered in its research reports. Analysts: Greg Pendy, Brian Dobson, Justin Pan. March 3, 2026.`
+      },
       // === Jan 2026 - PT Raise $87 → $137 (FULL REPORT - Golden Dome & DoD) ===
       {
         date: '2026-01-20',
@@ -2138,7 +2222,7 @@ DISCLOSURE: Clear Street does and seeks to do business with companies covered in
       { date: '2025-11-12', action: 'PT Raise', priceTarget: 87, previousTarget: 59, rating: 'Buy', ratingNormalized: 'bullish', source: 'TipRanks', sourceUrl: 'https://www.tipranks.com/', isFullReport: false,
         thesis: 'Raising price target post-Q3 results.'
       },
-      { date: '2025-07-10', action: 'Initiation', priceTarget: 59, rating: 'Buy', ratingNormalized: 'bullish', source: 'Investing.com', sourceUrl: 'https://www.investing.com/', isFullReport: true,
+      { date: '2025-07-10', action: 'Initiation', priceTarget: 59, rating: 'Buy', ratingNormalized: 'bullish', source: 'Clear Street Research', isFullReport: true,
         thesis: 'Initiating coverage with Buy rating and $59 price target.'
       }
     ]
