@@ -17,6 +17,7 @@
  */
 
 export const ASTS_SEC_FILINGS = [
+  { date: 'Mar 2, 2026', type: '10-K', description: 'Annual Report', period: 'FY 2025', color: 'blue' },
   { date: 'Feb 23, 2026', type: '8-K', description: 'RD Settlements + Notes Repurchases Completed (RD#1 Feb 20: $46.5M 4.25%; RD#2 Feb 23: $250M 2.375%; Item 8.01)', period: '—', color: 'yellow' },
   { date: 'Feb 20, 2026', type: '8-K', description: '$75M Greenshoe Exercise — Total 2.25% Notes $1,075M (Option Notes; Item 2.03/3.02/8.01; Freshfields opinions)', period: '—', color: 'yellow' },
   { date: 'Feb 17, 2026', type: '8-K', description: 'Convertible Notes Indenture Completion ($1B 2.25% due 2036; settlement + Item 1.01/2.03/3.02/8.01)', period: '—', color: 'yellow' },
@@ -106,7 +107,7 @@ export const ASTS_SEC_META = {
   exchange: 'NASDAQ',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 23, 2026', title: 'SDA $30M HALO Europa Track 2 Prime Contract' },
-  totalFilingsTracked: 78
+  totalFilingsTracked: 79
 };
 
 // Color palette constants (reduce duplication per Gemini review)
@@ -140,6 +141,11 @@ export const ASTS_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '
  * Key format: "FORM_TYPE|YYYY-MM-DD" using the filing date from sec-filings.ts.
  */
 export const ASTS_FILING_CROSS_REFS: Record<string, { source: string; data: string }[]> = {
+
+  // ── Mar 2026 ──────────────────────────────────────────────────────────────
+  '10-K|2026-03-02': [
+    { source: 'financials', data: "Q4 2025: cashAndEquiv: 2780, totalDebt: 2264, revenue: ~50 (derived); FY 2025: Revenue $63-71M, OpEx $355-363M, adj opex $257-263M" },
+  ],
 
   // ── Feb 2026 ──────────────────────────────────────────────────────────────
   '8-K|2026-02-23': [
