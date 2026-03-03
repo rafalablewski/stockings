@@ -18,6 +18,7 @@
 'use client';
 
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { flushSync } from 'react-dom';
 import { VERDICT_COLORS, parseVerdict, stripVerdict } from './verdictUtils';
 import { authFetch } from '@/lib/auth-fetch';
 
@@ -1290,21 +1291,23 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             finalNews = checked.slice(dedupedPrs.length);
           } catch { /* show articles with analyzed: null as fallback */ }
         }
-        // Batch all state updates so we never render with mainCard filled but dbRecords stale (avoids list disappearing after refresh)
+        // Apply all state in one synchronous flush so we never render with mainCard filled but dbRecords stale (avoids list disappearing after refresh)
         if (!cancelled) {
-          setDbRecords(new Map(records));
-          setNewArticleKeys(newKeys);
-          setMainCard(prev => ({
-            ...prev,
-            loading: false,
-            loadingPR: false,
-            loadingNews: false,
-            loaded: true,
-            error: null,
-            activeTab: 'pr',
-            pressReleases: mergeArticles(finalPrs, prev.pressReleases),
-            news: mergeArticles(finalNews, prev.news),
-          }));
+          flushSync(() => {
+            setDbRecords(new Map(records));
+            setNewArticleKeys(newKeys);
+            setMainCard(prev => ({
+              ...prev,
+              loading: false,
+              loadingPR: false,
+              loadingNews: false,
+              loaded: true,
+              error: null,
+              activeTab: 'pr',
+              pressReleases: mergeArticles(finalPrs, prev.pressReleases),
+              news: mergeArticles(finalNews, prev.news),
+            }));
+          });
           console.log(`[db-init] set state: ${finalPrs.length} PRs, ${finalNews.length} news`);
         }
       } catch (err) {
