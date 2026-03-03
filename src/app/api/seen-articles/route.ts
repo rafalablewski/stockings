@@ -193,8 +193,8 @@ export async function POST(request: NextRequest) {
           set: { dismissed: true },
         });
       } else {
-        // Upsert: always overwrite articleType/url/source/headline/date
-        // dismissed is NOT touched — only the dismiss=true path sets it
+        // Upsert from fetch: overwrite articleType/url/source/headline/date and set hidden false
+        // so newly fetched (or re-fetched) articles show in the list instead of staying hidden
         await db.insert(seenArticles).values(values).onConflictDoUpdate({
           target: [seenArticles.ticker, seenArticles.cacheKey],
           set: {
@@ -203,6 +203,7 @@ export async function POST(request: NextRequest) {
             source: sql`excluded.source`,
             headline: sql`excluded.headline`,
             date: sql`excluded.date`,
+            hidden: false,
           },
         });
       }

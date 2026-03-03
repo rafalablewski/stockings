@@ -925,16 +925,9 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       if (saveRes.ok) {
         console.log('[ai-fetch] save OK:', saveBody);
         for (const a of articles) {
-          // Inherit hidden from same cache key OR any headline match (covers different URLs for same article)
           const existingRec = dbRecordsRef.current.get(a.cacheKey);
-          let inheritHidden = existingRec?.hidden ?? false;
-          if (!inheritHidden) {
-            const nh = normalizeHeadline(a.headline);
-            for (const [, r] of dbRecordsRef.current) {
-              if (r.hidden && normalizeHeadline(r.headline) === nh) { inheritHidden = true; break; }
-            }
-          }
-          const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: newKeys.has(a.cacheKey) ? false : (existingRec?.dismissed ?? false), hidden: inheritHidden };
+          // Save-from-fetch sets hidden=false in the API; mark all saved articles visible locally so the list updates (e.g. March PR no longer stuck in hidden)
+          const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: newKeys.has(a.cacheKey) ? false : (existingRec?.dismissed ?? false), hidden: false };
           dbRecordsRef.current.set(a.cacheKey, rec);
         }
         setDbRecords(new Map(dbRecordsRef.current));
