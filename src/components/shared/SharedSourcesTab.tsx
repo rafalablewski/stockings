@@ -911,32 +911,27 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     }
   }, [ticker, forceLocal]);
 
-  // Helper: save articles to DB and update local state
+  // Helper: save articles to DB and update local state. Throws if save fails so callers can surface error.
   const saveArticlesToDb = useCallback(async (articles: { cacheKey: string; headline: string; date: string; url: string; source?: string; articleType: string }[], newKeys: Set<string>) => {
     if (articles.length === 0) return;
     console.log(`[ai-fetch] saving ${articles.length} articles to DB (${newKeys.size} NEW)...`);
-    try {
-      const saveRes = await fetch('/api/seen-articles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker, articles }),
-      });
-      const saveBody = await saveRes.json().catch(() => ({}));
-      if (saveRes.ok) {
-        console.log('[ai-fetch] save OK:', saveBody);
-        for (const a of articles) {
-          const existingRec = dbRecordsRef.current.get(a.cacheKey);
-          // Save-from-fetch sets hidden=false in the API; mark all saved articles visible locally so the list updates (e.g. March PR no longer stuck in hidden)
-          const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: newKeys.has(a.cacheKey) ? false : (existingRec?.dismissed ?? false), hidden: false };
-          dbRecordsRef.current.set(a.cacheKey, rec);
-        }
-        setDbRecords(new Map(dbRecordsRef.current));
-      } else {
-        console.error('[ai-fetch] save FAILED:', saveRes.status, saveBody);
-      }
-    } catch (err) {
-      console.error('[ai-fetch] save error:', err);
+    const saveRes = await fetch('/api/seen-articles', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ticker, articles }),
+    });
+    const saveBody = await saveRes.json().catch(() => ({}));
+    if (!saveRes.ok) {
+      console.error('[ai-fetch] save FAILED:', saveRes.status, saveBody);
+      throw new Error(saveBody?.error || `Save failed: ${saveRes.status}`);
     }
+    console.log('[ai-fetch] save OK:', saveBody);
+    for (const a of articles) {
+      const existingRec = dbRecordsRef.current.get(a.cacheKey);
+      const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: newKeys.has(a.cacheKey) ? false : (existingRec?.dismissed ?? false), hidden: false };
+      dbRecordsRef.current.set(a.cacheKey, rec);
+    }
+    setDbRecords(new Map(dbRecordsRef.current));
   }, [ticker]);
 
   // Fetch Press Releases only
@@ -956,15 +951,15 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         if (!dbRecordsRef.current.has(key)) newKeys.add(key);
       }
 
+      const toSave = prs.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' }));
+      await saveArticlesToDb(toSave, newKeys);
+
       setMainCard(prev => ({
         ...prev, loadingPR: false, loaded: true,
         pressReleases: mergeArticles(prs, prev.pressReleases),
       }));
       setLastFetchedAt(Date.now());
       if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
-
-      const toSave = prs.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' }));
-      await saveArticlesToDb(toSave, newKeys);
 
       if (prs.length > 0) {
         setAiChecking(true);
@@ -974,8 +969,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         } catch { /* handled */ }
         finally { setAiChecking(false); }
       }
-    } catch {
-      setMainCard(prev => ({ ...prev, loadingPR: false, error: 'Could not fetch press releases' }));
+    } catch (err) {
+      setMainCard(prev => ({ ...prev, loadingPR: false, error: err instanceof Error ? err.message : 'Could not fetch or save press releases' }));
     }
   }, [ticker, checkAnalyzed, saveArticlesToDb]);
 
@@ -996,15 +991,15 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         if (!dbRecordsRef.current.has(key)) newKeys.add(key);
       }
 
+      const toSave = news.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'news' }));
+      await saveArticlesToDb(toSave, newKeys);
+
       setMainCard(prev => ({
         ...prev, loadingNews: false, loaded: true,
         news: mergeArticles(news, prev.news),
       }));
       setLastFetchedAt(Date.now());
       if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
-
-      const toSave = news.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'news' }));
-      await saveArticlesToDb(toSave, newKeys);
 
       if (news.length > 0) {
         setAiChecking(true);
@@ -1014,8 +1009,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
         } catch { /* handled */ }
         finally { setAiChecking(false); }
       }
-    } catch {
-      setMainCard(prev => ({ ...prev, loadingNews: false, error: 'Could not fetch news' }));
+    } catch (err) {
+      setMainCard(prev => ({ ...prev, loadingNews: false, error: err instanceof Error ? err.message : 'Could not fetch or save news' }));
     }
   }, [ticker, checkAnalyzed, saveArticlesToDb]);
 
@@ -1044,41 +1039,48 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
     if (prResult.status === 'fulfilled') prs = prResult.value;
     if (newsResult.status === 'fulfilled') news = newsResult.value;
-    const error = (prResult.status === 'rejected' && newsResult.status === 'rejected') ? 'Could not fetch feeds' : null;
+    let fetchError: string | null = (prResult.status === 'rejected' && newsResult.status === 'rejected') ? 'Could not fetch feeds' : null;
 
-    const newKeys = new Set<string>();
-    for (const a of [...prs, ...news]) {
-      const key = articleCacheKey(a);
-      if (!dbRecordsRef.current.has(key)) newKeys.add(key);
-    }
+    try {
+      const newKeys = new Set<string>();
+      for (const a of [...prs, ...news]) {
+        const key = articleCacheKey(a);
+        if (!dbRecordsRef.current.has(key)) newKeys.add(key);
+      }
 
-    setMainCard(prev => ({
-      ...prev, loading: false, loadingPR: false, loadingNews: false, loaded: true, error,
-      pressReleases: mergeArticles(prs, prev.pressReleases),
-      news: mergeArticles(news, prev.news),
-    }));
-    setLastFetchedAt(Date.now());
-    if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
+      const allToSave = [
+        ...prs.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' })),
+        ...news.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'news' })),
+      ];
+      if (allToSave.length > 0) await saveArticlesToDb(allToSave, newKeys);
 
-    const allToSave = [
-      ...prs.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' })),
-      ...news.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'news' })),
-    ];
-    await saveArticlesToDb(allToSave, newKeys);
+      setMainCard(prev => ({
+        ...prev, loading: false, loadingPR: false, loadingNews: false, loaded: true, error: fetchError,
+        pressReleases: mergeArticles(prs, prev.pressReleases),
+        news: mergeArticles(news, prev.news),
+      }));
+      setLastFetchedAt(Date.now());
+      if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
 
-    const allArticles = [...prs, ...news];
-    if (allArticles.length > 0) {
-      initialRecheckDone.current = true;
-      setAiChecking(true);
-      try {
-        const checked = await checkAnalyzed(allArticles);
-        setMainCard(prev => ({
-          ...prev,
-          pressReleases: mergeArticles(checked.slice(0, prs.length), prev.pressReleases),
-          news: mergeArticles(checked.slice(prs.length), prev.news),
-        }));
-      } catch { /* handled */ }
-      finally { setAiChecking(false); }
+      const allArticles = [...prs, ...news];
+      if (allArticles.length > 0) {
+        initialRecheckDone.current = true;
+        setAiChecking(true);
+        try {
+          const checked = await checkAnalyzed(allArticles);
+          setMainCard(prev => ({
+            ...prev,
+            pressReleases: mergeArticles(checked.slice(0, prs.length), prev.pressReleases),
+            news: mergeArticles(checked.slice(prs.length), prev.news),
+          }));
+        } catch { /* handled */ }
+        finally { setAiChecking(false); }
+      }
+    } catch (err) {
+      setMainCard(prev => ({
+        ...prev, loading: false, loadingPR: false, loadingNews: false,
+        error: err instanceof Error ? err.message : (fetchError ?? 'Could not save to database'),
+      }));
     }
   }, [ticker, checkAnalyzed, saveArticlesToDb]);
 
