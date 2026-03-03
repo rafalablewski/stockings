@@ -30,7 +30,7 @@ export const PARTNERS_METADATA: DataMetadata = {
   lastUpdated: '2026-03-02',
   source: 'Q3 2025 10-Q, press releases, Jan 2026 8-K (Mikitani resignation), MWC 2026 announcements (Feb 27 - Mar 2)',
   nextExpectedUpdate: 'After MWC follow-ups or new partnership announcements',
-  notes: 'MWC 2026: Orange, Taiwan Mobile, VodafoneThree, Sunrise, Vodafone Ireland elevated from Others to named partners. Verizon definitive Oct 2025, stc $1.8B agreement Q3 2025. Mikitani resigned from board Jan 13, 2026 (dilution); Rakuten retains observer.',
+  notes: 'MWC 2026 Mar 2: Telefónica (SCE engagement, Spain/Germany), Vodafone Ukraine (MoU), CK Hutchison Group Telecom (SCE partnership, 5 EU markets) added. Prior MWC 2026: Orange, Taiwan Mobile, VodafoneThree, Sunrise, Vodafone Ireland elevated. Verizon definitive Oct 2025, stc $1.8B agreement Q3 2025. Mikitani resigned from board Jan 13, 2026 (dilution); Rakuten retains observer.',
 };
 
 // ============================================================================
@@ -159,13 +159,40 @@ export const PARTNERS: Partner[] = [
     notes: 'Partnership with SCE. Secured Ireland\'s first D2D Test and Trial licence. Preparing first satellite broadband video call.',
   },
   {
+    name: 'Telefónica',
+    region: 'EU/LatAm',
+    subs: 300,
+    status: 'Exploring D2D (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'Engaging with SCE to explore D2D satellite connectivity in Spain and Germany. Focus: complementing 4G/5G, network resilience in remote areas. Softer commitment than MOU — "exploring" and "engaging." ~300M subs across 12 markets. Elevated from Others at MWC 2026.',
+  },
+  {
+    name: 'Vodafone Ukraine',
+    region: 'Ukraine',
+    subs: 17,
+    status: 'MOU (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'MoU signed at MWC 2026 for high-capacity LEO satellite broadband across Ukraine. Full-service: broadband voice + data on standard smartphones. National resilience / infrastructure continuity focus. Not binding — subject to definitive agreements and regulatory approvals.',
+  },
+  {
+    name: 'CK Hutchison Group Telecom',
+    region: 'EU (5 markets)',
+    subs: 42,
+    status: 'Partnership Agreement (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'Partnership agreement with SCE for 5 markets: 3 Austria, 3 Denmark, 3 Ireland, WINDTRE Italy, 3 Sweden. Field demos summer 2026 in Austria and Italy. Pushing for harmonised EU D2D framework. Largest multi-market SCE deal. 3 Ireland separate from Vodafone Ireland.',
+  },
+  {
     name: 'Others (40+ MNOs)',
     region: 'Global',
-    subs: 1645,
+    subs: 1345,
     status: 'MOU/LOI',
     prepay: 0,
     spectrum: 'Various',
-    notes: 'Telefonica, Etisalat + 40+ others.',
+    notes: 'Etisalat + 40+ others.',
   },
 ];
 

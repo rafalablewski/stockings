@@ -138,7 +138,7 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
     category: 'Commercial',
   },
   {
-    event: 'Bell Canada, Telefonica, Etisalat + 50 MNO Deals',
+    event: 'Bell Canada, Etisalat + 50 MNO Deals → Definitive Upgrades',
     timeline: '2026',
     impact: 'High',
     category: 'Commercial',
