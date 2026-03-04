@@ -273,10 +273,15 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { ticker, articles, forceLocal } = body as { ticker: string; articles: Article[]; forceLocal?: boolean };
+    const { ticker, articles, forceLocal, bustCache } = body as { ticker: string; articles: Article[]; forceLocal?: boolean; bustCache?: boolean };
 
     if (!ticker || !articles?.length) {
       return NextResponse.json({ error: 'Missing ticker or articles' }, { status: 400 });
+    }
+
+    // Bust the in-memory cache when explicitly requested (e.g., after a db/setup reseed).
+    if (bustCache) {
+      analysisCache.delete(ticker.toUpperCase());
     }
 
     // Gather all existing analysis data for this ticker from the database

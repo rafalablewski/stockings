@@ -140,7 +140,7 @@ const SourceArticleRow: React.FC<{
       const res = await fetch('/api/check-analyzed', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker, articles: [{ headline: article.headline, date: article.date }] }),
+        body: JSON.stringify({ ticker, articles: [{ headline: article.headline, date: article.date }], bustCache: true }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -871,13 +871,13 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   // Persistent analysis cache (survives page reloads — loaded from Postgres)
   const [persistedSourceAnalyses, setPersistedSourceAnalyses] = useState<Record<string, string>>({});
 
-  const checkAnalyzed = useCallback(async (articles: ArticleItem[]): Promise<ArticleItem[]> => {
+  const checkAnalyzed = useCallback(async (articles: ArticleItem[], opts?: { bustCache?: boolean }): Promise<ArticleItem[]> => {
     if (articles.length === 0) return articles;
     try {
       const res = await authFetch('/api/check-analyzed', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker, articles: articles.map(a => ({ headline: a.headline, date: a.date })), forceLocal }),
+        body: JSON.stringify({ ticker, articles: articles.map(a => ({ headline: a.headline, date: a.date })), forceLocal, ...(opts?.bustCache && { bustCache: true }) }),
       });
       if (!res.ok) throw new Error(`AI check failed: ${res.status}`);
       const data = await res.json();
@@ -1069,12 +1069,21 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   // Only promotes articles (untracked→tracked), never demotes (tracked→untracked).
   // The DB is append-only, so a previously-tracked article should stay tracked.
   // This prevents AI non-determinism from flipping green dots to red on re-check.
+  // Step 1: Reseed PostgreSQL from .ts source files so newly added entries are queryable.
+  // Step 2: Bust the check-analyzed in-memory cache, then re-run matching.
   const recheckMainCard = useCallback(async () => {
     setAiChecking(true);
     try {
+      // Reseed PostgreSQL from .ts data files before re-checking.
+      // This ensures entries added via git commits (not workflow/apply) are reflected.
+      try {
+        await authFetch('/api/db/setup', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+      } catch (e) {
+        console.warn('[recheckMainCard] db/setup reseed failed, continuing with existing data:', e);
+      }
       const all = [...mainCard.pressReleases, ...mainCard.news];
       if (all.length === 0) return;
-      const checked = await checkAnalyzed(all);
+      const checked = await checkAnalyzed(all, { bustCache: true });
       setMainCard(prev => {
         const prLen = prev.pressReleases.length;
         return {
