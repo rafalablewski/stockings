@@ -25,3 +25,6 @@ export const MAX_MONTE_CARLO_SIMULATIONS = 10000;
 
 // Risk-free rate (annual)
 export const RISK_FREE_RATE = 0.04; // 4% annual risk-free rate
+
+// Article deduplication
+export const HEADLINE_TRUNCATION_LENGTH = 120; // chars kept for headline normalization / cache keys

@@ -21,6 +21,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { flushSync } from 'react-dom';
 import { VERDICT_COLORS, parseVerdict, stripVerdict } from './verdictUtils';
 import { authFetch } from '@/lib/auth-fetch';
+import { articleCacheKey, normalizeHeadline, deduplicateByHeadline } from '@/lib/sourceUtils';
 
 export interface SourceGroup {
   category: string;
@@ -75,35 +76,10 @@ const SOURCE_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
   news: { bg: 'var(--mint-dim)', text: 'var(--mint)' },
 };
 
-/** Generate a stable cache key for an article */
-function articleCacheKey(article: ArticleItem): string {
-  return (article.url || article.headline || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 120);
-}
-
-/** Normalize headline for deduplication (matches server-side deduplicateReleases logic) */
-function normalizeHeadline(headline: string): string {
-  return headline
-    .toLowerCase()
-    .replace(/\s*[-–—]\s*(business wire|pr newswire|globenewswire|prnewswire).*$/i, '')
-    .replace(/[^a-z0-9]/g, '')
-    .slice(0, 120);
-}
-
 /** Merge fresh articles with existing, preserving existing ones not in the fresh set */
 function mergeArticles(fresh: ArticleItem[], existing: ArticleItem[]): ArticleItem[] {
   const freshKeys = new Set(fresh.map(articleCacheKey));
   return [...fresh, ...existing.filter(a => !freshKeys.has(articleCacheKey(a)))];
-}
-
-/** Remove duplicate articles by normalized headline, keeping first occurrence */
-function deduplicateByHeadline(articles: ArticleItem[]): ArticleItem[] {
-  const seen = new Set<string>();
-  return articles.filter(a => {
-    const key = normalizeHeadline(a.headline);
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
 }
 
 /** DB record shape for per-article status display */
