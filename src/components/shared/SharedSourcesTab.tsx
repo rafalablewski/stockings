@@ -1766,7 +1766,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <span className="sm-text3">Detail fields:</span> details, period, category, summary
               </div>
               <div>
-                <span className="sm-text3">Dedup:</span> normalized headline (first 80 chars)
+                <span className="sm-text3">Dedup:</span> normalized headline (first 120 chars)
               </div>
               <div>
                 <span className="sm-text3">Auto-reseed:</span> workflow/apply &rarr; triggers /api/db/setup after patches so Postgres stays in sync with .ts files
