@@ -980,10 +980,142 @@ DISCLOSURE: B. Riley Securities, Inc. Mike Crawford, Senior Research Analyst. (3
     firm: 'UBS',
     analyst: 'Christopher Schoell',
     coverageSince: 'March 2025',
-    currentPT: 43,
-    currentRating: 'Under Review',
+    currentPT: 85,
+    currentRating: 'Neutral',
     currentRatingNormalized: 'neutral',
     reports: [
+      // === Mar 4, 2026 - PT Raise $43 → $85 (FULL REPORT - Government Opportunity) ===
+      {
+        date: '2026-03-04',
+        action: 'PT Raise',
+        priceTarget: 85,
+        previousTarget: 43,
+        rating: 'Neutral',
+        ratingNormalized: 'neutral',
+        reportTitle: 'Government opportunity scaling faster',
+        source: 'UBS Global Research',
+        isFullReport: true,
+        thesis: 'Raising PT to $85 from $43, maintaining Neutral. Government revenue opportunity scaling faster than expected with ~10 contracts signed and potential for multiple programs of record generating hundreds of millions each. Golden Dome (~$25B initial, up to $175B), PLEO (~$13B), and European sovereign interest drive government upside. Near-term carrier revenue cut to $96M from $283M as commercial launches shift to later in 2026. 2030E revenue raised to $3.56B (from $3.0B) with ~84% Adj. EBITDA margins (from 78%). Government ~50% of $1B 2027 revenue target.',
+        reportSummary: `**PT RAISE: $43 → $85 (+97.7%) — Neutral Maintained**
+ASTS will be a long-term player in space-to-cellular broadband given unique technology and carrier relationships. Over six months, progress includes: definitive Verizon agreement, first Block 2 satellite launched (3-4x larger than Block 1), enhanced funding, and listing as vendor for U.S. Shield program (Golden Dome).
+
+**GUIDANCE & ESTIMATES**
+Management expects revenues to more than double in 2026 and targets $1B in 2027 with billions of annual opportunity beyond. 2026 launch schedule more compressed/back-end weighted, lowering near-term carrier revenue estimates. Government revenue commentary and ~90% flow-through EBITDA margins suggest upside to prior forecasts.
+- 2026E: $183M rev / -$354M EBIT (prior UBSe $383M rev)
+- 2030E: $3.56B rev / $2.6B EBIT (prior UBSe $3.0B / $2.4B EBITDA)
+- Adj. EBITDA margins: ~84% by 2030 (vs. 78% prior)
+
+**COMMERCIAL — DELAYED BUT CONTRACTED**
+Commercial launches expected later in 2026 (delayed vs. prior mid-2026 assumption). Carrier/gateway revenue now $96M for 2026 (vs. $283M prior). $1.2B backlog (up from $1.0B) locks in ~$100-300M of minimum annual revenue commitments.
+
+**GOVERNMENT — SCALING FASTER**
+~10 contracts signed to date. Multiple programs of record possible (hundreds of millions each). Billions of annual revenue opportunity including:
+- Golden Dome (~$25B initial funding, projections up to $175B total spend)
+- PLEO (~$13B budget)
+- European sovereign interest
+- ~50% of $1B 2027 revenue target driven by government (UBSe $500M)
+
+**MARKET SUPPORTS MULTIPLE PLAYERS**
+Industry and governments likely to work with multiple/alternate providers. ASTS has a viable path alongside competitors.
+
+DISCLOSURE: UBS does and seeks to do business with companies covered in its research reports.`,
+        assumptions: [
+          { label: 'Price Target', value: '$85.00' },
+          { label: 'Prev Target', value: '$43.00' },
+          { label: 'PT Change', value: '+97.7%' },
+          { label: 'Rating', value: 'Neutral (maintained)' },
+          { label: 'Stock Price', value: '$92.68 (Mar 3, 2026)' },
+          { label: 'Implied Upside', value: '-8.3% (PT below market)' },
+          { label: '2026E Revenue', value: '$183M (from $383M prior)' },
+          { label: '2026E Carrier/Gateway Rev', value: '$96M (from $283M prior)' },
+          { label: '2026E Govt Rev', value: '~$87M (implied)' },
+          { label: '2027E Revenue', value: '$961M' },
+          { label: '2027E Govt Rev', value: '~$500M (~50% of $1B target)' },
+          { label: '2030E Revenue', value: '$3.56B (from $3.0B prior)' },
+          { label: '2030E Adj EBITDA Margin', value: '~84% (from 78% prior)' },
+          { label: 'Govt Flow-through Margins', value: '~90% long-term' },
+          { label: 'Market Cap', value: '$26.3B' },
+          { label: 'Shares Outstanding', value: '284M (COM)' },
+          { label: 'P/BV (12/26E)', value: '12.1x' },
+        ],
+        catalysts: [
+          'Golden Dome / U.S. Shield program inclusion (~$25B initial, up to $175B)',
+          'PLEO budget (~$13B) and other U.S. Government programs',
+          'European sovereign interest in space-based cellular',
+          'Definitive Verizon agreement signed',
+          'First Block 2 satellite successfully launched (3-4x larger than Block 1)',
+          'Commercial launches later in 2026 driving carrier revenue ramp',
+          '$1B revenue target for 2027',
+        ],
+        risks: [
+          'PT $85 below current price $92.68 — implies -8.3% downside',
+          '2026 carrier/gateway revenue cut sharply: $96M vs $283M prior (commercial launches delayed)',
+          '2026 launch schedule compressed/back-end weighted',
+          'EPS FY2026 revised worse: -$1.10 (from -$0.71)',
+          'Equity FCF yield deeply negative through 2027 (-5.6% in 2026, -2.7% in 2027)',
+        ],
+        estimates: [
+          { metric: 'Revenue', period: 'FY2025', prior: '', new: '$71M', change: 'Reported' },
+          { metric: 'Revenue', period: 'FY2026', prior: '$383M', new: '$183M', change: '-52.2%' },
+          { metric: 'Revenue', period: 'FY2027', prior: '', new: '$961M', change: '' },
+          { metric: 'Revenue', period: 'FY2028', prior: '', new: '$1,848M', change: '' },
+          { metric: 'Revenue', period: 'FY2030', prior: '$3,000M', new: '$3,562M', change: '+18.7%' },
+          { metric: 'EBIT', period: 'FY2026', prior: '', new: '-$354M', change: '' },
+          { metric: 'EBIT', period: 'FY2027', prior: '', new: '$170M', change: '' },
+          { metric: 'EBIT', period: 'FY2030', prior: '', new: '$2,596M', change: '' },
+          { metric: 'EPS', period: 'FY2026', prior: '-$0.71', new: '-$1.10', change: '-54.9%' },
+          { metric: 'EPS', period: 'FY2027', prior: '$0.35', new: '$0.08', change: '-77.1%' },
+          { metric: 'EPS', period: 'FY2028', prior: '$1.73', new: '$1.48', change: '-14.5%' },
+          { metric: 'Adj EBITDA Margin', period: 'FY2030', prior: '78%', new: '~84%', change: '+6pp' },
+        ],
+        methodology: 'PT nearly doubled from $43 to $85 driven by substantially higher government revenue estimates and improved long-term margin assumptions. Near-term carrier revenue cut sharply ($283M → $96M for 2026) as commercial launches delayed to later in year. 2030E revenue raised to $3.56B (from $3.0B) with ~84% EBITDA margins (from 78%). Government revenue estimated at ~50% of $1B 2027 target. Flow-through margins of ~90% on government contracts.',
+        fullNotes: `FULL FINANCIAL MODEL (UBS ESTIMATES):
+FY2025A: Rev $70.9M, EBIT -$240M, EPS -$1.34
+FY2026E: Rev $183M, EBIT -$354M, EPS -$1.10 (cons -$0.87)
+FY2027E: Rev $961M, EBIT $170M, EPS $0.08 (cons -$0.07)
+FY2028E: Rev $1,848M, EBIT $878M, EPS $1.48 (cons $1.48)
+FY2029E: Rev $2,780M, EBIT $1,750M, EPS $3.31
+FY2030E: Rev $3,562M, EBIT $2,596M
+
+QUARTERLY EPS ESTIMATES (FY2026):
+Q1E: -$0.20 (unchanged)
+Q2E: -$0.19 (from -$0.23)
+Q3E: -$0.19 (from -$0.32)
+Q4E: -$0.18 (from -$0.34)
+FY2026E: -$1.10 (from -$0.71)
+
+VALUATION METRICS:
+Market cap: $26.3B
+52-wk range: $20.07 - $122.09
+P/BV (12/26E): 12.1x
+EV/EBITDA (12/27E): 79.1x
+EV/EBITDA (12/28E): 27.2x
+P/E (12/28E): 62.4x
+Equity FCF yield: -5.6% (2026), -2.7% (2027), +0.8% (2028)
+Net debt/EBITDA (12/26E): NM
+
+GOVERNMENT REVENUE DETAIL:
+- ~10 contracts signed to date
+- Multiple programs of record possible (hundreds of millions each)
+- Golden Dome (~$25B initial funding, projections up to $175B total spend)
+- PLEO (~$13B budget)
+- European sovereign interest
+- ~50% of 2027E revenue = ~$500M government
+
+COMMERCIAL DETAIL:
+- $1.2B backlog (up from $1.0B)
+- Locks in ~$100-300M minimum annual revenue commitments
+- Commercial launches delayed to later in 2026 (was mid-2026)
+- 2026 carrier/gateway revenue: $96M (vs $283M prior)
+
+KEY DE-RISKING EVENTS:
+1. Definitive Verizon agreement signed
+2. First Block 2 satellite launched (3-4x larger than Block 1)
+3. Enhanced funding position
+4. Listed as vendor for U.S. Shield program (Golden Dome)
+
+DISCLOSURE: UBS does and seeks to do business with companies covered in its research reports. Distributed March 4, 2026.`
+      },
       // === Mar 3, 2026 - Under Review (Q4 2025 Earnings Note) ===
       {
         date: '2026-03-03',
