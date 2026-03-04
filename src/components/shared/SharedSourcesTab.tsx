@@ -1754,7 +1754,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <span className="sm-text3">Dedup:</span> normalized headline (first 120 chars)
               </div>
               <div>
-                <span className="sm-text3">Auto-reseed:</span> workflow/apply &rarr; triggers /api/db/setup after patches so Postgres stays in sync with .ts files
+                <span className="sm-text3">Reseed triggers:</span> workflow/apply &rarr; auto after patches; RE-CHECK DB &rarr; reseeds before matching; both keep Postgres in sync with .ts files
+              </div>
+              <div>
+                <span className="sm-text3">Cache bust:</span> RE-CHECK DB clears 5-min in-memory analysis cache so reseeded data is immediately queryable
               </div>
             </div>
 
@@ -1890,8 +1893,8 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div className="sm-ed-info-card-xl">
                 <div style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(130,180,220,0.7)', marginBottom: 6 }}>RE-CHECK DB</div>
                 <div className="sm-mono-sm sm-text3" style={{ fontSize: 10, lineHeight: 1.8 }}>
-                  <div><span className="sm-text">Purpose:</span> checks tracked / untracked</div>
-                  <div><span className="sm-text">API:</span> POST /api/check-analyzed</div>
+                  <div><span className="sm-text">Purpose:</span> reseeds Postgres from .ts files, then checks tracked / untracked</div>
+                  <div><span className="sm-text">API:</span> POST /api/db/setup &rarr; POST /api/check-analyzed (bustCache)</div>
                   <div><span className="sm-text">Checks:</span> timeline_events, sec_filings, catalysts, partner_news</div>
                   <div><span className="sm-text">Does NOT:</span> query seen_articles table</div>
                 </div>
