@@ -28,10 +28,10 @@ import type { DataMetadata, StockDefaults } from '../shared/types';
 // ============================================================================
 
 export const ASTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-03-03',
-  source: 'FY2025 10-K (filed Mar 2, 2026), Q4 2025 Business Update (Mar 2), MWC 2026 (Mar 2), sell-side reports (Mar 3)',
+  lastUpdated: '2026-03-04',
+  source: 'FY2025 10-K (filed Mar 2, 2026), Q4 2025 Business Update (Mar 2), MWC 2026 (Mar 2), sell-side reports (Mar 3-4)',
   nextExpectedUpdate: 'Q1 2026 10-Q (~May 2026)',
-  notes: 'FY2025 10-K audited: Rev $70.9M, Cash $2,780M, Debt $2,264M, Net Loss -$461M. RPO $1.2B. Fully funded ~90 sats. NCI 23.9%. Class A 285.4M (Dec 31) / 292.6M (Feb 26). Price $86.92.',
+  notes: 'FY2025 10-K audited: Rev $70.9M, Cash $2,780M, Debt $2,264M, Net Loss -$461M. RPO $1.2B. Fully funded ~90 sats. NCI 23.9%. Class A 285.4M (Dec 31) / 292.6M (Feb 26). Price $92.68.',
 };
 
 // ============================================================================
@@ -68,8 +68,8 @@ export const COMPANY_INFO = {
  */
 export const DEFAULTS: StockDefaults = {
   // === MARKET DATA ===
-  currentStockPrice: 86.92,   // UPDATE REGULARLY - Last: Mar 2, 2026
-  priceAsOf: '2026-03-02',    // Date of stock price above
+  currentStockPrice: 92.68,   // UPDATE REGULARLY - Last: Mar 3, 2026
+  priceAsOf: '2026-03-03',    // Date of stock price above
 
   // === SHARE COUNT (per 10-K: Dec 31 285.4M Class A; Feb 26 292.6M) ===
   // Class A: ~292.6M + Class B: 11.2M + Class C: 78.2M = ~382.0M
@@ -142,8 +142,8 @@ export const MODEL_ASSUMPTIONS = {
  * For display in the UI data freshness badge
  */
 export const DATA_FRESHNESS = {
-  dataAsOf: 'Mar 3, 2026',
+  dataAsOf: 'Mar 4, 2026',
   lastFiling: 'FY2025 10-K (Mar 2, 2026)',
   nextFiling: 'Q1 2026 10-Q (~May 2026)',
-  priceNote: '$86.92 (Mar 2). 10-K audited: Rev $70.9M, Cash $2,780M, RPO $1.2B. Fully funded ~90 sats.',
+  priceNote: '$92.68 (Mar 3). 10-K audited: Rev $70.9M, Cash $2,780M, RPO $1.2B. Fully funded ~90 sats.',
 };
