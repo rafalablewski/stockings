@@ -30,10 +30,10 @@ import type { Catalyst, CompletedMilestone, DataMetadata } from '../shared/types
 // ============================================================================
 
 export const CATALYSTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-03-03',
-  source: 'Q4 2025 Business Update (Mar 2, 2026), sell-side reports (Mar 3), MWC 2026 announcements',
+  lastUpdated: '2026-03-04',
+  source: 'Q4 2025 Business Update (Mar 2, 2026), sell-side reports (Mar 3), MWC 2026 + post-MWC announcements (Feb 27 - Mar 3)',
   nextExpectedUpdate: 'After Q4 2025 10-K filing or next launch (BB7 March)',
-  notes: 'Q4 rev $54.3M beat. FY $70.9M. 2026 guide $150-200M. 2027 target $1B. Backlog $1.2B. BB7 March. Beta trials late summer (after 25 sats). Pro forma $3.9B.',
+  notes: 'Q4 rev $54.3M beat. FY $70.9M. 2026 guide $150-200M. 2027 target $1B. Backlog $1.2B. BB7 March. Beta trials late summer (after 25 sats). Pro forma $3.9B. Mar 3: TELUS (commercial + equity), AXIAN/Yas (Africa 43M subs). Mar 2: Vodafone Romania (SCE trials) + 8 MWC partnerships.',
 };
 
 // ============================================================================
@@ -240,7 +240,8 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
 export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   // === 2026 ===
   { event: 'Q4 2025 Business Update: $54.3M rev (beat), FY $70.9M, 2026 guide $150-200M, 2027 target $1B, backlog $1.2B', date: 'Mar 2, 2026', category: 'Earnings' },
-  { event: 'MWC 2026: 8 new MNO partnerships (Orange, Taiwan Mobile, VodafoneThree, Sunrise, Vodafone Ireland, Telefónica, Vodafone Ukraine, CK Hutchison)', date: 'Mar 2, 2026', category: 'Partnership' },
+  { event: 'TELUS commercial agreement (Canada, equity investment + ground infra); AXIAN Telecom/Yas partnership (Africa, 43M subs, 11 markets)', date: 'Mar 3, 2026', category: 'Partnership' },
+  { event: 'MWC 2026: 9 new MNO partnerships (Orange, Taiwan Mobile, VodafoneThree, Sunrise, Vodafone Ireland, Vodafone Romania, Telefónica, Vodafone Ukraine, CK Hutchison)', date: 'Mar 2, 2026', category: 'Partnership' },
   { event: 'SDA $30M HALO Europa Track 2 Prime Contract (AST SpaceMobile USA defense subsidiary; 10th gov contract)', date: 'Feb 23, 2026', category: 'Government' },
   { event: 'Feb 2026 RD Settlements & $296.5M Notes Repurchases Completed (RD#1 Feb 20, RD#2 Feb 23)', date: 'Feb 23, 2026', category: 'Financing' },
   { event: '$75M Greenshoe Exercised — Total 2.25% Notes Now $1.075B ($75M of $150M option)', date: 'Feb 20, 2026', category: 'Financing' },

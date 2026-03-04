@@ -16,10 +16,106 @@ export const ASTS_ANALYST_COVERAGE: AnalystCoverage[] = [
     firm: 'Deutsche Bank',
     analyst: 'Bryan Kraft',
     coverageSince: 'June 2021',
-    currentPT: 137,
+    currentPT: 139,
     currentRating: 'Buy',
     currentRatingNormalized: 'bullish',
     reports: [
+      // === Mar 4, 2026 - PT Raise $137 → $139 (FULL REPORT - Q4 2025 Update) ===
+      {
+        date: '2026-03-04',
+        action: 'PT Raise',
+        priceTarget: 139,
+        previousTarget: 137,
+        rating: 'Buy',
+        ratingNormalized: 'bullish',
+        reportTitle: 'Satellite Build & Launch Matter Most — Key Takeaways from ASTS\' 4Q25 Update',
+        source: 'Deutsche Bank Research',
+        isFullReport: true,
+        thesis: 'Raising PT to $139 from $137 driven by higher EBITDA estimates post-Q4. Revenue estimate raised 42% ($120M → $170M). Manufacturing timeline slipping (only 2 Block 2 completed vs. 6/month goal) but 22 sats in production. Even ~30 sats by YE26 sufficient if manufacturing ramp demonstrated. Third Circuit ruled for ASTS vs. Inmarsat on Ligado spectrum lease.',
+        reportSummary: `**PT RAISE: $137 → $139 (+1.5%)**
+Driven by higher EBITDA estimates. EV/2030E EBITDA multiple remains at 20x. Stock remains controversial — bears cite delays, bulls focus on long-term TAM opportunity + accelerating government demand.
+
+**MANUFACTURING TIMELINE UPDATE**
+Additional slippage acknowledged. Only 2 Block 2 satellites completed in total vs. goal of 6/month by Dec 2025. However:
+- 22 satellites now in various phases of production
+- Microns for 40 satellites on track for completion by mid-2026
+- BB7 encapsulated in New Glenn launch vehicle — March launch expected
+- First batch of Block 2 stackable satellites shipping April
+- Multi-satellite launch to follow a few weeks after April shipment
+- Launch cadence: every 1-2 months, batches of 3, 4, 6, or 8 sats
+
+**"30-SAT FLOOR" THESIS**
+YE26 target technically reiterated at 45-60, but now closer to 45 in orbit / 60 cumulative ready to ship. Even ~30 sats by YE26 "shouldn't matter too much" as long as manufacturing/launch pace demonstrates clear path to 2027 commercial service.
+
+**2027 GUIDANCE VALIDATION**
+Management's $1B revenue target and $100-300M EBITDA range for 2027 is consistent with DB forecast. Combination of government, equipment, and D2D revenue.
+
+**2026 GUIDANCE**
+- Revenue: $150-200M (2026)
+- Q1 2026 opex: $70-80M (ex-cost of revenue)
+- Q1 2026 capex: $350-425M (higher than expected — advance launch supplier payments)
+- Full-year 2026 capex increased by $520M to account for 6-12 month advance payments to launch suppliers
+
+**THIRD CIRCUIT RULING — SPECTRUM CATALYST**
+Third Circuit Court of Appeals ruled in favor of ASTS (Mon Mar 2) in dispute with Inmarsat Global (Viasat subsidiary). Court ruled Inmarsat must follow through with bankruptcy court order requiring support for FCC approval of ASTS-Ligado spectrum leasing agreement. Overturned stay granted by lower court on Feb 27.
+
+**KEY ACCOMPLISHMENTS TO DATE**
+Satellite development/design, significant capital raised, global MNO partnerships, vertically integrated manufacturing, spectrum rights secured, SatCo (SCE) JV in Europe, 6 commercial sats launched, US Government customer, robust patent portfolio.`,
+        assumptions: [
+          { label: 'Price Target', value: '$139.00' },
+          { label: 'Prev Target', value: '$137.00' },
+          { label: 'PT Change', value: '+1.5%' },
+          { label: 'EV/2030E EBITDA Multiple', value: '20x (unchanged)' },
+          { label: '2026E Revenue', value: '$170M (from $120M, +42%)' },
+          { label: '2026E EPS', value: '-$1.08 (from -$1.39, +22%)' },
+          { label: '2026E Capex Increase', value: '+$520M (advance launch payments)' },
+          { label: 'Q1 2026 Capex Guidance', value: '$350-425M' },
+          { label: 'YE26 Satellite Target', value: '~45 in orbit, 60 cumulative built/shipped' },
+          { label: 'Sats in Production', value: '22 (various stages)' },
+          { label: 'Microns Completion', value: '40 satellites by mid-2026' },
+        ],
+        catalysts: [
+          'BB7 March launch (New Glenn vehicle)',
+          'First stackable Block 2 batch shipping April — multi-sat launch weeks after',
+          'Manufacturing ramp acceleration through 2026',
+          '45 cumulative sats in orbit by YE26 (or ~30 minimum for bull case)',
+          'Third Circuit Inmarsat ruling — Ligado spectrum lease approval path cleared',
+          '2027 commercial service launch driving $1B revenue target',
+        ],
+        risks: [
+          'Manufacturing ramp execution — only 2 Block 2 completed vs. 6/month goal',
+          'Launch timeline slippage — 5 launches by March target missed (1 completed)',
+          'Future NTN competition',
+          'High capex — $520M increase in 2026 for advance launch payments',
+        ],
+        estimates: [
+          { metric: 'Revenue', period: 'FY2026', prior: '$120M', new: '$170M', change: '+41.7%' },
+          { metric: 'EPS', period: 'FY2026', prior: '-$1.39', new: '-$1.08', change: '+22.3%' },
+        ],
+        methodology: 'EV/2030E EBITDA multiple of 20x (unchanged from Jan 2026). PT increase driven by higher EBITDA estimates. 2026 capex raised by $520M for advance launch supplier payments (6-12 months ahead).',
+        fullNotes: `MANUFACTURING STATUS (as of Q4 2025 update):
+- Block 2 satellites completed: 2 (vs. 6/month target by Dec 2025)
+- Satellites in production: 22 (various phases)
+- Microns for 40 sats: on track for mid-2026 completion
+- BB7: encapsulated in New Glenn, March launch
+- First stackable Block 2 batch: shipping April
+- Production rate target: 6 sats/month for microns and phased arrays (exited 2025 at this rate for components)
+- Integration/assembly/testing: reaching 6/month by mid-2026
+
+2027 MANAGEMENT COMMENTARY:
+- Revenue approaching $1B
+- EBITDA: $100-300M range
+- Driven by government + equipment + D2D revenue mix
+- "Billions of annual revenue potential" for government use cases
+
+THIRD CIRCUIT RULING (Mar 2, 2026):
+- Case: ASTS vs. Inmarsat Global (Viasat subsidiary)
+- Ruling: Inmarsat must comply with bankruptcy court order to support FCC approval of ASTS-Ligado spectrum lease
+- Overturned stay granted by lower court on Feb 27
+- Removes key legal overhang on spectrum access
+
+DISCLOSURE: Deutsche Bank does and seeks to do business with companies covered in its research reports. Distributed March 2026.`
+      },
       // === Jan 2026 - PT Raise $81 → $137 (FULL REPORT - Revamped Model) ===
       {
         date: '2026-01-20',

@@ -27,10 +27,10 @@ import type { Partner, RevenueSource, DataMetadata, PartnerNewsEntry } from '../
 // ============================================================================
 
 export const PARTNERS_METADATA: DataMetadata = {
-  lastUpdated: '2026-03-02',
-  source: 'Q3 2025 10-Q, press releases, Jan 2026 8-K (Mikitani resignation), MWC 2026 announcements (Feb 27 - Mar 2)',
-  nextExpectedUpdate: 'After MWC follow-ups or new partnership announcements',
-  notes: 'MWC 2026 Mar 2: Telefónica (SCE engagement, Spain/Germany), Vodafone Ukraine (MoU), CK Hutchison Group Telecom (SCE partnership, 5 EU markets) added. Prior MWC 2026: Orange, Taiwan Mobile, VodafoneThree, Sunrise, Vodafone Ireland elevated. Verizon definitive Oct 2025, stc $1.8B agreement Q3 2025. Mikitani resigned from board Jan 13, 2026 (dilution); Rakuten retains observer.',
+  lastUpdated: '2026-03-03',
+  source: 'Q3 2025 10-Q, press releases, Jan 2026 8-K (Mikitani resignation), MWC 2026 announcements (Feb 27 - Mar 3)',
+  nextExpectedUpdate: 'After new partnership announcements or definitive upgrades',
+  notes: 'Mar 3: TELUS commercial agreement (Canada, equity investment in ASTS), AXIAN Telecom/Yas partnership (Africa, 11 markets, 43M subs). Mar 2: Vodafone Romania (SCE trials summer 2026), Telefónica (SCE engagement, Spain/Germany), Vodafone Ukraine (MoU), CK Hutchison Group Telecom (SCE partnership, 5 EU markets). Prior MWC 2026: Orange, Taiwan Mobile, VodafoneThree, Sunrise, Vodafone Ireland elevated. Verizon definitive Oct 2025, stc $1.8B agreement Q3 2025. Mikitani resigned from board Jan 13, 2026 (dilution); Rakuten retains observer.',
 };
 
 // ============================================================================
@@ -75,7 +75,7 @@ export const PARTNERS: Partner[] = [
     status: 'Definitive (2034)',
     prepay: 25,
     spectrum: '2GHz MSS',
-    notes: 'SatCo JV partner. Extended to 2034 Dec 2024. JV rebranded as Satellite Connect Europe (SCE) Feb 27, 2026 — Luxembourg HQ, open-access D2D for European MNOs, 5 ground stations under construction. Samsung "working with Vodafone" for satellite comms on Galaxy smartphones (Feb 2026 MWC PR).',
+    notes: 'SatCo JV partner. Extended to 2034 Dec 2024. JV rebranded as Satellite Connect Europe (SCE) Feb 27, 2026 — Luxembourg HQ, open-access D2D for European MNOs, 5 ground stations under construction. Samsung "working with Vodafone" for satellite comms on Galaxy smartphones (Feb 2026 MWC PR). Vodafone Romania SCE trials announced Mar 2, 2026 (summer 2026).',
   },
   {
     name: 'Vodafone Idea',
@@ -111,7 +111,7 @@ export const PARTNERS: Partner[] = [
     status: 'Definitive',
     prepay: 0,
     spectrum: 'TBD',
-    notes: 'Testing phase.',
+    notes: 'Testing phase. Second Canadian MNO partner: TELUS signed commercial agreement Mar 2026.',
   },
   {
     name: 'Orange',
@@ -184,6 +184,33 @@ export const PARTNERS: Partner[] = [
     prepay: 0,
     spectrum: 'TBD',
     notes: 'Partnership agreement with SCE for 5 markets: 3 Austria, 3 Denmark, 3 Ireland, WINDTRE Italy, 3 Sweden. Field demos summer 2026 in Austria and Italy. Pushing for harmonised EU D2D framework. Largest multi-market SCE deal. 3 Ireland separate from Vodafone Ireland.',
+  },
+  {
+    name: 'TELUS',
+    region: 'Canada',
+    subs: 11,
+    status: 'Commercial Agreement (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'Commercial agreement signed Mar 3, 2026. TELUS to invest in ground-based satellite infrastructure and become equity shareholder in ASTS. Text, voice, data planned late 2026. TSX:T / NYSE:TU, $20B+ annual revenue, 21M+ customer connections. Second Canadian MNO partner alongside Bell Canada.',
+  },
+  {
+    name: 'AXIAN Telecom (Yas)',
+    region: 'Africa',
+    subs: 43,
+    status: 'Partnership (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'Partnership for Africa\'s first D2D space-based mobile broadband. Yas integrates BlueBird LEO satellites with core infrastructure. Joint commercial offerings: consumer, enterprise, IoT, maritime, aviation, emergency response. One-click SpaceMobile activation. Africa\'s 6th largest MNO, 11 markets (Tanzania, Madagascar, Togo, Senegal, Uganda, Kenya, DRC, Comoros, Malawi, Réunion, Mayotte).',
+  },
+  {
+    name: 'Vodafone Romania',
+    region: 'Romania',
+    subs: 10,
+    status: 'Partnership (Mar 2026)',
+    prepay: 0,
+    spectrum: 'TBD',
+    notes: 'Partnership with SCE for D2D open-access satellite connectivity. Trials to begin summer 2026 in Romania. Integration into existing 4G/5G networks. Focus on rural/remote communities and emergency services. Part of Vodafone\'s global D2D strategy via SCE.',
   },
   {
     name: 'Others (40+ MNOs)',
