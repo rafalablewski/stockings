@@ -1423,8 +1423,8 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       prepayment: 25,
       prepayStatus: 'Received',
       revenueCommitment: 'Included in $1B+',
-      notes: 'SatCo JV for EU. 21/27 EU member states MOUs signed.',
-      keyMilestones: ['Original investor 2020', '2034 extension Dec 2024', 'SatCo JV 2025']
+      notes: 'SCE JV for EU. Open-access D2D platform for European MNOs.',
+      keyMilestones: ['Original investor 2020', '2034 extension Dec 2024', 'SCE JV rebranded Feb 2026']
     },
     { 
       partner: 'stc Group', 
@@ -1443,18 +1443,13 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
     },
   ];
 
-  // Other Key Partners (MOUs, non-definitive)
-  const otherPartners = [
-    { partner: 'Vodafone Idea', region: 'India', subs: 250, status: 'Definitive', spectrum: 'TBD', notes: 'June 2025 agreement' },
-    { partner: 'Rakuten', region: 'Japan', subs: 5, status: 'Definitive', spectrum: 'LTE', notes: 'Investor. Video calls completed.' },
-    { partner: 'Bell Canada', region: 'Canada', subs: 23, status: 'Definitive', spectrum: 'TBD', notes: 'First Canadian VoLTE call 2025' },
-    { partner: 'Orange', region: 'Europe/Africa', subs: 220, status: 'MOU', spectrum: 'TBD', notes: 'MoU Mar 2022. Testing in Africa post-BW3. 220M+ mobile customers. Note: Orange launched competing SMS D2D with Skylo (Dec 2025)' },
-    { partner: 'Telefonica', region: 'Europe/LatAm', subs: 380, status: 'MOU', spectrum: 'TBD', notes: 'Agreement in place' },
-    { partner: 'TIM', region: 'Italy/Brazil', subs: 100, status: 'MOU', spectrum: 'TBD', notes: 'Agreement in place' },
-    { partner: 'MTN', region: 'Africa', subs: 280, status: 'MOU', spectrum: 'TBD', notes: 'Agreement in place' },
-    { partner: 'Telstra', region: 'Australia', subs: 20, status: 'MOU', spectrum: 'TBD', notes: 'Agreement in place' },
-    { partner: 'Others (35+)', region: 'Global', subs: 1100, status: 'Various', spectrum: 'Various', notes: '50+ total MNO agreements' },
-  ];
+  // Other Key Partners — dynamically derived from partners prop (PARTNERS data file)
+  // Excludes the 4 definitive detail-card partners shown above
+  const definitiveNames = new Set(definitiveAgreements.map(d => d.partner));
+  const namedPartners = partners
+    .filter(p => !definitiveNames.has(p.name) && !p.name.startsWith('Others'))
+    .sort((a, b) => b.subs - a.subs);
+  const othersCatchAll = partners.find(p => p.name.startsWith('Others'));
 
   // ASTS-Owned Spectrum Holdings
   const ownedSpectrum = [
@@ -1511,7 +1506,9 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
 
   const totalPrepay = definitiveAgreements.reduce((s, p) => s + p.prepayment, 0);
   const totalDefinitiveSubs = definitiveAgreements.reduce((s, p) => s + p.subs, 0);
-  const totalOtherSubs = otherPartners.reduce((s, p) => s + p.subs, 0);
+  const totalOtherSubs = namedPartners.reduce((s, p) => s + p.subs, 0) + (othersCatchAll?.subs || 0);
+  const totalPartnerCount = namedPartners.length + definitiveAgreements.length;
+  const totalSubs = totalDefinitiveSubs + totalOtherSubs;
 
   return (
     <div className="sm-flex-col">
@@ -1519,7 +1516,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       <div className="sm-tab-hero">
         <div className="sm-section-label">Strategic Ecosystem</div>
         <h2>Partners<span className="sm-mint">.</span></h2>
-        <p>50+ MNO agreements covering 3.2B subscribers. $1B+ contracted. 50/50 revenue share. ~80 MHz US spectrum owned/controlled plus 60 MHz S-band global ITU priority.</p>
+        <p>{totalPartnerCount}+ MNO agreements covering {(totalSubs / 1000).toFixed(1)}B subscribers. $1B+ contracted. 50/50 revenue share. ~80 MHz US spectrum owned/controlled plus 60 MHz S-band global ITU priority.</p>
       </div>
 
       {/* KPI Dashboard — Glass grid */}
@@ -1527,8 +1524,8 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         {[
           { label: 'Contracted', value: '$1B+', sub: 'Hard commitments', color: 'var(--mint)' },
           { label: 'Prepayments', value: `$${totalPrepay}M`, sub: 'Cash received/due', color: 'var(--cyan)' },
-          { label: 'MNO Partners', value: '50+', sub: 'Global agreements', color: 'var(--violet)' },
-          { label: 'Addressable', value: '3.2B', sub: 'Total subscribers', color: 'var(--gold)' },
+          { label: 'MNO Partners', value: `${totalPartnerCount}+`, sub: 'Global agreements', color: 'var(--violet)' },
+          { label: 'Addressable', value: `${(totalSubs / 1000).toFixed(1)}B`, sub: 'Total subscribers', color: 'var(--gold)' },
         ].map(kpi => (
           <div key={kpi.label} className="sm-kpi-cell">
             <div className="sm-micro-text">{kpi.label}</div>
@@ -1541,7 +1538,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       {/* Quick Stats — Side-by-side panels */}
       <div className="sm-grid-sep-3col sm-rounded-16 sm-overflow-hidden sm-mt-16">
         <div className="sm-card-body sm-bg-surface">
-          {[{ l: 'Definitive Partners', v: '4' }, { l: 'Definitive Subs', v: `${totalDefinitiveSubs}M` }, { l: 'Revenue Share', v: '50/50' }].map(r => (
+          {[{ l: 'Definitive Partners', v: `${definitiveAgreements.length}` }, { l: 'Definitive Subs', v: `${totalDefinitiveSubs}M` }, { l: 'Revenue Share', v: '50/50' }].map(r => (
             <div key={r.l} className="sm-kv-row">
               <span className="sm-subtle">{r.l}</span>
               <span className="sm-mono-sm sm-text">{r.v}</span>
@@ -1705,15 +1702,24 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
               <span key={h} className="sm-micro-label">{h}</span>
             ))}
           </div>
-          {otherPartners.map((p, i) => (
-            <div key={p.partner} className="sm-grid-row" style={{ gridTemplateColumns: '130px 140px 80px 100px 1fr' }}>
-              <span className="sm-text-13t sm-fw-500">{p.partner}</span>
+          {namedPartners.map(p => (
+            <div key={p.name} className="sm-grid-row" style={{ gridTemplateColumns: '130px 140px 80px 100px 1fr' }}>
+              <span className="sm-text-13t sm-fw-500">{p.name}</span>
               <span className="sm-text-12">{p.region}</span>
               <span className="sm-mono-val" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{p.subs}M</span>
-              <span className="sm-status-badge" style={{ '--badge-color': p.status === 'Definitive' ? 'var(--mint)' : 'var(--gold)' } as React.CSSProperties}>{p.status}</span>
+              <span className="sm-status-badge" style={{ '--badge-color': p.status.toLowerCase().includes('definitive') ? 'var(--mint)' : 'var(--gold)' } as React.CSSProperties}>{p.status}</span>
               <span className="sm-text-11">{p.notes}</span>
             </div>
           ))}
+          {othersCatchAll && (
+            <div className="sm-grid-row-lg" style={{ gridTemplateColumns: '130px 140px 80px 100px 1fr', background: 'color-mix(in srgb, var(--violet) 5%, transparent)', borderTop: '1px solid var(--border)' }}>
+              <span className="sm-text-12 sm-fw-600 sm-text">{othersCatchAll.name}</span>
+              <span className="sm-text-12">{othersCatchAll.region}</span>
+              <span className="sm-mono-val" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{othersCatchAll.subs}M</span>
+              <span className="sm-status-badge" style={{ '--badge-color': 'var(--text3)' } as React.CSSProperties}>{othersCatchAll.status}</span>
+              <span className="sm-text-11">{othersCatchAll.notes}</span>
+            </div>
+          )}
         </div>
       </div>
 
