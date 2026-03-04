@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
 import { stocks } from '@/lib/stocks';
+import { HEADLINE_TRUNCATION_LENGTH } from '@/lib/constants';
 
 type RouteParams = Promise<{ symbol: string }>;
 
@@ -329,7 +330,7 @@ function deduplicateReleases(items: PressRelease[]): PressRelease[] {
       .toLowerCase()
       .replace(/\s*[-–—]\s*(business wire|pr newswire|globenewswire|prnewswire).*$/i, '')
       .replace(/[^a-z0-9]/g, '')
-      .slice(0, 60); // compare first 60 chars to catch near-duplicates
+      .slice(0, HEADLINE_TRUNCATION_LENGTH);
     if (seen.has(normalized)) return false;
     seen.add(normalized);
     return true;
