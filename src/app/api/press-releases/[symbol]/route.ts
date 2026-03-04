@@ -329,7 +329,7 @@ function deduplicateReleases(items: PressRelease[]): PressRelease[] {
       .toLowerCase()
       .replace(/\s*[-–—]\s*(business wire|pr newswire|globenewswire|prnewswire).*$/i, '')
       .replace(/[^a-z0-9]/g, '')
-      .slice(0, 60); // compare first 60 chars to catch near-duplicates
+      .slice(0, 120); // compare first 120 chars — 60 was too short for yearly recurrent headlines
     if (seen.has(normalized)) return false;
     seen.add(normalized);
     return true;

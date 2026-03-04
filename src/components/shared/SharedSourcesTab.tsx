@@ -77,7 +77,7 @@ const SOURCE_TYPE_COLORS: Record<string, { bg: string; text: string }> = {
 
 /** Generate a stable cache key for an article */
 function articleCacheKey(article: ArticleItem): string {
-  return (article.url || article.headline || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 60);
+  return (article.url || article.headline || '').replace(/[^a-zA-Z0-9]/g, '').slice(0, 120);
 }
 
 /** Normalize headline for deduplication (matches server-side deduplicateReleases logic) */
@@ -86,7 +86,7 @@ function normalizeHeadline(headline: string): string {
     .toLowerCase()
     .replace(/\s*[-–—]\s*(business wire|pr newswire|globenewswire|prnewswire).*$/i, '')
     .replace(/[^a-z0-9]/g, '')
-    .slice(0, 60);
+    .slice(0, 120);
 }
 
 /** Merge fresh articles with existing, preserving existing ones not in the fresh set */
