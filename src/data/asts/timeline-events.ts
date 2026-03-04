@@ -55,6 +55,23 @@ export const ASTS_TIMELINE_EVENTS = [
     },
     {
       date: '2026-03-02',
+      category: 'Regulatory',
+      title: 'Third Circuit Rules for ASTS vs. Inmarsat — Ligado Spectrum Lease Path Cleared',
+      summary: 'Third Circuit Court of Appeals ruled in favor of ASTS; Inmarsat must support FCC approval of ASTS-Ligado spectrum leasing agreement. Overturned lower court stay.',
+      details: [
+        'Third Circuit Court of Appeals ruled in favor of ASTS in dispute with Inmarsat Global (Viasat subsidiary)',
+        'Inmarsat must follow through with bankruptcy court order requiring support for FCC approval of ASTS-Ligado spectrum lease',
+        'Overturned stay granted by lower court on Feb 27, 2026',
+        'Removes key legal overhang on Ligado L-band spectrum access ($550M for 45 MHz)',
+        'Reported in Deutsche Bank research note (Bryan Kraft, Mar 4, 2026)',
+      ],
+      sources: ['Deutsche Bank Research Mar 4, 2026', 'Third Circuit Court of Appeals ruling Mar 2, 2026'],
+      prevValue: 'Ligado spectrum term sheet signed Jun 2025; Inmarsat support secured but legal challenge pending',
+      newValue: 'Third Circuit affirms Inmarsat must support FCC approval — legal path cleared for ASTS-Ligado spectrum lease',
+      impact: 'Positive',
+    },
+    {
+      date: '2026-03-02',
       category: 'Partnership',
       title: 'Vodafone Romania Partners with SCE for D2D Satellite Connectivity Trials Summer 2026',
       summary: 'Vodafone Romania collaborating with SCE on D2D open-access satellite connectivity; trial services to begin summer 2026',
