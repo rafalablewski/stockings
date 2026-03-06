@@ -10,7 +10,7 @@
 
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { stockList, stocks } from '@/lib/stocks';
-import { articleCacheKey, normalizeHeadline } from '@/lib/sourceUtils';
+import { articleCacheKey, normalizeHeadline, deduplicateByHeadline } from '@/lib/sourceUtils';
 import '../stocks/stock-model-styles.css';
 import './dashboard.css';
 
@@ -244,9 +244,13 @@ export default function Dashboard() {
             newFilKeys.add(key);
           }
         }
-        if (articles.length > 0 || filings.length > 0) {
+        // Dedup articles by normalized headline — the same press release can
+        // be stored under different cacheKeys if the "winning" source URL
+        // changed between fetches.
+        const dedupedArticles = deduplicateByHeadline(articles);
+        if (dedupedArticles.length > 0 || filings.length > 0) {
           feedUpdates[s.ticker] = {
-            ...(articles.length > 0 ? { articles } : {}),
+            ...(dedupedArticles.length > 0 ? { articles: dedupedArticles } : {}),
             ...(filings.length > 0 ? { filings } : {}),
             loaded: true,
           };
