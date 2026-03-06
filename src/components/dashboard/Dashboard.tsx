@@ -228,13 +228,28 @@ export default function Dashboard() {
             newArtKeys.add(key);
           }
         }
-        if (articles.length > 0) {
-          feedUpdates[s.ticker] = { articles, loaded: true };
-        }
+        const filings: EdgarFiling[] = [];
         for (const [key, rec] of dbFilingsRef.current.entries()) {
           if (key.startsWith(`${s.ticker}:`)) {
+            if (!rec.hidden) {
+              filings.push({
+                accessionNumber: rec.accessionNumber,
+                filingDate: rec.filingDate || '',
+                form: rec.form,
+                primaryDocDescription: rec.description || rec.form,
+                reportDate: rec.reportDate || '',
+                fileUrl: rec.fileUrl || '',
+              });
+            }
             newFilKeys.add(key);
           }
+        }
+        if (articles.length > 0 || filings.length > 0) {
+          feedUpdates[s.ticker] = {
+            ...(articles.length > 0 ? { articles } : {}),
+            ...(filings.length > 0 ? { filings } : {}),
+            loaded: true,
+          };
         }
       }
 
