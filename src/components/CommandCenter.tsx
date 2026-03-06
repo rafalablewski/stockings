@@ -84,18 +84,20 @@ const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
   news: { bg: 'var(--mint-dim)', text: 'var(--mint)' },
 };
 
+const OWNERSHIP_FILING_COLOR = { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' };
+
 const EDGAR_COLORS: Record<string, { bg: string; text: string }> = {
   '10-K': { bg: 'rgba(59,130,246,0.2)', text: '#60a5fa' },
   '10-Q': { bg: 'rgba(168,85,247,0.2)', text: 'var(--violet)' },
   '8-K': { bg: 'rgba(234,179,8,0.2)', text: 'var(--gold)' },
-  'Form 4': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  'Form 3': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  'SC 13D': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  'SC 13D/A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  'SC 13G': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  'Form 4': OWNERSHIP_FILING_COLOR,
+  'Form 3': OWNERSHIP_FILING_COLOR,
+  'SC 13D': OWNERSHIP_FILING_COLOR,
+  'SC 13D/A': OWNERSHIP_FILING_COLOR,
+  'SC 13G': OWNERSHIP_FILING_COLOR,
   '424B5': { bg: 'rgba(249,115,22,0.2)', text: '#fb923c' },
-  'S-3': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
-  'DEF 14A': { bg: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+  'S-3': OWNERSHIP_FILING_COLOR,
+  'DEF 14A': OWNERSHIP_FILING_COLOR,
 };
 
 const DEFAULT_EDGAR_COLOR = { bg: 'rgba(110,118,129,0.15)', text: 'var(--text3)' };
@@ -186,8 +188,11 @@ export default function CommandCenter() {
       setDbArticles(new Map(dbArticlesRef.current));
       setDbFilings(new Map(dbFilingsRef.current));
 
-      // Hydrate feeds from DB records (articles only — filings need fresh fetch)
+      // Hydrate feeds from DB records + mark undismissed as new (single pass)
       const feedUpdates: Record<string, Partial<StockFeedState>> = {};
+      const newArtKeys = new Set<string>();
+      const newFilKeys = new Set<string>();
+
       for (const s of stockList) {
         const articles: ArticleItem[] = [];
         for (const [key, rec] of dbArticlesRef.current.entries()) {
@@ -199,23 +204,22 @@ export default function CommandCenter() {
               source: rec.source || undefined,
               type: (rec.articleType === 'pr' ? 'pr' : 'news') as 'pr' | 'news',
             });
+            if (!rec.dismissed) newArtKeys.add(key);
           }
         }
         if (articles.length > 0) {
           feedUpdates[s.ticker] = { articles, loaded: true };
         }
-        // Mark undismissed articles as new
-        for (const [key, rec] of dbArticlesRef.current.entries()) {
-          if (key.startsWith(`${s.ticker}:`) && !rec.dismissed) {
-            setNewArticleKeys(prev => { const next = new Set(prev); next.add(key); return next; });
-          }
-        }
         for (const [key, rec] of dbFilingsRef.current.entries()) {
           if (key.startsWith(`${s.ticker}:`) && !rec.dismissed) {
-            setNewFilingKeys(prev => { const next = new Set(prev); next.add(key); return next; });
+            newFilKeys.add(key);
           }
         }
       }
+
+      if (newArtKeys.size > 0) setNewArticleKeys(newArtKeys);
+      if (newFilKeys.size > 0) setNewFilingKeys(newFilKeys);
+
       if (Object.keys(feedUpdates).length > 0) {
         setFeeds(prev => {
           const next = { ...prev };
@@ -764,7 +768,7 @@ export default function CommandCenter() {
                             </span>
                           )}
                           <a
-                            href={article.url}
+                            href={/^https?:\/\//.test(article.url) ? article.url : undefined}
                             target="_blank"
                             rel="noopener noreferrer"
                             title="Open article"
@@ -826,7 +830,7 @@ export default function CommandCenter() {
                               {formatEdgarDate(filing.filingDate)}
                             </span>
                           )}
-                          {filing.fileUrl && (
+                          {filing.fileUrl && /^https?:\/\//.test(filing.fileUrl) && (
                             <a
                               href={filing.fileUrl}
                               target="_blank"
