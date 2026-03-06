@@ -4,16 +4,7 @@
  * Reference links for Circle Internet Group research.
  */
 
-import type { SourceGroup, Competitor } from '@/components/shared/SharedSourcesTab';
-
-export const CRCL_COMPETITORS: Competitor[] = [
-  { name: 'Tether', url: 'https://tether.to/en/transparency/' },
-  { name: 'PayPal PYUSD', url: 'https://www.paypal.com/pyusd' },
-  { name: 'Paxos', url: 'https://paxos.com' },
-  { name: 'Ripple RLUSD', url: 'https://ripple.com' },
-];
-
-export const CRCL_COMPETITOR_LABEL = 'Stablecoin Peers';
+import type { SourceGroup } from '@/components/shared/SharedSourcesTab';
 
 export const CRCL_RESEARCH_SOURCES: SourceGroup[] = [
   { category: 'Company / IR', sources: [
