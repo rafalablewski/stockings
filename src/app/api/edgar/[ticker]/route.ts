@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { stocks } from '@/lib/stocks';
 
 type RouteParams = Promise<{ ticker: string }>;
-
-// CIK numbers for tracked companies (zero-padded to 10 digits)
-const CIK_MAP: Record<string, string> = {
-  ASTS: '0001780312',
-  BMNR: '0001829311',
-};
 
 interface EdgarFiling {
   accessionNumber: string;
@@ -79,7 +74,7 @@ export async function GET(
 ) {
   const { ticker } = await params;
   const upperTicker = ticker.toUpperCase();
-  const cik = CIK_MAP[upperTicker];
+  const cik = stocks[upperTicker]?.cik;
 
   if (!cik) {
     return NextResponse.json(

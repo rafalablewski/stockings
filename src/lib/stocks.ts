@@ -5,6 +5,8 @@ export interface StockMeta {
   name: string;
   sector: string;
   description: string;
+  accent: string;   // CSS color token name: 'cyan', 'violet', 'mint', etc.
+  cik?: string;     // SEC CIK number (zero-padded). Undefined = no EDGAR coverage.
 }
 
 export const stocks: Record<string, StockMeta> = {
@@ -13,18 +15,23 @@ export const stocks: Record<string, StockMeta> = {
     name: 'AST SpaceMobile',
     sector: 'Space Technology',
     description: 'Space-based cellular broadband network accessible by standard smartphones',
+    accent: 'cyan',
+    cik: '0001780312',
   },
   BMNR: {
     ticker: 'BMNR',
     name: 'BitMine Immersion Technologies',
     sector: 'Digital Assets',
     description: 'ETH treasury company with immersion cooling and validator operations',
+    accent: 'violet',
+    cik: '0001829311',
   },
   CRCL: {
     ticker: 'CRCL',
     name: 'Circle Internet Group',
     sector: 'Fintech',
     description: 'Issuer of USDC, the leading regulated digital dollar stablecoin',
+    accent: 'mint',
   },
 };
 

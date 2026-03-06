@@ -158,6 +158,15 @@ const componentClasses: CSSClass[] = [
   { name: ".hdr-spine",          description: "Right column — vertical HUD markers with spine line (::before)",           usage: "Flex column, gap 32px, pills on mobile" },
   { name: ".hdr-marker",         description: "Individual HUD marker — label + value, tick mark via ::before",            usage: "data-sentiment=\"positive|negative|neutral\"" },
   { name: ".hdr-stats",          description: "Bottom stats row — centered, 11c style (14px values, 9px labels)",         usage: "Wraps <Stat /> children" },
+  // Dashboard classes (db- prefix)
+  { name: ".db-toolbar",          description: "Sticky toolbar below nav — filter pills, ticker toggles, scan button",    usage: "className=\"db-toolbar\"" },
+  { name: ".db-filter-pill",      description: "Filter pill button — data-active, data-filter for NEW/SEEN color variants", usage: "data-active=\"true\" data-filter=\"new\"" },
+  { name: ".db-ticker-pill",      description: "Ticker toggle pill — stock-agnostic via --pill-color/--pill-dim CSS vars",  usage: "data-active=\"true\"" },
+  { name: ".db-stats-grid",       description: "Per-stock stats grid — dynamic columns via --stock-count CSS var",          usage: "className=\"db-stats-grid\"" },
+  { name: ".db-stat-cell",        description: "Individual stock stat cell — clickable, data-active for highlight",         usage: "data-active=\"true\"" },
+  { name: ".db-stat-refresh-btn", description: "Tiny inline refresh icon per source (PR/News/Edgar) in stat cells",         usage: "className=\"db-stat-refresh-btn\"" },
+  { name: ".db-feed-row",         description: "Feed item row — badges, headline, meta, hover highlight",                  usage: "className=\"db-feed-row\"" },
+  { name: ".db-date-sep",         description: "Sticky date separator — label, line, day of week",                          usage: "className=\"db-date-sep\"" },
 ];
 
 const investmentClasses: CSSClass[] = [
@@ -354,6 +363,7 @@ const routingTree = [
   { path: "/",                                     label: "Home",              file: "app/page.tsx",                          note: "Coverage grid, audits, workflows" },
   { path: "/stocks",                               label: "Stock List",        file: "app/stocks/page.tsx",                   note: "Tracked companies index" },
   { path: "/stocks/[ticker]",                      label: "Stock Detail",      file: "app/stocks/[ticker]/page.tsx",          note: "Loads ASTS / BMNR / CRCL component" },
+  { path: "/dashboard",                              label: "Dashboard",        file: "app/dashboard/page.tsx",                note: "Bloomberg-style unified intel feed — all stocks" },
   { path: "/docs",                                 label: "Docs",             file: "app/docs/page.tsx",                     note: "This page — design system + architecture" },
   { path: "/hooks",                                label: "Hooks",            file: "app/hooks/page.tsx",                    note: "Agent hooks documentation" },
   { path: "/audit/comprehensive-code-audit",       label: "Code Audit",       file: "app/audit/comprehensive-code-audit/page.tsx", note: "35-category audit results" },
@@ -401,6 +411,7 @@ const componentHierarchy = [
   { depth: 3, name: "AiToggle",                       file: "components/shared/AiToggle.tsx",   note: "AI on/off toggle (desktop nav; mobile → inside MobileNav drawer)" },
   { depth: 3, name: "NotesPanel",                     file: "components/shared/NotesPanel.tsx",  note: "Global notes drawer with collapsible AI preview cards (desktop nav; mobile → inside MobileNav drawer); portaled to document.body via createPortal; uses authFetch for AI-gated generate endpoint" },
   { depth: 3, name: "MobileNav",                      file: "components/shared/MobileNav.tsx",  note: "Drawer nav for mobile — receives badges as children; drawer portaled to document.body via createPortal" },
+  { depth: 2, name: "Dashboard",                       file: "components/dashboard/Dashboard.tsx", note: "Unified intel feed — aggregates news, PRs, EDGAR across all stocks" },
   { depth: 2, name: "main → [Page]",                  file: "",                       note: "Dynamic content area (pt-14)" },
   { depth: 2, name: "Footer",                         file: "app/layout.tsx",         note: "Disclaimer footer" },
 ];

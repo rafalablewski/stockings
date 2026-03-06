@@ -82,15 +82,16 @@ interface FeedItem {
   primaryDocDescription?: string;
 }
 
-type FilterType = 'all' | 'new' | 'pr' | 'news' | 'edgar';
+type FilterType = 'all' | 'new' | 'seen' | 'pr' | 'news' | 'edgar';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const STOCK_ACCENTS: Record<string, { color: string; dim: string }> = {
-  ASTS: { color: 'var(--cyan)', dim: 'var(--cyan-dim)' },
-  BMNR: { color: 'var(--violet)', dim: 'var(--violet-dim)' },
-  CRCL: { color: 'var(--mint)', dim: 'var(--mint-dim)' },
-};
+const ACCENT_CYCLE = ['cyan', 'violet', 'mint', 'sky', 'gold', 'coral'];
+
+function getStockAccent(ticker: string, index: number): { color: string; dim: string } {
+  const accentName = stocks[ticker]?.accent || ACCENT_CYCLE[index % ACCENT_CYCLE.length];
+  return { color: `var(--${accentName})`, dim: `var(--${accentName}-dim)` };
+}
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
   pr: { bg: 'var(--sky-dim)', text: 'var(--sky)' },
@@ -246,89 +247,82 @@ export default function Dashboard() {
     loadDb();
   }, []);
 
-  // ── Scan All ─────────────────────────────────────────────────────────────
-  const scanAll = useCallback(async () => {
-    setScanning(true);
+  // ── Per-source scan ──────────────────────────────────────────────────────
+  // Tracks which cells are refreshing (keys like "ASTS:pr", "BMNR:edgar")
+  const [scanningCells, setScanningCells] = useState<Set<string>>(new Set());
 
-    const fetchStock = async (ticker: string) => {
-      setFeeds(prev => ({
-        ...prev,
-        [ticker]: { ...prev[ticker], loadingPR: true, loadingNews: true, loadingEdgar: true, error: null },
-      }));
+  const scanSource = useCallback(async (ticker: string, source: 'pr' | 'news' | 'edgar') => {
+    const cellKey = `${ticker}:${source}`;
+    setScanningCells(prev => { const n = new Set(prev); n.add(cellKey); return n; });
 
-      const results: { prs: ArticleItem[]; news: ArticleItem[]; filings: EdgarFiling[] } = {
-        prs: [], news: [], filings: [],
-      };
+    const loadingFlag = source === 'pr' ? 'loadingPR' : source === 'news' ? 'loadingNews' : 'loadingEdgar';
+    setFeeds(prev => ({ ...prev, [ticker]: { ...prev[ticker], [loadingFlag]: true, error: null } }));
 
-      try {
+    let fetchedPRs: ArticleItem[] = [];
+    let fetchedNews: ArticleItem[] = [];
+    let fetchedFilings: EdgarFiling[] = [];
+
+    try {
+      if (source === 'pr') {
         const res = await fetch(`/api/press-releases/${ticker}`);
         if (res.ok) {
           const d = await res.json();
-          results.prs = (d.releases || []).slice(0, 15).map((r: { date: string; headline: string; url: string; source?: string }) => ({
+          fetchedPRs = (d.releases || []).slice(0, 15).map((r: { date: string; headline: string; url: string; source?: string }) => ({
             headline: r.headline, date: r.date, url: r.url, source: r.source, type: 'pr' as const,
           }));
         }
-      } catch { /* continue */ }
-      setFeeds(prev => ({ ...prev, [ticker]: { ...prev[ticker], loadingPR: false } }));
-
-      try {
+      } else if (source === 'news') {
         const res = await fetch(`/api/news/${ticker}`);
         if (res.ok) {
           const d = await res.json();
-          results.news = (d.articles || []).slice(0, 10).map((a: { title: string; date: string; url: string; source: string }) => ({
+          fetchedNews = (d.articles || []).slice(0, 10).map((a: { title: string; date: string; url: string; source: string }) => ({
             headline: a.title, date: a.date, url: a.url, source: a.source, type: 'news' as const,
           }));
         }
-      } catch { /* continue */ }
-      setFeeds(prev => ({ ...prev, [ticker]: { ...prev[ticker], loadingNews: false } }));
-
-      try {
+      } else {
         const res = await fetch(`/api/edgar/${ticker}`);
         if (res.ok) {
           const d = await res.json();
-          results.filings = (d.filings || []).slice(0, 15);
+          fetchedFilings = (d.filings || []).slice(0, 15);
         }
-      } catch { /* continue */ }
-      setFeeds(prev => ({ ...prev, [ticker]: { ...prev[ticker], loadingEdgar: false } }));
+      }
+    } catch { /* continue */ }
 
-      // Deduplicate news against PRs
-      const prHeadlines = new Set(results.prs.map(a => normalizeHeadline(a.headline)));
-      const dedupedNews = results.news.filter(a => !prHeadlines.has(normalizeHeadline(a.headline)));
-      const finalArticles = [...results.prs, ...dedupedNews];
+    setFeeds(prev => ({ ...prev, [ticker]: { ...prev[ticker], [loadingFlag]: false } }));
 
-      // Save articles to DB + detect new
+    // Process articles (PR or news)
+    if (source === 'pr' || source === 'news') {
+      let articles: ArticleItem[];
+      if (source === 'news') {
+        // Dedup news against existing PRs in feed
+        const existingPRs = feeds[ticker]?.articles.filter(a => a.type === 'pr') || [];
+        const prHeadlines = new Set(existingPRs.map(a => normalizeHeadline(a.headline)));
+        articles = fetchedNews.filter(a => !prHeadlines.has(normalizeHeadline(a.headline)));
+      } else {
+        articles = fetchedPRs;
+      }
+
       const newArtKeys = new Set<string>();
-      if (finalArticles.length > 0) {
-        const toSave = finalArticles.map(a => ({
-          cacheKey: articleCacheKey(a),
-          headline: a.headline,
-          date: a.date,
-          url: a.url,
-          source: a.source,
-          articleType: a.type,
+      if (articles.length > 0) {
+        const toSave = articles.map(a => ({
+          cacheKey: articleCacheKey(a), headline: a.headline, date: a.date,
+          url: a.url, source: a.source, articleType: a.type,
         }));
-
-        for (const a of finalArticles) {
+        for (const a of articles) {
           const key = artKey(ticker, a);
           if (!dbArticlesRef.current.has(key)) newArtKeys.add(key);
         }
-
         try {
           await fetch('/api/seen-articles', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ticker, articles: toSave }),
           });
           for (const a of toSave) {
             const key = `${ticker}:${a.cacheKey}`;
             const existing = dbArticlesRef.current.get(key);
             dbArticlesRef.current.set(key, {
-              cacheKey: a.cacheKey,
-              headline: a.headline,
-              date: a.date || null,
-              url: a.url || null,
-              source: a.source || null,
-              articleType: a.articleType || null,
+              cacheKey: a.cacheKey, headline: a.headline, date: a.date || null,
+              url: a.url || null, source: a.source || null, articleType: a.articleType || null,
               dismissed: newArtKeys.has(key) ? false : (existing?.dismissed ?? false),
               hidden: existing?.hidden ?? false,
             });
@@ -336,81 +330,86 @@ export default function Dashboard() {
         } catch { /* best-effort */ }
       }
 
-      // Save filings to DB + detect new
-      const newFilKeys = new Set<string>();
-      if (results.filings.length > 0) {
-        const toSave = results.filings.map(f => ({
-          accessionNumber: f.accessionNumber,
-          form: f.form,
-          filingDate: f.filingDate,
-          description: f.primaryDocDescription,
-          reportDate: f.reportDate,
-          fileUrl: f.fileUrl,
-          status: 'new',
-        }));
-
-        for (const f of results.filings) {
-          const key = filKey(ticker, f.accessionNumber);
-          if (!dbFilingsRef.current.has(key)) newFilKeys.add(key);
-        }
-
-        try {
-          await fetch('/api/seen-filings', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ticker, filings: toSave }),
-          });
-          for (const f of toSave) {
-            const key = `${ticker}:${f.accessionNumber}`;
-            const existing = dbFilingsRef.current.get(key);
-            dbFilingsRef.current.set(key, {
-              accessionNumber: f.accessionNumber,
-              form: f.form,
-              filingDate: f.filingDate || null,
-              description: f.description || null,
-              reportDate: f.reportDate || null,
-              fileUrl: f.fileUrl || null,
-              status: f.status || null,
-              dismissed: newFilKeys.has(key) ? false : (existing?.dismissed ?? false),
-              hidden: existing?.hidden ?? false,
-            });
-          }
-        } catch { /* best-effort */ }
-      }
-
-      // Merge with existing
       setFeeds(prev => {
         const existing = prev[ticker];
-        const existingKeys = new Set(finalArticles.map(a => articleCacheKey(a)));
-        const keptArticles = existing.articles.filter(a => !existingKeys.has(articleCacheKey(a)));
+        const fetchedKeys = new Set(articles.map(a => articleCacheKey(a)));
+        // Keep articles of the other type + non-overlapping articles of same type
+        const kept = existing.articles.filter(a =>
+          a.type !== source || !fetchedKeys.has(articleCacheKey(a))
+        );
         return {
           ...prev,
-          [ticker]: {
-            ...existing,
-            articles: [...finalArticles, ...keptArticles],
-            filings: results.filings.length > 0 ? results.filings : existing.filings,
-            loaded: true,
-            fetchedAt: Date.now(),
-          },
+          [ticker]: { ...existing, articles: [...articles, ...kept], loaded: true, fetchedAt: Date.now() },
         };
       });
 
       if (newArtKeys.size > 0) {
         setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newArtKeys) next.add(k); return next; });
       }
+    }
+
+    // Process filings (edgar)
+    if (source === 'edgar' && fetchedFilings.length > 0) {
+      const newFilKeys = new Set<string>();
+      const toSave = fetchedFilings.map(f => ({
+        accessionNumber: f.accessionNumber, form: f.form, filingDate: f.filingDate,
+        description: f.primaryDocDescription, reportDate: f.reportDate, fileUrl: f.fileUrl, status: 'new',
+      }));
+      for (const f of fetchedFilings) {
+        const key = filKey(ticker, f.accessionNumber);
+        if (!dbFilingsRef.current.has(key)) newFilKeys.add(key);
+      }
+      try {
+        await fetch('/api/seen-filings', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ticker, filings: toSave }),
+        });
+        for (const f of toSave) {
+          const key = `${ticker}:${f.accessionNumber}`;
+          const existing = dbFilingsRef.current.get(key);
+          dbFilingsRef.current.set(key, {
+            accessionNumber: f.accessionNumber, form: f.form,
+            filingDate: f.filingDate || null, description: f.description || null,
+            reportDate: f.reportDate || null, fileUrl: f.fileUrl || null,
+            status: f.status || null,
+            dismissed: newFilKeys.has(key) ? false : (existing?.dismissed ?? false),
+            hidden: existing?.hidden ?? false,
+          });
+        }
+      } catch { /* best-effort */ }
+
+      setFeeds(prev => ({
+        ...prev,
+        [ticker]: { ...prev[ticker], filings: fetchedFilings, loaded: true, fetchedAt: Date.now() },
+      }));
+
       if (newFilKeys.size > 0) {
         setNewFilingKeys(prev => { const next = new Set(prev); for (const k of newFilKeys) next.add(k); return next; });
       }
+    }
 
-      setDbArticles(new Map(dbArticlesRef.current));
-      setDbFilings(new Map(dbFilingsRef.current));
-    };
+    setDbArticles(new Map(dbArticlesRef.current));
+    setDbFilings(new Map(dbFilingsRef.current));
+    setScanningCells(prev => { const n = new Set(prev); n.delete(cellKey); return n; });
+  }, [feeds]);
 
-    await Promise.allSettled(stockList.map(s => fetchStock(s.ticker)));
+  // ── Scan All — wraps scanSource for all stocks × all sources ────────────
+  const scanAll = useCallback(async () => {
+    setScanning(true);
+    const tasks: Promise<void>[] = [];
+    for (const s of stockList) {
+      tasks.push(scanSource(s.ticker, 'pr'));
+      tasks.push(scanSource(s.ticker, 'news'));
+      if (stocks[s.ticker]?.cik) tasks.push(scanSource(s.ticker, 'edgar'));
+    }
+    await Promise.allSettled(tasks);
     setScanning(false);
-  }, []);
+  }, [scanSource]);
 
   // ── Dismiss handlers ─────────────────────────────────────────────────────
+  // These write to the same seen_articles / seen_filings DB tables that
+  // SharedSourcesTab and SharedEdgarTab read from. Dismiss state syncs
+  // across all views on next DB load (page navigation or manual refresh).
   const dismissArticle = useCallback((ticker: string, article: ArticleItem) => {
     const key = artKey(ticker, article);
     const rec = dbArticlesRef.current.get(key);
@@ -504,7 +503,7 @@ export default function Dashboard() {
       if (filter === 'pr') return item.itemType === 'pr';
       if (filter === 'news') return item.itemType === 'news';
       if (filter === 'edgar') return item.itemType === 'filing';
-      if (filter === 'new') {
+      if (filter === 'new' || filter === 'seen') {
         const key = item.itemType === 'filing'
           ? filKey(item.ticker, item.accessionNumber!)
           : artKey(item.ticker, item);
@@ -514,7 +513,7 @@ export default function Dashboard() {
         const isDismissed = item.itemType === 'filing'
           ? dbFilings.get(key)?.dismissed ?? false
           : dbArticles.get(key)?.dismissed ?? false;
-        return isNew && !isDismissed;
+        return filter === 'new' ? (isNew && !isDismissed) : (isNew && isDismissed);
       }
       return true;
     });
@@ -558,6 +557,30 @@ export default function Dashboard() {
     [perStockStats],
   );
 
+  // NEW badge count scoped to the active type filter
+  const filteredNewCount = useMemo(() => {
+    if (filter === 'all' || filter === 'new' || filter === 'seen') return totalNewCount;
+    let count = 0;
+    for (const s of stockList) {
+      if (!activeTickers.has(s.ticker)) continue;
+      const feed = feeds[s.ticker];
+      if (filter === 'pr' || filter === 'news') {
+        for (const a of feed.articles) {
+          if (a.type !== filter) continue;
+          const key = artKey(s.ticker, a);
+          if (newArticleKeys.has(key) && !dbArticles.get(key)?.dismissed) count++;
+        }
+      }
+      if (filter === 'edgar') {
+        for (const f of feed.filings) {
+          const key = filKey(s.ticker, f.accessionNumber);
+          if (newFilingKeys.has(key) && !dbFilings.get(key)?.dismissed) count++;
+        }
+      }
+    }
+    return count;
+  }, [filter, feeds, activeTickers, totalNewCount, newArticleKeys, newFilingKeys, dbArticles, dbFilings]);
+
   const anyLoading = Object.values(feeds).some(f => f.loadingPR || f.loadingNews || f.loadingEdgar);
   const anyLoaded = Object.values(feeds).some(f => f.loaded);
 
@@ -598,17 +621,18 @@ export default function Dashboard() {
             data-filter="new"
             onClick={() => setFilter(filter === 'new' ? 'all' : 'new')}
           >
-            NEW{totalNewCount > 0 ? ` ${totalNewCount}` : ''}
+            NEW{filteredNewCount > 0 ? ` ${filteredNewCount}` : ''}
           </button>
 
           <span className="db-filter-sep" />
 
           {/* Type filters */}
-          {(['all', 'pr', 'news', 'edgar'] as const).map(f => (
+          {(['all', 'pr', 'news', 'edgar', 'seen'] as const).map(f => (
             <button
               key={f}
               className="db-filter-pill"
               data-active={filter === f}
+              data-filter={f}
               onClick={() => setFilter(f)}
             >
               {f}
@@ -618,17 +642,20 @@ export default function Dashboard() {
           <span className="db-filter-sep" />
 
           {/* Ticker toggles */}
-          {stockList.map(s => (
-            <button
-              key={s.ticker}
-              className="db-ticker-pill"
-              data-ticker={s.ticker}
-              data-active={activeTickers.has(s.ticker)}
-              onClick={() => toggleTicker(s.ticker)}
-            >
-              {s.ticker}
-            </button>
-          ))}
+          {stockList.map((s, idx) => {
+            const a = getStockAccent(s.ticker, idx);
+            return (
+              <button
+                key={s.ticker}
+                className="db-ticker-pill"
+                data-active={activeTickers.has(s.ticker)}
+                style={{ '--pill-color': a.color, '--pill-dim': a.dim } as React.CSSProperties}
+                onClick={() => toggleTicker(s.ticker)}
+              >
+                {s.ticker}
+              </button>
+            );
+          })}
         </div>
 
         <div className="db-toolbar-right">
@@ -650,10 +677,10 @@ export default function Dashboard() {
       </div>
 
       {/* Zone B: Stats Strip */}
-      <div className="db-stats-grid">
-        {stockList.map(s => {
+      <div className="db-stats-grid" style={{ '--stock-count': stockList.length } as React.CSSProperties}>
+        {stockList.map((s, idx) => {
           const feed = feeds[s.ticker];
-          const accent = STOCK_ACCENTS[s.ticker];
+          const accent = getStockAccent(s.ticker, idx);
           const stat = perStockStats[s.ticker];
           const isLoading = feed.loadingPR || feed.loadingNews || feed.loadingEdgar;
           const isActive = activeTickers.has(s.ticker);
@@ -689,10 +716,52 @@ export default function Dashboard() {
                 )}
               </div>
               <div className="db-stat-breakdown">
-                <span className="db-stat-item">PR: <span>{stat.prCount}</span></span>
-                <span className="db-stat-item">News: <span>{stat.newsCount}</span></span>
                 <span className="db-stat-item">
-                  Edgar: <span>{s.ticker === 'CRCL' ? '—' : stat.edgarCount}</span>
+                  PR: <span>{stat.prCount}</span>
+                  <button
+                    className="db-stat-refresh-btn"
+                    title={`Refresh PRs for ${s.ticker}`}
+                    disabled={scanningCells.has(`${s.ticker}:pr`)}
+                    onClick={(e) => { e.stopPropagation(); scanSource(s.ticker, 'pr'); }}
+                  >
+                    <svg width="9" height="9" viewBox="0 0 16 16" fill="none"
+                      style={{ animation: scanningCells.has(`${s.ticker}:pr`) ? 'spin 1s linear infinite' : 'none' }}>
+                      <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                </span>
+                <span className="db-stat-item">
+                  News: <span>{stat.newsCount}</span>
+                  <button
+                    className="db-stat-refresh-btn"
+                    title={`Refresh news for ${s.ticker}`}
+                    disabled={scanningCells.has(`${s.ticker}:news`)}
+                    onClick={(e) => { e.stopPropagation(); scanSource(s.ticker, 'news'); }}
+                  >
+                    <svg width="9" height="9" viewBox="0 0 16 16" fill="none"
+                      style={{ animation: scanningCells.has(`${s.ticker}:news`) ? 'spin 1s linear infinite' : 'none' }}>
+                      <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </button>
+                </span>
+                <span className="db-stat-item">
+                  Edgar: <span>{stocks[s.ticker]?.cik ? stat.edgarCount : '—'}</span>
+                  {stocks[s.ticker]?.cik && (
+                    <button
+                      className="db-stat-refresh-btn"
+                      title={`Refresh EDGAR for ${s.ticker}`}
+                      disabled={scanningCells.has(`${s.ticker}:edgar`)}
+                      onClick={(e) => { e.stopPropagation(); scanSource(s.ticker, 'edgar'); }}
+                    >
+                      <svg width="9" height="9" viewBox="0 0 16 16" fill="none"
+                        style={{ animation: scanningCells.has(`${s.ticker}:edgar`) ? 'spin 1s linear infinite' : 'none' }}>
+                        <path d="M14 8A6 6 0 1 1 8 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <path d="M8 0L10 2L8 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
+                  )}
                 </span>
               </div>
               {feed.fetchedAt && !isLoading && (
@@ -765,9 +834,12 @@ export default function Dashboard() {
                     {/* Ticker pill */}
                     <span
                       className="db-ticker-pill"
-                      data-ticker={item.ticker}
                       data-active="true"
-                      style={{ cursor: 'default', fontSize: 8, padding: '2px 6px' }}
+                      style={{
+                        cursor: 'default', fontSize: 8, padding: '2px 6px',
+                        '--pill-color': getStockAccent(item.ticker, stockList.findIndex(s => s.ticker === item.ticker)).color,
+                        '--pill-dim': getStockAccent(item.ticker, stockList.findIndex(s => s.ticker === item.ticker)).dim,
+                      } as React.CSSProperties}
                     >
                       {item.ticker}
                     </span>

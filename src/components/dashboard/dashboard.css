@@ -73,6 +73,13 @@
   border-color: rgba(255, 123, 114, 0.2);
 }
 
+/* SEEN filter — muted gold when active */
+.db-filter-pill[data-filter="seen"][data-active="true"] {
+  color: var(--gold);
+  background: rgba(210, 153, 34, 0.12);
+  border-color: rgba(210, 153, 34, 0.2);
+}
+
 /* Ticker pills */
 .db-ticker-pill {
   font-size: 9px;
@@ -91,22 +98,11 @@
   opacity: 0.35;
 }
 
-.db-ticker-pill[data-ticker="ASTS"] {
-  background: var(--cyan-dim);
-  color: var(--cyan);
-  border-color: rgba(34, 211, 238, 0.15);
-}
-
-.db-ticker-pill[data-ticker="BMNR"] {
-  background: var(--violet-dim);
-  color: var(--violet);
-  border-color: rgba(167, 139, 250, 0.15);
-}
-
-.db-ticker-pill[data-ticker="CRCL"] {
-  background: var(--mint-dim);
-  color: var(--mint);
-  border-color: rgba(126, 231, 135, 0.15);
+/* Accent colors driven by --pill-color / --pill-dim CSS variables (stock-agnostic) */
+.db-ticker-pill {
+  background: var(--pill-dim);
+  color: var(--pill-color);
+  border-color: color-mix(in srgb, var(--pill-color) 15%, transparent);
 }
 
 /* Separator between filter groups */
@@ -151,7 +147,7 @@
 /* Stats strip — glass-border 3-column grid */
 .db-stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(var(--stock-count, 3), 1fr);
   gap: 1px;
   background: var(--border);
   border-bottom: 1px solid var(--border);
@@ -209,6 +205,31 @@
 .db-stat-item span {
   color: var(--text2);
   font-weight: 600;
+}
+
+/* Per-source refresh button */
+.db-stat-refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  opacity: 0.4;
+  padding: 1px 2px;
+  margin-left: 2px;
+  transition: opacity 0.12s ease;
+  vertical-align: middle;
+}
+.db-stat-refresh-btn:hover {
+  opacity: 1;
+  color: var(--text2);
+}
+.db-stat-refresh-btn:disabled {
+  cursor: wait;
+  opacity: 0.7;
+  color: var(--gold);
 }
 
 .db-stat-time {
