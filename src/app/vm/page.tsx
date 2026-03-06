@@ -11,7 +11,8 @@ interface ScrapedRelease {
 interface ScrapeResult {
   ok: boolean;
   url: string;
-  mode: 'playwright' | 'cheerio';
+  mode: string;
+  chromiumPath?: string;
   strategy: string;
   count: number;
   results: ScrapedRelease[];
@@ -166,7 +167,7 @@ export default function VMPage() {
             </span>
             <span style={{ color: 'rgba(255,255,255,0.1)' }}>·</span>
             <span>
-              mode: <span style={{ color: data.mode === 'playwright' ? 'rgba(126,231,135,0.6)' : 'rgba(210,153,34,0.6)' }}>{data.mode}</span>
+              chromium: <span style={{ color: 'rgba(126,231,135,0.6)' }}>{data.chromiumPath || data.mode}</span>
             </span>
             <span style={{ color: 'rgba(255,255,255,0.1)' }}>·</span>
             <span>

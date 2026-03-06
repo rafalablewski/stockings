@@ -23,42 +23,77 @@ interface ScrapedRelease {
 function findChromium(): string | null {
   const fs = require('fs');
   const path = require('path');
-  const home = process.env.HOME || '/root';
+  const os = require('os');
+  const home = process.env.HOME || os.homedir();
+  const platform = os.platform();
 
-  // 1. Check Playwright cache (any revision)
-  const pwCache = path.join(home, '.cache', 'ms-playwright');
+  // 1. Playwright cache — cross-platform, any revision
+  const pwCache = path.join(home, platform === 'darwin'
+    ? 'Library/Caches/ms-playwright'
+    : '.cache/ms-playwright');
   try {
-    const dirs = fs.readdirSync(pwCache).filter((d: string) => d.startsWith('chromium-'));
-    // Use highest revision
-    dirs.sort().reverse();
+    const dirs = fs.readdirSync(pwCache)
+      .filter((d: string) => d.startsWith('chromium-'))
+      .sort()
+      .reverse();
     for (const dir of dirs) {
-      const candidate = path.join(pwCache, dir, 'chrome-linux', 'chrome');
-      if (fs.existsSync(candidate)) return candidate;
+      // Platform-specific subdirectory names
+      const candidates = [
+        path.join(pwCache, dir, 'chrome-linux', 'chrome'),
+        path.join(pwCache, dir, 'chrome-mac', 'Chromium.app', 'Contents', 'MacOS', 'Chromium'),
+        path.join(pwCache, dir, 'chrome-win', 'chrome.exe'),
+      ];
+      for (const c of candidates) {
+        if (fs.existsSync(c)) return c;
+      }
     }
   } catch { /* no cache dir */ }
 
-  // 2. System-installed Chromium/Chrome
-  for (const bin of ['/usr/bin/chromium-browser', '/usr/bin/chromium', '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable']) {
+  // 2. System-installed Chrome/Chromium
+  const systemPaths = platform === 'darwin'
+    ? [
+        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+        '/Applications/Chromium.app/Contents/MacOS/Chromium',
+        '/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary',
+      ]
+    : platform === 'win32'
+    ? [
+        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+      ]
+    : [
+        '/usr/bin/google-chrome-stable',
+        '/usr/bin/google-chrome',
+        '/usr/bin/chromium-browser',
+        '/usr/bin/chromium',
+      ];
+
+  for (const bin of systemPaths) {
     try { if (fs.existsSync(bin)) return bin; } catch { /* skip */ }
   }
 
   return null;
 }
 
-async function fetchWithPlaywright(url: string): Promise<{ html: string; mode: 'playwright' } | null> {
+async function fetchWithPlaywright(url: string): Promise<{ html: string; mode: 'playwright'; chromiumPath: string }> {
+  const execPath = findChromium();
+  if (!execPath) {
+    throw new Error(
+      'No Chromium/Chrome found. Install one:\n' +
+      '  • npx playwright install chromium\n' +
+      '  • Or install Google Chrome on your system'
+    );
+  }
+
+  const pw = await import('playwright-core');
+
+  const browser = await pw.chromium.launch({
+    executablePath: execPath,
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  });
+
   try {
-    const execPath = findChromium();
-    if (!execPath) return null;
-
-    const pw = await import('playwright-core');
-    const chromium = pw.chromium;
-
-    const browser = await chromium.launch({
-      executablePath: execPath,
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-
     const context = await browser.newContext({
       userAgent:
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
@@ -74,36 +109,10 @@ async function fetchWithPlaywright(url: string): Promise<{ html: string; mode: '
     await page.waitForTimeout(500);
 
     const html = await page.content();
+    return { html, mode: 'playwright', chromiumPath: execPath };
+  } finally {
     await browser.close();
-
-    return { html, mode: 'playwright' };
-  } catch {
-    // Playwright or Chromium not available — fall through to cheerio
-    return null;
   }
-}
-
-// ─── Static fetch (cheerio mode) ────────────────────────────────────────────
-
-const FETCH_HEADERS = {
-  'User-Agent':
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-  Accept:
-    'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-} as const;
-
-async function fetchWithCheerio(url: string): Promise<{ html: string; mode: 'cheerio' }> {
-  const response = await fetch(url, {
-    headers: FETCH_HEADERS,
-    signal: AbortSignal.timeout(15000),
-    redirect: 'follow',
-  });
-
-  if (!response.ok) {
-    throw new Error(`Upstream returned ${response.status}`);
-  }
-
-  return { html: await response.text(), mode: 'cheerio' };
 }
 
 // ─── Extraction strategies (all work on cheerio-parsed HTML) ────────────────
@@ -280,9 +289,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Try Playwright first (handles JS-rendered pages), fall back to plain fetch
-    const pwResult = await fetchWithPlaywright(url);
-    const { html, mode } = pwResult ?? await fetchWithCheerio(url);
+    // Always use Playwright (headless Chromium) — no silent fallback
+    const { html, mode, chromiumPath } = await fetchWithPlaywright(url);
 
     const $ = cheerio.load(html);
     const base = `${parsedUrl.protocol}//${parsedUrl.host}`;
@@ -317,6 +325,7 @@ export async function GET(request: NextRequest) {
       ok: true,
       url,
       mode,
+      chromiumPath,
       strategy,
       count: unique.length,
       results: unique,
