@@ -32,6 +32,7 @@ export const stocks: Record<string, StockMeta> = {
     sector: 'Fintech',
     description: 'Issuer of USDC, the leading regulated digital dollar stablecoin',
     accent: 'mint',
+    cik: '0001876042',
   },
 };
 
