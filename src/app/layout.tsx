@@ -63,6 +63,10 @@ const docs = [
 
 const mobileNavItems = [
   {
+    label: 'VM',
+    href: '/vm',
+  },
+  {
     label: 'Docs',
     children: docs.map((d) => ({ label: d.label, href: d.href })),
   },
@@ -188,6 +192,14 @@ function Navigation() {
                 </div>
               </div>
             </div>
+
+            {/* VM link */}
+            <Link
+              href="/vm"
+              className="text-[13px] text-white/60 hover:text-white transition-colors"
+            >
+              VM
+            </Link>
 
             {/* Audit dropdown */}
             <div className="relative group/audit">
