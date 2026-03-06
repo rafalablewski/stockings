@@ -20,13 +20,41 @@ interface ScrapedRelease {
 
 // ─── Playwright renderer ────────────────────────────────────────────────────
 
+function findChromium(): string | null {
+  const fs = require('fs');
+  const path = require('path');
+  const home = process.env.HOME || '/root';
+
+  // 1. Check Playwright cache (any revision)
+  const pwCache = path.join(home, '.cache', 'ms-playwright');
+  try {
+    const dirs = fs.readdirSync(pwCache).filter((d: string) => d.startsWith('chromium-'));
+    // Use highest revision
+    dirs.sort().reverse();
+    for (const dir of dirs) {
+      const candidate = path.join(pwCache, dir, 'chrome-linux', 'chrome');
+      if (fs.existsSync(candidate)) return candidate;
+    }
+  } catch { /* no cache dir */ }
+
+  // 2. System-installed Chromium/Chrome
+  for (const bin of ['/usr/bin/chromium-browser', '/usr/bin/chromium', '/usr/bin/google-chrome', '/usr/bin/google-chrome-stable']) {
+    try { if (fs.existsSync(bin)) return bin; } catch { /* skip */ }
+  }
+
+  return null;
+}
+
 async function fetchWithPlaywright(url: string): Promise<{ html: string; mode: 'playwright' } | null> {
   try {
+    const execPath = findChromium();
+    if (!execPath) return null;
+
     const pw = await import('playwright-core');
     const chromium = pw.chromium;
 
-    // Try common Chromium paths, then Playwright's bundled one
     const browser = await chromium.launch({
+      executablePath: execPath,
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
