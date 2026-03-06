@@ -143,8 +143,6 @@ import { CRCL_COMPETITOR_NEWS, CRCL_COMPETITOR_PROFILES, type CRCLCompetitorProf
 import type { CompetitorNewsEntry } from '@/data/shared/competitor-schema';
 import { CRCL_ANALYST_COVERAGE } from '@/data/crcl/analyst-coverage';
 import { CRCL_RESEARCH_SOURCES } from '@/data/crcl/research-sources';
-import { CRCL_COMPETITORS, CRCL_COMPETITOR_LABEL } from '@/data/crcl/sources';
-import { CRCL_SEC_TYPE_COLORS } from '@/data/crcl/sec-filings';
 
 // ============================================================================
 // CRCL - Circle Internet Group Financial Model
@@ -548,7 +546,12 @@ const MAJOR_SHAREHOLDERS = [
 ];
 
 
-const crclCompetitors = CRCL_COMPETITORS;
+const crclCompetitors: Competitor[] = [
+  { name: 'Tether', url: 'https://tether.to/en/transparency/' },
+  { name: 'PayPal PYUSD', url: 'https://www.paypal.com/pyusd' },
+  { name: 'Paxos', url: 'https://paxos.com' },
+  { name: 'Ripple RLUSD', url: 'https://ripple.com' },
+];
 
 const crclResearchSources = CRCL_RESEARCH_SOURCES;
 
@@ -2531,7 +2534,15 @@ function CRCLModel() {
     lastPR: { date: 'December 12, 2025', title: 'OCC National Bank Charter Approval' }
   };
   
-  const secTypeColors = CRCL_SEC_TYPE_COLORS;
+  const secTypeColors: Record<string, { bg: string; text: string }> = {
+    '10-K': { bg: 'color-mix(in srgb, var(--sky) 20%, transparent)', text: '#60a5fa' },
+    '10-Q': { bg: 'color-mix(in srgb, var(--violet) 20%, transparent)', text: 'var(--violet)' },
+    '8-K': { bg: 'color-mix(in srgb, var(--gold) 20%, transparent)', text: 'var(--gold)' },
+    'S-1': { bg: 'color-mix(in srgb, var(--violet) 20%, transparent)', text: 'var(--violet)' },
+    'S-3': { bg: 'color-mix(in srgb, var(--mint) 20%, transparent)', text: '#4ade80' },
+    'S-8': { bg: 'color-mix(in srgb, var(--mint) 20%, transparent)', text: 'var(--mint)' },
+    '424B5': { bg: 'color-mix(in srgb, var(--coral) 20%, transparent)', text: '#fb923c' },
+  };
   
   const secFilterTypes = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '424B5'];
 
@@ -4805,7 +4816,7 @@ function CRCLModel() {
 
           {activeTab === 'ai-agents' && <TabPanel id="ai-agents"><SharedAIAgentsTab ticker="CRCL" /></TabPanel>}
           {activeTab === 'sources' && <TabPanel id="sources">
-            <SharedSourcesTab ticker="CRCL" companyName="Circle Internet Group" researchSources={crclResearchSources} competitorLabel={CRCL_COMPETITOR_LABEL} competitors={crclCompetitors} />
+            <SharedSourcesTab ticker="CRCL" companyName="Circle Internet Group" researchSources={crclResearchSources} competitorLabel="Stablecoin Peers" competitors={crclCompetitors} />
           </TabPanel>}
         </main>
       </div>
