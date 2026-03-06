@@ -207,7 +207,9 @@ export default function Dashboard() {
       setDbArticles(new Map(dbArticlesRef.current));
       setDbFilings(new Map(dbFilingsRef.current));
 
-      // Hydrate feeds from DB records + mark undismissed as new (single pass)
+      // Hydrate feeds from DB records + track all known items (single pass)
+      // All DB items go into new*Keys — the dismissed flag on DB records
+      // separately tracks seen/unseen for the "seen" filter.
       const feedUpdates: Record<string, Partial<StockFeedState>> = {};
       const newArtKeys = new Set<string>();
       const newFilKeys = new Set<string>();
@@ -223,14 +225,14 @@ export default function Dashboard() {
               source: rec.source || undefined,
               type: (rec.articleType === 'pr' ? 'pr' : 'news') as 'pr' | 'news',
             });
-            if (!rec.dismissed) newArtKeys.add(key);
+            newArtKeys.add(key);
           }
         }
         if (articles.length > 0) {
           feedUpdates[s.ticker] = { articles, loaded: true };
         }
         for (const [key, rec] of dbFilingsRef.current.entries()) {
-          if (key.startsWith(`${s.ticker}:`) && !rec.dismissed) {
+          if (key.startsWith(`${s.ticker}:`)) {
             newFilKeys.add(key);
           }
         }
@@ -289,9 +291,13 @@ export default function Dashboard() {
         if (res.ok) {
           const d = await res.json();
           fetchedFilings = (d.filings || []).slice(0, 15);
+        } else {
+          console.error(`[Dashboard] EDGAR fetch failed for ${ticker}: ${res.status}`);
         }
       }
-    } catch { /* continue */ }
+    } catch (err) {
+      console.error(`[Dashboard] scanSource(${ticker}, ${source}) error:`, err);
+    }
 
     setFeeds(prev => ({ ...prev, [ticker]: { ...prev[ticker], [loadingFlag]: false } }));
 
