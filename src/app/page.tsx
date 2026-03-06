@@ -2,7 +2,7 @@ import Link from "next/link";
 import { stockList } from "@/lib/stocks";
 import { workflows } from "@/data/workflows";
 import { PromptCard } from "@/components/PromptCard";
-import CommandCenter from "@/components/CommandCenter";
+
 const CODE_AUDIT_IDS = new Set([
   "code-audit",
   "dependency-vulnerability",
@@ -62,13 +62,6 @@ export default function HomePage() {
           >
             View all research →
           </Link>
-        </div>
-      </section>
-
-      {/* Command Center */}
-      <section className="py-10 px-6">
-        <div className="max-w-4xl mx-auto">
-          <CommandCenter />
         </div>
       </section>
 

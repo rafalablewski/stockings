@@ -63,6 +63,10 @@ const docs = [
 
 const mobileNavItems = [
   {
+    label: 'Dashboard',
+    children: [{ label: 'Intel Feed', href: '/dashboard' }],
+  },
+  {
     label: 'Docs',
     children: docs.map((d) => ({ label: d.label, href: d.href })),
   },
@@ -107,6 +111,14 @@ function Navigation() {
 
           {/* Desktop navigation — hidden on mobile */}
           <div className="hidden md:flex items-center gap-8">
+            {/* Dashboard link */}
+            <Link
+              href="/dashboard"
+              className="text-[13px] text-white/60 hover:text-white transition-colors"
+            >
+              Dashboard
+            </Link>
+
             {/* Docs dropdown */}
             <div className="relative group/docs">
               <span className="text-[13px] text-white/60 group-hover/docs:text-white transition-colors cursor-default select-none">
