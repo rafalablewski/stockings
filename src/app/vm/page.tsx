@@ -11,6 +11,7 @@ interface ScrapedRelease {
 interface ScrapeResult {
   ok: boolean;
   url: string;
+  mode: 'playwright' | 'cheerio';
   strategy: string;
   count: number;
   results: ScrapedRelease[];
@@ -76,8 +77,8 @@ export default function VMPage() {
             marginTop: 6,
           }}
         >
-          Paste any IR or press release page URL. The server fetches the HTML and
-          extracts all press releases it can find.
+          Paste any IR or press release page URL. Uses headless Chromium (Playwright)
+          to render JS-heavy pages, with a static fallback.
         </p>
       </div>
 
@@ -162,6 +163,10 @@ export default function VMPage() {
           >
             <span>
               {data.count} result{data.count !== 1 ? 's' : ''}
+            </span>
+            <span style={{ color: 'rgba(255,255,255,0.1)' }}>·</span>
+            <span>
+              mode: <span style={{ color: data.mode === 'playwright' ? 'rgba(126,231,135,0.6)' : 'rgba(210,153,34,0.6)' }}>{data.mode}</span>
             </span>
             <span style={{ color: 'rgba(255,255,255,0.1)' }}>·</span>
             <span>

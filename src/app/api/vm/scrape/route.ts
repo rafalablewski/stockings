@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as cheerio from 'cheerio';
 
-const FETCH_HEADERS = {
-  'User-Agent':
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-  Accept:
-    'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-} as const;
+/**
+ * VM Scraper API — /api/vm/scrape?url=<any IR page>
+ *
+ * Two modes:
+ *   1. Playwright (headless Chromium) — handles JS-rendered pages (Q4, Nasdaq widgets)
+ *   2. Cheerio fallback — if Playwright/Chromium not installed
+ *
+ * Setup for Playwright mode (one time):
+ *   npx playwright install chromium
+ */
 
 interface ScrapedRelease {
   title: string;
@@ -14,7 +18,68 @@ interface ScrapedRelease {
   url: string;
 }
 
-// ─── Strategy 1: Q4 / Nasdaq IR widget ─────────────────────────────────────
+// ─── Playwright renderer ────────────────────────────────────────────────────
+
+async function fetchWithPlaywright(url: string): Promise<{ html: string; mode: 'playwright' } | null> {
+  try {
+    const pw = await import('playwright-core');
+    const chromium = pw.chromium;
+
+    // Try common Chromium paths, then Playwright's bundled one
+    const browser = await chromium.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+
+    const context = await browser.newContext({
+      userAgent:
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    });
+    const page = await context.newPage();
+
+    await page.goto(url, { waitUntil: 'networkidle', timeout: 30_000 });
+
+    // Scroll to trigger lazy-loading
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(2000);
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.waitForTimeout(500);
+
+    const html = await page.content();
+    await browser.close();
+
+    return { html, mode: 'playwright' };
+  } catch {
+    // Playwright or Chromium not available — fall through to cheerio
+    return null;
+  }
+}
+
+// ─── Static fetch (cheerio mode) ────────────────────────────────────────────
+
+const FETCH_HEADERS = {
+  'User-Agent':
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+  Accept:
+    'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+} as const;
+
+async function fetchWithCheerio(url: string): Promise<{ html: string; mode: 'cheerio' }> {
+  const response = await fetch(url, {
+    headers: FETCH_HEADERS,
+    signal: AbortSignal.timeout(15000),
+    redirect: 'follow',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Upstream returned ${response.status}`);
+  }
+
+  return { html: await response.text(), mode: 'cheerio' };
+}
+
+// ─── Extraction strategies (all work on cheerio-parsed HTML) ────────────────
+
 function strategyQ4Widget($: cheerio.CheerioAPI, base: string): ScrapedRelease[] {
   const results: ScrapedRelease[] = [];
   const items = $('li.wd-item, div.wd-item, article.wd-item');
@@ -37,35 +102,6 @@ function strategyQ4Widget($: cheerio.CheerioAPI, base: string): ScrapedRelease[]
   return results;
 }
 
-// ─── Strategy 2: Generic anchor scan ────────────────────────────────────────
-function strategyAnchorScan($: cheerio.CheerioAPI, base: string): ScrapedRelease[] {
-  const results: ScrapedRelease[] = [];
-  const seen = new Set<string>();
-  const prPattern = /press-release|news-release|investor|newsroom|press_release/i;
-
-  $('a[href]').each((_, el) => {
-    const href = $(el).attr('href') || '';
-    const title = $(el).text().trim();
-    if (!title || title.length < 15 || title.length > 300) return;
-
-    const fullUrl = new URL(href, base).toString();
-    if (seen.has(fullUrl)) return;
-
-    if (!prPattern.test(fullUrl) && !prPattern.test(title)) return;
-    seen.add(fullUrl);
-
-    // Look for a date in the nearest container
-    const parent = $(el).closest('li, tr, div[class], article');
-    const dateEl = parent.find('time, .date, [class*="date"], [class*="time"]').first();
-    const date = dateEl.attr('datetime') || dateEl.text().trim();
-
-    results.push({ title, date, url: fullUrl });
-  });
-
-  return results;
-}
-
-// ─── Strategy 3: Structured data (JSON-LD) ──────────────────────────────────
 function strategyJsonLd($: cheerio.CheerioAPI, base: string): ScrapedRelease[] {
   const results: ScrapedRelease[] = [];
 
@@ -96,7 +132,32 @@ function strategyJsonLd($: cheerio.CheerioAPI, base: string): ScrapedRelease[] {
   return results;
 }
 
-// ─── Strategy 4: IR-style link regex (press-release hrefs with dates) ───────
+function strategyAnchorScan($: cheerio.CheerioAPI, base: string): ScrapedRelease[] {
+  const results: ScrapedRelease[] = [];
+  const seen = new Set<string>();
+  const prPattern = /press-release|news-release|investor|newsroom|press_release/i;
+
+  $('a[href]').each((_, el) => {
+    const href = $(el).attr('href') || '';
+    const title = $(el).text().trim();
+    if (!title || title.length < 15 || title.length > 300) return;
+
+    const fullUrl = new URL(href, base).toString();
+    if (seen.has(fullUrl)) return;
+
+    if (!prPattern.test(fullUrl) && !prPattern.test(title)) return;
+    seen.add(fullUrl);
+
+    const parent = $(el).closest('li, tr, div[class], article');
+    const dateEl = parent.find('time, .date, [class*="date"], [class*="time"]').first();
+    const date = dateEl.attr('datetime') || dateEl.text().trim();
+
+    results.push({ title, date, url: fullUrl });
+  });
+
+  return results;
+}
+
 function strategyIRLinks($: cheerio.CheerioAPI, base: string): ScrapedRelease[] {
   const results: ScrapedRelease[] = [];
   const seen = new Set<string>();
@@ -110,7 +171,6 @@ function strategyIRLinks($: cheerio.CheerioAPI, base: string): ScrapedRelease[] 
     if (seen.has(fullUrl)) return;
     seen.add(fullUrl);
 
-    // Extract date from URL path like /2025/02/11/ or /20250211
     let date = '';
     const urlDateMatch = href.match(/\/(\d{4})\/(\d{1,2})\/(\d{1,2})\//);
     if (urlDateMatch) {
@@ -124,7 +184,6 @@ function strategyIRLinks($: cheerio.CheerioAPI, base: string): ScrapedRelease[] 
       }
     }
 
-    // Only keep if date was found in URL (high-confidence press release link)
     if (date) {
       results.push({ title, date, url: fullUrl });
     }
@@ -133,7 +192,6 @@ function strategyIRLinks($: cheerio.CheerioAPI, base: string): ScrapedRelease[] 
   return results;
 }
 
-// ─── Strategy 5: Full page text regex (last resort) ─────────────────────────
 function strategyPageText($: cheerio.CheerioAPI): ScrapedRelease[] {
   const results: ScrapedRelease[] = [];
   const text = $('body').text();
@@ -161,6 +219,7 @@ function strategyPageText($: cheerio.CheerioAPI): ScrapedRelease[] {
 }
 
 // ─── Deduplication ──────────────────────────────────────────────────────────
+
 function deduplicate(items: ScrapedRelease[]): ScrapedRelease[] {
   const seen = new Set<string>();
   return items.filter((item) => {
@@ -174,13 +233,14 @@ function deduplicate(items: ScrapedRelease[]): ScrapedRelease[] {
   });
 }
 
+// ─── Route handler ──────────────────────────────────────────────────────────
+
 export async function GET(request: NextRequest) {
   const url = request.nextUrl.searchParams.get('url');
   if (!url) {
     return NextResponse.json({ error: 'Missing ?url= parameter' }, { status: 400 });
   }
 
-  // Basic URL validation
   let parsedUrl: URL;
   try {
     parsedUrl = new URL(url);
@@ -192,24 +252,14 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const response = await fetch(url, {
-      headers: FETCH_HEADERS,
-      signal: AbortSignal.timeout(15000),
-      redirect: 'follow',
-    });
+    // Try Playwright first (handles JS-rendered pages), fall back to plain fetch
+    const pwResult = await fetchWithPlaywright(url);
+    const { html, mode } = pwResult ?? await fetchWithCheerio(url);
 
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: `Upstream returned ${response.status}` },
-        { status: 502 },
-      );
-    }
-
-    const html = await response.text();
     const $ = cheerio.load(html);
     const base = `${parsedUrl.protocol}//${parsedUrl.host}`;
 
-    // Run strategies in priority order, stop at the first that returns results
+    // Run strategies in priority order
     let results = strategyQ4Widget($, base);
     let strategy = 'Q4 Widget';
 
@@ -238,6 +288,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       ok: true,
       url,
+      mode,
       strategy,
       count: unique.length,
       results: unique,
