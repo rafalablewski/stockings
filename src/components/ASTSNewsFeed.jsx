@@ -21,6 +21,7 @@ const storyIsASTSOwnedPR = (storyText) => {
 
 // Concurrency helper — mirrors mapWithConcurrency from original JS
 const mapWithConcurrency = (items, limit, mapper) => {
+  if (items.length === 0) return Promise.resolve([]);
   let i = 0;
   const results = new Array(items.length);
   return new Promise((resolve) => {

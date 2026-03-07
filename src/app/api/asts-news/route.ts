@@ -28,6 +28,9 @@ export async function GET() {
     }
 
     const data = await response.json();
+    console.log("[asts-news] upstream keys:", JSON.stringify(Object.keys(data || {})));
+    const news = data?.results?.news;
+    console.log("[asts-news] news type:", Array.isArray(news) ? "array" : typeof news, "| newsitem type:", news?.newsitem ? (Array.isArray(news.newsitem) ? "array(" + news.newsitem.length + ")" : typeof news.newsitem) : "missing");
     return NextResponse.json(data, {
       headers: {
         "Cache-Control": "s-maxage=300, stale-while-revalidate",
