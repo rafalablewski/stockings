@@ -320,111 +320,6 @@ function extractDateFromURL(href: string): string {
   return '';
 }
 
-// ─── Source 3: Issuer Direct feed (ASTS-specific, avoids CORS via server-side fetch) ───
-
-const ISSUER_DIRECT_BASE = 'https://feeds.issuerdirect.com/news.html';
-const ISSUER_DIRECT_EXCLUDE =
-  'The New Arms Race,Speed Superiority,National Defense Strategy Ignites';
-
-/** Tickers that have an Issuer Direct feed. */
-const ISSUER_DIRECT_SYMBOLS = new Set(['ASTS']);
-
-async function fetchIssuerDirect(symbol: string): Promise<PressRelease[]> {
-  if (!ISSUER_DIRECT_SYMBOLS.has(symbol)) return [];
-
-  const params = new URLSearchParams({
-    symbol,
-    news_template: `plain-${symbol.toLowerCase()}`,
-    date_format: 'YYYY-MM-DD',
-    per_page: '200',
-    page: '1',
-    exclude_headlines: ISSUER_DIRECT_EXCLUDE,
-  });
-
-  const url = `${ISSUER_DIRECT_BASE}?${params.toString()}`;
-
-  try {
-    const response = await fetch(url, {
-      headers: FETCH_HEADERS,
-      cache: 'no-store',
-      signal: AbortSignal.timeout(10000),
-    });
-
-    if (!response.ok) {
-      console.warn(`[press-releases] Issuer Direct returned ${response.status} for ${symbol}`);
-      return [];
-    }
-
-    const html = await response.text();
-    return parseIssuerDirectHTML(html, symbol);
-  } catch (error) {
-    console.error(`[press-releases] Issuer Direct fetch failed for ${symbol}:`, error);
-    return [];
-  }
-}
-
-function parseIssuerDirectHTML(html: string, symbol: string): PressRelease[] {
-  const $ = cheerio.load(html);
-  const releases: PressRelease[] = [];
-  const seen = new Set<string>();
-
-  // Each press release link contains newsid= in the href
-  $('a[href*="newsid="]').each((_, el) => {
-    if (releases.length >= 200) return false;
-
-    const href = $(el).attr('href') || '';
-    const newsidMatch = href.match(/newsid=(\d+)/);
-    if (!newsidMatch) return;
-    const newsid = newsidMatch[1];
-    if (seen.has(newsid)) return;
-    seen.add(newsid);
-
-    const rawTitle = $(el).text().trim();
-    const title = decodeHTMLEntities(rawTitle);
-    if (!title || title.length < 10) return;
-
-    const fullURL = href.startsWith('http')
-      ? href
-      : `https://feeds.issuerdirect.com/${href.replace(/^\//, '')}`;
-
-    // Look for a date near the link — check parent/sibling elements
-    const container = $(el).closest('li, div, tr');
-    const containerText = container.text();
-    const dateMatch = containerText.match(/(\d{4}-\d{2}-\d{2})/);
-    const date = dateMatch ? dateMatch[1] : '';
-
-    releases.push({
-      title,
-      url: fullURL,
-      date,
-      source: 'Issuer Direct',
-    });
-  });
-
-  // Fallback: regex-based extraction if cheerio found nothing (e.g. inline JS-rendered content)
-  if (releases.length === 0) {
-    const linkPattern = /href="([^"]*newsid=(\d+)[^"]*)"\s*[^>]*>([^<]+)<\/a>/gi;
-    let m: RegExpExecArray | null;
-    while ((m = linkPattern.exec(html)) !== null && releases.length < 200) {
-      const [, href, newsid, rawTitle] = m;
-      if (seen.has(newsid)) continue;
-      seen.add(newsid);
-
-      const title = decodeHTMLEntities(rawTitle.trim());
-      if (!title || title.length < 10) continue;
-
-      releases.push({
-        title,
-        url: `https://feeds.issuerdirect.com/news-release.html?newsid=${newsid}&symbol=${symbol}`,
-        date: '',
-        source: 'Issuer Direct',
-      });
-    }
-  }
-
-  return releases;
-}
-
 // ─── Deduplication ───
 
 function deduplicateReleases(items: PressRelease[]): PressRelease[] {
@@ -459,31 +354,25 @@ export async function GET(
     );
   }
 
-  // Allow callers (e.g. /scraper page) to request more results via ?limit=N (default 50)
-  const limitParam = request.nextUrl.searchParams.get('limit');
-  const limit = Math.min(Math.max(Number(limitParam) || 50, 1), 500);
-
   try {
-    // Fetch from all sources in parallel: IR, BW direct, Google News (company name + ticker), Issuer Direct
-    const [wireResults, wireTickerResults, irResults, businessWireResults, issuerDirectResults] = await Promise.allSettled([
+    // Fetch from all sources in parallel: IR, BW direct, Google News (company name + ticker)
+    const [wireResults, wireTickerResults, irResults, businessWireResults] = await Promise.allSettled([
       fetchWireServiceRSS(stock.name, symbol),
       fetchWireServiceRSS(symbol, symbol),
       fetchIRPage(symbol),
       fetchBusinessWireDirect(stock.name, symbol),
-      fetchIssuerDirect(symbol),
     ]);
 
     const wireArticles = wireResults.status === 'fulfilled' ? wireResults.value : [];
     const wireTickerArticles = wireTickerResults.status === 'fulfilled' ? wireTickerResults.value : [];
     const irArticles = irResults.status === 'fulfilled' ? irResults.value : [];
     const businessWireArticles = businessWireResults.status === 'fulfilled' ? businessWireResults.value : [];
-    const issuerDirectArticles = issuerDirectResults.status === 'fulfilled' ? issuerDirectResults.value : [];
 
-    const merged = [...issuerDirectArticles, ...irArticles, ...businessWireArticles, ...wireArticles, ...wireTickerArticles];
+    const merged = [...irArticles, ...businessWireArticles, ...wireArticles, ...wireTickerArticles];
     const unique = deduplicateReleases(merged);
     unique.sort((a, b) => b.date.localeCompare(a.date));
 
-    const releases = unique.slice(0, limit).map(a => ({
+    const releases = unique.slice(0, 15).map(a => ({
       date: a.date,
       headline: a.title,
       url: a.url,
