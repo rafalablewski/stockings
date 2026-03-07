@@ -300,47 +300,75 @@ export default function PressIntelligencePage() {
           </div>
         )}
 
-        {/* ── Filter Bar ── */}
-        <div className="pi-filter-bar">
-          {/* Stock pills */}
-          <button
-            className="pi-stock-pill"
-            data-active={activeTicker === "ALL"}
-            style={{ '--pill-color': 'var(--text)' } as React.CSSProperties}
-            onClick={() => setActiveTicker("ALL")}
-          >
-            ALL
-          </button>
-          {FEED_CONFIGS.map((cfg) => (
+        {/* ── Filter Panel ── */}
+        <div className="pi-filter-panel">
+          <div className="pi-filter-group">
+            <span className="pi-filter-group-label">Stock</span>
             <button
-              key={cfg.ticker}
               className="pi-stock-pill"
-              data-active={activeTicker === cfg.ticker}
-              style={{ '--pill-color': cfg.color } as React.CSSProperties}
-              onClick={() => setActiveTicker(cfg.ticker)}
+              data-active={activeTicker === "ALL"}
+              style={{ '--pill-color': 'var(--text)' } as React.CSSProperties}
+              onClick={() => setActiveTicker("ALL")}
             >
-              {cfg.ticker}
+              ALL
             </button>
-          ))}
+            {FEED_CONFIGS.map((cfg) => (
+              <button
+                key={cfg.ticker}
+                className="pi-stock-pill"
+                data-active={activeTicker === cfg.ticker}
+                style={{ '--pill-color': cfg.color } as React.CSSProperties}
+                onClick={() => setActiveTicker(cfg.ticker)}
+              >
+                {cfg.ticker}
+              </button>
+            ))}
+          </div>
 
           <div className="pi-divider" />
 
-          {/* Category tabs */}
-          {ALL_CATEGORIES.map((cat) => (
+          <div className="pi-filter-group">
+            <span className="pi-filter-group-label">Type</span>
+            {ALL_CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                className="pi-cat-tab"
+                data-active={activeCategory === cat}
+                onClick={() => setActiveCategory(cat)}
+              >
+                {cat}
+                {activeCategory === cat && cat !== "All" && (
+                  <span className="pi-filter-count">{visibleItems.length}</span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {(activeTicker !== "ALL" || activeCategory !== "All" || searchQuery) && (
             <button
-              key={cat}
-              className="pi-cat-tab"
-              data-active={activeCategory === cat}
-              onClick={() => setActiveCategory(cat)}
+              className="pi-filter-clear"
+              onClick={() => { setActiveTicker("ALL"); setActiveCategory("All"); setSearchQuery(""); }}
             >
-              {cat}
+              Clear
             </button>
-          ))}
+          )}
         </div>
       </div>
 
       {/* ── Feed ── */}
       <div className="pi-feed">
+        {/* Result bar */}
+        {!loading && (
+          <div className="pi-result-bar">
+            <span className="pi-result-count">
+              <strong>{visibleItems.length}</strong> of {allItems.length} releases
+              {activeTicker !== "ALL" && <> &middot; {activeTicker}</>}
+              {activeCategory !== "All" && <> &middot; {activeCategory}</>}
+              {searchQuery && <> &middot; &ldquo;{searchQuery}&rdquo;</>}
+            </span>
+          </div>
+        )}
+
         {/* Loading skeletons */}
         {loading && Array.from({ length: 10 }).map((_, i) => (
           <div key={i} className="pi-skeleton" style={{ opacity: 1 - i * 0.08 }} />
