@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 
-// Try multiple QuoteMedia proxy endpoints — the original accesswire.com one
-// may have moved when IssuerDirect rebranded to ACCESS Newswire
 const QM_ENDPOINTS = [
   "https://feeds.issuerdirect.com/qm/data/getHeadlines.json",
   "https://www.accessnewswire.com/qm/data/getHeadlines.json",
@@ -19,50 +17,6 @@ const QM_PARAMS = new URLSearchParams({
   start: "1000-01-01",
   end: "3000-01-01",
 }).toString();
-
-interface NewsItem {
-  newsid: string;
-  headline: string;
-  datetime: string;
-  source: string;
-  src: string;
-  qmsummary?: string;
-  permalink?: string;
-  [key: string]: unknown;
-}
-
-// Normalize QuoteMedia response into a flat newsArray
-function extractNewsItems(data: Record<string, unknown>): NewsItem[] {
-  // QuoteMedia may nest news as object or array
-  const results = data?.results as Record<string, unknown> | undefined;
-  const news = results?.news;
-
-  let items: NewsItem[] = [];
-
-  if (Array.isArray(news)) {
-    // news is [{newsitem: [...]}, ...]
-    items = news.flatMap((n: Record<string, unknown>) => {
-      const ni = n.newsitem;
-      return Array.isArray(ni) ? ni : ni ? [ni] : [];
-    }) as NewsItem[];
-  } else if (news && typeof news === "object") {
-    // news is {newsitem: [...]}
-    const ni = (news as Record<string, unknown>).newsitem;
-    items = (Array.isArray(ni) ? ni : ni ? [ni] : []) as NewsItem[];
-  }
-
-  // Normalize field names for the frontend
-  return items.map((item) => ({
-    ...item,
-    newsid: item.newsid || "",
-    headline: item.headline || "",
-    publishdate: item.datetime || "",
-    date: item.datetime || "",
-    source: item.source || "",
-    src: item.src || item.source || "",
-    summary: item.qmsummary || "",
-  }));
-}
 
 export async function GET() {
   const errors: string[] = [];
@@ -85,25 +39,29 @@ export async function GET() {
       }
 
       const data = await response.json();
-      const newsArray = extractNewsItems(data as Record<string, unknown>);
+
+      // Check if the response has news items
+      const news = data?.results?.news;
+      const hasItems = Array.isArray(news)
+        ? news.some(
+            (n: Record<string, unknown>) =>
+              Array.isArray(n.newsitem) && n.newsitem.length > 0
+          )
+        : false;
 
       console.log(
-        `[asts-news] ${baseUrl} returned ${newsArray.length} items`
+        `[asts-news] ${baseUrl}: hasItems=${hasItems}, news length=${Array.isArray(news) ? news.length : "not array"}`
       );
 
-      if (newsArray.length > 0) {
-        return NextResponse.json(
-          { data: { newsArray } },
-          {
-            headers: {
-              "Cache-Control": "s-maxage=300, stale-while-revalidate",
-            },
-          }
-        );
+      if (hasItems) {
+        return NextResponse.json(data, {
+          headers: {
+            "Cache-Control": "s-maxage=300, stale-while-revalidate",
+          },
+        });
       }
 
-      // Got a response but no items — try next endpoint
-      errors.push(`${baseUrl}: 0 items in response`);
+      errors.push(`${baseUrl}: 0 items`);
     } catch (err) {
       errors.push(
         `${baseUrl}: ${err instanceof Error ? err.message : "unknown error"}`
@@ -113,11 +71,7 @@ export async function GET() {
 
   console.error("[asts-news] all endpoints failed:", errors);
   return NextResponse.json(
-    {
-      error: "All upstream endpoints returned no data",
-      details: errors,
-      data: { newsArray: [] },
-    },
+    { error: "All upstream endpoints returned no data", details: errors },
     { status: 502 }
   );
 }

@@ -7,8 +7,8 @@ const CARD_BG = "#111113";
 const BORDER = "rgba(201,169,110,0.15)";
 // Only Business Wire releases are ASTS official press releases
 const isASTSRelease = (item) => {
-  const src = (item.src || item.source || "").toLowerCase();
-  return src === "bwi" || src.includes("business wire");
+  const src = (item.source || "").toLowerCase();
+  return src.includes("business wire");
 };
 const CATEGORIES = {
   All: () => true,
@@ -48,9 +48,9 @@ export default function ASTSNewsFeed() {
       const res = await fetch("/api/asts-news");
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
-      const raw = json?.data?.newsArray || json?.newsArray || json?.data || [];
+      const raw = (json?.results?.news?.[0]?.newsitem) || [];
       const filtered = raw.filter(isASTSRelease).sort(
-        (a, b) => new Date(b.publishdate || b.date) - new Date(a.publishdate || a.date)
+        (a, b) => new Date(b.datetime) - new Date(a.datetime)
       );
       cacheRef.current = { data: filtered, ts: Date.now() };
       setItems(filtered);
@@ -72,9 +72,9 @@ export default function ASTSNewsFeed() {
     const h = item.headline || item.title || "";
     return CATEGORIES[activeTab](h);
   });
-  const thisYear = items.filter((i) => isThisYear(i.publishdate || i.date)).length;
-  const thisMonth = items.filter((i) => isThisMonth(i.publishdate || i.date)).length;
-  const latest = items[0] ? formatDate(items[0].publishdate || items[0].date) : "—";
+  const thisYear = items.filter((i) => isThisYear(i.datetime)).length;
+  const thisMonth = items.filter((i) => isThisMonth(i.datetime)).length;
+  const latest = items[0] ? formatDate(items[0].datetime) : "—";
   const styles = {
     wrap: {
       fontFamily: "'DM Sans', sans-serif",
@@ -280,7 +280,7 @@ export default function ASTSNewsFeed() {
           const expanded = expandedId === id;
           const headline = item.headline || item.title || "";
           const summary = item.summary || item.description || "";
-          const date = formatDate(item.publishdate || item.date);
+          const date = formatDate(item.datetime);
           const link = `https://feeds.issuerdirect.com/news-release.html?newsid=${id}&symbol=ASTS`;
           return (
             <div
