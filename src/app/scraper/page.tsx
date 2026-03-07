@@ -17,6 +17,7 @@ interface ScrapeResult {
   per_page: number;
   count: number;
   releases: Release[];
+  _debug?: Record<string, unknown>;
 }
 
 export default function ScraperPage() {
@@ -33,7 +34,7 @@ export default function ScraperPage() {
       const res = await fetch('/api/issuer-direct?per_page=200');
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || `HTTP ${res.status}`);
+        throw new Error(JSON.stringify(body) || `HTTP ${res.status}`);
       }
       const data: ScrapeResult = await res.json();
       setResult(data);
@@ -127,6 +128,13 @@ export default function ScraperPage() {
 
             {result.releases.length === 0 && (
               <p className="text-[13px] text-white/30 text-center py-12">No press releases found.</p>
+            )}
+
+            {/* Debug info */}
+            {result._debug && (
+              <pre className="mt-8 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] text-[11px] font-mono text-white/40 overflow-x-auto whitespace-pre-wrap">
+                {JSON.stringify(result._debug, null, 2)}
+              </pre>
             )}
           </div>
         )}
