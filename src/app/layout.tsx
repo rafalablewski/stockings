@@ -79,7 +79,11 @@ const mobileNavItems = [
   },
   {
     label: 'Scraper',
-    children: [{ label: 'Press Releases', href: '/scraper' }],
+    children: [
+      { label: 'Press Intelligence', href: '/press-intelligence' },
+      { label: 'ASTS Feed', href: '/scraper' },
+      { label: 'BMNR Feed', href: '/scraper-bmnr' },
+    ],
   },
   {
     label: 'Audit',
@@ -193,13 +197,43 @@ function Navigation() {
               </div>
             </div>
 
-            {/* Scraper — direct link */}
-            <Link
-              href="/scraper"
-              className="text-[13px] text-white/60 hover:text-white transition-colors"
-            >
-              Scraper
-            </Link>
+            {/* Scraper dropdown */}
+            <div className="relative group/scraper">
+              <span className="text-[13px] text-white/60 group-hover/scraper:text-white transition-colors cursor-default select-none">
+                Scraper
+              </span>
+              <div className="absolute top-full right-0 pt-3 hidden group-hover/scraper:block">
+                <div className="bg-black/95 backdrop-blur-xl border border-white/[0.08] rounded-xl py-2 min-w-[220px] shadow-2xl">
+                  <Link
+                    href="/press-intelligence"
+                    className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-[12px] text-white/80">
+                      Press Intelligence
+                    </span>
+                    <span className="text-[9px] font-mono text-white/25 uppercase">
+                      live
+                    </span>
+                  </Link>
+                  <Link
+                    href="/scraper"
+                    className="block px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-[12px] text-white/80">
+                      ASTS Feed
+                    </span>
+                  </Link>
+                  <Link
+                    href="/scraper-bmnr"
+                    className="block px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-[12px] text-white/80">
+                      BMNR Feed
+                    </span>
+                  </Link>
+                </div>
+              </div>
+            </div>
 
             {/* Audit dropdown */}
             <div className="relative group/audit">
