@@ -78,6 +78,10 @@ const mobileNavItems = [
     children: stockList.map((s) => ({ label: `${s.ticker} — ${s.name}`, href: `/stocks/${s.ticker}` })),
   },
   {
+    label: 'Scraper',
+    children: [{ label: 'Press Releases', href: '/scraper' }],
+  },
+  {
     label: 'Audit',
     children: [
       ...audits.map((a) => ({ label: a.label, href: `/audit/${a.slug}` })),
@@ -188,6 +192,14 @@ function Navigation() {
                 </div>
               </div>
             </div>
+
+            {/* Scraper — direct link */}
+            <Link
+              href="/scraper"
+              className="text-[13px] text-white/60 hover:text-white transition-colors"
+            >
+              Scraper
+            </Link>
 
             {/* Audit dropdown */}
             <div className="relative group/audit">
