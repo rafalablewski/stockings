@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useCallback, useRef } from "react";
 
 const HEADLINES_URL = "/api/asts-news";
