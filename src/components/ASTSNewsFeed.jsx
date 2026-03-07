@@ -113,8 +113,15 @@ export default function ASTSNewsFeed() {
       const res = await fetch(HEADLINES_URL);
       if (!res.ok) throw new Error("Failed to fetch headlines");
       const data = await res.json();
+      if (data?.error) throw new Error(data.error);
 
-      const raw = data?.results?.news?.flatMap((n) => n.newsitem) || [];
+      // QuoteMedia may return news as an object { newsitem: [...] } or an array [{ newsitem: [...] }]
+      const news = data?.results?.news;
+      const raw = Array.isArray(news)
+        ? news.flatMap((n) => (Array.isArray(n.newsitem) ? n.newsitem : n.newsitem ? [n.newsitem] : []))
+        : news?.newsitem
+          ? (Array.isArray(news.newsitem) ? news.newsitem : [news.newsitem])
+          : [];
       setLoading(false);
 
       // Step 2: verify each story body — same logic as original issuerdirect JS
@@ -393,7 +400,7 @@ export default function ASTSNewsFeed() {
           <div style={{ padding: "20px 24px", background: "rgba(239,68,68,0.05)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "10px", color: "#fca5a5", fontSize: "13px" }}>
             ⚠ {error}
             <div style={{ marginTop: "8px", fontSize: "12px", color: "rgba(252,165,165,0.6)" }}>
-              Make sure <code>/api/asts-news.js</code> and <code>/api/asts-story.js</code> are deployed on Vercel.
+              Make sure the <code>/api/asts-news</code> and <code>/api/asts-story</code> API routes are deployed.
             </div>
           </div>
         )}
