@@ -27,10 +27,10 @@ export default async function handler(req, res) {
       signal: AbortSignal.timeout(8000),
     });
     if (!response.ok) throw new Error(`Upstream: ${response.status}`);
-    const text = await response.text();
+    const str = await response.json(); // unwraps the outer quoted string
     res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate");
     res.setHeader("Content-Type", "application/json");
-    return res.status(200).send(text);
+    return res.status(200).send(str);
   } catch (err) {
     return res.status(502).json({ error: err.message });
   }
