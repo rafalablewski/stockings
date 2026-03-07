@@ -83,6 +83,12 @@ const mobileNavItems = [
       ...audits.map((a) => ({ label: a.label, href: `/audit/${a.slug}` })),
     ],
   },
+  {
+    label: 'Tools',
+    children: [
+      { label: 'Scraper', href: '/scraper' },
+    ],
+  },
 ];
 
 function Navigation() {
@@ -188,6 +194,14 @@ function Navigation() {
                 </div>
               </div>
             </div>
+
+            {/* Scraper link */}
+            <Link
+              href="/scraper"
+              className="text-[13px] text-white/60 hover:text-white transition-colors"
+            >
+              Scraper
+            </Link>
 
             {/* Audit dropdown */}
             <div className="relative group/audit">
