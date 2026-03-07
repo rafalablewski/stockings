@@ -1,15 +1,6 @@
-// /api/asts-news.js
-// Place this file at: your-project/api/asts-news.js
+import { NextResponse } from "next/server";
 
-export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
+export async function GET() {
   try {
     const url =
       "https://www.accesswire.com/qm/data/getHeadlines.json?" +
@@ -37,9 +28,15 @@ export default async function handler(req, res) {
     }
 
     const data = await response.json();
-    res.setHeader("Cache-Control", "s-maxage=300, stale-while-revalidate"); // 5 min cache
-    return res.status(200).json(data);
+    return NextResponse.json(data, {
+      headers: {
+        "Cache-Control": "s-maxage=300, stale-while-revalidate",
+      },
+    });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Unknown error" },
+      { status: 500 }
+    );
   }
 }
