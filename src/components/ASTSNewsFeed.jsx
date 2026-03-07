@@ -1,494 +1,321 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
-
-const HEADLINES_URL = "/api/asts-news";
-const STORY_URL = "/api/asts-story";
-const CONCURRENCY = 10;
-
-// Same logic as the original issuerdirect news.js
-const storyIsASTSOwnedPR = (storyText) => {
-  const clean = storyText
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&nbsp;/gi, " ")
-    .replace(/\s+/g, " ")
-    .toLowerCase();
-  return (
-    clean.includes("investors@ast-science.com") ||
-    clean.includes("source ast spacemobile")
-  );
+import { useState, useEffect, useRef, useCallback } from "react";
+const GOLD = "#c9a96e";
+const DARK = "#0a0a0b";
+const CARD_BG = "#111113";
+const BORDER = "rgba(201,169,110,0.15)";
+// Only Business Wire releases are ASTS official press releases
+const isASTSRelease = (item) => {
+  const src = (item.src || item.source || "").toLowerCase();
+  return src === "bwi" || src.includes("business wire");
 };
-
-// Concurrency helper — mirrors mapWithConcurrency from original JS
-const mapWithConcurrency = (items, limit, mapper) => {
-  if (items.length === 0) return Promise.resolve([]);
-  let i = 0;
-  const results = new Array(items.length);
-  return new Promise((resolve) => {
-    let active = 0;
-    function next() {
-      while (active < limit && i < items.length) {
-        const idx = i++;
-        active++;
-        Promise.resolve(mapper(items[idx], idx))
-          .then((val) => { results[idx] = val; })
-          .catch(() => { results[idx] = true; }) // fail open: keep
-          .finally(() => {
-            active--;
-            if (i >= items.length && active === 0) resolve(results);
-            else next();
-          });
-      }
-    }
-    next();
-  });
+const CATEGORIES = {
+  All: () => true,
+  Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d/i.test(h),
+  Launches: (h) => /launch|bluebird|satellite|orbit|unfold/i.test(h),
+  Partnerships: (h) => /partner|agreement|definitive|carrier|vodafone|verizon|at&t|telus|vi |stc/i.test(h),
+  "Capital Markets": (h) => /notes|offering|convert|shares|capital|note repurchase|\$\d/i.test(h),
 };
-
-const formatDate = (dateStr) => {
-  const d = new Date(dateStr);
+const formatDate = (str) => {
+  if (!str) return "";
+  const d = new Date(str);
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 };
-
-const formatTime = (dateStr) => {
-  const d = new Date(dateStr);
-  return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
+const isThisYear = (str) => new Date(str).getFullYear() === new Date().getFullYear();
+const isThisMonth = (str) => {
+  const d = new Date(str);
+  const n = new Date();
+  return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth();
 };
-
-const getSourceLabel = (source) => {
-  if (source?.includes("Business Wire")) return "BW";
-  if (source?.includes("PR Newswire")) return "PRN";
-  if (source?.includes("GlobeNewswire")) return "GNW";
-  if (source?.includes("ACCESS")) return "ACW";
-  return "PR";
-};
-
-const truncate = (str, n) =>
-  str && str.length > n ? str.slice(0, n).trimEnd() + "…" : str;
-
-const stripHtml = (html) =>
-  html ? html.replace(/<[^>]*>/g, "").replace(/&[^;]+;/g, " ").replace(/\s+/g, " ").trim() : "";
-
 export default function ASTSNewsFeed() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [verifying, setVerifying] = useState(false);
-  const [verifyProgress, setVerifyProgress] = useState(0);
-  const [verifyTotal, setVerifyTotal] = useState(0);
   const [error, setError] = useState(null);
-  const [expanded, setExpanded] = useState(null);
-  const [filter, setFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("All");
+  const [expandedId, setExpandedId] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
-
-  // In-memory story cache (mirrors window.__astsStoryCache)
-  const storyCache = useRef({});
-  const TTL_MS = 5 * 60 * 1000;
-
-  const fetchStoryAndCheck = useCallback(async (newsid) => {
-    const now = Date.now();
-    const cached = storyCache.current[newsid];
-    if (cached && now - cached.ts < TTL_MS) return cached.keep;
-
-    try {
-      const res = await fetch(`${STORY_URL}?storyId=${newsid}`);
-      if (!res.ok) throw new Error("story fetch failed");
-      const data = await res.json();
-      const qmtext = data?.qmcistory?.qmnews?.qmstory?.qmtext ?? "";
-      const keep = storyIsASTSOwnedPR(qmtext);
-      storyCache.current[newsid] = { keep, ts: now };
-      return keep;
-    } catch {
-      storyCache.current[newsid] = { keep: true, ts: now };
-      return true; // fail open
-    }
-  }, []);
-
-  const fetchNews = useCallback(async () => {
-    setLoading(true);
-    setVerifying(false);
-    setVerifyProgress(0);
-    setItems([]);
-    setError(null);
-
-    try {
-      // Step 1: fetch headlines
-      const res = await fetch(HEADLINES_URL);
-      if (!res.ok) throw new Error("Failed to fetch headlines");
-      const data = await res.json();
-      if (data?.error) throw new Error(data.error);
-
-      // QuoteMedia may return news as an object { newsitem: [...] } or an array [{ newsitem: [...] }]
-      const news = data?.results?.news;
-      const raw = Array.isArray(news)
-        ? news.flatMap((n) => (Array.isArray(n.newsitem) ? n.newsitem : n.newsitem ? [n.newsitem] : []))
-        : news?.newsitem
-          ? (Array.isArray(news.newsitem) ? news.newsitem : [news.newsitem])
-          : [];
+  const [refreshing, setRefreshing] = useState(false);
+  const cacheRef = useRef({ data: null, ts: 0 });
+  const TTL = 5 * 60 * 1000;
+  const load = useCallback(async (force = false) => {
+    if (!force && cacheRef.current.data && Date.now() - cacheRef.current.ts < TTL) {
+      setItems(cacheRef.current.data);
       setLoading(false);
-
-      // Step 2: verify each story body — same logic as original issuerdirect JS
-      setVerifying(true);
-      setVerifyTotal(raw.length);
-      let done = 0;
-
-      const keepFlags = await mapWithConcurrency(raw, CONCURRENCY, async (item) => {
-        const keep = await fetchStoryAndCheck(item.newsid);
-        done++;
-        setVerifyProgress(done);
-        return keep;
-      });
-
-      const filtered = raw.filter((_, i) => keepFlags[i]);
+      return;
+    }
+    try {
+      const res = await fetch("/api/asts-news");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      const raw = json?.data?.newsArray || json?.newsArray || json?.data || [];
+      const filtered = raw.filter(isASTSRelease).sort(
+        (a, b) => new Date(b.publishdate || b.date) - new Date(a.publishdate || a.date)
+      );
+      cacheRef.current = { data: filtered, ts: Date.now() };
       setItems(filtered);
       setLastUpdated(new Date());
+      setError(null);
     } catch (e) {
-      setError(e.message || "Unable to load feed.");
+      setError(e.message);
     } finally {
       setLoading(false);
-      setVerifying(false);
+      setRefreshing(false);
     }
-  }, [fetchStoryAndCheck]);
-
-  useEffect(() => { fetchNews(); }, [fetchNews]);
-
-  const categories = {
-    all: items,
-    earnings: items.filter(i => /(earnings|results|revenue|quarter|financial)/i.test(i.headline)),
-    launches: items.filter(i => /(launch|bluebird|satellite|orbital)/i.test(i.headline)),
-    partnerships: items.filter(i => /(partner|agreement|contract|collaboration|deal)/i.test(i.headline)),
-    capital: items.filter(i => /(offering|notes|convertible|repurchase|pricing)/i.test(i.headline)),
+  }, []);
+  useEffect(() => { load(); }, [load]);
+  const handleRefresh = () => {
+    setRefreshing(true);
+    load(true);
   };
-
-  const displayed = categories[filter] || items;
-  const isWorking = loading || verifying;
-
-  return (
-    <div style={{
+  const visible = items.filter((item) => {
+    const h = item.headline || item.title || "";
+    return CATEGORIES[activeTab](h);
+  });
+  const thisYear = items.filter((i) => isThisYear(i.publishdate || i.date)).length;
+  const thisMonth = items.filter((i) => isThisMonth(i.publishdate || i.date)).length;
+  const latest = items[0] ? formatDate(items[0].publishdate || items[0].date) : "—";
+  const styles = {
+    wrap: {
+      fontFamily: "'DM Sans', sans-serif",
+      background: DARK,
       minHeight: "100vh",
-      background: "#0a0a0b",
-      fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
       color: "#e8e0d4",
-    }}>
+      padding: "0 0 60px",
+    },
+    header: {
+      background: "linear-gradient(180deg, #0d0d0f 0%, rgba(13,13,15,0) 100%)",
+      borderBottom: `1px solid ${BORDER}`,
+      padding: "24px 28px 0",
+      position: "sticky",
+      top: 0,
+      zIndex: 10,
+      backdropFilter: "blur(12px)",
+    },
+    topRow: {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 16,
+    },
+    titleGroup: { display: "flex", alignItems: "center", gap: 10 },
+    pulse: {
+      width: 8,
+      height: 8,
+      borderRadius: "50%",
+      background: "#4ade80",
+      boxShadow: "0 0 0 0 rgba(74,222,128,0.4)",
+      animation: "pulse 2s infinite",
+    },
+    title: {
+      fontFamily: "'DM Serif Display', serif",
+      fontSize: 20,
+      fontWeight: 400,
+      color: "#f5f0e8",
+      letterSpacing: "0.01em",
+    },
+    ticker: {
+      fontSize: 11,
+      fontWeight: 600,
+      letterSpacing: "0.12em",
+      color: GOLD,
+      background: "rgba(201,169,110,0.1)",
+      border: `1px solid ${BORDER}`,
+      borderRadius: 4,
+      padding: "3px 7px",
+    },
+    refreshBtn: {
+      background: "transparent",
+      border: `1px solid ${BORDER}`,
+      borderRadius: 6,
+      color: "#9a9080",
+      cursor: "pointer",
+      padding: "6px 12px",
+      fontSize: 12,
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      transition: "all 0.2s",
+    },
+    statsRow: {
+      display: "flex",
+      gap: 24,
+      marginBottom: 16,
+      flexWrap: "wrap",
+    },
+    stat: { display: "flex", flexDirection: "column", gap: 1 },
+    statVal: { fontSize: 18, fontWeight: 600, color: GOLD, fontVariantNumeric: "tabular-nums" },
+    statLabel: { fontSize: 10, letterSpacing: "0.1em", color: "#5a5248", textTransform: "uppercase" },
+    tabs: { display: "flex", gap: 2, borderTop: `1px solid ${BORDER}`, paddingTop: 0 },
+    tab: (active) => ({
+      padding: "10px 16px",
+      fontSize: 12,
+      fontWeight: active ? 600 : 400,
+      color: active ? GOLD : "#5a5248",
+      background: "transparent",
+      border: "none",
+      borderBottom: active ? `2px solid ${GOLD}` : "2px solid transparent",
+      cursor: "pointer",
+      transition: "all 0.2s",
+      letterSpacing: "0.05em",
+      whiteSpace: "nowrap",
+    }),
+    list: { padding: "16px 16px 0" },
+    card: (expanded) => ({
+      background: CARD_BG,
+      border: `1px solid ${expanded ? "rgba(201,169,110,0.3)" : BORDER}`,
+      borderRadius: 8,
+      marginBottom: 8,
+      overflow: "hidden",
+      transition: "border-color 0.2s",
+      cursor: "pointer",
+    }),
+    cardInner: { padding: "14px 16px" },
+    cardTop: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 },
+    headline: {
+      fontFamily: "'DM Serif Display', serif",
+      fontSize: 14,
+      fontWeight: 400,
+      color: "#f0ebe3",
+      lineHeight: 1.4,
+      flex: 1,
+    },
+    date: { fontSize: 11, color: "#5a5248", whiteSpace: "nowrap", marginTop: 2 },
+    summary: {
+      fontSize: 12,
+      color: "#7a7068",
+      lineHeight: 1.6,
+      marginTop: 8,
+      borderTop: `1px solid ${BORDER}`,
+      paddingTop: 8,
+    },
+    linkRow: { display: "flex", gap: 12, marginTop: 10 },
+    link: {
+      fontSize: 11,
+      color: GOLD,
+      textDecoration: "none",
+      letterSpacing: "0.05em",
+      display: "flex",
+      alignItems: "center",
+      gap: 4,
+    },
+    empty: { textAlign: "center", color: "#3a3530", padding: "60px 0", fontSize: 13 },
+    ts: { fontSize: 10, color: "#3a3530", textAlign: "center", marginTop: 16 },
+    skeleton: {
+      background: "linear-gradient(90deg, #111113 25%, #1a1a1d 50%, #111113 75%)",
+      backgroundSize: "200% 100%",
+      animation: "shimmer 1.5s infinite",
+      borderRadius: 6,
+      height: 60,
+      marginBottom: 8,
+    },
+  };
+  return (
+    <div style={styles.wrap}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        .news-card {
-          border: 1px solid rgba(255,255,255,0.06);
-          border-radius: 12px;
-          background: rgba(255,255,255,0.02);
-          padding: 20px 24px;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          position: relative;
-          overflow: hidden;
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap');
+        @keyframes pulse {
+          0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,0.4)}
+          50%{box-shadow:0 0 0 6px rgba(74,222,128,0)}
         }
-        .news-card::before {
-          content: '';
-          position: absolute;
-          left: 0; top: 0; bottom: 0;
-          width: 3px;
-          background: linear-gradient(180deg, #c9a96e, #8b6914);
-          opacity: 0;
-          transition: opacity 0.2s;
-        }
-        .news-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(201,169,110,0.2); transform: translateY(-1px); }
-        .news-card:hover::before { opacity: 1; }
-        .news-card.active { background: rgba(201,169,110,0.05); border-color: rgba(201,169,110,0.25); }
-        .news-card.active::before { opacity: 1; }
-
-        .filter-btn {
-          padding: 7px 16px;
-          border-radius: 20px;
-          border: 1px solid rgba(255,255,255,0.1);
-          background: transparent;
-          color: rgba(232,224,212,0.5);
-          font-family: 'DM Sans', sans-serif;
-          font-size: 12px;
-          font-weight: 500;
-          letter-spacing: 0.04em;
-          cursor: pointer;
-          transition: all 0.15s;
-          text-transform: uppercase;
-        }
-        .filter-btn:hover { border-color: rgba(201,169,110,0.4); color: #c9a96e; }
-        .filter-btn.active { background: rgba(201,169,110,0.12); border-color: rgba(201,169,110,0.5); color: #c9a96e; }
-
-        .source-badge {
-          display: inline-block;
-          padding: 2px 7px;
-          border-radius: 4px;
-          background: rgba(255,255,255,0.06);
-          font-size: 10px;
-          font-weight: 600;
-          letter-spacing: 0.08em;
-          color: rgba(232,224,212,0.4);
-        }
-
-        .refresh-btn {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 8px 16px;
-          border-radius: 8px;
-          border: 1px solid rgba(201,169,110,0.3);
-          background: rgba(201,169,110,0.08);
-          color: #c9a96e;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 12px;
-          font-weight: 500;
-          cursor: pointer;
-          transition: all 0.15s;
-        }
-        .refresh-btn:hover { background: rgba(201,169,110,0.15); border-color: rgba(201,169,110,0.5); }
-        .refresh-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        .skeleton {
-          background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.07) 50%, rgba(255,255,255,0.03) 75%);
-          background-size: 200% 100%;
-          animation: shimmer 1.5s infinite;
-          border-radius: 6px;
-        }
-        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-
-        .open-link {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          padding: 8px 14px;
-          border-radius: 7px;
-          background: rgba(201,169,110,0.1);
-          border: 1px solid rgba(201,169,110,0.3);
-          color: #c9a96e;
-          font-size: 12px;
-          font-weight: 500;
-          text-decoration: none;
-          transition: all 0.15s;
-        }
-        .open-link:hover { background: rgba(201,169,110,0.2); border-color: rgba(201,169,110,0.6); }
-
-        .ticker-bar {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 4px 10px;
-          background: rgba(201,169,110,0.08);
-          border: 1px solid rgba(201,169,110,0.15);
-          border-radius: 6px;
-          font-size: 12px;
-          font-weight: 600;
-          color: #c9a96e;
-          letter-spacing: 0.05em;
-        }
-        .pulse-dot {
-          width: 6px; height: 6px;
-          border-radius: 50%;
-          background: #4ade80;
-          animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
-
-        .progress-bar-track {
-          height: 2px;
-          background: rgba(255,255,255,0.06);
-          border-radius: 2px;
-          overflow: hidden;
-          margin-bottom: 28px;
-        }
-        .progress-bar-fill {
-          height: 100%;
-          background: linear-gradient(90deg, #8b6914, #c9a96e);
-          border-radius: 2px;
-          transition: width 0.15s ease;
-        }
-
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(201,169,110,0.2); border-radius: 2px; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+        @keyframes shimmer { to{background-position:-200% 0} }
+        button:hover { opacity: 0.8; }
       `}</style>
-
-      {/* Header */}
-      <div style={{
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
-        padding: "20px 32px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        background: "rgba(255,255,255,0.01)",
-        backdropFilter: "blur(10px)",
-        position: "sticky",
-        top: 0,
-        zIndex: 10,
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <div>
-            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: "20px", color: "#e8e0d4", letterSpacing: "-0.02em" }}>
-              ABISON <span style={{ color: "#c9a96e" }}>Intelligence</span>
-            </div>
-            <div style={{ fontSize: "11px", color: "rgba(232,224,212,0.3)", letterSpacing: "0.06em", marginTop: "1px" }}>
-              PRESS RELEASE MONITOR
-            </div>
+      <div style={styles.header}>
+        <div style={styles.topRow}>
+          <div style={styles.titleGroup}>
+            <div style={styles.pulse} />
+            <span style={styles.title}>Press Monitor</span>
+            <span style={styles.ticker}>ASTS</span>
           </div>
-          <div style={{ width: "1px", height: "32px", background: "rgba(255,255,255,0.08)" }} />
-          <div className="ticker-bar">
-            <div className="pulse-dot" />
-            ASTS
-          </div>
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          {lastUpdated && !isWorking && (
-            <div style={{ fontSize: "11px", color: "rgba(232,224,212,0.3)" }}>
-              Updated {lastUpdated.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
-            </div>
-          )}
-          {verifying && (
-            <div style={{ fontSize: "11px", color: "rgba(201,169,110,0.6)" }}>
-              Verifying {verifyProgress} / {verifyTotal}
-            </div>
-          )}
-          <button className="refresh-btn" onClick={fetchNews} disabled={isWorking}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
-              style={{ animation: isWorking ? "spin 1s linear infinite" : "none" }}>
-              <path d="M23 4v6h-6M1 20v-6h6"/>
-              <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-            </svg>
-            {loading ? "Loading…" : verifying ? "Verifying…" : "Refresh"}
+          <button style={styles.refreshBtn} onClick={handleRefresh} disabled={refreshing}>
+            <span style={{ display: "inline-block", animation: refreshing ? "spin 0.8s linear infinite" : "none" }}>⟳</span>
+            Refresh
           </button>
         </div>
-      </div>
-
-      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "32px 24px" }}>
-
-        {/* Progress bar during verification */}
-        {verifying && verifyTotal > 0 && (
-          <div className="progress-bar-track">
-            <div className="progress-bar-fill" style={{ width: `${(verifyProgress / verifyTotal) * 100}%` }} />
-          </div>
-        )}
-
-        {/* Stats */}
-        {!isWorking && !error && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "12px", marginBottom: "28px" }}>
-            {[
-              { label: "Total Releases", value: items.length },
-              { label: "This Year", value: items.filter(i => new Date(i.datetime).getFullYear() === new Date().getFullYear()).length },
-              { label: "This Month", value: items.filter(i => { const d = new Date(i.datetime); const n = new Date(); return d.getMonth() === n.getMonth() && d.getFullYear() === n.getFullYear(); }).length },
-              { label: "Latest", value: items.length > 0 ? formatDate(items[0].datetime) : "—" },
-            ].map((stat, i) => (
-              <div key={i} style={{ padding: "16px 20px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: "10px" }}>
-                <div style={{ fontSize: "11px", color: "rgba(232,224,212,0.35)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "6px" }}>{stat.label}</div>
-                <div style={{ fontSize: "22px", fontWeight: "300", color: "#e8e0d4", fontFamily: "'DM Serif Display', serif" }}>{stat.value}</div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Filters */}
-        {!isWorking && !error && (
-          <div style={{ display: "flex", gap: "8px", marginBottom: "20px", flexWrap: "wrap" }}>
-            {Object.entries({ all: "All", earnings: "Earnings", launches: "Launches", partnerships: "Partnerships", capital: "Capital Markets" }).map(([key, label]) => (
-              <button key={key} className={`filter-btn ${filter === key ? "active" : ""}`} onClick={() => { setFilter(key); setExpanded(null); }}>
-                {label} <span style={{ marginLeft: "5px", opacity: 0.5 }}>{categories[key]?.length || 0}</span>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Error */}
-        {error && (
-          <div style={{ padding: "20px 24px", background: "rgba(239,68,68,0.05)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "10px", color: "#fca5a5", fontSize: "13px" }}>
-            ⚠ {error}
-            <div style={{ marginTop: "8px", fontSize: "12px", color: "rgba(252,165,165,0.6)" }}>
-              Make sure the <code>/api/asts-news</code> and <code>/api/asts-story</code> API routes are deployed.
+        {!loading && !error && (
+          <div style={styles.statsRow}>
+            <div style={styles.stat}>
+              <span style={styles.statVal}>{items.length}</span>
+              <span style={styles.statLabel}>Total Releases</span>
+            </div>
+            <div style={styles.stat}>
+              <span style={styles.statVal}>{thisYear}</span>
+              <span style={styles.statLabel}>This Year</span>
+            </div>
+            <div style={styles.stat}>
+              <span style={styles.statVal}>{thisMonth}</span>
+              <span style={styles.statLabel}>This Month</span>
+            </div>
+            <div style={styles.stat}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: GOLD, marginTop: 3 }}>{latest}</span>
+              <span style={styles.statLabel}>Latest</span>
             </div>
           </div>
         )}
-
-        {/* Skeleton */}
-        {loading && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {[...Array(6)].map((_, i) => (
-              <div key={i} style={{ border: "1px solid rgba(255,255,255,0.06)", borderRadius: "12px", padding: "20px 24px" }}>
-                <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
-                  <div className="skeleton" style={{ width: "36px", height: "16px" }} />
-                  <div className="skeleton" style={{ width: "80px", height: "16px" }} />
+        <div style={styles.tabs}>
+          {Object.keys(CATEGORIES).map((tab) => (
+            <button key={tab} style={styles.tab(activeTab === tab)} onClick={() => setActiveTab(tab)}>
+              {tab}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div style={styles.list}>
+        {loading && Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} style={{ ...styles.skeleton, opacity: 1 - i * 0.1 }} />
+        ))}
+        {error && (
+          <div style={styles.empty}>
+            <div style={{ color: "#c96e6e", marginBottom: 8 }}>⚠ {error}</div>
+            <div>Check your /api/asts-news proxy</div>
+          </div>
+        )}
+        {!loading && !error && visible.length === 0 && (
+          <div style={styles.empty}>No releases in this category</div>
+        )}
+        {!loading && !error && visible.map((item) => {
+          const id = item.newsid || item.id;
+          const expanded = expandedId === id;
+          const headline = item.headline || item.title || "";
+          const summary = item.summary || item.description || "";
+          const date = formatDate(item.publishdate || item.date);
+          const link = `https://feeds.issuerdirect.com/news-release.html?newsid=${id}&symbol=ASTS`;
+          return (
+            <div
+              key={id}
+              style={styles.card(expanded)}
+              onClick={() => setExpandedId(expanded ? null : id)}
+            >
+              <div style={styles.cardInner}>
+                <div style={styles.cardTop}>
+                  <div style={styles.headline}>{headline}</div>
+                  <div style={styles.date}>{date}</div>
                 </div>
-                <div className="skeleton" style={{ width: `${70 + i * 4}%`, height: "18px", marginBottom: "8px" }} />
-                <div className="skeleton" style={{ width: "90%", height: "14px" }} />
+                {expanded && (
+                  <>
+                    {summary && <div style={styles.summary}>{summary}</div>}
+                    <div style={styles.linkRow}>
+                      <a
+                        href={link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={styles.link}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        ↗ Full Release
+                      </a>
+                    </div>
+                  </>
+                )}
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* Verifying placeholder */}
-        {verifying && items.length === 0 && (
-          <div style={{ textAlign: "center", padding: "60px 0" }}>
-            <div style={{ fontSize: "13px", color: "rgba(232,224,212,0.4)", marginBottom: "8px" }}>Verifying story content…</div>
-            <div style={{ fontSize: "12px", color: "rgba(232,224,212,0.2)" }}>Checking {verifyTotal} articles against AST SpaceMobile source</div>
-          </div>
-        )}
-
-        {/* News list */}
-        {!loading && !error && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {!verifying && displayed.length === 0 && (
-              <div style={{ textAlign: "center", padding: "60px 0", color: "rgba(232,224,212,0.3)", fontSize: "14px" }}>No releases found.</div>
-            )}
-            {displayed.map((item) => {
-              const isOpen = expanded === item.newsid;
-              const articleUrl = `https://feeds.issuerdirect.com/news-release.html?newsid=${item.newsid}&symbol=ASTS`;
-              return (
-                <div key={item.newsid} className={`news-card ${isOpen ? "active" : ""}`} onClick={() => setExpanded(isOpen ? null : item.newsid)}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
-                    <span className="source-badge">{getSourceLabel(item.source)}</span>
-                    <span style={{ fontSize: "12px", color: "rgba(232,224,212,0.35)" }}>{formatDate(item.datetime)}</span>
-                    <span style={{ fontSize: "11px", color: "rgba(232,224,212,0.2)" }}>{formatTime(item.datetime)}</span>
-                    <div style={{ marginLeft: "auto" }}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(232,224,212,0.2)" strokeWidth="2"
-                        style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div style={{ fontSize: "15px", fontWeight: "500", color: isOpen ? "#e8e0d4" : "rgba(232,224,212,0.85)", lineHeight: "1.45", letterSpacing: "-0.01em" }}>
-                    {item.headline}
-                  </div>
-                  {isOpen && (
-                    <div style={{ marginTop: "16px", borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: "16px" }}>
-                      <p style={{ fontSize: "13px", color: "rgba(232,224,212,0.55)", lineHeight: "1.7", marginBottom: "16px" }}>
-                        {truncate(stripHtml(item.qmsummary), 400)}
-                      </p>
-                      <div style={{ display: "flex", gap: "10px", alignItems: "center" }} onClick={e => e.stopPropagation()}>
-                        <a href={articleUrl} target="_blank" rel="noopener noreferrer" className="open-link">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
-                            <polyline points="15 3 21 3 21 9"/>
-                            <line x1="10" y1="14" x2="21" y2="3"/>
-                          </svg>
-                          Open on issuerdirect
-                        </a>
-                        {item.permalink && (
-                          <a href={item.permalink} target="_blank" rel="noopener noreferrer" className="open-link"
-                            style={{ background: "transparent", borderColor: "rgba(255,255,255,0.1)", color: "rgba(232,224,212,0.4)" }}>
-                            Source ↗
-                          </a>
-                        )}
-                        <span style={{ marginLeft: "auto", fontSize: "11px", color: "rgba(232,224,212,0.2)" }}>ID: {item.newsid}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {!isWorking && !error && displayed.length > 0 && (
-          <div style={{ marginTop: "32px", paddingTop: "20px", borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between", fontSize: "11px", color: "rgba(232,224,212,0.2)" }}>
-            <span>Source: accesswire.com via QuoteMedia · feeds.issuerdirect.com</span>
-            <span>ABISON Investment Research</span>
+            </div>
+          );
+        })}
+        {lastUpdated && (
+          <div style={styles.ts}>
+            Updated {lastUpdated.toLocaleTimeString()}
           </div>
         )}
       </div>
