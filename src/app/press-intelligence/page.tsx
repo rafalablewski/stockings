@@ -16,6 +16,7 @@ interface FeedConfig {
   color: string;         // hex for pill & badge
   colorDim: string;      // hex at 15% for badge bg
   sourceFilter: (source: string) => boolean;
+  parseResponse?: (json: any) => any[];  // custom response parser (default: QuoteMedia nested)
   categories: Record<string, (headline: string) => boolean>;
 }
 
@@ -49,6 +50,22 @@ const FEED_CONFIGS: FeedConfig[] = [
       Ethereum: (h) => /eth|ethereum|staking|crypto|digital asset|blockchain|treasury/i.test(h),
       Corporate: (h) => /acqui|merger|board|director|appoint|officer|name|ceo|cfo/i.test(h),
       "Capital Markets": (h) => /notes|offering|convert|shares|capital|warrant|stock|note repurchase|\$\d/i.test(h),
+    },
+  },
+  {
+    ticker: "IRDM",
+    endpoint: "/api/irdm-news",
+    accent: "gold",
+    color: "#F59E0B",
+    colorDim: "rgba(245,158,11,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Satellite: (h) => /satellite|launch|orbit|iot|certus|l-band|constellation/i.test(h),
+      Partnerships: (h) => /partner|agreement|contract|award|select|government|dod/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|\$\d/i.test(h),
     },
   },
 ];
@@ -141,7 +158,8 @@ export default function PressIntelligencePage() {
           const res = await fetch(cfg.endpoint);
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
-          const raw: any[] = json?.results?.news?.[0]?.newsitem || [];
+          const parse = cfg.parseResponse || ((j: any) => j?.results?.news?.[0]?.newsitem || []);
+          const raw: any[] = parse(json);
           const filtered: NewsItem[] = raw
             .filter((item: any) => cfg.sourceFilter(item.source || ""))
             .sort((a: any, b: any) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime())
