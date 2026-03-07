@@ -336,7 +336,7 @@ async function fetchIssuerDirect(symbol: string): Promise<PressRelease[]> {
     symbol,
     news_template: `plain-${symbol.toLowerCase()}`,
     date_format: 'YYYY-MM-DD',
-    per_page: '50',
+    per_page: '200',
     page: '1',
     exclude_headlines: ISSUER_DIRECT_EXCLUDE,
   });
@@ -370,7 +370,7 @@ function parseIssuerDirectHTML(html: string, symbol: string): PressRelease[] {
 
   // Each press release link contains newsid= in the href
   $('a[href*="newsid="]').each((_, el) => {
-    if (releases.length >= 30) return false;
+    if (releases.length >= 200) return false;
 
     const href = $(el).attr('href') || '';
     const newsidMatch = href.match(/newsid=(\d+)/);
@@ -405,7 +405,7 @@ function parseIssuerDirectHTML(html: string, symbol: string): PressRelease[] {
   if (releases.length === 0) {
     const linkPattern = /href="([^"]*newsid=(\d+)[^"]*)"\s*[^>]*>([^<]+)<\/a>/gi;
     let m: RegExpExecArray | null;
-    while ((m = linkPattern.exec(html)) !== null && releases.length < 30) {
+    while ((m = linkPattern.exec(html)) !== null && releases.length < 200) {
       const [, href, newsid, rawTitle] = m;
       if (seen.has(newsid)) continue;
       seen.add(newsid);
@@ -459,6 +459,10 @@ export async function GET(
     );
   }
 
+  // Allow callers (e.g. /scraper page) to request more results via ?limit=N (default 50)
+  const limitParam = request.nextUrl.searchParams.get('limit');
+  const limit = Math.min(Math.max(Number(limitParam) || 50, 1), 500);
+
   try {
     // Fetch from all sources in parallel: IR, BW direct, Google News (company name + ticker), Issuer Direct
     const [wireResults, wireTickerResults, irResults, businessWireResults, issuerDirectResults] = await Promise.allSettled([
@@ -479,7 +483,7 @@ export async function GET(
     const unique = deduplicateReleases(merged);
     unique.sort((a, b) => b.date.localeCompare(a.date));
 
-    const releases = unique.slice(0, 15).map(a => ({
+    const releases = unique.slice(0, limit).map(a => ({
       date: a.date,
       headline: a.title,
       url: a.url,

@@ -28,7 +28,7 @@ export default function ScraperPage() {
     setResult(null);
 
     try {
-      const res = await fetch(`/api/press-releases/${encodeURIComponent(symbol)}`);
+      const res = await fetch(`/api/press-releases/${encodeURIComponent(symbol)}?limit=500`);
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error || `HTTP ${res.status}`);
