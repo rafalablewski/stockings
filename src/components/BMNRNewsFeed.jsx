@@ -5,10 +5,10 @@ const GOLD = "#c9a96e";
 const DARK = "#0a0a0b";
 const CARD_BG = "#111113";
 const BORDER = "rgba(201,169,110,0.15)";
-// AccessWire releases for BMNR
+// BMNR publishes via PR Newswire — accept all wire sources
 const isBMNRRelease = (item) => {
   const src = (item.source || "").toLowerCase();
-  return src.includes("accesswire") || src.includes("business wire") || src.includes("globe newswire");
+  return src.includes("pr newswire") || src.includes("prnewswire") || src.includes("business wire") || src.includes("accesswire") || src.includes("globe newswire");
 };
 const CATEGORIES = {
   All: () => true,
