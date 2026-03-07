@@ -3,21 +3,21 @@
 import { useState } from 'react';
 
 interface Release {
+  newsid: string;
+  title: string;
   date: string;
-  headline: string;
   url: string;
-  source: string;
 }
 
 interface ScrapeResult {
   symbol: string;
-  companyName: string;
+  page: number;
+  per_page: number;
+  count: number;
   releases: Release[];
-  fetchedAt: string;
 }
 
 export default function ScraperPage() {
-  const [symbol, setSymbol] = useState('ASTS');
   const [result, setResult] = useState<ScrapeResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -28,7 +28,7 @@ export default function ScraperPage() {
     setResult(null);
 
     try {
-      const res = await fetch(`/api/press-releases/${encodeURIComponent(symbol)}?limit=500`);
+      const res = await fetch('/api/issuer-direct?per_page=200');
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error || `HTTP ${res.status}`);
@@ -48,22 +48,18 @@ export default function ScraperPage() {
         <div className="mb-12">
           <h1 className="text-2xl font-semibold text-white mb-3">Press Release Scraper</h1>
           <p className="text-[13px] text-white/40">
-            Scrape press releases from Issuer Direct, Business Wire, IR pages, and Google News RSS.
+            Scrape ASTS press releases from Issuer Direct (feeds.issuerdirect.com).
           </p>
         </div>
 
         {/* Controls */}
         <div className="flex items-center gap-4 mb-10">
-          <input
-            type="text"
-            value={symbol}
-            onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-            placeholder="Ticker (e.g. ASTS)"
-            className="w-32 px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[13px] font-mono text-white placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-colors"
-          />
+          <span className="px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[13px] font-mono text-white/60">
+            ASTS
+          </span>
           <button
             onClick={handleScrape}
-            disabled={loading || !symbol.trim()}
+            disabled={loading}
             className="px-6 py-2.5 rounded-xl bg-white/[0.08] border border-white/[0.1] text-[13px] text-white/80 hover:bg-white/[0.12] hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
           >
             {loading ? 'Scraping…' : 'Scrape'}
@@ -82,16 +78,15 @@ export default function ScraperPage() {
           <div>
             <div className="flex items-center gap-4 mb-6">
               <span className="text-[13px] font-mono text-white/60">{result.symbol}</span>
-              <span className="text-[11px] text-white/30">{result.companyName}</span>
               <span className="text-[11px] text-white/20 ml-auto">
-                {result.releases.length} releases · fetched {new Date(result.fetchedAt).toLocaleTimeString()}
+                {result.count} releases · page {result.page}
               </span>
             </div>
 
             <div className="grid gap-3">
-              {result.releases.map((r, i) => (
+              {result.releases.map((r) => (
                 <a
-                  key={i}
+                  key={r.newsid}
                   href={r.url}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -100,13 +95,14 @@ export default function ScraperPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <p className="text-[13px] text-white/80 group-hover:text-white transition-colors leading-relaxed">
-                        {r.headline}
+                        {r.title}
                       </p>
                       <div className="flex items-center gap-3 mt-2">
                         {r.date && (
                           <span className="text-[11px] font-mono text-white/30">{r.date}</span>
                         )}
-                        <span className="text-[10px] uppercase tracking-wider text-white/20">{r.source}</span>
+                        <span className="text-[10px] uppercase tracking-wider text-white/20">Issuer Direct</span>
+                        <span className="text-[10px] font-mono text-white/15">#{r.newsid}</span>
                       </div>
                     </div>
                     <svg
