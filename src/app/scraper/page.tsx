@@ -7,6 +7,8 @@ interface Release {
   title: string;
   date: string;
   url: string;
+  summary?: string;
+  thumbnail?: string | null;
 }
 
 interface ScrapeResult {
@@ -48,7 +50,7 @@ export default function ScraperPage() {
         <div className="mb-12">
           <h1 className="text-2xl font-semibold text-white mb-3">Press Release Scraper</h1>
           <p className="text-[13px] text-white/40">
-            Scrape ASTS press releases from Issuer Direct (feeds.issuerdirect.com).
+            Fetch ASTS press releases via AccessWire headlines API.
           </p>
         </div>
 
@@ -97,11 +99,16 @@ export default function ScraperPage() {
                       <p className="text-[13px] text-white/80 group-hover:text-white transition-colors leading-relaxed">
                         {r.title}
                       </p>
+                      {r.summary && (
+                        <p className="text-[11px] text-white/30 mt-1.5 leading-relaxed line-clamp-2">
+                          {r.summary}
+                        </p>
+                      )}
                       <div className="flex items-center gap-3 mt-2">
                         {r.date && (
                           <span className="text-[11px] font-mono text-white/30">{r.date}</span>
                         )}
-                        <span className="text-[10px] uppercase tracking-wider text-white/20">Issuer Direct</span>
+                        <span className="text-[10px] uppercase tracking-wider text-white/20">AccessWire</span>
                         <span className="text-[10px] font-mono text-white/15">#{r.newsid}</span>
                       </div>
                     </div>
