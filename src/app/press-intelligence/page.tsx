@@ -106,6 +106,23 @@ const FEED_CONFIGS: FeedConfig[] = [
       "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
     },
   },
+  {
+    ticker: "T",
+    endpoint: "/api/att-news",
+    accent: "sky",
+    color: "#38BDF8",
+    colorDim: "rgba(56,189,248,0.15)",
+    sourceFilter: () => true,  // API pre-filters across 5 sources
+    headlineFilter: () => true,  // API pre-filters for AT&T
+    parseResponse: (json: any) => Array.isArray(json) ? json : [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      "5G & Network": (h) => /5g|network|spectrum|firstnet|fiber|wireless|broadband/i.test(h),
+      Partnerships: (h) => /partner|agreement|contract|award|select|deal|alliance/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+    },
+  },
 ];
 
 /* Build merged category set from all configs */
