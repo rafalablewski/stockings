@@ -16,6 +16,7 @@ interface FeedConfig {
   color: string;         // hex for pill & badge
   colorDim: string;      // hex at 15% for badge bg
   sourceFilter: (source: string) => boolean;
+  headlineFilter: (headline: string) => boolean;  // relevance gate — must mention company
   parseResponse?: (json: any) => any[];  // custom response parser (default: QuoteMedia nested)
   categories: Record<string, (headline: string) => boolean>;
 }
@@ -28,6 +29,7 @@ const FEED_CONFIGS: FeedConfig[] = [
     color: "#22D3EE",
     colorDim: "rgba(34,211,238,0.15)",
     sourceFilter: (src) => src.toLowerCase().includes("business wire"),
+    headlineFilter: (h) => /ast\s*spacemobile|asts/i.test(h),
     categories: {
       Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d/i.test(h),
       Launches: (h) => /launch|bluebird|satellite|orbit|unfold|spacex/i.test(h),
@@ -45,6 +47,7 @@ const FEED_CONFIGS: FeedConfig[] = [
       const s = src.toLowerCase();
       return s.includes("pr newswire") || s.includes("prnewswire") || s.includes("business wire") || s.includes("accesswire") || s.includes("globe newswire");
     },
+    headlineFilter: (h) => /bitmine|bmnr|bit\s*mine/i.test(h),
     categories: {
       Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
       Ethereum: (h) => /eth|ethereum|staking|crypto|digital asset|blockchain|treasury/i.test(h),
@@ -59,6 +62,7 @@ const FEED_CONFIGS: FeedConfig[] = [
     color: "#F59E0B",
     colorDim: "rgba(245,158,11,0.15)",
     sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for "iridium"
     parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
     categories: {
       Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
@@ -75,6 +79,7 @@ const FEED_CONFIGS: FeedConfig[] = [
     color: "#7EE787",
     colorDim: "rgba(126,231,135,0.15)",
     sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for "globalstar"
     parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
     categories: {
       Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
@@ -177,7 +182,7 @@ export default function PressIntelligencePage() {
           const parse = cfg.parseResponse || ((j: any) => j?.results?.news?.[0]?.newsitem || []);
           const raw: any[] = parse(json);
           const filtered: NewsItem[] = raw
-            .filter((item: any) => cfg.sourceFilter(item.source || ""))
+            .filter((item: any) => cfg.sourceFilter(item.source || "") && cfg.headlineFilter(item.headline || item.title || ""))
             .sort((a: any, b: any) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime())
             .map((item: any) => ({ ...item, _ticker: cfg.ticker, _config: cfg }));
           cacheRef.current[cfg.ticker] = { data: filtered, ts: Date.now() };
