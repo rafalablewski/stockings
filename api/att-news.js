@@ -5,7 +5,7 @@
 // Dropped: about.att.com (403 all methods), investors.att.com (JS-rendered Sitecore)
 // Cache: 5 min
 
-const VERSION = 'v5-clean-2026-03-08';
+const VERSION = 'v5b-anchor-driven-2026-03-08';
 
 let cache = null;
 let cacheTime = 0;
@@ -128,16 +128,20 @@ async function fetchCorpPR() {
       .filter(a => ARTICLE_DOMAINS.some(d => a.href.includes(d)) && a.text.length > 8);
 
     const items = [];
-    for (const h3 of h3s) {
-      const anchor = anchors.find(a => a.index > h3.end);
-      if (!anchor) continue;
-      const nextH3 = h3s.find(h => h.end > h3.end);
-      if (nextH3 && anchor.index > nextH3.end) continue;
+    // Anchor-driven: for each article link, find the nearest h3 date BEFORE it
+    for (const anchor of anchors) {
+      // Find the last h3 whose end position is before this anchor
+      let bestH3 = null;
+      for (const h3 of h3s) {
+        if (h3.end < anchor.index) bestH3 = h3;
+        else break;
+      }
+      if (!bestH3) continue;
 
       const href = anchor.href.startsWith('http')
         ? anchor.href
         : `https://www.corp.att.com${anchor.href}`;
-      const datetime = parseCorpDate(h3.text) || new Date().toISOString();
+      const datetime = parseCorpDate(bestH3.text) || '2019-01-01T00:00:00.000Z';
 
       items.push({
         newsid: `corp-${href.replace(/[^a-z0-9]/gi, '-').slice(-60)}`,
