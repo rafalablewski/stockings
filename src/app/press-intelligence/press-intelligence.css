@@ -1,0 +1,517 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRESS INTELLIGENCE — Bloomberg-style unified press feed
+   Uses design tokens from stock-model-styles.css (:root variables)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.pi-app {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ── Header ── */
+.pi-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(5,7,10,0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px 0;
+}
+
+.pi-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 16px;
+}
+
+.pi-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pi-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 0 0 rgba(126,231,135,0.4);
+  animation: pi-pulse 2s infinite;
+}
+
+@keyframes pi-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(126,231,135,0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(126,231,135,0); }
+}
+
+.pi-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.pi-subtitle {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-top: 1px;
+}
+
+/* ── Controls row ── */
+.pi-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pi-search {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 7px 12px 7px 32px;
+  width: 240px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.pi-search:focus {
+  border-color: var(--cyan);
+}
+
+.pi-search-wrap {
+  position: relative;
+}
+
+.pi-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  color: var(--text3);
+  pointer-events: none;
+}
+
+.pi-refresh-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text3);
+  padding: 7px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.pi-refresh-btn:hover {
+  border-color: var(--text3);
+  color: var(--text2);
+}
+
+/* ── KPI Strip ── */
+.pi-kpi-strip {
+  display: flex;
+  gap: 28px;
+  padding: 12px 0 10px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.pi-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pi-kpi-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.pi-kpi-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* ── Filter Panel ── */
+.pi-filter-panel {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-top: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pi-filter-panel::-webkit-scrollbar { display: none; }
+
+/* Stock filter group */
+.pi-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.pi-filter-group-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 10px 12px 10px 4px;
+  white-space: nowrap;
+  opacity: 0.5;
+}
+
+.pi-stock-pill {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.pi-stock-pill[data-active="true"] {
+  color: var(--pill-color, var(--text));
+  border-bottom-color: var(--pill-color, var(--text));
+}
+
+.pi-stock-pill:hover {
+  color: var(--text2);
+}
+
+.pi-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border);
+  flex-shrink: 0;
+  margin: 0 4px;
+}
+
+.pi-cat-tab {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.pi-cat-tab[data-active="true"] {
+  color: var(--text);
+  border-bottom-color: var(--text);
+}
+
+.pi-cat-tab:hover {
+  color: var(--text2);
+}
+
+/* Active filter count badge */
+.pi-filter-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--cyan);
+  background: rgba(34,211,238,0.1);
+  border-radius: 10px;
+  padding: 2px 7px;
+  margin-left: 4px;
+}
+
+/* Clear filter button */
+.pi-filter-clear {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.pi-filter-clear:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+/* ── Feed Container ── */
+.pi-feed {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 32px 80px;
+}
+
+/* ── Result count bar ── */
+.pi-result-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 4px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.pi-result-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+}
+
+.pi-result-count strong {
+  color: var(--text2);
+  font-weight: 600;
+}
+
+/* ── News Card ── */
+.pi-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.pi-card:hover {
+  background: var(--surface2);
+  border-color: rgba(240,246,252,0.15);
+}
+
+.pi-card[data-expanded="true"] {
+  border-color: rgba(240,246,252,0.2);
+}
+
+.pi-card-inner {
+  padding: 14px 20px;
+}
+
+.pi-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.pi-card-ticker {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  background: var(--ticker-bg);
+  color: var(--ticker-color);
+}
+
+.pi-card-headline {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.45;
+  flex: 1;
+}
+
+.pi-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pi-card-date {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.pi-card-source {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--text3);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── Expanded Card Content ── */
+.pi-card-expand {
+  padding: 0 20px 14px;
+}
+
+.pi-card-summary {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.65;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.pi-card-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.pi-card-link {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--sky);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.15s;
+}
+
+.pi-card-link:hover {
+  color: var(--text);
+}
+
+/* ── Loading Skeletons ── */
+.pi-skeleton {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: pi-shimmer 1.5s infinite;
+  border-radius: 10px;
+  height: 54px;
+  margin-bottom: 6px;
+}
+
+@keyframes pi-shimmer { to { background-position: -200% 0; } }
+
+@keyframes pi-spin { to { transform: rotate(360deg); } }
+
+/* ── Empty / Error States ── */
+.pi-empty {
+  text-align: center;
+  color: var(--text3);
+  padding: 80px 0;
+  font-size: 13px;
+}
+
+.pi-error {
+  color: var(--coral);
+  margin-bottom: 8px;
+}
+
+/* ── Feed timestamp ── */
+.pi-timestamp {
+  font-size: 10px;
+  color: var(--text3);
+  text-align: center;
+  margin-top: 20px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* ── Stock summary badges in header ── */
+.pi-stock-summary {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pi-stock-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.pi-stock-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.pi-stock-stat-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.pi-stock-stat-label {
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* ═══ Responsive ═══ */
+
+@media (max-width: 900px) {
+  .pi-header { padding: 14px 20px 0; }
+  .pi-feed { padding: 10px 20px 60px; }
+  .pi-kpi-strip { gap: 20px; }
+  .pi-search { width: 180px; }
+}
+
+@media (max-width: 768px) {
+  .pi-header { padding: 12px 16px 0; }
+  .pi-feed { padding: 8px 16px 60px; }
+  .pi-title-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .pi-controls { width: 100%; }
+  .pi-search { flex: 1; width: auto; min-width: 0; }
+  .pi-kpi-strip { gap: 16px; }
+  .pi-kpi-value { font-size: 14px; }
+  .pi-title { font-size: 20px; }
+  .pi-card-inner { padding: 12px 14px; }
+  .pi-card-top { flex-wrap: wrap; }
+  .pi-card-meta { margin-top: 4px; }
+  .pi-filter-group-label { display: none; }
+}
+
+@media (max-width: 480px) {
+  .pi-header { padding: 10px 12px 0; }
+  .pi-feed { padding: 6px 12px 60px; }
+  .pi-kpi-strip { gap: 12px; }
+  .pi-card-headline { font-size: 13px; }
+  .pi-title { font-size: 18px; }
+}
