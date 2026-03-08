@@ -5,7 +5,7 @@
 // Dropped: about.att.com (403 all methods), investors.att.com (JS-rendered Sitecore)
 // Cache: 5 min
 
-const VERSION = 'v7-allnews-variants-2026-03-08';
+const VERSION = 'v8-final-2026-03-08';
 
 let cache = null;
 let cacheTime = 0;
@@ -294,71 +294,38 @@ async function fetchPRNDirect() {
 }
 
 // ─── 5. services.att.com — AT&T Newsroom ─────────────────────────────────────
-// Powers about.att.com/allnews.html via Lucidworks Fusion JSONP.
-// Returns numFound:0 with wrong params. Try multiple query variations.
+// Powers about.att.com/allnews.html. Working params: q=*:*&wt=json.
+// 951 total articles — fetch full archive with rows=1000.
 
 async function fetchAllNews() {
-  const variants = [
-    // Variant 1: original with q=*:*
-    'https://services.att.com/search/v1/newsroom?app-id=attnews&q=*:*&fq=-rejectDoc:true&rows=100&sort=published_date+desc&wt=json',
-    // Variant 2: no fq filter
-    'https://services.att.com/search/v1/newsroom?app-id=attnews&q=*:*&rows=100&sort=published_date+desc&wt=json',
-    // Variant 3: callback JSONP with q=*:*
-    'https://services.att.com/search/v1/newsroom?app-id=attnews&q=*:*&fq=-rejectDoc:true&rows=100&sort=published_date+desc&callback=getResults',
-    // Variant 4: original without q
-    'https://services.att.com/search/v1/newsroom?app-id=attnews&fq=-rejectDoc:true&rows=100&sort=published_date+desc&wt=json',
-    // Variant 5: no params except app-id
-    'https://services.att.com/search/v1/newsroom?app-id=attnews&rows=100&wt=json',
-  ];
-
-  const tried = [];
-  for (const url of variants) {
-    try {
-      const res = await fetch(url, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Referer': 'https://about.att.com/',
-          'Origin': 'https://about.att.com',
-          'Accept': 'application/json, text/javascript, */*; q=0.01',
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-      });
-      const text = await res.text();
-      tried.push({ url: url.slice(50), status: res.status, length: text.length, preview: text.slice(0, 200) });
-      if (!res.ok) continue;
-
-      // Try plain JSON
-      let json = null;
-      try { json = JSON.parse(text); } catch (_) {}
-      // Try JSONP strip
-      if (!json) {
-        const s = text.indexOf('{'); const e = text.lastIndexOf('}');
-        if (s !== -1 && e !== -1) try { json = JSON.parse(text.slice(s, e + 1)); } catch (_) {}
-      }
-      if (!json) continue;
-
-      const numFound = json?.response?.numFound ?? 0;
-      tried[tried.length - 1].numFound = numFound;
-      if (numFound === 0) continue;
-
-      const docs = json?.response?.docs ?? [];
-      const items = docs.map(doc => ({
-        newsid: `allnews-${(doc.article_url || doc.id || '').replace(/[^a-z0-9]/gi, '-').slice(-60)}`,
-        datetime: doc.published_date || new Date().toISOString(),
-        source: 'AT&T Newsroom',
-        headline: decode(doc.article_header || doc.title || ''),
-        qmsummary: decode(doc.article_description || doc.description || ''),
-        permalink: doc.article_url || doc.og_url?.[0] || '',
-        storyurl: doc.article_url || '',
-        _source: 'allnews',
-      })).filter(i => i.headline);
-
-      return { items, error: null, numFound, usedUrl: url };
-    } catch (e) {
-      tried.push({ url: url.slice(50), error: e.message });
-    }
-  }
-  return { items: [], error: 'All variants returned 0 results', tried };
+  try {
+    const url = 'https://services.att.com/search/v1/newsroom' +
+      '?app-id=attnews&q=*:*&fq=-rejectDoc:true&rows=1000&sort=published_date+desc&wt=json';
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://about.att.com/',
+        'Origin': 'https://about.att.com',
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+    });
+    if (!res.ok) return { items: [], error: `AllNews HTTP ${res.status}` };
+    const json = await res.json();
+    const numFound = json?.response?.numFound ?? 0;
+    const docs = json?.response?.docs ?? [];
+    const items = docs.map(doc => ({
+      newsid: `allnews-${(doc.article_url || doc.id || '').replace(/[^a-z0-9]/gi, '-').slice(-60)}`,
+      datetime: doc.published_date || new Date().toISOString(),
+      source: 'AT&T Newsroom',
+      headline: decode(doc.article_header || doc.title || ''),
+      qmsummary: decode(doc.article_description || doc.description || ''),
+      permalink: doc.article_url || (Array.isArray(doc.og_url) ? doc.og_url[0] : doc.og_url) || '',
+      storyurl: doc.article_url || '',
+      _source: 'allnews',
+    })).filter(i => i.headline);
+    return { items, error: null, numFound };
+  } catch (e) { return { items: [], error: e.message }; }
 }
 
 // ─── Merge & deduplicate ──────────────────────────────────────────────────────
@@ -423,7 +390,7 @@ export default async function handler(req, res) {
             sample: prnDirect.items.slice(0, 2).map(i => ({ headline: i.headline, datetime: i.datetime })) },
           corpPR:     { count: corpPR.items.length, error: corpPR.error,
             sample: corpPR.items.slice(0, 3).map(i => ({ headline: i.headline, datetime: i.datetime })) },
-          allnews:    { count: allNews.items.length, error: allNews.error, numFound: allNews.numFound, usedUrl: allNews.usedUrl, tried: allNews.tried,
+          allnews:    { count: allNews.items.length, error: allNews.error, numFound: allNews.numFound,
             sample: allNews.items.slice(0, 2).map(i => ({ headline: i.headline, datetime: i.datetime })) },
           edgar:      { count: edgar.items.length, error: edgar.error,
             sample: edgar.items.slice(0, 3).map(i => ({ headline: i.headline, datetime: i.datetime })) },
