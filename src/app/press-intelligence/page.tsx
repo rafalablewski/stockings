@@ -131,7 +131,7 @@ const ALL_CATEGORIES = (() => {
   for (const cfg of FEED_CONFIGS) {
     for (const cat of Object.keys(cfg.categories)) set.add(cat);
   }
-  return ["All", ...Array.from(set)];
+  return ["All", "Upcoming", ...Array.from(set)];
 })();
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
@@ -260,7 +260,10 @@ export default function PressIntelligencePage() {
     let items = allItems;
 
     /* Category filter */
-    if (activeCategory !== "All") {
+    if (activeCategory === "Upcoming") {
+      const now = Date.now();
+      items = items.filter((item) => new Date(item.datetime).getTime() > now);
+    } else if (activeCategory !== "All") {
       items = items.filter((item) => {
         const headline = item.headline || item.title || "";
         const cfg = item._config;
