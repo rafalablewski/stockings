@@ -5,7 +5,7 @@
 // Dropped: about.att.com (403 all methods), investors.att.com (JS-rendered Sitecore)
 // Cache: 5 min
 
-const VERSION = 'v6-four-sources-2026-03-08';
+const VERSION = 'v7-allnews-variants-2026-03-08';
 
 let cache = null;
 let cacheTime = 0;
@@ -162,46 +162,84 @@ async function fetchCorpPR() {
 
 
 // ─── 3. SEC EDGAR 8-K filings ─────────────────────────────────────────────────
-// AT&T CIK: 0000732717. Atom feed, always server-accessible, no IP blocking.
-// Covers earnings releases, material events, acquisitions, dividends.
+// Uses EDGAR submissions JSON API — returns proper filing descriptions.
+// AT&T CIK: 0000732717
 
 async function fetchSECEdgar() {
   try {
-    const url = 'https://www.sec.gov/cgi-bin/browse-edgar' +
-      '?action=getcompany&CIK=0000732717&type=8-K' +
-      '&dateb=&owner=include&count=40&search_text=&output=atom';
+    const url = 'https://data.sec.gov/submissions/CIK0000732717.json';
     const res = await fetch(url, {
       headers: {
         'User-Agent': 'StockingsBot/1.0 contact@stockings.vercel.app',
-        'Accept': 'application/atom+xml, application/xml, */*',
+        'Accept': 'application/json',
       },
     });
     if (!res.ok) return { items: [], error: `EDGAR HTTP ${res.status}` };
-    const xml = await res.text();
+    const data = await res.json();
 
-    const entries = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/gi)];
-    const items = [];
-    for (const entry of entries) {
-      const inner = entry[1];
-      const title = decode(strip(inner.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] || ''));
-      const link = inner.match(/<link[^>]+href="([^"]+)"/i)?.[1] || '';
-      const updated = strip(inner.match(/<updated>([\s\S]*?)<\/updated>/i)?.[1] || '');
-      const summary = decode(strip(inner.match(/<summary[^>]*>([\s\S]*?)<\/summary>/i)?.[1] || ''));
-      if (!title || title.length < 5) continue;
+    const filings = data?.filings?.recent;
+    if (!filings) return { items: [], error: 'No filings data' };
+
+    const { form, filingDate, primaryDocument, accessionNumber, items: filingItems } = filings;
+    const results = [];
+
+    for (let i = 0; i < form.length; i++) {
+      // Include 8-K, 8-K/A, and press-release-adjacent forms
+      if (!['8-K', '8-K/A'].includes(form[i])) continue;
+
+      const accession = (accessionNumber[i] || '').replace(/-/g, '');
+      const cik = '732717';
+      const doc = primaryDocument[i] || '';
+      const date = filingDate[i] || '';
+      const description = filingItems[i] || '';
+
+      const permalink = accession
+        ? `https://www.sec.gov/Archives/edgar/data/${cik}/${accession}/${doc}`
+        : `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${cik}&type=8-K`;
+
+      // Build meaningful headline from filing items field
+      // Items field contains e.g. "2.02,9.01" for earnings or "1.01" for agreements
+      const itemLabels = {
+        '1.01': 'Material Agreement',
+        '1.02': 'Material Agreement Terminated',
+        '2.01': 'Acquisition/Disposal of Assets',
+        '2.02': 'Results of Operations (Earnings)',
+        '2.03': 'Material Financial Obligation',
+        '2.05': 'Departure of Directors/Officers',
+        '2.06': 'Material Impairment',
+        '3.01': 'Delisting Notice',
+        '5.02': 'Director/Officer Change',
+        '5.03': 'Amendments to Charter',
+        '7.01': 'Regulation FD Disclosure',
+        '8.01': 'Other Events',
+        '9.01': 'Financial Statements',
+      };
+
+      const itemCodes = (description || '').split(',').map(s => s.trim());
+      const labels = itemCodes
+        .map(code => itemLabels[code])
+        .filter(Boolean);
+
+      const headline = labels.length > 0
+        ? `AT&T 8-K: ${labels[0]}${labels.length > 1 ? ` + ${labels.length - 1} more` : ''}`
+        : `AT&T 8-K Filing`;
+
       let datetime = new Date().toISOString();
-      try { if (updated) datetime = new Date(updated).toISOString(); } catch (_) {}
-      items.push({
-        newsid: `edgar-${link.replace(/[^a-z0-9]/gi, '-').slice(-60)}`,
+      try { if (date) datetime = new Date(date).toISOString(); } catch (_) {}
+
+      results.push({
+        newsid: `edgar-${accession || i}`,
         datetime,
-        source: 'AT&T SEC Filing',
-        headline: `SEC 8-K: ${title}`,
-        qmsummary: summary,
-        permalink: link,
-        storyurl: link,
+        source: 'AT&T SEC 8-K',
+        headline,
+        qmsummary: `SEC Form 8-K filed ${date}. Items: ${description || 'N/A'}`,
+        permalink,
+        storyurl: permalink,
         _source: 'edgar',
       });
     }
-    return { items, error: null };
+
+    return { items: results, error: null };
   } catch (e) { return { items: [], error: e.message }; }
 }
 
@@ -255,6 +293,74 @@ async function fetchPRNDirect() {
   return { items: [], error: 'PRN RSS unavailable' };
 }
 
+// ─── 5. services.att.com — AT&T Newsroom ─────────────────────────────────────
+// Powers about.att.com/allnews.html via Lucidworks Fusion JSONP.
+// Returns numFound:0 with wrong params. Try multiple query variations.
+
+async function fetchAllNews() {
+  const variants = [
+    // Variant 1: original with q=*:*
+    'https://services.att.com/search/v1/newsroom?app-id=attnews&q=*:*&fq=-rejectDoc:true&rows=100&sort=published_date+desc&wt=json',
+    // Variant 2: no fq filter
+    'https://services.att.com/search/v1/newsroom?app-id=attnews&q=*:*&rows=100&sort=published_date+desc&wt=json',
+    // Variant 3: callback JSONP with q=*:*
+    'https://services.att.com/search/v1/newsroom?app-id=attnews&q=*:*&fq=-rejectDoc:true&rows=100&sort=published_date+desc&callback=getResults',
+    // Variant 4: original without q
+    'https://services.att.com/search/v1/newsroom?app-id=attnews&fq=-rejectDoc:true&rows=100&sort=published_date+desc&wt=json',
+    // Variant 5: no params except app-id
+    'https://services.att.com/search/v1/newsroom?app-id=attnews&rows=100&wt=json',
+  ];
+
+  const tried = [];
+  for (const url of variants) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Referer': 'https://about.att.com/',
+          'Origin': 'https://about.att.com',
+          'Accept': 'application/json, text/javascript, */*; q=0.01',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      });
+      const text = await res.text();
+      tried.push({ url: url.slice(50), status: res.status, length: text.length, preview: text.slice(0, 200) });
+      if (!res.ok) continue;
+
+      // Try plain JSON
+      let json = null;
+      try { json = JSON.parse(text); } catch (_) {}
+      // Try JSONP strip
+      if (!json) {
+        const s = text.indexOf('{'); const e = text.lastIndexOf('}');
+        if (s !== -1 && e !== -1) try { json = JSON.parse(text.slice(s, e + 1)); } catch (_) {}
+      }
+      if (!json) continue;
+
+      const numFound = json?.response?.numFound ?? 0;
+      tried[tried.length - 1].numFound = numFound;
+      if (numFound === 0) continue;
+
+      const docs = json?.response?.docs ?? [];
+      const items = docs.map(doc => ({
+        newsid: `allnews-${(doc.article_url || doc.id || '').replace(/[^a-z0-9]/gi, '-').slice(-60)}`,
+        datetime: doc.published_date || new Date().toISOString(),
+        source: 'AT&T Newsroom',
+        headline: decode(doc.article_header || doc.title || ''),
+        qmsummary: decode(doc.article_description || doc.description || ''),
+        permalink: doc.article_url || doc.og_url?.[0] || '',
+        storyurl: doc.article_url || '',
+        _source: 'allnews',
+      })).filter(i => i.headline);
+
+      return { items, error: null, numFound, usedUrl: url };
+    } catch (e) {
+      tried.push({ url: url.slice(50), error: e.message });
+    }
+  }
+  return { items: [], error: 'All variants returned 0 results', tried };
+}
+
 // ─── Merge & deduplicate ──────────────────────────────────────────────────────
 
 function normalizeHl(h) {
@@ -297,14 +403,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    const [qm, corpPR, edgar, prnDirect] = await Promise.all([
+    const [qm, corpPR, edgar, prnDirect, allNews] = await Promise.all([
       fetchQuoteMedia(),
       fetchCorpPR(),
       fetchSECEdgar(),
       fetchPRNDirect(),
+      fetchAllNews(),
     ]);
 
-    const merged = mergeAndDedup([qm, prnDirect, corpPR, edgar]);
+    const merged = mergeAndDedup([qm, prnDirect, allNews, corpPR, edgar]);
 
     if (debug) {
       return res.status(200).json({
@@ -316,6 +423,8 @@ export default async function handler(req, res) {
             sample: prnDirect.items.slice(0, 2).map(i => ({ headline: i.headline, datetime: i.datetime })) },
           corpPR:     { count: corpPR.items.length, error: corpPR.error,
             sample: corpPR.items.slice(0, 3).map(i => ({ headline: i.headline, datetime: i.datetime })) },
+          allnews:    { count: allNews.items.length, error: allNews.error, numFound: allNews.numFound, usedUrl: allNews.usedUrl, tried: allNews.tried,
+            sample: allNews.items.slice(0, 2).map(i => ({ headline: i.headline, datetime: i.datetime })) },
           edgar:      { count: edgar.items.length, error: edgar.error,
             sample: edgar.items.slice(0, 3).map(i => ({ headline: i.headline, datetime: i.datetime })) },
         },
