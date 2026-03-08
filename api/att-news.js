@@ -5,11 +5,11 @@
 // Dropped: about.att.com (403 all methods), investors.att.com (JS-rendered Sitecore)
 // Cache: 5 min
 
-const VERSION = 'v8-final-2026-03-08';
+const VERSION = 'v8d-upcoming-flag-2026-03-08';
 
 let cache = null;
 let cacheTime = 0;
-const CACHE_TTL = 5 * 60 * 1000;
+const CACHE_TTL = 60 * 1000; // 1 minute — catch releases within seconds of publish
 
 const BROWSER_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -338,11 +338,14 @@ function mergeAndDedup(sources) {
   const seenUrl = new Set();
   const seenHl = new Set();
   const out = [];
+  const now = Date.now();
   for (const { items } of sources) {
     for (const item of (items || [])) {
       const kh = normalizeHl(item.headline);
       const ku = item.permalink || '';
       if (!kh || kh.length < 4) continue;
+      if (new Date(item.datetime).getTime() > now + 7 * 24 * 60 * 60 * 1000) continue; // drop >7 days future
+      if (new Date(item.datetime).getTime() > now) item.isUpcoming = true; // near-future event
       if (seenHl.has(kh) || (ku && seenUrl.has(ku))) continue;
       seenHl.add(kh);
       if (ku) seenUrl.add(ku);
