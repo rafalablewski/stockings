@@ -68,6 +68,22 @@ const FEED_CONFIGS: FeedConfig[] = [
       "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|\$\d/i.test(h),
     },
   },
+  {
+    ticker: "GSAT",
+    endpoint: "/api/gsat-news",
+    accent: "mint",
+    color: "#7EE787",
+    colorDim: "rgba(126,231,135,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Satellite: (h) => /satellite|launch|orbit|spectrum|band|constellation|apple/i.test(h),
+      Partnerships: (h) => /partner|agreement|contract|award|apple|qualcomm|government/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|\$\d/i.test(h),
+    },
+  },
 ];
 
 /* Build merged category set from all configs */
