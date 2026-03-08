@@ -78,8 +78,10 @@ const mobileNavItems = [
     children: stockList.map((s) => ({ label: `${s.ticker} — ${s.name}`, href: `/stocks/${s.ticker}` })),
   },
   {
-    label: 'Scraper',
-    children: [{ label: 'Press Releases', href: '/scraper' }],
+    label: 'Intelligence',
+    children: [
+      { label: 'Press Intelligence', href: '/press-intelligence' },
+    ],
   },
   {
     label: 'Audit',
@@ -193,12 +195,12 @@ function Navigation() {
               </div>
             </div>
 
-            {/* Scraper — direct link */}
+            {/* Intelligence — direct link */}
             <Link
-              href="/scraper"
+              href="/press-intelligence"
               className="text-[13px] text-white/60 hover:text-white transition-colors"
             >
-              Scraper
+              Intelligence
             </Link>
 
             {/* Audit dropdown */}
@@ -266,7 +268,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
           rel="stylesheet"
         />
       </head>
