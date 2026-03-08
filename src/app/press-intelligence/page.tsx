@@ -245,7 +245,7 @@ export default function PressIntelligencePage() {
   };
 
   /* ── Merged & filtered feed ── */
-  const allItems = useMemo(() => {
+  const mergedItems = useMemo(() => {
     let items: NewsItem[] = [];
     for (const [ticker, list] of Object.entries(feedsByTicker)) {
       if (activeTicker !== "ALL" && ticker !== activeTicker) continue;
@@ -256,27 +256,28 @@ export default function PressIntelligencePage() {
     return items;
   }, [feedsByTicker, activeTicker]);
 
+  /* Split upcoming from published so future-dated items only appear
+     under the Upcoming filter and don't pollute stats or other views. */
+  const now = Date.now();
+  const upcomingCutoff = now - 24 * 60 * 60 * 1000; // 24 h grace period
+  const allItems = useMemo(() =>
+    mergedItems.filter((item) => new Date(item.datetime).getTime() <= now),
+    [mergedItems, now]);
+  const upcomingItems = useMemo(() =>
+    mergedItems.filter((item) => new Date(item.datetime).getTime() > upcomingCutoff),
+    [mergedItems, upcomingCutoff]);
+
   const visibleItems = useMemo(() => {
-    let items = allItems;
+    let items = activeCategory === "Upcoming" ? upcomingItems : allItems;
 
     /* Category filter */
-    const now = Date.now();
-    if (activeCategory === "Upcoming") {
-      /* Show future-dated items + 24 h grace period so releases don't
-         vanish the instant their scheduled time passes. */
-      const cutoff = now - 24 * 60 * 60 * 1000;
-      items = items.filter((item) => new Date(item.datetime).getTime() > cutoff);
-    } else {
-      /* Exclude future-dated (upcoming) items from all other views */
-      items = items.filter((item) => new Date(item.datetime).getTime() <= now);
-      if (activeCategory !== "All") {
-        items = items.filter((item) => {
-          const headline = item.headline || item.title || "";
-          const cfg = item._config;
-          const fn = cfg.categories[activeCategory];
-          return fn ? fn(headline) : false;
-        });
-      }
+    if (activeCategory !== "Upcoming" && activeCategory !== "All") {
+      items = items.filter((item) => {
+        const headline = item.headline || item.title || "";
+        const cfg = item._config;
+        const fn = cfg.categories[activeCategory];
+        return fn ? fn(headline) : false;
+      });
     }
 
     /* Search filter */
