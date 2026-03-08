@@ -26,6 +26,14 @@ function decode(str) {
     .trim();
 }
 function strip(str) { return (str || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(); }
+// Parse dates like '10 APRIL 2024', '20 DEC 2022', 'JUNE 2019'
+// JS Date() fails on all-caps months — normalize to title case first
+function parseDate(str) {
+  if (!str) return null;
+  const normalized = str.replace(/\b([A-Z]{2,})\b/g, w => w[0] + w.slice(1).toLowerCase());
+  const d = new Date(normalized);
+  return isNaN(d.getTime()) ? null : d.toISOString();
+}
 // ─── 1. QuoteMedia ────────────────────────────────────────────────────────────
 async function fetchQuoteMedia() {
   try {
@@ -76,7 +84,7 @@ async function fetchAllNews() {
         try { json = JSON.parse(text.slice(start, end + 1)); } catch (_) {}
       }
     }
-    if (!json) return { items: [], error: 'Cannot parse allnews response', raw: text.slice(0, 300) };
+    if (!json) return { items: [], error: 'Cannot parse allnews response', rawText: text.slice(0, 500), contentType: 'check headers' };
     const docs = json?.response?.docs ?? [];
     const items = docs.map(doc => ({
       newsid: `allnews-${(doc.article_url || doc.id || '').replace(/[^a-z0-9]/gi, '-').slice(-60)}`,
@@ -136,8 +144,7 @@ async function fetchCorpPR() {
       const nextH3 = h3s.find(h => h.index > h3.index);
       if (nextH3 && anchor.index > nextH3.index) continue;
       const href = anchor.href.startsWith('http') ? anchor.href : `https://www.corp.att.com${anchor.href}`;
-      let datetime = new Date().toISOString();
-      try { datetime = new Date(h3.text).toISOString(); } catch (_) {}
+      const datetime = parseDate(h3.text) || new Date().toISOString();
       items.push({
         newsid: `corp-${href.replace(/[^a-z0-9]/gi, '-').slice(-60)}`,
         datetime,
@@ -174,9 +181,8 @@ function parseIRReleasesHtml(html, year) {
     // Date is always in cells[0], strip "Date" responsive label prefix
     const dateText = cells[0].replace(/^Date\s*/i, '').trim();
     if (!dateText || dateText === 'Date' || dateText.length < 4) continue;
-    let datetime = new Date().toISOString();
-    try { datetime = new Date(dateText).toISOString(); } catch (_) { continue; }
-    if (isNaN(new Date(datetime).getTime())) continue;
+    const datetime = parseDate(dateText);
+    if (!datetime) continue;
     // Title: look in cells[1] and cells[2], strip "Title"/"Documents" prefix
     // Take whichever cell has the longest meaningful text after stripping labels
     let titleText = '';
@@ -236,8 +242,7 @@ async function fetchIREvents() {
       if (titleText.length < 5) continue;
       // Skip if title looks like boilerplate
       if (/^(please|check|tab|for|events|presentations|upcoming|past)/i.test(titleText)) continue;
-      let datetime = new Date().toISOString();
-      try { datetime = new Date(dateText).toISOString(); } catch (_) { continue; }
+      const datetime = parseDate(dateText) || new Date().toISOString();
       items.push({
         newsid: `irevent-${titleText.replace(/[^a-z0-9]/gi, '-').slice(0, 60)}`,
         datetime,
