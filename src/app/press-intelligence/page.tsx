@@ -260,18 +260,23 @@ export default function PressIntelligencePage() {
     let items = allItems;
 
     /* Category filter */
+    const now = Date.now();
     if (activeCategory === "Upcoming") {
       /* Show future-dated items + 24 h grace period so releases don't
          vanish the instant their scheduled time passes. */
-      const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+      const cutoff = now - 24 * 60 * 60 * 1000;
       items = items.filter((item) => new Date(item.datetime).getTime() > cutoff);
-    } else if (activeCategory !== "All") {
-      items = items.filter((item) => {
-        const headline = item.headline || item.title || "";
-        const cfg = item._config;
-        const fn = cfg.categories[activeCategory];
-        return fn ? fn(headline) : false;
-      });
+    } else {
+      /* Exclude future-dated (upcoming) items from all other views */
+      items = items.filter((item) => new Date(item.datetime).getTime() <= now);
+      if (activeCategory !== "All") {
+        items = items.filter((item) => {
+          const headline = item.headline || item.title || "";
+          const cfg = item._config;
+          const fn = cfg.categories[activeCategory];
+          return fn ? fn(headline) : false;
+        });
+      }
     }
 
     /* Search filter */
