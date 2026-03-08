@@ -75,9 +75,9 @@ const FEED_CONFIGS: FeedConfig[] = [
   {
     ticker: "GSAT",
     endpoint: "/api/gsat-news",
-    accent: "mint",
-    color: "#7EE787",
-    colorDim: "rgba(126,231,135,0.15)",
+    accent: "orange",
+    color: "#FB923C",
+    colorDim: "rgba(251,146,60,0.15)",
     sourceFilter: () => true,  // API pre-filters
     headlineFilter: () => true,  // API pre-filters for "globalstar"
     parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
