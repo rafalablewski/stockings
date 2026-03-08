@@ -256,22 +256,21 @@ export default function PressIntelligencePage() {
     return items;
   }, [feedsByTicker, activeTicker]);
 
-  /* Split upcoming from published so future-dated items only appear
-     under the Upcoming filter and don't pollute stats or other views. */
-  const now = Date.now();
-  const upcomingCutoff = now - 24 * 60 * 60 * 1000; // 24 h grace period
-  const allItems = useMemo(() =>
-    mergedItems.filter((item) => new Date(item.datetime).getTime() <= now),
-    [mergedItems, now]);
-  const upcomingItems = useMemo(() =>
-    mergedItems.filter((item) => new Date(item.datetime).getTime() > upcomingCutoff),
-    [mergedItems, upcomingCutoff]);
+  /* Upcoming = headline-based filter for press releases announcing
+     future events (e.g. "to update shareholders", "to present at",
+     "scheduled", "will host", etc.). */
+  const isUpcoming = (headline: string) =>
+    /\bto (update|present|report|host|participate|speak|attend|announce)\b|\bupcoming\b|\bscheduled\b|\bwill (host|present|report|hold|release)\b|\binvites you\b/i.test(headline);
+
+  const allItems = mergedItems;
 
   const visibleItems = useMemo(() => {
-    let items = activeCategory === "Upcoming" ? upcomingItems : allItems;
+    let items = allItems;
 
     /* Category filter */
-    if (activeCategory !== "Upcoming" && activeCategory !== "All") {
+    if (activeCategory === "Upcoming") {
+      items = items.filter((item) => isUpcoming(item.headline || item.title || ""));
+    } else if (activeCategory !== "All") {
       items = items.filter((item) => {
         const headline = item.headline || item.title || "";
         const cfg = item._config;
