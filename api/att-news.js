@@ -5,7 +5,7 @@
 // Dropped: about.att.com (403 all methods), investors.att.com (JS-rendered Sitecore)
 // Cache: 5 min
 
-const VERSION = 'v5b-anchor-driven-2026-03-08';
+const VERSION = 'v6-four-sources-2026-03-08';
 
 let cache = null;
 let cacheTime = 0;
@@ -160,6 +160,101 @@ async function fetchCorpPR() {
   }
 }
 
+
+// ─── 3. SEC EDGAR 8-K filings ─────────────────────────────────────────────────
+// AT&T CIK: 0000732717. Atom feed, always server-accessible, no IP blocking.
+// Covers earnings releases, material events, acquisitions, dividends.
+
+async function fetchSECEdgar() {
+  try {
+    const url = 'https://www.sec.gov/cgi-bin/browse-edgar' +
+      '?action=getcompany&CIK=0000732717&type=8-K' +
+      '&dateb=&owner=include&count=40&search_text=&output=atom';
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': 'StockingsBot/1.0 contact@stockings.vercel.app',
+        'Accept': 'application/atom+xml, application/xml, */*',
+      },
+    });
+    if (!res.ok) return { items: [], error: `EDGAR HTTP ${res.status}` };
+    const xml = await res.text();
+
+    const entries = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/gi)];
+    const items = [];
+    for (const entry of entries) {
+      const inner = entry[1];
+      const title = decode(strip(inner.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] || ''));
+      const link = inner.match(/<link[^>]+href="([^"]+)"/i)?.[1] || '';
+      const updated = strip(inner.match(/<updated>([\s\S]*?)<\/updated>/i)?.[1] || '');
+      const summary = decode(strip(inner.match(/<summary[^>]*>([\s\S]*?)<\/summary>/i)?.[1] || ''));
+      if (!title || title.length < 5) continue;
+      let datetime = new Date().toISOString();
+      try { if (updated) datetime = new Date(updated).toISOString(); } catch (_) {}
+      items.push({
+        newsid: `edgar-${link.replace(/[^a-z0-9]/gi, '-').slice(-60)}`,
+        datetime,
+        source: 'AT&T SEC Filing',
+        headline: `SEC 8-K: ${title}`,
+        qmsummary: summary,
+        permalink: link,
+        storyurl: link,
+        _source: 'edgar',
+      });
+    }
+    return { items, error: null };
+  } catch (e) { return { items: [], error: e.message }; }
+}
+
+// ─── 4. PR Newswire RSS direct ────────────────────────────────────────────────
+// Direct PR Newswire RSS for AT&T — may overlap with QuoteMedia but has full text.
+// Dedup by permalink handles any overlap.
+
+async function fetchPRNDirect() {
+  const urls = [
+    'https://www.prnewswire.com/rss/news-releases-list.rss?company=att',
+    'https://www.businesswire.com/rss/home/?rss=G7&company=att',
+  ];
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, {
+        headers: { ...BROWSER_HEADERS, 'Accept': 'application/rss+xml, application/xml, */*' },
+      });
+      if (!res.ok) continue;
+      const xml = await res.text();
+      if (!xml.includes('<item>')) continue;
+
+      const entries = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)];
+      const items = [];
+      for (const entry of entries) {
+        const inner = entry[1];
+        const title = decode(strip(inner.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] || ''));
+        const link = strip(inner.match(/<link>([\s\S]*?)<\/link>/i)?.[1] || '') ||
+                     strip(inner.match(/<guid[^>]*>([\s\S]*?)<\/guid>/i)?.[1] || '');
+        const pubDate = strip(inner.match(/<pubDate>([\s\S]*?)<\/pubDate>/i)?.[1] || '');
+        const description = decode(strip(inner.match(/<description[^>]*>([\s\S]*?)<\/description>/i)?.[1] || ''));
+        if (!title || title.length < 5) continue;
+        // Filter to AT&T only
+        const hl = title.toLowerCase();
+        if (!hl.includes('at&t') && !hl.includes("at&t's")) continue;
+        let datetime = new Date().toISOString();
+        try { if (pubDate) datetime = new Date(pubDate).toISOString(); } catch (_) {}
+        items.push({
+          newsid: `prn-${link.replace(/[^a-z0-9]/gi, '-').slice(-60)}`,
+          datetime,
+          source: 'PR Newswire',
+          headline: title,
+          qmsummary: description,
+          permalink: link,
+          storyurl: link,
+          _source: 'prn-direct',
+        });
+      }
+      if (items.length > 0) return { items, error: null, rssUrl: url };
+    } catch (_) { continue; }
+  }
+  return { items: [], error: 'PRN RSS unavailable' };
+}
+
 // ─── Merge & deduplicate ──────────────────────────────────────────────────────
 
 function normalizeHl(h) {
@@ -202,27 +297,27 @@ export default async function handler(req, res) {
   }
 
   try {
-    const [qm, corpPR] = await Promise.all([
+    const [qm, corpPR, edgar, prnDirect] = await Promise.all([
       fetchQuoteMedia(),
       fetchCorpPR(),
+      fetchSECEdgar(),
+      fetchPRNDirect(),
     ]);
 
-    const merged = mergeAndDedup([qm, corpPR]);
+    const merged = mergeAndDedup([qm, prnDirect, corpPR, edgar]);
 
     if (debug) {
       return res.status(200).json({
         version: VERSION,
         sources: {
-          quotemedia: {
-            count: qm.items.length,
-            error: qm.error,
-            sample: qm.items.slice(0, 2).map(i => ({ headline: i.headline, datetime: i.datetime, source: i.source })),
-          },
-          corpPR: {
-            count: corpPR.items.length,
-            error: corpPR.error,
-            sample: corpPR.items.slice(0, 5).map(i => ({ headline: i.headline, datetime: i.datetime })),
-          },
+          quotemedia: { count: qm.items.length, error: qm.error,
+            sample: qm.items.slice(0, 2).map(i => ({ headline: i.headline, datetime: i.datetime, source: i.source })) },
+          prnDirect:  { count: prnDirect.items.length, error: prnDirect.error, rssUrl: prnDirect.rssUrl,
+            sample: prnDirect.items.slice(0, 2).map(i => ({ headline: i.headline, datetime: i.datetime })) },
+          corpPR:     { count: corpPR.items.length, error: corpPR.error,
+            sample: corpPR.items.slice(0, 3).map(i => ({ headline: i.headline, datetime: i.datetime })) },
+          edgar:      { count: edgar.items.length, error: edgar.error,
+            sample: edgar.items.slice(0, 3).map(i => ({ headline: i.headline, datetime: i.datetime })) },
         },
         mergedCount: merged.length,
         mergedSample: merged.slice(0, 5).map(i => ({
@@ -239,7 +334,9 @@ export default async function handler(req, res) {
     res.setHeader('X-Cache', 'MISS');
     res.setHeader('X-Version', VERSION);
     res.setHeader('X-QM-Count', qm.items.length);
+    res.setHeader('X-PRN-Direct-Count', prnDirect.items.length);
     res.setHeader('X-CorpPR-Count', corpPR.items.length);
+    res.setHeader('X-Edgar-Count', edgar.items.length);
     res.setHeader('X-Total', merged.length);
 
     return res.status(200).send(payload);
