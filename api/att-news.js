@@ -81,64 +81,111 @@ async function fetchQuoteMedia() {
   } catch (e) { return { items: [], error: e.message }; }
 }
 
-// ─── 2. AT&T Newsroom RSS ─────────────────────────────────────────────────────
-// services.att.com JSONP returns numFound:0 from Vercel IPs (server-side blocked)
-// Try RSS feed alternatives instead
-
-function parseRSS(xml) {
-  const items = [];
-  const entries = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)];
-  for (const entry of entries) {
-    const inner = entry[1];
-    const title = decode(strip(inner.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] || ''));
-    const link = (
-      strip(inner.match(/<link>([\s\S]*?)<\/link>/i)?.[1] || '') ||
-      strip(inner.match(/<guid[^>]*>([\s\S]*?)<\/guid>/i)?.[1] || '')
-    ).replace(/^<!\[CDATA\[|\]\]>$/g, '').trim();
-    const pubDate = strip(inner.match(/<pubDate>([\s\S]*?)<\/pubDate>/i)?.[1] || '');
-    const description = decode(strip(inner.match(/<description[^>]*>([\s\S]*?)<\/description>/i)?.[1] || ''));
-    if (!title || title.length < 5) continue;
-    let datetime = new Date().toISOString();
-    try { if (pubDate) datetime = new Date(pubDate).toISOString(); } catch (_) {}
-    items.push({
-      newsid: `rss-${link.replace(/[^a-z0-9]/gi, '-').slice(-60)}`,
-      datetime,
-      source: 'AT&T Newsroom',
-      headline: title,
-      qmsummary: description,
-      permalink: link,
-      storyurl: link,
-      _source: 'allnews',
-    });
-  }
-  return items;
-}
+// ─── 2. AT&T Newsroom HTML scrape ────────────────────────────────────────────
+// about.att.com RSS feeds all return 403 from Vercel server IPs.
+// Strategy: scrape about.att.com/news/press_releases HTML page directly.
+// The page is Next.js SSR — article list is embedded in __NEXT_DATA__ JSON.
+// Fallback: parse visible article card links from raw HTML.
 
 async function fetchAllNews() {
-  const rssUrls = [
-    'https://about.att.com/feed/press-releases',
-    'https://about.att.com/feed',
-    'https://about.att.com/news/press_releases.rss',
-    'https://about.att.com/rss.xml',
-    'https://about.att.com/category/press-releases/feed',
+  const urls = [
+    'https://about.att.com/news/press_releases',
+    'https://about.att.com/news/press-releases',
+    'https://about.att.com/news',
   ];
-  const tried = [];
-  for (const url of rssUrls) {
+
+  for (const url of urls) {
     try {
-      const res = await fetch(url, {
-        headers: { ...BROWSER_HEADERS, 'Accept': 'application/rss+xml, application/xml, text/xml, */*' },
-      });
-      tried.push({ url, status: res.status });
+      const res = await fetch(url, { headers: BROWSER_HEADERS });
       if (!res.ok) continue;
-      const text = await res.text();
-      if (!text.includes('<item>')) continue;
-      const items = parseRSS(text);
-      if (items.length > 0) return { items, error: null, rssSource: url };
+      const html = await res.text();
+
+      // Strategy 1: __NEXT_DATA__ embedded JSON
+      const nextDataMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/i);
+      if (nextDataMatch) {
+        try {
+          const nextData = JSON.parse(nextDataMatch[1]);
+          // Walk the props tree looking for article arrays
+          const str = JSON.stringify(nextData);
+          const articles = [];
+          // Find objects with title/url/date fields
+          const articleMatches = [...str.matchAll(/"(?:title|headline)":\s*"([^"]{10,200})"/g)];
+          if (articleMatches.length > 5) {
+            // Parse full structure
+            function findArticles(obj, acc = []) {
+              if (!obj || typeof obj !== 'object') return acc;
+              if (Array.isArray(obj)) { obj.forEach(i => findArticles(i, acc)); return acc; }
+              const keys = Object.keys(obj);
+              const hasTitle = keys.some(k => ['title','headline','name'].includes(k));
+              const hasUrl = keys.some(k => ['url','link','href','permalink'].includes(k));
+              const hasDate = keys.some(k => ['date','publishDate','pubDate','published_date'].includes(k));
+              if (hasTitle && (hasUrl || hasDate)) {
+                const title = obj.title || obj.headline || obj.name || '';
+                const link = obj.url || obj.link || obj.href || obj.permalink || '';
+                const date = obj.date || obj.publishDate || obj.pubDate || obj.published_date || '';
+                if (title.length > 10 && (link.includes('att.com') || date)) {
+                  acc.push({ title, link, date });
+                }
+              }
+              keys.forEach(k => findArticles(obj[k], acc));
+              return acc;
+            }
+            const found = findArticles(nextData);
+            if (found.length > 3) {
+              const items = found.map(a => ({
+                newsid: `allnews-${(a.link||a.title).replace(/[^a-z0-9]/gi,'-').slice(-60)}`,
+                datetime: a.date ? (new Date(a.date).toISOString() || new Date().toISOString()) : new Date().toISOString(),
+                source: 'AT&T Newsroom',
+                headline: decode(a.title),
+                qmsummary: '',
+                permalink: a.link.startsWith('http') ? a.link : `https://about.att.com${a.link}`,
+                storyurl: a.link.startsWith('http') ? a.link : `https://about.att.com${a.link}`,
+                _source: 'allnews',
+              })).filter(i => i.headline.toLowerCase().includes('at&t') || i.permalink.includes('att.com'));
+              if (items.length > 3) return { items, error: null, strategy: 'next-data', sourceUrl: url };
+            }
+          }
+        } catch (_) {}
+      }
+
+      // Strategy 2: Parse article card links from raw HTML
+      // about.att.com story URLs: /story/YYYY/slug.html or /blogs/YYYY/slug.html
+      const storyPattern = /href="(\/(?:story|blogs|newsroom)\/(\d{4})\/[^"]+\.html)"/g;
+      const storyMatches = [...html.matchAll(storyPattern)];
+      if (storyMatches.length > 3) {
+        // For each link, try to find nearby title text
+        const items = [];
+        const seenLinks = new Set();
+        for (const m of storyMatches) {
+          const href = `https://about.att.com${m[1]}`;
+          if (seenLinks.has(href)) continue;
+          seenLinks.add(href);
+          const year = m[2];
+          // Find the anchor text
+          const anchorMatch = html.slice(m.index, m.index + 500).match(/>(.*?)<\/a>/s);
+          const rawTitle = anchorMatch ? strip(anchorMatch[1]) : '';
+          const title = decode(rawTitle);
+          if (!title || title.length < 5) continue;
+          items.push({
+            newsid: `allnews-${href.replace(/[^a-z0-9]/gi,'-').slice(-60)}`,
+            datetime: new Date(`${year}-01-01`).toISOString(),
+            source: 'AT&T Newsroom',
+            headline: title,
+            qmsummary: '',
+            permalink: href,
+            storyurl: href,
+            _source: 'allnews',
+          });
+        }
+        if (items.length > 3) return { items, error: null, strategy: 'html-links', sourceUrl: url };
+      }
+
+      return { items: [], error: 'Page fetched but no articles found', htmlLength: html.length, sourceUrl: url };
     } catch (e) {
-      tried.push({ url, err: e.message });
+      continue;
     }
   }
-  return { items: [], error: 'No RSS feed accessible', tried };
+  return { items: [], error: 'All newsroom URLs failed' };
 }
 
 // ─── 3. corp.att.com/worldwide/att-press-release/ ────────────────────────────
@@ -253,18 +300,26 @@ async function fetchIRReleases() {
   try {
     const currentYear = new Date().getFullYear();
     const years = [currentYear, currentYear - 1, currentYear - 2];
+    const yearResults = {};
     const batches = await Promise.all(years.map(async year => {
       try {
         const res = await fetch(
           `https://investors.att.com/news-and-events/news-releases/${year}`,
           { headers: BROWSER_HEADERS }
         );
+        yearResults[year] = { status: res.status };
         if (!res.ok) return [];
         const html = await res.text();
-        return parseIRReleasesHtml(html);
-      } catch (_) { return []; }
+        yearResults[year].htmlLength = html.length;
+        const parsed = parseIRReleasesHtml(html);
+        yearResults[year].count = parsed.length;
+        return parsed;
+      } catch (e) {
+        yearResults[year] = { error: e.message };
+        return [];
+      }
     }));
-    return { items: batches.flat(), error: null };
+    return { items: batches.flat(), error: null, yearResults };
   } catch (e) { return { items: [], error: e.message }; }
 }
 
@@ -380,11 +435,11 @@ export default async function handler(req, res) {
         sources: {
           quotemedia:  { count: qm.items.length,         error: qm.error,
                          sample: qm.items.slice(0, 2).map(i => ({ headline: i.headline, datetime: i.datetime, source: i.source })) },
-          allnews:     { count: allNews.items.length,    error: allNews.error,    rssSource: allNews.rssSource, tried: allNews.tried,
+          allnews:     { count: allNews.items.length,    error: allNews.error,    strategy: allNews.strategy, sourceUrl: allNews.sourceUrl, tried: allNews.tried,
                          sample: allNews.items.slice(0, 3).map(i => ({ headline: i.headline, datetime: i.datetime })) },
           corpPR:      { count: corpPR.items.length,     error: corpPR.error,
                          sample: corpPR.items.slice(0, 3).map(i => ({ headline: i.headline, datetime: i.datetime })) },
-          irReleases:  { count: irReleases.items.length, error: irReleases.error,
+          irReleases:  { count: irReleases.items.length, error: irReleases.error, yearResults: irReleases.yearResults,
                          sample: irReleases.items.slice(0, 3).map(i => ({ headline: i.headline, datetime: i.datetime })) },
           irEvents:    { count: irEvents.items.length,   error: irEvents.error,
                          sample: irEvents.items.slice(0, 3).map(i => ({ headline: i.headline, datetime: i.datetime })) },
