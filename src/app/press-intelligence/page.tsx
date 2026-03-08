@@ -261,8 +261,10 @@ export default function PressIntelligencePage() {
 
     /* Category filter */
     if (activeCategory === "Upcoming") {
-      const now = Date.now();
-      items = items.filter((item) => new Date(item.datetime).getTime() > now);
+      /* Show future-dated items + 24 h grace period so releases don't
+         vanish the instant their scheduled time passes. */
+      const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+      items = items.filter((item) => new Date(item.datetime).getTime() > cutoff);
     } else if (activeCategory !== "All") {
       items = items.filter((item) => {
         const headline = item.headline || item.title || "";
