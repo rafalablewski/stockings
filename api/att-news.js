@@ -47,6 +47,12 @@ function parseDate(str) {
     const d = new Date(`${dmy[2]} ${dmy[1]}, ${dmy[3]}`);
     if (!isNaN(d.getTime())) return d.toISOString();
   }
+  // Handle month-only: 'June 2019' → June 1, 2019
+  const my = s.match(/^([A-Za-z]+)\s+(\d{4})$/);
+  if (my) {
+    const d = new Date(`${my[1]} 1, ${my[2]}`);
+    if (!isNaN(d.getTime())) return d.toISOString();
+  }
   const d = new Date(s);
   return isNaN(d.getTime()) ? null : d.toISOString();
 }
@@ -349,6 +355,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const debug = req.query?.debug === '1';
+  const version = 'v4-rss-2026-03-08';
   const now = Date.now();
 
   if (!debug && cache && now - cacheTime < CACHE_TTL) {
@@ -382,6 +389,7 @@ export default async function handler(req, res) {
           irEvents:    { count: irEvents.items.length,   error: irEvents.error,
                          sample: irEvents.items.slice(0, 3).map(i => ({ headline: i.headline, datetime: i.datetime })) },
         },
+        version,
         mergedCount: merged.length,
         mergedSample: merged.slice(0, 5).map(i => ({
           headline: i.headline, datetime: i.datetime, source: i.source, _source: i._source,
