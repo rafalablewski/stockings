@@ -1,28 +1,11 @@
 // api/lynk-news.js
-// Cloudflare blocks Vercel IPs on lynk.world directly.
-// Solution: fetch via allorigins.win which has non-blocked IPs.
-// Cache: 60s
-const VERSION = 'v5-allorigins-2026-03-09';
-const CACHE_TTL = 60 * 1000;
-let cache = null;
-let cacheTime = 0;
-function proxyUrl(url) {
-  return `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-}
-async function fetchHtml(url) {
-  try {
-    const res = await fetch(proxyUrl(url));
-    if (!res.ok) return { html: '', error: `allorigins HTTP ${res.status}` };
-    const json = await res.json();
-    // allorigins returns { contents: "<html>...", status: { http_code: 200 } }
-    if (json?.status?.http_code && json.status.http_code !== 200) {
-      return { html: '', error: `origin HTTP ${json.status.http_code}` };
-    }
-    return { html: json?.contents || '', error: null };
-  } catch (e) {
-    return { html: '', error: e.message };
-  }
-}
+// KEY: export const config = { runtime: 'edge' }
+// Edge functions run on Cloudflare's own network — CF-protected sites
+// like lynk.world pass through CF-to-CF traffic without challenge pages.
+// Standard Node.js serverless (Vercel's default) gets blocked because
+// Vercel's datacenter IPs are on Cloudflare's challenge list.
+export const config = { runtime: 'edge' };
+const VERSION = 'v7-edge-2026-03-09';
 function strip(s) { return (s||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim(); }
 function decode(s) {
   return (s||'')
@@ -114,7 +97,32 @@ function parsePage(html, category) {
   }
   return items;
 }
-async function fetchAll() {
+async function scrapePage(url, category) {
+  try {
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+      },
+    });
+    const html = await res.text();
+    const items = parsePage(html, category);
+    return { items, htmlLen: html.length, status: res.status, htmlSnip: html.slice(0, 300) };
+  } catch (e) {
+    return { items: [], htmlLen: 0, status: 0, htmlSnip: '', error: e.message };
+  }
+}
+export default async function handler(req) {
+  const { searchParams } = new URL(req.url);
+  const isDebug = searchParams.get('debug') === '1';
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: { 'Access-Control-Allow-Origin': '*' } });
+  }
   const pages = [
     { url: 'https://lynk.world/news/', category: 'all' },
     { url: 'https://lynk.world/press-releases/', category: 'press-release' },
@@ -122,12 +130,7 @@ async function fetchAll() {
     { url: 'https://lynk.world/podcasts-and-videos/', category: 'media' },
     { url: 'https://lynk.world/op-eds/', category: 'opinion' },
   ];
-  const results = await Promise.all(pages.map(async p => {
-    const { html, error } = await fetchHtml(p.url);
-    if (error || !html) return { items: [], error, htmlLen: 0 };
-    const items = parsePage(html, p.category);
-    return { items, error: null, htmlLen: html.length };
-  }));
+  const results = await Promise.all(pages.map(p => scrapePage(p.url, p.category)));
   const allItems = results.flatMap(r => r.items);
   const seen = new Set();
   const unique = allItems.filter(item => {
@@ -141,34 +144,27 @@ async function fetchAll() {
     if (new Date(item.datetime).getTime() > now) item.isUpcoming = true;
   }
   unique.sort((a,b) => new Date(b.datetime) - new Date(a.datetime));
-  return {
-    items: unique,
-    debugPages: pages.map((p,i) => ({
-      url: p.url,
-      count: results[i].items.length,
-      htmlLen: results[i].htmlLen,
-      error: results[i].error,
-    })),
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-store',
+    'X-Version': VERSION,
+    'X-Total': String(unique.length),
   };
-}
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  const now = Date.now();
-  if (cache && now - cacheTime < CACHE_TTL) {
-    res.setHeader('X-Cache', 'HIT');
-    return res.status(200).json({ news: cache });
+  if (isDebug) {
+    return new Response(JSON.stringify({
+      version: VERSION,
+      total: unique.length,
+      pages: pages.map((p,i) => ({
+        url: p.url,
+        status: results[i].status,
+        htmlLen: results[i].htmlLen,
+        count: results[i].items.length,
+        error: results[i].error || null,
+        htmlSnip: results[i].htmlSnip,
+      })),
+      sample: unique.slice(0,5).map(i => ({ headline: i.headline, datetime: i.datetime, source: i.source })),
+    }), { status: 200, headers });
   }
-  const { items, debugPages } = await fetchAll();
-  cache = items;
-  cacheTime = now;
-  if (req.query.debug === '1') {
-    return res.status(200).json({ version: VERSION, total: items.length, pages: debugPages,
-      sample: items.slice(0,5).map(i => ({ headline: i.headline, datetime: i.datetime, source: i.source })) });
-  }
-  res.setHeader('X-Version', VERSION);
-  res.setHeader('X-Total', items.length);
-  res.setHeader('Cache-Control', 'no-store');
-  return res.status(200).json({ news: items });
+  return new Response(JSON.stringify({ news: unique }), { status: 200, headers });
 }
