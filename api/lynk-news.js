@@ -1,8 +1,8 @@
 // api/lynk-news.js
 // Source: lynk.world/news + sub-pages (SSR WordPress)
-// Fix: only pick up <h5> anchors that are in article content, not nav
+// Articles link to both lynk.world AND external news sites (media coverage)
 // Cache: 60s
-const VERSION = 'v2-fixed-2026-03-08';
+const VERSION = 'v3-external-urls-2026-03-09';
 const CACHE_TTL = 60 * 1000;
 let cache = null;
 let cacheTime = 0;
@@ -22,80 +22,78 @@ function decode(str) {
     .replace(/&#8220;/g, '\u201C').replace(/&#8221;/g, '\u201D')
     .replace(/&#8211;/g, '\u2013').replace(/&#8230;/g, '\u2026');
 }
-const MONTHS = { january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12 };
+const MONTHS = {january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12};
 function parseDate(str) {
   if (!str) return null;
-  const s = str.trim();
-  // "March 02, 2026" or "March 2026"
-  const m = s.match(/^(\w+)\s+(\d{1,2})?,?\s*(\d{4})$/i);
+  const m = str.trim().match(/^(\w+)\s+(\d{1,2})?,?\s*(\d{4})$/i);
   if (m) {
     const mon = MONTHS[m[1].toLowerCase()];
     const day = m[2] ? parseInt(m[2]) : 1;
     const yr = parseInt(m[3]);
     if (mon && yr) return new Date(yr, mon - 1, day).toISOString();
   }
-  const d = new Date(s);
+  const d = new Date(str.trim());
   return isNaN(d.getTime()) ? null : d.toISOString();
 }
-// Valid lynk.world article domains
-function isLynkArticleUrl(href) {
+// Lynk nav-only paths to exclude from h5 link matching
+const NAV_PATHS = new Set([
+  '/', '/what-we-do/', '/how-we-do-it/', '/our-partners/', '/news/',
+  '/careers/', '/our-team/', '/the-human-impact/', '/blog/', '/contact/',
+  '/podcasts-and-videos/', '/op-eds/', '/press-releases/', '/media-coverage/',
+  '/what-we-do', '/how-we-do-it', '/our-partners', '/news',
+  '/careers', '/our-team', '/the-human-impact', '/blog', '/contact',
+  '/podcasts-and-videos', '/op-eds', '/press-releases', '/media-coverage',
+]);
+function isValidArticleHref(href) {
   if (!href) return false;
-  if (href.includes('#')) return false;
-  if (href.startsWith('mailto:') || href.startsWith('tel:')) return false;
-  // Must be on lynk.world and deeper than top-level pages
-  const navPages = ['what-we-do','how-we-do-it','our-partners','news','careers','our-team','the-human-impact','blog','contact','podcasts-and-videos','op-eds','press-releases','media-coverage'];
-  try {
-    const u = new URL(href.startsWith('http') ? href : `https://lynk.world${href}`);
-    if (!u.hostname.includes('lynk.world') && !u.hostname.includes('lynk.global')) return false;
-    const parts = u.pathname.split('/').filter(Boolean);
-    if (parts.length < 1) return false;
-    // Exclude pure nav pages (exactly /news/ etc with no slug)
-    if (parts.length === 1 && navPages.includes(parts[0])) return false;
-    return true;
-  } catch { return false; }
+  if (href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return false;
+  if (href.startsWith('http')) return true; // any external URL is fine
+  // relative path - make sure it's not a nav page
+  const path = href.startsWith('/') ? href : `/${href}`;
+  if (NAV_PATHS.has(path) || NAV_PATHS.has(path.replace(/\/$/, ''))) return false;
+  return path.length > 2;
 }
 async function scrapeLynkPage(url, defaultCategory) {
   try {
     const res = await fetch(url, { headers: BROWSER_HEADERS });
     if (!res.ok) return { items: [], error: `HTTP ${res.status}` };
     const html = await res.text();
-    // Cut to just the main content area — strip nav and footer to avoid false positives
-    // The main article list is between <main> or the first <section class="...entry..."> and </main>
+    // Try to isolate main content — cut off nav and footer noise
+    // Lynk uses WordPress; look for the article list container
     let body = html;
-    const mainMatch = html.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
-    if (mainMatch) body = mainMatch[1];
-    const items = [];
-    // Build element list with positions for: dates, h5 article links, h6 sources, p summaries
+    // Try to cut between first <header> end and <footer> start
+    const footerIdx = html.toLowerCase().lastIndexOf('<footer');
+    if (footerIdx > 0) body = html.slice(0, footerIdx);
+    const headerEnd = body.toLowerCase().indexOf('</header>');
+    if (headerEnd > 0) body = body.slice(headerEnd + 9);
     const elements = [];
-    // Dates: <p>Month DD, YYYY</p> — only in main body
-    const re1 = /<p[^>]*>\s*((?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4})\s*<\/p>/gi;
     let m;
+    // Dates: <p>Month DD, YYYY</p>
+    const re1 = /<p[^>]*>\s*((?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s*\d{4})\s*<\/p>/gi;
     while ((m = re1.exec(body)) !== null) {
       elements.push({ type: 'date', pos: m.index, text: m[1] });
     }
-    // h5 with an anchor link — article headings
-    // ONLY pick up links to external URLs or lynk.world article paths (not nav)
+    // h5 with anchor — article headlines
     const re2 = /<h5[^>]*>([\s\S]*?)<\/h5>/gi;
     while ((m = re2.exec(body)) !== null) {
       const inner = m[1];
-      const aMatch = inner.match(/<a\s+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i);
+      const aMatch = inner.match(/<a\s[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/i);
       if (!aMatch) continue;
       const href = aMatch[1];
       const text = decode(strip(aMatch[2]));
       if (!text || text.length < 8) continue;
-      // Filter: must look like an article URL
-      if (!isLynkArticleUrl(href)) continue;
+      if (!isValidArticleHref(href)) continue;
       elements.push({ type: 'heading', pos: m.index, href, text });
     }
-    // h6 source labels — between headings
+    // h6 source labels
     const re3 = /<h6[^>]*>([\s\S]*?)<\/h6>/gi;
     while ((m = re3.exec(body)) !== null) {
       const t = decode(strip(m[1]));
-      if (t && t.length > 1 && t.length < 100) {
+      if (t && t.length > 1 && t.length < 120) {
         elements.push({ type: 'source', pos: m.index, text: t });
       }
     }
-    // Summaries: <p> with substantial content
+    // Paragraph summaries
     const re4 = /<p[^>]*>([\s\S]*?)<\/p>/gi;
     while ((m = re4.exec(body)) !== null) {
       const t = decode(strip(m[1]));
@@ -105,6 +103,7 @@ async function scrapeLynkPage(url, defaultCategory) {
     }
     elements.sort((a, b) => a.pos - b.pos);
     const headings = elements.filter(e => e.type === 'heading');
+    const items = [];
     for (let i = 0; i < headings.length; i++) {
       const h = headings[i];
       const nextH = headings[i + 1];
@@ -113,7 +112,8 @@ async function scrapeLynkPage(url, defaultCategory) {
       const summary = elements.find(e => e.type === 'summary' && e.pos > h.pos && (!nextH || e.pos < nextH.pos));
       const headline = h.text;
       if (!headline || headline.length < 5) continue;
-      const href = h.href.startsWith('http') ? h.href : `https://lynk.world${h.href}`;
+      const href = h.href.startsWith('http') ? h.href
+        : `https://lynk.world${h.href.startsWith('/') ? h.href : '/' + h.href}`;
       const datetime = parseDate(nearDate?.text) || new Date().toISOString();
       const sourceLabel = src?.text || 'Lynk Global';
       let category = defaultCategory;
@@ -148,6 +148,7 @@ async function fetchAllLynk() {
   ];
   const results = await Promise.all(pages.map(p => scrapeLynkPage(p.url, p.category)));
   const allItems = results.flatMap(r => r.items);
+  // Deduplicate by permalink
   const seen = new Set();
   const unique = allItems.filter(item => {
     const key = item.permalink.toLowerCase().replace(/\/+$/, '');
@@ -164,7 +165,10 @@ async function fetchAllLynk() {
   return {
     items: unique,
     errors: results.map((r, i) => r.error ? `${pages[i].url}: ${r.error}` : null).filter(Boolean),
-    counts: Object.fromEntries(pages.map((p, i) => [p.url.split('/').filter(Boolean).pop() || 'news', results[i].items.length])),
+    counts: Object.fromEntries(pages.map((p, i) => [
+      p.url.split('/').filter(Boolean).pop() || 'news',
+      results[i].items.length
+    ])),
   };
 }
 export default async function handler(req, res) {
@@ -185,7 +189,7 @@ export default async function handler(req, res) {
       counts,
       errors,
       total: items.length,
-      sample: items.slice(0, 5).map(i => ({
+      sample: items.slice(0, 8).map(i => ({
         headline: i.headline,
         datetime: i.datetime,
         source: i.source,
