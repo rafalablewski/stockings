@@ -123,6 +123,39 @@ const FEED_CONFIGS: FeedConfig[] = [
       "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
     },
   },
+  {
+    ticker: "AMZLEO",
+    endpoint: "/api/amazon-leo-news",
+    accent: "emerald",
+    color: "#34D399",
+    colorDim: "rgba(52,211,153,0.15)",
+    sourceFilter: () => true,
+    headlineFilter: () => true,
+    parseResponse: (json: any) => json?.news || [],
+    categories: {
+      Satellite: (h) => /satellite|kuiper|leo|orbit|launch|space|constellation/i.test(h),
+      Connectivity: (h) => /connect|broadband|internet|coverage|rural|wireless|network/i.test(h),
+      Partnerships: (h) => /partner|agreement|contract|carrier|telco|operator|government/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|hire|team/i.test(h),
+    },
+  },
+  {
+    ticker: "LYNK",
+    endpoint: "/api/lynk-news",
+    accent: "teal",
+    color: "#2DD4BF",
+    colorDim: "rgba(45,212,191,0.15)",
+    sourceFilter: () => true,
+    headlineFilter: () => true,
+    parseResponse: (json: any) => json?.news || [],
+    categories: {
+      Satellite: (h) => /satellite|leo|orbit|launch|space|constellation|cell tower/i.test(h),
+      Connectivity: (h) => /connect|broadband|coverage|direct.to.cell|d2d|cellular|network/i.test(h),
+      Partnerships: (h) => /partner|agreement|contract|carrier|telco|operator|government|mno/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|funding|raise/i.test(h),
+      "Media & Opinion": (h) => /podcast|video|op.ed|interview|panel|keynote|conference/i.test(h),
+    },
+  },
 ];
 
 /* Build merged category set from all configs */
