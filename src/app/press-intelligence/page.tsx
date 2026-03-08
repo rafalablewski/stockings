@@ -274,7 +274,7 @@ export default function PressIntelligencePage() {
       const q = searchQuery.toLowerCase();
       items = items.filter((item) => {
         const headline = (item.headline || item.title || "").toLowerCase();
-        const summary = (item.summary || item.description || "").toLowerCase();
+        const summary = (item.summary || (item as any).qmsummary || item.description || "").toLowerCase();
         return headline.includes(q) || summary.includes(q);
       });
     }
@@ -470,12 +470,15 @@ export default function PressIntelligencePage() {
           const id = `${item._ticker}-${item.newsid || item.id}`;
           const expanded = expandedId === id;
           const headline = item.headline || item.title || "";
-          const summary = item.summary || item.description || "";
+          const summary = item.summary || (item as any).qmsummary || item.description || "";
           const date = formatDate(item.datetime);
           const time = formatTime(item.datetime);
           const source = (item.source || "").split(" ").slice(0, 2).join(" ");
           const cfg = item._config;
-          const link = `https://feeds.issuerdirect.com/news-release.html?newsid=${item.newsid || item.id}&symbol=${cfg.ticker}`;
+          const permalink = (item as any).permalink || (item as any).storyurl || "";
+          const link = permalink && permalink.startsWith("http")
+            ? permalink
+            : `https://feeds.issuerdirect.com/news-release.html?newsid=${item.newsid || item.id}&symbol=${cfg.ticker}`;
 
           return (
             <div
