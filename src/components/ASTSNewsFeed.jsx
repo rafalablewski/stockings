@@ -45,7 +45,7 @@ export default function ASTSNewsFeed() {
       return;
     }
     try {
-      const res = await fetch("/api/asts-news");
+      const res = await fetch("/api/press-intelligence?ticker=ASTS");
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = await res.json();
       const raw = (json?.results?.news?.[0]?.newsitem) || [];
@@ -269,7 +269,7 @@ export default function ASTSNewsFeed() {
         {error && (
           <div style={styles.empty}>
             <div style={{ color: "#c96e6e", marginBottom: 8 }}>⚠ {error}</div>
-            <div>Check your /api/asts-news proxy</div>
+            <div>Check your /api/press-intelligence?ticker=ASTS proxy</div>
           </div>
         )}
         {!loading && !error && visible.length === 0 && (

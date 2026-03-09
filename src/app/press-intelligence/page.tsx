@@ -24,7 +24,7 @@ interface FeedConfig {
 const FEED_CONFIGS: FeedConfig[] = [
   {
     ticker: "ASTS",
-    endpoint: "/api/asts-news",
+    endpoint: "/api/press-intelligence?ticker=ASTS",
     accent: "cyan",
     color: "#22D3EE",
     colorDim: "rgba(34,211,238,0.15)",
@@ -39,7 +39,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "BMNR",
-    endpoint: "/api/bmnr-news",
+    endpoint: "/api/press-intelligence?ticker=BMNR",
     accent: "violet",
     color: "#A78BFA",
     colorDim: "rgba(167,139,250,0.15)",
@@ -57,7 +57,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "IRDM",
-    endpoint: "/api/irdm-news",
+    endpoint: "/api/press-intelligence?ticker=IRDM",
     accent: "gold",
     color: "#F59E0B",
     colorDim: "rgba(245,158,11,0.15)",
@@ -74,7 +74,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "GSAT",
-    endpoint: "/api/gsat-news",
+    endpoint: "/api/press-intelligence?ticker=GSAT",
     accent: "orange",
     color: "#FB923C",
     colorDim: "rgba(251,146,60,0.15)",
@@ -91,7 +91,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "VZ",
-    endpoint: "/api/vz-news",
+    endpoint: "/api/press-intelligence?ticker=VZ",
     accent: "rose",
     color: "#F472B6",
     colorDim: "rgba(244,114,182,0.15)",
@@ -108,7 +108,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "T",
-    endpoint: "/api/att-news",
+    endpoint: "/api/press-intelligence?ticker=T",
     accent: "sky",
     color: "#38BDF8",
     colorDim: "rgba(56,189,248,0.15)",
@@ -125,7 +125,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "AMZLEO",
-    endpoint: "/api/amazon-leo-news",
+    endpoint: "/api/press-intelligence?ticker=AMZLEO",
     accent: "emerald",
     color: "#34D399",
     colorDim: "rgba(52,211,153,0.15)",
@@ -141,7 +141,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "LYNK",
-    endpoint: "/api/lynk-news",
+    endpoint: "/api/press-intelligence?ticker=LYNK",
     accent: "teal",
     color: "#2DD4BF",
     colorDim: "rgba(45,212,191,0.15)",
@@ -158,7 +158,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "MSTR",
-    endpoint: "/api/crypto-news?ticker=MSTR",
+    endpoint: "/api/press-intelligence?ticker=MSTR",
     accent: "amber",
     color: "#F59E0B",
     colorDim: "rgba(245,158,11,0.15)",
@@ -174,7 +174,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "MARA",
-    endpoint: "/api/crypto-news?ticker=MARA",
+    endpoint: "/api/press-intelligence?ticker=MARA",
     accent: "lime",
     color: "#84CC16",
     colorDim: "rgba(132,204,22,0.15)",
@@ -191,7 +191,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "RIOT",
-    endpoint: "/api/crypto-news?ticker=RIOT",
+    endpoint: "/api/press-intelligence?ticker=RIOT",
     accent: "red",
     color: "#EF4444",
     colorDim: "rgba(239,68,68,0.15)",
@@ -208,7 +208,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "CLSK",
-    endpoint: "/api/crypto-news?ticker=CLSK",
+    endpoint: "/api/press-intelligence?ticker=CLSK",
     accent: "green",
     color: "#22C55E",
     colorDim: "rgba(34,197,94,0.15)",
@@ -225,7 +225,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "FRMM",
-    endpoint: "/api/crypto-news?ticker=FRMM",
+    endpoint: "/api/press-intelligence?ticker=FRMM",
     accent: "purple",
     color: "#A855F7",
     colorDim: "rgba(168,85,247,0.15)",
@@ -242,7 +242,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "COIN",
-    endpoint: "/api/crypto-news?ticker=COIN",
+    endpoint: "/api/press-intelligence?ticker=COIN",
     accent: "blue",
     color: "#3B82F6",
     colorDim: "rgba(59,130,246,0.15)",
