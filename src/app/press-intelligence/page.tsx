@@ -30,6 +30,7 @@ const FEED_CONFIGS: FeedConfig[] = [
     colorDim: "rgba(34,211,238,0.15)",
     sourceFilter: (src) => src.toLowerCase().includes("business wire"),
     headlineFilter: (h) => /ast\s*spacemobile|asts/i.test(h),
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
     categories: {
       Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d/i.test(h),
       Launches: (h) => /launch|bluebird|satellite|orbit|unfold|spacex/i.test(h),
@@ -48,6 +49,7 @@ const FEED_CONFIGS: FeedConfig[] = [
       return s.includes("pr newswire") || s.includes("prnewswire") || s.includes("business wire") || s.includes("accesswire") || s.includes("globe newswire");
     },
     headlineFilter: (h) => /bitmine|bmnr|bit\s*mine/i.test(h),
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
     categories: {
       Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
       Ethereum: (h) => /eth|ethereum|staking|crypto|digital asset|blockchain|treasury/i.test(h),
