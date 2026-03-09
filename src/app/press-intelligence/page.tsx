@@ -158,7 +158,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "MSTR",
-    endpoint: "/api/mstr-news",
+    endpoint: "/api/crypto-news?ticker=MSTR",
     accent: "amber",
     color: "#F59E0B",
     colorDim: "rgba(245,158,11,0.15)",
@@ -174,7 +174,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "MARA",
-    endpoint: "/api/mara-news",
+    endpoint: "/api/crypto-news?ticker=MARA",
     accent: "lime",
     color: "#84CC16",
     colorDim: "rgba(132,204,22,0.15)",
@@ -191,7 +191,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "RIOT",
-    endpoint: "/api/riot-news",
+    endpoint: "/api/crypto-news?ticker=RIOT",
     accent: "red",
     color: "#EF4444",
     colorDim: "rgba(239,68,68,0.15)",
@@ -208,7 +208,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "CLSK",
-    endpoint: "/api/clsk-news",
+    endpoint: "/api/crypto-news?ticker=CLSK",
     accent: "green",
     color: "#22C55E",
     colorDim: "rgba(34,197,94,0.15)",
@@ -225,7 +225,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "FRMM",
-    endpoint: "/api/frmm-news",
+    endpoint: "/api/crypto-news?ticker=FRMM",
     accent: "purple",
     color: "#A855F7",
     colorDim: "rgba(168,85,247,0.15)",
@@ -241,7 +241,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "COIN",
-    endpoint: "/api/coin-news",
+    endpoint: "/api/crypto-news?ticker=COIN",
     accent: "blue",
     color: "#3B82F6",
     colorDim: "rgba(59,130,246,0.15)",
