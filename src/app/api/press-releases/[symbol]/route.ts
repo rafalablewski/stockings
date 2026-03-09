@@ -22,6 +22,11 @@ const IR_URLS: Record<string, string> = {
   CLSK: 'https://investors.cleanspark.com/news/',
   FRMM: 'https://ir.forum-markets.com/news-events/press-releases',
   COIN: 'https://investor.coinbase.com/news/default.aspx',
+  VSAT: 'https://investors.viasat.com/press-releases',
+  RKLB: 'https://investors.rocketlabcorp.com/news',
+  SATS: 'https://ir.echostar.com/press-releases',
+  LUNR: 'https://investors.intuitivemachines.com/news-events/latest-news',
+  HUT: 'https://www.hut8.com/news-insights/press-releases',
 };
 
 // Fallback IR URLs when primary page is JS-rendered and returns no links in initial HTML.
