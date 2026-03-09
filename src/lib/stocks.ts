@@ -26,6 +26,42 @@ export const stocks: Record<string, StockMeta> = {
     sector: 'Fintech',
     description: 'Issuer of USDC, the leading regulated digital dollar stablecoin',
   },
+  MSTR: {
+    ticker: 'MSTR',
+    name: 'Strategy',
+    sector: 'Digital Assets',
+    description: 'Bitcoin treasury company (formerly MicroStrategy), largest corporate BTC holder',
+  },
+  MARA: {
+    ticker: 'MARA',
+    name: 'MARA Holdings',
+    sector: 'Digital Assets',
+    description: 'Bitcoin mining and digital asset technology company',
+  },
+  RIOT: {
+    ticker: 'RIOT',
+    name: 'Riot Platforms',
+    sector: 'Digital Assets',
+    description: 'Bitcoin mining and digital infrastructure company',
+  },
+  CLSK: {
+    ticker: 'CLSK',
+    name: 'CleanSpark',
+    sector: 'Digital Assets',
+    description: 'Bitcoin mining company focused on low-carbon energy sources',
+  },
+  FRMM: {
+    ticker: 'FRMM',
+    name: 'Forum Markets',
+    sector: 'Digital Assets',
+    description: 'Digital asset holding company (formerly Ether Capital / ETHZ)',
+  },
+  COIN: {
+    ticker: 'COIN',
+    name: 'Coinbase Global',
+    sector: 'Digital Assets',
+    description: 'Largest US cryptocurrency exchange and digital asset platform',
+  },
 };
 
 export const stockList = Object.values(stocks);
