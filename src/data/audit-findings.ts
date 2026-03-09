@@ -520,14 +520,13 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
   },
   {
     id: 'DUP-002',
-    title: 'RSS Parsing and HTML Utilities Duplicated Across Files',
+    title: 'HTML Utilities Duplicated in Remaining Routes',
     category: '30. Code Duplication',
     description:
-      'decodeHTMLEntities() is copy-pasted in 2 files (press-releases, competitor-feed). RSS XML parsing regex logic is duplicated across the same 2 files with minor variations. HTML-to-text stripping (8 chained regex replacements) is duplicated in edgar/analyze and sources/analyze. (Previously 3 files — /api/news/ migrated to press intelligence.)',
-    severity: 'MEDIUM',
-    cvss: 3.5,
+      'decodeHTMLEntities() and RSS parsing remain only in competitor-feed. HTML-to-text stripping is duplicated in edgar/analyze and sources/analyze. (Previously 3 files — /api/news/ and /api/press-releases/ migrated to press intelligence.)',
+    severity: 'LOW',
+    cvss: 2.5,
     affectedAssets: [
-      'src/app/api/press-releases/[symbol]/route.ts',
       'src/app/api/competitor-feed/[company]/route.ts',
       'src/app/api/edgar/analyze/route.ts',
       'src/app/api/sources/analyze/route.ts',
@@ -2165,7 +2164,7 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
     impact:
       'News sources are now more reliable and diverse. Google News RSS dependency removed for the news pipeline.',
     remediation:
-      'Resolved — press intelligence provides multi-source redundancy. Competitor feed still uses Google News RSS.',
+      'Resolved — both /api/news/ and /api/press-releases/ now use press intelligence. Only /api/competitor-feed/ still uses Google News RSS.',
     effort: 'Short-term',
     compliance: [],
     status: 'Resolved',

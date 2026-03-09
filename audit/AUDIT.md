@@ -627,7 +627,7 @@
 | 29.1 | Yahoo Finance API (`stock/[symbol]/route.ts`) | **Medium** | Uses an undocumented Yahoo Finance API endpoint (`query1.finance.yahoo.com`). This endpoint has no SLA, no rate limit documentation, and can change or break without notice. Rate limit handling exists (429 detection) but no automatic backoff. |
 | 29.2 | Anthropic Claude API (multiple routes) | **Medium** | No API key rotation mechanism. If the key is compromised, every endpoint using Claude breaks simultaneously. No usage tracking or budget limits. |
 | 29.3 | SEC EDGAR API (`edgar/[ticker]/route.ts`) | **Good** | Properly implements SEC rate limiting guidelines with a valid User-Agent. Uses `revalidate` to avoid excessive requests. |
-| 29.4 | Google News RSS (press-releases, competitor-feed) | **Low** | `/api/news/[symbol]` migrated to press intelligence. Google News RSS still used in `/api/press-releases/` (wire-service PR discovery) and `/api/competitor-feed/` (competitor news). Those routes still depend on the undocumented feed. |
+| 29.4 | Google News RSS (competitor-feed only) | **Low** | `/api/news/` and `/api/press-releases/` both migrated to press intelligence. Google News RSS only remains in `/api/competitor-feed/` (competitor news). |
 
 ### Recommendations
 
@@ -644,8 +644,8 @@
 
 | # | Location | Severity | Description |
 |---|----------|----------|-------------|
-| 30.1 | `press-releases/[symbol]/route.ts:48-56` & `competitor-feed/[company]/route.ts:44-52` | **Medium** | `decodeHTMLEntities()` is copy-pasted identically in 2 files. Should be extracted to a shared utility. (Previously 3 files — `/api/news/` migrated to press intelligence.) |
-| 30.2 | `press-releases/[symbol]/route.ts:188-213` & `competitor-feed/[company]/route.ts:73-94` | **Medium** | RSS XML parsing logic (regex-based item extraction) is duplicated across 2 files with minor variations. Should be a shared `parseRSS()` utility. (Previously 3 files — `/api/news/` migrated to press intelligence.) |
+| 30.1 | `competitor-feed/[company]/route.ts:44-52` | **Low** | `decodeHTMLEntities()` remains only in competitor-feed. (Previously 3 files — `/api/news/` and `/api/press-releases/` migrated to press intelligence.) |
+| 30.2 | `competitor-feed/[company]/route.ts:73-94` | **Low** | RSS XML parsing logic remains only in competitor-feed. (Previously 3 files — `/api/news/` and `/api/press-releases/` migrated to press intelligence.) |
 | 30.3 | `src/app/api/edgar/analyze/route.ts:30-42` & `sources/analyze/route.ts:32-43` | **Low** | HTML-to-text stripping logic is duplicated in both analyze endpoints. |
 | 30.4 | `src/app/api/seen-articles/route.ts:32-69` & `seen-filings/route.ts:42-80` | **Medium** | The `ensureTable()` pattern with `tableVerified` flag and `isTableMissing()` helper is duplicated between these two files. Should be a shared utility. |
 | 30.5 | `scripts/seed-database.ts` & `src/app/api/db/setup/route.ts` | **High** | The entire seed logic is duplicated — once as a CLI script and once as an API route. Both import the same data and call the same mappers. Should share a common `seedAll()` function. |
