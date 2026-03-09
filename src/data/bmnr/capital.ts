@@ -215,6 +215,14 @@ export const MAJOR_SHAREHOLDERS = [
     notes: 'Mike Novogratz',
   },
   {
+    name: 'Lori Love',
+    shares: 36082,
+    percent: null,
+    type: 'Individual',
+    source: 'Feb 25, 2026 Form 4',
+    notes: 'Director. 36,082 shares direct + 17,496 unvested RSUs (2026 board service, quarterly vest). 13,582 shares granted for 2025 board/committee service.',
+  },
+  {
     name: 'Tom Lee',
     shares: 726722,
     percent: null,
