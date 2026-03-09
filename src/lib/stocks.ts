@@ -86,6 +86,12 @@ export const stocks: Record<string, StockMeta> = {
     sector: 'Space Technology',
     description: 'Space exploration company providing lunar landing, data transmission, and orbital services',
   },
+  HUT: {
+    ticker: 'HUT',
+    name: 'Hut 8',
+    sector: 'Digital Assets',
+    description: 'Bitcoin mining and high-performance computing infrastructure company',
+  },
 };
 
 export const stockList = Object.values(stocks);

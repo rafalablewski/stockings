@@ -398,6 +398,11 @@ const TICKER_CONFIG = {
     topics: ['CLSK'],
     filter: (hl) => /cleanspark/i.test(hl) || /\bclsk\b/i.test(hl),
   },
+  HUT: {
+    type: 'crypto',
+    topics: ['HUT'],
+    filter: (hl) => /hut\s*8|hut8|\bhut\b/i.test(hl),
+  },
   COIN: {
     type: 'crypto',
     topics: ['COIN'],

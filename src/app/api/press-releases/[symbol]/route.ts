@@ -26,6 +26,7 @@ const IR_URLS: Record<string, string> = {
   RKLB: 'https://investors.rocketlabcorp.com/news',
   SATS: 'https://ir.echostar.com/press-releases',
   LUNR: 'https://investors.intuitivemachines.com/news-events/latest-news',
+  HUT: 'https://www.hut8.com/news-insights/press-releases',
 };
 
 // Fallback IR URLs when primary page is JS-rendered and returns no links in initial HTML.

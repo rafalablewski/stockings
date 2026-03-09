@@ -296,6 +296,23 @@ const FEED_CONFIGS: FeedConfig[] = [
     },
   },
   {
+    ticker: "HUT",
+    endpoint: "/api/press-intelligence?ticker=HUT",
+    accent: "stone",
+    color: "#A8A29E",
+    colorDim: "rgba(168,162,158,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for "hut 8"
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Mining: (h) => /mining|hash|hashrate|exahash|block|mined|production|megawatt|facility|data\s*center/i.test(h),
+      Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+    },
+  },
+  {
     ticker: "FRMM",
     endpoint: "/api/press-intelligence?ticker=FRMM",
     accent: "purple",
