@@ -332,8 +332,20 @@ export default async function handler(req, res) {
       const gnwResults = gnwItems.status === 'fulfilled' ? gnwItems.value : [];
       const nfResults = nfItems.status === 'fulfilled' ? nfItems.value : [];
 
-      // Merge all sources: QM results first, then IR, then GNW, then Newsfile
-      finalItems = [...qmFiltered, ...irResults, ...gnwResults, ...nfResults];
+      // Apply the same company-name headline filter to all fallback results
+      const filterFallback = (items) => items.filter((item) => {
+        const hl = (item.headline || '').toLowerCase();
+        // Must mention the company AND have a meaningful headline (not nav links)
+        return hl.length >= 20 && config.filter(hl);
+      });
+
+      // Merge all sources: QM results first, then filtered fallbacks
+      finalItems = [
+        ...qmFiltered,
+        ...filterFallback(irResults),
+        ...filterFallback(gnwResults),
+        ...filterFallback(nfResults),
+      ];
     }
 
     // Deduplicate
