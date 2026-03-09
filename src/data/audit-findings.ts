@@ -2168,7 +2168,7 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
       'Resolved — press intelligence provides multi-source redundancy. Competitor feed still uses Google News RSS.',
     effort: 'Short-term',
     compliance: [],
-    status: 'Fixed',
+    status: 'Resolved',
   },
   {
     id: 'VENDOR-004',
