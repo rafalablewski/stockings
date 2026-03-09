@@ -371,7 +371,7 @@ const apiRoutes = [
   ]},
   { group: "Sources",   routes: [
     { method: "POST", path: "/api/sources/analyze",             auth: "PIN", note: "AI analysis of news article (Claude)" },
-    { method: "GET",  path: "/api/news/[symbol]",               auth: "—",   note: "Google News RSS by ticker" },
+    { method: "GET",  path: "/api/news/[symbol]",               auth: "—",   note: "Press intelligence news by ticker" },
     { method: "GET",  path: "/api/press-releases/[symbol]",     auth: "—",   note: "IR press releases via RSS" },
     { method: "GET",  path: "/api/competitor-feed/[company]",   auth: "—",   note: "Competitor intelligence feed" },
   ]},

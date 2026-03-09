@@ -3,6 +3,25 @@ import { stocks } from '@/lib/stocks';
 
 type RouteParams = Promise<{ symbol: string }>;
 
+// Press intelligence item shape (from api/press-intelligence.js)
+interface PressIntelItem {
+  newsid: string;
+  headline: string;
+  datetime: string;
+  source: string;
+  qmsummary?: string;
+  permalink: string;
+  storyurl?: string;
+  _source?: string;
+}
+
+/**
+ * GET /api/news/[symbol]
+ *
+ * Fetches news from press intelligence (multi-source aggregator)
+ * instead of Google News RSS.  Returns the same { articles } shape
+ * consumed by SharedSourcesTab.
+ */
 export async function GET(
   request: NextRequest,
   { params }: { params: RouteParams }
@@ -19,91 +38,50 @@ export async function GET(
   }
 
   try {
-    // Google News RSS search by company name + stock ticker
-    const query = encodeURIComponent(`"${stock.name}" OR "${symbol}" stock`);
-    const rssUrl = `https://news.google.com/rss/search?q=${query}&hl=en-US&gl=US&ceid=US:en`;
+    // Use press intelligence as the source
+    const piUrl = new URL('/api/press-intelligence', request.url);
+    piUrl.searchParams.set('ticker', symbol);
 
-    const response = await fetch(rssUrl, {
-      headers: {
-        'User-Agent': 'stockings-app/1.0 (research-tool)',
-      },
+    const response = await fetch(piUrl.toString(), {
       cache: 'no-store',
-      signal: AbortSignal.timeout(10000),
+      signal: AbortSignal.timeout(15000),
     });
 
     if (!response.ok) {
       return NextResponse.json(
-        { error: 'Failed to fetch from Google News RSS', status: response.status },
+        { error: `Press intelligence returned ${response.status}` },
         { status: response.status }
       );
     }
 
-    const xml = await response.text();
+    const data = await response.json();
 
-    // Parse RSS XML items
-    const items: Array<{
-      title: string;
-      url: string;
-      date: string;
-      source: string;
-    }> = [];
+    // Press intelligence returns a flat array for most tickers,
+    // but { news: [...] } for AMZLEO and LYNK
+    const items: PressIntelItem[] = Array.isArray(data) ? data : (data.news || []);
 
-    const itemRegex = /<item>([\s\S]*?)<\/item>/g;
-    let match;
-    while ((match = itemRegex.exec(xml)) !== null && items.length < 30) {
-      const itemXml = match[1];
-      const title = itemXml.match(/<title>([\s\S]*?)<\/title>/)?.[1]?.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').trim() || '';
-      const link = itemXml.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim() || '';
-      const pubDate = itemXml.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1]?.trim() || '';
-      const source = itemXml.match(/<source[^>]*>([\s\S]*?)<\/source>/)?.[1]?.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').trim() || '';
-
-      if (title) {
-        items.push({
-          title: decodeHTMLEntities(title),
-          url: link,
-          date: pubDate ? new Date(pubDate).toISOString().split('T')[0] : '',
-          source: decodeHTMLEntities(source),
-        });
-      }
-    }
-
-    // Filter out articles unrelated to this company
-    const nameLower = stock.name.toLowerCase();
-    const tickerLower = symbol.toLowerCase();
-    // Build keywords from company name (e.g. "AST SpaceMobile" → ["ast", "spacemobile"])
-    const nameWords = nameLower.split(/\s+/).filter(w => w.length >= 3);
-    const relevant = items.filter(item => {
-      const t = item.title.toLowerCase();
-      // Must mention ticker or at least one significant name word
-      if (t.includes(tickerLower)) return true;
-      if (t.includes(nameLower)) return true;
-      return nameWords.some(w => t.includes(w));
-    });
+    // Transform to the article shape SharedSourcesTab expects
+    const articles = items.slice(0, 30).map(item => ({
+      title: item.headline,
+      url: item.permalink || item.storyurl || '',
+      date: item.datetime ? item.datetime.split('T')[0] : '',
+      source: item.source || item._source || '',
+    }));
 
     // Sort by date descending (newest first)
-    relevant.sort((a, b) => b.date.localeCompare(a.date));
+    articles.sort((a, b) => b.date.localeCompare(a.date));
 
     return NextResponse.json({
       symbol,
       companyName: stock.name,
-      articles: relevant.slice(0, 10),
+      articles: articles.slice(0, 15),
       fetchedAt: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Google News RSS error:', error);
+    console.error('News API error (press intelligence):', error);
     return NextResponse.json(
       { error: 'Failed to fetch news' },
       { status: 500 }
     );
   }
-}
-
-function decodeHTMLEntities(text: string): string {
-  return text
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'");
 }

@@ -1659,7 +1659,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <div style={{ width: 2, height: 10, background: 'var(--sky)' }} />
                 <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>GET /api/press-releases/[ticker]</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
-                <div className="sm-text3 sm-text-center" style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', lineHeight: 1.6 }}>IR pages (with fallback for JS-rendered pages, e.g. ASTS) + direct Business Wire (newsroom, cheerio) + Google News RSS (company + ticker, wire sites). Returns up to 15; dedup by title.</div>
+                <div className="sm-text3 sm-text-center" style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', lineHeight: 1.6 }}>IR pages (with fallback for JS-rendered pages, e.g. ASTS) + direct Business Wire (newsroom, cheerio). Returns up to 15; dedup by title.</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
                 <div className="sm-sky" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600 }}>articleType: &quot;pr&quot;</div>
               </div>
@@ -1668,7 +1668,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <div style={{ width: 2, height: 10, background: 'var(--mint)' }} />
                 <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>GET /api/news/[ticker]</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
-                <div className="sm-text3 sm-text-center" style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', lineHeight: 1.6 }}>Google News RSS by company name + ticker<br />filtered for relevance (Yahoo, Reuters, etc.)</div>
+                <div className="sm-text3 sm-text-center" style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', lineHeight: 1.6 }}>Press Intelligence (multi-source aggregator)<br />QuoteMedia, GlobeNewsWire, Stock Titan, IR pages</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
                 <div className="sm-mint" style={{ padding: '4px 10px', fontSize: 10, fontFamily: 'Space Mono, monospace', fontWeight: 600 }}>articleType: &quot;news&quot;</div>
               </div>
