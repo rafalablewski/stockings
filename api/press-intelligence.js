@@ -358,6 +358,12 @@ const TICKER_CONFIG = {
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
     filter: (hl) => /viasat/i.test(hl),
   },
+  RKLB: {
+    type: 'qm-simple',
+    topics: ['RKLB'],
+    sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
+    filter: (hl) => /rocket\s*lab|rklb/i.test(hl),
+  },
 
   // ─── Crypto tickers (QM + optional fallbacks) ───
   MSTR: {

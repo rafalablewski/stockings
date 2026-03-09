@@ -126,6 +126,24 @@ const FEED_CONFIGS: FeedConfig[] = [
     },
   },
   {
+    ticker: "RKLB",
+    endpoint: "/api/press-intelligence?ticker=RKLB",
+    accent: "fuchsia",
+    color: "#D946EF",
+    colorDim: "rgba(217,70,239,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for "rocket lab"
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Launch: (h) => /launch|electron|neutron|mission|payload|deploy|liftoff|rocket/i.test(h),
+      Satellite: (h) => /satellite|spacecraft|photon|constellation|orbit|space\s*systems/i.test(h),
+      Partnerships: (h) => /partner|agreement|contract|award|select|government|dod|military|nasa/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+    },
+  },
+  {
     ticker: "T",
     endpoint: "/api/press-intelligence?ticker=T",
     accent: "sky",

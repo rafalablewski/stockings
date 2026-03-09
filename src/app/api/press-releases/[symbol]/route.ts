@@ -23,6 +23,7 @@ const IR_URLS: Record<string, string> = {
   FRMM: 'https://ir.forum-markets.com/news-events/press-releases',
   COIN: 'https://investor.coinbase.com/news/default.aspx',
   VSAT: 'https://investors.viasat.com/press-releases',
+  RKLB: 'https://investors.rocketlabcorp.com/news',
 };
 
 // Fallback IR URLs when primary page is JS-rendered and returns no links in initial HTML.

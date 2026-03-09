@@ -68,6 +68,12 @@ export const stocks: Record<string, StockMeta> = {
     sector: 'Space Technology',
     description: 'Global communications company providing satellite and wireless networking systems',
   },
+  RKLB: {
+    ticker: 'RKLB',
+    name: 'Rocket Lab',
+    sector: 'Space Technology',
+    description: 'End-to-end space company providing launch services, spacecraft, and space systems',
+  },
 };
 
 export const stockList = Object.values(stocks);
