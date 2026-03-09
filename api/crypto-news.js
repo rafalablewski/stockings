@@ -42,12 +42,23 @@ const TICKER_CONFIG = {
     // FRMM is TSX-listed (Canadian) — QM may not index it; use multi-source fallback
     irUrl: 'https://ir.forum-markets.com/news-events/press-releases',
     // GlobeNewsWire RSS (NOT Google RSS) — direct wire service feeds
-    gnwRssKeywords: ['Forum Markets', 'Ether Capital'],
-    // Notified platform API endpoints (common for IR sites hosted on Notified)
+    gnwRssKeywords: ['Forum Markets Inc', 'Forum Markets', 'Ether Capital'],
+    // Notified platform RSS + JSON API endpoints
     notifiedApiUrls: [
       'https://ir.forum-markets.com/rss/news-releases.xml',
       'https://ir.forum-markets.com/rss/press-releases.xml',
       'https://ir.forum-markets.com/feed',
+    ],
+    // Notified JSON API (the backend API the SPA calls)
+    notifiedJsonApis: [
+      'https://ir.forum-markets.com/api/PressRelease/GetPressReleaseList?pageSize=50&pageNumber=1',
+      'https://ir.forum-markets.com/api/News/GetNewsList?pageSize=50&pageNumber=1&category=press-releases',
+    ],
+    // Newsfile company page (common Canadian wire service)
+    newsfileCompanyUrls: [
+      'https://www.newsfilecorp.com/company/Forum-Markets',
+      'https://www.newsfilecorp.com/company/Forum-Markets-Inc',
+      'https://www.newsfilecorp.com/company/Ether-Capital',
     ],
   },
   COIN: {
@@ -225,6 +236,111 @@ async function fetchNotifiedRss(rssUrls) {
   return [];
 }
 
+// ─── Notified Platform JSON API (backend API that IR SPA calls) ───
+
+async function fetchNotifiedJson(apiUrls) {
+  for (const url of apiUrls) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          ...BROWSER_HEADERS,
+          'Accept': 'application/json, text/plain, */*',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!res.ok) {
+        console.warn(`[crypto-news] Notified JSON API returned ${res.status} for ${url}`);
+        continue;
+      }
+      const data = await res.json();
+
+      // Notified API returns various formats — try common shapes
+      const releases = data?.GetPressReleaseListResult || data?.data || data?.items || data?.results || (Array.isArray(data) ? data : []);
+      if (!Array.isArray(releases) || releases.length === 0) continue;
+
+      const items = [];
+      for (const pr of releases) {
+        const title = pr.Headline || pr.Title || pr.headline || pr.title || '';
+        const date = pr.PressReleaseDate || pr.Date || pr.date || pr.publishDate || '';
+        const prUrl = pr.LinkToDetailPage || pr.Url || pr.url || pr.link || '';
+        if (!title || title.length < 10) continue;
+
+        let datetime = '';
+        if (date) {
+          try { datetime = new Date(date).toISOString(); } catch { /* skip */ }
+        }
+
+        const origin = new URL(url).origin;
+        const fullUrl = prUrl
+          ? (prUrl.startsWith('http') ? prUrl : `${origin}${prUrl.startsWith('/') ? '' : '/'}${prUrl}`)
+          : origin;
+
+        items.push({
+          newsid: `notified-json-${items.length}`,
+          headline: decodeEntities(title),
+          datetime: datetime || new Date().toISOString(),
+          source: 'Investor Relations',
+          permalink: fullUrl,
+          storyurl: fullUrl,
+          _source: 'notified-json',
+        });
+      }
+      if (items.length > 0) {
+        console.log(`[crypto-news] Notified JSON API returned ${items.length} items from ${url}`);
+        return items;
+      }
+    } catch (e) {
+      console.warn(`[crypto-news] Notified JSON API failed for "${url}":`, e.message);
+    }
+  }
+  return [];
+}
+
+// ─── Newsfile Corp company page (direct company press releases) ───
+
+async function fetchNewsfileCompany(companyUrls) {
+  for (const url of companyUrls) {
+    try {
+      const res = await fetch(url, {
+        headers: BROWSER_HEADERS,
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!res.ok) continue;
+      const html = await res.text();
+
+      const items = [];
+      // Newsfile company pages list releases with /release/[id]/ links
+      const linkRe = /<a[^>]+href=["']((?:https:\/\/www\.newsfilecorp\.com)?\/release\/\d+\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+      let m;
+      while ((m = linkRe.exec(html)) !== null && items.length < 30) {
+        const href = m[1];
+        const text = decodeEntities(stripTags(m[2]));
+        if (!text || text.length < 15) continue;
+        const fullUrl = href.startsWith('http') ? href : `https://www.newsfilecorp.com${href}`;
+        const datetime = extractDateFromContext(html, m.index);
+
+        items.push({
+          newsid: `newsfile-${items.length}`,
+          headline: text,
+          datetime: datetime || new Date().toISOString(),
+          source: 'Newsfile Corp',
+          permalink: fullUrl,
+          storyurl: fullUrl,
+          _source: 'newsfile-company',
+        });
+      }
+      if (items.length > 0) {
+        console.log(`[crypto-news] Newsfile company page returned ${items.length} items from ${url}`);
+        return items;
+      }
+    } catch (e) {
+      console.warn(`[crypto-news] Newsfile company page failed for "${url}":`, e.message);
+    }
+  }
+  return [];
+}
+
 // ─── Direct IR page HTML scrape (last resort) ───
 
 function extractDateFromContext(html, idx) {
@@ -347,32 +463,50 @@ export default async function handler(req, res) {
 
     let finalItems = qmFiltered;
 
-    // Fallback for tickers with extra sources (FRMM): try GNW RSS, Notified RSS, IR scrape
-    if ((config.gnwRssKeywords || config.notifiedApiUrls || config.irUrl) && finalItems.length < 3) {
+    // Fallback for tickers with extra sources (FRMM): try multiple data sources
+    if ((config.gnwRssKeywords || config.notifiedApiUrls || config.notifiedJsonApis || config.newsfileCompanyUrls || config.irUrl) && finalItems.length < 3) {
       console.log(`[crypto-news] QM returned ${finalItems.length} for ${ticker}, trying fallback sources`);
 
       const fallbackPromises = [];
 
-      // 1. GlobeNewsWire RSS feed (direct wire service, NOT Google)
-      if (config.gnwRssKeywords) {
-        fallbackPromises.push(fetchGnwRss(config.gnwRssKeywords));
+      // 1. Notified platform JSON API (most likely to have current data)
+      if (config.notifiedJsonApis) {
+        fallbackPromises.push(fetchNotifiedJson(config.notifiedJsonApis));
       }
 
-      // 2. Notified platform RSS feeds (ir.forum-markets.com/rss/...)
+      // 2. Newsfile Corp company page (common Canadian wire service)
+      if (config.newsfileCompanyUrls) {
+        fallbackPromises.push(fetchNewsfileCompany(config.newsfileCompanyUrls));
+      }
+
+      // 3. Notified platform RSS feeds (ir.forum-markets.com/rss/...)
       if (config.notifiedApiUrls) {
         fallbackPromises.push(fetchNotifiedRss(config.notifiedApiUrls));
       }
 
-      // 3. Direct IR page HTML scrape (last resort)
+      // 4. GlobeNewsWire RSS feed (direct wire service, NOT Google)
+      if (config.gnwRssKeywords) {
+        fallbackPromises.push(fetchGnwRss(config.gnwRssKeywords));
+      }
+
+      // 5. Direct IR page HTML scrape (last resort)
       if (config.irUrl) {
         fallbackPromises.push(fetchIRPage(config.irUrl));
       }
 
       const results = await Promise.allSettled(fallbackPromises);
 
-      // Apply company-name headline filter to all fallback results
+      // Filter fallback results:
+      // - Sources from the company's own IR site (notified-json, notified-rss, ir-scrape)
+      //   don't need company-name matching — they ARE the company's releases
+      // - External sources (gnw-rss, newsfile) need headline filter to avoid unrelated results
       const filterFallback = (items) => items.filter((item) => {
         const hl = (item.headline || '').toLowerCase();
+        if (hl.length < 15) return false; // skip nav links
+        const src = item._source || '';
+        // Trust company IR sources directly
+        if (src === 'notified-json' || src === 'notified-rss' || src === 'newsfile-company') return true;
+        // External sources need company-name headline match
         return hl.length >= 20 && config.filter(hl);
       });
 
