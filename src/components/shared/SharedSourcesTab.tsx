@@ -61,6 +61,45 @@ interface CardData {
   news: ArticleItem[];
 }
 
+// ── PR source filter (must stay in sync with OFFICIAL_SOURCES in api/press-intelligence.js) ──
+const PR_WIRE_SOURCES = [
+  'pr newswire', 'business wire', 'globe newswire', 'globenewswire',
+  'accesswire', 'canada newswire', 'newsfile', 'investor relations',
+  'globenewswire rss', 'stock titan',
+];
+function isPRWireSource(source: string): boolean {
+  const lower = source.toLowerCase();
+  return PR_WIRE_SOURCES.some(s => lower.includes(s));
+}
+
+interface PressIntelItem {
+  headline: string;
+  datetime?: string;
+  source?: string;
+  _source?: string;
+  permalink?: string;
+  storyurl?: string;
+}
+
+/** Fetch PRs by calling /api/press-intelligence directly (avoids server-to-server issues) */
+async function fetchPRsFromPressIntelligence(ticker: string, max: number): Promise<ArticleItem[]> {
+  const res = await fetch(`/api/press-intelligence?ticker=${encodeURIComponent(ticker)}`);
+  if (!res.ok) throw new Error(`Press intelligence returned ${res.status}`);
+  const data = await res.json();
+  const items: PressIntelItem[] = Array.isArray(data) ? data : (data.news || []);
+  // Filter to official wire sources only
+  const prItems = items.filter(item => isPRWireSource(item.source || item._source || ''));
+  // Sort newest first
+  prItems.sort((a, b) => (b.datetime || '').localeCompare(a.datetime || ''));
+  return prItems.slice(0, max).map(item => ({
+    headline: item.headline,
+    date: item.datetime ? item.datetime.split('T')[0] : '',
+    url: item.permalink || item.storyurl || '',
+    source: item.source || item._source || '',
+    analyzed: null as boolean | null,
+  }));
+}
+
 function formatTimeAgo(ts: number): string {
   const seconds = Math.floor((Date.now() - ts) / 1000);
   if (seconds < 60) return 'just now';
@@ -919,12 +958,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const loadPRsOnly = useCallback(async () => {
     setMainCard(prev => ({ ...prev, loadingPR: true, error: null }));
     try {
-      const res = await fetch(`/api/press-releases/${ticker}`);
-      if (!res.ok) throw new Error('Failed');
-      const d = await res.json();
-      const prs: ArticleItem[] = (d.releases || []).slice(0, SECTION_MAX).map((r: { date: string; headline: string; url: string; source?: string; items?: string }) => ({
-        headline: r.headline, date: r.date, url: r.url, source: r.source, items: r.items, analyzed: null as boolean | null,
-      }));
+      const prs = await fetchPRsFromPressIntelligence(ticker, SECTION_MAX);
 
       const newKeys = new Set<string>();
       for (const a of prs) {
@@ -1002,13 +1036,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     let news: ArticleItem[] = [];
 
     const [prResult, newsResult] = await Promise.allSettled([
-      fetch(`/api/press-releases/${ticker}`).then(async res => {
-        if (!res.ok) throw new Error('Failed');
-        const d = await res.json();
-        return (d.releases || []).slice(0, SECTION_MAX).map((r: { date: string; headline: string; url: string; source?: string; items?: string }) => ({
-          headline: r.headline, date: r.date, url: r.url, source: r.source, items: r.items, analyzed: null as boolean | null,
-        }));
-      }),
+      fetchPRsFromPressIntelligence(ticker, SECTION_MAX),
       fetch(`/api/news/${ticker}`).then(async res => {
         if (!res.ok) throw new Error('Failed');
         const d = await res.json();
@@ -1657,7 +1685,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div className="sm-flex-col" style={{ flex: '1 1 220px', alignItems: 'center' }}>
                 <div className="sm-ed-flowbox-accent">Fetch PRs</div>
                 <div style={{ width: 2, height: 10, background: 'var(--sky)' }} />
-                <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>GET /api/press-releases/[ticker]</div>
+                <div className="sm-ed-flowbox" style={{ padding: '5px 12px', fontSize: 10 }}>GET /api/press-intelligence?ticker=</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
                 <div className="sm-text3 sm-text-center" style={{ fontSize: 9, fontFamily: 'Space Mono, monospace', lineHeight: 1.6 }}>IR pages (with fallback for JS-rendered pages, e.g. ASTS) + direct Business Wire (newsroom, cheerio). Returns up to 15; dedup by title.</div>
                 <div className="sm-ed-vline" style={{ height: 8 }} />
