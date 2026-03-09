@@ -520,13 +520,14 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
   },
   {
     id: 'DUP-002',
-    title: 'HTML Utilities Duplicated in Remaining Routes',
+    title: 'RSS Parsing and HTML Utilities Duplicated Across Files',
     category: '30. Code Duplication',
     description:
-      'decodeHTMLEntities() and RSS parsing remain only in competitor-feed. HTML-to-text stripping is duplicated in edgar/analyze and sources/analyze. (Previously 3 files — /api/news/ and /api/press-releases/ migrated to press intelligence.)',
-    severity: 'LOW',
-    cvss: 2.5,
+      'decodeHTMLEntities() and RSS parsing are duplicated in news and competitor-feed routes. HTML-to-text stripping is duplicated in edgar/analyze and sources/analyze. (/api/press-releases/ migrated to press intelligence.)',
+    severity: 'MEDIUM',
+    cvss: 3.5,
     affectedAssets: [
+      'src/app/api/news/[symbol]/route.ts',
       'src/app/api/competitor-feed/[company]/route.ts',
       'src/app/api/edgar/analyze/route.ts',
       'src/app/api/sources/analyze/route.ts',
@@ -2151,20 +2152,20 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
   },
   {
     id: 'VENDOR-003',
-    title: 'News API Migrated to Press Intelligence',
+    title: 'Press Releases Migrated to Press Intelligence',
     category: '29. Third-Party Integrations',
     description:
-      'News API (/api/news/[symbol]) now proxies to the press intelligence multi-source aggregator instead of Google News RSS. Press intelligence uses QuoteMedia, GlobeNewsWire, Stock Titan, IR pages, and other direct sources.',
+      'Press releases API (/api/press-releases/[symbol]) now proxies to the press intelligence multi-source aggregator, filtered to official wire sources. News API (/api/news/[symbol]) uses Google News RSS for broader coverage.',
     severity: 'LOW',
     cvss: 1.0,
     affectedAssets: [
-      'src/app/api/news/[symbol]/route.ts',
+      'src/app/api/press-releases/[symbol]/route.ts',
       'api/press-intelligence.js',
     ],
     impact:
-      'News sources are now more reliable and diverse. Google News RSS dependency removed for the news pipeline.',
+      'PR sources are now curated via press intelligence (QuoteMedia, wire services, IR pages). News uses Google News RSS for broad third-party coverage.',
     remediation:
-      'Resolved — both /api/news/ and /api/press-releases/ now use press intelligence. Only /api/competitor-feed/ still uses Google News RSS.',
+      'Resolved — /api/press-releases/ uses press intelligence for curated PRs. /api/news/ and /api/competitor-feed/ use Google News RSS.',
     effort: 'Short-term',
     compliance: [],
     status: 'Resolved',

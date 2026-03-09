@@ -358,7 +358,7 @@
 |---|----------|----------|-------------|
 | 15.1 | Entire project | **Low** | All text is hardcoded in English. No i18n framework (next-intl, react-intl) is configured. |
 | 15.2 | `src/components/shared/LivePrice.tsx:117,168` | **Low** | Currency symbols (`$`) are hardcoded. Number formatting uses `.toFixed(2)` instead of `Intl.NumberFormat`, which won't respect locale-specific decimal separators or currency formatting. |
-| 15.3 | ~~`src/app/api/news/[symbol]/route.ts`~~ | **Fixed** | ~~Google News RSS locale hardcoding~~ — Resolved: news API now uses press intelligence (multi-source aggregator), which does not depend on Google News RSS locale settings. |
+| 15.3 | `src/app/api/news/[symbol]/route.ts:24` | **Low** | Google News RSS is hardcoded to `hl=en-US&gl=US&ceid=US:en`. International users see only US-localized news. |
 | 15.4 | Various date formatting | **Low** | Dates are displayed using `toLocaleTimeString()` and `toISOString()` inconsistently. No standardized date formatting library. |
 
 ### Recommendations
@@ -457,7 +457,7 @@
 
 | # | Location | Severity | Description |
 |---|----------|----------|-------------|
-| 20.1 | ~~`src/app/api/news/[symbol]/route.ts`~~ | **Fixed** | ~~`decodeHTMLEntities()` limited entity handling~~ — Resolved: news API migrated to press intelligence, which handles full entity decoding in `api/press-intelligence.js`. |
+| 20.1 | `src/app/api/news/[symbol]/route.ts` | **Low** | `decodeHTMLEntities()` only handles 6 named entities. RSS feeds may contain numeric HTML entities (e.g., `&#8217;` for curly quotes) that are not decoded — but this is display-only and React auto-escapes JSX output. |
 | 20.2 | `src/app/api/seen-articles/route.ts:136` | **Low** | Error `detail: String(error)` exposes internal error details (including potential stack traces) in the API response. |
 | 20.3 | React JSX | **Good** | React's JSX automatically escapes interpolated values, providing strong XSS protection for all rendered content. No `dangerouslySetInnerHTML` usage was found. |
 
@@ -627,14 +627,14 @@
 | 29.1 | Yahoo Finance API (`stock/[symbol]/route.ts`) | **Medium** | Uses an undocumented Yahoo Finance API endpoint (`query1.finance.yahoo.com`). This endpoint has no SLA, no rate limit documentation, and can change or break without notice. Rate limit handling exists (429 detection) but no automatic backoff. |
 | 29.2 | Anthropic Claude API (multiple routes) | **Medium** | No API key rotation mechanism. If the key is compromised, every endpoint using Claude breaks simultaneously. No usage tracking or budget limits. |
 | 29.3 | SEC EDGAR API (`edgar/[ticker]/route.ts`) | **Good** | Properly implements SEC rate limiting guidelines with a valid User-Agent. Uses `revalidate` to avoid excessive requests. |
-| 29.4 | Google News RSS (competitor-feed only) | **Low** | `/api/news/` and `/api/press-releases/` both migrated to press intelligence. Google News RSS only remains in `/api/competitor-feed/` (competitor news). |
+| 29.4 | Google News RSS (news, competitor-feed) | **Low** | `/api/news/` and `/api/competitor-feed/` use Google News RSS (undocumented feed, no SLA). `/api/press-releases/` migrated to press intelligence. |
 
 ### Recommendations
 
 - Consider switching to an official financial data API with an SLA (Polygon.io, Finnhub, Alpha Vantage).
 - Add Anthropic API usage tracking and budget alerts.
 - Implement exponential backoff for all external API calls on 429/5xx responses.
-- News API migrated to press intelligence (done). Consider migrating competitor-feed as well.
+- Press releases migrated to press intelligence. News and competitor-feed still use Google News RSS — consider adding a fallback source.
 
 ---
 
@@ -644,8 +644,8 @@
 
 | # | Location | Severity | Description |
 |---|----------|----------|-------------|
-| 30.1 | `competitor-feed/[company]/route.ts:44-52` | **Low** | `decodeHTMLEntities()` remains only in competitor-feed. (Previously 3 files — `/api/news/` and `/api/press-releases/` migrated to press intelligence.) |
-| 30.2 | `competitor-feed/[company]/route.ts:73-94` | **Low** | RSS XML parsing logic remains only in competitor-feed. (Previously 3 files — `/api/news/` and `/api/press-releases/` migrated to press intelligence.) |
+| 30.1 | `news/[symbol]/route.ts` & `competitor-feed/[company]/route.ts` | **Medium** | `decodeHTMLEntities()` is duplicated in news and competitor-feed routes. Should be extracted to a shared utility. (`/api/press-releases/` migrated to press intelligence.) |
+| 30.2 | `news/[symbol]/route.ts` & `competitor-feed/[company]/route.ts` | **Medium** | RSS XML parsing logic is duplicated across news and competitor-feed with minor variations. Should be a shared `parseRSS()` utility. (`/api/press-releases/` migrated to press intelligence.) |
 | 30.3 | `src/app/api/edgar/analyze/route.ts:30-42` & `sources/analyze/route.ts:32-43` | **Low** | HTML-to-text stripping logic is duplicated in both analyze endpoints. |
 | 30.4 | `src/app/api/seen-articles/route.ts:32-69` & `seen-filings/route.ts:42-80` | **Medium** | The `ensureTable()` pattern with `tableVerified` flag and `isTableMissing()` helper is duplicated between these two files. Should be a shared utility. |
 | 30.5 | `scripts/seed-database.ts` & `src/app/api/db/setup/route.ts` | **High** | The entire seed logic is duplicated — once as a CLI script and once as an API route. Both import the same data and call the same mappers. Should share a common `seedAll()` function. |
