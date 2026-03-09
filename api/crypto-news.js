@@ -3,13 +3,13 @@
 // Supports: MSTR, MARA, RIOT, CLSK, FRMM (prev ETHZ), COIN
 // Usage: /api/crypto-news?ticker=MSTR
 // Filters to official company releases only (wire services + headline match)
-// FRMM: TSX-listed, not in QuoteMedia — uses direct IR page scrape + GlobeNewsWire
+// FRMM: TSX-listed, not in QuoteMedia — uses GlobeNewsWire RSS + Notified API + IR scrape
 // Cache: 5 minutes per ticker
 
 const caches = {};
 const CACHE_TTL = 5 * 60 * 1000;
 
-const OFFICIAL_SOURCES = ['pr newswire', 'business wire', 'globe newswire', 'globenewswire', 'accesswire', 'canada newswire', 'newsfile'];
+const OFFICIAL_SOURCES = ['pr newswire', 'business wire', 'globe newswire', 'globenewswire', 'accesswire', 'canada newswire', 'newsfile', 'investor relations', 'globenewswire rss'];
 
 const BROWSER_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
@@ -36,11 +36,19 @@ const TICKER_CONFIG = {
     filter: (hl) => /cleanspark/i.test(hl) || /\bclsk\b/i.test(hl),
   },
   FRMM: {
-    topics: ['FRMM', 'ETHZ'],
+    // Try multiple QM ticker variants for Canadian exchanges
+    topics: ['FRMM', 'ETHZ', 'FRMM:CA', 'ETHZ:CA'],
     filter: (hl) => /forum\s*markets/i.test(hl) || /ether\s*capital/i.test(hl) || /\bfrmm\b/i.test(hl) || /\bethz\b/i.test(hl),
-    // FRMM is TSX-listed (Canadian) — QM may not index it; use IR page + GlobeNewsWire fallback
+    // FRMM is TSX-listed (Canadian) — QM may not index it; use multi-source fallback
     irUrl: 'https://ir.forum-markets.com/news-events/press-releases',
-    gnwSearch: ['Forum+Markets', 'Ether+Capital'],
+    // GlobeNewsWire RSS (NOT Google RSS) — direct wire service feeds
+    gnwRssKeywords: ['Forum Markets', 'Ether Capital'],
+    // Notified platform API endpoints (common for IR sites hosted on Notified)
+    notifiedApiUrls: [
+      'https://ir.forum-markets.com/rss/news-releases.xml',
+      'https://ir.forum-markets.com/rss/press-releases.xml',
+      'https://ir.forum-markets.com/feed',
+    ],
   },
   COIN: {
     topics: ['COIN'],
@@ -53,7 +61,7 @@ const TICKER_CONFIG = {
 async function fetchQM(topic) {
   const url =
     'https://www.accesswire.com/qm/data/getHeadlines.json' +
-    `?topics=${topic}` +
+    `?topics=${encodeURIComponent(topic)}` +
     '&excludeTopics=NONCOMPANY' +
     '&noSrc=qmr' +
     '&src=pzo,bayaw,prn,bwi,TheNewsWire,nfil,actw,irw,acn,cnw,nwd,glpr,nwmw' +
@@ -74,7 +82,7 @@ async function fetchQM(topic) {
   }
 }
 
-// ─── Direct IR page scrape (for FRMM / sites not in QM) ───
+// ─── Utilities ───
 
 function decodeEntities(str) {
   return (str || '')
@@ -82,12 +90,142 @@ function decodeEntities(str) {
     .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'")
     .replace(/&#8217;/g, '\u2019').replace(/&#8220;/g, '\u201C')
     .replace(/&#8221;/g, '\u201D').replace(/&#8211;/g, '\u2013')
-    .replace(/&nbsp;/g, ' ');
+    .replace(/&nbsp;/g, ' ').replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1');
 }
 
 function stripTags(str) {
   return (str || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
+
+// ─── GlobeNewsWire RSS (direct wire service, NOT Google RSS) ───
+
+function parseRssXml(xml) {
+  const items = [];
+  const itemRe = /<item>([\s\S]*?)<\/item>/g;
+  let m;
+  while ((m = itemRe.exec(xml)) !== null && items.length < 30) {
+    const block = m[1];
+    const title = decodeEntities(stripTags(block.match(/<title>([\s\S]*?)<\/title>/)?.[1] || ''));
+    const link = stripTags(block.match(/<link>([\s\S]*?)<\/link>/)?.[1] || '');
+    const pubDate = stripTags(block.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1] || '');
+    const desc = decodeEntities(stripTags(block.match(/<description>([\s\S]*?)<\/description>/)?.[1] || '')).slice(0, 300);
+    if (!title || title.length < 10) continue;
+    let datetime = '';
+    if (pubDate) {
+      try { datetime = new Date(pubDate).toISOString(); } catch { /* skip */ }
+    }
+    items.push({
+      newsid: `gnw-rss-${items.length}`,
+      headline: title,
+      datetime: datetime || new Date().toISOString(),
+      source: 'GlobeNewsWire RSS',
+      qmsummary: desc,
+      permalink: link,
+      storyurl: link,
+      _source: 'gnw-rss',
+    });
+  }
+  return items;
+}
+
+// Atom feed parser (GlobeNewsWire also serves Atom)
+function parseAtomXml(xml) {
+  const items = [];
+  const entryRe = /<entry>([\s\S]*?)<\/entry>/g;
+  let m;
+  while ((m = entryRe.exec(xml)) !== null && items.length < 30) {
+    const block = m[1];
+    const title = decodeEntities(stripTags(block.match(/<title[^>]*>([\s\S]*?)<\/title>/)?.[1] || ''));
+    const link = block.match(/<link[^>]+href=["']([^"']+)["']/)?.[1] || '';
+    const updated = stripTags(block.match(/<(?:published|updated)>([\s\S]*?)<\/(?:published|updated)>/)?.[1] || '');
+    const summary = decodeEntities(stripTags(block.match(/<(?:summary|content)[^>]*>([\s\S]*?)<\/(?:summary|content)>/)?.[1] || '')).slice(0, 300);
+    if (!title || title.length < 10) continue;
+    let datetime = '';
+    if (updated) {
+      try { datetime = new Date(updated).toISOString(); } catch { /* skip */ }
+    }
+    items.push({
+      newsid: `gnw-atom-${items.length}`,
+      headline: title,
+      datetime: datetime || new Date().toISOString(),
+      source: 'GlobeNewsWire',
+      qmsummary: summary,
+      permalink: link,
+      storyurl: link,
+      _source: 'gnw-atom',
+    });
+  }
+  return items;
+}
+
+async function fetchGnwRss(keywords) {
+  const items = [];
+  for (const keyword of keywords) {
+    // Try multiple GlobeNewsWire RSS/Atom URL patterns
+    const urls = [
+      `https://www.globenewswire.com/RssFeed/searchresults/keyword/${encodeURIComponent(keyword)}/feedTitle/GlobeNewsWire`,
+      `https://www.globenewswire.com/AtomFeed/keyword/${encodeURIComponent(keyword)}`,
+    ];
+    for (const url of urls) {
+      try {
+        const res = await fetch(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; StockingsBot/1.0)',
+            'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
+          },
+          signal: AbortSignal.timeout(8000),
+        });
+        if (!res.ok) continue;
+        const xml = await res.text();
+        if (xml.includes('<item>')) {
+          items.push(...parseRssXml(xml));
+        } else if (xml.includes('<entry>')) {
+          items.push(...parseAtomXml(xml));
+        }
+        if (items.length > 0) break; // got results, skip remaining URLs
+      } catch (e) {
+        console.warn(`[crypto-news] GNW RSS fetch failed for "${url}":`, e.message);
+      }
+    }
+    if (items.length > 0) break;
+  }
+  return items;
+}
+
+// ─── Notified Platform RSS/API (for IR sites hosted on Notified) ───
+
+async function fetchNotifiedRss(rssUrls) {
+  for (const url of rssUrls) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; StockingsBot/1.0)',
+          'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
+        },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!res.ok) continue;
+      const xml = await res.text();
+      let items = [];
+      if (xml.includes('<item>')) {
+        items = parseRssXml(xml);
+      } else if (xml.includes('<entry>')) {
+        items = parseAtomXml(xml);
+      }
+      // Re-tag source
+      for (const item of items) {
+        item.source = 'Investor Relations';
+        item._source = 'notified-rss';
+      }
+      if (items.length > 0) return items;
+    } catch (e) {
+      console.warn(`[crypto-news] Notified RSS failed for "${url}":`, e.message);
+    }
+  }
+  return [];
+}
+
+// ─── Direct IR page HTML scrape (last resort) ───
 
 function extractDateFromContext(html, idx) {
   const start = Math.max(0, idx - 500);
@@ -116,22 +254,25 @@ async function fetchIRPage(irUrl) {
       headers: BROWSER_HEADERS,
       signal: AbortSignal.timeout(10000),
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.warn(`[crypto-news] IR page returned ${res.status} for ${irUrl}`);
+      return [];
+    }
     const html = await res.text();
     const items = [];
     const origin = new URL(irUrl).origin;
 
-    // Pattern 1: press-release/news-release links (common IR platforms)
-    const linkRe = /<a[^>]+href=["']([^"']*(?:press-release|news-release|press_release|news\/)[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
+    // Pattern 1: press-release/news-release/detail links (common IR platforms)
+    const linkRe = /<a[^>]+href=["']([^"']*(?:press-release|news-release|press_release|\/detail\/|\/news\/)[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
     let m;
     while ((m = linkRe.exec(html)) !== null && items.length < 30) {
       const href = m[1];
       const text = decodeEntities(stripTags(m[2]));
-      if (!text || text.length < 10) continue;
+      if (!text || text.length < 20) continue;
       const url = href.startsWith('http') ? href : `${origin}${href.startsWith('/') ? '' : '/'}${href}`;
       const datetime = extractDateFromContext(html, m.index);
       items.push({
-        newsid: `frmm-ir-${items.length}`,
+        newsid: `ir-${items.length}`,
         headline: text,
         datetime: datetime || new Date().toISOString(),
         source: 'Investor Relations',
@@ -141,123 +282,11 @@ async function fetchIRPage(irUrl) {
       });
     }
 
-    // Pattern 2: Generic anchor links in article/listing containers
-    if (items.length === 0) {
-      const genericRe = /<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
-      while ((m = genericRe.exec(html)) !== null && items.length < 30) {
-        const href = m[1];
-        const text = decodeEntities(stripTags(m[2]));
-        if (!text || text.length < 20) continue;
-        // Skip navigation/footer links
-        if (/^\s*(home|about|contact|privacy|terms|login|sign|menu|nav)/i.test(text)) continue;
-        if (href.includes('#') && !href.includes('/')) continue;
-        const url = href.startsWith('http') ? href : `${origin}${href.startsWith('/') ? '' : '/'}${href}`;
-        const datetime = extractDateFromContext(html, m.index);
-        items.push({
-          newsid: `frmm-ir-${items.length}`,
-          headline: text,
-          datetime: datetime || new Date().toISOString(),
-          source: 'Investor Relations',
-          permalink: url,
-          storyurl: url,
-          _source: 'ir-scrape',
-        });
-      }
-    }
-
     return items;
   } catch (e) {
     console.warn(`[crypto-news] IR page scrape failed for ${irUrl}:`, e.message);
     return [];
   }
-}
-
-// ─── GlobeNewsWire search scrape ───
-
-async function fetchGlobeNewsWire(searchTerms) {
-  const items = [];
-  for (const term of searchTerms) {
-    try {
-      // GlobeNewsWire search page
-      const url = `https://www.globenewswire.com/search/keyword/${encodeURIComponent(term)}`;
-      const res = await fetch(url, {
-        headers: BROWSER_HEADERS,
-        signal: AbortSignal.timeout(8000),
-      });
-      if (!res.ok) continue;
-      const html = await res.text();
-
-      // GNW search results: links containing /news-release/
-      const linkRe = /<a[^>]+href=["'](\/news-release\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
-      let m;
-      while ((m = linkRe.exec(html)) !== null && items.length < 30) {
-        const href = m[1];
-        const text = decodeEntities(stripTags(m[2]));
-        if (!text || text.length < 10) continue;
-        const fullUrl = `https://www.globenewswire.com${href}`;
-
-        // Extract date from URL pattern: /news-release/2026/03/07/
-        const dateMatch = href.match(/\/news-release\/(\d{4})\/(\d{2})\/(\d{2})\//);
-        const datetime = dateMatch
-          ? new Date(`${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}`).toISOString()
-          : '';
-
-        items.push({
-          newsid: `frmm-gnw-${items.length}`,
-          headline: text,
-          datetime: datetime || new Date().toISOString(),
-          source: 'GlobeNewsWire',
-          permalink: fullUrl,
-          storyurl: fullUrl,
-          _source: 'gnw-search',
-        });
-      }
-    } catch (e) {
-      console.warn(`[crypto-news] GNW search failed for "${term}":`, e.message);
-    }
-  }
-  return items;
-}
-
-// ─── Newsfile Corp search (common Canadian wire service) ───
-
-async function fetchNewsfile(searchTerms) {
-  const items = [];
-  for (const term of searchTerms) {
-    try {
-      const url = `https://www.newsfilecorp.com/search?query=${encodeURIComponent(term)}`;
-      const res = await fetch(url, {
-        headers: BROWSER_HEADERS,
-        signal: AbortSignal.timeout(8000),
-      });
-      if (!res.ok) continue;
-      const html = await res.text();
-
-      // Newsfile links: /release/ pattern
-      const linkRe = /<a[^>]+href=["']((?:https:\/\/www\.newsfilecorp\.com)?\/release\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
-      let m;
-      while ((m = linkRe.exec(html)) !== null && items.length < 30) {
-        const href = m[1];
-        const text = decodeEntities(stripTags(m[2]));
-        if (!text || text.length < 10) continue;
-        const fullUrl = href.startsWith('http') ? href : `https://www.newsfilecorp.com${href}`;
-        const datetime = extractDateFromContext(html, m.index);
-
-        items.push({
-          newsid: `frmm-nf-${items.length}`,
-          headline: text,
-          datetime: datetime || new Date().toISOString(),
-          source: 'Newsfile Corp',
-          permalink: fullUrl,
-          storyurl: fullUrl,
-          _source: 'newsfile',
-        });
-      }
-    } catch (e) {
-      console.warn(`[crypto-news] Newsfile search failed for "${term}":`, e.message);
-    }
-  }
-  return items;
 }
 
 // ─── Deduplication ───
@@ -318,34 +347,45 @@ export default async function handler(req, res) {
 
     let finalItems = qmFiltered;
 
-    // FRMM fallback: if QM returned few/no results, try IR page + GlobeNewsWire + Newsfile
-    if (config.irUrl && finalItems.length < 3) {
-      console.log(`[crypto-news] QM returned ${finalItems.length} for ${ticker}, trying IR/GNW/Newsfile fallbacks`);
+    // Fallback for tickers with extra sources (FRMM): try GNW RSS, Notified RSS, IR scrape
+    if ((config.gnwRssKeywords || config.notifiedApiUrls || config.irUrl) && finalItems.length < 3) {
+      console.log(`[crypto-news] QM returned ${finalItems.length} for ${ticker}, trying fallback sources`);
 
-      const [irItems, gnwItems, nfItems] = await Promise.allSettled([
-        fetchIRPage(config.irUrl),
-        config.gnwSearch ? fetchGlobeNewsWire(config.gnwSearch) : Promise.resolve([]),
-        config.gnwSearch ? fetchNewsfile(config.gnwSearch) : Promise.resolve([]),
-      ]);
+      const fallbackPromises = [];
 
-      const irResults = irItems.status === 'fulfilled' ? irItems.value : [];
-      const gnwResults = gnwItems.status === 'fulfilled' ? gnwItems.value : [];
-      const nfResults = nfItems.status === 'fulfilled' ? nfItems.value : [];
+      // 1. GlobeNewsWire RSS feed (direct wire service, NOT Google)
+      if (config.gnwRssKeywords) {
+        fallbackPromises.push(fetchGnwRss(config.gnwRssKeywords));
+      }
 
-      // Apply the same company-name headline filter to all fallback results
+      // 2. Notified platform RSS feeds (ir.forum-markets.com/rss/...)
+      if (config.notifiedApiUrls) {
+        fallbackPromises.push(fetchNotifiedRss(config.notifiedApiUrls));
+      }
+
+      // 3. Direct IR page HTML scrape (last resort)
+      if (config.irUrl) {
+        fallbackPromises.push(fetchIRPage(config.irUrl));
+      }
+
+      const results = await Promise.allSettled(fallbackPromises);
+
+      // Apply company-name headline filter to all fallback results
       const filterFallback = (items) => items.filter((item) => {
         const hl = (item.headline || '').toLowerCase();
-        // Must mention the company AND have a meaningful headline (not nav links)
         return hl.length >= 20 && config.filter(hl);
       });
 
-      // Merge all sources: QM results first, then filtered fallbacks
-      finalItems = [
-        ...qmFiltered,
-        ...filterFallback(irResults),
-        ...filterFallback(gnwResults),
-        ...filterFallback(nfResults),
-      ];
+      let fallbackItems = [];
+      for (const r of results) {
+        if (r.status === 'fulfilled' && r.value.length > 0) {
+          fallbackItems.push(...filterFallback(r.value));
+        }
+      }
+
+      finalItems = [...qmFiltered, ...fallbackItems];
+
+      console.log(`[crypto-news] ${ticker} fallback: ${fallbackItems.length} items after filtering (from ${results.map(r => r.status === 'fulfilled' ? r.value.length : 0).join('+')} raw)`);
     }
 
     // Deduplicate
