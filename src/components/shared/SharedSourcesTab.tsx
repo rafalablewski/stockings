@@ -954,10 +954,21 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     setDbRecords(new Map(dbRecordsRef.current));
   }, [ticker]);
 
-  // Fetch Press Releases only
+  // Fetch Press Releases only (from press-intelligence, replacing old DB data)
   const loadPRsOnly = useCallback(async () => {
     setMainCard(prev => ({ ...prev, loadingPR: true, error: null }));
     try {
+      // 1. Delete old PR articles from DB for this ticker
+      await fetch(`/api/seen-articles?ticker=${ticker}&articleType=pr`, { method: 'DELETE' });
+
+      // 2. Clear PR records from local state
+      for (const [key, rec] of dbRecordsRef.current) {
+        if (rec.articleType === 'pr') dbRecordsRef.current.delete(key);
+      }
+      setDbRecords(new Map(dbRecordsRef.current));
+      setMainCard(prev => ({ ...prev, pressReleases: [] }));
+
+      // 3. Fetch fresh PRs from press-intelligence
       const prs = await fetchPRsFromPressIntelligence(ticker, SECTION_MAX);
 
       const newKeys = new Set<string>();
@@ -971,7 +982,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
       setMainCard(prev => ({
         ...prev, loadingPR: false, loaded: true,
-        pressReleases: mergeArticles(prs, prev.pressReleases),
+        pressReleases: prs,
       }));
       setLastFetchedAt(Date.now());
       if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
@@ -1035,6 +1046,14 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     let prs: ArticleItem[] = [];
     let news: ArticleItem[] = [];
 
+    // Delete old PR articles from DB before fetching fresh ones
+    await fetch(`/api/seen-articles?ticker=${ticker}&articleType=pr`, { method: 'DELETE' }).catch(() => {});
+    for (const [key, rec] of dbRecordsRef.current) {
+      if (rec.articleType === 'pr') dbRecordsRef.current.delete(key);
+    }
+    setDbRecords(new Map(dbRecordsRef.current));
+    setMainCard(prev => ({ ...prev, pressReleases: [] }));
+
     const [prResult, newsResult] = await Promise.allSettled([
       fetchPRsFromPressIntelligence(ticker, SECTION_MAX),
       fetch(`/api/news/${ticker}`).then(async res => {
@@ -1065,7 +1084,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
       setMainCard(prev => ({
         ...prev, loading: false, loadingPR: false, loadingNews: false, loaded: true, error: fetchError,
-        pressReleases: mergeArticles(prs, prev.pressReleases),
+        pressReleases: prs,
         news: mergeArticles(news, prev.news),
       }));
       setLastFetchedAt(Date.now());
