@@ -68,8 +68,9 @@ interface PressRelease {
   source: string;
 }
 
-// ─── Source 1: Google News RSS filtered to wire services ───
-// Note: Google News index can lag; newest wire PRs may appear with delay. We also fetch Business Wire directly below.
+// ─── Source 1: Google News RSS filtered to wire services (PR discovery) ───
+// Note: This is separate from /api/news/ (which uses press intelligence). Google News
+// RSS is used here only for discovering wire-service press releases. Can lag; we also fetch BW directly below.
 
 async function fetchWireServiceRSS(companyName: string, ticker: string): Promise<PressRelease[]> {
   const wireSites = WIRE_SERVICES.map(s => `site:${s}`).join(' OR ');
@@ -94,7 +95,7 @@ async function fetchWireServiceRSS(companyName: string, ticker: string): Promise
   }
 }
 
-// ─── Source 1b: Direct Business Wire (fresher than Google News index) ───
+// ─── Source 1b: Direct Business Wire (fresher than Google News RSS index) ───
 // /news/home/search?keyword= returns 404; use newsroom URL and filter by company name/ticker.
 
 async function fetchBusinessWireDirect(companyName: string, ticker: string): Promise<PressRelease[]> {
@@ -368,7 +369,7 @@ export async function GET(
   }
 
   try {
-    // Fetch from all sources in parallel: IR, BW direct, Google News (company name + ticker)
+    // Fetch from all sources in parallel: IR, BW direct, Google News RSS (wire services only)
     const [wireResults, wireTickerResults, irResults, businessWireResults] = await Promise.allSettled([
       fetchWireServiceRSS(stock.name, symbol),
       fetchWireServiceRSS(symbol, symbol),

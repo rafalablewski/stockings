@@ -638,17 +638,16 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
     title: 'Hardcoded Currency Symbols and Locale-Insensitive Formatting',
     category: '15. Internationalization & Localization',
     description:
-      'Currency symbols ($) are hardcoded in LivePrice.tsx. Number formatting uses .toFixed(2) instead of Intl.NumberFormat. Date formatting is inconsistent (toLocaleTimeString, toISOString, manual parsing). Google News RSS is hardcoded to US locale (hl=en-US&gl=US).',
+      'Currency symbols ($) are hardcoded in LivePrice.tsx. Number formatting uses .toFixed(2) instead of Intl.NumberFormat. Date formatting is inconsistent (toLocaleTimeString, toISOString, manual parsing).',
     severity: 'LOW',
     cvss: 2.0,
     affectedAssets: [
       'src/components/shared/LivePrice.tsx:117,168',
-      'src/app/api/news/[symbol]/route.ts:24',
     ],
     impact:
-      'Non-US users see incorrectly formatted numbers and dates. International news coverage is excluded.',
+      'Non-US users see incorrectly formatted numbers and dates.',
     remediation:
-      'Use Intl.NumberFormat for all currency displays. Use Intl.DateTimeFormat or date-fns for date formatting. Consider parameterizing the news locale.',
+      'Use Intl.NumberFormat for all currency displays. Use Intl.DateTimeFormat or date-fns for date formatting.',
     effort: 'Medium-term',
     compliance: [],
     status: 'Open',
@@ -2154,23 +2153,23 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
   },
   {
     id: 'VENDOR-003',
-    title: 'Google News RSS Is Undocumented and Fragile',
+    title: 'News API Migrated to Press Intelligence',
     category: '29. Third-Party Integrations',
     description:
-      'Google News RSS is an informal/undocumented feed. Google could discontinue or change it at any time. No fallback news source is configured.',
+      'News API (/api/news/[symbol]) now proxies to the press intelligence multi-source aggregator instead of Google News RSS. Press intelligence uses QuoteMedia, GlobeNewsWire, Stock Titan, IR pages, and other direct sources.',
     severity: 'LOW',
-    cvss: 2.0,
+    cvss: 1.0,
     affectedAssets: [
       'src/app/api/news/[symbol]/route.ts',
-      'src/app/api/competitor-feed/[company]/route.ts',
+      'api/press-intelligence.js',
     ],
     impact:
-      'News functionality could break without warning if Google changes or removes the RSS feed.',
+      'News sources are now more reliable and diverse. Google News RSS dependency removed for the news pipeline.',
     remediation:
-      'Add fallback news sources or graceful degradation. Consider official news APIs (NewsAPI, Bing News) as alternatives.',
-    effort: 'Medium-term',
+      'Resolved — press intelligence provides multi-source redundancy. Competitor feed still uses Google News RSS.',
+    effort: 'Short-term',
     compliance: [],
-    status: 'Open',
+    status: 'Fixed',
   },
   {
     id: 'VENDOR-004',
