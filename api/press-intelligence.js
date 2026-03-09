@@ -370,6 +370,12 @@ const TICKER_CONFIG = {
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
     filter: (hl) => /echostar|sats|hughes/i.test(hl),
   },
+  LUNR: {
+    type: 'qm-simple',
+    topics: ['LUNR'],
+    sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
+    filter: (hl) => /intuitive\s*machines|lunr/i.test(hl),
+  },
 
   // ─── Crypto tickers (QM + optional fallbacks) ───
   MSTR: {

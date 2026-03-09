@@ -161,6 +161,24 @@ const FEED_CONFIGS: FeedConfig[] = [
     },
   },
   {
+    ticker: "LUNR",
+    endpoint: "/api/press-intelligence?ticker=LUNR",
+    accent: "yellow",
+    color: "#FACC15",
+    colorDim: "rgba(250,204,21,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for "intuitive machines"
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Lunar: (h) => /lunar|moon|lander|landing|artemis|clps|south\s*pole/i.test(h),
+      Satellite: (h) => /satellite|orbit|relay|data\s*transmission|deep\s*space|navigation/i.test(h),
+      Partnerships: (h) => /partner|agreement|contract|award|select|government|nasa|dod|military/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+    },
+  },
+  {
     ticker: "T",
     endpoint: "/api/press-intelligence?ticker=T",
     accent: "sky",

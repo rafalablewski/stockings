@@ -80,6 +80,12 @@ export const stocks: Record<string, StockMeta> = {
     sector: 'Space Technology',
     description: 'Global satellite communications and technology company operating Hughes and DISH networks',
   },
+  LUNR: {
+    ticker: 'LUNR',
+    name: 'Intuitive Machines',
+    sector: 'Space Technology',
+    description: 'Space exploration company providing lunar landing, data transmission, and orbital services',
+  },
 };
 
 export const stockList = Object.values(stocks);
