@@ -1,5 +1,5 @@
 // api/press-intelligence.js
-// Unified press-release proxy for all 19 tickers
+// Unified press-release proxy for all 14 tickers
 // Usage: /api/press-intelligence?ticker=ASTS
 // Supported: ASTS, BMNR, IRDM, GSAT, VZ, T, AMZLEO, LYNK,
 //            MSTR, MARA, RIOT, CLSK, FRMM, COIN,
@@ -354,34 +354,29 @@ const TICKER_CONFIG = {
     filter: (hl) => /verizon/i.test(hl),
   },
 
-  // ─── Space / satellite tickers (QM + IR + GNW fallback) ───
   VSAT: {
-    type: 'crypto',
+    type: 'qm-simple',
     topics: ['VSAT'],
+    sources: ['business wire', 'pr newswire', 'globenewswire'],
     filter: (hl) => /viasat/i.test(hl) || /\bvsat\b/i.test(hl),
-    irUrl: 'https://investors.viasat.com/press-releases',
-    gnwRssKeywords: ['Viasat'],
   },
   RKLB: {
-    type: 'crypto',
+    type: 'qm-simple',
     topics: ['RKLB'],
+    sources: ['business wire', 'pr newswire', 'globenewswire'],
     filter: (hl) => /rocket\s*lab/i.test(hl) || /\brklb\b/i.test(hl),
-    irUrl: 'https://investors.rocketlabcorp.com/news',
-    gnwRssKeywords: ['Rocket Lab'],
   },
   SATS: {
-    type: 'crypto',
+    type: 'qm-simple',
     topics: ['SATS'],
+    sources: ['business wire', 'pr newswire', 'globenewswire'],
     filter: (hl) => /echostar/i.test(hl) || /\bsats\b/i.test(hl) || /hughes\s*net/i.test(hl),
-    irUrl: 'https://ir.echostar.com/press-releases',
-    gnwRssKeywords: ['EchoStar'],
   },
   LUNR: {
-    type: 'crypto',
+    type: 'qm-simple',
     topics: ['LUNR'],
+    sources: ['business wire', 'pr newswire', 'globenewswire', 'accesswire'],
     filter: (hl) => /intuitive\s*machines/i.test(hl) || /\blunr\b/i.test(hl),
-    irUrl: 'https://investors.intuitivemachines.com/news-events/latest-news',
-    gnwRssKeywords: ['Intuitive Machines'],
   },
 
   // ─── Crypto tickers (QM + optional fallbacks) ───
@@ -414,8 +409,6 @@ const TICKER_CONFIG = {
     type: 'crypto',
     topics: ['HUT'],
     filter: (hl) => /hut\s*8/i.test(hl) || /\bhut\b/i.test(hl),
-    irUrl: 'https://www.hut8.com/news-insights/press-releases',
-    gnwRssKeywords: ['Hut 8'],
   },
   FRMM: {
     type: 'crypto',
