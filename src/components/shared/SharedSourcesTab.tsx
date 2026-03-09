@@ -954,21 +954,10 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     setDbRecords(new Map(dbRecordsRef.current));
   }, [ticker]);
 
-  // Fetch Press Releases only (from press-intelligence, replacing old DB data)
+  // Fetch Press Releases only (from press-intelligence)
   const loadPRsOnly = useCallback(async () => {
     setMainCard(prev => ({ ...prev, loadingPR: true, error: null }));
     try {
-      // 1. Delete old PR articles from DB for this ticker
-      await fetch(`/api/seen-articles?ticker=${ticker}&articleType=pr`, { method: 'DELETE' });
-
-      // 2. Clear PR records from local state
-      for (const [key, rec] of dbRecordsRef.current) {
-        if (rec.articleType === 'pr') dbRecordsRef.current.delete(key);
-      }
-      setDbRecords(new Map(dbRecordsRef.current));
-      setMainCard(prev => ({ ...prev, pressReleases: [] }));
-
-      // 3. Fetch fresh PRs from press-intelligence
       const prs = await fetchPRsFromPressIntelligence(ticker, SECTION_MAX);
 
       const newKeys = new Set<string>();
@@ -982,7 +971,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
       setMainCard(prev => ({
         ...prev, loadingPR: false, loaded: true,
-        pressReleases: prs,
+        pressReleases: mergeArticles(prs, prev.pressReleases),
       }));
       setLastFetchedAt(Date.now());
       if (newKeys.size > 0) setNewArticleKeys(prev => { const next = new Set(prev); for (const k of newKeys) next.add(k); return next; });
@@ -1046,14 +1035,6 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
     let prs: ArticleItem[] = [];
     let news: ArticleItem[] = [];
 
-    // Delete old PR articles from DB before fetching fresh ones
-    await fetch(`/api/seen-articles?ticker=${ticker}&articleType=pr`, { method: 'DELETE' }).catch(() => {});
-    for (const [key, rec] of dbRecordsRef.current) {
-      if (rec.articleType === 'pr') dbRecordsRef.current.delete(key);
-    }
-    setDbRecords(new Map(dbRecordsRef.current));
-    setMainCard(prev => ({ ...prev, pressReleases: [] }));
-
     const [prResult, newsResult] = await Promise.allSettled([
       fetchPRsFromPressIntelligence(ticker, SECTION_MAX),
       fetch(`/api/news/${ticker}`).then(async res => {
@@ -1084,7 +1065,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
 
       setMainCard(prev => ({
         ...prev, loading: false, loadingPR: false, loadingNews: false, loaded: true, error: fetchError,
-        pressReleases: prs,
+        pressReleases: mergeArticles(prs, prev.pressReleases),
         news: mergeArticles(news, prev.news),
       }));
       setLastFetchedAt(Date.now());
@@ -1295,6 +1276,24 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               records.set(key, { ...rec, hidden: true });
             }
           }
+        }
+
+        // One-time migration: purge old PR data so fresh press-intelligence data takes over
+        const migrationKey = `pr-source-migrated-${ticker}`;
+        if (typeof localStorage !== 'undefined' && !localStorage.getItem(migrationKey)) {
+          const prKeys: string[] = [];
+          for (const [key, rec] of records) {
+            if (rec.articleType === 'pr') prKeys.push(key);
+          }
+          if (prKeys.length > 0) {
+            // Delete PR rows from DB
+            await fetch(`/api/seen-articles?ticker=${ticker}&articleType=pr`, { method: 'DELETE' }).catch(() => {});
+            // Remove from local map
+            for (const key of prKeys) records.delete(key);
+            // Clear PR items from the arrays
+            prs.length = 0;
+          }
+          localStorage.setItem(migrationKey, Date.now().toString());
         }
 
         dbRecordsRef.current = records;
