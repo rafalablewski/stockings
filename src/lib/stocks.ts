@@ -92,6 +92,12 @@ export const stocks: Record<string, StockMeta> = {
     sector: 'Digital Assets',
     description: 'Bitcoin mining and high-performance computing infrastructure company',
   },
+  IREN: {
+    ticker: 'IREN',
+    name: 'IREN',
+    sector: 'Digital Assets',
+    description: 'Next-generation data center business powering AI and Bitcoin mining',
+  },
 };
 
 export const stockList = Object.values(stocks);

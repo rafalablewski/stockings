@@ -313,6 +313,23 @@ const FEED_CONFIGS: FeedConfig[] = [
     },
   },
   {
+    ticker: "IREN",
+    endpoint: "/api/press-intelligence?ticker=IREN",
+    accent: "teal",
+    color: "#2DD4BF",
+    colorDim: "rgba(45,212,191,0.15)",
+    sourceFilter: () => true,
+    headlineFilter: () => true,
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Mining: (h) => /mining|hash|hashrate|exahash|block|mined|production|megawatt|facility|data\s*center/i.test(h),
+      Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+    },
+  },
+  {
     ticker: "FRMM",
     endpoint: "/api/press-intelligence?ticker=FRMM",
     accent: "purple",

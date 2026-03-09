@@ -403,6 +403,11 @@ const TICKER_CONFIG = {
     topics: ['HUT'],
     filter: (hl) => /hut\s*8|hut8|\bhut\b/i.test(hl),
   },
+  IREN: {
+    type: 'crypto',
+    topics: ['IREN'],
+    filter: (hl) => /\biren\b|iris\s*energy/i.test(hl),
+  },
   COIN: {
     type: 'crypto',
     topics: ['COIN'],
