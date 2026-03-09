@@ -352,6 +352,12 @@ const TICKER_CONFIG = {
     sources: ['globenewswire', 'pr newswire', 'business wire'],
     filter: (hl) => /verizon/i.test(hl),
   },
+  VSAT: {
+    type: 'qm-simple',
+    topics: ['VSAT'],
+    sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
+    filter: (hl) => /viasat/i.test(hl),
+  },
 
   // ─── Crypto tickers (QM + optional fallbacks) ───
   MSTR: {

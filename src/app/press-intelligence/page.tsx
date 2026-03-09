@@ -109,6 +109,23 @@ const FEED_CONFIGS: FeedConfig[] = [
     },
   },
   {
+    ticker: "VSAT",
+    endpoint: "/api/press-intelligence?ticker=VSAT",
+    accent: "indigo",
+    color: "#818CF8",
+    colorDim: "rgba(129,140,248,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for "viasat"
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Satellite: (h) => /satellite|launch|orbit|ka-band|broadband|inflight|connectivity|viasat-3/i.test(h),
+      Partnerships: (h) => /partner|agreement|contract|award|select|government|dod|military|airline/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+    },
+  },
+  {
     ticker: "T",
     endpoint: "/api/press-intelligence?ticker=T",
     accent: "sky",

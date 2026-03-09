@@ -62,6 +62,12 @@ export const stocks: Record<string, StockMeta> = {
     sector: 'Digital Assets',
     description: 'Largest US cryptocurrency exchange and digital asset platform',
   },
+  VSAT: {
+    ticker: 'VSAT',
+    name: 'Viasat',
+    sector: 'Space Technology',
+    description: 'Global communications company providing satellite and wireless networking systems',
+  },
 };
 
 export const stockList = Object.values(stocks);
