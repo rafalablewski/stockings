@@ -2,7 +2,7 @@
 // Unified press-release proxy for all 14 tickers
 // Usage: /api/press-intelligence?ticker=ASTS
 // Supported: ASTS, BMNR, IRDM, GSAT, VZ, T, AMZLEO, LYNK,
-//            MSTR, MARA, RIOT, CLSK, NBIS, FRMM, COIN
+//            MSTR, MARA, RIOT, CLSK, FRMM, COIN
 
 const caches = {};
 const CACHE_TTL_DEFAULT = 5 * 60 * 1000;
@@ -412,7 +412,6 @@ const TICKER_CONFIG = {
     type: 'crypto',
     topics: ['NBIS'],
     filter: (hl) => /\bnbis\b|nebius/i.test(hl),
-    irUrl: 'https://nebius.com/newsroom',
   },
   COIN: {
     type: 'crypto',
@@ -453,7 +452,7 @@ async function fetchQmSimple(config) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-//  CRYPTO FETCHER (MSTR, MARA, RIOT, CLSK, NBIS, COIN, FRMM)
+//  CRYPTO FETCHER (MSTR, MARA, RIOT, CLSK, COIN, FRMM)
 // ═══════════════════════════════════════════════════════════════════════════
 
 async function fetchCrypto(config) {
