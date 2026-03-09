@@ -144,6 +144,23 @@ const FEED_CONFIGS: FeedConfig[] = [
     },
   },
   {
+    ticker: "SATS",
+    endpoint: "/api/press-intelligence?ticker=SATS",
+    accent: "pink",
+    color: "#EC4899",
+    colorDim: "rgba(236,72,153,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for "echostar/hughes"
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Satellite: (h) => /satellite|launch|orbit|spectrum|broadband|jupiter|s-band|ku-band|hughes/i.test(h),
+      Partnerships: (h) => /partner|agreement|contract|award|select|government|dod|military|fcc/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback|dish/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+    },
+  },
+  {
     ticker: "T",
     endpoint: "/api/press-intelligence?ticker=T",
     accent: "sky",

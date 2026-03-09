@@ -364,6 +364,12 @@ const TICKER_CONFIG = {
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
     filter: (hl) => /rocket\s*lab|rklb/i.test(hl),
   },
+  SATS: {
+    type: 'qm-simple',
+    topics: ['SATS'],
+    sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
+    filter: (hl) => /echostar|sats|hughes/i.test(hl),
+  },
 
   // ─── Crypto tickers (QM + optional fallbacks) ───
   MSTR: {

@@ -24,6 +24,7 @@ const IR_URLS: Record<string, string> = {
   COIN: 'https://investor.coinbase.com/news/default.aspx',
   VSAT: 'https://investors.viasat.com/press-releases',
   RKLB: 'https://investors.rocketlabcorp.com/news',
+  SATS: 'https://ir.echostar.com/press-releases',
 };
 
 // Fallback IR URLs when primary page is JS-rendered and returns no links in initial HTML.

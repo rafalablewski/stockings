@@ -74,6 +74,12 @@ export const stocks: Record<string, StockMeta> = {
     sector: 'Space Technology',
     description: 'End-to-end space company providing launch services, spacecraft, and space systems',
   },
+  SATS: {
+    ticker: 'SATS',
+    name: 'EchoStar',
+    sector: 'Space Technology',
+    description: 'Global satellite communications and technology company operating Hughes and DISH networks',
+  },
 };
 
 export const stockList = Object.values(stocks);
