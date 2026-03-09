@@ -229,3 +229,44 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: msg, detail: String(error) }, { status: 500 });
   }
 }
+
+// ---------------------------------------------------------------------------
+// DELETE — remove articles by articleType for a ticker
+// Usage: DELETE /api/seen-articles?ticker=ASTS&articleType=pr
+// ---------------------------------------------------------------------------
+export async function DELETE(request: NextRequest) {
+  const ticker = request.nextUrl.searchParams.get('ticker');
+  const articleType = request.nextUrl.searchParams.get('articleType');
+
+  if (!ticker || !articleType) {
+    return NextResponse.json({ error: 'Missing ticker or articleType' }, { status: 400 });
+  }
+
+  const t = ticker.toLowerCase();
+  if (!VALID_TICKERS.has(t)) {
+    return NextResponse.json({ error: `Unknown ticker: ${ticker}` }, { status: 400 });
+  }
+
+  try {
+    await ensureTable();
+  } catch (e) {
+    console.error('[seen-articles] ensureTable failed in DELETE:', e);
+    return NextResponse.json({ error: 'Table setup failed', detail: String(e) }, { status: 500 });
+  }
+
+  try {
+    const result = await db.delete(seenArticles).where(
+      and(eq(seenArticles.ticker, t), eq(seenArticles.articleType, articleType))
+    );
+    console.log(`[seen-articles] DELETE ticker=${t} articleType=${articleType}`);
+    return NextResponse.json({ ok: true, deleted: (result as { rowCount?: number }).rowCount ?? 0 });
+  } catch (error) {
+    console.error('[seen-articles] DELETE error:', error);
+    if (isTableMissing(error)) {
+      tableVerified = false;
+      return NextResponse.json({ ok: true, deleted: 0 });
+    }
+    const msg = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: msg, detail: String(error) }, { status: 500 });
+  }
+}

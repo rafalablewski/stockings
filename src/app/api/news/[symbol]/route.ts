@@ -86,7 +86,7 @@ export async function GET(
     return NextResponse.json({
       symbol,
       companyName: stock.name,
-      articles: relevant.slice(0, 10),
+      articles: relevant.slice(0, 15),
       fetchedAt: new Date().toISOString(),
     });
   } catch (error) {

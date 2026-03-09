@@ -132,8 +132,8 @@ const normalizeFormForMatch = (f: string) => {
 /**
  * Look up cross-refs by accession number first, then by form|date (legacy).
  * Accession-number keys have no pipe; form|date keys contain a pipe separator.
- * Legacy fallback uses closest-date matching (within MAX_LEGACY_MATCH_DAYS)
- * instead of a fixed ±N day window, so it works regardless of when data is entered.
+ * Legacy fallback uses exact date matching (±1 day tolerance for timezone drift)
+ * to prevent cross-refs from bleeding between nearby filings of the same type.
  */
 function lookupCrossRefs(
   accessionNumber: string,
@@ -148,24 +148,18 @@ function lookupCrossRefs(
   if (index[accessionNumber]) return index[accessionNumber];
   if (index[accNorm]) return index[accNorm];
 
-  // Fallback: closest-date match among form|date keys of the same form type
+  // Fallback: exact or near-exact date match among form|date keys of same form type.
+  // Use tight tolerance (<=1 day) to prevent cross-refs bleeding between weekly filings
+  // (e.g. BMNR weekly 8-K ETH updates). The 14-day window is for local filing matching
+  // only — cross-ref keys must match their specific filing date.
   const lookupNorm = normalizeFormForMatch(form);
-  let bestValue: { source: string; data: string }[] | undefined;
-  let bestDays = Infinity;
   for (const [key, value] of Object.entries(index)) {
     const pipeIdx = key.indexOf('|');
     if (pipeIdx === -1) continue;
     const keyForm = key.slice(0, pipeIdx);
     const keyDate = key.slice(pipeIdx + 1);
     if (normalizeFormForMatch(keyForm) !== lookupNorm) continue;
-    const days = daysBetween(isoDate, keyDate);
-    if (days < bestDays) {
-      bestDays = days;
-      bestValue = value;
-    }
-  }
-  if (bestValue && bestDays <= MAX_LEGACY_MATCH_DAYS) {
-    return bestValue;
+    if (daysBetween(isoDate, keyDate) <= 1) return value;
   }
   return undefined;
 }

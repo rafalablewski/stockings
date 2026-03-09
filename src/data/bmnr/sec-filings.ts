@@ -37,6 +37,7 @@
 
 export const BMNR_SEC_FILINGS = [
   // === 2026 ===
+  { date: 'Feb 25, 2026', type: 'Form 4', description: 'Love: 13,582 Board Comp Shares + 17,496 RSUs (2026 Service, Quarterly Vest)', period: '—', color: 'green' },
   { date: 'Feb 23, 2026', type: '8-K', description: '4.423M ETH Holdings Update ($9.6B Total, 3.66% Supply, 73% to 5%)', period: '—', color: 'yellow' },
   { date: 'Feb 17, 2026', type: 'Form 4/A', description: 'Tom Lee: 1.5M RSU Grant, 500K Vested, ~232K Tax-Withheld ($6.7M @ $28.84)', period: '—', color: 'green' },
   { date: 'Feb 17, 2026', type: '8-K', description: '4.371M ETH Holdings Update ($9.6B Total, Staking 3.04M)', period: '—', color: 'yellow' },
@@ -175,7 +176,7 @@ export const BMNR_SEC_META = {
   exchange: 'NYSE American',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 23, 2026', title: '4,422,659 ETH Holdings Update — $9.6B Total, 3.66% Supply, 73% to Alchemy of 5%' },
-  totalFilingsTracked: 113
+  totalFilingsTracked: 114
 };
 
 // Color palette constants (reduce duplication per Gemini review)
@@ -219,6 +220,9 @@ export const BMNR_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '
 export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: string }[]> = {
 
   // ── Feb 2026 ──────────────────────────────────────────────────────────────
+  'Form 4|2026-02-25': [
+    { source: 'capital', data: "Lori Love (Director): 13,582 shares board comp + 17,496 RSUs (2026 service, quarterly vest); 36,082 shares total" },
+  ],
   '8-K|2026-02-23': [
     { source: 'company', data: "ethHoldings: 4,422,659 ETH; ethPrice: $1,958; stakedETH: 3,040,483; CESR: 2.81%; cash: $691M; stakingRatio: 68.7%" },
     { source: 'timeline', data: "ETH Holdings 4.423M ($9.6B total); 3.66% supply; 73% to 5% target; +51,162 ETH WoW" },
