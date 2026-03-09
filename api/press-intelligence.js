@@ -408,6 +408,11 @@ const TICKER_CONFIG = {
     topics: ['IREN'],
     filter: (hl) => /\biren\b|iris\s*energy/i.test(hl),
   },
+  NBIS: {
+    type: 'crypto',
+    topics: ['NBIS'],
+    filter: (hl) => /\bnbis\b|nebius/i.test(hl),
+  },
   COIN: {
     type: 'crypto',
     topics: ['COIN'],

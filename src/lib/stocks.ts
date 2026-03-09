@@ -98,6 +98,12 @@ export const stocks: Record<string, StockMeta> = {
     sector: 'Digital Assets',
     description: 'Next-generation data center business powering AI and Bitcoin mining',
   },
+  NBIS: {
+    ticker: 'NBIS',
+    name: 'Nebius',
+    sector: 'AI Infrastructure',
+    description: 'AI infrastructure company providing cloud compute, data tools, and AI services',
+  },
 };
 
 export const stockList = Object.values(stocks);

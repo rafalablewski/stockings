@@ -330,6 +330,23 @@ const FEED_CONFIGS: FeedConfig[] = [
     },
   },
   {
+    ticker: "NBIS",
+    endpoint: "/api/press-intelligence?ticker=NBIS",
+    accent: "indigo",
+    color: "#818CF8",
+    colorDim: "rgba(129,140,248,0.15)",
+    sourceFilter: () => true,
+    headlineFilter: () => true,
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      "AI & Cloud": (h) => /\bai\b|artificial|cloud|gpu|compute|inference|training|model|data\s*center/i.test(h),
+      Product: (h) => /launch|platform|product|service|partner|integrat|sdk|api/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|ipo|stock|debt|\$\d/i.test(h),
+    },
+  },
+  {
     ticker: "FRMM",
     endpoint: "/api/press-intelligence?ticker=FRMM",
     accent: "purple",
