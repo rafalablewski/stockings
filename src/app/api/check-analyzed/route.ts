@@ -86,19 +86,35 @@ function daysBetween(a: string, b: string): number {
   return Math.abs(da.getTime() - db2.getTime()) / (1000 * 60 * 60 * 24);
 }
 
-/** Extract all numeric sequences (up to 4 digits) from text for distinguishing similar announcements */
+/** Extract all numeric sequences (up to 4 digits) from text for distinguishing similar announcements.
+ *  Filters out noise: single-digit numbers (0-9), year-like 4-digit numbers (2020-2039),
+ *  and common percentage fragments to reduce false positives. */
 function extractNumbers(text: string): Set<string> {
   const matches = text.match(/\d+/g);
   if (!matches) return new Set();
-  return new Set(matches.filter(n => n.length <= 4));
+  return new Set(matches.filter(n => {
+    if (n.length <= 1) return false;                    // skip single digits (noise from decimals like "$1.0")
+    if (n.length === 4 && +n >= 2020 && +n <= 2039) return false; // skip year-like numbers
+    return n.length <= 4;
+  }));
 }
 
-/** True if both strings contain numbers but share none in common */
+/** True if two number strings are approximately equal (within 10%) */
+function approxEqual(a: string, b: string): boolean {
+  const na = +a, nb = +b;
+  if (na === 0 || nb === 0) return false;
+  return Math.abs(na - nb) / Math.max(na, nb) <= 0.10;
+}
+
+/** True if both strings contain numbers but share none in common (exact or approximate) */
 function numbersDisagree(a: string, b: string): boolean {
   const numsA = extractNumbers(a);
   const numsB = extractNumbers(b);
   if (numsA.size === 0 || numsB.size === 0) return false;
-  for (const n of numsA) { if (numsB.has(n)) return false; }
+  for (const na of numsA) {
+    if (numsB.has(na)) return false;                          // exact match
+    for (const nb of numsB) { if (approxEqual(na, nb)) return false; }  // ~10% match
+  }
   return true;
 }
 
@@ -111,8 +127,10 @@ function hasDistinguishingNumbers(a: string, b: string): boolean {
   const numsA = extractNumbers(a);
   const numsB = extractNumbers(b);
   if (numsA.size === 0 || numsB.size === 0) return false;
-  const uniqueToA = [...numsA].filter(n => !numsB.has(n));
-  const uniqueToB = [...numsB].filter(n => !numsA.has(n));
+  const matchesB = (n: string) => numsB.has(n) || [...numsB].some(nb => approxEqual(n, nb));
+  const matchesA = (n: string) => numsA.has(n) || [...numsA].some(na => approxEqual(n, na));
+  const uniqueToA = [...numsA].filter(n => !matchesB(n));
+  const uniqueToB = [...numsB].filter(n => !matchesA(n));
   return uniqueToA.length > 0 && uniqueToB.length > 0;
 }
 
