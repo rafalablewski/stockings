@@ -24,12 +24,13 @@ interface FeedConfig {
 const FEED_CONFIGS: FeedConfig[] = [
   {
     ticker: "ASTS",
-    endpoint: "/api/asts-news",
+    endpoint: "/api/press-intelligence?ticker=ASTS",
     accent: "cyan",
     color: "#22D3EE",
     colorDim: "rgba(34,211,238,0.15)",
     sourceFilter: (src) => src.toLowerCase().includes("business wire"),
     headlineFilter: (h) => /ast\s*spacemobile|asts/i.test(h),
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
     categories: {
       Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d/i.test(h),
       Launches: (h) => /launch|bluebird|satellite|orbit|unfold|spacex/i.test(h),
@@ -39,7 +40,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "BMNR",
-    endpoint: "/api/bmnr-news",
+    endpoint: "/api/press-intelligence?ticker=BMNR",
     accent: "violet",
     color: "#A78BFA",
     colorDim: "rgba(167,139,250,0.15)",
@@ -48,6 +49,7 @@ const FEED_CONFIGS: FeedConfig[] = [
       return s.includes("pr newswire") || s.includes("prnewswire") || s.includes("business wire") || s.includes("accesswire") || s.includes("globe newswire");
     },
     headlineFilter: (h) => /bitmine|bmnr|bit\s*mine/i.test(h),
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
     categories: {
       Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
       Ethereum: (h) => /eth|ethereum|staking|crypto|digital asset|blockchain|treasury/i.test(h),
@@ -57,7 +59,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "IRDM",
-    endpoint: "/api/irdm-news",
+    endpoint: "/api/press-intelligence?ticker=IRDM",
     accent: "gold",
     color: "#F59E0B",
     colorDim: "rgba(245,158,11,0.15)",
@@ -74,7 +76,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "GSAT",
-    endpoint: "/api/gsat-news",
+    endpoint: "/api/press-intelligence?ticker=GSAT",
     accent: "orange",
     color: "#FB923C",
     colorDim: "rgba(251,146,60,0.15)",
@@ -91,7 +93,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "VZ",
-    endpoint: "/api/vz-news",
+    endpoint: "/api/press-intelligence?ticker=VZ",
     accent: "rose",
     color: "#F472B6",
     colorDim: "rgba(244,114,182,0.15)",
@@ -107,8 +109,78 @@ const FEED_CONFIGS: FeedConfig[] = [
     },
   },
   {
+    ticker: "VSAT",
+    endpoint: "/api/press-intelligence?ticker=VSAT",
+    accent: "indigo",
+    color: "#818CF8",
+    colorDim: "rgba(129,140,248,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for "viasat"
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Satellite: (h) => /satellite|launch|orbit|ka-band|broadband|inflight|connectivity|viasat-3/i.test(h),
+      Partnerships: (h) => /partner|agreement|contract|award|select|government|dod|military|airline/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+    },
+  },
+  {
+    ticker: "RKLB",
+    endpoint: "/api/press-intelligence?ticker=RKLB",
+    accent: "fuchsia",
+    color: "#D946EF",
+    colorDim: "rgba(217,70,239,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for "rocket lab"
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Launch: (h) => /launch|electron|neutron|mission|payload|deploy|liftoff|rocket/i.test(h),
+      Satellite: (h) => /satellite|spacecraft|photon|constellation|orbit|space\s*systems/i.test(h),
+      Partnerships: (h) => /partner|agreement|contract|award|select|government|dod|military|nasa/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+    },
+  },
+  {
+    ticker: "SATS",
+    endpoint: "/api/press-intelligence?ticker=SATS",
+    accent: "pink",
+    color: "#EC4899",
+    colorDim: "rgba(236,72,153,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for "echostar/hughes"
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Satellite: (h) => /satellite|launch|orbit|spectrum|broadband|jupiter|s-band|ku-band|hughes/i.test(h),
+      Partnerships: (h) => /partner|agreement|contract|award|select|government|dod|military|fcc/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback|dish/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+    },
+  },
+  {
+    ticker: "LUNR",
+    endpoint: "/api/press-intelligence?ticker=LUNR",
+    accent: "yellow",
+    color: "#FACC15",
+    colorDim: "rgba(250,204,21,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for "intuitive machines"
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Lunar: (h) => /lunar|moon|lander|landing|artemis|clps|south\s*pole/i.test(h),
+      Satellite: (h) => /satellite|orbit|relay|data\s*transmission|deep\s*space|navigation/i.test(h),
+      Partnerships: (h) => /partner|agreement|contract|award|select|government|nasa|dod|military/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+    },
+  },
+  {
     ticker: "T",
-    endpoint: "/api/att-news",
+    endpoint: "/api/press-intelligence?ticker=T",
     accent: "sky",
     color: "#38BDF8",
     colorDim: "rgba(56,189,248,0.15)",
@@ -125,7 +197,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "AMZLEO",
-    endpoint: "/api/amazon-leo-news",
+    endpoint: "/api/press-intelligence?ticker=AMZLEO",
     accent: "emerald",
     color: "#34D399",
     colorDim: "rgba(52,211,153,0.15)",
@@ -141,7 +213,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "LYNK",
-    endpoint: "/api/lynk-news",
+    endpoint: "/api/press-intelligence?ticker=LYNK",
     accent: "teal",
     color: "#2DD4BF",
     colorDim: "rgba(45,212,191,0.15)",
@@ -154,6 +226,158 @@ const FEED_CONFIGS: FeedConfig[] = [
       Partnerships: (h) => /partner|agreement|contract|carrier|telco|operator|government|mno/i.test(h),
       Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|funding|raise/i.test(h),
       "Media & Opinion": (h) => /podcast|video|op.ed|interview|panel|keynote|conference/i.test(h),
+    },
+  },
+  {
+    ticker: "MSTR",
+    endpoint: "/api/press-intelligence?ticker=MSTR",
+    accent: "amber",
+    color: "#F59E0B",
+    colorDim: "rgba(245,158,11,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for strategy/microstrategy
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury|hodl|acquisition/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|name change|rebrand/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+    },
+  },
+  {
+    ticker: "MARA",
+    endpoint: "/api/press-intelligence?ticker=MARA",
+    accent: "lime",
+    color: "#84CC16",
+    colorDim: "rgba(132,204,22,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for marathon/mara
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Mining: (h) => /mining|hash|hashrate|exahash|block|mined|production|energize/i.test(h),
+      Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+    },
+  },
+  {
+    ticker: "RIOT",
+    endpoint: "/api/press-intelligence?ticker=RIOT",
+    accent: "red",
+    color: "#EF4444",
+    colorDim: "rgba(239,68,68,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for riot
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Mining: (h) => /mining|hash|hashrate|exahash|block|mined|production|megawatt|facility/i.test(h),
+      Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+    },
+  },
+  {
+    ticker: "CLSK",
+    endpoint: "/api/press-intelligence?ticker=CLSK",
+    accent: "green",
+    color: "#22C55E",
+    colorDim: "rgba(34,197,94,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for cleanspark
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Mining: (h) => /mining|hash|hashrate|exahash|block|mined|production|megawatt|facility/i.test(h),
+      Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+    },
+  },
+  {
+    ticker: "HUT",
+    endpoint: "/api/press-intelligence?ticker=HUT",
+    accent: "stone",
+    color: "#A8A29E",
+    colorDim: "rgba(168,162,158,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for "hut 8"
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Mining: (h) => /mining|hash|hashrate|exahash|block|mined|production|megawatt|facility|data\s*center/i.test(h),
+      Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+    },
+  },
+  {
+    ticker: "IREN",
+    endpoint: "/api/press-intelligence?ticker=IREN",
+    accent: "teal",
+    color: "#2DD4BF",
+    colorDim: "rgba(45,212,191,0.15)",
+    sourceFilter: () => true,
+    headlineFilter: () => true,
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Mining: (h) => /mining|hash|hashrate|exahash|block|mined|production|megawatt|facility|data\s*center/i.test(h),
+      Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+    },
+  },
+  {
+    ticker: "NBIS",
+    endpoint: "/api/press-intelligence?ticker=NBIS",
+    accent: "indigo",
+    color: "#818CF8",
+    colorDim: "rgba(129,140,248,0.15)",
+    sourceFilter: () => true,
+    headlineFilter: () => true,
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      "AI & Cloud": (h) => /\bai\b|artificial|cloud|gpu|compute|inference|training|model|data\s*center/i.test(h),
+      Product: (h) => /launch|platform|product|service|partner|integrat|sdk|api/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|ipo|stock|debt|\$\d/i.test(h),
+    },
+  },
+  {
+    ticker: "FRMM",
+    endpoint: "/api/press-intelligence?ticker=FRMM",
+    accent: "purple",
+    color: "#A855F7",
+    colorDim: "rgba(168,85,247,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for forum/ethzilla
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Tokenization: (h) => /token|rwa|real.world|aviation|loan|portfolio|securit/i.test(h),
+      Ethereum: (h) => /eth|ethereum|staking|crypto|digital asset|blockchain|treasury|validator/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|name change|rebrand|forum|ethzilla/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|warrant|stock|\$\d/i.test(h),
+    },
+  },
+  {
+    ticker: "COIN",
+    endpoint: "/api/press-intelligence?ticker=COIN",
+    accent: "blue",
+    color: "#3B82F6",
+    colorDim: "rgba(59,130,246,0.15)",
+    sourceFilter: () => true,  // API pre-filters
+    headlineFilter: () => true,  // API pre-filters for coinbase
+    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    categories: {
+      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Exchange: (h) => /exchange|trading|listing|delist|custody|staking|base\b|layer\s*2/i.test(h),
+      Regulatory: (h) => /sec|regulat|compliance|license|legal|lawsuit|settlement|approval/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|partnership/i.test(h),
+      "Capital Markets": (h) => /notes|offering|convert|shares|capital|buyback|repurchase|debt|\$\d/i.test(h),
     },
   },
 ];

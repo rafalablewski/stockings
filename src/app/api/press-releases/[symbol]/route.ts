@@ -16,6 +16,19 @@ const IR_URLS: Record<string, string> = {
   ASTS: 'https://investors.ast-science.com/press-releases',
   BMNR: 'https://www.bitminetech.io/investor-relations',
   CRCL: 'https://investors.circle.com/press-releases',
+  MSTR: 'https://www.strategy.com/press',
+  MARA: 'https://ir.mara.com/news-events/press-releases',
+  RIOT: 'https://www.riotplatforms.com/overview/news-events/press-releases/',
+  CLSK: 'https://investors.cleanspark.com/news/',
+  FRMM: 'https://ir.forum-markets.com/news-events/press-releases',
+  COIN: 'https://investor.coinbase.com/news/default.aspx',
+  VSAT: 'https://investors.viasat.com/press-releases',
+  RKLB: 'https://investors.rocketlabcorp.com/news',
+  SATS: 'https://ir.echostar.com/press-releases',
+  LUNR: 'https://investors.intuitivemachines.com/news-events/latest-news',
+  HUT: 'https://www.hut8.com/news-insights/press-releases',
+  IREN: 'https://iren.com/investors/news',
+  NBIS: 'https://nebius.com/newsroom',
 };
 
 // Fallback IR URLs when primary page is JS-rendered and returns no links in initial HTML.
