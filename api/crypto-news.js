@@ -9,7 +9,7 @@
 const caches = {};
 const CACHE_TTL = 5 * 60 * 1000;
 
-const OFFICIAL_SOURCES = ['pr newswire', 'business wire', 'globe newswire', 'globenewswire', 'accesswire', 'canada newswire', 'newsfile', 'investor relations', 'globenewswire rss'];
+const OFFICIAL_SOURCES = ['pr newswire', 'business wire', 'globe newswire', 'globenewswire', 'accesswire', 'canada newswire', 'newsfile', 'investor relations', 'globenewswire rss', 'stock titan'];
 
 const BROWSER_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
@@ -36,29 +36,19 @@ const TICKER_CONFIG = {
     filter: (hl) => /cleanspark/i.test(hl) || /\bclsk\b/i.test(hl),
   },
   FRMM: {
-    // Try multiple QM ticker variants for Canadian exchanges
-    topics: ['FRMM', 'ETHZ', 'FRMM:CA', 'ETHZ:CA'],
-    filter: (hl) => /forum\s*markets/i.test(hl) || /ether\s*capital/i.test(hl) || /\bfrmm\b/i.test(hl) || /\bethz\b/i.test(hl),
-    // FRMM is TSX-listed (Canadian) — QM may not index it; use multi-source fallback
+    // Nasdaq-listed: previously ETHZilla Corp (ETHZ), rebranded to Forum Markets Inc (FRMM) on Mar 2, 2026
+    // Wire service: Stock Titan (stocktitan.net)
+    topics: ['FRMM', 'ETHZ'],
+    filter: (hl) => /forum\s*markets/i.test(hl) || /\bforum\b/i.test(hl) || /ethzilla/i.test(hl) || /\bfrmm\b/i.test(hl) || /\bethz\b/i.test(hl),
     irUrl: 'https://ir.forum-markets.com/news-events/press-releases',
-    // GlobeNewsWire RSS (NOT Google RSS) — direct wire service feeds
-    gnwRssKeywords: ['Forum Markets Inc', 'Forum Markets', 'Ether Capital'],
-    // Notified platform RSS + JSON API endpoints
+    // Stock Titan is the wire service — fetch their company news page
+    stockTitanSlugs: ['ETHZ', 'FRMM'],
+    // Also try GNW RSS for ETHZilla/Forum (NOT "Ether Capital" which is a different company)
+    gnwRssKeywords: ['ETHZilla', 'Forum Markets'],
+    // IR site RSS feeds
     notifiedApiUrls: [
       'https://ir.forum-markets.com/rss/news-releases.xml',
       'https://ir.forum-markets.com/rss/press-releases.xml',
-      'https://ir.forum-markets.com/feed',
-    ],
-    // Notified JSON API (the backend API the SPA calls)
-    notifiedJsonApis: [
-      'https://ir.forum-markets.com/api/PressRelease/GetPressReleaseList?pageSize=50&pageNumber=1',
-      'https://ir.forum-markets.com/api/News/GetNewsList?pageSize=50&pageNumber=1&category=press-releases',
-    ],
-    // Newsfile company page (common Canadian wire service)
-    newsfileCompanyUrls: [
-      'https://www.newsfilecorp.com/company/Forum-Markets',
-      'https://www.newsfilecorp.com/company/Forum-Markets-Inc',
-      'https://www.newsfilecorp.com/company/Ether-Capital',
     ],
   },
   COIN: {
@@ -199,6 +189,59 @@ async function fetchGnwRss(keywords) {
       }
     }
     if (items.length > 0) break;
+  }
+  return items;
+}
+
+// ─── Stock Titan (wire service used by Forum Markets / ETHZilla) ───
+
+async function fetchStockTitan(slugs) {
+  const items = [];
+  for (const slug of slugs) {
+    try {
+      // Stock Titan has company news pages at /news/TICKER/
+      const url = `https://www.stocktitan.net/news/${slug}/`;
+      const res = await fetch(url, {
+        headers: BROWSER_HEADERS,
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!res.ok) {
+        console.warn(`[crypto-news] Stock Titan returned ${res.status} for ${url}`);
+        continue;
+      }
+      const html = await res.text();
+
+      // Stock Titan news pages have links to individual press releases
+      // Pattern: /news/TICKER/headline-slug-hash.html
+      const linkRe = /<a[^>]+href=["']((?:https:\/\/www\.stocktitan\.net)?\/news\/[^"']+\.html)["'][^>]*>([\s\S]*?)<\/a>/gi;
+      let m;
+      while ((m = linkRe.exec(html)) !== null && items.length < 30) {
+        const href = m[1];
+        const text = decodeEntities(stripTags(m[2]));
+        if (!text || text.length < 15) continue;
+        // Skip nav links and non-article links
+        if (/view all|see more|read more|load more/i.test(text)) continue;
+        const fullUrl = href.startsWith('http') ? href : `https://www.stocktitan.net${href}`;
+        const datetime = extractDateFromContext(html, m.index);
+
+        items.push({
+          newsid: `stocktitan-${items.length}`,
+          headline: text,
+          datetime: datetime || new Date().toISOString(),
+          source: 'Stock Titan',
+          permalink: fullUrl,
+          storyurl: fullUrl,
+          _source: 'stocktitan',
+        });
+      }
+
+      if (items.length > 0) {
+        console.log(`[crypto-news] Stock Titan returned ${items.length} items from ${url}`);
+        break;
+      }
+    } catch (e) {
+      console.warn(`[crypto-news] Stock Titan failed for "${slug}":`, e.message);
+    }
   }
   return items;
 }
@@ -464,32 +507,27 @@ export default async function handler(req, res) {
     let finalItems = qmFiltered;
 
     // Fallback for tickers with extra sources (FRMM): try multiple data sources
-    if ((config.gnwRssKeywords || config.notifiedApiUrls || config.notifiedJsonApis || config.newsfileCompanyUrls || config.irUrl) && finalItems.length < 3) {
+    if ((config.stockTitanSlugs || config.gnwRssKeywords || config.notifiedApiUrls || config.irUrl) && finalItems.length < 3) {
       console.log(`[crypto-news] QM returned ${finalItems.length} for ${ticker}, trying fallback sources`);
 
       const fallbackPromises = [];
 
-      // 1. Notified platform JSON API (most likely to have current data)
-      if (config.notifiedJsonApis) {
-        fallbackPromises.push(fetchNotifiedJson(config.notifiedJsonApis));
+      // 1. Stock Titan (primary wire service for Forum Markets / ETHZilla)
+      if (config.stockTitanSlugs) {
+        fallbackPromises.push(fetchStockTitan(config.stockTitanSlugs));
       }
 
-      // 2. Newsfile Corp company page (common Canadian wire service)
-      if (config.newsfileCompanyUrls) {
-        fallbackPromises.push(fetchNewsfileCompany(config.newsfileCompanyUrls));
-      }
-
-      // 3. Notified platform RSS feeds (ir.forum-markets.com/rss/...)
+      // 2. IR site RSS feeds
       if (config.notifiedApiUrls) {
         fallbackPromises.push(fetchNotifiedRss(config.notifiedApiUrls));
       }
 
-      // 4. GlobeNewsWire RSS feed (direct wire service, NOT Google)
+      // 3. GlobeNewsWire RSS feed (direct wire service, NOT Google)
       if (config.gnwRssKeywords) {
         fallbackPromises.push(fetchGnwRss(config.gnwRssKeywords));
       }
 
-      // 5. Direct IR page HTML scrape (last resort)
+      // 4. Direct IR page HTML scrape (last resort)
       if (config.irUrl) {
         fallbackPromises.push(fetchIRPage(config.irUrl));
       }
@@ -504,8 +542,8 @@ export default async function handler(req, res) {
         const hl = (item.headline || '').toLowerCase();
         if (hl.length < 15) return false; // skip nav links
         const src = item._source || '';
-        // Trust company IR sources directly
-        if (src === 'notified-json' || src === 'notified-rss' || src === 'newsfile-company') return true;
+        // Trust company-specific sources directly (Stock Titan company page, IR site, Notified API)
+        if (src === 'stocktitan' || src === 'notified-json' || src === 'notified-rss' || src === 'newsfile-company') return true;
         // External sources need company-name headline match
         return hl.length >= 20 && config.filter(hl);
       });

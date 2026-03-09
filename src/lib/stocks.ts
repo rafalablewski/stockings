@@ -54,7 +54,7 @@ export const stocks: Record<string, StockMeta> = {
     ticker: 'FRMM',
     name: 'Forum Markets',
     sector: 'Digital Assets',
-    description: 'Digital asset holding company (formerly Ether Capital / ETHZ)',
+    description: 'Digital asset platform for tokenized real-world assets on Ethereum (formerly ETHZilla / ETHZ)',
   },
   COIN: {
     ticker: 'COIN',

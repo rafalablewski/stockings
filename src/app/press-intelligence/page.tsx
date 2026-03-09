@@ -230,12 +230,13 @@ const FEED_CONFIGS: FeedConfig[] = [
     color: "#A855F7",
     colorDim: "rgba(168,85,247,0.15)",
     sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for forum markets/ether capital
+    headlineFilter: () => true,  // API pre-filters for forum/ethzilla
     parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
     categories: {
       Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Tokenization: (h) => /token|rwa|real.world|aviation|loan|portfolio|securit/i.test(h),
       Ethereum: (h) => /eth|ethereum|staking|crypto|digital asset|blockchain|treasury|validator/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|name change|rebrand/i.test(h),
+      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|name change|rebrand|forum|ethzilla/i.test(h),
       "Capital Markets": (h) => /notes|offering|convert|shares|capital|warrant|stock|\$\d/i.test(h),
     },
   },
