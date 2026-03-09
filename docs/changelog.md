@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-03-09
+
+- feat: add unified /api/press-intelligence endpoint supporting 20 tickers (ASTS, BMNR, IRDM, GSAT, VZ, VSAT, RKLB, SATS, LUNR, MSTR, MARA, RIOT, CLSK, HUT, IREN, NBIS, COIN, FRMM, T, AMZLEO, LYNK)
+- feat: add /press-intelligence page with multi-ticker feed, category filters, and search
+- refactor: consolidate per-ticker API files into single handler-factory pattern (TICKER_CONFIG)
+- docs: update /docs with press-intelligence route, API endpoint, and asts-story route
+
 ## 2026-03-01
 
 - feat: add View prompt / Copy prompt buttons to each hook card on /hooks
