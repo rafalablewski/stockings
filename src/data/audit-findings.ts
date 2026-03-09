@@ -520,18 +520,17 @@ export const AUDIT_FINDINGS: AuditFinding[] = [
   },
   {
     id: 'DUP-002',
-    title: 'RSS Parsing and HTML Utilities Duplicated Across 3+ Files',
+    title: 'RSS Parsing and HTML Utilities Duplicated Across Files',
     category: '30. Code Duplication',
     description:
-      'decodeHTMLEntities() is copy-pasted identically in 3 files (news, press-releases, competitor-feed). RSS XML parsing regex logic is duplicated across the same 3 files with minor variations. HTML-to-text stripping (8 chained regex replacements) is duplicated in edgar/analyze and sources/analyze.',
+      'decodeHTMLEntities() is copy-pasted in 2 files (press-releases, competitor-feed). RSS XML parsing regex logic is duplicated across the same 2 files with minor variations. HTML-to-text stripping (8 chained regex replacements) is duplicated in edgar/analyze and sources/analyze. (Previously 3 files — /api/news/ migrated to press intelligence.)',
     severity: 'MEDIUM',
     cvss: 3.5,
     affectedAssets: [
-      'src/app/api/news/[symbol]/route.ts:101-108',
-      'src/app/api/press-releases/[symbol]/route.ts:21-29',
-      'src/app/api/competitor-feed/[company]/route.ts:44-52',
-      'src/app/api/edgar/analyze/route.ts:30-42',
-      'src/app/api/sources/analyze/route.ts:32-43',
+      'src/app/api/press-releases/[symbol]/route.ts',
+      'src/app/api/competitor-feed/[company]/route.ts',
+      'src/app/api/edgar/analyze/route.ts',
+      'src/app/api/sources/analyze/route.ts',
     ],
     impact:
       'Bug fixes and improvements must be applied in multiple places. Inconsistencies between copies can cause subtle behavioral differences. Increased maintenance burden.',
