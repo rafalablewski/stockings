@@ -2,8 +2,7 @@
 // Unified press-release proxy for all 14 tickers
 // Usage: /api/press-intelligence?ticker=ASTS
 // Supported: ASTS, BMNR, IRDM, GSAT, VZ, T, AMZLEO, LYNK,
-//            MSTR, MARA, RIOT, CLSK, FRMM, COIN,
-//            VSAT, RKLB, SATS, LUNR, HUT
+//            MSTR, MARA, RIOT, CLSK, FRMM, COIN
 
 const caches = {};
 const CACHE_TTL_DEFAULT = 5 * 60 * 1000;
@@ -354,31 +353,6 @@ const TICKER_CONFIG = {
     filter: (hl) => /verizon/i.test(hl),
   },
 
-  VSAT: {
-    type: 'qm-simple',
-    topics: ['VSAT'],
-    sources: ['business wire', 'pr newswire', 'globenewswire'],
-    filter: (hl) => /viasat/i.test(hl) || /\bvsat\b/i.test(hl),
-  },
-  RKLB: {
-    type: 'qm-simple',
-    topics: ['RKLB'],
-    sources: ['business wire', 'pr newswire', 'globenewswire'],
-    filter: (hl) => /rocket\s*lab/i.test(hl) || /\brklb\b/i.test(hl),
-  },
-  SATS: {
-    type: 'qm-simple',
-    topics: ['SATS'],
-    sources: ['business wire', 'pr newswire', 'globenewswire'],
-    filter: (hl) => /echostar/i.test(hl) || /\bsats\b/i.test(hl) || /hughes\s*net/i.test(hl),
-  },
-  LUNR: {
-    type: 'qm-simple',
-    topics: ['LUNR'],
-    sources: ['business wire', 'pr newswire', 'globenewswire', 'accesswire'],
-    filter: (hl) => /intuitive\s*machines/i.test(hl) || /\blunr\b/i.test(hl),
-  },
-
   // ─── Crypto tickers (QM + optional fallbacks) ───
   MSTR: {
     type: 'crypto',
@@ -404,11 +378,6 @@ const TICKER_CONFIG = {
     type: 'crypto',
     topics: ['COIN'],
     filter: (hl) => /coinbase/i.test(hl) || /\bcoin\b/i.test(hl),
-  },
-  HUT: {
-    type: 'crypto',
-    topics: ['HUT'],
-    filter: (hl) => /hut\s*8/i.test(hl) || /\bhut\b/i.test(hl),
   },
   FRMM: {
     type: 'crypto',

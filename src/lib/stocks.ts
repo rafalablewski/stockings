@@ -62,36 +62,6 @@ export const stocks: Record<string, StockMeta> = {
     sector: 'Digital Assets',
     description: 'Largest US cryptocurrency exchange and digital asset platform',
   },
-  VSAT: {
-    ticker: 'VSAT',
-    name: 'Viasat',
-    sector: 'Space Technology',
-    description: 'Global communications company providing satellite and wireless networking systems',
-  },
-  RKLB: {
-    ticker: 'RKLB',
-    name: 'Rocket Lab USA',
-    sector: 'Space Technology',
-    description: 'End-to-end space company providing launch services and spacecraft components',
-  },
-  SATS: {
-    ticker: 'SATS',
-    name: 'EchoStar',
-    sector: 'Space Technology',
-    description: 'Satellite communications and technology company (merged with DISH Network)',
-  },
-  LUNR: {
-    ticker: 'LUNR',
-    name: 'Intuitive Machines',
-    sector: 'Space Technology',
-    description: 'Lunar access and services company developing lunar landers and space infrastructure',
-  },
-  HUT: {
-    ticker: 'HUT',
-    name: 'Hut 8',
-    sector: 'Digital Assets',
-    description: 'Digital asset mining and high-performance computing infrastructure company',
-  },
 };
 
 export const stockList = Object.values(stocks);
