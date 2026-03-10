@@ -2823,6 +2823,89 @@ const PurchasesTab = ({ ethPrice, currentShares, currentStockPrice }: { ethPrice
         </div>
       </div>
 
+      {/* mNAV Methodology */}
+      <div className="sm-divider">
+        <span className="sm-param-label">mNAV Methodology</span>
+        <span className="sm-divider-line" />
+      </div>
+
+      <div className="sm-card">
+        <div className="sm-card-section">
+          <div className="sm-text sm-fw-600 sm-bmnr-fs-16 sm-mb-6">NAV Multiple (mNAV) Calculation</div>
+          <p className="sm-body-sm sm-text3 sm-lh-17 sm-m-0">
+            mNAV measures premium or discount to net asset value at time of each ETH purchase. Requires stock price and shares outstanding from the PR date.
+          </p>
+        </div>
+        <div className="sm-card-body">
+          <div className="sm-grid-2 sm-gap-16">
+            <div className="sm-bg-surface2 sm-overflow-hidden sm-rounded-12">
+              <div className="sm-flex sm-border-b sm-bmnr-cell">
+                <span className="sm-bmnr-step-badge" style={{ '--step-color': 'var(--accent)' } as React.CSSProperties}>Step 1</span>
+                <span className="sm-subtle sm-text sm-fw-600">NAV per Share</span>
+              </div>
+              <div className="sm-flex-col-gap sm-bmnr-cell sm-gap-8">
+                <div className="sm-flex-between sm-items-baseline">
+                  <div className="sm-min-w-0 sm-flex-1">
+                    <div className="sm-subtle-sm sm-text2 sm-fw-600">Formula</div>
+                    <div className="sm-text3 sm-bmnr-formula">NAV/Share = (Total ETH After × ETH Price) ÷ Shares Outstanding</div>
+                  </div>
+                </div>
+                <div className="sm-flex-between sm-items-baseline">
+                  <div className="sm-min-w-0 sm-flex-1">
+                    <div className="sm-subtle-sm sm-text2 sm-fw-600">Example (Feb 9)</div>
+                    <div className="sm-text3 sm-bmnr-formula">(4,325,738 × $2,125) ÷ 460M = $19.97</div>
+                  </div>
+                  <div className="sm-bmnr-method-result" style={{ '--result-color': 'var(--accent)' } as React.CSSProperties}>$19.97</div>
+                </div>
+              </div>
+            </div>
+            <div className="sm-bg-surface2 sm-overflow-hidden sm-rounded-12">
+              <div className="sm-flex sm-border-b sm-bmnr-cell">
+                <span className="sm-bmnr-step-badge" style={{ '--step-color': 'var(--sky)' } as React.CSSProperties}>Step 2</span>
+                <span className="sm-subtle sm-text sm-fw-600">mNAV Multiple</span>
+              </div>
+              <div className="sm-flex-col-gap sm-bmnr-cell sm-gap-8">
+                <div className="sm-flex-between sm-items-baseline">
+                  <div className="sm-min-w-0 sm-flex-1">
+                    <div className="sm-subtle-sm sm-text2 sm-fw-600">Formula</div>
+                    <div className="sm-text3 sm-bmnr-formula">mNAV = Stock Price ÷ NAV/Share</div>
+                  </div>
+                </div>
+                <div className="sm-flex-between sm-items-baseline">
+                  <div className="sm-min-w-0 sm-flex-1">
+                    <div className="sm-subtle-sm sm-text2 sm-fw-600">Example (Feb 9)</div>
+                    <div className="sm-text3 sm-bmnr-formula">$27.15 ÷ $19.97 = 1.36x</div>
+                  </div>
+                  <div className="sm-bmnr-method-result" style={{ '--result-color': 'var(--sky)' } as React.CSSProperties}>1.36x</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="sm-bmnr-assumptions">
+            <div className="sm-text2 sm-fw-600 sm-mb-4">Interpretation</div>
+            <ul className="sm-bmnr-list-reset">
+              <li><span className="sm-text" style={{ color: 'var(--mint)' }}>mNAV &lt; 1.0x</span> — Discount: stock trades below ETH value per share</li>
+              <li><span className="sm-text" style={{ color: 'var(--gold)' }}>mNAV 1.0–1.5x</span> — Moderate premium: ATM issuance is accretive</li>
+              <li><span className="sm-text" style={{ color: 'var(--coral)' }}>mNAV &gt; 1.5x</span> — High premium: highly accretive to existing shareholders</li>
+            </ul>
+          </div>
+
+          <div className="sm-bmnr-assumptions sm-mt-12">
+            <div className="sm-text2 sm-fw-600 sm-mb-4">Data Requirements</div>
+            <ul className="sm-bmnr-list-reset">
+              <li><strong>Total ETH After</strong> — from weekly 8-K/PR (available for all entries)</li>
+              <li><strong>ETH Price</strong> — from PR or Coinbase at time (available for all entries)</li>
+              <li><strong>Stock Price</strong> — BMNR closing price on PR date (requires manual lookup)</li>
+              <li><strong>Shares Outstanding</strong> — from 10-Q or PR (changes weekly due to ATM issuance)</li>
+            </ul>
+            <p className="sm-body-sm sm-text3 sm-lh-17 sm-mt-8">
+              mNAV shows &ldquo;—&rdquo; where stock price or shares outstanding were not recorded at time of PR. These can be back-filled from historical market data and 8-K filings as they become available.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Glossary */}
       <CFANotes title="CFA Level III — Purchase History Concepts" items={[
         { term: 'mNAV (NAV Multiple)', def: 'Stock Price / NAV per Share. Measures premium or discount to net asset value. mNAV > 1 = premium (market pays more than assets are worth), mNAV < 1 = discount. Purchases at high mNAV are more accretive to ETH/share.' },
