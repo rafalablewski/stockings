@@ -350,8 +350,7 @@ const SourceArticleRow: React.FC<{
             />
           )}
           {/* Source type badge — fixed width so columns align */}
-          <span className="sm-ed-form-badge" style={{
-            width: 48,
+          <span className="sm-ed-form-badge sm-src-badge-w48" style={{
             '--badge-bg': tc.bg, '--badge-text': tc.text,
           } as React.CSSProperties}>
             {type === 'pr' ? 'PR' : 'NEWS'}
@@ -702,7 +701,7 @@ const CompanyFeedCard: React.FC<{
         borderBottom: data.loaded ? '1px solid var(--border)' : 'none',
         background: isPrimary ? 'color-mix(in srgb, var(--accent) 4%, transparent)' : 'transparent',
       }}>
-        <div className="sm-flex sm-gap-12" style={{ minWidth: 0 }}>
+        <div className="sm-flex sm-gap-12 sm-min-w-0">
           {/* Status indicator */}
           {data.loaded && (
             <span
@@ -1596,7 +1595,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div className="sm-micro-label sm-mb-16 sm-src-research-ls">
               {group.category}
             </div>
-            <nav aria-label={`${group.category} links`} className="sm-flex-col" style={{ gap: 2 }}>
+            <nav aria-label={`${group.category} links`} className="sm-flex-col sm-gap-2">
               {group.sources.map(s => (
                 <a
                   key={s.url}
@@ -1637,13 +1636,13 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div className="sm-ed-method-label">DB-First Architecture</div>
             <div className="sm-flex-col sm-src-flow-center">
               <div className="sm-ed-flowbox">Page loads</div>
-              <div className="sm-ed-vline" style={{ height: 12 }} />
+              <div className="sm-ed-vline sm-ed-vline-12" />
               <div className="sm-ed-flowbox-accent">GET /api/seen-articles?ticker=X</div>
-              <div className="sm-ed-vline" style={{ height: 12 }} />
+              <div className="sm-ed-vline sm-ed-vline-12" />
               <div className="sm-ed-flowbox">ensureTable() &mdash; auto-creates seen_articles if missing</div>
-              <div className="sm-ed-vline" style={{ height: 12 }} />
+              <div className="sm-ed-vline sm-ed-vline-12" />
               <div className="sm-ed-flowbox">Load saved articles from Neon PostgreSQL</div>
-              <div className="sm-ed-vline" style={{ height: 12 }} />
+              <div className="sm-ed-vline sm-ed-vline-12" />
               <div className="sm-mint sm-src-pipeline-label">Render from DB &mdash; no external API calls on mount</div>
             </div>
             <div className="sm-ed-method-text sm-mt-12">
@@ -1661,20 +1660,20 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div className="sm-flex-wrap sm-gap-24">
               <div className="sm-flex-col sm-src-pipe-col sm-src-flow-center">
                 <div className="sm-ed-flowbox-accent">Fetch PRs</div>
-                <div className="sm-src-vpipe" style={{ background: 'var(--sky)' }} />
+                <div className="sm-src-vpipe sm-src-vpipe-sky" />
                 <div className="sm-ed-flowbox sm-src-flowbox-sm">GET /api/press-intelligence?ticker=</div>
-                <div className="sm-ed-vline" style={{ height: 8 }} />
+                <div className="sm-ed-vline sm-ed-vline-8" />
                 <div className="sm-text3 sm-text-center sm-src-method-desc">IR pages (with fallback for JS-rendered pages, e.g. ASTS) + direct Business Wire (newsroom, cheerio). Returns up to 15; dedup by title.</div>
-                <div className="sm-ed-vline" style={{ height: 8 }} />
+                <div className="sm-ed-vline sm-ed-vline-8" />
                 <div className="sm-sky sm-src-pipeline-label">articleType: &quot;pr&quot;</div>
               </div>
               <div className="sm-flex-col sm-src-pipe-col sm-src-flow-center">
-                <div className="sm-ed-flowbox-accent" style={{ background: 'var(--mint-dim)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>Fetch News</div>
-                <div className="sm-src-vpipe" style={{ background: 'var(--mint)' }} />
+                <div className="sm-ed-flowbox-accent sm-ed-flowbox-accent-mint">Fetch News</div>
+                <div className="sm-src-vpipe sm-src-vpipe-mint" />
                 <div className="sm-ed-flowbox sm-src-flowbox-sm">GET /api/news/[ticker]</div>
-                <div className="sm-ed-vline" style={{ height: 8 }} />
+                <div className="sm-ed-vline sm-ed-vline-8" />
                 <div className="sm-text3 sm-text-center sm-src-method-desc">Press Intelligence (multi-source aggregator)<br />QuoteMedia, GlobeNewsWire, Stock Titan, IR pages</div>
-                <div className="sm-ed-vline" style={{ height: 8 }} />
+                <div className="sm-ed-vline sm-ed-vline-8" />
                 <div className="sm-mint sm-src-pipeline-label">articleType: &quot;news&quot;</div>
               </div>
             </div>
@@ -1694,27 +1693,27 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div className="sm-flex-col sm-src-flow-center sm-src-min-w-180">
                 {/* Node: Article */}
                 <div className="sm-ed-flowbox">Article arrives</div>
-                <div className="sm-ed-vline" style={{ height: 12 }} />
+                <div className="sm-ed-vline sm-ed-vline-12" />
                 {/* Node: API Key? */}
                 <div className="sm-ed-flowbox">API key?</div>
-                <div className="sm-ed-vline" style={{ height: 6 }} />
+                <div className="sm-ed-vline sm-ed-vline-6" />
                 <div className="sm-mono-sm sm-text3 sm-src-flow-yn">Yes</div>
-                <div className="sm-ed-vline" style={{ height: 6 }} />
+                <div className="sm-ed-vline sm-ed-vline-6" />
                 {/* Node: AI Disabled? */}
                 <div className="sm-ed-flowbox">AI disabled?</div>
-                <div className="sm-ed-vline" style={{ height: 6 }} />
+                <div className="sm-ed-vline sm-ed-vline-6" />
                 <div className="sm-mono-sm sm-text3 sm-src-flow-yn">No</div>
-                <div className="sm-ed-vline" style={{ height: 6 }} />
+                <div className="sm-ed-vline sm-ed-vline-6" />
                 {/* Node: Token limit? */}
                 <div className="sm-ed-flowbox">Prompt &gt; limit?</div>
-                <div className="sm-ed-vline" style={{ height: 6 }} />
+                <div className="sm-ed-vline sm-ed-vline-6" />
                 <div className="sm-mono-sm sm-text3 sm-src-flow-yn">No</div>
-                <div className="sm-ed-vline" style={{ height: 6 }} />
+                <div className="sm-ed-vline sm-ed-vline-6" />
                 {/* Node: Claude AI */}
                 <div className="sm-ed-flowbox-accent">Claude AI</div>
-                <div className="sm-ed-vline" style={{ height: 6 }} />
+                <div className="sm-ed-vline sm-ed-vline-6" />
                 <div className="sm-mono-sm sm-text3 sm-src-flow-yn">OK</div>
-                <div className="sm-ed-vline" style={{ height: 6 }} />
+                <div className="sm-ed-vline sm-ed-vline-6" />
                 {/* Result */}
                 <div className="sm-sky sm-src-pipeline-label">AI Result</div>
               </div>
@@ -1735,7 +1734,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <div className="sm-flex sm-text3 sm-src-routing-label sm-src-routing-label-height">
                   <span className="sm-coral sm-src-routing-arrow">&larr;</span> Fail
                 </div>
-                <div className="sm-ed-flowbox-accent sm-mt-4" style={{ background: 'var(--gold-dim)', borderColor: 'var(--gold)', color: 'var(--gold)' }}>Local Matching</div>
+                <div className="sm-ed-flowbox-accent sm-ed-flowbox-accent-gold sm-mt-4">Local Matching</div>
               </div>
             </div>
 
@@ -1774,12 +1773,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div className="sm-flex-col sm-src-flow-center">
               {/* Node: Extract */}
               <div className="sm-ed-flowbox">Extract keywords (stop words removed, stemmed, &gt;2 chars)</div>
-              <div className="sm-ed-vline" style={{ height: 12 }} />
+              <div className="sm-ed-vline sm-ed-vline-12" />
               {/* Stemming note */}
               <div className="sm-text3 sm-text-center sm-src-stemmer-note">Normalize: Q1-Q4 &rarr; quarter, FY &rarr; fiscal year</div>
               <div className="sm-text3 sm-text-center sm-src-stemmer-note">Stemmer: -s, -ed, -ing, -tion, -ment, -ies, -ly, -er, -or</div>
               <div className="sm-text3 sm-text-center sm-src-stemmer-note">Overlap: max(article→DB, DB→article) — bidirectional</div>
-              <div className="sm-ed-vline" style={{ height: 12 }} />
+              <div className="sm-ed-vline sm-ed-vline-12" />
               {/* Dollar-amount guard */}
               <div className="sm-text sm-bg-surface2 sm-text-center sm-rounded-8 sm-src-guard-box">
                 <div className="sm-gold sm-src-guard-title">Dollar-amount guard</div>
@@ -1788,7 +1787,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 <div className="sm-micro-text sm-src-guard-note-cont">Recurring series (same template, different values)? &rarr; only match when key figures match and date within 3 days</div>
                 <div className="sm-text3 sm-src-guard-footer">Prevents matching different awards/contracts or different weekly/quarterly updates</div>
               </div>
-              <div className="sm-ed-vline" style={{ height: 12 }} />
+              <div className="sm-ed-vline sm-ed-vline-12" />
               {/* Tier 1 row */}
               <div className="sm-flex sm-gap-16">
                 <div className="sm-ed-flowbox">
@@ -1798,12 +1797,12 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   <div className="sm-micro-text sm-micro-text-sub">short: &ge;60%, &ge;2 kw, &le;30d</div>
                 </div>
                 <div className="sm-flex sm-text3 sm-src-tier-match">
-                  Match &rarr; <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6" style={{ background: 'var(--mint)' }} /><span className="sm-mint sm-fw-600">TRACKED</span></span>
+                  Match &rarr; <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6 sm-src-dot-6-mint" /><span className="sm-mint sm-fw-600">TRACKED</span></span>
                 </div>
               </div>
-              <div className="sm-ed-vline" style={{ height: 6 }} />
+              <div className="sm-ed-vline sm-ed-vline-6" />
               <div className="sm-mono-sm sm-text3 sm-src-flow-yn">No match</div>
-              <div className="sm-ed-vline" style={{ height: 6 }} />
+              <div className="sm-ed-vline sm-ed-vline-6" />
               {/* Tier 2 row */}
               <div className="sm-flex sm-gap-16">
                 <div className="sm-ed-flowbox">
@@ -1812,15 +1811,15 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                   <div className="sm-micro-text sm-micro-text-sub">&gt;30 days: &ge;70%, &ge;3 kw</div>
                 </div>
                 <div className="sm-flex sm-text3 sm-src-tier-match">
-                  Match &rarr; <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6" style={{ background: 'var(--mint)' }} /><span className="sm-mint sm-fw-600">TRACKED</span></span>
+                  Match &rarr; <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6 sm-src-dot-6-mint" /><span className="sm-mint sm-fw-600">TRACKED</span></span>
                 </div>
               </div>
-              <div className="sm-ed-vline" style={{ height: 6 }} />
+              <div className="sm-ed-vline sm-ed-vline-6" />
               <div className="sm-mono-sm sm-text3 sm-src-flow-yn">No match</div>
-              <div className="sm-ed-vline" style={{ height: 6 }} />
+              <div className="sm-ed-vline sm-ed-vline-6" />
               {/* Result: UNTRACKED */}
               <div className="sm-inline-flex sm-gap-4">
-                <span className="sm-src-dot-6" style={{ background: 'var(--coral)' }} />
+                <span className="sm-src-dot-6 sm-src-dot-6-coral" />
                 <span className="sm-coral sm-src-tracked-label">UNTRACKED</span>
               </div>
               {/* Guard notes */}
@@ -1834,29 +1833,29 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             <div className="sm-ed-method-label">New Article Detection</div>
             <div className="sm-flex-col sm-src-flow-center">
               <div className="sm-flex sm-gap-16">
-                <div className="sm-sky sm-text-center sm-rounded-8 sm-src-detect-badge" style={{ background: 'var(--sky-dim)', border: '1px solid var(--sky)' }}>Fetch PRs</div>
+                <div className="sm-sky sm-text-center sm-rounded-8 sm-src-detect-badge sm-src-detect-badge-sky">Fetch PRs</div>
                 <div className="sm-text3 sm-src-detect-or">or</div>
-                <div className="sm-ed-flowbox-accent sm-src-fetch-news-badge" style={{ background: 'var(--mint-dim)', borderColor: 'var(--mint)', color: 'var(--mint)' }}>Fetch News</div>
+                <div className="sm-ed-flowbox-accent sm-ed-flowbox-accent-mint sm-src-fetch-news-badge">Fetch News</div>
               </div>
-              <div className="sm-ed-vline" style={{ height: 12 }} />
+              <div className="sm-ed-vline sm-ed-vline-12" />
               <div className="sm-ed-flowbox">Compare cacheKey against DB records</div>
-              <div className="sm-ed-vline" style={{ height: 12 }} />
+              <div className="sm-ed-vline sm-ed-vline-12" />
               <div className="sm-ed-flowbox">Already in DB?</div>
               <div className="sm-flex sm-mt-8 sm-src-gap-32">
                 <div className="sm-flex-col sm-src-flow-center">
                   <div className="sm-mono-sm sm-text3 sm-src-flow-yn">Yes</div>
-                  <div className="sm-ed-vline" style={{ height: 8 }} />
+                  <div className="sm-ed-vline sm-ed-vline-8" />
                   <div className="sm-text3 sm-src-upsert-label">Upsert (update metadata)</div>
                 </div>
                 <div className="sm-flex-col sm-src-flow-center">
                   <div className="sm-mono-sm sm-text3 sm-src-flow-yn">No</div>
-                  <div className="sm-ed-vline" style={{ height: 8 }} />
+                  <div className="sm-ed-vline sm-ed-vline-8" />
                   <div className="sm-ed-flowbox">Save to DB (dismissed=false)</div>
-                  <div className="sm-ed-vline" style={{ height: 8 }} />
+                  <div className="sm-ed-vline sm-ed-vline-8" />
                   <div className="sm-sky sm-src-pipeline-label">NEW badge</div>
-                  <div className="sm-ed-vline" style={{ height: 8 }} />
+                  <div className="sm-ed-vline sm-ed-vline-8" />
                   <div className="sm-mono-sm sm-text3 sm-src-flow-yn">User clicks NEW</div>
-                  <div className="sm-ed-vline" style={{ height: 8 }} />
+                  <div className="sm-ed-vline sm-ed-vline-8" />
                   <div className="sm-sky sm-src-pipeline-label sm-opacity-30">SEEN badge</div>
                 </div>
               </div>
@@ -1916,9 +1915,9 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
             </div>
             <div className="sm-text3 sm-mt-10 sm-src-method-bottom">
               <div className="sm-flex sm-gap-16">
-                <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6" style={{ background: 'var(--mint)' }} /> In DB (all fields)</span>
-                <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6" style={{ background: 'var(--gold)' }} /> In DB (partial data)</span>
-                <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6 sm-opacity-40" style={{ background: 'var(--text3)' }} /> Not in DB</span>
+                <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6 sm-src-dot-6-mint" /> In DB (all fields)</span>
+                <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6 sm-src-dot-6-gold" /> In DB (partial data)</span>
+                <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6 sm-src-dot-6-text3 sm-opacity-40" /> Not in DB</span>
               </div>
             </div>
 
@@ -1929,9 +1928,9 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div>
                 <span className="sm-micro-text sm-src-config-label">Analysis Status</span>
                 <div className="sm-flex sm-gap-16 sm-mt-4">
-                  <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6" style={{ background: 'var(--mint)' }} /> Tracked</span>
-                  <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6" style={{ background: 'var(--coral)' }} /> Untracked</span>
-                  <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6" style={{ background: 'var(--text3)' }} /> Pending</span>
+                  <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6 sm-src-dot-6-mint" /> Tracked</span>
+                  <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6 sm-src-dot-6-coral" /> Untracked</span>
+                  <span className="sm-inline-flex sm-gap-4"><span className="sm-src-dot-6 sm-src-dot-6-text3" /> Pending</span>
                 </div>
               </div>
               <div>
