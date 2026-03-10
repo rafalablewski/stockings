@@ -3835,7 +3835,7 @@ function CRCLModel() {
                   <span className="sm-section-label">Share Class Structure<UpdateIndicators sources="SEC" /></span>
                 </div>
                 <div className="sm-cap-table-scroll">
-                  <div style={{ minWidth: 500 }}>
+                  <div className="sm-min-w-500">
                     <div className="sm-cap-table-header" style={{ gridTemplateColumns: '100px 1fr 1fr 1fr 2fr' }}>
                       {['Class', 'Authorized', 'Outstanding', 'Votes/Share', 'Description'].map((h, i) => (
                         <span key={h} className="sm-cap-th" data-align={i >= 1 && i <= 3 ? 'right' : undefined}>{h}</span>
@@ -3983,7 +3983,7 @@ function CRCLModel() {
                         <span className="sm-cap-td" data-align="right" data-highlight>${w.fairValue}M</span>
                         <span className="sm-cap-td" data-align="right">{w.volatility}%</span>
                         <span className="sm-cap-td">{w.expiry}</span>
-                        <span className="sm-cap-td" style={{ color: 'var(--gold)' }}>{w.status}</span>
+                        <span className="sm-cap-td" className="sm-gold">{w.status}</span>
                       </div>
                     ))}
                     <div className="sm-cap-table-total sm-cap-grid-1p5-6x1fr">
@@ -4031,7 +4031,7 @@ function CRCLModel() {
                   <div className="sm-p-12-24 sm-card-note sm-color-text2">All preferred shares converted to Class A common stock at IPO. Historical liquidation preferences totaled $1.14B across six series.</div>
                   <div className="sm-cap-header-row sm-cap-grid-1p5-5x1fr">
                     {['Series', 'Year', 'Shares (K)', 'Liq. Pref', 'Price/Share'].map((h, i) => (
-                      <span key={h} className="sm-micro-header" style={{ textAlign: i >= 1 ? 'right' : 'left' }}>{h}</span>
+                      <span key={h} className="sm-micro-header" data-align={i >= 1 ? 'right' : 'left'}>{h}</span>
                     ))}
                   </div>
                   {PREFERRED_STOCK.map((p, i) => (
@@ -4064,7 +4064,7 @@ function CRCLModel() {
                 <div className="sm-p0">
                   <div className="sm-cap-header-row sm-cap-grid-2fr-1fr-1fr">
                     {['Component', 'Shares (M)', '% of Total'].map((h, i) => (
-                      <span key={h} className="sm-micro-header" style={{ textAlign: i >= 1 ? 'right' : 'left' }}>{h}</span>
+                      <span key={h} className="sm-micro-header" data-align={i >= 1 ? 'right' : 'left'}>{h}</span>
                     ))}
                   </div>
                   {[
@@ -4101,15 +4101,15 @@ function CRCLModel() {
                 <div className="sm-card-header">
                   <span className="sm-section-label">RSU Grants (Form 4)<UpdateIndicators sources={['SEC']} /></span>
                 </div>
-                <div style={{ padding: '24px 24px', color: 'var(--text3)', fontSize: 13, lineHeight: 1.7 }}>
+                <div className="sm-panel-body-muted">
                   No Form 4 insider grant filings tracked yet. Equity awards summary: {EQUITY_AWARDS.rsus.classA.toLocaleString()} Class A RSUs + {EQUITY_AWARDS.rsus.classB.toLocaleString()} Class B RSUs outstanding (from S-1 filing). Individual grant details will appear here when Form 4 filings are ingested.
                 </div>
               </div>
-              <div className="sm-panel sm-overflow-hidden sm-mt-16" style={{ overflow: 'hidden' }}>
+              <div className="sm-panel sm-overflow-hidden sm-mt-16" >
                 <div className="sm-card-header">
                   <span className="sm-section-label">Insider Sales (Form 4)<UpdateIndicators sources={['SEC']} /></span>
                 </div>
-                <div style={{ padding: '24px 24px', color: 'var(--text3)', fontSize: 13, lineHeight: 1.7 }}>
+                <div className="sm-panel-body-muted">
                   No Form 4 insider sale filings tracked yet. Individual sale details will appear here when Form 4 filings are ingested.
                 </div>
               </div>
@@ -4144,20 +4144,15 @@ function CRCLModel() {
                       <div
                         key={key}
                         onClick={() => applyMcPreset(key)}
-                        style={{
-                          padding: '16px 8px',
-                          background: isActive ? `${p.color}15` : 'var(--surface)',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s',
-                          textAlign: 'center',
-                          borderBottom: isActive ? `2px solid ${p.color}` : '2px solid transparent',
-                        }}
+                        className="sm-preset-card"
+                        data-active={isActive || undefined}
+                        style={{ '--preset-color': p.color } as React.CSSProperties}
                       >
                         <div className="sm-micro-text">{p.label}</div>
-                        <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 16, fontWeight: 700, color: isActive ? p.color : 'var(--text)', margin: '4px 0 2px' }}>
+                        <div className="sm-scenario-card-header" style={{ color: isActive ? p.color : 'var(--text)' }}>
                           {p.revMin}–{p.revMax}%
                         </div>
-                        <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>
+                        <div className="sm-micro-text sm-scenario-subtitle">
                           rev growth
                         </div>
                       </div>
@@ -4402,14 +4397,14 @@ function CRCLModel() {
                     <span className="sm-text-left">Interpretation</span>
                   </div>
                   {[
-                    { label: 'Win Probability', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: mcSim.winProb > 50 ? 'var(--mint)' : 'var(--red)' }}>{mcSim.winProb.toFixed(1)}%</span>, interp: 'Prob. of exceeding current price' },
-                    { label: 'Expected Value', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600 }}>${mcSim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
-                    { label: 'Sharpe Ratio', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: mcSim.sharpe > 1 ? 'var(--mint)' : mcSim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{mcSim.sharpe.toFixed(2)}</span>, interp: mcSim.sharpe > 1 ? 'Excellent risk-adj return' : mcSim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
-                    { label: 'Sortino Ratio', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: mcSim.sortino > 1 ? 'var(--mint)' : mcSim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{mcSim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
-                    { label: 'VaR (5%)', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: 'var(--red)' }}>{mcSim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
-                    { label: 'CVaR (5%)', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: 'var(--red)' }}>{mcSim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
+                    { label: 'Win Probability', value: <span className="sm-mc-risk-val" data-color={mcSim.winProb > 50 ? 'mint' : 'red'}>{mcSim.winProb.toFixed(1)}%</span>, interp: 'Prob. of exceeding current price' },
+                    { label: 'Expected Value', value: <span className="sm-mc-risk-val">${mcSim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
+                    { label: 'Sharpe Ratio', value: <span className="sm-mc-risk-val" data-color={mcSim.sharpe > 1 ? 'mint' : mcSim.sharpe > 0.5 ? 'gold' : 'text2'}>{mcSim.sharpe.toFixed(2)}</span>, interp: mcSim.sharpe > 1 ? 'Excellent risk-adj return' : mcSim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
+                    { label: 'Sortino Ratio', value: <span className="sm-mc-risk-val" data-color={mcSim.sortino > 1 ? 'mint' : mcSim.sortino > 0.5 ? 'gold' : 'text2'}>{mcSim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
+                    { label: 'VaR (5%)', value: <span className="sm-mc-risk-val" data-color="red">{mcSim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
+                    { label: 'CVaR (5%)', value: <span className="sm-mc-risk-val" data-color="red">{mcSim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
                   ].map((row, i) => (
-                    <div key={i} className="sm-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}
+                    <div key={i} className="sm-table-row sm-gtc-3x1"
                     >
                       <span className="sm-text2">{row.label}</span>
                       <span className="sm-text-right">{row.value}</span>
@@ -4492,7 +4487,7 @@ function CRCLModel() {
                             <div className="sm-subtle">10-K Annual Report</div>
                           </div>
                           <div>
-                            <div className="sm-mono-sm sm-mint" style={{ textAlign: 'right' }}>~Feb 2026</div>
+                            <div className="sm-mono-sm sm-mint sm-text-right">~Feb 2026</div>
                             <div className="sm-tl-event-sub">Est.</div>
                           </div>
                         </div>
@@ -4502,7 +4497,7 @@ function CRCLModel() {
                             <div className="sm-subtle">~198M shares eligible for sale</div>
                           </div>
                           <div>
-                            <div className="sm-mono-sm sm-gold" style={{ textAlign: 'right' }}>Dec 2025</div>
+                            <div className="sm-mono-sm sm-gold sm-text-right">Dec 2025</div>
                             <div className="sm-tl-event-sub">180 days post-IPO</div>
                           </div>
                         </div>
@@ -4512,7 +4507,7 @@ function CRCLModel() {
                             <div className="sm-subtle">2019 SeedInvest Note ($15.7M)</div>
                           </div>
                           <div>
-                            <div className="sm-mono-sm sm-sky" style={{ textAlign: 'right' }}>Mar 2026</div>
+                            <div className="sm-mono-sm sm-sky sm-text-right">Mar 2026</div>
                             <div className="sm-tl-event-sub">Convertible @ $16.23</div>
                           </div>
                         </div>
@@ -4539,7 +4534,7 @@ function CRCLModel() {
                         ))}
                       </div>
                       {hiddenPRCount > 0 && (
-                        <div className="sm-text-center" style={{ paddingTop: 16 }}>
+                        <div className="sm-text-center" className="sm-pt-16">
                           <button
                             onClick={() => setShowAllPR(!showAllPR)}
                             className="sm-expand-btn"
@@ -4559,14 +4554,14 @@ function CRCLModel() {
                 <span className="sm-param-label">Event Timeline</span>
                 <span className="sm-divider-line" />
               </div>
-              <h3 className="sm-flex sm-gap-12 sm-text sm-fw-600" style={{ fontSize: 18, margin: 0 }}>
+              <h3 className="sm-flex sm-gap-12 sm-text sm-fw-600" className="sm-fs-18 sm-m-0">
                 <span>Event Timeline</span>
                 <span className="sm-body-sm sm-text3">({filteredEvents.length} events)</span>
                 <UpdateIndicators sources="PR" />
               </h3>
 
               {/* Topic Filters (AND logic multi-select) */}
-              <div className="sm-card" style={{ padding: 16 }}>
+              <div className="sm-card" className="sm-p-16">
                 <div className="sm-flex-between">
                   <span className="sm-text-13t sm-fw-600">Filter by Topic</span>
                   {selectedTopics.length > 0 && (
@@ -4644,30 +4639,30 @@ function CRCLModel() {
                         <span className="sm-mono-sm sm-text3">{p.date}</span>
                         <span className="sm-text-11">{p.category}</span>
                         <span className="sm-text-13t sm-fw-500">{p.event}</span>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: verdictColor, textTransform: 'capitalize' }}>
+                        <span className="sm-verdict-badge" style={{ color: verdictColor }}>
                           {p.verdict === 'positive' && '↑ '}
                           {p.verdict === 'negative' && '↓ '}
                           {p.verdict === 'mixed' && '↔ '}
                           {p.verdict}
                         </span>
-                        <span style={{ fontSize: 11, color: 'var(--text3)', transition: 'transform 0.2s', transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
+                        <span className="sm-expand-chevron" data-expanded={isExpanded || undefined}>▼</span>
                       </div>
                       {isExpanded && (
                         <div className="sm-tl-detail-panel">
-                          <div style={{ padding: '12px 0' }}>
-                            <div className="sm-text-13" style={{ lineHeight: 1.6 }}>{p.details}</div>
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 12 }}>
+                          <div className="sm-py-12">
+                            <div className="sm-text-13" className="sm-lh-16">{p.details}</div>
+                            <div className="sm-grid-3 sm-mt-12 sm-gap-12">
                               <div className="sm-bg-surface2 sm-rounded-8 sm-p-8-12">
                                 <div className="sm-micro-label">Impact</div>
-                                <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 2 }}>{p.impact}</div>
+                                <div className="sm-text-12 sm-text2 sm-mt-2">{p.impact}</div>
                               </div>
                               <div className="sm-bg-surface2 sm-rounded-8 sm-p-8-12">
                                 <div className="sm-micro-label">Source</div>
-                                <div style={{ fontSize: 12, color: 'var(--mint)', marginTop: 2 }}>{p.source}</div>
+                                <div className="sm-text-12 sm-mint sm-mt-2">{p.source}</div>
                               </div>
                               <div className="sm-bg-surface2 sm-rounded-8 sm-p-8-12">
                                 <div className="sm-micro-label">Verdict</div>
-                                <div style={{ fontSize: 12, color: verdictColor, marginTop: 2 }}>
+                                <div className="sm-text-12 sm-mt-2" style={{ color: verdictColor }}>
                                   {p.verdict === 'positive' && '● Bullish'}
                                   {p.verdict === 'negative' && '● Bearish'}
                                   {p.verdict === 'mixed' && '● Neutral'}
@@ -5039,7 +5034,7 @@ const CompsTab = () => {
                 <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">{p.ebitda > 0 ? `$${p.ebitda}B` : p.ebitda < 0 ? `($${Math.abs(p.ebitda)}B)` : '—'}</div><div className="sm-cmp-metric-label">EBITDA</div></div>
                 <div className="sm-cmp-metric"><div className="sm-cmp-metric-value" style={{ color: p.margin >= 30 ? 'var(--mint)' : p.margin < 0 ? 'var(--coral)' : undefined }}>{p.margin}%</div><div className="sm-cmp-metric-label">Margin</div></div>
                 <div className="sm-cmp-metric"><div className="sm-cmp-metric-value" style={{ color: p.growth >= 30 ? 'var(--mint)' : undefined }}>{p.growth}%</div><div className="sm-cmp-metric-label">Growth</div></div>
-                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value" style={{ color: 'var(--accent)' }}>{p.cap ? `${(p.cap / p.rev).toFixed(1)}x` : '—'}</div><div className="sm-cmp-metric-label">P/S</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value" className="sm-accent">{p.cap ? `${(p.cap / p.rev).toFixed(1)}x` : '—'}</div><div className="sm-cmp-metric-label">P/S</div></div>
               </div>
               {qual && (
                 <>
@@ -5096,7 +5091,7 @@ const CompsTab = () => {
           </div>
         </div>
         <div className="sm-surface2-pad-sm">
-          <div className="sm-flex-between" style={{ flexWrap: 'wrap', gap: 16 }}>
+          <div className="sm-flex-between" className="sm-flex-wrap sm-gap-16">
             <div>
               <span className="sm-subtle">Reserve Yield</span>
               <div className="sm-mono-18 sm-color-sky">{CIRCLE_METRICS.reserveYield}%</div>
@@ -5283,7 +5278,7 @@ const CompsTab = () => {
           </div>
           {SENSITIVITY_USDC.map(usdc => (
             <div key={usdc} className="sm-cmp-table-row" style={{ gridTemplateColumns: `1fr repeat(${SENSITIVITY_RATES.length}, 1fr)` }}>
-              <div className="sm-cmp-td-label" style={{ fontWeight: 600 }}>${usdc}B</div>
+              <div className="sm-cmp-td-label" className="sm-fw-600">${usdc}B</div>
               {SENSITIVITY_RATES.map(rate => {
                 const val = calcSensitivity(usdc, rate, 13);
                 const isNear = Math.abs(usdc - 73.7) < 15 && Math.abs(rate - 4.0) < 0.5;
@@ -5450,7 +5445,7 @@ const CompsTab = () => {
                 onClick={() => { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); }}
                 onKeyDown={(e) => { if (e.key === 'Enter') { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); } }}
               >
-                <div className="sm-flex-between" style={{ alignItems: 'flex-start' }}>
+                <div className="sm-flex-between" className="sm-items-start">
                   <div className="sm-flex-1">
                     <div className="sm-flex-wrap sm-gap-6 sm-mb-4">
                       <span className="sm-text3 sm-mono-10">{news.date}</span>
@@ -5466,7 +5461,7 @@ const CompsTab = () => {
                 {isExpanded && (
                   <div className="sm-crcl-news-detail">
                     <div className="sm-text-13 sm-lh-16">
-                      {news.details.map((d, j) => <div key={j} className="sm-flex sm-gap-8" style={{ alignItems: 'initial' }}><span className="sm-accent sm-shrink-0">•</span>{d}</div>)}
+                      {news.details.map((d, j) => <div key={j} className="sm-flex sm-gap-8" className="sm-items-initial"><span className="sm-accent sm-shrink-0">•</span>{d}</div>)}
                     </div>
                     {news.thesisComparison && (
                       <div className="sm-crcl-comparison-box">
@@ -5489,7 +5484,7 @@ const CompsTab = () => {
         <div className="sm-flex-col-gap sm-gap-16">
           {COMPETITOR_PROFILES.map(comp => (
             <div key={comp.id} className="sm-crcl-comp-profile">
-              <div className="sm-flex-between" style={{ alignItems: 'flex-start' }}>
+              <div className="sm-flex-between" className="sm-items-start">
                 <div>
                   <div className="sm-text sm-fw-600 sm-text-16">{comp.name}</div>
                   <div className="sm-text-13">{comp.description}</div>

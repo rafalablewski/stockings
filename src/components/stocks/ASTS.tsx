@@ -1582,7 +1582,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             </div>
           ))}
           <div className="sm-grid-row-lg sm-total-row-mint sm-gtc-120-140-80-140-100x2-1 sm-min-w-700">
-            <span className="sm-text-12 sm-fw-600 sm-text" className="sm-gc-span-2">Total Definitive</span>
+            <span className="sm-text-12 sm-fw-600 sm-text sm-gc-span-2">Total Definitive</span>
             <span className="sm-mono-val sm-fw-700" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{totalDefinitiveSubs}M</span>
             <span /><span />
             <span className="sm-mono-val sm-fw-700" style={{ '--val-color': 'var(--mint)' } as React.CSSProperties}>${totalPrepay}M</span>
@@ -2351,7 +2351,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
         <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--mint)', '--bar-accent-2': 'var(--violet)' } as React.CSSProperties}>
           <div className="sm-section-divider" style={{ padding: 0, '--divider-color': 'var(--mint)' } as React.CSSProperties}>Multi-Class Structure</div>
-          <div className="sm-text-12 sm-text2 sm-lh-15" className="sm-mt-4">
+          <div className="sm-text-12 sm-text2 sm-lh-15 sm-mt-4">
             Three share classes with different voting rights. Significant dilution from warrants, RSUs, and convertible instruments.
           </div>
         </div>
@@ -2529,7 +2529,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           {equityOfferings.map((offering, i) => (
             <div key={i} className="sm-cap-table-row sm-gtc-100-1-100x2-80-90">
               <span className="sm-cap-td-label">{offering.date}</span>
-              <span className="sm-cap-td" className="sm-fw-500">{offering.event}</span>
+              <span className="sm-cap-td sm-fw-500">{offering.event}</span>
               <span className="sm-cap-td">{offering.type}</span>
               <span className="sm-cap-td" data-align="right">${offering.amount}M</span>
               <span className="sm-cap-td" data-align="right">{offering.price ? `$${offering.price.toFixed(2)}` : '\u2014'}</span>
@@ -2537,9 +2537,9 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             </div>
           ))}
           <div className="sm-cap-table-total sm-gtc-100-1-100x2-80-90">
-            <span className="sm-cap-td-label" className="sm-gc-span-3">Total Capital Raised (2019-2026)</span>
+            <span className="sm-cap-td-label sm-gc-span-3">Total Capital Raised (2019-2026)</span>
             <span className="sm-cap-td" data-align="right">~$6.3B</span>
-            <span className="sm-cap-td" className="sm-gc-span-2"></span>
+            <span className="sm-cap-td sm-gc-span-2"></span>
           </div>
         </div>
         </div>
@@ -2961,7 +2961,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <div className="sm-flex-between">
             <div>
               <span className="sm-text-13t sm-fw-600">{AUG_2025_CEO_RSU_GRANT.name}</span>
-              <span className="sm-text-11 sm-text3" className="sm-ml-8">{AUG_2025_CEO_RSU_GRANT.role}</span>
+              <span className="sm-text-11 sm-text3 sm-ml-8">{AUG_2025_CEO_RSU_GRANT.role}</span>
             </div>
             <span className="sm-mono-sm sm-text3 sm-fs-11">{AUG_2025_CEO_RSU_GRANT.date}</span>
           </div>
@@ -3149,7 +3149,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       <div className="sm-card sm-mt-8">
         <div className="sm-inline-header">
           <span className="sm-param-label">March 2025 — RSU Vesting Sales & Withholdings</span>
-          <span className="sm-mono-sm" className="sm-color-rose">~111K shares / $3.4M</span>
+          <span className="sm-mono-sm sm-color-rose">~111K shares / $3.4M</span>
         </div>
         <div className="sm-grid-header sm-th sm-gtc-1-90-80x2-90-70 sm-p-8-24">
           <span>Name</span><span>Date</span><span className="sm-text-right">Shares</span><span className="sm-text-right">Price</span><span className="sm-text-right">Proceeds</span><span>Type</span>
@@ -3159,7 +3159,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <div key={`mar-sale-${i}`} className="hover-row sm-grid-row sm-gtc-1-90-80x2-90-70">
               <span className="sm-text-13t">{s.name} <span className="sm-text-11">({s.role})</span></span>
               <span className="sm-text-12">{s.date.slice(5)}</span>
-              <span className="sm-mono-right" className="sm-color-rose">{s.shares.toLocaleString()}</span>
+              <span className="sm-mono-right sm-color-rose">{s.shares.toLocaleString()}</span>
               <span className="sm-mono-right">${s.price.toFixed(2)}</span>
               <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: s.proceeds > 0 ? 'var(--rose)' : 'var(--text3)', textAlign: 'right' }}>{s.proceeds > 0 ? `$${(s.proceeds / 1000).toFixed(0)}K` : '—'}</span>
               <span className="sm-sale-type-badge" data-type={s.type === 'sale' ? 'sale' : 'withholding'}>{s.type === 'withholding' ? 'W/H' : 'Sale'}</span>
@@ -3274,7 +3274,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               </div>
             ))}
           </div>
-          <div className="sm-text-12 sm-text2 sm-mt-8" className="sm-lh-16">
+          <div className="sm-text-12 sm-text2 sm-mt-8 sm-lh-16">
             {JUL_2025_CREDIT_FACILITY.notes}
           </div>
         </div>
@@ -3917,10 +3917,10 @@ const ModelTab = ({
           </div>
 
           {/* Primary Output — Hero KPIs */}
-          <div className="sm-grid-sep-2col sm-rounded-16 sm-overflow-hidden" className="sm-dcf-summary-accent">
+          <div className="sm-grid-sep-2col sm-rounded-16 sm-overflow-hidden sm-dcf-summary-accent">
             <div className="sm-dcf-cell">
               <div className="sm-th sm-accent">Target Price</div>
-              <div className="sm-mono-2xl sm-accent" className="sm-m-6-0-4">{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
+              <div className="sm-mono-2xl sm-accent sm-m-6-0-4">{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
               <div className="sm-text-11">vs ${currentStockPrice} current</div>
             </div>
             <div className="sm-dcf-cell">
@@ -4611,7 +4611,7 @@ const SECFilingTracker = () => {
                   <div className="sm-text-11">{filingData.latestEventDate}</div>
                 </div>
               </div>
-              <div className="sm-flex-between sm-items-center sm-card-body sm-rounded-6" className="sm-fin-detail-mint">
+              <div className="sm-flex-between sm-items-center sm-card-body sm-rounded-6 sm-fin-detail-mint">
                 <span className="sm-text-13 sm-text3">Last PR Processed</span>
                 <div className="sm-text-right">
                   <span className="sm-text-13 sm-mint">{filingData.lastPressRelease}</span>
@@ -4735,7 +4735,7 @@ const QuarterlyMetricsPanel = () => {
           <div className="sm-fin-table-header" style={{ gridTemplateColumns: `minmax(130px, 1fr) ${displayQuarters.map(() => '90px').join(' ')}` }}>
             <span className="sm-fin-th" data-sticky="">Metric</span>
             {displayQuarters.map((q, idx) => (
-              <span key={q} className="sm-fin-th" data-latest={idx === 0 ? '' : undefined} className="sm-fin-th-right">
+              <span key={q} className="sm-fin-th sm-fin-th-right" data-latest={idx === 0 ? '' : undefined}>
                 {q.replace('Q', '').replace(' ', "'")}
               </span>
             ))}
@@ -5836,7 +5836,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               {qual && (
                 <>
                   <div className="sm-subtle sm-text2 sm-mb-4 sm-lh-15"><strong>Focus:</strong> {qual.focus}</div>
-                  <div className="sm-subtle-sm sm-mt-8 sm-border-t" className="sm-italic sm-pt-8 sm-lh-15">{qual.notes}</div>
+                  <div className="sm-subtle-sm sm-mt-8 sm-border-t sm-italic sm-pt-8 sm-lh-15">{qual.notes}</div>
                 </>
               )}
             </div>
@@ -5868,7 +5868,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 </div>
               )}
               <div className="sm-subtle sm-text2 sm-mb-4 sm-lh-15"><strong>Focus:</strong> {kc.focus}</div>
-              <div className="sm-subtle-sm sm-mt-8 sm-border-t" className="sm-italic sm-pt-8 sm-lh-15">{kc.notes}</div>
+              <div className="sm-subtle-sm sm-mt-8 sm-border-t sm-italic sm-pt-8 sm-lh-15">{kc.notes}</div>
             </div>
           );
         })}
@@ -6026,7 +6026,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 </div>
               ))}
               <div className="sm-cmp-table-total sm-gtc-2fr-3x1">
-                <span className="sm-cmp-td-label" className="sm-sotp-label-span">SOTP Total</span>
+                <span className="sm-cmp-td-label sm-sotp-label-span">SOTP Total</span>
                 <span className="sm-cmp-td sm-mint" data-align="right">${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</span>
               </div>
             </div>
@@ -6062,7 +6062,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 </div>
               ))}
               <div className="sm-cmp-table-total sm-gtc-2fr-3x1">
-                <span className="sm-cmp-td-label" className="sm-sotp-label-span">Expected Value</span>
+                <span className="sm-cmp-td-label sm-sotp-label-span">Expected Value</span>
                 <span className="sm-cmp-td sm-mint" data-align="right">${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</span>
               </div>
             </div>
