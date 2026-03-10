@@ -664,7 +664,7 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'staking' && <TabPanel id="staking"><StakingTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} stakingType={stakingType} setStakingType={setStakingType} baseStakingAPY={baseStakingAPY} setBaseStakingAPY={setBaseStakingAPY} restakingBonus={restakingBonus} setRestakingBonus={setRestakingBonus} stakingRatio={stakingRatio} setStakingRatio={setStakingRatio} slashingRisk={slashingRisk} setSlashingRisk={setSlashingRisk} /></TabPanel>}
         {activeTab === 'dilution' && <TabPanel id="dilution"><DilutionTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} currentStockPrice={currentStockPrice} tranches={tranches} setTranches={setTranches} dilutionPercent={dilutionPercent} setDilutionPercent={setDilutionPercent} saleDiscount={saleDiscount} setSaleDiscount={setSaleDiscount} navMultiple={navMultiple} setNavMultiple={setNavMultiple} maxAuthorizedShares={maxAuthorizedShares} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} regulatoryRisk={regulatoryRisk} /></TabPanel>}
         {activeTab === 'debt' && <TabPanel id="debt"><DebtTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} currentStockPrice={currentStockPrice} useDebt={useDebt} setUseDebt={setUseDebt} debtAmount={debtAmount} setDebtAmount={setDebtAmount} debtRate={debtRate} setDebtRate={setDebtRate} debtMaturity={debtMaturity} setDebtMaturity={setDebtMaturity} conversionPremium={conversionPremium} setConversionPremium={setConversionPremium} debtCovenantLTV={debtCovenantLTV} setDebtCovenantLTV={setDebtCovenantLTV} /></TabPanel>}
-        {activeTab === 'purchases' && <TabPanel id="purchases"><PurchasesTab currentETH={currentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} /></TabPanel>}
+        {activeTab === 'purchases' && <TabPanel id="purchases"><PurchasesTab ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} /></TabPanel>}
         {activeTab === 'capital' && <TabPanel id="capital"><CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} currentETH={currentETH} ethPrice={ethPrice} /></TabPanel>}
         {activeTab === 'comps' && <TabPanel id="comps"><CompsTab comparables={comparables} ethPrice={ethPrice} /></TabPanel>}
         {activeTab === 'sensitivity' && <TabPanel id="sensitivity"><SensitivityTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} /></TabPanel>}
@@ -2685,14 +2685,17 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
 // PURCHASES TAB - ETH Purchase History with mNAV, ETH Price, Cost Basis
 // ============================================================================
 
-const PurchasesTab = ({ currentETH, ethPrice, currentShares, currentStockPrice }: { currentETH: number; ethPrice: number; currentShares: number; currentStockPrice: number }) => {
+const PurchasesTab = ({ ethPrice, currentShares, currentStockPrice }: { ethPrice: number; currentShares: number; currentStockPrice: number }) => {
   const purchases: PurchaseRecord[] = BMNR_PURCHASE_HISTORY;
+
+  // Source ETH amount from press release data only (latest totalEthAfter)
+  const latestETH = purchases[0]?.totalEthAfter ?? 0;
 
   // Compute summary stats (chronological order for weighted avg)
   const totalEthBought = purchases.reduce((sum, p) => sum + p.ethBought, 0);
   const totalCashDeployed = purchases.reduce((sum, p) => sum + p.cashDeployed, 0);
   const weightedAvgEthPrice = totalCashDeployed / totalEthBought;
-  const currentNAV = (currentETH * ethPrice) / (currentShares * 1e6);
+  const currentNAV = (latestETH * ethPrice) / (currentShares * 1e6);
   const currentMNAV = currentStockPrice / currentNAV;
   const unrealizedPL = (ethPrice - weightedAvgEthPrice) * totalEthBought;
   const unrealizedPLPct = ((ethPrice / weightedAvgEthPrice) - 1) * 100;
@@ -2728,10 +2731,11 @@ const PurchasesTab = ({ currentETH, ethPrice, currentShares, currentStockPrice }
       <div className="sm-card">
         <div className="sm-card-section">
           <span className="sm-param-label">Purchase Overview</span>
+          <span className="sm-subtle sm-fs-11 sm-ml-4">Sourced from PRs — last reported {purchases[0]?.date}</span>
         </div>
         <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
           {[
-            { label: 'Total ETH Bought', value: `${(totalEthBought / 1e6).toFixed(3)}M`, color: 'var(--mint)' },
+            { label: 'Last Reported ETH', value: `${(latestETH / 1e6).toFixed(3)}M`, color: 'var(--accent)' },
             { label: 'Total Deployed', value: fmtUSD(totalCashDeployed), color: 'var(--gold)' },
             { label: 'Avg ETH Price', value: `$${fmtNum(Math.round(weightedAvgEthPrice))}`, color: 'var(--sky)' },
             { label: 'Current mNAV', value: `${currentMNAV.toFixed(2)}x`, color: mnavColor(currentMNAV) },
