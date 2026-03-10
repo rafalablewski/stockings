@@ -172,9 +172,12 @@ function Navigation() {
 
             {/* Research dropdown */}
             <div className="relative group/research">
-              <span className="text-[13px] text-white/60 group-hover/research:text-white transition-colors cursor-default select-none">
+              <Link
+                href="/research"
+                className="text-[13px] text-white/60 group-hover/research:text-white transition-colors"
+              >
                 Research
-              </span>
+              </Link>
               <div className="absolute top-full right-0 pt-3 hidden group-hover/research:block">
                 <div className="bg-black/95 backdrop-blur-xl border border-white/[0.08] rounded-xl py-2 min-w-[220px] shadow-2xl">
                   {researchStocks.map((stock) => (
