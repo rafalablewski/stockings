@@ -223,6 +223,28 @@ const investmentClasses: CSSClass[] = [
   { name: ".sm-ml-auto",              description: "margin-left: auto utility — push element to end of flex row",                                               usage: "className=\"sm-ml-auto\"" },
 ];
 
+const navigationClasses: CSSClass[] = [
+  // ── Tab Type Indicators ──
+  { name: ".nav-btn.tab-tracking",           description: "Tracking tab — 6% mint bg wash (data/actuals)",                        usage: "Applied automatically via tab type" },
+  { name: ".nav-btn.tab-projection",         description: "Projection tab — 6% accent bg wash (models/analysis)",                 usage: "Applied automatically via tab type" },
+  { name: ".nav-btn.tab-tracking:hover",     description: "Tracking hover — 12% mint bg",                                         usage: "CSS hover" },
+  { name: ".nav-btn.tab-projection:hover",   description: "Projection hover — 12% accent bg",                                     usage: "CSS hover" },
+  { name: ".nav-btn.tab-tracking.active",    description: "Active tracking — solid mint bg + border",                              usage: "className=\"nav-btn tab-tracking active\"" },
+  { name: ".nav-btn.tab-projection.active",  description: "Active projection — solid accent bg + border",                         usage: "className=\"nav-btn tab-projection active\"" },
+  // ── Dropdown Groups ──
+  { name: ".nav-dropdown",                   description: "Container for expandable tab group (position: relative)",               usage: "Wraps trigger + space" },
+  { name: ".nav-dropdown-trigger",           description: "Dropdown toggle button — violet 6% bg, text2 color, chevron",          usage: "className=\"nav-dropdown-trigger\"" },
+  { name: ".nav-dropdown-trigger.open",      description: "Open state — surface2 bg, text color",                                  usage: "className=\"nav-dropdown-trigger open\"" },
+  { name: ".nav-dropdown-trigger.active",    description: "Active state — solid violet bg, --bg text color",                       usage: "className=\"nav-dropdown-trigger active\"" },
+  { name: ".nav-dropdown-chevron",           description: "SVG chevron — rotates 180° when .open applied",                        usage: "className=\"nav-dropdown-chevron open\"" },
+  { name: ".nav-dropdown-space",             description: "Collapsible container — height: 0→48px transition, overflow hidden",   usage: "Height set via max-height" },
+  { name: ".nav-dropdown-menu",              description: "Inner menu — flex row, gap 2px, fadeSlideIn animation",                 usage: "Inside .nav-dropdown-space" },
+  { name: ".nav-dropdown-item",              description: "Sub-tab button — text2 default, surface2 hover, accent active",        usage: "className=\"nav-dropdown-item tab-{type}\"" },
+  { name: ".nav-dropdown-item.tab-tracking.active", description: "Active tracking dropdown item — mint bg instead of accent",     usage: "Automatic" },
+  // ── Accessibility ──
+  { name: ".tab-type-badge",                 description: "Non-color indicator SVG (triangle for projection tabs) — 10×10px",     usage: "Rendered by <ProjectionIcon />" },
+];
+
 interface DataAttr {
   attribute: string;
   values: string;
@@ -491,7 +513,7 @@ const dataFileStructure: DataFileEntry[] = [
 const stockSpecificFiles: Array<{ ticker: string; file: string; exports: string; purpose: string }> = [
   { ticker: 'ASTS', file: 'partners.ts',           exports: 'PARTNERS, PARTNER_NEWS, REVENUE_SOURCES',      purpose: 'MNO partnerships (AT&T, Vodafone, etc.) & revenue model' },
   { ticker: 'BMNR', file: 'ethereum-adoption.ts',  exports: 'BMNR_ADOPTION_TIMELINE',                       purpose: 'Institutional ETH adoption tracking' },
-  { ticker: 'BMNR', file: 'purchase-history.ts',   exports: 'BMNR_PURCHASE_HISTORY, PURCHASE_HISTORY_METADATA', purpose: 'ETH purchase log with mNAV, price, cost basis per acquisition' },
+  { ticker: 'BMNR', file: 'purchase-history.ts',   exports: 'BMNR_PURCHASE_HISTORY, PURCHASE_HISTORY_METADATA', purpose: 'ETH purchase log with mNAV, prevDayClose, prevDayMarketCap, navPerShare per acquisition (PurchaseRecord interface)' },
   { ticker: 'CRCL', file: 'usdc.ts',               exports: 'USDC_METADATA, USDC_*',                        purpose: 'USDC stablecoin circulation, reserves, market share' },
 ];
 
@@ -785,6 +807,13 @@ const archive: ArchiveEntry[] = [];
   },
 ];
 
+const changelogPurchaseHistory: string[][] = [
+  ["1", "Purchase History Data", "Filled all 32 ETH purchase entries with mNAV, prevDayClose, prevDayMarketCap, navPerShare; renamed stockPrice→prevDayClose", "purchase-history.ts, bmnr schema"],
+  ["2", "Table Columns", "Added Stock (prevDayClose) and Mkt Cap columns to purchase history table with color-coded mNAV values", "BMNR.tsx"],
+  ["3", "Methodology Disclaimer", "Added ~100-line header with data sources, reliability ratings (High/Medium/Low), interpolation methodology, and mNAV bias explanation", "purchase-history.ts"],
+  ["4", "Purchases Tab Type", "Changed Purchases tab from type: 'tracking' to 'projection' to match other BMNR Analysis dropdown tabs (accent color instead of mint bg)", "BMNR.tsx"],
+];
+
 const changelogHeaderFixes: string[][] = [
   ["1", "Nav Badge Heights", "Removed .nav-ai-badge/.nav-pin-badge 44px override. Badges stay 24px. Blanket button min-height removed in #10.", "stock-model-styles.css"],
   ["2", "Collapsible Disclaimer", "DisclaimerBanner now toggles collapse/expand with localStorage persistence (key: disclaimer-collapsed). New .disclaimer-collapsed, .disclaimer-toggle classes.", "DisclaimerBanner.tsx, CSS"],
@@ -935,6 +964,8 @@ export default function DocsPage() {
             { id: "typography",  label: "Typography" },
             { id: "colors",      label: "Colors" },
             { id: "component-patterns", label: "Patterns" },
+            { id: "navigation",  label: "Navigation" },
+            { id: "bmnr-classes", label: "BMNR" },
             { id: "investment",  label: "Investment" },
             { id: "data-attrs",  label: "Data Attrs" },
             { id: "css-vars",    label: "CSS Vars" },
@@ -1240,7 +1271,19 @@ export default function DocsPage() {
         </p>
         <ClassTable classes={componentClasses} />
 
-        {/* ── 5b. Investment Tab Classes ─────────────────────────────────── */}
+        {/* ── 5b. Navigation Tab System ─────────────────────────────────── */}
+        <SectionHeader id="navigation" title="Navigation Tab System" count={navigationClasses.length} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Tab navigation supports two visual types: <span className="font-mono text-white/40">tracking</span> (mint — actual data/tracking tabs) and{" "}
+          <span className="font-mono text-white/40">projection</span> (accent — model/analysis tabs). Type is set via{" "}
+          <span className="font-mono text-white/40">type: &apos;tracking&apos; | &apos;projection&apos;</span> on tab definitions in each stock component.
+          Dropdown groups (e.g. &quot;BMNR Analysis&quot;) use <span className="font-mono text-white/40">.nav-dropdown</span> with animated expand/collapse.
+          Projection tabs render a <span className="font-mono text-white/40">&lt;ProjectionIcon /&gt;</span> triangle badge for non-color visual differentiation.
+          Background washes use <span className="font-mono text-white/40">color-mix(in srgb, ...)</span> for transparent tints.
+        </p>
+        <ClassTable classes={navigationClasses} />
+
+        {/* ── 5c. Investment Tab Classes ─────────────────────────────────── */}
         <SectionHeader id="investment" title="Investment Tab Classes (sm-inv-*)" count={investmentClasses.length} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
           Glass-border card pattern for <span className="font-mono text-white/40">SharedInvestmentTab</span>. All classes in{" "}
@@ -1461,6 +1504,56 @@ export default function DocsPage() {
             [".sm-sec-pill-count", "Count badge inside filter pills (9px mono)."],
             [".sm-sec-footer", "Footer with CIK/ticker/exchange + last PR."],
             [".sm-sec-footer-meta", "Meta line inside footer (flex-wrap, gap 16px)."],
+          ]}
+        />
+
+        {/* ── BMNR Classes ──────────────────────────────────────────────── */}
+        <SectionHeader id="bmnr-classes" title="BMNR Model Classes (sm-bmnr-*)" count={38} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          BitMine-specific classes — parameter panels, scenario selectors, staking cells, KPI values, methodology badges,
+          purchase history table helpers, debt/LTV stress testing, and tranche management.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".sm-bmnr-param-panel", "Parameter card wrapper — surface bg, border, rounded-16. data-disabled for dimming."],
+            [".sm-bmnr-param-grid", "7-column button grid. data-disabled for pointer-events: none."],
+            [".sm-bmnr-param-btn", "Preset value selector — centered, mono, 12px. data-active + --btn-color for selected state."],
+            [".sm-bmnr-custom-wrap / -input", "Custom value input — flex row, surface2 bg, 13px Space Mono, rounded-8."],
+            [".sm-bmnr-scale-label", "Scale endpoints (← Bearish | Bullish →) — 11px, text3, flex-between."],
+            [".sm-bmnr-scenario-grid", "6-column preset grid — 1px gap, border bg (glass-edge pattern)."],
+            [".sm-bmnr-scenario-cell", "Scenario card — centered, surface bg. data-active + --scenario-color for 8% tint."],
+            [".sm-bmnr-scenario-btn", "Scenario toggle button — 12px mono. data-active + --btn-color for 2px border."],
+            [".sm-bmnr-scenario-detail", "Expanded scenario detail card — surface bg, border, rounded-16."],
+            [".sm-bmnr-custom-notice", "Custom scenario info box — 8px 12px padding, surface2 bg."],
+            [".sm-bmnr-mode-card", "Mode toggle card (current/growth) — 16px pad, rounded-12. data-active + --mode-color."],
+            [".sm-bmnr-mode-icon / -label", "Mode icon (20px) and label (13px/600)."],
+            [".sm-bmnr-mode-status", "Mode status banner — data-mode='current' (mint 10%) or 'growth' (cyan 10%)."],
+            [".sm-bmnr-kpi-val / -lg / -xl", "KPI values — Space Mono 18px/22px/28px, bold, --kpi-color."],
+            [".sm-bmnr-hero-kpi-grid / -cell", "2-col hero KPI grid — 8% accent bg cells, border, rounded-12."],
+            [".sm-bmnr-assumptions", "Key assumptions box — 16px pad, surface bg, border, rounded-12."],
+            [".sm-bmnr-step-badge", "Methodology step badge — --step-color bg, --bg text, 10px mono bold, rounded-4."],
+            [".sm-bmnr-method-result", "Methodology result value — 13px Space Mono, bold, --result-color."],
+            [".sm-bmnr-formula", "Monospace formula — 10px Space Mono, nowrap, text-ellipsis."],
+            [".sm-bmnr-cell", "Table cell utility — 12px 16px padding. data-highlight for mint tint."],
+            [".sm-bmnr-th", "Table header — 10px/600 uppercase, text3."],
+            [".sm-bmnr-mono-val", "Monospace data value — 12px Space Mono, --val-color, --align. data-align='right'."],
+            [".sm-bmnr-row-item / -sm", "Flex-between rows with border-bottom — standard (12px pad) and small (6px pad)."],
+            [".sm-bmnr-staking-cell", "Staking strategy card — surface bg, rounded-12. data-active for 8% violet tint."],
+            [".sm-bmnr-apy-display", "APY value — Space Mono 14px/700, --apy-color."],
+            [".sm-bmnr-tranche-row / -grid", "Multi-tranche debt row — 16px 20px pad. data-enabled for 3% violet tint. Grid: 4-col."],
+            [".sm-bmnr-factor-card / -title", "Factor card — surface2, 12px 16px pad, 3px left border via --factor-color."],
+            [".sm-bmnr-stress-cell", "Stress test cell — 24px 16px pad. data-safe (mint 3%) or data-danger (coral 3%)."],
+            [".sm-bmnr-ltv-cell", "LTV cell — 24px 12px pad. data-breach for coral 5% tint."],
+            [".sm-bmnr-breach-label", "Breach warning label — 10px bold."],
+            [".sm-bmnr-year-btn", "Year selector — 12px 20px pad, mono 14px. data-active + --btn-color."],
+            [".sm-bmnr-analyst-card / -badge / -summary", "ETH tab analyst card — surface bg, rounded-12, 10px badge, mono summary."],
+            [".sm-bmnr-invest-banner", "Investment case banner — 12px pad, accent-tinted."],
+            [".sm-bmnr-capital-summary", "Capital summary banner — 16px 24px pad, accent tint."],
+            [".sm-bmnr-caveats / -list", "Caveats box — surface2, rounded-8, styled list (12px, text3, 1.7 line-height)."],
+            [".sm-bmnr-return-text", "Return text — 12px. data-sentiment='positive' (mint) or 'negative' (coral)."],
+            [".sm-bmnr-desc-sm", "Small description text — 11px, text3, 4px margin-bottom."],
+            [".sm-bmnr-micro-plain", "Micro label override — removes uppercase/letter-spacing from sm-micro-label."],
           ]}
         />
 
@@ -1718,10 +1811,20 @@ export default function DocsPage() {
         />
 
         {/* ── Changelog ─────────────────────────────────────────────────── */}
-        <SectionHeader id="changelog" title="Changelog" count={changelogHeaderFixes.length + changelogDesignUnification.length + changelogEarlierFixes.length} />
+        <SectionHeader id="changelog" title="Changelog" count={changelogPurchaseHistory.length + changelogHeaderFixes.length + changelogDesignUnification.length + changelogEarlierFixes.length} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
           UI/UX fixes and design unification history. Newest first.
         </p>
+
+        {/* Purchase History & Tab Fixes — Mar 10 2026 */}
+        <div className="mt-6 mb-2">
+          <h3 className="text-[13px] font-semibold text-white/60">BMNR Purchase History &amp; Tab Styling <span className="text-white/20 font-normal ml-2">Mar 10, 2026</span></h3>
+          <p className="text-[11px] text-white/25 mt-1">4 changes: purchase data population with mNAV/price/market cap, new table columns, methodology disclaimer, tab type fix for BMNR Analysis group consistency.</p>
+        </div>
+        <SmallTable
+          headers={["#", "Task", "What Changed", "Files"]}
+          rows={changelogPurchaseHistory}
+        />
 
         {/* Header & Disclaimer Fixes — Feb 28 2026 */}
         <div className="mt-6 mb-2">
@@ -1762,7 +1865,7 @@ export default function DocsPage() {
           <p className="text-[11px] text-white/15">
             This documentation is auto-generated from the design system.
             CSS source: <span className="font-mono">src/components/stocks/stock-model-styles.css</span>.
-            Last updated: Feb 2026.
+            Last updated: Mar 2026.
           </p>
         </div>
       </div>
