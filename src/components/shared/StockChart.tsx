@@ -1875,16 +1875,16 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
             )}
             {correlations.gold !== null && (
               <div className="sm-chart-corr-chip">
-                <div className="sm-chart-corr-label" style={{ color: COLORS.gold }}>vs Gold</div>
-                <div className="sm-chart-corr-value" style={{ color: Math.abs(correlations.gold) > 0.7 ? '#22c55e' : Math.abs(correlations.gold) < 0.3 ? '#ef4444' : 'var(--text)' }}>
+                <div className="sm-chart-corr-label sm-chart-corr-label-gold">vs Gold</div>
+                <div className={`sm-chart-corr-value ${Math.abs(correlations.gold) > 0.7 ? 'sm-chart-metric-positive' : Math.abs(correlations.gold) < 0.3 ? 'sm-chart-metric-negative' : 'sm-chart-metric-default'}`}>
                   {correlations.gold.toFixed(2)}
                 </div>
               </div>
             )}
             {correlations.btc !== null && (
               <div className="sm-chart-corr-chip">
-                <div className="sm-chart-corr-label" style={{ color: COLORS.btc }}>vs BTC</div>
-                <div className="sm-chart-corr-value" style={{ color: Math.abs(correlations.btc) > 0.7 ? '#22c55e' : Math.abs(correlations.btc) < 0.3 ? '#ef4444' : 'var(--text)' }}>
+                <div className="sm-chart-corr-label sm-chart-corr-label-btc">vs BTC</div>
+                <div className={`sm-chart-corr-value ${Math.abs(correlations.btc) > 0.7 ? 'sm-chart-metric-positive' : Math.abs(correlations.btc) < 0.3 ? 'sm-chart-metric-negative' : 'sm-chart-metric-default'}`}>
                   {correlations.btc.toFixed(2)}
                 </div>
               </div>
@@ -1905,12 +1905,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
               <div key={i} className="sm-chart-vol-row">
                 <span className="sm-chart-vol-price">${level.priceLevel.toFixed(2)}</span>
                 <div className="sm-chart-vol-track">
-                  <div style={{
-                    width: `${level.percentage}%`,
-                    height: '100%',
-                    background: level.priceLevel <= lastPrice ? COLORS.support : COLORS.resistance,
-                    opacity: 0.7,
-                  }} />
+                  <div className="sm-chart-vol-bar" data-below={level.priceLevel <= lastPrice} ref={(el) => { if (el) el.style.setProperty('width', `${level.percentage}%`); }} />
                 </div>
                 <span className="sm-chart-vol-pct">{level.percentage.toFixed(1)}%</span>
               </div>
@@ -1955,9 +1950,9 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   {/* SMA 20/50/200 */}
                   <div>
                     <div className="sm-chart-guide-entry-title">
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.sma20 }} />
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.sma50 }} />
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.sma200 }} />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-sma20" />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-sma50" />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-sma200" />
                       SMA 20 / SMA 50 / SMA 200
                     </div>
                     <div>

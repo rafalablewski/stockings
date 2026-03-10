@@ -9999,3 +9999,1318 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* ── WS dynamic grid via data-cols ── */
 .sm-ws-dynamic-grid[data-cols="narrow"] { --ws-cols: 1fr 120px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/* ASTS INLINE STYLE EXTRACTION — Reusable utility classes                   */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Grid template column patterns */
+.sm-gtc-1fr-120-1fr { grid-template-columns: 1fr 120px 1fr; }
+.sm-gtc-1fr-100-80 { grid-template-columns: 1fr 100px 80px; }
+.sm-gtc-80-1fr-1fr-1fr { grid-template-columns: 80px 1fr 1fr 1fr; }
+.sm-gtc-100-1fr-auto-auto { grid-template-columns: 100px 1fr auto auto; }
+.sm-gtc-110-1fr-auto { grid-template-columns: 110px 1fr auto; }
+.sm-gtc-120-140-80-140-100-100-1fr { grid-template-columns: 120px 140px 80px 140px 100px 100px 1fr; }
+.sm-gtc-130-140-80-100-1fr { grid-template-columns: 130px 140px 80px 100px 1fr; }
+.sm-gtc-1fr-100-120-1fr { grid-template-columns: 1fr 100px 120px 1fr; }
+.sm-gtc-repeat4 { grid-template-columns: repeat(4, 1fr); }
+.sm-gtc-1fr-100-100-120-1fr { grid-template-columns: 1fr 100px 100px 120px 1fr; }
+.sm-gtc-1fr-100-90-80-80-80-1fr { grid-template-columns: 1fr 100px 90px 80px 80px 80px 1fr; }
+.sm-gtc-100-1fr-100-100-80-90 { grid-template-columns: 100px 1fr 100px 100px 80px 90px; }
+.sm-gtc-1fr-100-90-90-90-100 { grid-template-columns: 1fr 100px 90px 90px 90px 100px; }
+.sm-gtc-1fr-100-80-80-100 { grid-template-columns: 1fr 100px 80px 80px 100px; }
+.sm-gtc-1fr-100-80-80-100-80 { grid-template-columns: 1fr 100px 80px 80px 100px 80px; }
+.sm-gtc-1fr-90-80-80-90-70 { grid-template-columns: 1fr 90px 80px 80px 90px 70px; }
+.sm-gtc-1fr-130-1fr { grid-template-columns: 1fr 130px 1fr; }
+.sm-gtc-1fr-120-100-120-1fr { grid-template-columns: 1fr 120px 100px 120px 1fr; }
+.sm-gtc-1fr-100-100-90-1fr { grid-template-columns: 1fr 100px 100px 90px 1fr; }
+.sm-gtc-1fr-100-100 { grid-template-columns: 1fr 100px 100px; }
+.sm-gtc-1fr-100-100-100 { grid-template-columns: 1fr 100px 100px 100px; }
+.sm-gtc-1fr-100-100-80-100-80 { grid-template-columns: 1fr 100px 100px 80px 100px 80px; }
+.sm-gtc-1fr-1fr-120-100-100 { grid-template-columns: 1fr 1fr 120px 100px 100px; }
+.sm-gtc-100-100-100-120-1fr { grid-template-columns: 100px 100px 100px 120px 1fr; }
+.sm-gtc-1fr-100-100-100-100 { grid-template-columns: 1fr 100px 100px 100px 100px; }
+.sm-gtc-1fr-1fr-1fr { grid-template-columns: 1fr 1fr 1fr; }
+.sm-gtc-1fr-1fr-1fr-1fr-1fr { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+.sm-gtc-2fr-1fr-1fr-1fr { grid-template-columns: 2fr 1fr 1fr 1fr; }
+.sm-gtc-autofit-150 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.sm-gtc-1fr-1fr { grid-template-columns: 1fr 1fr; }
+
+/* Font size utilities */
+.sm-fs-10 { font-size: 10px; }
+.sm-fs-14 { font-size: 14px; }
+.sm-fs-16 { font-size: 16px; }
+.sm-fs-20 { font-size: 20px; }
+.sm-fs-32 { font-size: 32px; }
+
+/* Dynamic color via data attributes */
+[data-color-dynamic] { color: var(--dynamic-color); }
+
+/* Common layout patterns */
+.sm-grid-data-row { display: grid; padding: 12px 24px; transition: background 0.15s; }
+.sm-grid-data-row-bordered { display: grid; padding: 12px 24px; transition: background 0.15s; border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent); }
+.sm-grid-data-row-16-24 { display: grid; align-items: center; padding: 16px 24px; }
+.sm-grid-data-row-12-16 { display: grid; padding: 12px 16px; }
+.sm-grid-row-lg-gap-16 { gap: 16; }
+
+/* Specific repeated patterns */
+.sm-bar-fill { width: 100%; border-radius: 4px 4px 0 0; transition: height 0.3s; }
+.sm-bar-fill-mint { composes: sm-bar-fill; background: var(--mint); }
+
+.sm-progress-track { height: 4px; background: var(--surface3); }
+.sm-progress-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+
+.sm-span-2 { grid-column: span 2; }
+.sm-span-1-4 { grid-column: 1 / 4; }
+
+/* Section header styles */
+.sm-section-header-row { padding: 8px 24px; letter-spacing: 1px; }
+.sm-section-header-mint { color: var(--mint); background: color-mix(in srgb, var(--mint) 5%, transparent); }
+.sm-section-header-coral { color: var(--coral); background: color-mix(in srgb, var(--coral) 5%, transparent); }
+.sm-section-header-sky { color: var(--sky); background: color-mix(in srgb, var(--sky) 5%, transparent); }
+.sm-section-header-violet { color: var(--violet); background: color-mix(in srgb, var(--violet) 5%, transparent); }
+
+/* Padding utilities */
+.sm-pl-16 { padding-left: 16px; }
+.sm-p-8 { padding: 8px; }
+.sm-p-16 { padding: 16px; }
+.sm-p-24 { padding: 24px; }
+.sm-pb-0 { padding-bottom: 0; }
+.sm-pt-8 { padding-top: 8px; }
+.sm-p-0-24-24 { padding: 0 24px 24px; }
+.sm-p-16-24 { padding: 16px 24px; }
+.sm-p-8-0 { padding: 8px 0; }
+.sm-p-12-16 { padding: 12px 16px; }
+.sm-p-24-16 { padding: 24px 16px; }
+.sm-p-24-24-16 { padding: 24px 24px 16px; }
+.sm-p-32-0-16 { padding: 32px 0 16px; }
+.sm-p-16-20 { padding: 16px 20px; }
+.sm-p-12-24 { padding: 12px 24px; }
+
+/* Margin utilities */
+.sm-ml-8 { margin-left: 8px; }
+.sm-mr-8 { margin-right: 8px; }
+.sm-mt-2 { margin-top: 2px; }
+.sm-mt-6 { margin-top: 6px; }
+.sm-m-6-0-4 { margin: 6px 0 4px; }
+.sm-m-8-0-4 { margin: 8px 0 4px; }
+.sm-m-4-0-2 { margin: 4px 0 2px; }
+.sm-m-4-0 { margin: 4px 0; }
+.sm-m-0-0-4 { margin: 0 0 4px; }
+.sm-m-0-0-16 { margin: 0 0 16px; }
+.sm-m-0-8 { margin: 0 8px; }
+
+/* Height utilities */
+.sm-h-4 { height: 4px; }
+.sm-h-200 { height: 200px; }
+.sm-h-192 { height: 192px; }
+.sm-h-256 { height: 256px; }
+.sm-h-full { height: 100%; }
+.sm-min-h-280 { min-height: 280px; }
+
+/* Minimum width */
+.sm-min-w-520 { min-width: 520px; }
+.sm-min-w-560 { min-width: 560px; }
+.sm-min-w-620 { min-width: 620px; }
+.sm-min-w-700 { min-width: 700px; }
+.sm-min-w-420 { min-width: 420px; }
+.sm-min-w-440 { min-width: 440px; }
+
+/* Gap utilities */
+.sm-gap-4 { gap: 4px; }
+.sm-gap-24 { gap: 24px; }
+
+/* Border utilities */
+.sm-border-bottom { border-bottom: 1px solid var(--border); }
+.sm-border-top { border-top: 1px solid var(--border); }
+.sm-border-left-mint-3 { border-left: 3px solid var(--mint); }
+.sm-border-left-cyan-3 { border-left: 3px solid var(--cyan); }
+.sm-border-top-2-border { border-top: 2px solid var(--border); }
+.sm-fw-600-el { font-weight: 600; }
+.sm-border-bottom-half { border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent); }
+
+/* Flex utilities */
+.sm-flex-1 { flex: 1; }
+.sm-flex-shrink-0 { flex-shrink: 0; }
+.sm-flex-between-center { display: flex; justify-content: space-between; align-items: center; }
+
+/* Background patterns */
+.sm-bg-accent-dim-fill { background: var(--accent-dim); }
+.sm-bg-mint-tint { background: color-mix(in srgb, var(--mint) 5%, transparent); }
+.sm-bg-violet-tint { background: color-mix(in srgb, var(--violet) 5%, transparent); }
+.sm-bg-coral-tint { background: color-mix(in srgb, var(--coral) 3%, transparent); }
+.sm-bg-gold-tint { background: color-mix(in srgb, var(--gold) 3%, transparent); }
+.sm-bg-accent-surface { background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+.sm-bg-accent-30-border { background: color-mix(in srgb, var(--accent) 30%, var(--border)); }
+.sm-bg-surface2-60 { background: color-mix(in srgb, var(--surface2) 60%, transparent); }
+.sm-bg-mint-12 { background: color-mix(in srgb, var(--mint) 12%, transparent); border: 1px solid color-mix(in srgb, var(--mint) 30%, transparent); }
+.sm-bg-accent-6 { background: color-mix(in srgb, var(--accent) 6%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent); }
+
+/* Line height */
+.sm-lh-17 { line-height: 1.7; }
+.sm-lh-14-el { line-height: 1.4; }
+
+/* Specific component styles */
+.sm-mono-val-mono { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 600; }
+.sm-mono-val-mono-rose { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--rose); text-align: right; font-weight: 600; }
+.sm-mono-val-mono-coral { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--coral); text-align: right; font-weight: 600; }
+.sm-mono-val-mono-text2 { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--text2); text-align: right; font-weight: 600; }
+.sm-mono-val-mono-text { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--text); font-weight: 600; }
+
+/* Step badge */
+.sm-step-badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-family: 'Space Mono', monospace; color: var(--bg); }
+
+/* Transparent gap variants for existing grid classes */
+.sm-grid-sep-transparent { gap: 12px; background: transparent; }
+.sm-grid-sep-transparent-16 { gap: 16px; background: transparent; }
+
+/* Chart legend extended */
+.sm-chart-legend-extended { gap: 16px; flex-wrap: wrap; }
+
+/* Text alignment for conditional headers */
+.sm-th-text-right { text-align: right; }
+.sm-th-text-left { text-align: left; }
+
+/* Competitor tab specific */
+.sm-competitor-filter-label { font-size: 11px; color: var(--text3); margin-right: 8px; }
+
+/* Empty state padding */
+.sm-empty-state-lg { padding: 48px; }
+
+/* Moat card */
+.sm-moat-card { border-left: 3px solid var(--mint); }
+
+/* Grid gap display */
+.sm-grid-display { display: grid; gap: 12px; }
+
+/* Scenario preset cards */
+.sm-scenario-card {
+  padding: 16px 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  border-bottom: 2px solid transparent;
+}
+.sm-scenario-card[data-active="true"] {
+  border-bottom-width: 2px;
+  border-bottom-style: solid;
+}
+
+/* Scenario preset value display */
+.sm-scenario-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 4px 0 2px;
+}
+
+/* Micro text normal weight */
+.sm-micro-text-sub { letter-spacing: normal; text-transform: none; font-weight: 400; }
+
+/* Custom notification banner */
+.sm-custom-scenario-note {
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--violet) 8%, transparent);
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--violet);
+  margin-top: 8px;
+}
+
+/* Percentile table row */
+.sm-percentile-row { display: grid; }
+.sm-percentile-label { color: var(--text2); }
+.sm-percentile-label[data-highlight="true"] { font-weight: 600; color: var(--accent); }
+.sm-percentile-price { text-align: right; font-family: 'Space Mono', monospace; }
+.sm-percentile-price[data-highlight="true"] { font-weight: 700; color: var(--accent); }
+.sm-percentile-diff { text-align: right; font-family: 'Space Mono', monospace; color: var(--text2); }
+.sm-percentile-pct { text-align: right; font-family: 'Space Mono', monospace; font-weight: 500; }
+.sm-percentile-pct[data-positive="true"] { color: var(--mint); }
+.sm-percentile-pct[data-positive="false"] { color: var(--red); }
+
+/* Risk metrics row */
+.sm-risk-metric-row { display: grid; }
+
+/* Category list */
+.sm-category-list { gap: 8px; list-style: none; padding: 0; margin: 0; }
+.sm-category-list-dense { gap: 4px; list-style: none; padding: 0; margin: 0; }
+.sm-ul-compact { margin: 0; padding-left: 16px; }
+
+/* Comp news row */
+.sm-comp-news-row {
+  padding: 16px 24px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.sm-comp-news-row[data-implication="positive"] { border-left: 3px solid var(--mint); }
+.sm-comp-news-row[data-implication="negative"] { border-left: 3px solid var(--coral); }
+.sm-comp-news-row[data-implication="neutral"] { border-left: 3px solid var(--sky); }
+
+/* Comp news meta badges */
+.sm-comp-news-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.sm-comp-news-date { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text3); }
+.sm-comp-news-cat-badge { padding: 1px 8px; border-radius: 99px; font-size: 10px; }
+.sm-comp-news-cat-badge[data-type="category"] { background: color-mix(in srgb, var(--violet) 12%, transparent); color: var(--violet); }
+.sm-comp-news-cat-badge[data-type="company"] { background: color-mix(in srgb, var(--sky) 12%, transparent); color: var(--sky); }
+.sm-comp-news-headline { font-weight: 600; color: var(--text); font-size: 13px; line-height: 1.4; }
+.sm-comp-news-impact { font-size: 11px; font-family: 'Space Mono', monospace; margin-left: 12px; white-space: nowrap; }
+.sm-comp-news-detail { padding-top: 16px; margin-top: 12px; border-top: 1px solid var(--border); }
+.sm-comp-thesis-card { padding: 12px 16px; background: color-mix(in srgb, var(--mint) 5%, var(--surface)); border-radius: 12px; border-left: 3px solid var(--mint); margin-top: 12px; }
+.sm-comp-thesis-title { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--mint); margin-bottom: 4px; }
+.sm-comp-source { font-size: 10px; color: var(--text3); font-family: 'Space Mono', monospace; margin-top: 8px; }
+
+/* Competitor profile card */
+.sm-comp-profile-card { padding: 16px; background: var(--surface2); border-radius: 8px; border: 1px solid var(--border); }
+.sm-comp-profile-name { font-weight: 600; font-size: 16px; color: var(--text); }
+.sm-comp-profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+
+/* Comp profiles container */
+.sm-comp-profiles-wrap { background: color-mix(in srgb, var(--surface2) 60%, transparent); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+
+/* Filter section container */
+.sm-filter-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px 24px; margin-top: 8px; }
+.sm-filter-desc { color: var(--text2); font-size: 13px; line-height: 1.6; margin: 0 0 4px; }
+.sm-filter-subdesc { font-size: 11px; color: var(--text3); font-style: italic; margin: 0 0 16px; }
+.sm-filter-result-text { font-size: 11px; color: var(--text3); margin-top: 8px; font-family: 'Space Mono', monospace; }
+
+/* Comp filter pill */
+.sm-comp-filter-pill {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sm-comp-filter-pill[data-active="true"] {
+  border-color: var(--violet);
+  background: color-mix(in srgb, var(--violet) 15%, transparent);
+  color: var(--violet);
+}
+.sm-comp-filter-pill-sky {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sm-comp-filter-pill-sky[data-active="true"] {
+  border-color: var(--sky);
+  background: color-mix(in srgb, var(--sky) 15%, transparent);
+  color: var(--sky);
+}
+
+/* Clear button (comps) */
+.sm-comp-clear-btn {
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--coral) 15%, transparent);
+  color: var(--coral);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Expand all button (comps) */
+.sm-comp-expand-btn {
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--violet) 15%, transparent);
+  color: var(--violet);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+/* Empty state centered */
+.sm-empty-state-center { text-align: center; padding: 48px; }
+
+/* RSU type badge */
+.sm-rsu-type-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+.sm-rsu-type-badge[data-type="RSU Grant"] {
+  background: color-mix(in srgb, var(--violet) 15%, transparent);
+  color: var(--violet);
+}
+.sm-rsu-type-badge[data-type="RSU Vesting"] {
+  background: color-mix(in srgb, var(--mint) 15%, transparent);
+  color: var(--mint);
+}
+.sm-rsu-type-badge[data-type] {
+  background: color-mix(in srgb, var(--sky) 15%, transparent);
+  color: var(--sky);
+}
+.sm-rsu-type-badge[data-type="RSU Grant"] {
+  background: color-mix(in srgb, var(--violet) 15%, transparent);
+  color: var(--violet);
+}
+.sm-rsu-type-badge[data-type="RSU Vesting"] {
+  background: color-mix(in srgb, var(--mint) 15%, transparent);
+  color: var(--mint);
+}
+
+/* Transaction type badge */
+.sm-txn-type-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.sm-txn-type-badge[data-type="sale"] {
+  color: var(--rose);
+  background: color-mix(in srgb, var(--rose) 15%, transparent);
+}
+.sm-txn-type-badge[data-type="withholding"] {
+  color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 15%, transparent);
+}
+
+/* Select dropdown styling */
+.sm-select-dropdown {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--text1);
+}
+
+/* Color utilities */
+.sm-color-rose { color: var(--rose); }
+.sm-color-pink { color: var(--pink); }
+.sm-color-green { color: var(--green); }
+.sm-color-red { color: var(--red); }
+.sm-color-accent { color: var(--accent); }
+
+/* White space */
+.sm-nowrap-el { white-space: nowrap; }
+
+/* Competitor news implication borders */
+.sm-news-border-positive { border-left: 3px solid var(--mint); }
+.sm-news-border-negative { border-left: 3px solid var(--red); }
+.sm-news-border-neutral { border-left: 3px solid var(--text3); }
+
+/* Text center */
+.sm-text-center-el { text-align: center; }
+
+/* Multi-class structure highlight */
+.sm-highlight-title { font-size: 11px; color: var(--mint); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+.sm-highlight-desc { font-size: 12px; color: var(--text2); line-height: 1.5; margin-top: 4px; }
+
+/* KPI font size 20 */
+.sm-kpi-value-lg { font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700; }
+.sm-kpi-label-caps { font-size: 10px; color: var(--text3); letter-spacing: 0.8px; text-transform: uppercase; font-weight: 500; margin-top: 4px; }
+
+/* Spectrum partner label */
+.sm-spectrum-label { font-size: 13px; font-weight: 500; color: var(--cyan); }
+
+/* Spectrum notes */
+.sm-spectrum-notes { font-size: 11px; color: var(--text3); opacity: 0.7; margin-top: 2px; }
+
+/* Owned spectrum item */
+.sm-owned-spectrum-item {
+  padding: 16px 24px;
+  border-left: 3px solid var(--cyan);
+  transition: background 0.15s;
+}
+.sm-owned-spectrum-item:not(:last-child) {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+/* Block items with separator */
+.sm-block-item {
+  padding: 8px 0;
+}
+.sm-block-item:not(:last-child) {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+/* Table header with padding variant */
+.sm-grid-header-p0 { padding: 0; }
+
+/* Font text styling for conditional highlighting */
+.sm-mono-cond-hl[data-hl="true"] {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--mint);
+  font-weight: 600;
+}
+.sm-mono-cond-hl[data-hl="false"],
+.sm-mono-cond-hl:not([data-hl]) {
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text2);
+  font-weight: 400;
+}
+
+/* Conditional color via data attributes */
+.sm-kv-value-cond[data-hl="true"] {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+}
+.sm-kv-value-cond[data-hl="false"],
+.sm-kv-value-cond:not([data-hl]) {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* Plan 10b5-1 indicator */
+.sm-plan-indicator { font-size: 11px; }
+.sm-plan-indicator[data-active="true"] { color: var(--mint); }
+.sm-plan-indicator[data-active="false"] { color: var(--text3); }
+
+/* Threat level color */
+.sm-threat-color[data-level="high"] { color: var(--red); }
+.sm-threat-color[data-level="medium"] { color: var(--gold); }
+.sm-threat-color[data-level="low"] { color: var(--mint); }
+
+/* Text center with padding top */
+.sm-text-center-pt-16 { text-align: center; padding-top: 16px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SharedSourcesTab + SharedEdgarTab — extracted inline styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Hidden row inner padding ────────────────────────────────────────────── */
+.sm-hidden-row-inner { padding: 3px 12px; border-radius: 6px; }
+
+/* ── Source type badge (small, in hidden row) ────────────────────────────── */
+.sm-source-type-badge-sm {
+  font-size: 9px;
+  font-family: 'Space Mono', monospace;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--badge-bg);
+  color: var(--badge-text);
+}
+
+/* ── Hidden row truncated headline ───────────────────────────────────────── */
+.sm-hidden-headline {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: line-through;
+}
+
+/* ── Mono date small ─────────────────────────────────────────────────────── */
+.sm-mono-date-sm { font-family: 'Space Mono', monospace; font-size: 10px; }
+
+/* ── Hidden label ────────────────────────────────────────────────────────── */
+.sm-hidden-label { font-size: 8px; font-family: 'Space Mono', monospace; text-transform: uppercase; }
+
+/* ── Chevron rotation via data attribute ─────────────────────────────────── */
+.sm-ed-chevron-slot svg[data-expanded="true"] { transform: rotate(90deg); }
+.sm-ed-chevron-slot svg[data-expanded="false"] { transform: rotate(0deg); }
+
+/* ── Conditional cursor on analysis row ──────────────────────────────────── */
+.sm-ed-filing-row[data-has-analysis="true"] { cursor: pointer; }
+
+/* ── Status dot opacity via data attributes ──────────────────────────────── */
+.sm-ed-status-dot[data-status="unknown"] { opacity: 0.4; }
+.sm-ed-status-dot[data-status="known"] { opacity: 0.9; }
+
+/* ── Source badge fixed width for sources tab ────────────────────────────── */
+.sm-source-badge-w48 { width: 48px; }
+
+/* ── Relative position wrapper ───────────────────────────────────────────── */
+.sm-relative { position: relative; }
+
+/* ── DB status dot indicator (5×5 circle) ────────────────────────────────── */
+.sm-db-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--db-dot-color, var(--text3));
+}
+
+/* ── DB tooltip header ───────────────────────────────────────────────────── */
+.sm-db-tooltip-header {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Italic fetch message ────────────────────────────────────────────────── */
+.sm-italic { font-style: italic; }
+
+/* ── Tooltip field label (inline block with min-width) ───────────────────── */
+.sm-tooltip-label-70 { min-width: 70px; display: inline-block; }
+.sm-tooltip-label-80 { min-width: 80px; display: inline-block; }
+
+/* ── Tooltip value with conditional color via data-* ─────────────────────── */
+.sm-tooltip-val-status[data-val="TRACKED"] { color: var(--mint); font-weight: 600; }
+.sm-tooltip-val-status[data-val="UNTRACKED"] { color: var(--coral); font-weight: 600; }
+.sm-tooltip-val-status[data-val="PENDING"] { color: var(--text3); font-weight: 600; }
+.sm-tooltip-val-status[data-val="IN DB"] { color: var(--mint); font-weight: 600; }
+.sm-tooltip-val-status[data-val="DATA ONLY"] { color: var(--gold); font-weight: 600; }
+
+.sm-tooltip-val-category[data-val="PRESS RELEASE"] { color: var(--sky); }
+.sm-tooltip-val-category[data-val="NEWS"] { color: var(--mint); }
+.sm-tooltip-val-category { color: var(--text3); }
+
+.sm-tooltip-val-seen[data-val="NO"] { color: var(--sky); font-weight: 600; }
+.sm-tooltip-val-seen[data-val="YES"] { color: var(--text3); font-weight: 600; }
+
+/* ── Truncated row ───────────────────────────────────────────────────────── */
+.sm-truncate-row { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Not in DB message ───────────────────────────────────────────────────── */
+.sm-not-in-db { font-weight: 600; }
+
+/* ── Expanded body padding ───────────────────────────────────────────────── */
+.sm-expanded-body { padding: 0 12px 12px; }
+
+/* ── Inline verdict badge (expanded, with gap) ───────────────────────────── */
+.sm-verdict-badge-expanded {
+  margin: 12px 0 0 7px;
+  display: inline-flex;
+  gap: 6px;
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+/* ── Verdict explanation text ────────────────────────────────────────────── */
+.sm-verdict-explanation {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.7;
+  font-size: 10px;
+}
+
+/* ── Section label no margin ─────────────────────────────────────────────── */
+.sm-section-label-no-mb { margin-bottom: 0; }
+
+/* ── Section micro label with padding & spacing ──────────────────────────── */
+.sm-section-header-label {
+  padding: 8px 12px 4px;
+  opacity: 0.7;
+  letter-spacing: 1.5px;
+}
+
+/* ── All-hidden notice ───────────────────────────────────────────────────── */
+.sm-all-hidden-notice { padding: 4px 12px; font-size: 11px; }
+
+/* ── Show more/collapse hidden button ────────────────────────────────────── */
+.sm-hidden-toggle-btn {
+  display: block;
+  padding: 4px 12px;
+  margin: 2px 0;
+  font-size: 9px;
+  font-family: 'Space Mono', monospace;
+  background: transparent;
+  border: none;
+  text-align: left;
+}
+
+/* ── Empty state padding ─────────────────────────────────────────────────── */
+.sm-empty-state-pad { padding: 16px 12px; }
+
+/* ── Divider line between PR and News ────────────────────────────────────── */
+.sm-section-divider {
+  height: 1px;
+  background: color-mix(in srgb, var(--border) 40%, transparent);
+  margin: 4px 12px;
+}
+
+/* ── Card with no padding ────────────────────────────────────────────────── */
+.sm-tab-card-no-pad { padding: 0; }
+
+/* ── Card header ─────────────────────────────────────────────────────────── */
+.sm-card-header {
+  padding: 16px 24px;
+}
+.sm-card-header[data-loaded="true"] { border-bottom: 1px solid var(--border); }
+.sm-card-header[data-loaded="false"] { border-bottom: none; }
+.sm-card-header[data-primary="true"] { background: color-mix(in srgb, var(--accent) 4%, transparent); }
+.sm-card-header[data-primary="false"] { background: transparent; }
+
+/* ── Min-width 0 ─────────────────────────────────────────────────────────── */
+.sm-min-w-0 { min-width: 0; }
+
+/* ── Status indicator dot (8×8 with box-shadow) ──────────────────────────── */
+.sm-status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.sm-status-indicator[data-active="true"] {
+  background: var(--gold);
+  box-shadow: 0 0 8px var(--gold-dim);
+}
+.sm-status-indicator[data-active="false"] {
+  background: var(--mint);
+  box-shadow: 0 0 8px var(--mint-dim);
+}
+
+/* ── Card title heading ──────────────────────────────────────────────────── */
+.sm-card-title {
+  margin: 0;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.sm-card-title[data-primary="true"] { font-size: 15px; }
+.sm-card-title[data-primary="false"] { font-size: 14px; }
+
+/* ── External link arrow ─────────────────────────────────────────────────── */
+.sm-external-link-arrow { text-decoration: none; padding: 2px 6px; border-radius: 4px; }
+
+/* ── Freshness timestamp ─────────────────────────────────────────────────── */
+.sm-freshness-ts {
+  font-size: 10px;
+  opacity: 0.6;
+  font-family: 'Space Mono', monospace;
+  margin-left: 4px;
+}
+
+/* ── Spin animation on SVGs via data attribute ───────────────────────────── */
+.sm-spin-when-active[data-spinning="true"] { animation: spin 1s linear infinite; }
+.sm-spin-when-active[data-spinning="false"] { animation: none; }
+
+/* ── Card body padding ───────────────────────────────────────────────────── */
+.sm-card-body { padding: 16px 20px; }
+.sm-card-body[data-extra-bottom="true"] { padding: 16px 20px 20px; }
+
+/* ── Loading area padding ────────────────────────────────────────────────── */
+.sm-loading-pad { padding: 24px 0; }
+
+/* ── Loading text size ───────────────────────────────────────────────────── */
+.sm-loading-text { font-size: 12px; }
+
+/* ── Spin always (for loading spinners) ──────────────────────────────────── */
+.sm-spin-always { animation: spin 1s linear infinite; }
+
+/* ── Status bar text ─────────────────────────────────────────────────────── */
+.sm-status-text-lg { font-size: 13px; font-weight: 600; }
+.sm-status-text-sm { font-size: 13px; }
+
+/* ── Legend item layout ──────────────────────────────────────────────────── */
+.sm-legend-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  max-width: 260px;
+}
+
+/* ── Legend dot (5×5) ────────────────────────────────────────────────────── */
+.sm-legend-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: 3px;
+}
+.sm-legend-dot[data-color="mint"] { background: var(--mint); opacity: 0.9; }
+.sm-legend-dot[data-color="coral"] { background: var(--coral); opacity: 0.9; }
+.sm-legend-dot[data-color="text3"] { background: var(--text3); opacity: 0.4; }
+.sm-legend-dot[data-color="gold"] { background: var(--gold); opacity: 0.9; }
+
+/* Dynamic legend dots using CSS custom properties */
+.sm-legend-dot-dynamic {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: 3px;
+  background: var(--legend-color);
+  opacity: var(--legend-opacity, 0.9);
+}
+
+/* ── Legend text column ──────────────────────────────────────────────────── */
+.sm-legend-text-col { gap: 1px; }
+
+/* ── Legend label ─────────────────────────────────────────────────────────── */
+.sm-legend-label { font-weight: 500; }
+
+/* ── Legend description ──────────────────────────────────────────────────── */
+.sm-legend-desc { font-size: 9px; opacity: 0.5; line-height: 1.4; }
+
+/* ── Toggle container ────────────────────────────────────────────────────── */
+.sm-toggle-area { gap: 10px; padding: 0 4px 12px; }
+
+/* ── Toggle button ───────────────────────────────────────────────────────── */
+.sm-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+}
+.sm-toggle-btn[data-mode="local"] { color: var(--gold); }
+.sm-toggle-btn[data-mode="ai"] { color: var(--sky); }
+
+/* ── Toggle track ────────────────────────────────────────────────────────── */
+.sm-toggle-track {
+  width: 24px;
+  height: 12px;
+  border-radius: 6px;
+  position: relative;
+}
+.sm-toggle-track[data-mode="local"] {
+  background: var(--gold-dim);
+  border: 1px solid var(--gold);
+}
+.sm-toggle-track[data-mode="ai"] {
+  background: var(--sky-dim);
+  border: 1px solid var(--sky);
+}
+
+/* ── Toggle thumb ────────────────────────────────────────────────────────── */
+.sm-toggle-thumb {
+  position: absolute;
+  top: 1px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.sm-toggle-thumb[data-mode="local"] {
+  background: var(--gold);
+  left: 13px;
+}
+.sm-toggle-thumb[data-mode="ai"] {
+  background: var(--sky);
+  left: 1px;
+}
+
+/* ── Match method badge ──────────────────────────────────────────────────── */
+.sm-match-method-badge {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+.sm-match-method-badge[data-method="local"] { background: var(--gold-dim); color: var(--gold); }
+.sm-match-method-badge[data-method="ai"] { background: var(--sky-dim); color: var(--sky); }
+.sm-match-method-badge[data-method="hybrid"] { background: var(--sky-dim); color: var(--sky); }
+
+/* ── Grid cols 2 (using existing sm-grid-sep with --cols var) ────────────── */
+/* Already handled via CSS custom property */
+
+/* ── Micro label with letter-spacing 1.5 ─────────────────────────────────── */
+.sm-micro-label-ls { letter-spacing: 1.5px; }
+
+/* ── Nav gap 2 ───────────────────────────────────────────────────────────── */
+.sm-gap-2 { gap: 2px; }
+
+/* ── Research source link ────────────────────────────────────────────────── */
+.sm-research-link { text-decoration: none; padding: 6px 8px; gap: 6px; }
+
+/* ── SVG opacity 30% ─────────────────────────────────────────────────────── */
+.sm-opacity-30 { opacity: 0.3; }
+.sm-opacity-50 { opacity: 0.5; }
+.sm-opacity-70 { opacity: 0.7; }
+.sm-opacity-25 { opacity: 0.25; }
+
+/* ── Methodology toggle text ─────────────────────────────────────────────── */
+.sm-method-toggle-icon { font-size: 18px; }
+
+/* ── Methodology flow: center-aligned column ─────────────────────────────── */
+.sm-flow-center { align-items: center; }
+
+/* ── Vertical line heights (used in methodology flows) ───────────────────── */
+.sm-ed-vline-6 { height: 6px; }
+.sm-ed-vline-8 { height: 8px; }
+.sm-ed-vline-10 { height: 10px; }
+.sm-ed-vline-12 { height: 12px; }
+
+/* ── Methodology highlight label ─────────────────────────────────────────── */
+.sm-method-highlight {
+  padding: 4px 10px;
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  font-weight: 600;
+}
+
+/* ── Methodology flow wrap gap ───────────────────────────────────────────── */
+.sm-flow-wrap-24 { gap: 24px; }
+.sm-flow-wrap-20 { gap: 20px; }
+.sm-flow-wrap-32 { gap: 32px; }
+
+/* ── Methodology column with flex basis ──────────────────────────────────── */
+.sm-flow-col-220 { flex: 1 1 220px; align-items: center; }
+
+/* ── Vertical color line (2px wide) ──────────────────────────────────────── */
+.sm-vline-sky { width: 2px; height: 10px; background: var(--sky); }
+.sm-vline-mint { width: 2px; height: 10px; background: var(--mint); }
+
+/* ── Flowbox with smaller padding ────────────────────────────────────────── */
+.sm-ed-flowbox-sm { padding: 5px 12px; font-size: 10px; }
+
+/* ── Methodology note text ───────────────────────────────────────────────── */
+.sm-method-note {
+  font-size: 9px;
+  font-family: 'Space Mono', monospace;
+  line-height: 1.6;
+}
+
+/* ── Flowbox accent with mint overrides ──────────────────────────────────── */
+.sm-ed-flowbox-accent-mint {
+  background: var(--mint-dim);
+  border-color: var(--mint);
+  color: var(--mint);
+}
+
+/* ── Flowbox accent with gold overrides ──────────────────────────────────── */
+.sm-ed-flowbox-accent-gold {
+  background: var(--gold-dim);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* ── Flowbox accent font weight normal ───────────────────────────────────── */
+.sm-fw-400 { font-weight: 400; }
+
+/* ── Analysis routing fallback column ────────────────────────────────────── */
+.sm-flow-fallback-col {
+  justify-content: center;
+  gap: 4px;
+  padding-top: 28px;
+}
+
+/* ── Analysis routing fallback row ───────────────────────────────────────── */
+.sm-flow-fallback-row {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  gap: 6px;
+  height: 28px;
+}
+
+/* ── Fallback arrow ──────────────────────────────────────────────────────── */
+.sm-flow-arrow { font-size: 11px; }
+
+/* ── Spacer heights ──────────────────────────────────────────────────────── */
+.sm-spacer-22 { height: 22px; }
+.sm-spacer-4 { margin-top: 4px; }
+
+/* ── Data extraction text block ──────────────────────────────────────────── */
+.sm-data-extract-text {
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  line-height: 2;
+}
+
+/* ── Margin-top 4 ────────────────────────────────────────────────────────── */
+.sm-mt-4 { margin-top: 4px; }
+
+/* ── Local matching note (mono, centered, with padding) ──────────────────── */
+.sm-method-note-centered {
+  padding: 4px 10px;
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  margin-bottom: 4px;
+}
+
+/* ── Dollar guard box ────────────────────────────────────────────────────── */
+.sm-dollar-guard-box {
+  padding: 6px 14px;
+  border: 1px solid var(--gold);
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* ── Micro text reset (override the default letter-spacing/transform) ───── */
+.sm-micro-text-reset {
+  margin-top: 2px;
+  letter-spacing: normal;
+  text-transform: none;
+  font-weight: 400;
+}
+.sm-micro-text-norm {
+  letter-spacing: normal;
+  text-transform: none;
+  font-weight: 400;
+}
+
+/* ── Gold label bold ─────────────────────────────────────────────────────── */
+.sm-gold-bold { font-weight: 600; }
+
+/* ── Italic guard note ───────────────────────────────────────────────────── */
+.sm-guard-note { font-size: 10px; font-style: italic; }
+
+/* ── Match result row ────────────────────────────────────────────────────── */
+.sm-match-row {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  gap: 6px;
+}
+
+/* ── Status dot inline (6×6) ─────────────────────────────────────────────── */
+.sm-dot-6 {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.sm-dot-6[data-color="mint"] { background: var(--mint); }
+.sm-dot-6[data-color="coral"] { background: var(--coral); }
+.sm-dot-6[data-color="gold"] { background: var(--gold); }
+.sm-dot-6[data-color="text3"] { background: var(--text3); }
+
+/* ── Inline flex override ────────────────────────────────────────────────── */
+.sm-inline-flex-items { display: inline-flex; }
+
+/* ── Flow mono 9 ─────────────────────────────────────────────────────────── */
+.sm-flow-label-9 { font-size: 9px; }
+.sm-flow-label-10 { font-size: 10px; }
+
+/* ── Methodology flowbox for fetch buttons ───────────────────────────────── */
+.sm-fetch-pr-box {
+  padding: 6px 14px;
+  background: var(--sky-dim);
+  border: 1px solid var(--sky);
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* ── Methodology "or" label ──────────────────────────────────────────────── */
+.sm-or-label {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  align-self: center;
+}
+
+/* ── Methodology flow min-width ──────────────────────────────────────────── */
+.sm-flow-col-180 { align-items: center; min-width: 180px; }
+
+/* ── Methodology info text block ─────────────────────────────────────────── */
+.sm-method-info-text { font-size: 10px; line-height: 1.8; }
+
+/* ── Info card label ─────────────────────────────────────────────────────── */
+.sm-info-card-label { font-size: 10px; font-weight: 700; font-family: 'Space Mono', monospace; margin-bottom: 6px; }
+.sm-info-card-label-recheck { color: rgba(130,180,220,0.7); }
+.sm-info-card-label-dbper { /* inherits color from sm-mint */ }
+.sm-info-card-label-fetch { color: rgba(130,200,130,0.7); }
+
+/* ── Methodology DB status indicators text ───────────────────────────────── */
+.sm-method-db-text {
+  margin-top: 10px;
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  line-height: 1.8;
+}
+
+/* ── Methodology controls section ────────────────────────────────────────── */
+.sm-method-controls-wrap { gap: 24px; font-size: 11px; line-height: 2; }
+.sm-method-letter-2 { letter-spacing: 2px; }
+
+/* ── Separator pipe ──────────────────────────────────────────────────────── */
+.sm-sep-pipe { margin: 0 8px; }
+
+/* ── Code badge ──────────────────────────────────────────────────────────── */
+.sm-code-badge { font-size: 11px; font-family: 'Space Mono', monospace; padding: 1px 5px; }
+
+/* ── Mono 11 ─────────────────────────────────────────────────────────────── */
+.sm-mono-11 { font-size: 11px; font-family: 'Space Mono', monospace; }
+
+/* ── Active method badge ─────────────────────────────────────────────────── */
+/* Reuses .sm-match-method-badge above */
+
+/* ── Filter pill area ────────────────────────────────────────────────────── */
+.sm-filter-pill-area { padding: 8px 0 16px; flex-wrap: wrap; }
+
+/* ── Methodology panel bottom border ─────────────────────────────────────── */
+.sm-method-tooltip-border { margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+
+/* ── Cross-ref opacity spans ─────────────────────────────────────────────── */
+.sm-crossref-prefix { opacity: 0.7; }
+.sm-crossref-arrow { opacity: 0.5; }
+
+/* ── Filing hidden badge (auto width) ────────────────────────────────────── */
+.sm-ed-form-badge-auto { font-size: 9px; padding: 1px 6px; border-radius: 4px; width: auto; }
+
+/* ── Chevron transition ──────────────────────────────────────────────────── */
+.sm-chevron-transition { transition: transform 0.2s; }
+
+/* ── SVG ring transition ─────────────────────────────────────────────────── */
+.sm-ring-transition { transition: stroke-dasharray 0.4s ease; }
+
+/* ── Text size 13 ────────────────────────────────────────────────────────── */
+.sm-text-13 { font-size: 13px; }
+
+/* ── Cross-ref criteria text ─────────────────────────────────────────────── */
+.sm-crossref-criteria {
+  font-size: 9px;
+  opacity: 0.4;
+  padding: 0 4px 8px;
+  font-family: 'Space Mono', monospace;
+  line-height: 1.6;
+}
+
+/* ── Filing list empty state ─────────────────────────────────────────────── */
+.sm-filing-empty { font-size: 13px; padding: 24px 0; line-height: 1.6; }
+
+/* ── Year button letter spacing ──────────────────────────────────────────── */
+.sm-year-ls { letter-spacing: -0.5px; }
+
+/* ── Year divider line ───────────────────────────────────────────────────── */
+.sm-year-divider { flex: 1; height: 1px; background: color-mix(in srgb, var(--border) 50%, transparent); }
+
+/* ── Year stats ──────────────────────────────────────────────────────────── */
+.sm-year-stats { font-size: 10px; }
+.sm-year-arrow { font-size: 9px; opacity: 0.5; }
+
+/* ── Year hidden toggle ──────────────────────────────────────────────────── */
+.sm-year-hidden-toggle {
+  display: block;
+  padding: 4px 12px;
+  margin: 2px 0;
+  font-size: 9px;
+  background: transparent;
+  border: none;
+  opacity: 0.25;
+  text-align: left;
+}
+
+/* ── Filter pill count ───────────────────────────────────────────────────── */
+.sm-pill-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+}
+.sm-pill-count[data-active="true"] { opacity: 0.8; }
+.sm-pill-count[data-active="false"] { opacity: 0.35; }
+
+/* ── Recheck button dynamic styles ───────────────────────────────────────── */
+.sm-ed-action-btn-sm[data-recheck="loading"] {
+  --ed-btn-color: var(--text3);
+  border-color: var(--border);
+  cursor: wait;
+  opacity: 0.5;
+}
+.sm-ed-action-btn-sm[data-recheck="idle"] {
+  --ed-btn-color: rgba(130,180,220,0.5);
+  border-color: rgba(130,180,220,0.15);
+  opacity: 1;
+}
+
+/* ── Hide button muted ───────────────────────────────────────────────────── */
+.sm-ed-action-btn-sm[data-hide-btn="true"] { opacity: 0.5; }
+
+/* ── Spin 0.8s variant ───────────────────────────────────────────────────── */
+.sm-spin-fast[data-spinning="true"] { animation: spin 0.8s linear infinite; }
+.sm-spin-fast[data-spinning="false"] { animation: none; }
+
+/* ── Action toolbar margin ───────────────────────────────────────────────── */
+.sm-action-toolbar-margin { margin: 8px 0 2px 7px; }
+.sm-action-toolbar-pt { padding-top: 8px; }
+.sm-action-toolbar-align { align-items: center; }
+
+/* ── Copy button dynamic color ───────────────────────────────────────────── */
+.sm-ed-action-btn[data-copied="true"] {
+  --ed-btn-color: var(--mint);
+  border-color: rgba(130,200,130,0.15);
+}
+
+/* ── Preview button states ───────────────────────────────────────────────── */
+.sm-ed-action-btn[data-preview="previewing"] {
+  --ed-btn-color: var(--text3);
+  opacity: 0.6;
+}
+.sm-ed-action-btn[data-preview="error"] {
+  --ed-btn-color: var(--coral);
+  border-color: color-mix(in srgb, var(--coral) 25%, transparent);
+}
+.sm-ed-action-btn[data-preview="default"] {
+  --ed-btn-color: rgba(130,200,130,0.5);
+  border-color: rgba(130,200,130,0.15);
+}
+
+/* ── Commit button states ────────────────────────────────────────────────── */
+.sm-ed-action-btn[data-commit="done"] {
+  --ed-btn-color: var(--mint);
+  border-color: rgba(130,200,130,0.15);
+  opacity: 1;
+}
+.sm-ed-action-btn[data-commit="error"] {
+  --ed-btn-color: var(--coral);
+  opacity: 1;
+}
+.sm-ed-action-btn[data-commit="disabled"] {
+  --ed-btn-color: var(--text3);
+  opacity: 0.3;
+}
+.sm-ed-action-btn[data-commit="ready"] {
+  --ed-btn-color: rgba(168,130,230,0.5);
+  border-color: rgba(168,130,230,0.15);
+  opacity: 1;
+}
+.sm-ed-action-btn[data-commit="committing"] {
+  --ed-btn-color: rgba(168,130,230,0.5);
+  border-color: rgba(168,130,230,0.15);
+  opacity: 0.6;
+}
+
+/* ── Status message inline ───────────────────────────────────────────────── */
+.sm-status-msg { font-size: 10px; margin-left: 4px; }
+.sm-status-msg[data-type="error"] { color: var(--coral); }
+.sm-status-msg[data-type="info"] { color: var(--text3); }
+
+/* ── Confirm button states ───────────────────────────────────────────────── */
+.sm-ed-action-btn[data-confirm="active"] {
+  --ed-btn-color: rgba(234,179,8,0.8);
+  border-color: rgba(234,179,8,0.3);
+  font-weight: 600;
+  opacity: 1;
+}
+.sm-ed-action-btn[data-confirm="disabled"] {
+  --ed-btn-color: var(--text3);
+  opacity: 0.4;
+}
+
+/* ── Diff panel header/footer ────────────────────────────────────────────── */
+.sm-diff-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(234,179,8,0.1);
+}
+.sm-diff-footer {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(234,179,8,0.1);
+}
+
+/* ── Patch preview title ─────────────────────────────────────────────────── */
+.sm-patch-title {
+  font-size: 11px;
+  color: rgba(234,179,8,0.7);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ── Patch summary ───────────────────────────────────────────────────────── */
+.sm-patch-summary { font-size: 10px; margin-left: 12px; }
+
+/* ── Diff file entry ─────────────────────────────────────────────────────── */
+.sm-diff-file-entry { padding: 10px 16px; }
+.sm-diff-file-entry[data-has-top="true"] { border-top: 1px solid rgba(255,255,255,0.04); }
+
+/* ── Diff file mb ────────────────────────────────────────────────────────── */
+.sm-diff-file-header { margin-bottom: 6px; }
+
+/* ── Diff file path ──────────────────────────────────────────────────────── */
+.sm-diff-file-path {
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  font-weight: 500;
+}
+.sm-diff-file-path[data-valid="true"] { color: var(--text2); }
+.sm-diff-file-path[data-valid="false"] { color: var(--coral); }
+
+/* ── Diff action badge ───────────────────────────────────────────────────── */
+.sm-diff-action-badge {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.sm-diff-action-badge[data-valid="true"] {
+  background: rgba(130,200,130,0.1);
+  color: rgba(130,200,130,0.6);
+  border: 1px solid rgba(130,200,130,0.15);
+}
+.sm-diff-action-badge[data-valid="false"] {
+  background: rgba(255,100,100,0.1);
+  color: var(--coral);
+  border: 1px solid rgba(255,100,100,0.15);
+}
+
+/* ── Diff detail error ───────────────────────────────────────────────────── */
+.sm-diff-detail-error { font-size: 10px; opacity: 0.7; }
+
+/* ── Warning review text ─────────────────────────────────────────────────── */
+.sm-diff-warning {
+  font-size: 9px;
+  color: rgba(234,179,8,0.5);
+  letter-spacing: 0.05em;
+}
+
+/* ── Applying spinner dot ────────────────────────────────────────────────── */
+.sm-apply-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(234,179,8,0.5);
+  animation: pulse 2s infinite;
+}
+
+/* ── Applying text ───────────────────────────────────────────────────────── */
+.sm-apply-text {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Badge verdict expanded with letter-spacing ──────────────────────────── */
+.sm-verdict-badge-expanded-ls {
+  margin: 12px 0 0 7px;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+}
+
+/* ── Info card cross-ref source title ────────────────────────────────────── */
+.sm-info-card-src-title { font-size: 10px; margin-bottom: 4px; }
+.sm-info-card-src-desc { font-size: 9.5px; line-height: 1.7; }
+
+/* ── Cross-ref storage notes ─────────────────────────────────────────────── */
+.sm-crossref-notes { margin-top: 10px; font-size: 10px; line-height: 2; }
+
+/* ── Auto cross-ref note text ────────────────────────────────────────────── */
+.sm-auto-crossref-note { font-size: 10px; line-height: 1.6; }
+
+/* ── Auto cross-ref max width text ───────────────────────────────────────── */
+.sm-auto-crossref-constraint { font-size: 9px; line-height: 1.6; max-width: 340px; }
+
+/* ── DB status indicator card mb ─────────────────────────────────────────── */
+.sm-db-indicator-mb { margin-bottom: 6px; }
+
+/* ── DB indicator dot gray ───────────────────────────────────────────────── */
+.sm-dot-6-gray { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); opacity: 0.3; }
+
+/* ── DB indicator label styles ───────────────────────────────────────────── */
+.sm-db-indicator-label { font-size: 10px; }
+.sm-db-indicator-label-gray { font-size: 10px; opacity: 0.5; }
+
+/* ── Persisted data section ──────────────────────────────────────────────── */
+.sm-persisted-data-text { font-size: 10px; line-height: 2.2; }
+.sm-persisted-note { margin-top: 4px; opacity: 0.7; }
+
+/* ── No match label (11px untracked) ─────────────────────────────────────── */
+.sm-untracked-label { font-size: 11px; }
+
+/* ── SEEN badge opacity for methodology ──────────────────────────────────── */
+.sm-seen-badge-dim { opacity: 0.3; }
+
+/* ── Methodology italic date note ────────────────────────────────────────── */
+.sm-method-italic-note {
+  padding: 4px 10px;
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  font-style: italic;
+}
+
+/* ── Loading spinner SVG ─────────────────────────────────────────────────── */
+.sm-spin-svg { animation: spin 1s linear infinite; }
+
