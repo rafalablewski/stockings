@@ -4765,20 +4765,20 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
       {/* Risk Metrics */}
       <div>
         <div className="sm-card">
-          <div className="sm-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+          <div className="sm-table-header sm-mc-grid-3">
             <span className="sm-text-left">Risk Metric</span>
             <span className="sm-text-right">Value</span>
             <span className="sm-text-left">Interpretation</span>
           </div>
           {[
-            { label: 'Win Probability', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: sim.winProb > 50 ? 'var(--mint)' : 'var(--red)' }}>{sim.winProb.toFixed(1)}%</span>, interp: 'Prob. of exceeding current NAV' },
-            { label: 'Expected Value', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600 }}>${sim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
-            { label: 'Sharpe Ratio', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: sim.sharpe > 1 ? 'var(--mint)' : sim.sharpe > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sharpe.toFixed(2)}</span>, interp: sim.sharpe > 1 ? 'Excellent risk-adj return' : sim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
-            { label: 'Sortino Ratio', value: <span style={{ fontFamily: "'Space Mono', monospace", fontWeight: 600, color: sim.sortino > 1 ? 'var(--mint)' : sim.sortino > 0.5 ? 'var(--gold)' : 'var(--text2)' }}>{sim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
+            { label: 'Win Probability', value: <span className="sm-mc-risk-val" data-signal={sim.winProb > 50 ? 'good' : undefined}>{sim.winProb.toFixed(1)}%</span>, interp: 'Prob. of exceeding current NAV' },
+            { label: 'Expected Value', value: <span className="sm-mc-risk-val">${sim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
+            { label: 'Sharpe Ratio', value: <span className="sm-mc-risk-val" data-signal={sim.sharpe > 1 ? 'good' : sim.sharpe > 0.5 ? 'ok' : 'neutral'}>{sim.sharpe.toFixed(2)}</span>, interp: sim.sharpe > 1 ? 'Excellent risk-adj return' : sim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
+            { label: 'Sortino Ratio', value: <span className="sm-mc-risk-val" data-signal={sim.sortino > 1 ? 'good' : sim.sortino > 0.5 ? 'ok' : 'neutral'}>{sim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
             { label: 'VaR (5%)', value: <span className="sm-mono sm-fw-600 sm-red">{sim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
             { label: 'CVaR (5%)', value: <span className="sm-mono sm-fw-600 sm-red">{sim.cvar5Pct.toFixed(1)}%</span>, interp: 'Expected tail loss' },
           ].map((row, i) => (
-            <div key={i} className="sm-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+            <div key={i} className="sm-table-row sm-mc-grid-3">
               <span className="sm-text2">{row.label}</span>
               <span className="sm-text-right">{row.value}</span>
               <span className="sm-text3">{row.interp}</span>

@@ -1206,12 +1206,12 @@ const CRCLModelTab = ({
         <div className="sm-crcl-hero-kpi-row">
           <div className="sm-crcl-hero-kpi-cell">
             <div className="sm-section-label sm-accent">Target Stock Price</div>
-            <div className="sm-comps-big-num" style={{ color: 'var(--accent)', lineHeight: 1 }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
+            <div className="sm-comps-big-num sm-color-accent sm-lh-1">{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
             <div className="sm-subtle sm-crcl-mt-6">vs ${currentStockPrice.toFixed(0)} current</div>
           </div>
           <div className="sm-crcl-hero-kpi-cell">
             <div className="sm-section-label sm-accent">Implied Upside</div>
-            <div className="sm-comps-big-num" style={{ color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)', lineHeight: 1 }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
+            <div className="sm-comps-big-num sm-lh-1" style={{ color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
             <div className="sm-subtle sm-crcl-mt-6">{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
           </div>
         </div>

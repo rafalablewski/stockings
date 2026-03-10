@@ -848,7 +848,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     </div>
 
     <div className="sm-card sm-mt-8">
-      <div className="sm-grid-header" style={{ gridTemplateColumns: '1fr 120px 1fr' }}>
+      <div className="sm-grid-header sm-gtc-1-120-1">
         {['Metric', 'Value', 'Description'].map(h => (
           <span key={h} className="sm-th" style={{ textAlign: h === 'Value' ? 'right' : 'left'}}>{h}</span>
         ))}
@@ -859,7 +859,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         { metric: 'Constellation', value: `${calc.totalSats}/${targetSats2026}`, desc: `${calc.constellationProgress.toFixed(0)}% complete`, color: 'var(--cyan)' },
         { metric: 'Cash Runway', value: `${calc.cashRunwayQuarters.toFixed(1)} quarters`, desc: `~${(calc.cashRunwayQuarters / 4).toFixed(1)} year runway`, color: calc.cashRunwayQuarters > 4 ? 'var(--mint)' : 'var(--gold)' },
       ].map((row, i, arr) => (
-        <div key={row.metric} className="sm-data-row" style={{ gridTemplateColumns: '1fr 120px 1fr' }}>
+        <div key={row.metric} className="sm-data-row sm-gtc-1-120-1">
           <span className="sm-text-13t">{row.metric}</span>
           <span className="sm-mono-val sm-text-right" data-weight="600" style={{ '--val-color': row.color } as React.CSSProperties}>{row.value}</span>
           <span className="sm-text-12 sm-text3 sm-pl-16">{row.desc}</span>
@@ -1217,7 +1217,7 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
         </div>
         <div className="sm-p0">
           {partners.map((p, i) => (
-            <div key={p.name} className="sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 80px' }}>
+            <div key={p.name} className="sm-grid-row sm-gtc-1-100-80">
               <span className="sm-text-13t">{p.name}</span>
               <span className="sm-mono-val sm-text-right" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{p.subs}M</span>
               <span className="sm-mono-val sm-text-right" style={{ '--val-color': 'var(--text3)' } as React.CSSProperties}>{((p.subs / partnerReach) * 100).toFixed(1)}%</span>
@@ -1233,13 +1233,13 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
           <UpdateIndicators sources={['PR', 'SEC']} />
         </div>
         <div className="sm-p0">
-          <div className="sm-grid-header" style={{ gridTemplateColumns: '80px 1fr 1fr 1fr' }}>
+          <div className="sm-grid-header sm-gtc-80-3x1">
             {['Pen%', 'Subs', 'Rev/yr', '$/Sub'].map(h => (
               <span key={h} className="sm-th" style={{ textAlign: h === 'Pen%' ? 'left' : 'right'}}>{h}</span>
             ))}
           </div>
           {scenarios.map((s, i) => (
-            <div key={s.p} className="sm-grid-row" style={{ gridTemplateColumns: '80px 1fr 1fr 1fr' }}>
+            <div key={s.p} className="sm-grid-row sm-gtc-80-3x1">
               <span className="sm-mono-val" style={{ '--val-color': s.p === penetrationRate ? 'var(--cyan)' : 'var(--text)', fontWeight: s.p === penetrationRate ? 600 : 400 } as React.CSSProperties}>{s.p}%</span>
               <span className="sm-mono-right">{s.subs.toFixed(0)}M</span>
               <span className="sm-mono-right sm-mint">${s.rev.toFixed(1)}B</span>
@@ -1677,7 +1677,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         </div>
         <div className="sm-p0">
           {govContracts.map((g, i) => (
-            <div key={g.agency} className="sm-grid-row-lg" style={{ gridTemplateColumns: '1fr 100px 120px 1fr' }}>
+            <div key={g.agency} className="sm-grid-row-lg sm-gtc-1-100-120-1">
               <span className="sm-text-13t sm-fw-500">{g.agency}</span>
               <span className="sm-mono-val" data-weight="600" style={{ '--val-color': 'var(--mint)' } as React.CSSProperties}>{g.value}</span>
               <span className="sm-status-badge" style={{ '--badge-color': 'var(--sky)' } as React.CSSProperties}>{g.status}</span>
@@ -1697,13 +1697,13 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
           <UpdateIndicators sources="PR" />
         </div>
         <div className="sm-p0">
-          <div className="sm-grid-header" style={{ gridTemplateColumns: '130px 140px 80px 100px 1fr' }}>
+          <div className="sm-grid-header sm-gtc-130-140-80-100-1">
             {['Partner', 'Region', 'Subs', 'Status', 'Notes'].map(h => (
               <span key={h} className="sm-micro-label">{h}</span>
             ))}
           </div>
           {namedPartners.map(p => (
-            <div key={p.name} className="sm-grid-row" style={{ gridTemplateColumns: '130px 140px 80px 100px 1fr' }}>
+            <div key={p.name} className="sm-grid-row sm-gtc-130-140-80-100-1">
               <span className="sm-text-13t sm-fw-500">{p.name}</span>
               <span className="sm-text-12">{p.region}</span>
               <span className="sm-mono-val" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{p.subs}M</span>
@@ -1712,7 +1712,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             </div>
           ))}
           {othersCatchAll && (
-            <div className="sm-grid-row-lg sm-total-row-violet" style={{ gridTemplateColumns: '130px 140px 80px 100px 1fr' }}>
+            <div className="sm-grid-row-lg sm-total-row-violet sm-gtc-130-140-80-100-1">
               <span className="sm-text-12 sm-fw-600 sm-text">{othersCatchAll.name}</span>
               <span className="sm-text-12">{othersCatchAll.region}</span>
               <span className="sm-mono-val" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{othersCatchAll.subs}M</span>
@@ -2396,14 +2396,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="sm-cap-table-scroll">
           <div style={{ minWidth: 520 }}>
             {/* Header */}
-            <div className="sm-cap-table-header" style={{ gridTemplateColumns: '1fr 100px 100px 120px 1fr' }}>
+            <div className="sm-cap-table-header sm-gtc-1-100-100-120-1">
               {['Class', 'Shares (M)', '% of Basic', 'Voting', 'Description'].map((h, idx) => (
                 <span key={h} className="sm-cap-th" data-align={[1, 2].includes(idx) ? 'right' : undefined}>{h}</span>
               ))}
             </div>
             {/* Rows */}
             {shareClasses.map((sc, i) => (
-              <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 100px 100px 120px 1fr' }}>
+              <div key={i} className="sm-cap-table-row sm-gtc-1-100-100-120-1">
                 <span className="sm-cap-td-label">{sc.classType}</span>
                 <span className="sm-cap-td" data-align="right" data-highlight>{sc.shares}</span>
                 <span className="sm-cap-td" data-align="right">{(sc.shares / totalBasic * 100).toFixed(1)}%</span>
@@ -2412,7 +2412,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               </div>
             ))}
             {/* Total Basic */}
-            <div className="sm-cap-table-total" style={{ gridTemplateColumns: '1fr 100px 100px 120px 1fr' }}>
+            <div className="sm-cap-table-total sm-gtc-1-100-100-120-1">
               <span className="sm-cap-td-label">Total Basic</span>
               <span className="sm-cap-td" data-align="right">{totalBasic.toFixed(1)}</span>
               <span className="sm-cap-td" data-align="right">100%</span>
@@ -2479,7 +2479,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
         <div className="sm-cap-table-scroll">
         <div style={{ minWidth: 620 }}>
-          <div className="sm-cap-table-header" style={{ gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr' }}>
+          <div className="sm-cap-table-header sm-gtc-1-100-90-80x3-1">
             <span className="sm-cap-th">Shareholder</span>
             <span className="sm-cap-th">Role</span>
             <span className="sm-cap-th" data-align="right">Shares (M)</span>
@@ -2489,7 +2489,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <span className="sm-cap-th">Notes</span>
           </div>
           {majorShareholders.map((sh, i) => (
-            <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 100px 90px 80px 80px 80px 1fr' }}>
+            <div key={i} className="sm-cap-table-row sm-gtc-1-100-90-80x3-1">
               <span className="sm-cap-td-label">{sh.name}</span>
               <span className="sm-cap-td">{sh.role}</span>
               <span className="sm-cap-td" data-align="right">{typeof sh.shares === 'number' ? sh.shares.toFixed(1) : sh.shares}</span>
@@ -2519,7 +2519,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
         <div className="sm-cap-table-scroll">
         <div style={{ minWidth: 560 }}>
-          <div className="sm-cap-table-header" style={{ gridTemplateColumns: '100px 1fr 100px 100px 80px 90px' }}>
+          <div className="sm-cap-table-header sm-gtc-100-1-100x2-80-90">
             <span className="sm-cap-th">Date</span>
             <span className="sm-cap-th">Event</span>
             <span className="sm-cap-th">Type</span>
@@ -2528,7 +2528,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <span className="sm-cap-th" data-align="right">Shares (M)</span>
           </div>
           {equityOfferings.map((offering, i) => (
-            <div key={i} className="sm-cap-table-row" style={{ gridTemplateColumns: '100px 1fr 100px 100px 80px 90px' }}>
+            <div key={i} className="sm-cap-table-row sm-gtc-100-1-100x2-80-90">
               <span className="sm-cap-td-label">{offering.date}</span>
               <span className="sm-cap-td" style={{ fontWeight: 500 }}>{offering.event}</span>
               <span className="sm-cap-td">{offering.type}</span>
@@ -2537,7 +2537,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <span className="sm-cap-td" data-align="right">{offering.shares ? offering.shares.toFixed(1) : '\u2014'}</span>
             </div>
           ))}
-          <div className="sm-cap-table-total" style={{ gridTemplateColumns: '100px 1fr 100px 100px 80px 90px' }}>
+          <div className="sm-cap-table-total sm-gtc-100-1-100x2-80-90">
             <span className="sm-cap-td-label" style={{ gridColumn: 'span 3' }}>Total Capital Raised (2019-2026)</span>
             <span className="sm-cap-td" data-align="right">~$6.3B</span>
             <span className="sm-cap-td" style={{ gridColumn: 'span 2' }}></span>
@@ -2562,7 +2562,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
         <div className="sm-card-body">
         <div>
-          <div className="sm-grid-header sm-grid-header-p0" style={{ gridTemplateColumns: '1fr 100px 100px 100px' }}>
+          <div className="sm-grid-header sm-grid-header-p0 sm-gtc-1-100-3x">
             <span className="sm-table-header">Quarter</span>
             <span className="sm-table-header sm-text-right">Total SBC</span>
             <span className="sm-table-header sm-text-right">Engineering</span>
@@ -2643,13 +2643,13 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <strong className="sm-violet">Dilution Risk:</strong> Converts only dilute if stock price exceeds conversion price. Company may repurchase for cash instead. Total potential: +{totalConvertDilution.toFixed(1)}M shares.
         </div>
         <div>
-          <div className="sm-grid-header" style={{ gridTemplateColumns: '1fr 100px 100px 80px 100px 80px' }}>
+          <div className="sm-grid-header sm-gtc-1-100-100-80-100-80">
             {['Note', 'Outstanding', 'Conv. Price', 'Rate', 'Max Shares', 'Status'].map(h => (
               <span key={h} className="sm-th" style={{ textAlign: h === 'Note' ? 'left' : 'right'}}>{h}</span>
             ))}
           </div>
           {convertibleNotes.map((note, i) => (
-            <div key={note.name} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 100px 80px 100px 80px' }}>
+            <div key={note.name} className="hover-row sm-grid-row sm-gtc-1-100-100-80-100-80">
               <span className="sm-text-12 sm-text">{note.name}</span>
               <span className="sm-mono-right">${note.outstandingPrincipal}M</span>
               <span className="sm-mono-right">${note.conversionPrice.toFixed(2)}</span>
@@ -2675,7 +2675,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <UpdateIndicators sources="SEC" />
         </div>
         <div>
-          <div className="sm-grid-header" style={{ gridTemplateColumns: '1fr 1fr 120px 100px 100px' }}>
+          <div className="sm-grid-header sm-gtc-1-1-120-100x2">
             {['Scenario', 'Source', 'New Shares', 'FD Total', 'Dilution'].map(h => (
               <span key={h} className="sm-th" style={{ textAlign: h === 'Scenario' || h === 'Source' ? 'left' : 'right'}}>{h}</span>
             ))}
@@ -2726,7 +2726,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
         <div className="sm-card-body">
           <div>
-            <div className="sm-grid-header" style={{ gridTemplateColumns: '100px 100px 100px 120px 1fr' }}>
+            <div className="sm-grid-header sm-gtc-100x3-120-1">
               <span className="sm-table-header">Quarter</span>
               <span className="sm-table-header sm-text-right">Class A (M)</span>
               <span className="sm-table-header sm-text-right">Implied (M)</span>
@@ -2828,13 +2828,13 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <UpdateIndicators sources="SEC" />
         </div>
         <div>
-          <div className="sm-grid-header" style={{ gridTemplateColumns: '1fr 100px 100px 100px 100px' }}>
+          <div className="sm-grid-header sm-gtc-1-100-4x">
             {['Scenario', 'Cash', 'Burn/Q', 'Rev/Q', 'Runway'].map(h => (
               <span key={h} className="sm-th" style={{ textAlign: h === 'Scenario' ? 'left' : 'right'}}>{h}</span>
             ))}
           </div>
           {CASH_RUNWAY_SCENARIOS.map((s, i) => (
-            <div key={s.label} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 100px 100px 100px' }}>
+            <div key={s.label} className="hover-row sm-grid-row sm-gtc-1-100-4x">
               <span className="sm-text-12 sm-text">{s.label}</span>
               <span className="sm-mono-right">${(s.startingCash / 1000).toFixed(1)}B</span>
               <span className="sm-mono-val sm-text-right" style={{ '--val-color': 'var(--coral)' } as React.CSSProperties}>${s.quarterlyBurn}M</span>
@@ -2974,13 +2974,13 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
         {/* Dec 2025 C-Suite Grants */}
         <div>
-          <div className="sm-grid-header" style={{ gridTemplateColumns: '1fr 120px 100px 120px 1fr' }}>
+          <div className="sm-grid-header sm-gtc-1-120-100-120-1">
             {['Executive', 'Role', 'RSUs', 'Vesting Start', 'Notes'].map(h => (
               <span key={h} className="sm-th" style={{ textAlign: h === 'RSUs' ? 'right' : 'left'}}>{h}</span>
             ))}
           </div>
           {DEC_2025_RSU_GRANTS.map((g, i) => (
-            <div key={g.name} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 120px 100px 120px 1fr' }}>
+            <div key={g.name} className="hover-row sm-grid-row sm-gtc-1-120-100-120-1">
               <span className="sm-text-13t">{g.name}</span>
               <span className="sm-text-12">{g.role}</span>
               <span className="sm-mono-right sm-violet">{(g.units / 1000).toFixed(0)}K</span>
@@ -2998,13 +2998,13 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <UpdateIndicators sources="SEC" />
         </div>
         <div>
-          <div className="sm-grid-header" style={{ gridTemplateColumns: '1fr 100px 90px 90px 90px 100px' }}>
+          <div className="sm-grid-header sm-gtc-1-100-90x3-100">
             {['Executive', 'Date', 'Vested', 'Tax W/H', 'Net', 'Tax Value'].map(h => (
               <span key={h} className="sm-th" style={{ textAlign: ['Vested', 'Tax W/H', 'Net', 'Tax Value'].includes(h) ? 'right' : 'left'}}>{h}</span>
             ))}
           </div>
           {FEB_2026_RSU_VESTINGS.map((v, i) => (
-            <div key={i} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 90px 90px 90px 100px' }}>
+            <div key={i} className="hover-row sm-grid-row sm-gtc-1-100-90x3-100">
               <span className="sm-text-13t">{v.name} <span className="sm-text-11">({v.role})</span></span>
               <span className="sm-text-12">{v.date.slice(5)}</span>
               <span className="sm-mono-right">{(v.unitsVested / 1000).toFixed(1)}K</span>
@@ -3023,13 +3023,13 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <UpdateIndicators sources="SEC" />
         </div>
         <div>
-          <div className="sm-grid-header" style={{ gridTemplateColumns: '1fr 100px 90px 90px 90px 100px' }}>
+          <div className="sm-grid-header sm-gtc-1-100-90x3-100">
             {['Executive', 'Date', 'Vested', 'Tax W/H', 'Net', 'Tax Value'].map(h => (
               <span key={h} className="sm-th" style={{ textAlign: ['Vested', 'Tax W/H', 'Net', 'Tax Value'].includes(h) ? 'right' : 'left'}}>{h}</span>
             ))}
           </div>
           {AUG_SEP_2025_RSU_VESTINGS.map((v, i) => (
-            <div key={i} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 90px 90px 90px 100px' }}>
+            <div key={i} className="hover-row sm-grid-row sm-gtc-1-100-90x3-100">
               <span className="sm-text-13t">{v.name} <span className="sm-text-11">({v.role})</span></span>
               <span className="sm-text-12">{v.date.slice(5)}</span>
               <span className="sm-mono-right">{(v.unitsVested / 1000).toFixed(0)}K</span>
@@ -3058,7 +3058,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           );
         })()}
         <div>
-          <div className="sm-grid-header" style={{ gridTemplateColumns: '1fr 100px 80px 80px 100px 80px' }}>
+          <div className="sm-grid-header sm-gtc-1-100-80x2-100-80">
             {['Insider', 'Date', 'Shares', 'Price', 'Proceeds', '10b5-1'].map(h => (
               <span key={h} className="sm-th" style={{ textAlign: ['Shares', 'Price', 'Proceeds'].includes(h) ? 'right' : 'left'}}>{h}</span>
             ))}
@@ -3066,7 +3066,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           {/* Dec 2025 Sales */}
           <div className="sm-section-divider" style={{ '--divider-color': 'var(--coral)' } as React.CSSProperties}>December 2025</div>
           {DEC_2025_INSIDER_SALES.map((s, i) => (
-            <div key={`dec-${i}`} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 80px 80px 100px 80px' }}>
+            <div key={`dec-${i}`} className="hover-row sm-grid-row sm-gtc-1-100-80x2-100-80">
               <span className="sm-text-13t">{s.name} <span className="sm-text-11">({s.role})</span></span>
               <span className="sm-text-12">{s.date.slice(5)}</span>
               <span className="sm-mono-right">{(s.shares / 1000).toFixed(0)}K</span>
@@ -3078,7 +3078,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           {/* Aug-Sep 2025 Sales */}
           <div className="sm-section-divider" style={{ '--divider-color': 'var(--coral)' } as React.CSSProperties}>August-September 2025</div>
           {AUG_SEP_2025_INSIDER_SALES.map((s, i) => (
-            <div key={`aug-${i}`} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 80px 80px 100px 80px' }}>
+            <div key={`aug-${i}`} className="hover-row sm-grid-row sm-gtc-1-100-80x2-100-80">
               <span className="sm-text-13t">{s.name} <span className="sm-text-11">({s.role})</span></span>
               <span className="sm-text-12">{s.date.slice(5)}</span>
               <span className="sm-mono-right">{(s.shares / 1000).toFixed(0)}K</span>
@@ -3097,13 +3097,13 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <UpdateIndicators sources="SEC" />
         </div>
         <div>
-          <div className="sm-grid-header" style={{ gridTemplateColumns: '1fr 100px 80px 80px 100px' }}>
+          <div className="sm-grid-header sm-gtc-1-100-80x2-100">
             {['Insider', 'Date', 'Shares', 'Price', 'Account'].map(h => (
               <span key={h} className="sm-th" style={{ textAlign: ['Shares', 'Price'].includes(h) ? 'right' : 'left'}}>{h}</span>
             ))}
           </div>
           {DEC_2025_INSIDER_PURCHASES.map((p, i) => (
-            <div key={i} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 80px 80px 100px' }}>
+            <div key={i} className="hover-row sm-grid-row sm-gtc-1-100-80x2-100">
               <span className="sm-text-13t">{p.name} <span className="sm-text-11">({p.role})</span></span>
               <span className="sm-text-12">{p.date.slice(5)}</span>
               <span className="sm-mono-right sm-mint">{p.shares}</span>
@@ -3119,7 +3119,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="sm-section-divider" data-border-top="true" style={{ '--divider-color': 'var(--mint)' } as React.CSSProperties}>June 2025 — Insider Buys at $25 Dip</div>
         <div>
           {JUN_2025_INSIDER_PURCHASES.map((p, i) => (
-            <div key={`jun-${i}`} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 80px 80px 100px' }}>
+            <div key={`jun-${i}`} className="hover-row sm-grid-row sm-gtc-1-100-80x2-100">
               <span className="sm-text-13t">{p.name} <span className="sm-text-11">({p.role})</span></span>
               <span className="sm-text-12">{p.date.slice(5)}</span>
               <span className="sm-mono-right sm-mint">{p.shares.toLocaleString()}</span>
@@ -3132,7 +3132,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="sm-section-divider" data-border-top="true" style={{ '--divider-color': 'var(--mint)' } as React.CSSProperties}>Apr–May 2025 — Insider Buys at $25 Dip</div>
         <div>
           {APR_MAY_2025_INSIDER_PURCHASES.map((p, i) => (
-            <div key={`apr-${i}`} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 80px 80px 100px' }}>
+            <div key={`apr-${i}`} className="hover-row sm-grid-row sm-gtc-1-100-80x2-100">
               <span className="sm-text-13t">{p.name} <span className="sm-text-11">({p.role})</span></span>
               <span className="sm-text-12">{p.date.slice(5)}</span>
               <span className="sm-mono-right sm-mint">{p.shares.toLocaleString()}</span>
@@ -3157,7 +3157,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
         <div>
           {MAR_2025_INSIDER_SALES.map((s, i) => (
-            <div key={`mar-sale-${i}`} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 90px 80px 80px 90px 70px' }}>
+            <div key={`mar-sale-${i}`} className="hover-row sm-grid-row sm-gtc-1-90-80x2-90-70">
               <span className="sm-text-13t">{s.name} <span className="sm-text-11">({s.role})</span></span>
               <span className="sm-text-12">{s.date.slice(5)}</span>
               <span className="sm-mono-right" style={{ color: 'var(--rose)' }}>{s.shares.toLocaleString()}</span>
@@ -3235,7 +3235,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         {/* Board Changes */}
         <div className="sm-section-divider" style={{ '--divider-color': 'var(--sky)' } as React.CSSProperties}>Board Appointments</div>
         {JAN_FEB_2025_GOVERNANCE.boardChanges.map((bc, i) => (
-          <div key={`bc-${i}`} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 130px 1fr' }}>
+          <div key={`bc-${i}`} className="hover-row sm-grid-row sm-gtc-1-130-1">
             <span className="sm-text-13t">{bc.name} <span className="sm-text-11">({bc.role})</span></span>
             <span className="sm-text-12">{bc.date.slice(5)}</span>
             <span className="sm-text-12">{bc.event}</span>
@@ -3248,7 +3248,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
         {/* Bernal RSU */}
         <div className="sm-section-divider" data-border-top="true" style={{ '--divider-color': 'var(--violet)' } as React.CSSProperties}>RSU Grant (Feb 27)</div>
-        <div className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 100px' }}>
+        <div className="hover-row sm-grid-row sm-gtc-1-100-100">
           <span className="sm-text-13t">Maya Bernal <span className="sm-text-11">(CAO)</span></span>
           <span className="sm-mono-val" style={{ '--val-color': 'var(--violet)' } as React.CSSProperties}>{JAN_FEB_2025_GOVERNANCE.bernalRsuGrant.shares.toLocaleString()} RSUs</span>
           <span className="sm-text-12">Vest {JAN_FEB_2025_GOVERNANCE.bernalRsuGrant.vestingDate.slice(5)}</span>
@@ -3312,13 +3312,13 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <UpdateIndicators sources="SEC" />
         </div>
         <div>
-          <div className="sm-grid-header" style={{ gridTemplateColumns: '1fr 100px 100px 90px 1fr' }}>
+          <div className="sm-grid-header sm-gtc-1-100-100-90-1">
             {['Executive', 'Date', 'Type', 'Units', 'Notes'].map(h => (
               <span key={h} className="sm-th" style={{ textAlign: h === 'Units' ? 'right' : 'left'}}>{h}</span>
             ))}
           </div>
           {MAY_JUN_2025_RSU_ACTIVITY.map((a, i) => (
-            <div key={i} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 100px 90px 1fr' }}>
+            <div key={i} className="hover-row sm-grid-row sm-gtc-1-100-100-90-1">
               <span className="sm-text-13t">{a.name} <span className="sm-text-11">({a.role})</span></span>
               <span className="sm-text-12">{a.date.slice(5)}</span>
               <span className="sm-activity-badge" data-type={a.type === 'RSU Grant' ? 'grant' : a.type === 'RSU Vesting' ? 'vesting' : 'exercise'}>{a.type}</span>
@@ -4459,7 +4459,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Percentile Distribution */}
       <div>
         <div className="sm-card sm-mt-8">
-          <div className="sm-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
+          <div className="sm-table-header sm-gtc-4x1fr">
             <span className="sm-text-left">Percentile</span>
             <span className="sm-text-right">Price Target</span>
             <span className="sm-text-right">vs Current</span>
@@ -4488,7 +4488,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
       {/* Risk Metrics */}
       <div>
         <div className="sm-card sm-mt-8">
-          <div className="sm-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+          <div className="sm-table-header sm-gtc-3x1">
             <span className="sm-text-left">Risk Metric</span>
             <span className="sm-text-right">Value</span>
             <span className="sm-text-left">Interpretation</span>
@@ -4501,7 +4501,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
             { label: 'VaR (5%)', value: <span className="sm-fw-600" style={{ fontFamily: "'Space Mono', monospace", color: 'var(--red)' }}>{sim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
             { label: 'CVaR (5%)', value: <span className="sm-fw-600" style={{ fontFamily: "'Space Mono', monospace", color: 'var(--red)' }}>{sim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
           ].map((row, i) => (
-            <div key={i} className="sm-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
+            <div key={i} className="sm-table-row sm-gtc-3x1">
               <span className="sm-text2">{row.label}</span>
               <span className="sm-text-right">{row.value}</span>
               <span className="sm-text3">{row.interp}</span>
@@ -5975,7 +5975,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
         <div className="sm-cmp-table-scroll">
           <div style={{ minWidth: 560 }}>
-            <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr' }}>
+            <div className="sm-cmp-table-header sm-gtc-5x1">
               {['Method', 'Peer Basis', 'Multiple/Metric', 'Implied Value', 'Premium/(Discount)'].map((label, idx) => (
                 <span key={label} className="sm-cmp-th" data-align={idx >= 2 ? 'right' : undefined}>{label}</span>
               ))}
@@ -5988,7 +5988,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               { method: 'EV/Rev (Fwd)', basis: 'High-Growth SaaS', metric: '10x', implied: calc.fwdRevenue * 10, premium: ((calc.fwdRevenue * 10) / calc.marketCap - 1) * 100 },
               { method: 'EV/Rev (Fwd)', basis: 'Telco Avg', metric: '2x', implied: calc.fwdRevenue * 2, premium: ((calc.fwdRevenue * 2) / calc.marketCap - 1) * 100 },
             ].map((v, i) => (
-              <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr' }}>
+              <div key={i} className="sm-cmp-table-row sm-gtc-5x1">
                 <span className="sm-cmp-td-label">{v.method}</span>
                 <span className="sm-cmp-td">{v.basis}</span>
                 <span className="sm-cmp-td" data-align="right">{v.metric}</span>
