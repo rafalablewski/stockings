@@ -5252,7 +5252,7 @@ const CompsTab = () => {
                 ))}
               </div>
               {TRANSACTIONS.map((t, i) => (
-                <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '100px 2fr 1fr 100px' }}>
+                <div key={i} className="sm-cmp-table-row sm-cmp-grid-100-2-1-100">
                   <div className="sm-cmp-td-label">{t.date}</div>
                   <div className="sm-cmp-td">
                     <div className="sm-fw-500">{t.target}</div>

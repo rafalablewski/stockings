@@ -6576,7 +6576,7 @@ const TimelineTab = () => {
                   <div key={i} className="sm-tl-pr-item-v2">
                     <div className="sm-tl-pr-meta">
                       <span className="sm-tl-pr-date">{pr.date}</span>
-                      <span className="sm-tl-pr-cat" style={{ color: pr.color }}>{pr.category}</span>
+                      <span className="sm-tl-pr-cat" style={{ '--dynamic-color': pr.color, color: 'var(--dynamic-color)' } as React.CSSProperties}>{pr.category}</span>
                     </div>
                     <div className="sm-tl-pr-title">{pr.title}</div>
                   </div>

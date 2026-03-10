@@ -6187,8 +6187,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                       {news.details.map((d, j) => <div key={j} className="sm-flex sm-gap-8" style={{ alignItems: 'initial' }}><span style={{ color: 'var(--accent)', flexShrink: 0 }}>•</span>{d}</div>)}
                     </div>
                     {news.thesisComparison && (
-                      <div style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--mint) 5%, var(--surface))', borderRadius: 12, borderLeft: '3px solid var(--mint)', marginTop: 12 }}>
-                        <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 4 }}>ASTS Comparison</div>
+                      <div className="sm-comp-asts-box">
+                        <div className="sm-comp-asts-label">ASTS Comparison</div>
                         <div className="sm-text-12 sm-text2 sm-lh-15">{news.thesisComparison}</div>
                       </div>
                     )}
