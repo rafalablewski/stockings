@@ -13074,6 +13074,13 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-bmnr-changes-sep {
   border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
 }
+.sm-bmnr-change-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  text-align: right;
+}
+.sm-bmnr-change-val[data-dir="up"] { color: var(--mint); }
+.sm-bmnr-change-val[data-dir="down"] { color: var(--coral); }
 .sm-bmnr-changes-sep:last-child { border-bottom: none; }
 
 /* ── Insight card with margin-top ─────────────────────────────────── */
@@ -13475,3 +13482,322 @@ input[type="range"]::-webkit-slider-thumb {
 /* ── Margin utility ──────────────────────────────────────────────── */
 .sm-m-4-0-0 { margin: 4px 0 0; }
 
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § ASTS BATCH 2 — Continued inline style extraction
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Competitor threat color via data-threat on span */
+.sm-threat-color[data-threat="High"] { color: var(--red); }
+.sm-threat-color[data-threat="Medium"] { color: var(--gold); }
+.sm-threat-color[data-threat="Low"] { color: var(--mint); }
+
+/* Filter label — small muted text with right margin */
+.sm-filter-label { font-size: 11px; color: var(--text3); margin-right: 8px; }
+
+/* News entry border-left via data-implication */
+.news-entry[data-impl="positive"] { border-left: 3px solid var(--mint); }
+.news-entry[data-impl="negative"] { border-left: 3px solid var(--red); }
+.news-entry[data-impl="neutral"]  { border-left: 3px solid var(--text3); }
+
+/* News meta date line */
+.sm-news-meta-line { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+
+/* Empty state with larger padding */
+.sm-empty-state-lg { padding: 48px; }
+
+/* Competitor card with mint left border */
+.competitor-card-mint { border-left: 3px solid var(--mint); }
+
+/* Grid gap-12 */
+.sm-grid-gap-12 { display: grid; gap: 12px; }
+
+/* Dilution scenario row */
+.sm-dilution-label { font-size: 12px; color: var(--text); }
+.sm-dilution-label[data-current="true"] { font-weight: 600; }
+
+/* Monospace right-aligned cell with conditional color */
+.sm-mono-right-cond { font-family: 'Space Mono', monospace; font-size: 12px; text-align: right; }
+.sm-mono-right-cond[data-negative="true"] { color: var(--coral); }
+.sm-mono-right-cond[data-positive="true"] { color: var(--mint); }
+.sm-mono-right-cond[data-muted="true"] { color: var(--text2); }
+
+/* Dilution history grid row */
+.sm-dilution-history-row {
+  display: grid;
+  grid-template-columns: 100px 100px 100px 120px 1fr;
+  padding: 12px 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-dilution-history-row:last-child { border-bottom: none; }
+
+/* Height utility */
+.sm-h-256 { height: 256px; }
+
+/* Dilution scenario full row */
+.sm-dilution-scenario-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 120px 100px 100px;
+  padding: 12px 24px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-dilution-scenario-row:last-child { border-bottom: none; }
+.sm-dilution-scenario-row[data-type="stress"] {
+  background: color-mix(in srgb, var(--coral) 3%, transparent);
+}
+
+/* Convertible notes total row */
+.sm-convert-total-row {
+  display: grid;
+  grid-template-columns: 1fr 100px 100px 80px 100px 80px;
+  padding: 12px 24px;
+  background: var(--accent-dim);
+}
+.sm-convert-total-label { font-size: 12px; color: var(--text); font-weight: 600; }
+.sm-convert-total-mono { font-family: 'Space Mono', monospace; font-size: 12px; text-align: right; font-weight: 600; }
+.sm-convert-total-mono[data-color="text2"] { color: var(--text2); }
+.sm-convert-total-mono[data-color="coral"] { color: var(--coral); }
+
+/* Note status badge */
+.sm-note-status { font-size: 11px; text-align: right; }
+.sm-note-status[data-status="outstanding"] { color: var(--mint); }
+.sm-note-status[data-status="partial"] { color: var(--gold); }
+
+/* Min-width utilities */
+.sm-min-w-520 { min-width: 520px; }
+.sm-min-w-560 { min-width: 560px; }
+.sm-min-w-620 { min-width: 620px; }
+.sm-min-w-420 { min-width: 420px; }
+.sm-min-w-440 { min-width: 440px; }
+
+/* Font size 13 muted */
+.sm-fs-13-muted { font-size: 13px; color: var(--text3); }
+
+/* Cap table span-2 and span-3 utilities */
+.sm-gc-span-2 { grid-column: span 2; }
+.sm-gc-span-3 { grid-column: span 3; }
+.sm-cap-td-muted { grid-column: span 2; color: var(--text3); font-weight: 400; }
+
+/* Margin top 4 */
+.sm-mt-4 { margin-top: 4px; }
+
+/* Select dropdown pill */
+.sm-select-pill {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--text1);
+}
+
+/* OpEx breakdown grid */
+.sm-opex-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; font-size: 11px; }
+
+/* OpEx total separator */
+.sm-opex-total { padding-top: 8px; border-top: 1px solid var(--border); }
+.sm-opex-total-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 500; }
+
+/* Monte Carlo percentile table cells */
+.sm-mc-label { color: var(--text2); }
+.sm-mc-label[data-highlight="true"] { font-weight: 600; color: var(--accent); }
+.sm-mc-value { text-align: right; font-family: 'Space Mono', monospace; color: var(--text); }
+.sm-mc-value[data-highlight="true"] { font-weight: 700; color: var(--accent); }
+.sm-mc-value[data-weight="500"] { font-weight: 500; }
+.sm-mc-diff { text-align: right; font-family: 'Space Mono', monospace; color: var(--text2); }
+.sm-mc-pct { text-align: right; font-family: 'Space Mono', monospace; font-weight: 500; }
+.sm-mc-pct[data-positive="true"] { color: var(--mint); }
+.sm-mc-pct[data-negative="true"] { color: var(--red); }
+
+/* Monte Carlo risk metric values */
+.sm-mc-risk-val { font-family: 'Space Mono', monospace; font-weight: 600; }
+.sm-mc-risk-val[data-color="mint"] { color: var(--mint); }
+.sm-mc-risk-val[data-color="gold"] { color: var(--gold); }
+.sm-mc-risk-val[data-color="red"] { color: var(--red); }
+.sm-mc-risk-val[data-color="text2"] { color: var(--text2); }
+
+/* Distribution axis label */
+.sm-dist-axis { font-size: 11px; color: var(--text3); }
+.sm-dist-axis-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); }
+
+/* DCF breakdown step badge */
+.sm-dcf-step-badge {
+  font-weight: 700;
+  color: var(--bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* DCF step header */
+.sm-dcf-step-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+
+/* DCF step body */
+.sm-dcf-step-body { display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; }
+
+/* DCF formula text */
+.sm-dcf-formula { font-family: 'Space Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* DCF result value */
+.sm-dcf-result { font-weight: 700; flex-shrink: 0; font-family: 'Space Mono', monospace; font-size: 13px; }
+
+/* DCF notes box */
+.sm-dcf-notes {
+  padding: 16px;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.7;
+  border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
+}
+.sm-dcf-notes ul { margin: 0; padding-left: 16px; }
+
+/* Color dynamic via style -- inline still needed for dynamic colors */
+.sm-color-dynamic { color: var(--dyn-color); }
+
+/* Margin left 8 */
+.sm-ml-8 { margin-left: 8px; }
+
+/* Line height 1.6 */
+.sm-lh-16 { line-height: 1.6; }
+
+/* Italic notes with border top */
+.sm-italic-notes { font-style: italic; padding-top: 8px; line-height: 1.5; }
+
+/* Investment card scenario header */
+.sm-scenario-card-header {
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 4px 0 2px;
+}
+.sm-scenario-card-header[data-active="true"] { color: var(--dyn-color); }
+.sm-scenario-card-header[data-active="false"] { color: var(--text); }
+
+/* Scenario card subtitle */
+.sm-scenario-subtitle { letter-spacing: normal; text-transform: none; font-weight: 400; }
+
+/* Padding-left list */
+.sm-list-reset { gap: 8px; list-style: none; padding: 0; margin: 0; }
+.sm-list-reset-4 { gap: 4px; list-style: none; padding: 0; margin: 0; }
+
+/* Category legend colors */
+.sm-cat-pink { color: var(--pink); }
+.sm-cat-green { color: var(--green); }
+
+/* Margin bottom 2 */
+.sm-mb-2 { margin-bottom: 2px; }
+
+/* Padding left 16 */
+.sm-pl-16 { padding-left: 16px; }
+
+/* Color rose */
+.sm-rose { color: var(--rose); }
+
+/* Flex-1 */
+.sm-flex-1 { flex: 1; }
+
+/* Change diff arrows */
+.sm-diff-old { text-decoration: line-through; color: var(--coral); }
+.sm-diff-arrow { margin: 0 8px; color: var(--text3); }
+.sm-diff-new { color: var(--mint); }
+
+/* Border with accent pill */
+.sm-accent-pill-border { border: 1px solid var(--border); }
+
+/* Dynamic color mono value — uses parent data-color-scheme */
+.sm-mono-lg-dyn { color: var(--dyn-color); }
+
+/* Financial table dynamic min-width */
+.sm-fin-chart-overflow { /* applied alongside sm-fin-chart when overflow */ }
+
+/* DCF summary boxes */
+.sm-dcf-summary-accent {
+  background: color-mix(in srgb, var(--accent) 30%, var(--border));
+}
+.sm-dcf-margin-6 { margin: 6px 0 4px; }
+
+/* Financial metric detail */
+.sm-fin-detail-box {
+  background: color-mix(in srgb, var(--mint) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mint) 30%, transparent);
+}
+.sm-fin-detail-grid { font-size: 13px; }
+
+/* SOTP/prob grid-column span utilities */
+.sm-cmp-td-label-span3 { grid-column: 1 / 4; }
+
+/* Preset scenario card */
+.sm-preset-card {
+  padding: 16px 8px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  border-bottom: 2px solid transparent;
+}
+.sm-preset-card[data-active] {
+  background: color-mix(in srgb, var(--preset-color) 8%, transparent);
+  border-bottom-color: var(--preset-color);
+}
+
+/* Items baseline alignment */
+.sm-items-baseline { align-items: baseline; }
+
+/* DCF notes list (ul reset) */
+.sm-dcf-notes-list { margin: 0; padding-left: 16px; }
+
+/* Diff arrows (changelog) */
+.sm-diff-old { text-decoration: line-through; color: var(--coral); }
+.sm-diff-arrow { margin: 0 8px; color: var(--text3); }
+.sm-diff-new { color: var(--mint); }
+
+/* Timeline category color */
+.sm-tl-cat-color { /* use style={{ color }} for dynamic */ }
+
+/* List resets */
+.sm-list-reset { list-style: none; padding: 0; margin: 0; }
+
+/* Category legend inline colors */
+.sm-cat-pink { color: var(--pink); }
+.sm-cat-green { color: var(--green); }
+
+/* Financial detail mint box */
+.sm-fin-detail-mint {
+  background: color-mix(in srgb, var(--mint) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mint) 30%, transparent);
+}
+
+/* Valuation premium color */
+.sm-val-premium[data-positive="true"] { color: var(--mint); }
+.sm-val-premium[data-negative="true"] { color: var(--coral); }
+
+/* SOTP/probability label span */
+.sm-sotp-label-span { grid-column: 1 / 4; }
+
+/* Dynamic border-left via CSS var */
+.sm-border-left-accent { border-left: 3px solid var(--bl-color); }
+
+/* Table header alignment via data-align */
+.sm-th[data-align="right"] { text-align: right; }
+.sm-th[data-align="left"] { text-align: left; }
+
+/* Financial table th right alignment */
+.sm-fin-th-right { text-align: right; }
+
+/* Hover row with standard padding/border */
+.sm-hover-row-std {
+  padding: 12px 24px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+/* Gap utilities */
+.sm-gap-4 { gap: 4px; }
+.sm-gap-8 { gap: 8px; }
+
+/* Padding utilities */
+.sm-p-48 { padding: 48px; }
+.sm-fin-bar-label { text-align: center; font-size: 10px; color: var(--text3); padding: 4px 0; }
