@@ -116,6 +116,8 @@ import type { UpdateSource } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
+import SharedEdgarTab from '../shared/SharedEdgarTab';
+import { CRCL_SEC_FILINGS, CRCL_SEC_META, CRCL_SEC_TYPE_COLORS, CRCL_SEC_FILTER_TYPES, CRCL_FILING_CROSS_REFS } from '@/data/crcl/sec-filings';
 import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
 import { SharedInvestmentTab } from '../shared/SharedInvestmentTab';
 import { CRCL_INVESTMENT_CURRENT, CRCL_INVESTMENT_ARCHIVE } from '@/data/crcl/investment';
@@ -2497,6 +2499,7 @@ function CRCLModel() {
     // AI hub (grouped under "AI")
     { id: 'ai-agents', label: 'AI Agents', type: 'tracking', group: 'AI' },
     { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
+    { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
   ];
 
   const [activeTab, setActiveTab] = useHashTab(tabs.map(t => t.id));
@@ -4817,6 +4820,9 @@ function CRCLModel() {
           {activeTab === 'ai-agents' && <TabPanel id="ai-agents"><SharedAIAgentsTab ticker="CRCL" /></TabPanel>}
           {activeTab === 'sources' && <TabPanel id="sources">
             <SharedSourcesTab ticker="CRCL" companyName="Circle Internet Group" researchSources={crclResearchSources} competitorLabel="Stablecoin Peers" competitors={crclCompetitors} />
+          </TabPanel>}
+          {activeTab === 'edgar' && <TabPanel id="edgar">
+            <SharedEdgarTab ticker="CRCL" companyName="Circle Internet Group" localFilings={CRCL_SEC_FILINGS} cik={CRCL_SEC_META.cik} typeColors={CRCL_SEC_TYPE_COLORS} crossRefIndex={CRCL_FILING_CROSS_REFS} />
           </TabPanel>}
         </main>
       </div>
