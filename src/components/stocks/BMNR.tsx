@@ -1822,7 +1822,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
             <div className="sm-bmnr-scenario-detail" style={{ '--scenario-color': selected.color } as React.CSSProperties}>
               <div className="sm-flex-between sm-flex-wrap sm-gap-16 sm-items-start">
                 <div>
-                  <h3 style={{ color: selected.color }}>
+                  <h3 style={{ '--dynamic-color': selected.color, color: 'var(--dynamic-color)' } as React.CSSProperties}>
                     {selected.name} Case — {targetYear}
                   </h3>
                   <p className="sm-text2 sm-bmnr-max-w-600">{selected.description}</p>
@@ -1839,7 +1839,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
             {/* Key Metrics */}
             <div className="sm-model-grid sm-bmnr-grid-gap-24" style={{ '--cols': 4 } as React.CSSProperties}>
               <div className="big-stat">
-                <div className="num" style={{ color: selected.color }}>${targetProjection.stockPrice.toFixed(0)}</div>
+                <div className="num" style={{ '--dynamic-color': selected.color, color: 'var(--dynamic-color)' } as React.CSSProperties}>${targetProjection.stockPrice.toFixed(0)}</div>
                 <div className="lbl">Stock Price</div>
                 <div className="sm-bmnr-return-text" data-sentiment={priceReturn >= 0 ? 'positive' : 'negative'}>
                   {priceReturn >= 0 ? '+' : ''}{priceReturn.toFixed(0)}% from ${currentStockPrice.toFixed(0)}
@@ -1876,7 +1876,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
             <div className="sm-card-body">
             <div className="sm-overflow-x">
               {/* Table header */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid var(--border)' }}>
+              <div className="sm-dyn-grid-header" style={{ '--grid-cols': `150px 100px repeat(${selected.projections.length}, 100px)` } as React.CSSProperties}>
                 <span className="sm-micro-label sm-bg-surface2 sm-bmnr-cell">Metric</span>
                 <span className="sm-table-header sm-text-right">Today</span>
                 {selected.projections.map(p => (
@@ -1886,7 +1886,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* ETH Price row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+              <div className="sm-dyn-grid-row" style={{ '--grid-cols': `150px 100px repeat(${selected.projections.length}, 100px)` } as React.CSSProperties}>
                 <span className="sm-text-13 sm-bmnr-cell">ETH Price</span>
                 <span className="sm-text-right sm-bmnr-cell">${ethPrice.toLocaleString()}</span>
                 {selected.projections.map(p => (
@@ -1896,7 +1896,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* ETH Holdings row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+              <div className="sm-dyn-grid-row" style={{ '--grid-cols': `150px 100px repeat(${selected.projections.length}, 100px)` } as React.CSSProperties}>
                 <span className="sm-text-13 sm-bmnr-cell">ETH Holdings (M)</span>
                 <span className="sm-text-right sm-bmnr-cell">{(currentETH / 1e6).toFixed(3)}</span>
                 {selected.projections.map(p => (
@@ -1906,7 +1906,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* Shares row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+              <div className="sm-dyn-grid-row" style={{ '--grid-cols': `150px 100px repeat(${selected.projections.length}, 100px)` } as React.CSSProperties}>
                 <span className="sm-text-13 sm-bmnr-cell">Shares (M)</span>
                 <span className="sm-text-right sm-bmnr-cell">{currentShares.toFixed(0)}</span>
                 {selected.projections.map(p => (
@@ -1916,7 +1916,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* NAV/Share row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderTop: '1px solid var(--border)', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+              <div className="sm-dyn-grid-row-top" style={{ '--grid-cols': `150px 100px repeat(${selected.projections.length}, 100px)` } as React.CSSProperties}>
                 <span className="sm-text-13 sm-bmnr-cell">NAV/Share</span>
                 <span className="sm-text-right sm-bmnr-cell">${calc.currentNAV.toFixed(2)}</span>
                 {selected.projections.map(p => (
@@ -1926,17 +1926,17 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* Stock Price row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+              <div className="sm-dyn-grid-row" style={{ '--grid-cols': `150px 100px repeat(${selected.projections.length}, 100px)` } as React.CSSProperties}>
                 <span className="sm-text-13 sm-bmnr-cell">Stock Price</span>
                 <span className="sm-text-right sm-bmnr-cell">${currentStockPrice.toFixed(2)}</span>
                 {selected.projections.map(p => (
-                  <span key={p.year} className="sm-bmnr-cell sm-text-right sm-fw-700" data-highlight={p.year === targetYear} style={{ color: selected.color }}>
+                  <span key={p.year} className="sm-bmnr-cell sm-text-right sm-fw-700" data-highlight={p.year === targetYear} style={{ '--dynamic-color': selected.color, color: 'var(--dynamic-color)' } as React.CSSProperties}>
                     ${p.stockPrice.toFixed(2)}
                   </span>
                 ))}
               </div>
               {/* Cum. Dividends row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+              <div className="sm-dyn-grid-row" style={{ '--grid-cols': `150px 100px repeat(${selected.projections.length}, 100px)` } as React.CSSProperties}>
                 <span className="sm-text-13 sm-bmnr-cell">Cum. Dividends</span>
                 <span className="sm-text-right sm-bmnr-cell">$0.00</span>
                 {selected.projections.map(p => (
@@ -1946,7 +1946,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* Price Return row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)`, borderTop: '1px solid var(--border)', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+              <div className="sm-dyn-grid-row-top" style={{ '--grid-cols': `150px 100px repeat(${selected.projections.length}, 100px)` } as React.CSSProperties}>
                 <span className="sm-text-13 sm-bmnr-cell">Price Return</span>
                 <span className="sm-text-right sm-bmnr-cell">—</span>
                 {selected.projections.map(p => (
@@ -1956,7 +1956,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 ))}
               </div>
               {/* Total Return row */}
-              <div style={{ display: 'grid', gridTemplateColumns: `150px 100px repeat(${selected.projections.length}, 100px)` }}>
+              <div className="sm-dyn-grid-row-none" style={{ '--grid-cols': `150px 100px repeat(${selected.projections.length}, 100px)` } as React.CSSProperties}>
                 <span className="sm-text-13 sm-bmnr-cell">Total Return</span>
                 <span className="sm-text-right sm-bmnr-cell">—</span>
                 {selected.projections.map(p => (
@@ -2083,41 +2083,41 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
         <div className="sm-card-section"><span className="sm-section-label">All Scenarios — {targetYear} Comparison</span></div>
         <div className="sm-card-body">
         <div className="sm-overflow-x">
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid var(--border)' }}>
+          <div className="sm-dyn-grid-header" style={{ '--grid-cols': `160px repeat(${scenarios.length}, 1fr)` } as React.CSSProperties}>
             <span className="sm-micro-label sm-bg-surface2 sm-bmnr-cell">Metric</span>
             {scenarios.map(s => (
-              <span key={s.id} className="sm-th sm-bmnr-cell sm-bg-surface2" data-align="right" style={{ color: s.color }}>{s.name}</span>
+              <span key={s.id} className="sm-th sm-bmnr-cell sm-bg-surface2" data-align="right" style={{ '--dynamic-color': s.color, color: 'var(--dynamic-color)' } as React.CSSProperties}>{s.name}</span>
             ))}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+          <div className="sm-dyn-grid-row" style={{ '--grid-cols': `160px repeat(${scenarios.length}, 1fr)` } as React.CSSProperties}>
             <span className="sm-text-13 sm-bmnr-cell">ETH Price ($)</span>
             {scenarios.map(s => <span key={s.id} className="sm-text-right sm-p-12-16">${s.ethPrice.toLocaleString()}</span>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+          <div className="sm-dyn-grid-row" style={{ '--grid-cols': `160px repeat(${scenarios.length}, 1fr)` } as React.CSSProperties}>
             <span className="sm-text-13 sm-bmnr-cell">ETH Holdings (M)</span>
             {scenarios.map(s => <span key={s.id} className="sm-text-right sm-p-12-16">{(s.futureETH / 1e6).toFixed(2)}</span>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+          <div className="sm-dyn-grid-row" style={{ '--grid-cols': `160px repeat(${scenarios.length}, 1fr)` } as React.CSSProperties}>
             <span className="sm-text-13 sm-bmnr-cell">NAV/Share ($)</span>
             {scenarios.map(s => <span key={s.id} className="sm-text-right sm-p-12-16">${s.finalNAV.toFixed(2)}</span>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 700 }}>
+          <div className="sm-dyn-grid-row sm-dyn-grid-fw700" style={{ '--grid-cols': `160px repeat(${scenarios.length}, 1fr)` } as React.CSSProperties}>
             <span className="sm-text-13 sm-bmnr-cell">Stock Price ($)</span>
-            {scenarios.map(s => <span key={s.id} className="sm-bmnr-cell sm-text-right" style={{ color: s.color }}>${s.finalStockPrice.toFixed(2)}</span>)}
+            {scenarios.map(s => <span key={s.id} className="sm-bmnr-cell sm-text-right" style={{ '--dynamic-color': s.color, color: 'var(--dynamic-color)' } as React.CSSProperties}>${s.finalStockPrice.toFixed(2)}</span>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+          <div className="sm-dyn-grid-row" style={{ '--grid-cols': `160px repeat(${scenarios.length}, 1fr)` } as React.CSSProperties}>
             <span className="sm-text-13 sm-bmnr-cell">Cum. Dividends ($)</span>
             {scenarios.map(s => <span key={s.id} className="sm-mint sm-text-right sm-bmnr-cell">${s.totalDividends.toFixed(2)}</span>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
+          <div className="sm-dyn-grid-row" style={{ '--grid-cols': `160px repeat(${scenarios.length}, 1fr)` } as React.CSSProperties}>
             <span className="sm-text-13 sm-bmnr-cell">Price Return (%)</span>
             {scenarios.map(s => <span key={s.id} className="sm-bmnr-cell sm-text-right sm-val-color" data-positive={s.stockReturn >= 0}>{s.stockReturn >= 0 ? '+' : ''}{s.stockReturn.toFixed(0)}%</span>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)`, borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)', fontWeight: 700 }}>
+          <div className="sm-dyn-grid-row sm-dyn-grid-fw700" style={{ '--grid-cols': `160px repeat(${scenarios.length}, 1fr)` } as React.CSSProperties}>
             <span className="sm-text-13 sm-bmnr-cell">Total Return (%)</span>
             {scenarios.map(s => <span key={s.id} className="sm-bmnr-cell sm-text-right sm-val-color" data-positive={s.totalReturn >= 0}>{s.totalReturn >= 0 ? '+' : ''}{s.totalReturn.toFixed(0)}%</span>)}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: `160px repeat(${scenarios.length}, 1fr)` }}>
+          <div className="sm-dyn-grid-row-none" style={{ '--grid-cols': `160px repeat(${scenarios.length}, 1fr)` } as React.CSSProperties}>
             <span className="sm-text-13 sm-bmnr-cell">Total IRR (%)</span>
             {scenarios.map(s => <span key={s.id} className="sm-bmnr-cell sm-text-right sm-val-color" data-positive={s.totalIRR >= 0}>{s.totalIRR >= 0 ? '+' : ''}{s.totalIRR.toFixed(1)}%</span>)}
           </div>
@@ -4316,18 +4316,18 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
         </div>
         <div className="sm-overflow-x">
           {/* Header */}
-          <div style={{ display: 'grid', gridTemplateColumns: dcfMethod === 'intermediate' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr' : dcfMethod === 'dividend' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr' : '80px 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)' }}>
+          <div className="sm-dyn-grid-header sm-dyn-grid-p12-24" style={{ '--grid-cols': dcfMethod === 'intermediate' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr' : dcfMethod === 'dividend' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr' : '80px 1fr 1fr 1fr 1fr' } as React.CSSProperties}>
             {['Year', 'ETH', 'ETH Price', 'NAV',
               ...(dcfMethod === 'intermediate' ? ['Yield ETH', 'CF/Share', 'CF PV'] : []),
               ...(dcfMethod === 'dividend' ? ['Dividend', 'Div PV'] : []),
               'NAV PV'
             ].map((h, i) => (
-              <span key={h} style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.8px', textTransform: 'uppercase', color: 'var(--text3)', textAlign: i === 0 ? 'left' : 'right' }}>{h}</span>
+              <span key={h} className="sm-th-micro">{h}</span>
             ))}
           </div>
           {/* Data rows */}
           {dcf.projections.map((p, i) => (
-            <div key={p.year} style={{ display: 'grid', gridTemplateColumns: dcfMethod === 'intermediate' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr' : dcfMethod === 'dividend' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr' : '80px 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: i < dcf.projections.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : '1px solid var(--border)', transition: 'background 0.15s' }}>
+            <div key={p.year} className={`sm-dyn-grid-data${i === dcf.projections.length - 1 ? ' sm-dyn-grid-data-last' : ''}`} style={{ '--grid-cols': dcfMethod === 'intermediate' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr' : dcfMethod === 'dividend' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr' : '80px 1fr 1fr 1fr 1fr' } as React.CSSProperties}>
               <span className="sm-mono-sm sm-fw-500">{p.year}</span>
               <span className="sm-mono-sm sm-text-right">{(p.eth / 1e6).toFixed(2)}M</span>
               <span className="sm-mono-sm sm-text-right">${p.ethPrice.toFixed(0)}</span>
@@ -4350,7 +4350,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
           ))}
           {/* Summary rows */}
           {dcfMethod === 'intermediate' && (
-            <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+            <div className="sm-dyn-grid-summary" style={{ '--grid-cols': '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr' } as React.CSSProperties}>
               <span className="sm-mono-sm sm-fw-500">Sum CFs</span>
               <span /><span /><span /><span /><span />
               <span className="sm-mono-sm sm-text-right sm-fw-500 sm-cyan">${dcf.sumIntermediatePV.toFixed(2)}</span>
@@ -4358,14 +4358,14 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
             </div>
           )}
           {dcfMethod === 'dividend' && (
-            <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+            <div className="sm-dyn-grid-summary" style={{ '--grid-cols': '80px 1fr 1fr 1fr 1fr 1fr 1fr' } as React.CSSProperties}>
               <span className="sm-mono-sm sm-fw-500">Sum Dividends</span>
               <span /><span /><span />
-              <span className="sm-mono-sm sm-text-right sm-fw-500 sm-mint" style={{ gridColumn: 'span 2' }}>${dcf.sumDividendPV.toFixed(2)}</span>
+              <span className="sm-mono-sm sm-text-right sm-fw-500 sm-mint sm-col-span-2">${dcf.sumDividendPV.toFixed(2)}</span>
               <span />
             </div>
           )}
-          <div style={{ display: 'grid', gridTemplateColumns: dcfMethod === 'intermediate' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr' : dcfMethod === 'dividend' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr' : '80px 1fr 1fr 1fr 1fr', padding: '12px 24px', borderBottom: '1px solid var(--border)', background: 'var(--surface2)' }}>
+          <div className="sm-dyn-grid-summary" style={{ '--grid-cols': dcfMethod === 'intermediate' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr' : dcfMethod === 'dividend' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr' : '80px 1fr 1fr 1fr 1fr' } as React.CSSProperties}>
             <span className="sm-mono-sm sm-fw-500">Terminal</span>
             {dcfMethod === 'terminal' && <><span /><span /></>}
             {dcfMethod === 'intermediate' && <><span /><span /><span /><span /><span /></>}
@@ -4373,7 +4373,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
             <span className="sm-mono-sm sm-text-right">${dcf.terminalNAV.toFixed(2)}</span>
             <span className="sm-mono-sm sm-text-right sm-fw-500">${dcf.terminalPV.toFixed(2)}</span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: dcfMethod === 'intermediate' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr' : dcfMethod === 'dividend' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr' : '80px 1fr 1fr 1fr 1fr', padding: '12px 24px', background: 'rgba(0,212,170,0.1)' }}>
+          <div className="sm-dyn-grid-total" style={{ '--grid-cols': dcfMethod === 'intermediate' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr 1fr' : dcfMethod === 'dividend' ? '80px 1fr 1fr 1fr 1fr 1fr 1fr' : '80px 1fr 1fr 1fr 1fr' } as React.CSSProperties}>
             <span className="sm-mono-sm sm-fw-700">TOTAL</span>
             {dcfMethod === 'terminal' && <><span /><span /><span /></>}
             {dcfMethod === 'intermediate' && <><span /><span /><span /><span /><span /><span /></>}
@@ -4724,7 +4724,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
         </div>
 
         {/* Current NAV Info */}
-        <div style={{ padding: 12, background: 'var(--surface2)', borderRadius: 8, fontSize: 12, color: 'var(--text3)' }}>
+        <div className="sm-nav-info-box">
           Current NAV: <strong className="sm-accent">${currentNAV.toFixed(0)}</strong> | Adjustments: +{stakingYield.toFixed(1)}% yield, -{slashingRisk}% slash, -{liquidityDiscount + regulatoryRisk}% disc
         </div>
 
@@ -4735,7 +4735,7 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
       {/* Percentile Distribution */}
       <div>
         <div className="sm-card">
-          <div className="sm-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
+          <div className="sm-table-header sm-mc-grid-4">
             <span className="sm-text-left">Percentile</span>
             <span className="sm-text-right">Price Target</span>
             <span className="sm-text-right">vs Current</span>
@@ -4750,12 +4750,12 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
           ].map((row, i) => {
             const pctChange = ((row.value / currentNAV - 1) * 100);
             return (
-              <div key={i} className="sm-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : 'transparent', cursor: 'default' }}
+              <div key={i} className="sm-table-row sm-mc-grid-4 sm-mc-row" data-highlight={row.highlight || undefined}
               >
-                <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
-                <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
-                <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", color: 'var(--text2)' }}>${(row.value - currentNAV).toFixed(2)}</span>
-                <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</span>
+                <span className="sm-mc-label" data-highlight={row.highlight || undefined}>{row.label}</span>
+                <span className="sm-mc-val" data-highlight={row.highlight || undefined}>${row.value.toFixed(2)}</span>
+                <span className="sm-mc-val-muted">${(row.value - currentNAV).toFixed(2)}</span>
+                <span className="sm-mc-val-sign" data-positive={pctChange >= 0}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</span>
               </div>
             );
           })}

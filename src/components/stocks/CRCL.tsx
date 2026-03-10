@@ -833,7 +833,7 @@ const OverviewParameterCard = ({
   };
 
   return (
-    <div className="sm-panel sm-mb-12" style={{ borderRadius: 14 }}>
+    <div className="sm-panel sm-mb-12 sm-rounded-14">
       <div className="sm-panel-title sm-mb-12">{title}</div>
       <p className="sm-note-list">
         {explanation}
@@ -886,7 +886,7 @@ const OverviewParameterCard = ({
           </div>
         )}
       </div>
-      <div className="sm-subtle-sm sm-text-center" style={{ marginTop: 6 }}>
+      <div className="sm-subtle-sm sm-text-center sm-mt-6">
         ← Bearish | Bullish →
       </div>
     </div>
@@ -1023,9 +1023,9 @@ const CRCLModelTab = ({
       <>
 
         {/* Scenario Presets - 6 scenarios from Worst to Moon */}
-        <div className="sm-panel" style={{ borderRadius: 14 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 12 }}>Scenario Presets</div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 1, background: 'var(--border)', borderRadius: 10, overflow: 'hidden' }}>
+        <div className="sm-panel sm-rounded-14">
+          <div className="sm-crcl-presets-title">Scenario Presets</div>
+          <div className="sm-crcl-preset-grid">
             {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
               const preset = CRCL_SCENARIO_PRESETS[s];
               const isActive = selectedScenario === s;
@@ -1037,20 +1037,15 @@ const CRCLModelTab = ({
                   tabIndex={0}
                   aria-label={`${preset.label} scenario`}
                   onKeyDown={(e) => e.key === 'Enter' && applyScenario(s)}
-                  style={{
-                    padding: 12,
-                    background: isActive ? `${preset.color}15` : 'var(--surface)',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    textAlign: 'center',
-                    borderBottom: isActive ? `2px solid ${preset.color}` : '2px solid transparent',
-                  }}
+                  className="sm-crcl-preset-item"
+                  data-active={isActive}
+                  style={{ '--preset-color': preset.color } as React.CSSProperties}
                 >
-                  <div style={{ fontSize: 20 }}>{preset.icon}</div>
-                  <div style={{ fontWeight: 600, fontSize: 13, color: isActive ? preset.color : 'var(--text)' }}>
+                  <div className="sm-crcl-preset-icon">{preset.icon}</div>
+                  <div className="sm-crcl-preset-label" style={{ color: isActive ? preset.color : 'var(--text)' }}>
                     {preset.label}
                   </div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', lineHeight: 1.3 }}>
+                  <div className="sm-crcl-preset-detail">
                     {preset.usdcGrowthRate > 0 ? '+' : ''}{preset.usdcGrowthRate}% · {preset.reserveYield}%
                   </div>
                 </div>
@@ -1058,7 +1053,7 @@ const CRCLModelTab = ({
             })}
           </div>
           {/* Always show to prevent layout shift */}
-          <div style={{ padding: 12, background: 'color-mix(in srgb, var(--violet) 10%, transparent)', borderRadius: 8, fontSize: 12, color: selectedScenario === 'custom' ? 'var(--violet)' : 'var(--text3)', opacity: selectedScenario === 'custom' ? 1 : 0.5 }}>
+          <div className="sm-crcl-custom-hint" data-active={selectedScenario === 'custom'}>
             ⚙️ {selectedScenario === 'custom' ? 'Custom scenario - parameters modified from preset' : 'Click any value below to create custom scenario'}
           </div>
         </div>
@@ -1123,7 +1118,7 @@ const CRCLModelTab = ({
             onChange={v => { setOperatingMargin(v); setSelectedScenario('custom'); }}
             format="%"
           />
-          <div className="sm-panel sm-mb-12" style={{ borderRadius: 14 }}>
+          <div className="sm-panel sm-mb-12 sm-rounded-14">
             <div className="sm-panel-title sm-mb-12">Current Position</div>
             <p className="sm-note-list">
               Live data from Circle financials. Used as starting point for projections.

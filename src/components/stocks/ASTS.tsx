@@ -2071,7 +2071,7 @@ const CompetitorsTab = () => {
 
       {/* Key Competitors Overview */}
       <div className="sm-divider"><span className="sm-param-label">Key Competitors</span><span className="sm-divider-line" /></div>
-      <div className="sm-grid-sep-2col sm-mb-16" style={{ gap: 12, background: 'transparent' }}>
+      <div className="sm-grid-sep-2col sm-mb-16 sm-gap-12-bg-transparent">
         {keyCompetitors.map((comp, i) => (
           <div key={i} className={`competitor-card threat-${comp.threat.toLowerCase()}`}>
             <div className="competitor-header">
@@ -2087,7 +2087,7 @@ const CompetitorsTab = () => {
       </div>
 
       {/* Competitor News Timeline */}
-      <div className="sm-flex-between sm-items-center" style={{ padding: '32px 0 16px' }}><span className="sm-param-label">Competitor Intelligence ({filteredCompetitorNews.length} events)</span></div>
+      <div className="sm-flex-between sm-items-center sm-p-32-0-16"><span className="sm-param-label">Competitor Intelligence ({filteredCompetitorNews.length} events)</span></div>
 
       {/* Competitor Filter */}
       <div className="sm-mb-12">
@@ -2232,13 +2232,13 @@ const ASTSDilutionTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQu
           <UpdateIndicators sources="SEC" />
         </div>
         <div className="sm-p0">
-          <div className="sm-grid-header" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+          <div className="sm-grid-header sm-gtc-4x1">
             {['Raise Amount', 'New Shares', 'Dilution', 'Ext. Runway'].map(h => (
               <span key={h} className="sm-th" style={{ textAlign: h === 'Raise Amount' ? 'left' : 'right'}}>{h}</span>
             ))}
           </div>
           {dilution.map((d, i) => (
-            <div key={d.r} className="sm-data-row" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+            <div key={d.r} className="sm-data-row sm-gtc-4x1">
               <span className="sm-mono-sm sm-text">${d.r}M</span>
               <span className="sm-mono-right">{d.new.toFixed(1)}M</span>
               <span className="sm-mono-right sm-coral">{d.dil.toFixed(1)}%</span>
@@ -2699,7 +2699,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <UpdateIndicators sources="SEC" />
         </div>
         <div className="sm-p0">
-          <div className="sm-grid-header" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+          <div className="sm-grid-header sm-gtc-4x1">
             {['Raise Amount', 'New Shares', 'Dilution', 'Ext. Runway'].map(h => (
               <span key={h} className="sm-th" style={{ textAlign: h === 'Raise Amount' ? 'left' : 'right'}}>{h}</span>
             ))}
@@ -3881,7 +3881,7 @@ const ModelTab = ({
             <span className="sm-mono-sm sm-text3 sm-fs-11">{(riskFactor * 100).toFixed(0)}% success</span>
           </div>
 
-          <div className="sm-grid-sep-3col" style={{ gap: 12, background: 'transparent' }}>
+          <div className="sm-grid-sep-3col sm-gap-12-bg-transparent">
             <ParameterCard
               title="Regulatory Risk (%)"
               explanation="Probability of adverse regulatory action. ASTS has FCC approval but needs country-by-country clearance. 2-5% = most approvals done. 20-30% = major regulatory uncertainty remains."
@@ -4425,7 +4425,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           <span className="sm-param-label">Risk Factors</span>
           <span className="sm-divider-line" />
         </div>
-        <div className="sm-grid-sep-3col" style={{ gap: 12, background: 'transparent' }}>
+        <div className="sm-grid-sep-3col sm-gap-12-bg-transparent">
           <ParameterCard
             title="Launch Risk (%)"
             explanation="Prob. of constellation failure. If triggered: -40% revenue."
@@ -4860,7 +4860,7 @@ const QuarterlyMetricsPanel = () => {
                     ))}
                   </div>
                 </div>
-                <div className="sm-text-11" style={{ padding: '0 24px 24px' }}>Major raises: $462M SPAC (Apr'21), $210M equity (Jan'24), $500M ATM (Aug'25). Includes restricted cash.</div>
+                <div className="sm-text-11 sm-p-0-24-24">Major raises: $462M SPAC (Apr'21), $210M equity (Jan'24), $500M ATM (Aug'25). Includes restricted cash.</div>
               </>
             );
           })()}
@@ -4995,7 +4995,7 @@ const QuarterlyMetricsPanel = () => {
                     ))}
                   </div>
                 </div>
-                <div className="sm-text-11" style={{ padding: '0 24px 24px' }}>Class B (founders) + Class C (strategic partners) convert to Class A over time. Dilution from ATM, converts, RSUs.</div>
+                <div className="sm-text-11 sm-p-0-24-24">Class B (founders) + Class C (strategic partners) convert to Class A over time. Dilution from ATM, converts, RSUs.</div>
               </>
             );
           })()}
@@ -5026,7 +5026,7 @@ const QuarterlyMetricsPanel = () => {
                     ))}
                   </div>
                 </div>
-                <div className="sm-text-11" style={{ padding: '0 24px 24px' }}>Price × shares. Rally post Block 1 launch (Sep'24). Peak ~$78 (Oct'25). Implied includes Class B/C.</div>
+                <div className="sm-text-11 sm-p-0-24-24">Price × shares. Rally post Block 1 launch (Sep'24). Peak ~$78 (Oct'25). Implied includes Class B/C.</div>
               </>
             );
           })()}
@@ -5060,7 +5060,7 @@ const QuarterlyMetricsPanel = () => {
                     ))}
                   </div>
                 </div>
-                <div className="sm-text-11" style={{ padding: '0 24px 24px' }}>BW3 (test, Sep'22) → BB1-5 (Block 1, Sep'24) → BB6 (Block 2, Dec'25). Target: 168 sats for global coverage.</div>
+                <div className="sm-text-11 sm-p-0-24-24">BW3 (test, Sep'22) → BB1-5 (Block 1, Sep'24) → BB6 (Block 2, Dec'25). Target: 168 sats for global coverage.</div>
               </>
             );
           })()}
@@ -5886,10 +5886,10 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
       <div className="sm-grid-sep-2col sm-grid-sep-gap16">
         <div className="sm-card">
-          <div className="sm-card-section" style={{ padding: '16px 20px' }}>
+          <div className="sm-card-section sm-p-16-20">
             <div className="sm-section-label sm-flex">EV/Rev Comparison</div>
           </div>
-          <div style={{ padding: '24px 24px 16px', minHeight: 280 }}>
+          <div className="sm-p-24-24-16">
             <ResponsiveContainer width="100%" height={Math.max(280, Math.min(filteredComps.length * 44, 500))}>
               <BarChart data={filteredComps} layout="vertical" margin={{ top: 8, right: 32, left: 8, bottom: 8 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={true} vertical={false} opacity={0.3} />
@@ -5923,10 +5923,10 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           </div>
         </div>
         <div className="sm-card">
-          <div className="sm-card-section" style={{ padding: '16px 20px' }}>
+          <div className="sm-card-section sm-p-16-20">
             <div className="sm-section-label sm-flex">$/Subscriber Comparison</div>
           </div>
-          <div style={{ padding: '24px 24px 16px', minHeight: 280 }}>
+          <div className="sm-p-24-24-16">
             <ResponsiveContainer width="100%" height={Math.max(280, Math.min(filteredComps.length * 44, 500))}>
               <BarChart data={filteredComps} layout="vertical" margin={{ top: 8, right: 32, left: 8, bottom: 8 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={true} vertical={false} opacity={0.3} />
@@ -5969,7 +5969,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
 
       {/* Valuation Methodology Matrix */}
       <div className="sm-card sm-mt-8">
-        <div className="sm-card-section" style={{ padding: '16px 20px' }}>
+        <div className="sm-card-section sm-p-16-20">
           <div className="sm-param-label sm-flex sm-gap-8">Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
           <p className="sm-text-13 sm-text3 sm-m-4-0-0">ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
         </div>
@@ -6006,13 +6006,13 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         {/* SOTP Valuation */}
         <div>
           <div className="sm-card sm-mt-8">
-          <div className="sm-card-section" style={{ padding: '16px 20px' }}>
+          <div className="sm-card-section sm-p-16-20">
             <div className="sm-param-label sm-flex sm-gap-8">Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
             <p className="sm-text-13 sm-text3 sm-m-4-0-0">Value each business segment separately</p>
           </div>
           <div className="sm-cmp-table-scroll">
             <div style={{ minWidth: 440 }}>
-              <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+              <div className="sm-cmp-table-header sm-gtc-2fr-3x1">
                 {['Segment', 'Metric', 'Multiple', 'Value'].map((label, idx) => (
                   <span key={label} className="sm-cmp-th" data-align={idx > 0 ? 'right' : undefined}>{label}</span>
                 ))}
@@ -6024,14 +6024,14 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 { segment: 'Maritime/Aviation', basis: 'Niche verticals', metric: 'Option value', multiple: '—', value: 1000 },
                 { segment: 'Spectrum Assets', basis: 'Licensed spectrum', metric: 'Strategic value', multiple: '—', value: 3000 },
               ].map((s, i) => (
-                <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                <div key={i} className="sm-cmp-table-row sm-gtc-2fr-3x1">
                   <span className="sm-cmp-td-label"><div>{s.segment}</div><div className="sm-text-11">{s.basis}</div></span>
                   <span className="sm-cmp-td" data-align="right">{s.metric}</span>
                   <span className="sm-cmp-td" data-align="right">{s.multiple}</span>
                   <span className="sm-cmp-td sm-mint" data-align="right">${(s.value / 1000).toFixed(1)}B</span>
                 </div>
               ))}
-              <div className="sm-cmp-table-total" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+              <div className="sm-cmp-table-total sm-gtc-2fr-3x1">
                 <span className="sm-cmp-td-label" style={{ gridColumn: '1 / 4' }}>SOTP Total</span>
                 <span className="sm-cmp-td sm-mint" data-align="right">${((calc.potentialSubs * 0.4 * 2000 + calc.potentialSubs * 0.4 * 1500 + 6000) / 1000).toFixed(1)}B</span>
               </div>
@@ -6043,13 +6043,13 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         {/* Risk-Adjusted Scenarios */}
         <div>
           <div className="sm-card sm-mt-8">
-            <div className="sm-card-section" style={{ padding: '16px 20px' }}>
+            <div className="sm-card-section sm-p-16-20">
               <div className="sm-param-label sm-flex sm-gap-8">Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
               <p className="sm-text-13 sm-text3 sm-m-4-0-0">Probability-weighted valuation outcomes</p>
             </div>
           <div className="sm-cmp-table-scroll">
             <div style={{ minWidth: 420 }}>
-              <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+              <div className="sm-cmp-table-header sm-gtc-2fr-3x1">
                 {['Scenario', 'Prob.', 'Value', 'Weighted'].map((label, idx) => (
                   <span key={label} className="sm-cmp-th" data-align={idx > 0 ? 'right' : undefined}>{label}</span>
                 ))}
@@ -6060,14 +6060,14 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 { scenario: 'Bear Case', desc: 'Delays, limited commercial traction', prob: 20, value: calc.marketCap * 0.5 },
                 { scenario: 'Failure', desc: 'Technology or funding issues', prob: 10, value: calc.marketCap * 0.1 },
               ].map((s, i) => (
-                <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                <div key={i} className="sm-cmp-table-row sm-gtc-2fr-3x1">
                   <span className="sm-cmp-td-label"><div>{s.scenario}</div><div className="sm-text-11">{s.desc}</div></span>
                   <span className="sm-cmp-td" data-align="right">{s.prob}%</span>
                   <span className="sm-cmp-td" data-align="right">${(s.value / 1000).toFixed(1)}B</span>
                   <span className="sm-cmp-td sm-mint" data-align="right">${(s.value * s.prob / 100 / 1000).toFixed(1)}B</span>
                 </div>
               ))}
-              <div className="sm-cmp-table-total" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+              <div className="sm-cmp-table-total sm-gtc-2fr-3x1">
                 <span className="sm-cmp-td-label" style={{ gridColumn: '1 / 4' }}>Expected Value</span>
                 <span className="sm-cmp-td sm-mint" data-align="right">${((calc.marketCap * 3 * 0.25 + calc.marketCap * 1.5 * 0.45 + calc.marketCap * 0.5 * 0.20 + calc.marketCap * 0.1 * 0.10) / 1000).toFixed(1)}B</span>
               </div>

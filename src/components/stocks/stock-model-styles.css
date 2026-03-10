@@ -13036,3 +13036,399 @@ input[type="range"]::-webkit-slider-thumb {
 /* ── ETH hero KPI ─────────────────────────────────────────────────── */
 .sm-fs-28-m0 { font-size: 28px; margin: 0; }
 
+/* ═══════════════════════════════════════════════════════════════════════════════
+   CRCL inline style extraction — utility classes
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Simple utilities ────────────────────────────────────────────── */
+.sm-rounded-14 { border-radius: 14px; }
+.sm-rounded-10 { border-radius: 10px; }
+.sm-fs-36 { font-size: 36px; }
+.sm-h-300 { height: 300px; }
+.sm-h-280 { height: 280px; }
+.sm-min-w-500 { min-width: 500px; }
+.sm-min-w-400 { min-width: 400px; }
+.sm-min-w-380 { min-width: 380px; }
+.sm-min-w-580 { min-width: 580px; }
+.sm-lh-1 { line-height: 1; }
+.sm-lh-13 { line-height: 1.3; }
+.sm-mb-12-crcl { margin-bottom: 12px; }
+
+/* ── Color utilities ─────────────────────────────────────────────── */
+.sm-color-sky { color: var(--sky); }
+.sm-color-mint { color: var(--mint); }
+.sm-color-coral { color: var(--coral); }
+.sm-color-text { color: var(--text); }
+.sm-color-text2 { color: var(--text2); }
+.sm-color-text3 { color: var(--text3); }
+
+/* ── Scenario preset grid (6 columns, 1px gap) ──────────────────── */
+.sm-crcl-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* ── Scenario preset item ────────────────────────────────────────── */
+.sm-crcl-preset-item {
+  padding: 12px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  border-bottom: 2px solid transparent;
+}
+.sm-crcl-preset-item[data-active="true"] {
+  border-bottom-color: var(--preset-color);
+  background: color-mix(in srgb, var(--preset-color, var(--accent)) 6%, transparent);
+}
+
+/* ── Scenario preset sub-elements ────────────────────────────────── */
+.sm-crcl-preset-icon { font-size: 20px; }
+.sm-crcl-preset-label { font-weight: 600; font-size: 13px; }
+.sm-crcl-preset-detail { font-size: 10px; color: var(--text3); line-height: 1.3; }
+
+/* ── Custom scenario hint box ────────────────────────────────────── */
+.sm-crcl-custom-hint {
+  padding: 12px;
+  background: color-mix(in srgb, var(--violet) 10%, transparent);
+  border-radius: 8px;
+  font-size: 12px;
+}
+.sm-crcl-custom-hint[data-active="true"] {
+  color: var(--violet);
+  opacity: 1;
+}
+.sm-crcl-custom-hint[data-active="false"] {
+  color: var(--text3);
+  opacity: 0.5;
+}
+
+/* ── Scenario presets title ──────────────────────────────────────── */
+.sm-crcl-presets-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+/* ── Scenario header panel ───────────────────────────────────────── */
+.sm-crcl-scenario-header {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  border-left: 4px solid var(--scenario-color, var(--accent));
+}
+
+/* ── Flex-between with flex-start + wrap ──────────────────────────── */
+.sm-flex-between-start {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* ── Surface2 card with border-radius 12 + padding 24 ────────────── */
+.sm-surface2-pad-card {
+  background: var(--surface2);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+/* ── Mono value fonts ────────────────────────────────────────────── */
+.sm-mono-18 {
+  font-family: 'Space Mono', monospace;
+  font-size: 18px;
+}
+.sm-mono-24-bold {
+  font-family: 'Space Mono', monospace;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--mint);
+}
+.sm-mono-12 {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+}
+.sm-mono-10 {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+}
+
+/* ── Micro header (10px uppercase label) ─────────────────────────── */
+.sm-micro-header {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* ── Cap table grid patterns ─────────────────────────────────────── */
+.sm-cap-grid-5eq { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+.sm-cap-grid-2fr-4x1fr { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; }
+.sm-cap-grid-100-2fr-1fr-100 { grid-template-columns: 100px 2fr 1fr 100px; }
+.sm-cap-grid-100-1fr-3x-2fr { grid-template-columns: 100px 1fr 1fr 1fr 2fr; }
+.sm-cap-grid-2fr-1fr-1fr-1fr { grid-template-columns: 2fr 1fr 1fr 1fr; }
+.sm-cap-grid-1p5-6x1fr { grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr 1fr; }
+.sm-cap-grid-3eq { grid-template-columns: repeat(3, 1fr); }
+.sm-cap-grid-2fr-1fr-1fr { grid-template-columns: 2fr 1fr 1fr; }
+.sm-cap-grid-80-5x1fr { grid-template-columns: 80px repeat(5, 1fr); }
+.sm-cap-grid-1p5-5x1fr { grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; }
+
+/* ── Capital table data row ──────────────────────────────────────── */
+.sm-cap-data-row {
+  display: grid;
+  padding: 12px 24px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+
+/* ── Capital table header row ────────────────────────────────────── */
+.sm-cap-header-row {
+  display: grid;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+/* ── Capital table total/summary row ─────────────────────────────── */
+.sm-cap-total-row {
+  display: grid;
+  padding: 12px 24px;
+  font-weight: 600;
+}
+
+/* ── Card body text with fontSize 13 + text3 ─────────────────────── */
+.sm-card-note {
+  font-size: 13px;
+  color: var(--text3);
+}
+
+/* ── Competitor filter pill button ────────────────────────────────── */
+.sm-crcl-filter-pill {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sm-crcl-filter-pill[data-active="true"] {
+  border-color: var(--filter-color, var(--violet));
+  background: color-mix(in srgb, var(--filter-color, var(--violet)) 15%, transparent);
+  color: var(--filter-color, var(--violet));
+}
+
+/* ── Clear filter button ─────────────────────────────────────────── */
+.sm-crcl-clear-btn {
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--coral) 15%, transparent);
+  color: var(--coral);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* ── Reset all filter button ─────────────────────────────────────── */
+.sm-crcl-reset-btn {
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+/* ── Competitor news item ────────────────────────────────────────── */
+.sm-crcl-news-item {
+  padding: 16px 24px;
+  cursor: pointer;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+  border-left: 3px solid var(--news-accent, var(--accent));
+}
+.sm-crcl-news-item:last-child { border-bottom: none; }
+
+/* ── News badge (small pill) ─────────────────────────────────────── */
+.sm-crcl-news-badge {
+  padding: 1px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+}
+.sm-crcl-news-badge-violet {
+  background: color-mix(in srgb, var(--violet) 12%, transparent);
+  color: var(--violet);
+}
+.sm-crcl-news-badge-sky {
+  background: color-mix(in srgb, var(--sky) 12%, transparent);
+  color: var(--sky);
+}
+
+/* ── News impact indicator ───────────────────────────────────────── */
+.sm-crcl-news-impact {
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  margin-left: 12px;
+  white-space: nowrap;
+}
+
+/* ── News expanded detail section ────────────────────────────────── */
+.sm-crcl-news-detail {
+  padding-top: 16px;
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── CRCL comparison callout box ─────────────────────────────────── */
+.sm-crcl-comparison-box {
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--mint) 5%, var(--surface));
+  border-radius: 12px;
+  border-left: 3px solid var(--mint);
+  margin-top: 12px;
+}
+.sm-crcl-comparison-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--mint);
+  margin-bottom: 4px;
+}
+.sm-crcl-comparison-text {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+/* ── News source line ────────────────────────────────────────────── */
+.sm-crcl-news-source {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  margin-top: 8px;
+}
+
+/* ── Competitor profile card ─────────────────────────────────────── */
+.sm-crcl-comp-profile {
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+/* ── Panel surface2 transparent bg ───────────────────────────────── */
+.sm-crcl-surface2-panel {
+  background: color-mix(in srgb, var(--surface2) 60%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+/* ── Section with border-bottom + padding ────────────────────────── */
+.sm-crcl-section-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Footnote padding ────────────────────────────────────────────── */
+.sm-crcl-footnote {
+  padding: 12px 20px;
+  font-size: 12px;
+  color: var(--text3);
+}
+
+/* ── Surface2 pad card (padding 16, radius 8) ────────────────────── */
+.sm-surface2-pad-sm {
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+}
+
+/* ── Flex center with font 12 ────────────────────────────────────── */
+.sm-flex-center-12 {
+  justify-content: center;
+  font-size: 12px;
+}
+
+/* ── Empty state centered ────────────────────────────────────────── */
+.sm-crcl-empty-state {
+  text-align: center;
+  padding: 48px;
+}
+
+/* ── Italic note with border-top ─────────────────────────────────── */
+.sm-crcl-italic-note {
+  font-style: italic;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  line-height: 1.5;
+}
+
+/* ── Comps table grids ───────────────────────────────────────────── */
+.sm-cmp-grid-5col { grid-template-columns: 1fr 1fr 1fr 1fr 1.2fr; }
+.sm-cmp-grid-4col { grid-template-columns: 2fr 1fr 1fr 1fr; }
+.sm-cmp-grid-100-2-1-100 { grid-template-columns: 100px 2fr 1fr 100px; }
+.sm-cmp-header-rounded { border-radius: 10px 10px 0 0; }
+
+/* ── Rate sensitivity ────────────────────────────────────────────── */
+.sm-crcl-rate-header {
+  display: grid;
+  grid-template-columns: 80px repeat(5, 1fr);
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.sm-crcl-rate-row {
+  display: grid;
+  grid-template-columns: 80px repeat(5, 1fr);
+  padding: 12px 24px;
+  transition: background 0.15s;
+}
+.sm-crcl-rate-row:not(:last-child) {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+.sm-crcl-rate-row[data-highlight="true"] {
+  background: color-mix(in srgb, var(--cyan) 3%, transparent);
+}
+
+/* ── Verdict color/size ──────────────────────────────────────────── */
+.sm-crcl-verdict {
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* ── List reset (no style, no padding, no margin) ────────────────── */
+.sm-list-reset {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* ── grid-column span ────────────────────────────────────────────── */
+.sm-col-span-1-5 { grid-column: 1 / 5; }
+.sm-col-span-1-3 { grid-column: 1 / 3; }
+.sm-col-span-1-4 { grid-column: 1 / 4; }
+
+/* ── Subtitle (body-sm italic for comps) ─────────────────────────── */
+.sm-crcl-subtitle {
+  font-style: italic;
+  margin: 0 0 16px;
+}
+
+/* ── Margin utility ──────────────────────────────────────────────── */
+.sm-m-4-0-0 { margin: 4px 0 0; }
+
