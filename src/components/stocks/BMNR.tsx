@@ -2792,6 +2792,8 @@ const PurchasesTab = ({ ethPrice, currentShares, currentStockPrice }: { ethPrice
                 <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>ETH Bought</th>
                 <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>ETH Price</th>
                 <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>USD Deployed</th>
+                <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>Stock</th>
+                <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>Mkt Cap</th>
                 <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>mNAV</th>
                 <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>Total ETH</th>
                 <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, whiteSpace: 'nowrap' }}>Notes</th>
@@ -2804,6 +2806,8 @@ const PurchasesTab = ({ ethPrice, currentShares, currentStockPrice }: { ethPrice
                   <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--mint)' }}>{fmtNum(p.ethBought)}</td>
                   <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text)' }}>${fmtNum(p.ethPrice)}</td>
                   <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--gold)' }}>{fmtUSD(p.cashDeployed)}</td>
+                  <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text2)' }}>{p.prevDayClose !== null ? `$${p.prevDayClose.toFixed(2)}` : '—'}</td>
+                  <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text2)' }}>{p.prevDayMarketCap !== null ? `$${(p.prevDayMarketCap / 1e9).toFixed(1)}B` : '—'}</td>
                   <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: mnavColor(p.mnavAtTime) }}>{p.mnavAtTime !== null ? `${p.mnavAtTime.toFixed(2)}x` : '—'}</td>
                   <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text2)' }}>{(p.totalEthAfter / 1e6).toFixed(3)}M</td>
                   <td style={{ padding: '8px 12px', color: 'var(--text3)', fontSize: '12px', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.notes || '—'}</td>
@@ -2816,7 +2820,7 @@ const PurchasesTab = ({ ethPrice, currentShares, currentStockPrice }: { ethPrice
                 <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--mint)' }}>{fmtNum(totalEthBought)}</td>
                 <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text2)' }}>avg ${fmtNum(Math.round(weightedAvgEthPrice))}</td>
                 <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--gold)' }}>{fmtUSD(totalCashDeployed)}</td>
-                <td colSpan={3} />
+                <td colSpan={5} />
               </tr>
             </tfoot>
           </table>
@@ -2833,7 +2837,7 @@ const PurchasesTab = ({ ethPrice, currentShares, currentStockPrice }: { ethPrice
         <div className="sm-card-section">
           <div className="sm-text sm-fw-600 sm-bmnr-fs-16 sm-mb-6">NAV Multiple (mNAV) Calculation</div>
           <p className="sm-body-sm sm-text3 sm-lh-17 sm-m-0">
-            mNAV measures premium or discount to net asset value at time of each ETH purchase. Requires stock price and shares outstanding from the PR date.
+            mNAV measures premium or discount to net asset value at time of each ETH purchase. Uses previous trading day&apos;s closing price and interpolated shares outstanding.
           </p>
         </div>
         <div className="sm-card-body">
