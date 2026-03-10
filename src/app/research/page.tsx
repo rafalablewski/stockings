@@ -33,7 +33,7 @@ export default function StocksPage() {
           {researchStocks.map((stock) => (
             <Link
               key={stock.ticker}
-              href={`/stocks/${stock.ticker}`}
+              href={`/research/${stock.ticker}`}
               className="group relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300"
             >
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

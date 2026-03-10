@@ -788,7 +788,7 @@ export default function PressIntelligencePage() {
                       &#x2197; Full Release
                     </a>
                     <a
-                      href={`/stocks/${cfg.ticker}`}
+                      href={`/research/${cfg.ticker}`}
                       className="pi-card-link"
                       onClick={(e) => e.stopPropagation()}
                     >

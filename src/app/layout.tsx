@@ -75,7 +75,7 @@ const mobileNavItems = [
   },
   {
     label: 'Research',
-    children: researchStocks.map((s) => ({ label: `${s.ticker} — ${s.name}`, href: `/stocks/${s.ticker}` })),
+    children: researchStocks.map((s) => ({ label: `${s.ticker} — ${s.name}`, href: `/research/${s.ticker}` })),
   },
   {
     label: 'Intelligence',
@@ -180,7 +180,7 @@ function Navigation() {
                   {researchStocks.map((stock) => (
                     <Link
                       key={stock.ticker}
-                      href={`/stocks/${stock.ticker}`}
+                      href={`/research/${stock.ticker}`}
                       className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
                     >
                       <span className="text-[12px] font-mono font-medium text-white/80 w-10">

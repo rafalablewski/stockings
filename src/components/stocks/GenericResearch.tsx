@@ -19,7 +19,7 @@ export default function GenericResearch({ ticker }: { ticker: string }) {
       <div className="max-w-3xl mx-auto">
         {/* Back link */}
         <Link
-          href="/stocks"
+          href="/research"
           className="text-[12px] text-white/30 hover:text-white/60 transition-colors mb-8 inline-block"
         >
           &larr; Back to Research
@@ -97,7 +97,7 @@ export default function GenericResearch({ ticker }: { ticker: string }) {
               "Add upcoming catalysts and milestones to catalysts.ts",
               "Build out investment thesis in investment.ts (scorecard, drivers, risks)",
               "Add historical timeline events to timeline.ts",
-              "Create a custom analysis component at components/stocks/{TICKER}.tsx",
+              "Create a custom analysis component at components/research/{TICKER}.tsx",
             ].map((step, i) => (
               <li key={i} className="text-[12px] text-white/40 leading-relaxed">
                 {step.replace("{TICKER}", stock.ticker)}

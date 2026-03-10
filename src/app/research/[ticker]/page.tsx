@@ -41,7 +41,7 @@ function NotFoundState({ ticker }: { ticker: string }) {
           No analysis available for {ticker}.
         </p>
         <Link
-          href="/stocks"
+          href="/research"
           className="text-[13px] text-white/40 hover:text-white transition-colors"
         >
           ← Back to Research

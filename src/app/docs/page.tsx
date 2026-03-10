@@ -307,8 +307,8 @@ interface FileEntry {
 const projectStructure: FileEntry[] = [
   { path: "src/app/layout.tsx",                          type: "Layout",    description: "Root layout — Navigation, Footer, PinGate wrapper" },
   { path: "src/app/globals.css",                         type: "CSS",       description: "Global styles — Tailwind imports, design tokens, scrollbar, base reset" },
-  { path: "src/app/page.tsx",                            type: "Page",      description: "Landing page — stock list" },
-  { path: "src/app/stocks/[ticker]/page.tsx",            type: "Page",      description: "Dynamic stock route — loads ASTS/BMNR/CRCL components" },
+  { path: "src/app/page.tsx",                            type: "Page",      description: "Landing page — hedge fund homepage" },
+  { path: "src/app/research/[ticker]/page.tsx",          type: "Page",      description: "Dynamic research route — loads ASTS/BMNR/CRCL components" },
   { path: "src/app/hooks/page.tsx",                      type: "Page",      description: "Agent Hooks documentation page" },
   { path: "src/app/hooks/HookCard.tsx",                  type: "Component", description: "Hook card — View/Copy prompt, config display" },
   { path: "src/app/docs/page.tsx",                       type: "Page",      description: "This documentation page" },
@@ -351,9 +351,9 @@ const projectStructure: FileEntry[] = [
    ───────────────────────────────────────────────────────────────────────────── */
 
 const routingTree = [
-  { path: "/",                                     label: "Home",              file: "app/page.tsx",                          note: "Coverage grid, audits, workflows" },
-  { path: "/stocks",                               label: "Stock List",        file: "app/stocks/page.tsx",                   note: "Tracked companies index" },
-  { path: "/stocks/[ticker]",                      label: "Stock Detail",      file: "app/stocks/[ticker]/page.tsx",          note: "Loads ASTS / BMNR / CRCL component" },
+  { path: "/",                                     label: "Home",              file: "app/page.tsx",                          note: "Hedge fund landing page" },
+  { path: "/research",                             label: "Research",          file: "app/research/page.tsx",                 note: "Research coverage index" },
+  { path: "/research/[ticker]",                    label: "Stock Detail",      file: "app/research/[ticker]/page.tsx",        note: "Loads ASTS / BMNR / CRCL component" },
   { path: "/docs",                                 label: "Docs",             file: "app/docs/page.tsx",                     note: "This page — design system + architecture" },
   { path: "/hooks",                                label: "Hooks",            file: "app/hooks/page.tsx",                    note: "Agent hooks documentation" },
   { path: "/audit/comprehensive-code-audit",       label: "Code Audit",       file: "app/audit/comprehensive-code-audit/page.tsx", note: "35-category audit results" },

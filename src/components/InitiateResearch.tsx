@@ -44,7 +44,7 @@ export default function InitiateResearch() {
 
       // Navigate to the new research page after a brief delay
       setTimeout(() => {
-        router.push(`/stocks/${data.ticker}`);
+        router.push(`/research/${data.ticker}`);
         router.refresh();
       }, 1000);
     } catch {
