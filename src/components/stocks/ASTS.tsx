@@ -5048,7 +5048,7 @@ const QuarterlyMetricsPanel = () => {
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                         <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6 sm-ws-nowrap">{d.display}</div>
-                        <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div className="sm-mini-bar-fill" data-color="cyan" style={{ height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0 }} />
                         <div className="sm-micro-text sm-text-center sm-mt-6-ws">{d.label}</div>
                       </div>
                     ))}
@@ -6178,7 +6178,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                 {isExpanded && (
                   <div className="sm-pt-16 sm-mt-12 sm-border-t">
                     <div className="sm-text-13 sm-lh-16">
-                      {news.details.map((d, j) => <div key={j} className="sm-flex sm-gap-8 sm-items-start"><span style={{ color: 'var(--accent)', flexShrink: 0 }}>•</span>{d}</div>)}
+                      {news.details.map((d, j) => <div key={j} className="sm-flex sm-gap-8 sm-items-start"><span className="sm-accent sm-flex-shrink-0">•</span>{d}</div>)}
                     </div>
                     {news.thesisComparison && (
                       <div className="sm-comp-asts-box">

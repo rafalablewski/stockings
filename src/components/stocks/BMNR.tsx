@@ -2054,7 +2054,7 @@ const ScenariosTab = ({ calc, currentETH, currentShares, currentStockPrice, ethP
                 return (
                   <div key={s.id} className="sm-grid-row sm-bmnr-scenario-5col" style={selectedScenario === s.id ? { background: `${s.color}11` } : undefined}>
                     <span className="sm-bmnr-cell sm-flex sm-items-center">
-                      <span className="sm-bmnr-color-dot" style={{ background: s.color }}></span>
+                      <span className="sm-bmnr-color-dot" style={{ '--dynamic-color': s.color, background: 'var(--dynamic-color)' } as React.CSSProperties}></span>
                       {s.name}
                     </span>
                     <span className="sm-text-right sm-bmnr-cell">{s.prob}%</span>
@@ -4097,7 +4097,7 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
           <div className="sm-chart-legend">
             {[{ label: 'NAV', color: 'var(--violet)' }, { label: `Stock (${assumedMult.toFixed(1)}x)`, color: 'var(--mint)' }].map(l => (
               <span key={l.label} className="sm-chart-legend-item">
-                <span className="sm-legend-swatch" style={{ background: l.color }} />{l.label}
+                <span className="sm-legend-swatch" style={{ '--dynamic-color': l.color, background: 'var(--dynamic-color)' } as React.CSSProperties} />{l.label}
               </span>
             ))}
           </div>
@@ -5363,7 +5363,7 @@ const BMNRQuarterlyMetricsPanel = () => {
         <div className="sm-overflow-x sm-scroll-hint">
           <div style={{ minWidth: `${130 + quarterlyData.length * 90}px` }}>
             {/* Header */}
-            <div className="sm-fin-table-header" style={{ gridTemplateColumns: `minmax(130px, 1fr) ${quarterlyData.map(() => '90px').join(' ')}` }}>
+            <div className="sm-fin-table-header" style={{ '--grid-cols': `minmax(130px, 1fr) ${quarterlyData.map(() => '90px').join(' ')}`, gridTemplateColumns: 'var(--grid-cols)' } as React.CSSProperties}>
               <span className="sm-fin-th" data-sticky="">Metric</span>
               {quarterlyData.map((q, idx) => (
                 <span key={q.quarter} className="sm-fin-th sm-text-right" data-latest={idx === 0 ? '' : undefined}>
@@ -5373,7 +5373,7 @@ const BMNRQuarterlyMetricsPanel = () => {
             </div>
             {/* Rows */}
             {metrics.map((metric, mi) => (
-              <div key={metric.label} className="sm-fin-table-row" style={{ gridTemplateColumns: `minmax(130px, 1fr) ${quarterlyData.map(() => '90px').join(' ')}`, borderBottom: mi < metrics.length - 1 ? undefined : 'none' }}>
+              <div key={metric.label} className="sm-fin-table-row" style={{ '--grid-cols': `minmax(130px, 1fr) ${quarterlyData.map(() => '90px').join(' ')}`, gridTemplateColumns: 'var(--grid-cols)', borderBottom: mi < metrics.length - 1 ? undefined : 'none' } as React.CSSProperties}>
                 <span className="sm-fin-td-label">
                   {metric.label}
                 </span>
@@ -5386,7 +5386,7 @@ const BMNRQuarterlyMetricsPanel = () => {
                       key={q.quarter}
                       className="sm-fin-td"
                       data-latest={isLatestQuarter ? '' : undefined}
-                      style={cellColor ? { color: cellColor } : undefined}
+                      style={cellColor ? { '--dynamic-color': cellColor, color: 'var(--dynamic-color)' } as React.CSSProperties : undefined}
                     >
                       {metric.format(val as never, q as never)}
                     </span>
@@ -6183,7 +6183,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
         </div>
         <div className="sm-p0">
           {protocolRoadmap.map((item, i) => (
-            <div key={i} className="sm-bmnr-roadmap-item" style={{ '--impact-color': item.impact === 'Very High' ? 'var(--violet)' : item.impact === 'High' ? 'var(--mint)' : 'var(--sky)', borderBottom: i < protocolRoadmap.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' } as React.CSSProperties}>
+            <div key={i} className="sm-bmnr-roadmap-item sm-bmnr-roadmap-sep" style={{ '--impact-color': item.impact === 'Very High' ? 'var(--violet)' : item.impact === 'High' ? 'var(--mint)' : 'var(--sky)' } as React.CSSProperties}>
               <div className="sm-flex-between">
                 <span className="sm-text-13t sm-fw-600">{item.name}</span>
                 <div className="sm-flex sm-gap-6">
@@ -6283,7 +6283,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
                 role="button"
                 tabIndex={0}
                 aria-label={`${news.title} — ${news.impact} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-                className="sm-bmnr-news-row" style={{ '--news-accent': accentColor, borderBottom: i < filteredNews.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' } as React.CSSProperties}
+                className="sm-bmnr-news-row sm-bmnr-news-row-sep" style={{ '--news-accent': accentColor } as React.CSSProperties}
                 onClick={() => {
                   const next = new Set(expandedNews);
                   if (isExpanded) next.delete(i);
@@ -6324,7 +6324,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
                     )}
 
                     {news.bmnrImplication && (
-                      <div className="sm-bmnr-insight-card" style={{ '--insight-color': 'var(--mint)', marginTop: 8 } as React.CSSProperties}>
+                      <div className="sm-bmnr-insight-card sm-bmnr-insight-mt8" style={{ '--insight-color': 'var(--mint)' } as React.CSSProperties}>
                         <div className="sm-micro-label sm-mint sm-mb-4 sm-ls-1">BMNR Implication</div>
                         <div className="sm-subtle sm-text2 sm-lh-15">{news.bmnrImplication}</div>
                       </div>
@@ -6690,8 +6690,8 @@ const TimelineTab = () => {
               role="button"
               tabIndex={0}
               aria-label={`${entry.title} — ${entry.impact} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-              className="sm-bmnr-news-row"
-              style={{ '--news-accent': accentColor, borderBottom: i < filteredEntries.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' } as React.CSSProperties}
+              className="sm-bmnr-news-row sm-bmnr-news-row-sep"
+              style={{ '--news-accent': accentColor } as React.CSSProperties}
               onClick={() => {
                 const next = new Set(expanded);
                 if (isExpanded) next.delete(i);
@@ -6731,18 +6731,18 @@ const TimelineTab = () => {
                         ))}
                       </div>
                       {entry.changes.map((c, cidx) => (
-                        <div key={cidx} className="sm-bmnr-changes-row" style={{ borderBottom: cidx < entry.changes.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+                        <div key={cidx} className="sm-bmnr-changes-row sm-bmnr-changes-sep">
                           <span className="sm-bmnr-changes-cell">{c.metric}</span>
                           <span className="sm-mono-sm sm-text-right sm-bmnr-changes-cell sm-fs-11">{c.previous}</span>
                           <span className="sm-mono-sm sm-text-right sm-bmnr-changes-cell sm-fs-11">{c.new}</span>
-                          <span className="sm-bmnr-changes-cell" style={{ fontFamily: "'Space Mono', monospace", fontSize: 11, textAlign: 'right', color: c.change.startsWith('+') ? 'var(--mint)' : c.change.startsWith('-') ? 'var(--coral)' : undefined }}>{c.change}</span>
+                          <span className="sm-bmnr-changes-cell sm-bmnr-change-val" data-dir={c.change.startsWith('+') ? 'up' : c.change.startsWith('-') ? 'down' : undefined}>{c.change}</span>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   {entry.notes && (
-                    <div className="sm-bmnr-insight-card" style={{ '--insight-color': 'var(--violet)', marginTop: 8 } as React.CSSProperties}>
+                    <div className="sm-bmnr-insight-card sm-bmnr-insight-mt8" style={{ '--insight-color': 'var(--violet)' } as React.CSSProperties}>
                       <div className="sm-micro-label sm-violet sm-mb-4 sm-ls-1">Notes</div>
                       <div className="sm-subtle sm-text2 sm-lh-15">{entry.notes}</div>
                     </div>

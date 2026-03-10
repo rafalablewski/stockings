@@ -12673,6 +12673,9 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-mini-bar-fill[data-color="violet"] { background: var(--violet); }
 .sm-mini-bar-fill[data-color="coral"] { background: var(--coral); }
 .sm-mini-bar-fill[data-color="sky"] { background: var(--sky); }
+.sm-mini-bar-fill[data-color="cyan"] { background: var(--cyan); }
+.sm-flex-shrink-0 { flex-shrink: 0; }
+.sm-m-6-0-4 { margin: 6px 0 4px; }
 
 /* ── Convertible note total row ──────────────────────────────────── */
 .sm-conv-total-row {
