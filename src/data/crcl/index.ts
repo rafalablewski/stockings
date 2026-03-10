@@ -98,6 +98,21 @@ export {
   USDC_MARKET_SHARE,
 } from './usdc';
 
+// Analyst Coverage
+export { CRCL_ANALYST_COVERAGE } from './analyst-coverage';
+
+// Competitor Intelligence
+export {
+  CRCL_COMPETITOR_PROFILES,
+  CRCL_COMPETITOR_NEWS,
+} from './competitor-news';
+
+// Investment
+export {
+  CRCL_INVESTMENT_CURRENT,
+  CRCL_INVESTMENT_ARCHIVE,
+} from './investment';
+
 // Re-export types for convenience
 export type {
   DataMetadata,
