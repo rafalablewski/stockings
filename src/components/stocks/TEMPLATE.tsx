@@ -1,0 +1,612 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * ╔═══════════════════════════════════════════════════════════════════════════════╗
+ * ║                     STOCK MODEL TEMPLATE — NEW TICKER                        ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║                                                                               ║
+ * ║  HOW TO USE THIS TEMPLATE:                                                   ║
+ * ║                                                                               ║
+ * ║  1. Copy this file to {TICKER}.tsx (e.g., PLTR.tsx)                          ║
+ * ║  2. Find-and-replace all placeholders:                                       ║
+ * ║     • {TICKER}       → PLTR                                                  ║
+ * ║     • {ticker}       → pltr                                                  ║
+ * ║     • {COMPANY}      → Palantir Technologies                                 ║
+ * ║     • {ACCENT}       → cyan | violet | mint | gold | coral | sky             ║
+ * ║     • {SECTOR}       → Technology                                             ║
+ * ║     • {INDUSTRY}     → Enterprise Software                                   ║
+ * ║     • {EXCHANGE}     → NASDAQ | NYSE                                         ║
+ * ║  3. Create data directory: /src/data/{ticker}/                               ║
+ * ║  4. Implement stock-specific tabs                                             ║
+ * ║  5. Remove this header block                                                  ║
+ * ║                                                                               ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║  UNIFIED MODEL MAINTENANCE PROTOCOL (ASTS/BMNR/CRCL/{TICKER})               ║
+ * ╠═══════════════════════════════════════════════════════════════════════════════╣
+ * ║  The structure, sections, update process, archiving rules, and level of      ║
+ * ║  detail MUST remain unified across all models at all times.                  ║
+ * ╚═══════════════════════════════════════════════════════════════════════════════╝
+ */
+
+import { useState, useMemo } from 'react';
+import {
+  // UI Primitives
+  Stat, Card, Row, Input, Panel, Guide, CFANotes,
+  // Stock Header & Navigation
+  StockHeader, buildHudMarkers, StockNavigation, TabPanel,
+  // Update Indicators
+  UpdateIndicatorContext, UpdateIndicators, UpdateLegend,
+  // Shared Tabs
+  SharedInvestmentTab,
+  SharedFinancialsTab,
+  SharedTimelineTab,
+  SharedWallStreetTab,
+  SharedAIAgentsTab,
+  SharedEdgarTab,
+  SharedSourcesTab,
+  SharedSecFilingsSection,
+  // Live Price
+  useLiveStockPrice,
+  // Error Boundary & Disclaimer
+  FinancialModelErrorBoundary,
+  DisclaimerBanner,
+  // Types
+  type HudMarker,
+  type MarketData,
+} from '../shared';
+import type { Competitor, SourceGroup } from '../shared/stockModelTypes';
+import { useHashTab } from '@/hooks/useHashTab';
+
+// ============================================================================
+// DATA IMPORTS — Create these files in /src/data/{ticker}/
+// ============================================================================
+import {
+  DEFAULTS,
+  DATA_FRESHNESS,
+  // QUARTERLY_DATA,
+} from '@/data/{ticker}';
+import { {TICKER}_INVESTMENT_CURRENT, {TICKER}_INVESTMENT_ARCHIVE } from '@/data/{ticker}/investment';
+import { {TICKER}_ANALYST_COVERAGE } from '@/data/{ticker}/analyst-coverage';
+import { {TICKER}_SEC_FILINGS, {TICKER}_SEC_META, {TICKER}_SEC_TYPE_COLORS, {TICKER}_FILING_CROSS_REFS } from '@/data/{ticker}/sec-filings';
+import { {TICKER}_QUARTERLY_DATA } from '@/data/{ticker}/quarterly-metrics';
+import { {TICKER}_TIMELINE_EVENTS } from '@/data/{ticker}/timeline';
+
+// CSS — shared across all stock models
+import './stock-model-styles.css';
+
+// ============================================================================
+// NAMED CONSTANTS — Extract magic numbers with explanations
+// ============================================================================
+
+/** Discount rate for DCF (adjust for company risk profile) */
+const DISCOUNT_RATE = 0.12;
+
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
+
+/** Safely clamp a value between min and max bounds */
+const clamp = (value: number, min: number, max: number): number =>
+  Math.max(min, Math.min(max, value));
+
+/** Safe division that returns fallback instead of Infinity/NaN */
+const safeDivide = (numerator: number, denominator: number, fallback: number = 0): number =>
+  denominator !== 0 && isFinite(numerator / denominator) ? numerator / denominator : fallback;
+
+/** Ensure a value is a finite number, otherwise return fallback */
+const safeNumber = (value: number, fallback: number = 0): number =>
+  isFinite(value) ? value : fallback;
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
+const {TICKER}Analysis = () => {
+  // ═══ CORE MODEL STATE ═══
+  // These are the user-adjustable parameters that drive all calculations.
+  // Defaults come from /src/data/{ticker}/company.ts
+  const [currentShares, setCurrentShares] = useState(DEFAULTS.currentShares);
+  const [currentStockPrice, setCurrentStockPrice] = useState(DEFAULTS.currentStockPrice);
+  const [cashOnHand, setCashOnHand] = useState(DEFAULTS.cashOnHand);
+  const [quarterlyBurn, setQuarterlyBurn] = useState(DEFAULTS.quarterlyBurn);
+  const [totalDebt, setTotalDebt] = useState(DEFAULTS.totalDebt);
+
+  // ═══ STOCK-SPECIFIC STATE ═══
+  // Add parameters unique to this company's model:
+  // const [customMetric, setCustomMetric] = useState(DEFAULTS.customMetric);
+
+  // ═══ DCF MODEL ASSUMPTIONS ═══
+  const [terminalMargin, setTerminalMargin] = useState(30);
+  const [terminalCapex, setTerminalCapex] = useState(8);
+  const [dilutionRate, setDilutionRate] = useState(3);
+  const [discountRate, setDiscountRate] = useState(12);
+  const [terminalGrowth, setTerminalGrowth] = useState(3);
+  const [regulatoryRisk, setRegulatoryRisk] = useState(5);
+  const [selectedScenario, setSelectedScenario] = useState<'bull' | 'base' | 'bear' | 'custom'>('base');
+
+  // ═══ UI STATE ═══
+  const [showIndicators, setShowIndicators] = useState(true);
+
+  // ═══ LIVE PRICE INTEGRATION ═══
+  const { isLoading: priceLoading, marketData, lastUpdated: priceLastUpdated, refresh: handleRefreshAll } = useLiveStockPrice('{TICKER}');
+  const changePct = marketData?.changePercent ?? 0;
+  const hudMarkers = useMemo(() => buildHudMarkers(marketData as MarketData), [marketData]);
+
+  // ═══ DERIVED CALCULATIONS (memoized) ═══
+  const calc = useMemo(() => {
+    const marketCap = currentStockPrice * currentShares;
+    const enterpriseValue = marketCap + totalDebt - cashOnHand;
+    const cashRunwayQuarters = quarterlyBurn > 0 ? cashOnHand / quarterlyBurn : 0;
+
+    // Add stock-specific derived values here:
+    // const customDerived = ...;
+
+    const safe = (v: number) => (isFinite(v) ? v : 0);
+    return {
+      marketCap: safe(marketCap),
+      enterpriseValue: safe(enterpriseValue),
+      cashRunwayQuarters: safe(cashRunwayQuarters),
+      // customDerived: safe(customDerived),
+    };
+  }, [currentShares, currentStockPrice, cashOnHand, quarterlyBurn, totalDebt]);
+
+  // ═══ COMPETITORS & SOURCES (for SharedSourcesTab) ═══
+  const competitors: Competitor[] = [
+    { name: 'Competitor 1', url: 'https://example.com' },
+    // Add competitors...
+  ];
+
+  const researchSources: SourceGroup[] = [
+    { category: 'Company / IR', sources: [
+      { name: '{COMPANY} Investor Relations', url: 'https://example.com/ir' },
+      { name: 'SEC EDGAR ({TICKER} Filings)', url: 'https://www.sec.gov/cgi-bin/browse-edgar?company={ticker}&CIK=&type=&dateb=&owner=include&count=40&action=getcompany' },
+    ]},
+    { category: 'Industry / Competitors', sources: [
+      // Add research sources...
+    ]},
+  ];
+
+  // ═══ TAB CONFIGURATION ═══
+  // Types: 'tracking' = actual company data, 'projection' = user model inputs
+  // Order: Overview → Stock-specific → Model → Monte Carlo → Comps → Tracking → AI
+  const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
+    { id: 'overview', label: 'Overview', type: 'tracking' },
+
+    // ── Stock-specific projection tabs (grouped under "{TICKER} Analysis") ──
+    // { id: 'custom-tab-1', label: 'Tab Name', type: 'projection', group: '{TICKER} Analysis' },
+    // { id: 'custom-tab-2', label: 'Tab Name', type: 'projection', group: '{TICKER} Analysis' },
+
+    // ── Unified valuation model ──
+    { id: 'model', label: 'Model', type: 'projection' },
+    { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
+    { id: 'comps', label: 'Comps', type: 'projection' },
+
+    // ── Tracking tabs ──
+    { id: 'capital', label: 'Capital', type: 'tracking' },
+    { id: 'financials', label: 'Financials', type: 'tracking' },
+    { id: 'timeline', label: 'Timeline', type: 'tracking' },
+    { id: 'investment', label: 'Investment', type: 'tracking' },
+    { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
+
+    // ── AI hub ──
+    { id: 'ai-agents', label: 'AI Agents', type: 'tracking', group: 'AI' },
+    { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
+    { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
+  ];
+
+  const [activeTab, setActiveTab] = useHashTab(tabs.map(t => t.id));
+
+  // ═══ RENDER ═══
+  return (
+    <UpdateIndicatorContext.Provider value={{ showIndicators, setShowIndicators }}>
+      <div className="stock-model-app" data-accent="{ACCENT}">
+        {/* ── Legal Disclaimer ── */}
+        <DisclaimerBanner />
+
+        {/* ── Header with Live Price & HUD Markers ── */}
+        <StockHeader
+          exchange="{EXCHANGE}"
+          ticker="{TICKER}"
+          companyName="{COMPANY}"
+          metadata={[
+            { label: 'SECTOR', value: '{SECTOR}' },
+            { label: 'INDUSTRY', value: '{INDUSTRY}' },
+            { label: 'DATA', value: DATA_FRESHNESS.dataAsOf },
+          ]}
+          price={currentStockPrice}
+          changePct={changePct}
+          onRefresh={handleRefreshAll}
+          isRefreshing={priceLoading}
+          lastUpdated={priceLastUpdated}
+          badge={<div className="price-badge up">📊 Custom Badge</div>}
+          hudMarkers={hudMarkers}
+        >
+          {/* Key stats shown in the header bar */}
+          <Stat label="Market Cap" value={`$${(calc.marketCap / 1000).toFixed(1)}B`} updateSource="MARKET" />
+          <Stat label="Enterprise Value" value={`$${(calc.enterpriseValue / 1000).toFixed(1)}B`} updateSource="MARKET" />
+          <Stat label="Cash" value={`$${cashOnHand}M`} color="mint" updateSource="SEC" />
+          <Stat label="Runway" value={`${calc.cashRunwayQuarters.toFixed(1)}Q`} color="mint" updateSource="SEC" />
+          {/* Add stock-specific header stats */}
+        </StockHeader>
+
+        {/* ── Tab Navigation ── */}
+        <StockNavigation tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} stockGroupName="{TICKER} Analysis" />
+
+        {/* ── Main Content ── */}
+        <main className="main">
+          <UpdateLegend />
+
+          {/* ── Overview Tab ── */}
+          {activeTab === 'overview' && (
+            <TabPanel id="overview">
+              <OverviewTab calc={calc} currentStockPrice={currentStockPrice} />
+            </TabPanel>
+          )}
+
+          {/* ── Stock-Specific Tabs ── */}
+          {/* {activeTab === 'custom-tab-1' && <TabPanel id="custom-tab-1"><CustomTab1 /></TabPanel>} */}
+
+          {/* ── Unified Model Tab ── */}
+          {activeTab === 'model' && (
+            <TabPanel id="model">
+              <ModelTab
+                currentShares={currentShares} currentStockPrice={currentStockPrice}
+                cashOnHand={cashOnHand} totalDebt={totalDebt}
+                discountRate={discountRate} setDiscountRate={setDiscountRate}
+                terminalGrowth={terminalGrowth} setTerminalGrowth={setTerminalGrowth}
+                terminalMargin={terminalMargin} setTerminalMargin={setTerminalMargin}
+                selectedScenario={selectedScenario} setSelectedScenario={setSelectedScenario}
+              />
+            </TabPanel>
+          )}
+
+          {/* ── Monte Carlo Tab ── */}
+          {activeTab === 'monte-carlo' && (
+            <TabPanel id="monte-carlo">
+              <MonteCarloTab currentShares={currentShares} currentStockPrice={currentStockPrice} totalDebt={totalDebt} cashOnHand={cashOnHand} />
+            </TabPanel>
+          )}
+
+          {/* ── Comps Tab ── */}
+          {activeTab === 'comps' && (
+            <TabPanel id="comps">
+              <CompsTab calc={calc} currentStockPrice={currentStockPrice} />
+            </TabPanel>
+          )}
+
+          {/* ── Capital Structure Tab ── */}
+          {activeTab === 'capital' && (
+            <TabPanel id="capital">
+              <CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} />
+            </TabPanel>
+          )}
+
+          {/* ── Financials Tab (shared) ── */}
+          {activeTab === 'financials' && <TabPanel id="financials"><FinancialsTab /></TabPanel>}
+
+          {/* ── Timeline Tab (shared) ── */}
+          {activeTab === 'timeline' && <TabPanel id="timeline"><TimelineTab /></TabPanel>}
+
+          {/* ── Investment Tab (shared) ── */}
+          {activeTab === 'investment' && <TabPanel id="investment"><InvestmentTab /></TabPanel>}
+
+          {/* ── Wall Street Tab (shared) ── */}
+          {activeTab === 'wall-street' && <TabPanel id="wall-street"><WallStreetTab /></TabPanel>}
+
+          {/* ── AI Agents Tab (shared) ── */}
+          {activeTab === 'ai-agents' && <TabPanel id="ai-agents"><SharedAIAgentsTab ticker="{TICKER}" /></TabPanel>}
+
+          {/* ── Sources Tab (shared) ── */}
+          {activeTab === 'sources' && (
+            <TabPanel id="sources">
+              <SharedSourcesTab
+                ticker="{TICKER}"
+                companyName="{COMPANY}"
+                researchSources={researchSources}
+                competitorLabel="Competitors"
+                competitors={competitors}
+              />
+            </TabPanel>
+          )}
+
+          {/* ── EDGAR Tab (shared) ── */}
+          {activeTab === 'edgar' && (
+            <TabPanel id="edgar">
+              <SharedEdgarTab
+                ticker="{TICKER}"
+                companyName="{COMPANY}"
+                localFilings={{TICKER}_SEC_FILINGS}
+                cik={{TICKER}_SEC_META.cik}
+                typeColors={{TICKER}_SEC_TYPE_COLORS}
+                crossRefIndex={{TICKER}_FILING_CROSS_REFS}
+              />
+            </TabPanel>
+          )}
+        </main>
+      </div>
+    </UpdateIndicatorContext.Provider>
+  );
+};
+
+// ============================================================================
+// STOCK-SPECIFIC TAB COMPONENTS
+// ============================================================================
+// Each tab is a separate component. Follow the pattern below.
+
+/**
+ * OVERVIEW TAB — Dashboard with key metrics and parameter cards.
+ *
+ * Pattern:
+ *   1. Hero section with section label + title + description
+ *   2. KPI grid (sm-model-grid with --cols)
+ *   3. Parameter cards for user-adjustable inputs
+ *   4. Data tables/charts
+ *   5. CFA Notes at the bottom
+ */
+const OverviewTab = ({ calc, currentStockPrice }: { calc: any; currentStockPrice: number }) => {
+  return (
+    <div className="sm-flex-col sm-flex-col-gap-16">
+      {/* Hero */}
+      <div className="sm-tab-hero">
+        <div className="sm-section-label">
+          Dashboard Overview
+          <UpdateIndicators sources="MARKET" />
+        </div>
+        <h2>{'{COMPANY}'} Analysis<span className="sm-accent">.</span></h2>
+        <p className="sm-hero-desc">
+          Comprehensive financial model with adjustable parameters.
+          Modify inputs below to see how they affect valuation.
+        </p>
+      </div>
+
+      {/* KPI Grid */}
+      <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
+        {[
+          { label: 'Market Cap', value: `$${(calc.marketCap / 1000).toFixed(1)}B`, color: 'var(--accent)', sub: 'Current valuation' },
+          { label: 'Enterprise Value', value: `$${(calc.enterpriseValue / 1000).toFixed(1)}B`, color: 'var(--accent)', sub: 'Incl. debt & cash' },
+          // Add more KPIs...
+        ].map(kpi => (
+          <div key={kpi.label} className="sm-kpi-cell">
+            <div className="sm-micro-text">{kpi.label}</div>
+            <div className="sm-mono-xl-kpi" style={{ '--kpi-color': kpi.color } as React.CSSProperties}>{kpi.value}</div>
+            <div className="sm-text-11">{kpi.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Parameter Cards — See OverviewParameterCard in ASTS.tsx for the full implementation */}
+      {/* <OverviewParameterCard title="Revenue ($M)" explanation="..." options={[100,200,300]} value={revenue} onChange={setRevenue} format="$" /> */}
+
+      {/* Data Section */}
+      <div className="sm-card">
+        <div className="sm-card-header">
+          <span className="sm-section-label">Key Metrics <UpdateIndicators sources="SEC" /></span>
+        </div>
+        <div className="sm-card-body">
+          {/* Table/chart content */}
+          <p className="sm-text2">Implement key metrics table here.</p>
+        </div>
+      </div>
+
+      {/* CFA Notes */}
+      <CFANotes title="CFA Level III — Company Analysis" items={[
+        { term: 'Revenue Model', def: 'How the company generates revenue and key drivers.' },
+        { term: 'Competitive Moat', def: 'Sources of sustainable competitive advantage.' },
+      ]} />
+    </div>
+  );
+};
+
+/**
+ * MODEL TAB — Unified valuation (Scenarios + DCF + Sensitivity).
+ * See ASTS.tsx ModelTab for full implementation reference.
+ */
+const ModelTab = (props: any) => {
+  // TODO: Implement scenario presets, DCF, sensitivity analysis
+  return (
+    <div className="sm-flex-col sm-flex-col-gap-16">
+      <div className="sm-tab-hero">
+        <div className="sm-section-label">Valuation Model <UpdateIndicators sources="PR" /></div>
+        <h2>Fair Value Model<span className="sm-accent">.</span></h2>
+      </div>
+      <p className="sm-text2">Implement DCF, scenario analysis, and sensitivity tables.</p>
+    </div>
+  );
+};
+
+/**
+ * MONTE CARLO TAB — Probabilistic simulation.
+ * See ASTS.tsx MonteCarloTab for full implementation reference.
+ */
+const MonteCarloTab = (props: any) => {
+  return (
+    <div className="sm-flex-col sm-flex-col-gap-16">
+      <div className="sm-tab-hero">
+        <div className="sm-section-label">Monte Carlo Simulation</div>
+        <h2>Probabilistic Fair Value<span className="sm-accent">.</span></h2>
+      </div>
+      <p className="sm-text2">Implement Monte Carlo simulation with risk metrics.</p>
+    </div>
+  );
+};
+
+/**
+ * COMPS TAB — Trading comparables and multiples.
+ * See ASTS.tsx CompsTab for full implementation reference.
+ */
+const CompsTab = ({ calc, currentStockPrice }: any) => {
+  return (
+    <div className="sm-flex-col sm-flex-col-gap-16">
+      <div className="sm-tab-hero">
+        <div className="sm-section-label">Comparable Analysis</div>
+        <h2>Trading Comps<span className="sm-accent">.</span></h2>
+      </div>
+      <p className="sm-text2">Implement peer comparison tables and relative valuation.</p>
+    </div>
+  );
+};
+
+/**
+ * CAPITAL TAB — Share structure, dilution, offerings.
+ * See ASTS.tsx CapitalTab for full implementation reference.
+ */
+const CapitalTab = ({ currentShares, currentStockPrice }: any) => {
+  return (
+    <div className="sm-flex-col sm-flex-col-gap-16">
+      <div className="sm-tab-hero">
+        <div className="sm-section-label">Capital Structure <UpdateIndicators sources="SEC" /></div>
+        <h2>Shares & Dilution<span className="sm-accent">.</span></h2>
+      </div>
+      <p className="sm-text2">Implement share classes, convertible notes, offering history, dilution scenarios.</p>
+    </div>
+  );
+};
+
+// ============================================================================
+// SHARED TAB WRAPPERS
+// These use shared components with stock-specific data.
+// ============================================================================
+
+/**
+ * INVESTMENT TAB — Uses SharedInvestmentTab with stock-specific render props.
+ */
+const InvestmentTab = () => (
+  <SharedInvestmentTab
+    current={{TICKER}_INVESTMENT_CURRENT}
+    archive={{TICKER}_INVESTMENT_ARCHIVE}
+    ticker="{TICKER}"
+    // Optional render props for stock-specific sections:
+    // renderHeaderMetrics={() => <div>Custom KPI columns</div>}
+    // renderAfterScorecard={() => <div>Custom section after scorecard</div>}
+    // renderStrategicAssessment={() => <div>Custom strategic Q&A</div>}
+    cfaNotes={[
+      { term: 'Investment Thesis', def: 'Core bull case for the stock.' },
+    ]}
+  />
+);
+
+/**
+ * WALL STREET TAB — Uses SharedWallStreetTab with analyst coverage data.
+ */
+const WallStreetTab = () => (
+  <SharedWallStreetTab coverage={{TICKER}_ANALYST_COVERAGE} ticker="{TICKER}" />
+);
+
+/**
+ * TIMELINE TAB — Uses SharedTimelineTab wrapper.
+ * Render press releases, SEC filings, and event timeline inside.
+ */
+const TimelineTab = () => (
+  <SharedTimelineTab
+    sectionLabel="Company Events"
+    title="Timeline & Milestones"
+    description="Chronological record of key events, SEC filings, and company milestones."
+  >
+    {/* Timeline content: press releases, SEC filings tracker, event log */}
+    <SharedSecFilingsSection
+      ticker="{TICKER}"
+      filings={{TICKER}_SEC_FILINGS}
+      cik={{TICKER}_SEC_META.cik}
+    />
+    <CFANotes title="CFA Level III — SEC Filings" items={[
+      { term: '10-K / 10-Q', def: 'Annual (10-K) and quarterly (10-Q) reports.' },
+      { term: '8-K', def: 'Current report for material events.' },
+    ]} />
+  </SharedTimelineTab>
+);
+
+/**
+ * FINANCIALS TAB — Uses SharedFinancialsTab with quarterly data.
+ */
+const FinancialsTab = () => (
+  <SharedFinancialsTab
+    ticker="{TICKER}"
+    sectionLabel="Quarterly Data"
+    title="Financials"
+    description="Quarterly and annual financial metrics with trend analysis."
+    secFilingConfig={{
+      cik: {TICKER}_SEC_META.cik,
+      ticker: '{TICKER}',
+      firstFiling: { date: '20XX-XX-XX', description: 'First filing' },
+      latestEvent: { date: '20XX-XX-XX', description: 'Latest event' },
+      lastPR: { date: '20XX-XX-XX', title: 'Latest press release' },
+      filings: {
+        '10-K': { date: '20XX-XX-XX', description: 'Annual report', color: 'cyan' },
+        '10-Q': { date: '20XX-XX-XX', description: 'Quarterly report', color: 'sky' },
+      },
+    }}
+    milestones={[
+      { date: '2025-01-01', event: 'Example milestone' },
+    ]}
+    cfaNotes={[
+      { term: 'Revenue Recognition', def: 'How the company recognizes revenue.' },
+    ]}
+    cfaNotesTitle="CFA Level III — Financial Analysis"
+  >
+    {/* Quarterly metrics panel — tables and charts */}
+    <QuarterlyMetricsPanel />
+  </SharedFinancialsTab>
+);
+
+/**
+ * QUARTERLY METRICS PANEL — Financial data tables and mini-charts.
+ * See ASTS.tsx QuarterlyMetricsPanel for full implementation reference.
+ */
+const QuarterlyMetricsPanel = () => {
+  return (
+    <div className="sm-card">
+      <p className="sm-text2 sm-p-24">Implement quarterly metrics tables and charts here.</p>
+    </div>
+  );
+};
+
+// ============================================================================
+// DATA DIRECTORY TEMPLATE — /src/data/{ticker}/
+// ============================================================================
+//
+// Create these files:
+//
+// /src/data/{ticker}/
+// ├── index.ts              ← Central exports (see /src/data/asts/index.ts)
+// ├── company.ts            ← DEFAULTS, DATA_FRESHNESS, COMPANY_INFO
+// │                           export { DEFAULTS, DATA_FRESHNESS, ... }
+// │                           DEFAULTS = { currentShares, currentStockPrice,
+// │                                        cashOnHand, quarterlyBurn, totalDebt }
+// │
+// ├── investment.ts         ← {TICKER}_INVESTMENT_CURRENT, {TICKER}_INVESTMENT_ARCHIVE
+// │                           Current: { date, source, verdict, verdictColor, tagline,
+// │                                      scorecard[], executiveSummary, growthDrivers[],
+// │                                      moatSources[], moatThreats[], risks[],
+// │                                      perspectives: { cfa, hedgeFund, cio },
+// │                                      positionSizing: { aggressive, growth, balanced, conservative } }
+// │                           Archive: Array of previous versions (never delete)
+// │
+// ├── analyst-coverage.ts   ← {TICKER}_ANALYST_COVERAGE
+// │                           Array<{ firm, reports: [{ date, analyst, action,
+// │                                    rating, priceTarget, thesis, assumptions[],
+// │                                    catalysts[], risks[] }] }>
+// │
+// ├── sec-filings.ts        ← {TICKER}_SEC_FILINGS, {TICKER}_SEC_META,
+// │                           {TICKER}_SEC_TYPE_COLORS, {TICKER}_FILING_CROSS_REFS
+// │
+// ├── quarterly-metrics.ts  ← {TICKER}_QUARTERLY_DATA
+// │                           Record<string, { revenue, netIncome, eps, ... }>
+// │
+// ├── timeline.ts           ← {TICKER}_TIMELINE_EVENTS
+// │                           Array<{ date, category, event, impact, source }>
+// │
+// └── capital.ts            ← SHARE_CLASSES, EQUITY_OFFERINGS, CONVERTIBLE_NOTES,
+//                             DILUTION_SCENARIOS, LIQUIDITY_POSITION, etc.
+//
+// ============================================================================
+
+// ============================================================================
+// EXPORT — Wrap with error boundary
+// ============================================================================
+
+const {TICKER}WithErrorBoundary = () => (
+  <FinancialModelErrorBoundary>
+    <{TICKER}Analysis />
+  </FinancialModelErrorBoundary>
+);
+
+export default {TICKER}WithErrorBoundary;
