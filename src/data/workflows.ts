@@ -276,6 +276,7 @@ SUMMARY OUTPUT:
    - Capital tab: [list updates]
    - Catalysts tab: [list timeline changes]
    - Ethereum tab: [list updates]
+   - Purchase History tab: [new purchase entry — ethBought, ethPrice, mNAV]
    - Investment tab: [scorecard rating changes, if any]
    - Wall Street tab: [new analyst commentary]
 2. Thesis Impact Assessment
@@ -1984,6 +1985,7 @@ PER-ITEM CHECKLIST (output for each proposed Add/Update):
   [ ] TREASURY/STAKING OWNERSHIP: If about BMNR's own ETH/BTC holdings, ATM purchases, staking deployments, or MAVAN → classified as BMNR, not Ethereum.
   [ ] ADD vs UPDATE: If "Add new" — confirmed no existing entry covers this. If "Update existing" — identified the specific entry being updated.
   [ ] EXISTING FIELDS: Other tabs' existing entries (e.g., ETH holdings, staking ratio, treasury value, Ethereum ecosystem metrics) are updated to reflect new info — no stale fields left behind.
+  [ ] PURCHASE HISTORY: If this is a Holdings PR (ETH acquisition), purchase-history.ts has a new entry at top with ethBought, ethPrice, totalEthAfter, cashDeployed, mnavAtTime. Search: [PR_CHECKLIST_PURCHASE_HISTORY]
 
 GLOBAL CHECKLIST (output once after all items):
   [ ] No item appears in more than one tab.
