@@ -37,6 +37,11 @@ export const FILING_TEMPLATES: Record<string, FilingTemplate> = {
         crossRefEntry: `'8-K|YYYY-MM-DD': [\n  { source: 'timeline', data: "Key event description" },\n  { source: 'company', data: "Updated metrics" },\n]`,
         targetFileNotes: 'timeline.ts: use changes[] array with {metric,previous,new,change}, impact LOWERCASE. For weekly ETH holdings updates: include ALL metrics (ETH Holdings, ETH Price, Supply%, Staked ETH, Cash, Holdings Value, Staking Revenue, CESR Rate). company.ts: update currentETH, ethPrice, cashOnHand.',
       },
+      crcl: {
+        secFilingEntry: `{ date: 'MMM DD, YYYY', type: '8-K', description: 'Short description', period: '—', color: 'gold' }`,
+        crossRefEntry: `'8-K|YYYY-MM-DD': [\n  { source: 'timeline', data: "Key event description" },\n  { source: 'financials', data: "Updated metrics" },\n]`,
+        targetFileNotes: 'timeline.ts: uses shared TimelineEntry with verdict LOWERCASE. financials.ts: update QUARTERLY_DATA if earnings. company.ts: update MARKET if material.',
+      },
     },
   },
 
@@ -54,6 +59,11 @@ export const FILING_TEMPLATES: Record<string, FilingTemplate> = {
         secFilingEntry: `{ date: 'MMM DD, YYYY', type: '10-Q', description: 'Quarterly Report (Qx FYxxxx)', period: 'Qx YYYY', color: 'purple' }`,
         crossRefEntry: `'10-Q|YYYY-MM-DD': [\n  { source: 'quarterly-metrics', data: "Qx: cash X, crypto X, revenue X" },\n]`,
         targetFileNotes: 'quarterly-metrics.ts: add array entry (single line) with ALL fields including ethHoldings, stakingYield, stakingDeployed for ETH era.',
+      },
+      crcl: {
+        secFilingEntry: `{ date: 'MMM DD, YYYY', type: '10-Q', description: 'Quarterly Report (Revenue $XM; USDC $XB; RLDC $XM)', period: 'Qx YYYY', color: 'violet' }`,
+        crossRefEntry: `'10-Q|YYYY-MM-DD': [\n  { source: 'financials', data: "Qx: totalRevenue X, rldc X, usdcCirculation X" },\n]`,
+        targetFileNotes: 'financials.ts: add full CRCLQuarterlyData entry at index 0 with all USDC-specific fields. capital.ts: update shares from balance sheet.',
       },
     },
   },
@@ -73,6 +83,11 @@ export const FILING_TEMPLATES: Record<string, FilingTemplate> = {
         crossRefEntry: `'10-K|YYYY-MM-DD': [\n  { source: 'quarterly-metrics', data: "FY: EPS X, revenue X, net income X" },\n  { source: 'company', data: "FY metrics" },\n]`,
         targetFileNotes: 'quarterly-metrics.ts: add Q4/FY entry. company.ts: update DEFAULTS.',
       },
+      crcl: {
+        secFilingEntry: `{ date: 'MMM DD, YYYY', type: '10-K', description: 'Annual Report FY YYYY', period: 'FY YYYY', color: 'blue' }`,
+        crossRefEntry: `'10-K|YYYY-MM-DD': [\n  { source: 'financials', data: "FY: totalRevenue X, rldc X, netIncome X" },\n  { source: 'company', data: "Annual metrics update" },\n]`,
+        targetFileNotes: 'financials.ts: add Q4 entry. capital.ts: reconcile share counts. company.ts: update MARKET and USDC_DATA.',
+      },
     },
   },
 
@@ -91,6 +106,11 @@ export const FILING_TEMPLATES: Record<string, FilingTemplate> = {
         crossRefEntry: `'424B5|YYYY-MM-DD': [\n  { source: 'capital', data: "$XM offering at $Y/share" },\n]`,
         targetFileNotes: 'capital.ts: add EQUITY_OFFERINGS entry. Update outstanding share count.',
       },
+      crcl: {
+        secFilingEntry: `{ date: 'MMM DD, YYYY', type: '424B5', description: 'Offering description (X shares @ $Y)', period: '—', color: 'orange' }`,
+        crossRefEntry: `'424B5|YYYY-MM-DD': [\n  { source: 'capital', data: "Offering: X shares at $Y → ~$ZM" },\n]`,
+        targetFileNotes: 'capital.ts: add EQUITY_OFFERINGS entry with date, type, amount, price, shares.',
+      },
     },
   },
 
@@ -106,6 +126,11 @@ export const FILING_TEMPLATES: Record<string, FilingTemplate> = {
       },
       bmnr: {
         secFilingEntry: `{ date: 'MMM DD, YYYY', type: 'SC 13G', description: 'Owner X.X% Ownership (XM Shares)', period: '—', color: 'green' }`,
+        crossRefEntry: `'SC 13G|YYYY-MM-DD': [\n  { source: 'capital', data: "Owner: XM shares, X.X%" },\n]`,
+        targetFileNotes: 'capital.ts: update or add MAJOR_SHAREHOLDERS entry.',
+      },
+      crcl: {
+        secFilingEntry: `{ date: 'MMM DD, YYYY', type: 'SC 13G', description: 'Owner X.X% Ownership (XM shares)', period: '—', color: 'green' }`,
         crossRefEntry: `'SC 13G|YYYY-MM-DD': [\n  { source: 'capital', data: "Owner: XM shares, X.X%" },\n]`,
         targetFileNotes: 'capital.ts: update or add MAJOR_SHAREHOLDERS entry.',
       },
@@ -127,6 +152,11 @@ export const FILING_TEMPLATES: Record<string, FilingTemplate> = {
         crossRefEntry: `'Form 4|YYYY-MM-DD': [\n  { source: 'capital', data: "Name: X shares action at $Y" },\n]`,
         targetFileNotes: 'capital.ts: add note to CAPITAL_METADATA.',
       },
+      crcl: {
+        secFilingEntry: `{ date: 'MMM DD, YYYY', type: 'Form 4', description: 'Name (Role) action X shares at $Y', period: '—', color: 'green' }`,
+        crossRefEntry: `'Form 4|YYYY-MM-DD': [\n  { source: 'capital', data: "Name (Role): X shares action at $Y" },\n]`,
+        targetFileNotes: 'capital.ts: add note to CAPITAL_METADATA or relevant shareholder entry.',
+      },
     },
   },
 
@@ -144,6 +174,11 @@ export const FILING_TEMPLATES: Record<string, FilingTemplate> = {
         secFilingEntry: `{ date: 'MMM DD, YYYY', type: 'S-8', description: 'Plan Name Registration', period: '—', color: 'cyan' }`,
         crossRefEntry: `'S-8|YYYY-MM-DD': [\n  { source: 'capital', data: "Plan registered" },\n  { source: 'timeline', data: "S-8 filed for plan" },\n]`,
         targetFileNotes: 'capital.ts: note in CAPITAL_METADATA. timeline.ts: add SEC Filing category entry.',
+      },
+      crcl: {
+        secFilingEntry: `{ date: 'MMM DD, YYYY', type: 'S-8', description: 'Plan Name Registration', period: '—', color: 'green' }`,
+        crossRefEntry: `'S-8|YYYY-MM-DD': [\n  { source: 'capital', data: "Plan registered for X shares" },\n]`,
+        targetFileNotes: 'capital.ts: note in CAPITAL_METADATA.',
       },
     },
   },
@@ -163,6 +198,11 @@ export const FILING_TEMPLATES: Record<string, FilingTemplate> = {
         crossRefEntry: `'S-3ASR|YYYY-MM-DD': [\n  { source: 'capital', data: "$X shelf registered" },\n  { source: 'catalysts', data: "ATM program capacity" },\n]`,
         targetFileNotes: 'capital.ts: update ATM capacity. catalysts.ts: add/update ATM catalyst.',
       },
+      crcl: {
+        secFilingEntry: `{ date: 'MMM DD, YYYY', type: 'S-3ASR', description: 'Shelf Registration', period: '—', color: 'green' }`,
+        crossRefEntry: `'S-3ASR|YYYY-MM-DD': [\n  { source: 'capital', data: "Shelf registered" },\n]`,
+        targetFileNotes: 'capital.ts: note shelf capacity. catalysts.ts: add if material offering expected.',
+      },
     },
   },
 
@@ -180,6 +220,11 @@ export const FILING_TEMPLATES: Record<string, FilingTemplate> = {
         secFilingEntry: `{ date: 'MMM DD, YYYY', type: 'DEF 14A', description: 'Definitive Proxy (Key proposals)', period: '—', color: 'cyan' }`,
         crossRefEntry: `'DEF 14A|YYYY-MM-DD': [\n  { source: 'capital', data: "Proxy proposals" },\n  { source: 'catalysts', data: "Meeting date and key votes" },\n]`,
         targetFileNotes: 'capital.ts: authorized share changes. catalysts.ts: meeting date and outcome.',
+      },
+      crcl: {
+        secFilingEntry: `{ date: 'MMM DD, YYYY', type: 'DEF 14A', description: 'Definitive Proxy (Key proposals)', period: '—', color: 'green' }`,
+        crossRefEntry: `'DEF 14A|YYYY-MM-DD': [\n  { source: 'capital', data: "Proxy proposals" },\n  { source: 'catalysts', data: "Meeting date and key votes" },\n]`,
+        targetFileNotes: 'capital.ts: authorized share changes if approved. catalysts.ts: add meeting date.',
       },
     },
   },
