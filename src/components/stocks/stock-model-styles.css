@@ -12466,3 +12466,573 @@ input[type="range"]::-webkit-slider-thumb {
 /* ── grid-sep with transparent bg and gap 16 ─────────────────────── */
 .sm-grid-sep-gap16 { gap: 16px; background: transparent; }
 
+/* ══════════════════════════════════════════════════════════════════════
+   ASTS utility classes — extracted from inline styles
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Simple utilities ────────────────────────────────────────────── */
+.sm-ws-nowrap { white-space: nowrap; }
+.sm-lh-15 { line-height: 1.5; }
+.sm-lh-16 { line-height: 1.6; }
+.sm-lh-17 { line-height: 1.7; }
+.sm-pb-0 { padding-bottom: 0; }
+.sm-mt-6-ws { margin-top: 6px; white-space: nowrap; }
+.sm-m-4-0-0 { margin: 4px 0 0; }
+.sm-p-16-20 { padding: 16px 20px; }
+.sm-p-0-24-24 { padding: 0 24px 24px; }
+.sm-p-32-0-16 { padding: 32px 0 16px; }
+.sm-p-24-24-16 { padding: 24px 24px 16px; min-height: 280px; }
+.sm-p-12-24 { padding: 12px 24px; }
+.sm-flex-1 { flex: 1; }
+.sm-m-0-0-16 { margin: 0 0 16px; }
+.sm-m-0-0-4 { margin: 0 0 4px; }
+.sm-min-w-560 { min-width: 560px; }
+.sm-min-w-700 { min-width: 700px; }
+.sm-gap-12-bg-transparent { gap: 12px; background: transparent; }
+
+/* ── Grid template column classes ────────────────────────────────── */
+.sm-gtc-1-120-1 { grid-template-columns: 1fr 120px 1fr; }
+.sm-gtc-4x1 { grid-template-columns: repeat(4, 1fr); }
+.sm-gtc-3x1 { grid-template-columns: 1fr 1fr 1fr; }
+.sm-gtc-4x1fr { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.sm-gtc-5x1 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+.sm-gtc-2x1 { grid-template-columns: 1fr 1fr; }
+.sm-gtc-80-3x1 { grid-template-columns: 80px 1fr 1fr 1fr; }
+.sm-gtc-1-100-80 { grid-template-columns: 1fr 100px 80px; }
+.sm-gtc-1-100-3x { grid-template-columns: 1fr 100px 100px 100px; }
+.sm-gtc-1-100-4x { grid-template-columns: 1fr 100px 100px 100px 100px; }
+.sm-gtc-1-100-100-120-1 { grid-template-columns: 1fr 100px 100px 120px 1fr; }
+.sm-gtc-1-100-100-90-1 { grid-template-columns: 1fr 100px 100px 90px 1fr; }
+.sm-gtc-1-100-100-80-100-80 { grid-template-columns: 1fr 100px 100px 80px 100px 80px; }
+.sm-gtc-1-100-90-80x3-1 { grid-template-columns: 1fr 100px 90px 80px 80px 80px 1fr; }
+.sm-gtc-1-100-90x3-100 { grid-template-columns: 1fr 100px 90px 90px 90px 100px; }
+.sm-gtc-1-100-80x2-100 { grid-template-columns: 1fr 100px 80px 80px 100px; }
+.sm-gtc-1-100-80x2-100-80 { grid-template-columns: 1fr 100px 80px 80px 100px 80px; }
+.sm-gtc-100-1-100x2-80-90 { grid-template-columns: 100px 1fr 100px 100px 80px 90px; }
+.sm-gtc-100x3-120-1 { grid-template-columns: 100px 100px 100px 120px 1fr; }
+.sm-gtc-120-140-80-140-100x2-1 { grid-template-columns: 120px 140px 80px 140px 100px 100px 1fr; }
+.sm-gtc-130-140-80-100-1 { grid-template-columns: 130px 140px 80px 100px 1fr; }
+.sm-gtc-1-120-100-120-1 { grid-template-columns: 1fr 120px 100px 120px 1fr; }
+.sm-gtc-1-1-120-100x2 { grid-template-columns: 1fr 1fr 120px 100px 100px; }
+.sm-gtc-1-130-1 { grid-template-columns: 1fr 130px 1fr; }
+.sm-gtc-1-90-80x2-90-70 { grid-template-columns: 1fr 90px 80px 80px 90px 70px; }
+.sm-gtc-100-1-auto { grid-template-columns: 100px 1fr auto; }
+.sm-gtc-100-1-auto-auto { grid-template-columns: 100px 1fr auto auto; }
+.sm-gtc-1-100-120-1 { grid-template-columns: 1fr 100px 120px 1fr; }
+.sm-gtc-1-100-100 { grid-template-columns: 1fr 100px 100px; }
+.sm-gtc-2fr-3x1 { grid-template-columns: 2fr 1fr 1fr 1fr; }
+.sm-gtc-autofit-150 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+
+/* ── Competitor filter pill ──────────────────────────────────────── */
+.sm-comp-filter-pill {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sm-comp-filter-pill[data-active="true"] {
+  border-color: var(--violet);
+  background: color-mix(in srgb, var(--violet) 15%, transparent);
+  color: var(--violet);
+}
+.sm-comp-filter-pill[data-color="sky"][data-active="true"] {
+  border-color: var(--sky);
+  background: color-mix(in srgb, var(--sky) 15%, transparent);
+  color: var(--sky);
+}
+
+/* ── Competitor clear button ─────────────────────────────────────── */
+.sm-comp-clear-btn {
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--coral) 15%, transparent);
+  color: var(--coral);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* ── Show all / toggle pill ──────────────────────────────────────── */
+.sm-comp-show-all-btn {
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--violet) 15%, transparent);
+  color: var(--violet);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+/* ── Competitor news badge ───────────────────────────────────────── */
+.sm-comp-badge-category {
+  padding: 1px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  background: color-mix(in srgb, var(--violet) 12%, transparent);
+  color: var(--violet);
+}
+.sm-comp-badge-name {
+  padding: 1px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  background: color-mix(in srgb, var(--sky) 12%, transparent);
+  color: var(--sky);
+}
+
+/* ── Competitor ASTS comparison box ──────────────────────────────── */
+.sm-comp-asts-box {
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--mint) 5%, var(--surface));
+  border-radius: 12px;
+  border-left: 3px solid var(--mint);
+  margin-top: 12px;
+}
+.sm-comp-asts-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--mint);
+  margin-bottom: 4px;
+}
+
+/* ── Competitor news row ─────────────────────────────────────────── */
+.sm-comp-news-row {
+  padding: 16px 24px;
+  cursor: pointer;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-comp-news-row:last-child { border-bottom: none; }
+
+/* ── Competitor panel container ──────────────────────────────────── */
+.sm-comp-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 8px;
+}
+
+/* ── Competitor profile card ─────────────────────────────────────── */
+.sm-comp-profile-card {
+  padding: 16px;
+  background: var(--surface2);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+/* ── Competitor results counter ──────────────────────────────────── */
+.sm-comp-results {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 8px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* ── Competitor card section bg ──────────────────────────────────── */
+.sm-comp-surface2-panel {
+  background: color-mix(in srgb, var(--surface2) 60%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+/* ── Step badge ──────────────────────────────────────────────────── */
+.sm-step-badge {
+  font-weight: 700;
+  color: var(--bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* ── Inline note-filter text ─────────────────────────────────────── */
+.sm-filter-label-11 {
+  font-size: 11px;
+  color: var(--text3);
+  margin-right: 8px;
+}
+
+/* ── Mini chart bar fill ─────────────────────────────────────────── */
+.sm-mini-bar-fill {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.3s;
+}
+.sm-mini-bar-fill[data-color="mint"] { background: var(--mint); }
+.sm-mini-bar-fill[data-color="violet"] { background: var(--violet); }
+.sm-mini-bar-fill[data-color="coral"] { background: var(--coral); }
+.sm-mini-bar-fill[data-color="sky"] { background: var(--sky); }
+
+/* ── Convertible note total row ──────────────────────────────────── */
+.sm-conv-total-row {
+  display: grid;
+  padding: 12px 24px;
+  background: var(--accent-dim);
+}
+
+/* ── Dilution scenario row ───────────────────────────────────────── */
+.sm-dilution-row {
+  display: grid;
+  padding: 12px 24px;
+  transition: background 0.15s;
+}
+.sm-dilution-row:not(:last-child) {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+.sm-dilution-row[data-type="stress"] {
+  background: color-mix(in srgb, var(--coral) 3%, transparent);
+}
+
+/* ── Dilution ref row ────────────────────────────────────────────── */
+.sm-dilution-ref-row {
+  display: grid;
+  padding: 12px 24px;
+  transition: background 0.15s;
+}
+.sm-dilution-ref-row:not(:last-child) {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+/* ── History row ─────────────────────────────────────────────────── */
+.sm-history-row {
+  display: grid;
+  padding: 12px 16px;
+}
+.sm-history-row:not(:last-child) {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+/* ── Insider row (hover) ─────────────────────────────────────────── */
+.sm-insider-row {
+  padding: 12px 24px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+/* ── Grid 2-col gap 12 transparent bg ────────────────────────────── */
+.sm-grid-sep-2col-gap12 {
+  gap: 12px;
+  background: transparent;
+}
+
+/* ── Grid 3-col gap 12 transparent bg ────────────────────────────── */
+.sm-grid-sep-3col-gap12 {
+  gap: 12px;
+  background: transparent;
+}
+
+/* ── Accent-themed info box ──────────────────────────────────────── */
+.sm-info-box-accent {
+  padding: 16px;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.7;
+  border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+/* ── Period badge (surface2 pill) ────────────────────────────────── */
+.sm-period-badge {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--text1);
+}
+
+/* ── Fin table grid (2col, fs 11) ────────────────────────────────── */
+.sm-fin-grid-2col-11 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  font-size: 11px;
+}
+
+/* ── Flex between fs-11 ──────────────────────────────────────────── */
+.sm-flex-between-11 {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* ── Description text (fs13, text2, lh 1.6) ──────────────────────── */
+.sm-desc-text {
+  color: var(--text2);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0 0 4px;
+}
+
+/* ── Filter description text ─────────────────────────────────────── */
+.sm-filter-desc {
+  font-size: 11px;
+  color: var(--text3);
+  font-style: italic;
+  margin: 0 0 16px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   BMNR EXTRACTED INLINE STYLES — Batch extraction from BMNR.tsx
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Dynamic grid with CSS custom property for columns ────────────── */
+.sm-dyn-grid {
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+}
+.sm-dyn-grid-row {
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+.sm-dyn-grid-row-solid {
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+  border-bottom: 1px solid var(--border);
+}
+.sm-dyn-grid-row-top {
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+.sm-dyn-grid-row-none {
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+}
+.sm-dyn-grid-header {
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+  border-bottom: 1px solid var(--border);
+}
+.sm-dyn-grid-p12-24 { padding: 12px 24px; }
+.sm-dyn-grid-summary {
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+.sm-dyn-grid-total {
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+  padding: 12px 24px;
+  background: rgba(0, 212, 170, 0.1);
+}
+.sm-dyn-grid-data {
+  display: grid;
+  grid-template-columns: var(--grid-cols);
+  padding: 12px 24px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-dyn-grid-data-last {
+  border-bottom: 1px solid var(--border);
+}
+.sm-dyn-grid-fw700 { font-weight: 700; }
+
+/* ── Table column header style (micro uppercase) ──────────────────── */
+.sm-th-micro {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+  text-align: right;
+}
+.sm-th-micro:first-child { text-align: left; }
+
+/* ── Monte Carlo / percentile table styles ────────────────────────── */
+.sm-mc-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.sm-mc-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.sm-mc-row {
+  cursor: default;
+}
+.sm-mc-row[data-highlight="true"] {
+  background: var(--accent-dim);
+}
+.sm-mc-label {
+  font-weight: 400;
+  color: var(--text2);
+}
+.sm-mc-label[data-highlight="true"] {
+  font-weight: 600;
+  color: var(--accent);
+}
+.sm-mc-val {
+  text-align: right;
+  font-family: 'Space Mono', monospace;
+  font-weight: 500;
+  color: var(--text);
+}
+.sm-mc-val[data-highlight="true"] {
+  font-weight: 700;
+  color: var(--accent);
+}
+.sm-mc-val-muted {
+  text-align: right;
+  font-family: 'Space Mono', monospace;
+  color: var(--text2);
+}
+.sm-mc-val-sign {
+  text-align: right;
+  font-family: 'Space Mono', monospace;
+  font-weight: 500;
+}
+.sm-mc-val-sign[data-positive="true"] { color: var(--mint); }
+.sm-mc-val-sign[data-positive="false"] { color: var(--red); }
+.sm-mc-risk-val {
+  font-family: 'Space Mono', monospace;
+  font-weight: 600;
+}
+.sm-mc-risk-val[data-signal="good"] { color: var(--mint); }
+.sm-mc-risk-val[data-signal="ok"] { color: var(--gold); }
+.sm-mc-risk-val[data-signal="neutral"] { color: var(--text2); }
+
+/* ── SEC Filing Tracker panel ─────────────────────────────────────── */
+.sm-sec-tracker-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 12px;
+}
+.sm-sec-pr-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 4px;
+}
+.sm-sec-filing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 13px;
+}
+.sm-sec-filing-card {
+  padding: 8px;
+  border: 1px solid var(--sec-card-border);
+  border-radius: 4px;
+  background: var(--sec-card-bg);
+}
+.sm-sec-filing-card-title {
+  font-weight: 500;
+  color: var(--sec-card-text);
+}
+.sm-sec-footer {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* ── Ethereum tab hero gradient ───────────────────────────────────── */
+.sm-eth-hero-gradient {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--violet) 15%, transparent), color-mix(in srgb, var(--sky) 15%, transparent));
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid color-mix(in srgb, var(--violet) 30%, transparent);
+}
+.sm-eth-inst-gradient {
+  padding: 16px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--violet) 10%, transparent), color-mix(in srgb, var(--mint) 10%, transparent));
+  border-radius: 8px;
+}
+.sm-eth-quote {
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* ── Font size utilities ──────────────────────────────────────────── */
+.sm-fs-28 { font-size: 28px; }
+
+/* ── KPI sub-text with dynamic color ──────────────────────────────── */
+.sm-kpi-sub {
+  font-size: 11px;
+  color: var(--kpi-sub-color, var(--text3));
+}
+
+/* ── Yield rate with dynamic color ────────────────────────────────── */
+.sm-yield-rate {
+  font-size: 12px;
+  color: var(--yield-color, var(--text));
+}
+
+/* ── Chart bar (dynamic height/bg kept in style, static parts here) ── */
+.sm-fin-chart-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s;
+}
+.sm-fin-chart-bar-down {
+  width: 100%;
+  border-radius: 0 0 4px 4px;
+  transition: height 0.3s;
+}
+
+/* ── Negative bar label ───────────────────────────────────────────── */
+.sm-fin-neg-label {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+  margin-top: 4px;
+}
+
+/* ── Financials chart axis labels ─────────────────────────────────── */
+.sm-fin-bar-label-item {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text3);
+  padding: 4px 0;
+}
+
+/* ── Separator with border-top, padding-top ───────────────────────── */
+.sm-sep-top {
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Dynamic flex with variable gap ───────────────────────────────── */
+.sm-flex-bar-labels {
+  display: flex;
+  border-top: 1px solid var(--border);
+}
+.sm-flex-neg-bars {
+  display: flex;
+  align-items: flex-start;
+}
+
+/* ── NAV info box ─────────────────────────────────────────────────── */
+.sm-nav-info-box {
+  padding: 12px;
+  background: var(--surface2);
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--text3);
+}
+
+/* ── Simple color utilities ───────────────────────────────────────── */
+.sm-fs-13-gold { font-size: 13px; color: var(--gold); }
+.sm-fs-13-mint { font-size: 13px; color: var(--mint); }
+
+/* ── Grid span utility ────────────────────────────────────────────── */
+.sm-col-span-2 { grid-column: span 2; }
+
+/* ── ETH hero KPI ─────────────────────────────────────────────────── */
+.sm-fs-28-m0 { font-size: 28px; margin: 0; }
+

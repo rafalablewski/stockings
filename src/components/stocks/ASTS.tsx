@@ -3197,7 +3197,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <span className="sm-detail-label">Annual Lease:</span> ${MAR_2025_LIGADO_DEAL.annualLease}M/yr + revenue share
             </div>
           </div>
-          <div className="sm-text-11 sm-text3 sm-mt-12" style={{ lineHeight: 1.5 }}>
+          <div className="sm-text-11 sm-text3 sm-mt-12 sm-lh-15">
             {MAR_2025_LIGADO_DEAL.notes}
           </div>
         </div>
@@ -4849,13 +4849,13 @@ const QuarterlyMetricsPanel = () => {
             const overflow = data.length > 8;
             return (
               <>
-                <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                <div className="sm-card-body sm-overflow-x sm-scroll-hint sm-pb-0">
                   <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
-                        <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6" style={{ whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6 sm-ws-nowrap">{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                        <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
+                        <div className="sm-micro-text sm-text-center sm-mt-6-ws">{d.label}</div>
                       </div>
                     ))}
                   </div>
@@ -4884,9 +4884,9 @@ const QuarterlyMetricsPanel = () => {
                 <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                   {data.map((d, i) => (
                     <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
-                      <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6" style={{ whiteSpace: 'nowrap' }}>{d.display}</div>
+                      <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6 sm-ws-nowrap">{d.display}</div>
                       <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                      <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
+                      <div className="sm-micro-text sm-text-center sm-mt-6-ws">{d.label}</div>
                     </div>
                   ))}
                 </div>
@@ -4984,13 +4984,13 @@ const QuarterlyMetricsPanel = () => {
             const overflow = data.length > 8;
             return (
               <>
-                <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                <div className="sm-card-body sm-overflow-x sm-scroll-hint sm-pb-0">
                   <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
-                        <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6" style={{ whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6 sm-ws-nowrap">{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                        <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
+                        <div className="sm-micro-text sm-text-center sm-mt-6-ws">{d.label}</div>
                       </div>
                     ))}
                   </div>
@@ -5015,13 +5015,13 @@ const QuarterlyMetricsPanel = () => {
             const overflow = data.length > 8;
             return (
               <>
-                <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                <div className="sm-card-body sm-overflow-x sm-scroll-hint sm-pb-0">
                   <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
-                        <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6" style={{ whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6 sm-ws-nowrap">{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                        <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
+                        <div className="sm-micro-text sm-text-center sm-mt-6-ws">{d.label}</div>
                       </div>
                     ))}
                   </div>
@@ -5049,13 +5049,13 @@ const QuarterlyMetricsPanel = () => {
             const overflow = data.length > 8;
             return (
               <>
-                <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                <div className="sm-card-body sm-overflow-x sm-scroll-hint sm-pb-0">
                   <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
-                        <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6" style={{ whiteSpace: 'nowrap' }}>{d.display}</div>
+                        <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6 sm-ws-nowrap">{d.display}</div>
                         <div style={{ width: '100%', background: 'var(--cyan)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
-                        <div className="sm-micro-text sm-text-center" style={{ marginTop: 6, whiteSpace: 'nowrap' }}>{d.label}</div>
+                        <div className="sm-micro-text sm-text-center sm-mt-6-ws">{d.label}</div>
                       </div>
                     ))}
                   </div>
@@ -5087,7 +5087,7 @@ const QuarterlyMetricsPanel = () => {
                   <div className="sm-fin-chart" style={{ height: hasNegative ? '50%' : undefined }}>
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
-                        {d.value >= 0 && <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6" style={{ whiteSpace: 'nowrap' }}>{d.display}</div>}
+                        {d.value >= 0 && <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6 sm-ws-nowrap">{d.display}</div>}
                         <div style={{ width: '100%', background: d.value >= 0 ? 'var(--mint)' : 'transparent', borderRadius: '4px 4px 0 0', height: d.value >= 0 && maxVal > 0 ? `${Math.round((d.value / maxVal) * 72)}%` : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
                       </div>
                     ))}
@@ -5841,7 +5841,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               )}
               {qual && (
                 <>
-                  <div className="sm-subtle sm-text2 sm-mb-4" style={{ lineHeight: 1.5 }}><strong>Focus:</strong> {qual.focus}</div>
+                  <div className="sm-subtle sm-text2 sm-mb-4 sm-lh-15"><strong>Focus:</strong> {qual.focus}</div>
                   <div className="sm-subtle-sm sm-mt-8 sm-border-t" style={{ fontStyle: 'italic', paddingTop: 8, lineHeight: 1.5 }}>{qual.notes}</div>
                 </>
               )}
@@ -5873,7 +5873,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                   <span className="sm-cmp-cap-tag" data-enabled={profile.capabilities.globalCoverage ? 'true' : undefined}>{profile.capabilities.globalCoverage ? '✓' : '✗'} Global</span>
                 </div>
               )}
-              <div className="sm-subtle sm-text2 sm-mb-4" style={{ lineHeight: 1.5 }}><strong>Focus:</strong> {kc.focus}</div>
+              <div className="sm-subtle sm-text2 sm-mb-4 sm-lh-15"><strong>Focus:</strong> {kc.focus}</div>
               <div className="sm-subtle-sm sm-mt-8 sm-border-t" style={{ fontStyle: 'italic', paddingTop: 8, lineHeight: 1.5 }}>{kc.notes}</div>
             </div>
           );
@@ -5971,7 +5971,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       <div className="sm-card sm-mt-8">
         <div className="sm-card-section" style={{ padding: '16px 20px' }}>
           <div className="sm-param-label sm-flex sm-gap-8">Implied Valuation Matrix<UpdateIndicators sources="WS" /></div>
-          <p className="sm-text-13 sm-text3" style={{ margin: '4px 0 0' }}>ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
+          <p className="sm-text-13 sm-text3 sm-m-4-0-0">ASTS value under different peer multiples and methodologies (current: ${(calc.marketCap / 1000).toFixed(1)}B)</p>
         </div>
         <div className="sm-cmp-table-scroll">
           <div style={{ minWidth: 560 }}>
@@ -6008,7 +6008,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           <div className="sm-card sm-mt-8">
           <div className="sm-card-section" style={{ padding: '16px 20px' }}>
             <div className="sm-param-label sm-flex sm-gap-8">Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
-            <p className="sm-text-13 sm-text3" style={{ margin: '4px 0 0' }}>Value each business segment separately</p>
+            <p className="sm-text-13 sm-text3 sm-m-4-0-0">Value each business segment separately</p>
           </div>
           <div className="sm-cmp-table-scroll">
             <div style={{ minWidth: 440 }}>
@@ -6045,7 +6045,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           <div className="sm-card sm-mt-8">
             <div className="sm-card-section" style={{ padding: '16px 20px' }}>
               <div className="sm-param-label sm-flex sm-gap-8">Risk-Adjusted Scenarios<UpdateIndicators sources={['WS']} /></div>
-              <p className="sm-text-13 sm-text3" style={{ margin: '4px 0 0' }}>Probability-weighted valuation outcomes</p>
+              <p className="sm-text-13 sm-text3 sm-m-4-0-0">Probability-weighted valuation outcomes</p>
             </div>
           <div className="sm-cmp-table-scroll">
             <div style={{ minWidth: 420 }}>
@@ -6189,7 +6189,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                     {news.thesisComparison && (
                       <div style={{ padding: '12px 16px', background: 'color-mix(in srgb, var(--mint) 5%, var(--surface))', borderRadius: 12, borderLeft: '3px solid var(--mint)', marginTop: 12 }}>
                         <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--mint)', marginBottom: 4 }}>ASTS Comparison</div>
-                        <div className="sm-text-12 sm-text2" style={{ lineHeight: 1.5 }}>{news.thesisComparison}</div>
+                        <div className="sm-text-12 sm-text2 sm-lh-15">{news.thesisComparison}</div>
                       </div>
                     )}
                     {news.source && <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: "'Space Mono', monospace", marginTop: 8 }}>Source: {news.sourceUrl ? <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" className="sm-accent">{news.source} ↗</a> : news.source}</div>}
