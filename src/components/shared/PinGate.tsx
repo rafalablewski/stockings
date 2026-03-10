@@ -96,29 +96,8 @@ export default function PinGate({ children }: PinGateProps) {
   // No AUTH_PIN configured — fully locked, no PIN will work
   if (!pinConfigured) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: 240,
-          padding: 32,
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 16,
-            padding: '32px 40px',
-            background: 'rgba(255,255,255,0.02)',
-            border: '1px solid rgba(255,77,79,0.15)',
-            borderRadius: 10,
-            maxWidth: 280,
-            width: '100%',
-          }}
-        >
+      <div className="pin-gate-container">
+        <div className="pin-gate-card pin-gate-card--denied">
           <svg
             width={28}
             height={28}
@@ -132,25 +111,10 @@ export default function PinGate({ children }: PinGateProps) {
             <rect x={3} y={11} width={18} height={11} rx={2} ry={2} />
             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
-          <div
-            style={{
-              fontSize: 11,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              color: 'rgba(255,77,79,0.7)',
-            }}
-          >
+          <div className="pin-gate-label pin-gate-label--denied">
             Access Closed
           </div>
-          <div
-            style={{
-              fontSize: 10,
-              color: 'rgba(255,255,255,0.3)',
-              textAlign: 'center',
-              lineHeight: 1.5,
-            }}
-          >
+          <div className="pin-gate-hint">
             No AUTH_PIN is configured on the server. Set the AUTH_PIN environment variable to enable access.
           </div>
         </div>
@@ -160,29 +124,10 @@ export default function PinGate({ children }: PinGateProps) {
 
   // Show PIN gate
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: 240,
-        padding: 32,
-      }}
-    >
+    <div className="pin-gate-container">
       <form
         onSubmit={handleSubmit}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 16,
-          padding: '32px 40px',
-          background: 'rgba(255,255,255,0.02)',
-          border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: 10,
-          maxWidth: 280,
-          width: '100%',
-        }}
+        className="pin-gate-card"
       >
         {/* Lock icon */}
         <svg
@@ -199,15 +144,7 @@ export default function PinGate({ children }: PinGateProps) {
           <path d="M7 11V7a5 5 0 0 1 10 0v4" />
         </svg>
 
-        <div
-          style={{
-            fontSize: 11,
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.1em',
-            color: 'rgba(255,255,255,0.35)',
-          }}
-        >
+        <div className="pin-gate-label">
           Enter PIN to unlock
         </div>
 
@@ -219,32 +156,12 @@ export default function PinGate({ children }: PinGateProps) {
           onChange={e => setPin(e.target.value)}
           placeholder="••••"
           autoFocus
-          style={{
-            width: '100%',
-            textAlign: 'center',
-            fontSize: 18,
-            fontFamily: 'Space Mono, monospace',
-            letterSpacing: '0.3em',
-            padding: '8px 12px',
-            borderRadius: 6,
-            border: `1px solid ${error ? 'rgba(255,77,79,0.4)' : 'rgba(255,255,255,0.1)'}`,
-            background: 'rgba(255,255,255,0.03)',
-            color: '#F0F6FC',
-            outline: 'none',
-            transition: 'border-color 0.15s',
-          }}
+          className="pin-gate-input"
+          data-error={error ? 'true' : undefined}
         />
 
         {error && (
-          <div
-            style={{
-              fontSize: 10,
-              fontWeight: 600,
-              color: '#FF4D4F',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-            }}
-          >
+          <div className="pin-gate-error">
             {error}
           </div>
         )}
@@ -252,20 +169,8 @@ export default function PinGate({ children }: PinGateProps) {
         <button
           type="submit"
           disabled={!pin.trim() || checking}
-          style={{
-            width: '100%',
-            fontSize: 10,
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            padding: '8px 16px',
-            borderRadius: 5,
-            background: pin.trim() ? 'rgba(121,192,255,0.08)' : 'rgba(255,255,255,0.03)',
-            border: `1px solid ${pin.trim() ? 'rgba(121,192,255,0.25)' : 'rgba(255,255,255,0.06)'}`,
-            color: pin.trim() ? 'rgba(121,192,255,0.9)' : 'rgba(255,255,255,0.2)',
-            cursor: pin.trim() ? 'pointer' : 'default',
-            transition: 'all 0.15s',
-          }}
+          className="pin-gate-submit"
+          data-active={pin.trim() ? 'true' : undefined}
         >
           {checking ? 'Verifying…' : 'Unlock'}
         </button>

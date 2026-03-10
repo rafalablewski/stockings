@@ -10,6 +10,7 @@
 import type { FileSchema } from './asts';
 import { ASTS_SCHEMAS } from './asts';
 import { BMNR_SCHEMAS } from './bmnr';
+import { CRCL_SCHEMAS } from './crcl';
 import { FILING_TEMPLATES } from './filing-templates';
 import type { FilingTemplate } from './filing-templates';
 
@@ -18,6 +19,7 @@ import type { FilingTemplate } from './filing-templates';
 const SCHEMA_REGISTRY: Record<string, Record<string, FileSchema>> = {
   asts: ASTS_SCHEMAS,
   bmnr: BMNR_SCHEMAS,
+  crcl: CRCL_SCHEMAS,
 };
 
 export function getSchemaForTicker(ticker: string): Record<string, FileSchema> | null {

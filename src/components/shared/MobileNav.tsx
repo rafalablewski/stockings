@@ -97,24 +97,25 @@ export default function MobileNav({ items, children }: MobileNavProps) {
               </button>
 
               <div
-                className="mobile-nav-children"
-                style={{ maxHeight: expanded === item.label ? `${item.children.length * 52}px` : undefined }}
+                className={`mobile-nav-children${expanded === item.label ? ' mobile-nav-children--expanded' : ''}`}
               >
-                {item.children.map((child) => (
-                  <Link
-                    key={child.href}
-                    href={child.href}
-                    onClick={close}
-                    className="mobile-nav-child-link"
-                  >
-                    <span>{child.label}</span>
-                    {child.meta && (
-                      <span className="mobile-nav-child-meta">
-                        {child.meta}
-                      </span>
-                    )}
-                  </Link>
-                ))}
+                <div className="mobile-nav-children-inner">
+                  {item.children.map((child) => (
+                    <Link
+                      key={child.href}
+                      href={child.href}
+                      onClick={close}
+                      className="mobile-nav-child-link"
+                    >
+                      <span>{child.label}</span>
+                      {child.meta && (
+                        <span className="mobile-nav-child-meta">
+                          {child.meta}
+                        </span>
+                      )}
+                    </Link>
+                  ))}
+                </div>
               </div>
             </div>
           ) : (

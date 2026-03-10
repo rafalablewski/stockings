@@ -20,6 +20,12 @@ import type { UpdateSource } from './stockModelTypes';
 import { UpdateIndicators } from './UpdateIndicators';
 import { CFANotes } from './StockModelUI';
 
+// Helper: extract CSS variable token name from 'var(--X)' → 'X'
+const cssVarName = (v: string): string => {
+  const m = v.match(/^var\(--(.+)\)$/);
+  return m ? m[1] : v;
+};
+
 // Helper: get archive verdict sentiment for data attribute
 const getVerdictSentiment = (verdict: string): string => {
   if (verdict === 'STRONG BUY' || verdict === 'BUY') return 'positive';
@@ -27,19 +33,19 @@ const getVerdictSentiment = (verdict: string): string => {
   return 'neutral';
 };
 
-// Helper: get severity border color
-const getSeverityColor = (severity: string): string => {
-  if (severity === 'Critical') return 'var(--coral)';
-  if (severity === 'High') return 'var(--gold)';
-  return 'var(--sky)';
+// Helper: get severity accent token name
+const getSeverityAccent = (severity: string): string => {
+  if (severity === 'Critical') return 'coral';
+  if (severity === 'High') return 'gold';
+  return 'sky';
 };
 
-// Helper: position sizing color
-const getPositionColor = (key: string): string => {
-  if (key === 'aggressive') return 'var(--mint)';
-  if (key === 'growth') return 'var(--sky)';
-  if (key === 'balanced') return 'var(--gold)';
-  return 'var(--coral)';
+// Helper: position sizing accent token name
+const getPositionAccent = (key: string): string => {
+  if (key === 'aggressive') return 'mint';
+  if (key === 'growth') return 'sky';
+  if (key === 'balanced') return 'gold';
+  return 'coral';
 };
 
 // Collapsible Section — gold-standard: sm-card + sm-toggle-header + sm-card-body
@@ -140,12 +146,12 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         <span className="sm-param-label">Current Assessment</span>
         <span className="sm-divider-line" />
       </div>
-      <div className="sm-card sm-inv-card-accent" style={{ '--inv-accent': `var(--${current.verdictColor})` } as React.CSSProperties}>
+      <div className="sm-card sm-inv-card-accent" data-accent={current.verdictColor}>
         <div className="sm-card-body">
           <div className="sm-flex-between sm-flex-wrap sm-gap-16 sm-items-start">
             <div>
               <div className="sm-flex sm-gap-12 sm-mb-12">
-                <span className="sm-inv-verdict-badge" style={{ '--inv-accent': `var(--${current.verdictColor})` } as React.CSSProperties}>{current.verdict}</span>
+                <span className="sm-inv-verdict-badge" data-accent={current.verdictColor}>{current.verdict}</span>
                 <span className="sm-inv-ticker-badge">{ticker}</span>
               </div>
               <div className="sm-text-13 sm-text2 sm-mb-8">{current.tagline}</div>
@@ -168,9 +174,9 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
         isOpen={investmentSections.has('scorecard')}
         onToggle={() => toggleSection('scorecard')}
       >
-        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
+        <div className="sm-model-grid" data-cols="4">
           {current.scorecard.map((item, i) => (
-            <div key={i} className="sm-kpi-cell" style={{ '--kpi-color': item.color } as React.CSSProperties}>
+            <div key={i} className="sm-kpi-cell" data-accent={cssVarName(item.color)}>
               <div className="sm-kpi-hero-md">{item.rating}</div>
               <div className="sm-kpi-label">{item.category}</div>
               <div className="sm-kpi-sub">{item.detail}</div>
@@ -227,7 +233,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
                 <div className="sm-text-13t sm-fw-600">{d.driver}</div>
                 <div className="sm-subtle">{d.description}</div>
               </div>
-              <span className="sm-inv-impact-label" style={{ '--inv-accent': d.color } as React.CSSProperties}>{d.impact}</span>
+              <span className="sm-inv-impact-label" data-accent={cssVarName(d.color)}>{d.impact}</span>
             </div>
           ))}
         </div>
@@ -257,7 +263,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
                         <div className="sm-text-13t sm-fw-600">{m.source}</div>
                         <div className="sm-text-11">{m.detail}</div>
                       </div>
-                      <span className="sm-inv-impact-label" style={{ '--inv-accent': m.color } as React.CSSProperties}>{m.strength}</span>
+                      <span className="sm-inv-impact-label" data-accent={cssVarName(m.color)}>{m.strength}</span>
                     </div>
                   ))}
                 </div>
@@ -271,7 +277,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
                         <div className="sm-text-13t sm-fw-600">{t.threat}</div>
                         <div className="sm-text-11">{t.detail}</div>
                       </div>
-                      <span className="sm-inv-impact-label" style={{ '--inv-accent': t.color } as React.CSSProperties}>{t.risk}</span>
+                      <span className="sm-inv-impact-label" data-accent={cssVarName(t.color)}>{t.risk}</span>
                     </div>
                   ))}
                 </div>
@@ -300,11 +306,11 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
       >
         <div className="sm-inv-glass-list">
           {current.risks.map((r, i) => (
-            <div key={i} className="sm-inv-glass-accent" style={{ '--inv-accent': getSeverityColor(r.severity) } as React.CSSProperties}>
+            <div key={i} className="sm-inv-glass-accent" data-accent={getSeverityAccent(r.severity)}>
               <div className="sm-flex-between">
                 <span className="sm-text sm-fw-600">{r.risk}</span>
                 <div className="sm-flex sm-gap-8">
-                  <span className="sm-inv-severity" style={{ '--inv-accent': getSeverityColor(r.severity) } as React.CSSProperties}>{r.severity}</span>
+                  <span className="sm-inv-severity" data-accent={getSeverityAccent(r.severity)}>{r.severity}</span>
                   <span className="sm-inv-likelihood">{r.likelihood} likelihood</span>
                 </div>
               </div>
@@ -330,9 +336,9 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
           /* Fallback: render perspectives as glass-border 2x2 grid */
           <div className="sm-inv-perspectives-grid">
             {Object.entries(current.perspectives).map(([key, p]) => (
-              <div key={key} className="sm-inv-perspective" style={{ '--inv-accent': p.color } as React.CSSProperties}>
+              <div key={key} className="sm-inv-perspective" data-accent={cssVarName(p.color)}>
                 <div className="sm-text sm-fw-600 sm-mb-8">{p.title}</div>
-                <span className="sm-inv-assess-badge" style={{ '--inv-accent': p.color } as React.CSSProperties}>{p.assessment}</span>
+                <span className="sm-inv-assess-badge" data-accent={cssVarName(p.color)}>{p.assessment}</span>
                 <div className="sm-text-13 sm-mt-12">{p.summary}</div>
                 <div className="sm-subtle sm-mt-8"><strong>Ecosystem:</strong> {p.ecosystemView}</div>
                 <div className="sm-text-11 sm-mt-8"><strong>Recommendation:</strong> {p.recommendation}</div>
@@ -357,7 +363,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
               {Object.entries(current.positionSizing).map(([key, size]) => (
                 <div key={key} className="sm-inv-glass-item">
                   <span className="sm-text2 sm-capitalize">{key}</span>
-                  <span className="sm-fw-500 sm-mono-sm sm-inv-impact-label" style={{ '--inv-accent': getPositionColor(key) } as React.CSSProperties}>{size.range}</span>
+                  <span className="sm-fw-500 sm-mono-sm sm-inv-impact-label" data-accent={getPositionAccent(key)}>{size.range}</span>
                 </div>
               ))}
             </div>

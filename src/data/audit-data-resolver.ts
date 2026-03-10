@@ -37,7 +37,6 @@ const MODULE_LOADERS: Record<string, Record<string, ModuleLoader>> = {
     company:            () => import('@/data/crcl/company'),
     financials:         () => import('@/data/crcl/financials'),
     catalysts:          () => import('@/data/crcl/catalysts'),
-    'research-sources': () => import('@/data/crcl/research-sources'),
     timeline:           () => import('@/data/crcl/timeline'),
   },
 };
@@ -59,7 +58,7 @@ const AUDIT_MODULES: Record<string, Record<string, string[]>> = {
   'sources-completeness': {
     asts: ['sec-filings', 'press-releases', 'company', 'catalysts'],
     bmnr: ['sec-filings', 'company', 'catalysts'],
-    crcl: ['financials', 'research-sources', 'company', 'catalysts'],
+    crcl: ['financials', 'company', 'catalysts'],
   },
   'data-freshness': {
     asts: ['company', 'capital', 'financials', 'catalysts', 'press-releases', 'partners'],
@@ -79,7 +78,7 @@ const AUDIT_MODULES: Record<string, Record<string, string[]>> = {
   'disclosure-completeness': {
     asts: ['sec-filings', 'company', 'press-releases', 'catalysts', 'partners'],
     bmnr: ['sec-filings', 'company', 'catalysts'],
-    crcl: ['company', 'financials', 'catalysts', 'research-sources'],
+    crcl: ['company', 'financials', 'catalysts'],
   },
   'model-consistency': {
     asts: ['financials', 'capital', 'company', 'catalysts'],

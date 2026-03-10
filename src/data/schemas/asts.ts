@@ -30,8 +30,8 @@ export interface FileSchema {
 
 export const ASTS_SCHEMAS: Record<string, FileSchema> = {
 
-  'asts/timeline-events.ts': {
-    file: 'asts/timeline-events.ts',
+  'asts/timeline.ts': {
+    file: 'asts/timeline.ts',
     exportName: 'ASTS_TIMELINE_EVENTS',
     description: 'Chronological record of actual company changes. Newest first.',
     ordering: 'newest first (reverse chronological)',

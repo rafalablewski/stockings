@@ -57,31 +57,14 @@ export default function PinGate({ children }: { children: React.ReactNode }) {
 
   // Loading — black screen (prevents flash)
   if (state === 'loading') {
-    return (
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
-        background: '#000',
-      }} />
-    );
+    return <div className="pin-gate-overlay" />;
   }
 
   // Locked — show PIN screen
   if (state === 'locked') {
     if (notConfigured) {
       return (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 9999,
-          background: '#000',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
-        }}>
+        <div className="pin-gate-denied">
           <svg
             width={32}
             height={32}
@@ -91,20 +74,15 @@ export default function PinGate({ children }: { children: React.ReactNode }) {
             strokeWidth={1.5}
             strokeLinecap="round"
             strokeLinejoin="round"
-            style={{ marginBottom: 20 }}
+            className="pin-gate-denied-icon"
           >
             <rect x={3} y={11} width={18} height={11} rx={2} ry={2} />
             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
-          <div style={{
-            fontSize: 14,
-            color: 'rgba(255,255,255,0.4)',
-            textAlign: 'center',
-            lineHeight: 1.8,
-          }}>
+          <div className="pin-gate-denied-text">
             Access Denied
             <br />
-            <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.2)' }}>
+            <span className="pin-gate-denied-sub">
               No AUTH_PIN configured on server
             </span>
           </div>

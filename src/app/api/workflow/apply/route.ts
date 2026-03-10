@@ -83,7 +83,7 @@ const FILE_SOURCE_MAP: Record<string, string> = {
   'capital.ts': 'capital',
   'financials.ts': 'financials',
   'quarterly-metrics.ts': 'financials',
-  'timeline-events.ts': 'timeline',
+  'timeline.ts': 'timeline',
   'catalysts.ts': 'catalysts',
   'company.ts': 'company',
   'partners.ts': 'partners',
@@ -547,7 +547,7 @@ export async function POST(request: NextRequest) {
 
       // Keywords to detect likely target files from the analysis text
       const TARGET_KEYWORDS: Record<string, string[]> = {
-        'timeline-events.ts': ['timeline', 'event', 'holdings update', 'changes[', 'details['],
+        'timeline.ts': ['timeline', 'event', 'holdings update', 'changes[', 'details['],
         'sec-filings.ts': ['sec filing', 'sec-filing', '8-k', '10-q', '10-k', '424b', 'form 4', 'sc 13', 'cross-ref', 'cross_ref'],
         'capital.ts': ['capital', 'shares', 'offering', 'equity', 'shareholder', 'dilut'],
         'financials.ts': ['financial', 'quarterly', 'revenue', 'cash', 'debt', 'opex', 'balance sheet'],

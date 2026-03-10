@@ -1742,7 +1742,7 @@ COMPARISON TABLE (if applicable):
 
 COMPS DATABASE ENTRY FORMAT:
 When proposing new Comps entries, use the shared CompetitorNewsEntry schema (defined in src/data/shared/competitor-schema.ts).
-Valid competitor IDs and categories are listed in the header comment of src/data/asts/comps-timeline.ts — read it before writing entries.
+Valid competitor IDs and categories are listed in the header comment of src/data/asts/competitor-news.ts — read it before writing entries.
 {
   date: 'YYYY-MM-DD',
   competitor: '<see data file header for valid IDs>',

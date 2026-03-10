@@ -18,8 +18,8 @@ import type { FieldDef, FileSchema } from './asts';
 
 export const BMNR_SCHEMAS: Record<string, FileSchema> = {
 
-  'bmnr/timeline-events.ts': {
-    file: 'bmnr/timeline-events.ts',
+  'bmnr/timeline.ts': {
+    file: 'bmnr/timeline.ts',
     exportName: 'BMNR_TIMELINE_EVENTS',
     description: 'Chronological record of actual company changes. Newest first.',
     ordering: 'newest first (reverse chronological)',
@@ -212,7 +212,7 @@ export const BMNR_SCHEMAS: Record<string, FileSchema> = {
   },`,
     insertAnchor: 'ETHEREUM_ADOPTION_EVENTS = [',
     notes: [
-      'Only for Ethereum ecosystem events — not BMNR company events (those go in timeline-events.ts)',
+      'Only for Ethereum ecosystem events — not BMNR company events (those go in timeline.ts)',
       'Must include bmnrImplication explaining relevance to BMNR thesis',
     ],
   },

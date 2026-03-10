@@ -19,14 +19,14 @@ import {
 
 // ── ASTS data imports ────────────────────────────────────────────────────────
 import { ASTS_SEC_FILINGS, ASTS_FILING_CROSS_REFS } from '../src/data/asts/sec-filings';
-import { ASTS_TIMELINE_EVENTS } from '../src/data/asts/timeline-events';
+import { ASTS_TIMELINE_EVENTS } from '../src/data/asts/timeline';
 import { UPCOMING_CATALYSTS as ASTS_CATALYSTS, COMPLETED_MILESTONES as ASTS_MILESTONES } from '../src/data/asts/catalysts';
 import { PARTNER_NEWS } from '../src/data/asts/partners';
-import { COMPS_TIMELINE } from '../src/data/asts/comps-timeline';
+import { COMPS_TIMELINE } from '../src/data/asts/competitor-news';
 
 // ── BMNR data imports ────────────────────────────────────────────────────────
 import { BMNR_SEC_FILINGS, BMNR_FILING_CROSS_REFS } from '../src/data/bmnr/sec-filings';
-import { BMNR_TIMELINE_EVENTS } from '../src/data/bmnr/timeline-events';
+import { BMNR_TIMELINE_EVENTS } from '../src/data/bmnr/timeline';
 import { UPCOMING_CATALYSTS as BMNR_CATALYSTS, COMPLETED_MILESTONES as BMNR_MILESTONES } from '../src/data/bmnr/catalysts';
 import { BMNR_COMPETITOR_NEWS } from '../src/data/bmnr/competitor-news';
 import { BMNR_ADOPTION_TIMELINE } from '../src/data/bmnr/ethereum-adoption';

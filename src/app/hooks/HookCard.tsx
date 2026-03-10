@@ -103,8 +103,8 @@ export default function HookCard({ plugin }: HookCardProps) {
       </div>
 
       {showPrompt && (
-        <div className="sm-scrollbox-short sm-mb-16 sm-rounded-8 sm-bg-surface2 sm-p-16" style={{ borderLeft: "2px solid var(--border)" }}>
-          <pre className="sm-subtle-sm" style={{ fontFamily: "var(--font-mono, monospace)", lineHeight: 1.7, whiteSpace: "pre-wrap", margin: 0 }}>
+        <div className="sm-scrollbox-short sm-mb-16 sm-rounded-8 sm-bg-surface2 sm-p-16 hook-prompt-box">
+          <pre className="sm-subtle-sm hook-prompt-pre">
             {plugin.script}
           </pre>
         </div>

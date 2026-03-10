@@ -20,7 +20,7 @@
  *  2. sec-filings.ts: SEC_META.lastPR             — Update date + title
  *  3. sec-filings.ts: SEC_META.totalFilingsTracked — Increment by 1
  *  4. sec-filings.ts: FILING_CROSS_REFS           — Add cross-ref entry
- *  5. timeline-events.ts (or equivalent)          — Add new timeline entry at top
+ *  5. timeline.ts (or equivalent)          — Add new timeline entry at top
  *  6. catalysts.ts (or equivalent)                — Move completed catalysts, update metadata
  *  7. company.ts / financials.ts                  — Update holdings, prices, staking, cash
  *
@@ -39,7 +39,7 @@
  *   [PR_CHECKLIST_SECMETA]                — sec-filings.ts, SEC_META block
  *   [PR_CHECKLIST_FILING_DATA]            — <TICKER>.tsx, filingData block
  *   [PR_CHECKLIST_RECENT_PRESS_RELEASES]  — <TICKER>.tsx, pressReleases array
- *   [PR_CHECKLIST_EVENT_TIMELINE]         — timeline-events.ts, timeline array
+ *   [PR_CHECKLIST_EVENT_TIMELINE]         — timeline.ts, timeline array
  *   [PR_CHECKLIST_ARCHIVE]               — <TICKER>.tsx, const archive = [
  *
  * This checklist applies to BMNR, ASTS, CRCL, and any future tickers.

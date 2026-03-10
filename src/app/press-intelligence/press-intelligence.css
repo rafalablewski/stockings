@@ -553,3 +553,104 @@
   .pi-card-headline { font-size: 13px; }
   .pi-title { font-size: 18px; }
 }
+
+/* ── Inline style replacements ── */
+
+.pi-refresh-icon {
+  display: inline-block;
+}
+.pi-refresh-icon[data-spinning="true"] {
+  animation: pi-spin 0.8s linear infinite;
+}
+
+.pi-kpi-value-sm {
+  font-size: 13px;
+}
+
+.pi-stock-summary-wrap {
+  margin-left: auto;
+}
+
+.pi-errors-wrap {
+  padding: 12px 0 8px;
+}
+
+.pi-error-item {
+  padding: 8px 0;
+}
+
+/* Skeleton opacity via nth-child */
+.pi-skeleton:nth-child(1)  { opacity: 1; }
+.pi-skeleton:nth-child(2)  { opacity: 0.92; }
+.pi-skeleton:nth-child(3)  { opacity: 0.84; }
+.pi-skeleton:nth-child(4)  { opacity: 0.76; }
+.pi-skeleton:nth-child(5)  { opacity: 0.68; }
+.pi-skeleton:nth-child(6)  { opacity: 0.60; }
+.pi-skeleton:nth-child(7)  { opacity: 0.52; }
+.pi-skeleton:nth-child(8)  { opacity: 0.44; }
+.pi-skeleton:nth-child(9)  { opacity: 0.36; }
+.pi-skeleton:nth-child(10) { opacity: 0.28; }
+
+/* Stock dot colors via data-accent */
+.pi-stock-dot[data-accent="cyan"]    { background: #22D3EE; }
+.pi-stock-dot[data-accent="violet"]  { background: #A78BFA; }
+.pi-stock-dot[data-accent="gold"]    { background: #F59E0B; }
+.pi-stock-dot[data-accent="orange"]  { background: #FB923C; }
+.pi-stock-dot[data-accent="rose"]    { background: #F472B6; }
+.pi-stock-dot[data-accent="indigo"]  { background: #818CF8; }
+.pi-stock-dot[data-accent="fuchsia"] { background: #D946EF; }
+.pi-stock-dot[data-accent="pink"]    { background: #EC4899; }
+.pi-stock-dot[data-accent="yellow"]  { background: #FACC15; }
+.pi-stock-dot[data-accent="sky"]     { background: #38BDF8; }
+.pi-stock-dot[data-accent="emerald"] { background: #34D399; }
+.pi-stock-dot[data-accent="teal"]    { background: #2DD4BF; }
+.pi-stock-dot[data-accent="amber"]   { background: #F59E0B; }
+.pi-stock-dot[data-accent="lime"]    { background: #84CC16; }
+.pi-stock-dot[data-accent="red"]     { background: #EF4444; }
+.pi-stock-dot[data-accent="green"]   { background: #22C55E; }
+.pi-stock-dot[data-accent="stone"]   { background: #A8A29E; }
+.pi-stock-dot[data-accent="purple"]  { background: #A855F7; }
+.pi-stock-dot[data-accent="blue"]    { background: #3B82F6; }
+
+/* Stock pill colors via data-accent */
+.pi-stock-pill[data-accent="all"]     { --pill-color: var(--text); }
+.pi-stock-pill[data-accent="cyan"]    { --pill-color: #22D3EE; }
+.pi-stock-pill[data-accent="violet"]  { --pill-color: #A78BFA; }
+.pi-stock-pill[data-accent="gold"]    { --pill-color: #F59E0B; }
+.pi-stock-pill[data-accent="orange"]  { --pill-color: #FB923C; }
+.pi-stock-pill[data-accent="rose"]    { --pill-color: #F472B6; }
+.pi-stock-pill[data-accent="indigo"]  { --pill-color: #818CF8; }
+.pi-stock-pill[data-accent="fuchsia"] { --pill-color: #D946EF; }
+.pi-stock-pill[data-accent="pink"]    { --pill-color: #EC4899; }
+.pi-stock-pill[data-accent="yellow"]  { --pill-color: #FACC15; }
+.pi-stock-pill[data-accent="sky"]     { --pill-color: #38BDF8; }
+.pi-stock-pill[data-accent="emerald"] { --pill-color: #34D399; }
+.pi-stock-pill[data-accent="teal"]    { --pill-color: #2DD4BF; }
+.pi-stock-pill[data-accent="amber"]   { --pill-color: #F59E0B; }
+.pi-stock-pill[data-accent="lime"]    { --pill-color: #84CC16; }
+.pi-stock-pill[data-accent="red"]     { --pill-color: #EF4444; }
+.pi-stock-pill[data-accent="green"]   { --pill-color: #22C55E; }
+.pi-stock-pill[data-accent="stone"]   { --pill-color: #A8A29E; }
+.pi-stock-pill[data-accent="purple"]  { --pill-color: #A855F7; }
+.pi-stock-pill[data-accent="blue"]    { --pill-color: #3B82F6; }
+
+/* Card ticker colors via data-accent */
+.pi-card-ticker[data-accent="cyan"]    { --ticker-color: #22D3EE; --ticker-bg: rgba(34,211,238,0.15); }
+.pi-card-ticker[data-accent="violet"]  { --ticker-color: #A78BFA; --ticker-bg: rgba(167,139,250,0.15); }
+.pi-card-ticker[data-accent="gold"]    { --ticker-color: #F59E0B; --ticker-bg: rgba(245,158,11,0.15); }
+.pi-card-ticker[data-accent="orange"]  { --ticker-color: #FB923C; --ticker-bg: rgba(251,146,60,0.15); }
+.pi-card-ticker[data-accent="rose"]    { --ticker-color: #F472B6; --ticker-bg: rgba(244,114,182,0.15); }
+.pi-card-ticker[data-accent="indigo"]  { --ticker-color: #818CF8; --ticker-bg: rgba(129,140,248,0.15); }
+.pi-card-ticker[data-accent="fuchsia"] { --ticker-color: #D946EF; --ticker-bg: rgba(217,70,239,0.15); }
+.pi-card-ticker[data-accent="pink"]    { --ticker-color: #EC4899; --ticker-bg: rgba(236,72,153,0.15); }
+.pi-card-ticker[data-accent="yellow"]  { --ticker-color: #FACC15; --ticker-bg: rgba(250,204,21,0.15); }
+.pi-card-ticker[data-accent="sky"]     { --ticker-color: #38BDF8; --ticker-bg: rgba(56,189,248,0.15); }
+.pi-card-ticker[data-accent="emerald"] { --ticker-color: #34D399; --ticker-bg: rgba(52,211,153,0.15); }
+.pi-card-ticker[data-accent="teal"]    { --ticker-color: #2DD4BF; --ticker-bg: rgba(45,212,191,0.15); }
+.pi-card-ticker[data-accent="amber"]   { --ticker-color: #F59E0B; --ticker-bg: rgba(245,158,11,0.15); }
+.pi-card-ticker[data-accent="lime"]    { --ticker-color: #84CC16; --ticker-bg: rgba(132,204,22,0.15); }
+.pi-card-ticker[data-accent="red"]     { --ticker-color: #EF4444; --ticker-bg: rgba(239,68,68,0.15); }
+.pi-card-ticker[data-accent="green"]   { --ticker-color: #22C55E; --ticker-bg: rgba(34,197,94,0.15); }
+.pi-card-ticker[data-accent="stone"]   { --ticker-color: #A8A29E; --ticker-bg: rgba(168,162,158,0.15); }
+.pi-card-ticker[data-accent="purple"]  { --ticker-color: #A855F7; --ticker-bg: rgba(168,85,247,0.15); }
+.pi-card-ticker[data-accent="blue"]    { --ticker-color: #3B82F6; --ticker-bg: rgba(59,130,246,0.15); }

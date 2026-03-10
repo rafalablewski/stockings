@@ -223,7 +223,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
   };
 
   return (
-    <div className="sm-rounded-12 sm-overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.06)", transition: "border-color 0.2s" }}>
+    <div className="sm-rounded-12 sm-overflow-hidden sm-agent-card-border">
       {/* Header */}
       <button
         type="button"
@@ -231,29 +231,29 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
         aria-expanded={expanded}
         className="sm-w-full sm-pointer sm-gap-16 sm-flex sm-items-start sm-text-left sm-justify-between sm-p-16-20 sm-bg-none sm-border-none"
       >
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div className="sm-flex sm-gap-8" style={{ marginBottom: 4 }}>
-            <span className="sm-fw-500" style={{ fontSize: 13, fontFamily: "var(--font-mono, monospace)", color: "rgba(255,255,255,0.85)" }}>
+        <div className="sm-agent-header-name-col">
+          <div className="sm-flex sm-gap-8 sm-agent-header-name-row">
+            <span className="sm-fw-500 sm-agent-name">
               {workflow.name}
             </span>
             <span className="sm-ed-action-btn-sm" data-variant={workflow.auditType === 'code' ? "violet" : workflow.auditType === 'data' ? "gold" : workflow.requiresUserData ? "muted" : "mint"}>
               {workflow.auditType === 'code' ? "Code Audit" : workflow.auditType === 'data' ? "Data Audit" : workflow.requiresUserData ? "Paste data" : "Database"}
             </span>
           </div>
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.25)", lineHeight: 1.5 }}>
+          <div className="sm-agent-desc">
             {workflow.description}
           </div>
         </div>
-        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="sm-shrink-0" style={{ transition: "transform 0.2s", transform: expanded ? "rotate(90deg)" : "rotate(0deg)", marginTop: 4 }}>
+        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="sm-shrink-0 sm-agent-chevron" data-expanded={expanded}>
           <path d="M9 5l7 7-7 7" />
         </svg>
       </button>
 
       {/* Expanded body */}
       {expanded && (
-        <div className="sm-border-t" style={{ padding: "0 20px 20px" }}>
+        <div className="sm-border-t sm-agent-body">
           {/* View prompt toggle */}
-          <div className="sm-flex sm-gap-6 sm-mb-16" style={{ paddingTop: 16 }}>
+          <div className="sm-flex sm-gap-6 sm-mb-16 sm-agent-prompt-toggle-row">
             <button type="button" onClick={() => setShowPrompt(!showPrompt)} className="sm-ed-action-btn-sm sm-ml-auto">
               {showPrompt ? "Hide prompt" : "View prompt"}
             </button>
@@ -269,8 +269,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 
           {/* Read-only prompt display */}
           {showPrompt && (
-            <div className="sm-scrollbox-short sm-mb-16 sm-rounded-8 sm-bg-surface2 sm-p-16" style={{ borderLeft: "2px solid var(--border)" }}>
-              <pre className="sm-subtle-sm" style={{ fontFamily: "var(--font-mono, monospace)", lineHeight: 1.7, whiteSpace: "pre-wrap", margin: 0 }}>
+            <div className="sm-scrollbox-short sm-mb-16 sm-rounded-8 sm-bg-surface2 sm-p-16 sm-agent-prompt-box">
+              <pre className="sm-subtle-sm sm-agent-prompt-pre">
                 {workflow.prompt}
               </pre>
             </div>
@@ -278,18 +278,17 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 
           {/* Textarea — only for workflows that need user-pasted data */}
           {workflow.requiresUserData && (
-            <div className="sm-mb-16" style={{ position: "relative" }}>
+            <div className="sm-mb-16 sm-agent-textarea-wrap">
               <textarea
                 value={userData}
                 onChange={(e) => setUserData(e.target.value)}
                 placeholder="Paste your data here — earnings call transcript, SEC filing, Form 4 filings, news articles..."
                 disabled={running}
                 aria-label={`Data input for ${workflow.name}`}
-                className="sm-agent-textarea"
-                style={{ resize: "vertical" }}
+                className="sm-agent-textarea sm-agent-textarea-resize"
               />
               {userData.length > 0 && (
-                <div className="sm-text3 sm-fw-500" style={{ position: "absolute", bottom: 12, right: 12, fontSize: 9, letterSpacing: "0.08em" }}>
+                <div className="sm-text3 sm-fw-500 sm-agent-char-count">
                   {(userData.length / 1000).toFixed(1)}k chars
                 </div>
               )}
@@ -297,7 +296,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
           )}
 
           {/* Run / Stop */}
-          <div className="sm-flex" style={{ gap: 10 }}>
+          <div className="sm-flex sm-agent-run-row">
             {!running ? (
               <button
                 type="button"
@@ -321,22 +320,22 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
             )}
             {running && (
               <div className="sm-flex sm-gap-8">
-                <div style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--text3)", animation: "pulse 2s infinite" }} />
-                <span className="sm-text3 sm-uppercase sm-fw-500" style={{ fontSize: 9, letterSpacing: "0.08em" }}>Analyzing...</span>
+                <div className="sm-agent-pulse-dot" />
+                <span className="sm-text3 sm-uppercase sm-fw-500 sm-agent-status-text">Analyzing...</span>
               </div>
             )}
           </div>
 
           {/* Error / AI-disabled info */}
           {error && (
-            <div style={{ paddingTop: 8 }}>
+            <div className="sm-agent-error-wrap">
               {error.includes('AI features are disabled') ? (
-                <div className="sm-ed-ai-banner" style={{ fontSize: 11 }}>
+                <div className="sm-ed-ai-banner sm-agent-error-ai-banner">
                   <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M8 5v3M8 10.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
                   {error}
                 </div>
               ) : (
-                <p className="sm-coral" style={{ fontSize: 11, margin: 0 }}>{error}</p>
+                <p className="sm-coral sm-agent-error-msg">{error}</p>
               )}
             </div>
           )}
@@ -345,7 +344,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
           {result && (
             <div ref={resultRef} className="sm-ed-analysis">
               <div className="sm-flex-between sm-mb-12">
-                <span className="sm-section-label" style={{ marginBottom: 0 }}>Analysis Result</span>
+                <span className="sm-section-label sm-agent-result-label-no-mb">Analysis Result</span>
               </div>
               <div className="sm-scrollbox-tall">
                 <pre className="sm-ed-analysis-pre">{result}</pre>
@@ -353,7 +352,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 
               {/* ── Action Toolbar ── */}
               {!running && (
-                <div className="sm-mt-16 sm-border-t" style={{ paddingTop: 16 }}>
+                <div className="sm-mt-16 sm-border-t sm-agent-toolbar">
                   {/* Button row */}
                   <div className="sm-flex-wrap">
                     {/* 1. Export PDF */}
@@ -418,13 +417,13 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 
                     {/* Status messages */}
                     {applyError && (
-                      <span style={{ fontSize: 10, color: applyStep === "error" ? "var(--coral)" : "var(--text3)", marginLeft: 4 }}>{applyError}</span>
+                      <span className="sm-agent-status-msg" data-variant={applyStep === "error" ? "error" : "muted"}>{applyError}</span>
                     )}
                     {patchPreview?.applySummary && applyStep === "applied" && (
-                      <span className="sm-text3" style={{ fontSize: 10, marginLeft: 4 }}>{patchPreview.applySummary}</span>
+                      <span className="sm-text3 sm-agent-status-msg" data-variant="muted">{patchPreview.applySummary}</span>
                     )}
                     {commitMessage && (
-                      <span style={{ fontSize: 10, color: commitStatus === "error" ? "var(--coral)" : "var(--text3)", marginLeft: 4 }}>{commitMessage}</span>
+                      <span className="sm-agent-status-msg" data-variant={commitStatus === "error" ? "error" : "muted"}>{commitMessage}</span>
                     )}
                   </div>
 
@@ -432,20 +431,20 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                   {applyStep === "previewed" && patchPreview && (
                     <div className="sm-ed-diff-panel">
                       {/* Header */}
-                      <div className="sm-flex-between" style={{ padding: "12px 16px", borderBottom: "1px solid rgba(234,179,8,0.1)" }}>
+                      <div className="sm-flex-between sm-agent-diff-header">
                         <div>
-                          <span className="sm-fw-600 sm-uppercase" style={{ fontSize: 11, color: "rgba(234,179,8,0.7)", letterSpacing: "1px" }}>Patch Preview</span>
-                          <span className="sm-text3" style={{ fontSize: 10, marginLeft: 12 }}>{patchPreview.summary}</span>
+                          <span className="sm-fw-600 sm-uppercase sm-agent-diff-title">Patch Preview</span>
+                          <span className="sm-text3 sm-agent-diff-summary">{patchPreview.summary}</span>
                         </div>
                       </div>
 
                       {/* Per-file diffs */}
                       <div className="sm-scrollbox-med">
                         {patchPreview.previews?.map((p: { file: string; action: string; valid: boolean; detail: string; diff: string; linesAdded: number }, i: number) => (
-                          <div key={i} style={{ borderTop: i > 0 ? "1px solid rgba(255,255,255,0.04)" : undefined, padding: "10px 16px" }}>
-                            <div className="sm-flex sm-gap-8 sm-mb-8" style={{ marginBottom: 6 }}>
-                              <span className="sm-fw-500" style={{ fontSize: 10, fontFamily: "var(--font-mono, monospace)", color: p.valid ? "var(--text2)" : "var(--coral)" }}>{p.file}</span>
-                              <span className="sm-uppercase" style={{ fontSize: 8, letterSpacing: "0.05em", padding: "1px 5px", borderRadius: 3, background: p.valid ? "rgba(130,200,130,0.1)" : "rgba(255,100,100,0.1)", color: p.valid ? "rgba(130,200,130,0.6)" : "var(--coral)", border: `1px solid ${p.valid ? "rgba(130,200,130,0.15)" : "rgba(255,100,100,0.15)"}` }}>
+                          <div key={i} className="sm-agent-diff-file" data-has-border={i > 0}>
+                            <div className="sm-flex sm-gap-8 sm-mb-8 sm-agent-diff-file-actions">
+                              <span className="sm-fw-500 sm-agent-diff-file-name" data-valid={p.valid}>{p.file}</span>
+                              <span className="sm-uppercase sm-agent-diff-badge" data-valid={p.valid}>
                                 {p.action} {p.valid ? `+${p.linesAdded}` : "rejected"}
                               </span>
                             </div>
@@ -454,23 +453,22 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                                 {p.diff.split("\n").map((line: string, li: number) => (
                                   <span
                                     key={li}
-                                    className={line.startsWith("+") && !line.startsWith("+++") ? "sm-ed-diff-add" : line.startsWith("-") && !line.startsWith("---") ? "sm-ed-diff-del" : line.startsWith("@@") ? "sm-ed-diff-hunk" : undefined}
-                                    style={!line.startsWith("+") && !line.startsWith("-") && !line.startsWith("@@") ? { display: "block" } : undefined}
+                                    className={line.startsWith("+") && !line.startsWith("+++") ? "sm-ed-diff-add" : line.startsWith("-") && !line.startsWith("---") ? "sm-ed-diff-del" : line.startsWith("@@") ? "sm-ed-diff-hunk" : "sm-agent-diff-plain-line"}
                                   >
                                     {line}
                                   </span>
                                 ))}
                               </pre>
                             ) : !p.valid ? (
-                              <span className="sm-coral" style={{ fontSize: 10, opacity: 0.7 }}>{p.detail}</span>
+                              <span className="sm-coral sm-agent-diff-error-detail">{p.detail}</span>
                             ) : null}
                           </div>
                         ))}
                       </div>
 
                       {/* Warning + action buttons */}
-                      <div className="sm-flex-between" style={{ padding: "12px 16px", borderTop: "1px solid rgba(234,179,8,0.1)" }}>
-                        <span className="sm-fw-500" style={{ fontSize: 9, color: "rgba(234,179,8,0.5)", letterSpacing: "0.05em" }}>
+                      <div className="sm-flex-between sm-agent-diff-footer">
+                        <span className="sm-fw-500 sm-agent-diff-warning">
                           Review carefully — these changes will be written to the database
                         </span>
                         <div className="sm-flex sm-gap-8">
@@ -496,8 +494,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
                   {/* Applying spinner */}
                   {applyStep === "applying" && (
                     <div className="sm-flex sm-gap-8 sm-mt-12">
-                      <div style={{ width: 4, height: 4, borderRadius: "50%", background: "rgba(234,179,8,0.5)", animation: "pulse 2s infinite" }} />
-                      <span className="sm-text3 sm-uppercase sm-fw-500" style={{ fontSize: 9, letterSpacing: "0.08em" }}>
+                      <div className="sm-agent-applying-dot" />
+                      <span className="sm-text3 sm-uppercase sm-fw-500 sm-agent-applying-text">
                         Writing patches to database...
                       </span>
                     </div>
@@ -513,9 +511,9 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
 }
 
 // Section category label (subcategory heading)
-function CategoryLabel({ children, color }: { children: React.ReactNode; color: string }) {
+function CategoryLabel({ children, variant }: { children: React.ReactNode; variant: 'mint' | 'blue' | 'violet' | 'gold' }) {
   return (
-    <div className="sm-fw-600 sm-uppercase sm-ls-wide" style={{ fontSize: 9, color, marginBottom: 10, paddingLeft: 2 }}>
+    <div className="sm-fw-600 sm-uppercase sm-ls-wide sm-agent-category-label" data-color-variant={variant}>
       {children}
     </div>
   );
@@ -550,7 +548,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
 
   if (availableWorkflows.length === 0) {
     return (
-      <div className="sm-text-center sm-text3" style={{ padding: 40, fontSize: 13 }}>
+      <div className="sm-text-center sm-text3 sm-agent-empty">
         No AI agents available for {ticker.toUpperCase()} yet.
       </div>
     );
@@ -583,12 +581,12 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
       {(thesisAgents.length > 0 || capitalAgents.length > 0) && (
         <div>
           <div className="sm-divider">
-            <span className="sm-section-label" style={{ marginBottom: 0 }}>Database Analysis — Run Directly</span>
+            <span className="sm-section-label sm-agent-section-label-no-mb">Database Analysis — Run Directly</span>
           </div>
 
           {thesisAgents.length > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <CategoryLabel color="rgba(130,200,130,0.5)">Thesis &amp; Strategy</CategoryLabel>
+            <div className="sm-agent-section-group">
+              <CategoryLabel variant="mint">Thesis &amp; Strategy</CategoryLabel>
               <div className="sm-flex-col sm-gap-8">
                 {thesisAgents.map((wf) => <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />)}
               </div>
@@ -596,8 +594,8 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
           )}
 
           {capitalAgents.length > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <CategoryLabel color="rgba(130,200,130,0.5)">Capital Analysis</CategoryLabel>
+            <div className="sm-agent-section-group">
+              <CategoryLabel variant="mint">Capital Analysis</CategoryLabel>
               <div className="sm-flex-col sm-gap-8">
                 {capitalAgents.map((wf) => <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />)}
               </div>
@@ -610,12 +608,12 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
       {(secFinancialsAgents.length > 0 || ownershipAgents.length > 0 || intelAgents.length > 0) && (
         <div>
           <div className="sm-divider">
-            <span className="sm-section-label" style={{ marginBottom: 0 }}>Data Input — Paste &amp; Analyze</span>
+            <span className="sm-section-label sm-agent-section-label-no-mb">Data Input — Paste &amp; Analyze</span>
           </div>
 
           {secFinancialsAgents.length > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <CategoryLabel color="rgba(121,192,255,0.5)">SEC &amp; Financials</CategoryLabel>
+            <div className="sm-agent-section-group">
+              <CategoryLabel variant="blue">SEC &amp; Financials</CategoryLabel>
               <div className="sm-flex-col sm-gap-8">
                 {secFinancialsAgents.map((wf) => <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />)}
               </div>
@@ -623,8 +621,8 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
           )}
 
           {ownershipAgents.length > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <CategoryLabel color="rgba(121,192,255,0.5)">Ownership &amp; Governance</CategoryLabel>
+            <div className="sm-agent-section-group">
+              <CategoryLabel variant="blue">Ownership &amp; Governance</CategoryLabel>
               <div className="sm-flex-col sm-gap-8">
                 {ownershipAgents.map((wf) => <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />)}
               </div>
@@ -632,8 +630,8 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
           )}
 
           {intelAgents.length > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <CategoryLabel color="rgba(121,192,255,0.5)">Intelligence &amp; Research</CategoryLabel>
+            <div className="sm-agent-section-group">
+              <CategoryLabel variant="blue">Intelligence &amp; Research</CategoryLabel>
               <div className="sm-flex-col sm-gap-8">
                 {intelAgents.map((wf) => <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />)}
               </div>
@@ -646,12 +644,12 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
       {(codeAuditAgents.length > 0 || dataAuditAgents.length > 0 || dataInputAuditAgents.length > 0) && (
         <div>
           <div className="sm-divider">
-            <span className="sm-section-label" style={{ marginBottom: 0 }}>Audits</span>
+            <span className="sm-section-label sm-agent-section-label-no-mb">Audits</span>
           </div>
 
           {codeAuditAgents.length > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <CategoryLabel color="rgba(168,130,230,0.5)">Code &amp; Security</CategoryLabel>
+            <div className="sm-agent-section-group">
+              <CategoryLabel variant="violet">Code &amp; Security</CategoryLabel>
               <div className="sm-flex-col sm-gap-8">
                 {codeAuditAgents.map((wf) => <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />)}
               </div>
@@ -659,8 +657,8 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
           )}
 
           {dataAuditAgents.length > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <CategoryLabel color="rgba(234,179,8,0.5)">Research Data Quality — database validation</CategoryLabel>
+            <div className="sm-agent-section-group">
+              <CategoryLabel variant="gold">Research Data Quality — database validation</CategoryLabel>
               <div className="sm-flex-col sm-gap-8">
                 {dataAuditAgents.map((wf) => <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />)}
               </div>
@@ -668,8 +666,8 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
           )}
 
           {dataInputAuditAgents.length > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <CategoryLabel color="rgba(234,179,8,0.5)">Research Data Quality — paste &amp; analyze</CategoryLabel>
+            <div className="sm-agent-section-group">
+              <CategoryLabel variant="gold">Research Data Quality — paste &amp; analyze</CategoryLabel>
               <div className="sm-flex-col sm-gap-8">
                 {dataInputAuditAgents.map((wf) => <AgentRunner key={wf.id} workflow={wf} ticker={tickerLower} />)}
               </div>
@@ -682,7 +680,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
       {askAgent && (
         <div>
           <div className="sm-divider">
-            <span className="sm-section-label" style={{ marginBottom: 0 }}>Ask Agent — general-purpose query</span>
+            <span className="sm-section-label sm-agent-section-label-no-mb">Ask Agent — general-purpose query</span>
           </div>
           <div className="sm-flex-col sm-gap-8">
             <AgentRunner workflow={askAgent} ticker={tickerLower} />

@@ -18,7 +18,7 @@
           "src/app/api/check-analyzed/route.ts"
         ],
         "watchDataGlobs": [
-          "src/data/*/research-sources.ts"
+          "src/data/*/press-releases.ts"
         ],
         "methodologyAnchor": "#sources-methodology",
         "methodologyFile": "src/components/shared/SharedSourcesTab.tsx"

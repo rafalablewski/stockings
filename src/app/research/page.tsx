@@ -1,15 +1,27 @@
 import Link from "next/link";
-import { researchStocks } from "@/lib/stocks";
+import { researchStocks, stockList } from "@/lib/stocks";
 import { workflows } from "@/data/workflows";
 import { PromptCard } from "@/components/PromptCard";
 import InitiateResearch from "@/components/InitiateResearch";
 
 export const metadata = {
   title: "Research | ABISON",
-  description: "Investment research coverage",
+  description: "Investment research coverage universe",
 };
 
-export default function StocksPage() {
+export default function ResearchPage() {
+  // Stocks without full research coverage (watchlist)
+  const watchlistStocks = stockList.filter((s) => !s.hasResearch);
+
+  // Group research stocks by sector in a single pass
+  const stocksBySector = researchStocks.reduce<Record<string, (typeof researchStocks)[number][]>>((acc, stock) => {
+    if (!acc[stock.sector]) acc[stock.sector] = [];
+    acc[stock.sector].push(stock);
+    return acc;
+  }, {});
+  const sectors = Object.keys(stocksBySector);
+
+  // AI agent workflow prompts
   const workflowPrompts = workflows.map((w) => ({
     name: w.name,
     description: w.description,
@@ -21,65 +33,139 @@ export default function StocksPage() {
 
   return (
     <div className="min-h-screen py-20 px-6">
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-12">
-          <h1 className="text-2xl font-semibold text-white mb-3">Research</h1>
-          <p className="text-[13px] text-white/40">
-            Select a stock to access comprehensive analysis.
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-16">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-white/20 mb-4">
+            Coverage Universe
+          </p>
+          <h1 className="text-3xl font-light tracking-tight text-white mb-4">
+            Research
+          </h1>
+          <div className="w-10 h-px bg-white/10 mb-6" />
+          <p className="text-[14px] text-white/35 leading-relaxed max-w-lg">
+            Deep-dive equity analysis across space technology, digital assets,
+            and fintech infrastructure.
           </p>
         </div>
 
-        <div className="grid gap-4">
-          {researchStocks.map((stock) => (
-            <Link
-              key={stock.ticker}
-              href={`/research/${stock.ticker}`}
-              className="group relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300"
-            >
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {/* Stats */}
+        <div className="flex items-center gap-12 mb-16 pb-12 border-b border-white/[0.04]">
+          <div>
+            <div className="text-xl font-light text-white/80 mb-0.5">
+              {researchStocks.length}
+            </div>
+            <div className="text-[9px] uppercase tracking-[0.2em] text-white/25">
+              Active Research
+            </div>
+          </div>
+          <div>
+            <div className="text-xl font-light text-white/80 mb-0.5">
+              {sectors.length}
+            </div>
+            <div className="text-[9px] uppercase tracking-[0.2em] text-white/25">
+              Sectors
+            </div>
+          </div>
+          <div>
+            <div className="text-xl font-light text-white/80 mb-0.5">
+              {watchlistStocks.length}
+            </div>
+            <div className="text-[9px] uppercase tracking-[0.2em] text-white/25">
+              Watchlist
+            </div>
+          </div>
+        </div>
 
-              <div className="relative flex items-start justify-between gap-6">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-[13px] font-mono font-medium text-white tracking-wide">
-                      {stock.ticker}
-                    </span>
-                    <span className="text-[11px] uppercase tracking-wider text-white/20">
-                      {stock.sector}
-                    </span>
-                  </div>
-                  <p className="text-[13px] text-white/40 leading-relaxed">
-                    {stock.name}
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.03] group-hover:bg-white/[0.08] transition-colors">
-                  <svg
-                    className="w-3.5 h-3.5 text-white/30 group-hover:text-white/60 transition-colors"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+        {/* Active Research — grouped by sector */}
+        {sectors.map((sector) => {
+          const sectorStocks = stocksBySector[sector];
+          return (
+            <div key={sector} className="mb-14">
+              <h2 className="text-[10px] uppercase tracking-[0.25em] text-white/25 mb-5">
+                {sector}
+              </h2>
+              <div className="grid gap-3">
+                {sectorStocks.map((stock) => (
+                  <Link
+                    key={stock.ticker}
+                    href={`/research/${stock.ticker}`}
+                    className="group flex items-center justify-between p-5 rounded-xl bg-white/[0.015] border border-white/[0.05] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-[13px] font-mono font-medium text-white/80 w-12">
+                        {stock.ticker}
+                      </span>
+                      <div>
+                        <span className="text-[13px] text-white/50 group-hover:text-white/70 transition-colors">
+                          {stock.name}
+                        </span>
+                        <p className="text-[11px] text-white/20 mt-0.5 leading-relaxed max-w-md">
+                          {stock.description}
+                        </p>
+                      </div>
+                    </div>
+                    <svg
+                      className="w-3.5 h-3.5 text-white/15 group-hover:text-white/40 transition-colors shrink-0"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </Link>
+                ))}
               </div>
-            </Link>
-          ))}
+            </div>
+          );
+        })}
 
-          {/* Initiate new research */}
+        {/* Watchlist */}
+        {watchlistStocks.length > 0 && (
+          <div className="mb-14">
+            <h2 className="text-[10px] uppercase tracking-[0.25em] text-white/25 mb-2">
+              Watchlist
+            </h2>
+            <p className="text-[11px] text-white/15 mb-5">
+              Tracked tickers without full research coverage.
+            </p>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {watchlistStocks.map((stock) => (
+                <div
+                  key={stock.ticker}
+                  className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.01] border border-white/[0.04]"
+                >
+                  <span className="text-[12px] font-mono text-white/40 w-10">
+                    {stock.ticker}
+                  </span>
+                  <span className="text-[12px] text-white/25">
+                    {stock.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Initiate new research */}
+        <div className="pt-8 border-t border-white/[0.04]">
           <InitiateResearch />
         </div>
 
         {/* AI Agents */}
         <div className="mt-20">
-          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-3">
+          <h2 className="text-[10px] uppercase tracking-[0.25em] text-white/25 mb-2">
             AI Agents
           </h2>
-          <p className="text-[12px] text-white/20 mb-10">
-            Streaming AI agent prompts for structured analysis. Run these from the AI Agents tab inside each stock.
+          <p className="text-[11px] text-white/15 mb-8">
+            Streaming AI agent prompts for structured analysis. Run these from
+            the AI Agents tab inside each stock.
           </p>
-
           <div className="grid gap-4">
             {workflowPrompts.map((workflow) => (
               <PromptCard

@@ -32,7 +32,7 @@
  * 9. <TICKER>.tsx: filingData (lastPressRelease, lastPressReleaseTitle,
  *    latestEvent, latestEventDate, filings['8-K'])
  * 10. <TICKER>.tsx: pressReleases[] array — Add new entry at TOP
- * 11. timeline-events.ts — Add new timeline entry at top
+ * 11. timeline.ts — Add new timeline entry at top
  * 12. catalysts.ts — Move completed catalysts, update metadata
  * ═══════════════════════════════════════════════════════════════════
  */

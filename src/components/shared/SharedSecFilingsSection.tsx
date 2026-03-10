@@ -33,13 +33,18 @@ export interface SharedSecFilingsSectionProps {
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-/** Cross-reference source colors (matches EDGAR tab convention) */
-const SOURCE_COLORS: Record<string, string> = {
-  capital: 'var(--sky)',
-  financials: 'var(--mint)',
-  timeline: 'var(--gold)',
-  catalysts: 'var(--violet)',
-  company: 'var(--coral)',
+/** Map badge text color to a known color token for data-badge-color attribute */
+const badgeColorName = (textColor: string): string => {
+  const map: Record<string, string> = {
+    '#60a5fa': 'blue',
+    'var(--violet)': 'violet',
+    'var(--gold)': 'gold',
+    '#4ade80': 'green',
+    '#fb923c': 'orange',
+    'var(--cyan)': 'cyan',
+    'var(--sky)': 'sky',
+  };
+  return map[textColor] || 'blue';
 };
 
 /** All categorized form types — used by 'Other' filter for exclusion */
@@ -101,26 +106,26 @@ const KPISummary: React.FC<{
   quarterly: number;
   current: number;
 }> = ({ total, annual, quarterly, current }) => (
-  <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
+  <div className="sm-model-grid" data-cols="4">
     <div className="sm-grid-cell-center">
       <div className="sm-micro-label">Tracked</div>
       <div className="sm-mono-lg sm-text">{total}</div>
-      <div className="sm-micro-label" style={{ opacity: 0.5 }}>filings</div>
+      <div className="sm-micro-label sm-micro-label-dim">filings</div>
     </div>
     <div className="sm-grid-cell-center">
       <div className="sm-micro-label">Annual</div>
       <div className="sm-mono-lg sm-sky">{annual}</div>
-      <div className="sm-micro-label" style={{ opacity: 0.5 }}>10-K</div>
+      <div className="sm-micro-label sm-micro-label-dim">10-K</div>
     </div>
     <div className="sm-grid-cell-center">
       <div className="sm-micro-label">Quarterly</div>
       <div className="sm-mono-lg sm-violet">{quarterly}</div>
-      <div className="sm-micro-label" style={{ opacity: 0.5 }}>10-Q</div>
+      <div className="sm-micro-label sm-micro-label-dim">10-Q</div>
     </div>
     <div className="sm-grid-cell-center">
       <div className="sm-micro-label">Current + Other</div>
       <div className="sm-mono-lg sm-gold">{current}</div>
-      <div className="sm-micro-label" style={{ opacity: 0.5 }}>8-K, S-3, 424B5&hellip;</div>
+      <div className="sm-micro-label sm-micro-label-dim">8-K, S-3, 424B5&hellip;</div>
     </div>
   </div>
 );
@@ -135,7 +140,7 @@ const CrossRefDots: React.FC<{
   return (
     <span className="sm-sec-sources">
       {sources.map(src => (
-        <span key={src} className="sm-sec-source-tag" style={{ '--src-color': SOURCE_COLORS[src] || 'var(--text3)' } as React.CSSProperties}>
+        <span key={src} className="sm-sec-source-tag" data-source={src}>
           <span className="sm-sec-source-dot" />
           {src}
         </span>
@@ -159,10 +164,7 @@ const FilingCard: React.FC<{
       <div className="sm-sec-card-top">
         <span
           className="sm-sec-badge"
-          style={{
-            '--badge-bg': colors.bg || `color-mix(in srgb, ${colors.text} 15%, transparent)`,
-            '--badge-text': colors.text,
-          } as React.CSSProperties}
+          data-badge-color={badgeColorName(colors.text)}
         >
           {displayType}
         </span>
@@ -245,7 +247,7 @@ export const SharedSecFilingsSection: React.FC<SharedSecFilingsSectionProps> = (
         <div className="sm-card-header">
           <span className="sm-section-label">SEC Filings<UpdateIndicators sources="SEC" /></span>
         </div>
-        <div className="sm-card-body sm-flex-col" style={{ gap: 16 }}>
+        <div className="sm-card-body sm-flex-col sm-card-body-gap-16">
 
           {/* KPI Summary Strip */}
           <KPISummary
@@ -298,19 +300,19 @@ export const SharedSecFilingsSection: React.FC<SharedSecFilingsSectionProps> = (
             <div className="sm-sec-footer-meta">
               <span>
                 <span className="sm-text3">CIK:</span>
-                <span className="sm-mono-sm sm-text2" style={{ marginLeft: 6 }}>{secMeta.cik}</span>
+                <span className="sm-mono-sm sm-text2 sm-sec-meta-ml">{secMeta.cik}</span>
               </span>
               <span>
                 <span className="sm-text3">Ticker:</span>
-                <span className="sm-fw-600" style={{ marginLeft: 6, color: 'var(--accent)' }}>{secMeta.ticker}</span>
+                <span className="sm-fw-600 sm-sec-ticker-accent">{secMeta.ticker}</span>
               </span>
               <span>
                 <span className="sm-text3">Exchange:</span>
-                <span className="sm-text2" style={{ marginLeft: 6 }}>{secMeta.exchange}</span>
+                <span className="sm-text2 sm-sec-exchange-ml">{secMeta.exchange}</span>
               </span>
             </div>
             <div className="sm-sec-footer-pr">
-              <span style={{ color: 'var(--accent)' }}>●</span>
+              <span className="sm-sec-pr-dot">●</span>
               <span>Last PR Processed: {secMeta.lastPR.date} — {secMeta.lastPR.title}<UpdateIndicators sources="PR" /></span>
             </div>
           </div>

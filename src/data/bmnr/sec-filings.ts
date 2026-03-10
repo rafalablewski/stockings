@@ -18,7 +18,7 @@
  *  3. BMNR_SEC_META.totalFilingsTracked    — Increment by 1
  *  4. BMNR_FILING_CROSS_REFS (this file)   — Add cross-ref entry
  *  5. company.ts                           — Update ETH holdings, prices, cash, staking
- *  6. timeline-events.ts                   — Add new timeline entry at top
+ *  6. timeline.ts                   — Add new timeline entry at top
  *  7. catalysts.ts                         — Move completed catalysts, update metadata
  *
  * UI COMPONENT (src/components/stocks/BMNR.tsx):

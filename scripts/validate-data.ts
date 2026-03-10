@@ -184,7 +184,6 @@ async function main() {
     const t = ticker.toLowerCase();
     // Try known competitor news file patterns
     const mod =
-      await tryImport(`${dir}/${t}/comps-timeline`) ??
       await tryImport(`${dir}/${t}/competitor-news`);
     if (!mod) continue;
 
