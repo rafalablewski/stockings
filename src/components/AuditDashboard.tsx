@@ -10,6 +10,7 @@ import {
   type Severity,
 } from '@/data/audit-findings';
 import { workflows } from '@/data/workflows';
+import '@/components/stocks/stock-model-styles.css';
 
 const AuditReportSection = lazy(() => import('@/app/audit/comprehensive-code-audit/AuditReportSection'));
 
@@ -46,21 +47,8 @@ function SeverityBadge({ severity }: { severity: Severity }) {
   const cfg = SEVERITY_CONFIG[severity];
   return (
     <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 4,
-        fontSize: 10,
-        fontWeight: 700,
-        fontFamily: 'Space Mono, monospace',
-        letterSpacing: '0.08em',
-        padding: '2px 8px',
-        borderRadius: 3,
-        color: cfg.color,
-        background: cfg.bg,
-        border: `1px solid ${cfg.border}`,
-        textTransform: 'uppercase',
-      }}
+      className="aud-severity-badge"
+      style={{ '--aud-sev-color': cfg.color, '--aud-sev-bg': cfg.bg, '--aud-sev-border': cfg.border } as React.CSSProperties}
     >
       {cfg.label}
     </span>
@@ -74,14 +62,7 @@ function CvssBadge({ score }: { score: number }) {
   else if (score >= 4.0) color = '#D29922';
 
   return (
-    <span
-      style={{
-        fontFamily: 'Space Mono, monospace',
-        fontSize: 11,
-        fontWeight: 700,
-        color,
-      }}
-    >
+    <span className="aud-cvss" style={{ '--aud-cvss-color': color } as React.CSSProperties}>
       {score.toFixed(1)}
     </span>
   );
@@ -89,38 +70,11 @@ function CvssBadge({ score }: { score: number }) {
 
 function StatBox({ label, value, accent }: { label: string; value: string | number; accent?: string }) {
   return (
-    <div
-      style={{
-        padding: '16px 20px',
-        background: 'rgba(255,255,255,0.02)',
-        border: '1px solid rgba(255,255,255,0.06)',
-        borderRadius: 10,
-        minWidth: 0,
-      }}
-    >
-      <div
-        style={{
-          fontSize: 24,
-          fontWeight: 700,
-          fontFamily: 'Space Mono, monospace',
-          color: accent || '#F0F6FC',
-          lineHeight: 1.2,
-        }}
-      >
+    <div className="aud-stat-box">
+      <div className="aud-stat-value" style={accent ? { '--aud-accent': accent } as React.CSSProperties : undefined}>
         {value}
       </div>
-      <div
-        style={{
-          fontSize: 10,
-          fontWeight: 500,
-          textTransform: 'uppercase',
-          letterSpacing: '0.12em',
-          color: 'rgba(255,255,255,0.35)',
-          marginTop: 6,
-        }}
-      >
-        {label}
-      </div>
+      <div className="aud-stat-label">{label}</div>
     </div>
   );
 }
@@ -136,39 +90,21 @@ function SeverityBar({ bySeverity }: { bySeverity: Record<Severity, number> }) {
     .map(s => ({ severity: s, count: bySeverity[s], pct: (bySeverity[s] / total) * 100 }));
 
   return (
-    <div style={{ marginTop: 12 }}>
-      <div
-        style={{
-          display: 'flex',
-          height: 6,
-          borderRadius: 3,
-          overflow: 'hidden',
-          background: 'rgba(255,255,255,0.04)',
-        }}
-      >
+    <div className="aud-sev-bar-wrap">
+      <div className="aud-sev-bar-track">
         {segments.map(seg => (
           <div
             key={seg.severity}
-            style={{
-              width: `${seg.pct}%`,
-              background: SEVERITY_CONFIG[seg.severity].color,
-              transition: 'width 0.3s',
-            }}
+            className="aud-sev-bar-seg"
+            style={{ width: `${seg.pct}%`, background: SEVERITY_CONFIG[seg.severity].color }}
           />
         ))}
       </div>
-      <div style={{ display: 'flex', gap: 16, marginTop: 10, flexWrap: 'wrap' }}>
+      <div className="aud-sev-bar-legend">
         {segments.map(seg => (
-          <div key={seg.severity} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: 2,
-                background: SEVERITY_CONFIG[seg.severity].color,
-              }}
-            />
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: 'Space Mono, monospace' }}>
+          <div key={seg.severity} className="aud-sev-bar-item">
+            <div className="aud-sev-bar-dot" style={{ background: SEVERITY_CONFIG[seg.severity].color }} />
+            <span className="aud-sev-bar-label">
               {seg.severity}: {seg.count}
             </span>
           </div>
@@ -198,11 +134,7 @@ function FindingRow({
   const cfg = SEVERITY_CONFIG[finding.severity];
 
   return (
-    <div
-      style={{
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
-      }}
-    >
+    <div className="aud-finding-border">
       {/* Header Row — uses div instead of button to avoid invalid nested
            interactive content (the Check / re-check buttons live inside). */}
       <div
@@ -211,103 +143,41 @@ function FindingRow({
         onClick={onToggle}
         onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}
         aria-expanded={expanded}
-        style={{
-          width: '100%',
-          display: 'grid',
-          gridTemplateColumns: '72px 72px 1fr 100px 80px 120px 32px',
-          alignItems: 'center',
-          gap: 12,
-          padding: '14px 16px',
-          background: expanded ? 'rgba(255,255,255,0.02)' : 'transparent',
-          border: 'none',
-          borderLeft: `3px solid ${cfg.color}`,
-          cursor: 'pointer',
-          textAlign: 'left',
-          transition: 'background 0.15s',
-          color: 'inherit',
-          fontFamily: 'inherit',
-        }}
-        onMouseEnter={e => { if (!expanded) e.currentTarget.style.background = 'rgba(255,255,255,0.015)'; }}
-        onMouseLeave={e => { if (!expanded) e.currentTarget.style.background = 'transparent'; }}
+        className="aud-finding-row"
+        data-expanded={expanded}
+        style={{ '--aud-sev-color': cfg.color } as React.CSSProperties}
       >
-        <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.6)' }}>
-          {finding.id}
-        </span>
+        <span className="aud-finding-id">{finding.id}</span>
         <SeverityBadge severity={finding.severity} />
-        <span style={{ fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.85)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {finding.title}
-        </span>
-        <span style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'rgba(255,255,255,0.3)' }}>
+        <span className="aud-finding-title">{finding.title}</span>
+        <span className="aud-finding-cvss">
           CVSS <CvssBadge score={finding.cvss} />
         </span>
         <span
-          style={{
-            fontSize: 9,
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            color: EFFORT_COLORS[finding.effort] || '#8B949E',
-          }}
+          className="aud-finding-effort"
+          style={{ '--aud-effort-color': EFFORT_COLORS[finding.effort] || '#8B949E' } as React.CSSProperties}
         >
           {finding.effort}
         </span>
 
         {/* Status Cell */}
-        <span
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-          onClick={e => e.stopPropagation()}
-        >
+        <span className="aud-status-cell" onClick={e => e.stopPropagation()}>
           {isChecking ? (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-              <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(121,192,255,0.6)', animation: 'pulse 1.5s infinite' }} />
-              <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(121,192,255,0.6)', fontFamily: 'Space Mono, monospace' }}>
-                Checking
-              </span>
+            <span className="aud-status-checking">
+              <span className="aud-status-pulse" />
+              <span className="aud-status-checking-text">Checking</span>
             </span>
           ) : checkResult ? (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-              <span
-                style={{
-                  fontSize: 9,
-                  fontWeight: 700,
-                  fontFamily: 'Space Mono, monospace',
-                  letterSpacing: '0.08em',
-                  padding: '2px 7px',
-                  borderRadius: 3,
-                  textTransform: 'uppercase',
-                  color: checkResult.verdict === 'passed' ? '#7EE787' : '#FF4D4F',
-                  background: checkResult.verdict === 'passed' ? 'rgba(126,231,135,0.08)' : 'rgba(255,77,79,0.08)',
-                  border: `1px solid ${checkResult.verdict === 'passed' ? 'rgba(126,231,135,0.25)' : 'rgba(255,77,79,0.25)'}`,
-                }}
-              >
+            <span className="aud-status-checking">
+              <span className="aud-verdict-badge" data-verdict={checkResult.verdict}>
                 {checkResult.verdict}
               </span>
               {saveFailed && (
-                <span
-                  style={{ fontSize: 8, color: '#D29922', fontFamily: 'Space Mono, monospace' }}
-                  title="Result was not saved to database — it will be lost on refresh"
-                >
+                <span className="aud-save-failed" title="Result was not saved to database — it will be lost on refresh">
                   unsaved
                 </span>
               )}
-              <button
-                onClick={onRecheck}
-                title="Re-check this finding"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 20,
-                  height: 20,
-                  borderRadius: 3,
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  background: 'rgba(255,255,255,0.03)',
-                  cursor: 'pointer',
-                  color: 'rgba(255,255,255,0.3)',
-                  padding: 0,
-                  flexShrink: 0,
-                }}
-              >
+              <button onClick={onRecheck} title="Re-check this finding" className="aud-recheck-btn">
                 <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="23 4 23 10 17 10" />
                   <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
@@ -315,42 +185,16 @@ function FindingRow({
               </button>
             </span>
           ) : (
-            <button
-              onClick={onRecheck}
-              style={{
-                fontSize: 9,
-                fontWeight: 600,
-                fontFamily: 'Space Mono, monospace',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                padding: '3px 10px',
-                borderRadius: 4,
-                border: '1px solid rgba(255,255,255,0.1)',
-                background: 'rgba(255,255,255,0.03)',
-                color: 'rgba(255,255,255,0.4)',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-              }}
-            >
+            <button onClick={onRecheck} className="aud-check-btn">
               Check
             </button>
           )}
         </span>
 
         <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          style={{
-            color: 'rgba(255,255,255,0.25)',
-            transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
-            transition: 'transform 0.2s',
-          }}
+          width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+          className="aud-chevron" data-expanded={expanded}
         >
           <polyline points="9 18 15 12 9 6" />
         </svg>
@@ -358,111 +202,55 @@ function FindingRow({
 
       {/* Expanded Details */}
       {expanded && (
-        <div
-          style={{
-            padding: '0 16px 20px 89px',
-            background: 'rgba(255,255,255,0.015)',
-          }}
-        >
+        <div className="aud-detail-panel">
           {/* Description */}
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.25)', marginBottom: 6 }}>
-              Description
-            </div>
-            <div style={{ fontSize: 12, lineHeight: 1.7, color: 'rgba(255,255,255,0.6)' }}>
-              {finding.description}
-            </div>
+          <div className="aud-detail-section">
+            <div className="aud-detail-heading">Description</div>
+            <div className="aud-detail-text">{finding.description}</div>
           </div>
 
           {/* Impact */}
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.25)', marginBottom: 6 }}>
-              Impact Assessment
-            </div>
+          <div className="aud-detail-section">
+            <div className="aud-detail-heading">Impact Assessment</div>
             <div
-              style={{
-                fontSize: 12,
-                lineHeight: 1.7,
-                color: cfg.color,
-                padding: '10px 14px',
-                background: cfg.bg,
-                border: `1px solid ${cfg.border}`,
-                borderRadius: 6,
-              }}
+              className="aud-detail-box aud-detail-box-severity"
+              style={{ '--aud-sev-color': cfg.color, '--aud-sev-bg': cfg.bg, '--aud-sev-border': cfg.border } as React.CSSProperties}
             >
               {finding.impact}
             </div>
           </div>
 
           {/* Affected Assets */}
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.25)', marginBottom: 6 }}>
-              Affected Assets
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+          <div className="aud-detail-section">
+            <div className="aud-detail-heading">Affected Assets</div>
+            <div className="aud-asset-list">
               {finding.affectedAssets.map(asset => (
-                <code
-                  key={asset}
-                  style={{
-                    fontSize: 10,
-                    fontFamily: 'Space Mono, monospace',
-                    padding: '2px 8px',
-                    borderRadius: 3,
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    color: 'rgba(255,255,255,0.5)',
-                  }}
-                >
-                  {asset}
-                </code>
+                <code key={asset} className="aud-asset-tag">{asset}</code>
               ))}
             </div>
           </div>
 
           {/* Remediation */}
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.25)', marginBottom: 6 }}>
-              Remediation Guidance
-            </div>
-            <div
-              style={{
-                fontSize: 12,
-                lineHeight: 1.7,
-                color: 'rgba(126,231,135,0.85)',
-                padding: '10px 14px',
-                background: 'rgba(126,231,135,0.04)',
-                border: '1px solid rgba(126,231,135,0.12)',
-                borderRadius: 6,
-              }}
-            >
-              {finding.remediation}
-            </div>
+          <div className="aud-detail-section">
+            <div className="aud-detail-heading">Remediation Guidance</div>
+            <div className="aud-detail-box aud-detail-box-pass">{finding.remediation}</div>
           </div>
 
           {/* Verification Result */}
           {checkResult && (
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 9, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.25)', marginBottom: 6 }}>
-                Verification Result
-              </div>
+            <div className="aud-detail-section">
+              <div className="aud-detail-heading">Verification Result</div>
               <div
+                className="aud-detail-box aud-detail-box-verdict"
                 style={{
-                  fontSize: 12,
-                  lineHeight: 1.7,
-                  color: checkResult.verdict === 'passed' ? 'rgba(126,231,135,0.85)' : 'rgba(255,77,79,0.85)',
-                  padding: '10px 14px',
-                  background: checkResult.verdict === 'passed' ? 'rgba(126,231,135,0.04)' : 'rgba(255,77,79,0.04)',
-                  border: `1px solid ${checkResult.verdict === 'passed' ? 'rgba(126,231,135,0.12)' : 'rgba(255,77,79,0.12)'}`,
-                  borderRadius: 6,
-                }}
+                  '--aud-verdict-color': checkResult.verdict === 'passed' ? 'rgba(126,231,135,0.85)' : 'rgba(255,77,79,0.85)',
+                  '--aud-verdict-bg': checkResult.verdict === 'passed' ? 'rgba(126,231,135,0.04)' : 'rgba(255,77,79,0.04)',
+                  '--aud-verdict-border': checkResult.verdict === 'passed' ? 'rgba(126,231,135,0.12)' : 'rgba(255,77,79,0.12)',
+                } as React.CSSProperties}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                  <span style={{ fontSize: 10, fontWeight: 700, fontFamily: 'Space Mono, monospace', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                    {checkResult.verdict}
-                  </span>
-                  <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.2)', fontFamily: 'Space Mono, monospace' }}>
-                    {new Date(checkResult.timestamp).toLocaleTimeString()}
-                  </span>
+                <div className="aud-verdict-header">
+                  <span className="aud-verdict-label">{checkResult.verdict}</span>
+                  <span className="aud-verdict-ts">{new Date(checkResult.timestamp).toLocaleTimeString()}</span>
                 </div>
                 {checkResult.summary}
               </div>
@@ -470,32 +258,13 @@ function FindingRow({
           )}
 
           {/* Metadata Row */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center' }}>
-            {finding.cwe && (
-              <span style={{ fontSize: 10, fontFamily: 'Space Mono, monospace', color: 'rgba(255,255,255,0.35)' }}>
-                {finding.cwe}
-              </span>
-            )}
-            <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.25)' }}>
-              {finding.category}
-            </span>
+          <div className="aud-meta-row">
+            {finding.cwe && <span className="aud-meta-cwe">{finding.cwe}</span>}
+            <span className="aud-meta-category">{finding.category}</span>
             {finding.compliance.length > 0 && (
-              <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+              <div className="aud-compliance-list">
                 {finding.compliance.map(c => (
-                  <span
-                    key={c}
-                    style={{
-                      fontSize: 9,
-                      fontFamily: 'Space Mono, monospace',
-                      padding: '1px 6px',
-                      borderRadius: 2,
-                      background: 'rgba(121,192,255,0.08)',
-                      border: '1px solid rgba(121,192,255,0.15)',
-                      color: 'rgba(121,192,255,0.7)',
-                    }}
-                  >
-                    {c}
-                  </span>
+                  <span key={c} className="aud-compliance-tag">{c}</span>
                 ))}
               </div>
             )}
@@ -811,84 +580,25 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
   return (
     <div>
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div style={{ marginBottom: 32 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-          <h2
-            style={{
-              fontSize: 18,
-              fontWeight: 600,
-              color: '#F0F6FC',
-              margin: 0,
-              letterSpacing: '-0.01em',
-            }}
-          >
-            Security &amp; Risk Audit
-          </h2>
-          <span
-            style={{
-              fontSize: 9,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.12em',
-              padding: '3px 8px',
-              borderRadius: 3,
-              background: stats.bySeverity.CRITICAL > 0 ? 'rgba(255,77,79,0.12)' : 'rgba(126,231,135,0.12)',
-              color: stats.bySeverity.CRITICAL > 0 ? '#FF4D4F' : '#7EE787',
-              border: `1px solid ${stats.bySeverity.CRITICAL > 0 ? 'rgba(255,77,79,0.25)' : 'rgba(126,231,135,0.25)'}`,
-            }}
-          >
+      <div className="aud-header">
+        <div className="aud-header-row">
+          <h2 className="aud-title">Security &amp; Risk Audit</h2>
+          <span className="aud-critical-badge" data-has-critical={stats.bySeverity.CRITICAL > 0}>
             {stats.bySeverity.CRITICAL > 0 ? `${stats.bySeverity.CRITICAL} Critical` : 'No Critical'}
           </span>
 
           {/* Action buttons */}
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div className="aud-actions">
             {/* Check All button */}
             {!checkAllRunning ? (
-              <button
-                onClick={handleCheckAll}
-                disabled={checkAllRunning}
-                style={{
-                  fontSize: 9,
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  padding: '4px 12px',
-                  borderRadius: 4,
-                  background: 'rgba(121,192,255,0.06)',
-                  border: '1px solid rgba(121,192,255,0.2)',
-                  color: 'rgba(121,192,255,0.8)',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 5,
-                }}
-              >
+              <button onClick={handleCheckAll} disabled={checkAllRunning} className="aud-action-btn" data-variant="info">
                 <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
                 Check All
               </button>
             ) : (
-              <button
-                onClick={handleCheckAllStop}
-                style={{
-                  fontSize: 9,
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  padding: '4px 12px',
-                  borderRadius: 4,
-                  background: 'rgba(255,77,79,0.06)',
-                  border: '1px solid rgba(255,77,79,0.2)',
-                  color: 'rgba(255,77,79,0.8)',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 5,
-                }}
-              >
+              <button onClick={handleCheckAllStop} className="aud-action-btn" data-variant="danger">
                 <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <rect x={6} y={6} width={12} height={12} />
                 </svg>
@@ -898,25 +608,7 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
 
             {/* Re-run Audit button */}
             {!rerunRunning ? (
-              <button
-                onClick={handleRerun}
-                style={{
-                  fontSize: 9,
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  padding: '4px 12px',
-                  borderRadius: 4,
-                  background: 'rgba(121,192,255,0.06)',
-                  border: '1px solid rgba(121,192,255,0.2)',
-                  color: 'rgba(121,192,255,0.8)',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 5,
-                }}
-              >
+              <button onClick={handleRerun} className="aud-action-btn" data-variant="info">
                 <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="23 4 23 10 17 10" />
                   <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
@@ -924,25 +616,7 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
                 Re-run Audit
               </button>
             ) : (
-              <button
-                onClick={handleRerunStop}
-                style={{
-                  fontSize: 9,
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  padding: '4px 12px',
-                  borderRadius: 4,
-                  background: 'rgba(255,77,79,0.06)',
-                  border: '1px solid rgba(255,77,79,0.2)',
-                  color: 'rgba(255,77,79,0.8)',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 5,
-                }}
-              >
+              <button onClick={handleRerunStop} className="aud-action-btn" data-variant="danger">
                 <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <rect x={6} y={6} width={12} height={12} />
                 </svg>
@@ -951,43 +625,22 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
             )}
           </div>
         </div>
-        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', margin: 0, lineHeight: 1.6 }}>
+        <p className="aud-subtitle">
           Institutional-grade vulnerability assessment across 35 audit categories.
           CVSS v3.1 scoring. OWASP / CWE / GDPR / SOC 2 compliance mapping.
         </p>
       </div>
 
       {/* ── Audit Metadata ─────────────────────────────────────────────── */}
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: 20,
-          padding: '14px 18px',
-          background: 'rgba(255,255,255,0.02)',
-          border: '1px solid rgba(255,255,255,0.05)',
-          borderRadius: 8,
-          marginBottom: 24,
-          fontSize: 11,
-          color: 'rgba(255,255,255,0.35)',
-          fontFamily: 'Space Mono, monospace',
-        }}
-      >
-        <span>Date: <strong style={{ color: 'rgba(255,255,255,0.6)' }}>{AUDIT_METADATA.date}</strong></span>
-        <span>Scope: <strong style={{ color: 'rgba(255,255,255,0.6)' }}>{AUDIT_METADATA.scope}</strong></span>
-        <span>Stack: <strong style={{ color: 'rgba(255,255,255,0.6)' }}>{AUDIT_METADATA.stack}</strong></span>
-        <span>Version: <strong style={{ color: 'rgba(255,255,255,0.6)' }}>{AUDIT_METADATA.version}</strong></span>
+      <div className="aud-metadata-bar">
+        <span>Date: <strong className="aud-metadata-val">{AUDIT_METADATA.date}</strong></span>
+        <span>Scope: <strong className="aud-metadata-val">{AUDIT_METADATA.scope}</strong></span>
+        <span>Stack: <strong className="aud-metadata-val">{AUDIT_METADATA.stack}</strong></span>
+        <span>Version: <strong className="aud-metadata-val">{AUDIT_METADATA.version}</strong></span>
       </div>
 
       {/* ── Score Summary ──────────────────────────────────────────────── */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-          gap: 10,
-          marginBottom: 24,
-        }}
-      >
+      <div className="aud-score-grid">
         <StatBox label="Total Findings" value={stats.total} />
         <StatBox label="Critical" value={stats.bySeverity.CRITICAL} accent="#FF4D4F" />
         <StatBox label="High" value={stats.bySeverity.HIGH} accent="#FF7B72" />
@@ -1001,16 +654,7 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
 
       {/* ── View Tabs ──────────────────────────────────────────────────── */}
       {auditMd && (
-        <div
-          style={{
-            display: 'flex',
-            gap: 0,
-            marginTop: 28,
-            marginBottom: 0,
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
-            overflowX: 'auto',
-          }}
-        >
+        <div className="aud-tabs">
           {[
             { key: 'findings', label: 'Findings & Categories' },
             { key: 'exec', label: 'Executive Summary' },
@@ -1022,21 +666,8 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
             <button
               key={t.key}
               onClick={() => setActiveView(t.key)}
-              style={{
-                padding: '10px 16px',
-                fontSize: 11,
-                fontWeight: 600,
-                fontFamily: 'Space Mono, monospace',
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                background: 'none',
-                border: 'none',
-                borderBottom: activeView === t.key ? '2px solid rgba(121,192,255,0.7)' : '2px solid transparent',
-                color: activeView === t.key ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.35)',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                transition: 'all 0.15s',
-              }}
+              className="aud-tab"
+              data-active={activeView === t.key}
             >{t.label}</button>
           ))}
         </div>
@@ -1045,7 +676,7 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
       {/* ── Report Tabs (non-findings views) ───────────────────────────── */}
       {auditMd && activeView !== 'findings' && (
         <div style={{ marginTop: 24 }}>
-          <Suspense fallback={<div style={{ padding: 24, fontSize: 12, color: 'rgba(255,255,255,0.3)' }}>Loading report…</div>}>
+          <Suspense fallback={<div className="aud-loading">Loading report…</div>}>
             <AuditReportSection content={auditMd} initialTab={activeView} />
           </Suspense>
         </div>
@@ -1055,18 +686,8 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
       {(activeView === 'findings' || !auditMd) && <>
 
       {/* ── Filter Controls ────────────────────────────────────────────── */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          marginTop: 28,
-          marginBottom: 16,
-        }}
-      >
-        <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.25)', marginRight: 8 }}>
-          Filter
-        </span>
+      <div className="aud-filter-row">
+        <span className="aud-filter-label">Filter</span>
         {severityFilters.map(sev => {
           const isActive = filterSeverity === sev;
           const cfg = sev === 'ALL' ? null : SEVERITY_CONFIG[sev];
@@ -1074,20 +695,9 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
             <button
               key={sev}
               onClick={() => setFilterSeverity(sev)}
-              style={{
-                fontSize: 10,
-                fontWeight: 600,
-                fontFamily: 'Space Mono, monospace',
-                letterSpacing: '0.06em',
-                padding: '4px 10px',
-                borderRadius: 4,
-                border: `1px solid ${isActive ? (cfg?.border || 'rgba(255,255,255,0.2)') : 'rgba(255,255,255,0.06)'}`,
-                background: isActive ? (cfg?.bg || 'rgba(255,255,255,0.06)') : 'transparent',
-                color: isActive ? (cfg?.color || 'rgba(255,255,255,0.7)') : 'rgba(255,255,255,0.3)',
-                cursor: 'pointer',
-                transition: 'all 0.15s',
-                textTransform: 'uppercase',
-              }}
+              className="aud-filter-btn"
+              data-active={isActive}
+              style={cfg ? { '--aud-sev-border': cfg.border, '--aud-sev-bg': cfg.bg, '--aud-sev-color': cfg.color } as React.CSSProperties : undefined}
             >
               {sev === 'ALL' ? `All (${stats.total})` : `${sev} (${stats.bySeverity[sev]})`}
             </button>
@@ -1096,30 +706,9 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
       </div>
 
       {/* ── Findings Table ─────────────────────────────────────────────── */}
-      <div
-        style={{
-          border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: 10,
-          overflow: 'hidden',
-          background: 'rgba(255,255,255,0.01)',
-        }}
-      >
+      <div className="aud-table">
         {/* Table Header */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '72px 72px 1fr 100px 80px 120px 32px',
-            gap: 12,
-            padding: '10px 16px',
-            background: 'rgba(255,255,255,0.03)',
-            borderBottom: '1px solid rgba(255,255,255,0.06)',
-            fontSize: 9,
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.12em',
-            color: 'rgba(255,255,255,0.3)',
-          }}
-        >
+        <div className="aud-table-header">
           <span>ID</span>
           <span>Severity</span>
           <span>Finding</span>
@@ -1145,76 +734,36 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
       </div>
 
       {/* ── Compliance Coverage ─────────────────────────────────────────── */}
-      <div style={{ marginTop: 28 }}>
-        <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.25)', marginBottom: 12 }}>
-          Compliance Framework Coverage
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+      <div className="aud-section">
+        <div className="aud-section-heading">Compliance Framework Coverage</div>
+        <div className="aud-tag-list">
           {Array.from(new Set(AUDIT_FINDINGS.flatMap(f => f.compliance))).sort().map(fw => {
             const count = AUDIT_FINDINGS.filter(f => f.compliance.includes(fw)).length;
-            return (
-              <span
-                key={fw}
-                style={{
-                  fontSize: 10,
-                  fontFamily: 'Space Mono, monospace',
-                  padding: '4px 10px',
-                  borderRadius: 4,
-                  background: 'rgba(121,192,255,0.06)',
-                  border: '1px solid rgba(121,192,255,0.12)',
-                  color: 'rgba(121,192,255,0.65)',
-                }}
-              >
-                {fw} ({count})
-              </span>
-            );
+            return <span key={fw} className="aud-tag">{fw} ({count})</span>;
           })}
         </div>
       </div>
 
       {/* ── Remediation Priority Matrix ─────────────────────────────────── */}
-      <div style={{ marginTop: 28 }}>
-        <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(255,255,255,0.25)', marginBottom: 12 }}>
-          Remediation Priority Matrix
-        </div>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: 8,
-          }}
-        >
+      <div className="aud-section">
+        <div className="aud-section-heading">Remediation Priority Matrix</div>
+        <div className="aud-priority-grid">
           {(['Immediate', 'Short-term', 'Medium-term', 'Long-term'] as const).map(effort => {
             const findings = AUDIT_FINDINGS.filter(f => f.effort === effort);
             const color = EFFORT_COLORS[effort];
             return (
-              <div
-                key={effort}
-                style={{
-                  padding: '14px 16px',
-                  background: 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(255,255,255,0.06)',
-                  borderRadius: 8,
-                  borderTop: `2px solid ${color}`,
-                }}
-              >
-                <div style={{ fontSize: 9, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color, marginBottom: 8 }}>
-                  {effort}
-                </div>
-                <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'Space Mono, monospace', color: 'rgba(255,255,255,0.8)', marginBottom: 8 }}>
-                  {findings.length}
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <div key={effort} className="aud-priority-card" style={{ '--aud-effort-color': color } as React.CSSProperties}>
+                <div className="aud-priority-effort">{effort}</div>
+                <div className="aud-priority-count">{findings.length}</div>
+                <div className="aud-priority-items">
                   {findings.slice(0, 4).map(f => (
-                    <div key={f.id} style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      <span style={{ fontFamily: 'Space Mono, monospace', color: 'rgba(255,255,255,0.5)', marginRight: 6 }}>{f.id}</span>
+                    <div key={f.id} className="aud-priority-item">
+                      <span className="aud-priority-item-id">{f.id}</span>
                       {f.title}
                     </div>
                   ))}
                   {findings.length > 4 && (
-                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)' }}>
-                      +{findings.length - 4} more
-                    </div>
+                    <div className="aud-priority-more">+{findings.length - 4} more</div>
                   )}
                 </div>
               </div>
@@ -1224,19 +773,8 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
       </div>
 
       {/* ── Methodology Footer ──────────────────────────────────────────── */}
-      <div
-        style={{
-          marginTop: 32,
-          padding: '16px 18px',
-          background: 'rgba(255,255,255,0.015)',
-          border: '1px solid rgba(255,255,255,0.04)',
-          borderRadius: 8,
-          fontSize: 11,
-          lineHeight: 1.7,
-          color: 'rgba(255,255,255,0.3)',
-        }}
-      >
-        <strong style={{ color: 'rgba(255,255,255,0.5)' }}>Methodology:</strong>{' '}
+      <div className="aud-methodology">
+        <strong>Methodology:</strong>{' '}
         This audit covers 35 independent analysis categories including security, performance,
         accessibility, compliance, architecture, and operational readiness. Findings are scored
         using CVSS v3.1 base metrics and mapped to OWASP Top 10 2021, CWE, GDPR, SOC 2, and
@@ -1247,80 +785,43 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
 
       {/* ── Re-run Results ────────────────────────────────────────────── */}
       {(rerunResult || rerunRunning || rerunError) && (
-        <div style={{ marginTop: 32 }}>
+        <div className="aud-rerun-wrap">
           <button
             onClick={() => setRerunExpanded(!rerunExpanded)}
-            style={{
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '14px 18px',
-              background: 'rgba(121,192,255,0.03)',
-              border: '1px solid rgba(121,192,255,0.12)',
-              borderRadius: rerunExpanded ? '8px 8px 0 0' : 8,
-              cursor: 'pointer',
-              color: 'inherit',
-              fontFamily: 'inherit',
-            }}
+            className="aud-rerun-header"
+            data-expanded={rerunExpanded}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(121,192,255,0.7)' }}>
-                Re-run Results
-              </span>
+            <div className="aud-rerun-title-row">
+              <span className="aud-rerun-title">Re-run Results</span>
               {rerunRunning && (
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(121,192,255,0.6)', animation: 'pulse 2s infinite' }} />
-                  <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)' }}>Analyzing...</span>
+                <span className="aud-rerun-status">
+                  <span className="aud-rerun-pulse" />
+                  <span className="aud-rerun-analyzing">Analyzing...</span>
                 </span>
               )}
               {!rerunRunning && rerunResult && (
-                <span style={{ fontSize: 9, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(126,231,135,0.5)' }}>Complete</span>
+                <span className="aud-rerun-complete">Complete</span>
               )}
             </div>
             <svg
-              width={14}
-              height={14}
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="rgba(255,255,255,0.25)"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{ transform: rerunExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
+              width={14} height={14} viewBox="0 0 24 24" fill="none"
+              stroke="rgba(255,255,255,0.25)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
+              className="aud-chevron" data-expanded={rerunExpanded}
             >
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </button>
 
           {rerunExpanded && (
-            <div
-              style={{
-                border: '1px solid rgba(121,192,255,0.12)',
-                borderTop: 'none',
-                borderRadius: '0 0 8px 8px',
-                background: 'rgba(255,255,255,0.01)',
-              }}
-            >
+            <div className="aud-rerun-body">
               {rerunError && (
-                <div style={{ padding: '12px 18px' }}>
-                  <span style={{ fontSize: 11, color: '#FF4D4F' }}>{rerunError}</span>
+                <div className="aud-rerun-error">
+                  <span className="aud-rerun-error-text">{rerunError}</span>
                 </div>
               )}
               {rerunResult && (
-                <div style={{ maxHeight: 600, overflowY: 'auto', padding: '16px 18px' }}>
-                  <pre
-                    style={{
-                      fontSize: 12,
-                      fontFamily: 'Space Mono, monospace',
-                      color: 'rgba(255,255,255,0.65)',
-                      lineHeight: 1.8,
-                      whiteSpace: 'pre-wrap',
-                      margin: 0,
-                    }}
-                  >
-                    {rerunResult}
-                  </pre>
+                <div className="aud-rerun-output">
+                  <pre className="aud-rerun-pre">{rerunResult}</pre>
                 </div>
               )}
             </div>
