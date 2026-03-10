@@ -1537,6 +1537,47 @@ export default function DocsPage() {
           ]}
         />
 
+        {/* ── StockChart Classes ──────────────────────────────────────────── */}
+        <SectionHeader id="chart-classes" title="StockChart Classes (sm-chart-*)" count={30} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Interactive stock chart — price display, controls, indicator toggles, guide swatches, correlation chips, volume profile, and metrics.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".sm-chart-container", "Main chart wrapper — relative position, full width."],
+            [".sm-chart-guide-card", "Indicator guide panel — surface card with margin-top 32px, rounded-16."],
+            [".sm-chart-header", "Top bar with symbol + price info."],
+            [".sm-chart-controls", "Controls row — flex with gap, wraps on mobile."],
+            [".sm-chart-range-btn", "Time range button (1D, 1W, etc). data-active='true' highlights."],
+            [".sm-chart-type-btn", "Chart type toggle (candlestick/line). data-active='true' highlights."],
+            [".sm-chart-indicator-btn", "Indicator toggle button. data-active='true' for enabled state. data-indicator-color for swatch tint."],
+            [".sm-chart-indicator-swatch", "Color swatch inside indicator button. data-indicator-color maps to --indicator-color."],
+            [".sm-chart-toggle-section", "Collapsible section wrapper for guide content."],
+            [".sm-chart-toggle-chevron", "Chevron icon — data-open='true' rotates 90°."],
+            [".sm-chart-info-panel", "Metrics/info panel below chart."],
+            [".sm-chart-metric-card", "Individual metric card in grid."],
+            [".sm-chart-metric-positive", "Green text (#22c55e) for positive metric values."],
+            [".sm-chart-metric-negative", "Red text (#ef4444) for negative metric values."],
+            [".sm-chart-metric-default", "Default text color for neutral metric values."],
+            [".sm-chart-corr-chip", "Correlation chip container."],
+            [".sm-chart-corr-label", "Correlation label base. Modifier classes: -spy (purple), -qqq (cyan), -gold (yellow), -btc (orange)."],
+            [".sm-chart-corr-value", "Correlation value. Use .sm-chart-metric-positive/negative/default for color."],
+            [".sm-chart-vol-bar", "Volume profile bar. data-below='true' = green (support), 'false' = red (resistance). Width set via ref."],
+            [".sm-chart-vol-track", "Volume profile bar track — surface2, 6px height, rounded."],
+            [".sm-chart-guide-swatch", "Base swatch (12×12 rounded). Modifier classes for each indicator color:"],
+            [" -sma20, -sma50, -sma200", "SMA swatches: amber (#f59e0b), violet (#8b5cf6), cyan (#06b6d4)."],
+            [" -bb, -vwap, -rsi, -macd", "Indicator swatches: slate, orange, pink, blue."],
+            [" -macd-signal, -atr", "Signal swatches: red (#ef4444), teal (#14b8a6)."],
+            [" -spy, -qqq, -gold, -btc", "Compare swatches: purple, cyan, yellow, orange."],
+            [" -fibonacci, -vwapband", "Pro tool swatches: violet (#a78bfa), orange (#f97316)."],
+            [" -support, -resistance", "S/R swatches: green (#22c55e), red (#ef4444)."],
+            [" -volprofile", "Volume profile swatch: indigo (#6366f1)."],
+            [".sm-chart-price-change", "Price change text (12px Space Mono). data-direction='up|down' for mint/coral."],
+            [".sm-chart-price-change-positive / -negative", "Explicit positive (green) / negative (red) price change colors."],
+          ]}
+        />
+
         {/* ── LivePrice & Legend Classes ─────────────────────────────────── */}
         <SectionHeader id="liveprice-classes" title="LivePrice & Legend Classes" count={7} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">

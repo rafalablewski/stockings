@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-03-10
+
+- refactor: remove all inline styles from StockChart.tsx — correlation labels, metric values, volume profile bars, and guide swatches now use CSS classes
+- docs: add StockChart Classes (sm-chart-*) section to /docs design page with 30 class entries
+
 ## 2026-03-09
 
 - feat: add unified /api/press-intelligence endpoint supporting 20 tickers (ASTS, BMNR, IRDM, GSAT, VZ, VSAT, RKLB, SATS, LUNR, MSTR, MARA, RIOT, CLSK, HUT, IREN, NBIS, COIN, FRMM, T, AMZLEO, LYNK)

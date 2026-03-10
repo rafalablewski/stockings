@@ -1967,7 +1967,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   {/* Bollinger */}
                   <div>
                     <div className="sm-chart-guide-entry-title">
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.bbUpper }} />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-bb" />
                       Bollinger Bands
                     </div>
                     <div>
@@ -1984,7 +1984,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   {/* VWAP */}
                   <div>
                     <div className="sm-chart-guide-entry-title">
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.vwap }} />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-vwap" />
                       VWAP
                     </div>
                     <div>
@@ -2021,7 +2021,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   {/* RSI */}
                   <div>
                     <div className="sm-chart-guide-entry-title">
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.rsi }} />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-rsi" />
                       RSI
                     </div>
                     <div>
@@ -2043,8 +2043,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   {/* MACD */}
                   <div>
                     <div className="sm-chart-guide-entry-title">
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.macd }} />
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.macdSignal }} />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-macd" />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-macd-signal" />
                       MACD
                     </div>
                     <div>
@@ -2064,7 +2064,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
                   {/* ATR */}
                   <div>
                     <div className="sm-chart-guide-entry-title">
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.atr }} />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-atr" />
                       ATR
                     </div>
                     <div>
@@ -2131,7 +2131,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
                   <div>
                     <div className="sm-chart-guide-entry-title">
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.spy }} />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-spy" />
                       vs. SPY (S&P 500)
                     </div>
                     <div>
@@ -2143,7 +2143,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
                   <div>
                     <div className="sm-chart-guide-entry-title">
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.qqq }} />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-qqq" />
                       vs. QQQ (NASDAQ-100)
                     </div>
                     <div>
@@ -2155,7 +2155,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
                   <div>
                     <div className="sm-chart-guide-entry-title">
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.gold }} />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-gold" />
                       vs. Gold (GLD)
                     </div>
                     <div>
@@ -2167,7 +2167,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
                   <div>
                     <div className="sm-chart-guide-entry-title">
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.btc }} />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-btc" />
                       vs. BTC (Bitcoin)
                     </div>
                     <div>
@@ -2193,7 +2193,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
                   <div>
                     <div className="sm-chart-guide-entry-title">
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.fibonacci }} />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-fibonacci" />
                       Fibonacci Retracements
                     </div>
                     <div>
@@ -2213,7 +2213,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
                   <div>
                     <div className="sm-chart-guide-entry-title">
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.vwapBand1 }} />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-vwapband" />
                       VWAP Standard Deviation Bands
                     </div>
                     <div>
@@ -2232,8 +2232,8 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
                   <div>
                     <div className="sm-chart-guide-entry-title">
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.support }} />
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.resistance }} />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-support" />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-resistance" />
                       Support / Resistance (S/R)
                     </div>
                     <div>
@@ -2255,7 +2255,7 @@ export default function StockChart({ symbol, height = 280, externalRefreshKey = 
 
                   <div>
                     <div className="sm-chart-guide-entry-title">
-                      <span className="sm-chart-guide-swatch" style={{ background: COLORS.volumeProfile }} />
+                      <span className="sm-chart-guide-swatch sm-chart-guide-swatch-volprofile" />
                       Volume Profile
                     </div>
                     <div>
