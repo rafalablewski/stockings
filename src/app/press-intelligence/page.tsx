@@ -592,7 +592,7 @@ export default function PressIntelligencePage() {
               />
             </div>
             <button className="pi-refresh-btn" onClick={handleRefresh} disabled={refreshing}>
-              <span style={{ display: "inline-block", animation: refreshing ? "pi-spin 0.8s linear infinite" : "none" }}>
+              <span className="pi-refresh-icon" data-spinning={refreshing ? "true" : undefined}>
                 &#x27F3;
               </span>
               Refresh
@@ -620,16 +620,16 @@ export default function PressIntelligencePage() {
               <span className="pi-kpi-label">This Year</span>
             </div>
             <div className="pi-kpi">
-              <span className="pi-kpi-value" style={{ fontSize: 13 }}>{stats.latest}</span>
+              <span className="pi-kpi-value pi-kpi-value-sm">{stats.latest}</span>
               <span className="pi-kpi-label">Latest</span>
             </div>
 
             {/* Per-stock counts */}
-            <div style={{ marginLeft: "auto" }}>
+            <div className="pi-stock-summary-wrap">
               <div className="pi-stock-summary">
                 {FEED_CONFIGS.map((cfg) => (
                   <div key={cfg.ticker} className="pi-stock-stat">
-                    <span className="pi-stock-dot" style={{ background: cfg.color }} />
+                    <span className="pi-stock-dot" data-accent={cfg.accent} />
                     <span className="pi-stock-stat-count">{stats.perStock[cfg.ticker] || 0}</span>
                     <span className="pi-stock-stat-label">{cfg.ticker}</span>
                   </div>
@@ -646,7 +646,7 @@ export default function PressIntelligencePage() {
             <button
               className="pi-stock-pill"
               data-active={activeTicker === "ALL"}
-              style={{ '--pill-color': 'var(--text)' } as React.CSSProperties}
+              data-accent="all"
               onClick={() => setActiveTicker("ALL")}
             >
               ALL
@@ -656,7 +656,7 @@ export default function PressIntelligencePage() {
                 key={cfg.ticker}
                 className="pi-stock-pill"
                 data-active={activeTicker === cfg.ticker}
-                style={{ '--pill-color': cfg.color } as React.CSSProperties}
+                data-accent={cfg.accent}
                 onClick={() => setActiveTicker(cfg.ticker)}
               >
                 {cfg.ticker}
@@ -710,14 +710,14 @@ export default function PressIntelligencePage() {
 
         {/* Loading skeletons */}
         {loading && Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="pi-skeleton" style={{ opacity: 1 - i * 0.08 }} />
+          <div key={i} className="pi-skeleton" />
         ))}
 
         {/* Errors */}
         {!loading && hasErrors && (
-          <div style={{ padding: "12px 0 8px" }}>
+          <div className="pi-errors-wrap">
             {Object.entries(errors).map(([ticker, msg]) => (
-              <div key={ticker} className="pi-empty" style={{ padding: "8px 0" }}>
+              <div key={ticker} className="pi-empty pi-error-item">
                 <span className="pi-error">{ticker}: {msg}</span>
               </div>
             ))}
@@ -757,10 +757,7 @@ export default function PressIntelligencePage() {
                 <div className="pi-card-top">
                   <span
                     className="pi-card-ticker"
-                    style={{
-                      '--ticker-color': cfg.color,
-                      '--ticker-bg': cfg.colorDim,
-                    } as React.CSSProperties}
+                    data-accent={cfg.accent}
                   >
                     {cfg.ticker}
                   </span>

@@ -861,13 +861,13 @@ function ClassTable({ classes }: { classes: CSSClass[] }) {
 function SmallTable({ headers, rows }: { headers: string[]; rows: string[][] }) {
   return (
     <div className="mt-4 rounded-xl border border-white/[0.06] overflow-hidden">
-      <div className={`grid bg-white/[0.03] border-b border-white/[0.06]`} style={{ gridTemplateColumns: `repeat(${headers.length}, 1fr)` }}>
+      <div className={`docs-dynamic-grid bg-white/[0.03] border-b border-white/[0.06]`} data-cols={headers.length}>
         {headers.map((h) => (
           <div key={h} className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">{h}</div>
         ))}
       </div>
       {rows.map((row, i) => (
-        <div key={i} className="grid border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.02] transition-colors" style={{ gridTemplateColumns: `repeat(${headers.length}, 1fr)` }}>
+        <div key={i} className="docs-dynamic-grid border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.02] transition-colors" data-cols={headers.length}>
           {row.map((cell, j) => (
             <div key={j} className={`px-4 py-2.5 text-[12px] ${j === 0 ? 'font-mono text-cyan-400/70' : 'text-white/40'}`}>{cell}</div>
           ))}
@@ -886,10 +886,9 @@ function CodeBlock({ code }: { code: string }) {
 }
 
 function TreeRow({ depth, name, detail, mono }: { depth: number; name: string; detail: string; mono?: boolean }) {
-  const indent = depth * 24;
   const connector = depth === 0 ? "" : "├─ ";
   return (
-    <div className="flex items-baseline gap-2 py-1 hover:bg-white/[0.02] transition-colors" style={{ paddingLeft: indent }}>
+    <div className="flex items-baseline gap-2 py-1 hover:bg-white/[0.02] transition-colors docs-tree-row" data-indent={depth}>
       {depth > 0 && <span className="text-[10px] font-mono text-white/15 select-none">{connector}</span>}
       <span className={`text-[12px] ${mono ? 'font-mono text-cyan-400/70' : 'font-medium text-white/70'}`}>{name}</span>
       <span className="text-[11px] text-white/25">{detail}</span>
@@ -1315,13 +1314,13 @@ export default function DocsPage() {
         <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
             <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/25 mb-3">UI Font</div>
-            <div className="text-[20px] font-light text-white/80 mb-1" style={{ fontFamily: 'Outfit, sans-serif' }}>Outfit</div>
+            <div className="text-[20px] font-light text-white/80 mb-1 docs-font-outfit">Outfit</div>
             <div className="text-[11px] text-white/30">Weights: 300 (light), 400, 500, 600 (semi), 700 (bold), 800</div>
             <div className="text-[11px] text-white/25 mt-1">Used for: headings, labels, body text, buttons, navigation</div>
           </div>
           <div className="p-5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
             <div className="text-[11px] font-semibold uppercase tracking-[0.1em] text-white/25 mb-3">Data Font</div>
-            <div className="text-[20px] text-white/80 mb-1" style={{ fontFamily: 'Space Mono, monospace' }}>Space Mono</div>
+            <div className="text-[20px] text-white/80 mb-1 docs-font-space-mono">Space Mono</div>
             <div className="text-[11px] text-white/30">Weights: 400, 700</div>
             <div className="text-[11px] text-white/25 mt-1">Used for: prices, percentages, KPIs, tickers, code, dates</div>
           </div>
@@ -1339,10 +1338,10 @@ export default function DocsPage() {
             { ticker: "BMNR", color: "violet", hex: "#A78BFA", name: "BitMine Immersion" },
             { ticker: "CRCL", color: "mint",   hex: "#7EE787", name: "Circle Internet" },
           ].map((stock) => (
-            <div key={stock.ticker} className="p-4 rounded-xl border border-white/[0.06] flex items-center gap-4" style={{ background: `linear-gradient(135deg, ${stock.hex}08, transparent)` }}>
-              <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ background: stock.hex }} />
+            <div key={stock.ticker} className="p-4 rounded-xl border border-white/[0.06] flex items-center gap-4 docs-stock-card" data-stock-color={stock.color}>
+              <div className="w-3 h-3 rounded-full flex-shrink-0 docs-stock-dot" data-stock-color={stock.color} />
               <div>
-                <div className="text-[12px] font-mono font-semibold" style={{ color: stock.hex }}>{stock.ticker}</div>
+                <div className="text-[12px] font-mono font-semibold docs-stock-ticker" data-stock-color={stock.color}>{stock.ticker}</div>
                 <div className="text-[11px] text-white/30">{stock.name} — {stock.color}</div>
               </div>
             </div>
