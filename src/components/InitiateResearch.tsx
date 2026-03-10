@@ -58,7 +58,7 @@ export default function InitiateResearch() {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="group relative block w-full p-6 rounded-2xl border border-dashed border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.02] transition-all duration-300 text-left"
+        className="group relative block w-full p-6 rounded-2xl bg-white/[0.01] border border-dashed border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.03] transition-all duration-300 text-left"
       >
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.04] group-hover:bg-white/[0.08] transition-colors">
@@ -85,7 +85,7 @@ export default function InitiateResearch() {
   }
 
   return (
-    <div className="rounded-2xl bg-white/[0.02] border border-white/[0.08] p-6">
+    <div className="rounded-2xl bg-white/[0.015] border border-white/[0.06] p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-[13px] font-medium text-white/80">Initiate New Research</h3>
         <button
