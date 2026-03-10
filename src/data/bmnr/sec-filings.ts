@@ -31,7 +31,7 @@
  *
  * Search markers: [PR_CHECKLIST_SECMETA], [PR_CHECKLIST_FILING_DATA],
  *   [PR_CHECKLIST_RECENT_PRESS_RELEASES], [PR_CHECKLIST_EVENT_TIMELINE],
- *   [PR_CHECKLIST_ARCHIVE]
+ *   [PR_CHECKLIST_ARCHIVE], [PR_CHECKLIST_PURCHASE_HISTORY]
  * ═══════════════════════════════════════════════════════════════════════
  */
 

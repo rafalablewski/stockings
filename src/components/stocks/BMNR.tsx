@@ -193,8 +193,13 @@
  * ║     │ 🔴 MANDATORY         │ "const archive = ["         │ analysis entry     ║
  * ║     │ ⚠️ OFTEN FORGOTTEN   │ #investment-archive section │ at TOP of array    ║
  * ║                                                                               ║
+ * ║  12 │ Purchase History     │ [PR_CHECKLIST_PURCHASE_     │ Add NEW entry      ║
+ * ║     │ 🔴 MANDATORY         │  HISTORY]                   │ at TOP of array    ║
+ * ║     │                      │ purchase-history.ts          │ ethBought, price   ║
+ * ║                                                                               ║
  * ╠═══════════════════════════════════════════════════════════════════════════════╣
  * ║  ⚠️ COMMON MISTAKES TO AVOID:                                                 ║
+ * ║  - Forgetting Purchase History entry (purchase-history.ts)                    ║
  * ║  - Forgetting Analysis Archive entry (#investment-archive, const archive)     ║
  * ║  - Forgetting Investment DISPLAY metrics (hardcoded, not from state!)         ║
  * ║  - Forgetting secMeta.lastPR in Timeline tab                                  ║

@@ -23,6 +23,7 @@
  *  5. timeline.ts (or equivalent)          — Add new timeline entry at top
  *  6. catalysts.ts (or equivalent)                — Move completed catalysts, update metadata
  *  7. company.ts / financials.ts                  — Update holdings, prices, staking, cash
+ *  7b. purchase-history.ts (BMNR only)             — Add new purchase entry at top
  *
  * UI COMPONENT (src/components/stocks/<TICKER>.tsx):
  *  8. filingData.lastPressRelease                 — Update date
@@ -41,6 +42,7 @@
  *   [PR_CHECKLIST_RECENT_PRESS_RELEASES]  — <TICKER>.tsx, pressReleases array
  *   [PR_CHECKLIST_EVENT_TIMELINE]         — timeline.ts, timeline array
  *   [PR_CHECKLIST_ARCHIVE]               — <TICKER>.tsx, const archive = [
+ *   [PR_CHECKLIST_PURCHASE_HISTORY]      — purchase-history.ts, BMNR_PURCHASE_HISTORY array (BMNR only)
  *
  * This checklist applies to BMNR, ASTS, CRCL, and any future tickers.
  * ═══════════════════════════════════════════════════════════════════════════

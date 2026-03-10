@@ -67,6 +67,7 @@ export const PURCHASE_HISTORY_METADATA: DataMetadata = {
  * - Fill mnavAtTime, stockPrice, navPerShare when available
  */
 export const BMNR_PURCHASE_HISTORY: PurchaseRecord[] = [
+  // [PR_CHECKLIST_PURCHASE_HISTORY] - Add new purchase entry here at top!
   // === FEBRUARY 2026 ===
   {
     date: '2026-02-23',
