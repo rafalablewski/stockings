@@ -2896,16 +2896,23 @@ const PurchasesTab = ({ ethPrice, currentShares, currentStockPrice }: { ethPrice
           </div>
 
           <div className="sm-bmnr-assumptions sm-mt-12">
-            <div className="sm-text2 sm-fw-600 sm-mb-4">Data Requirements</div>
+            <div className="sm-text2 sm-fw-600 sm-mb-4">Data Sources &amp; Reliability</div>
             <ul className="sm-bmnr-list-reset">
-              <li><strong>Total ETH After</strong> — from weekly 8-K/PR (available for all entries)</li>
-              <li><strong>ETH Price</strong> — from PR or Coinbase at time (available for all entries)</li>
-              <li><strong>Stock Price</strong> — BMNR closing price on PR date (requires manual lookup)</li>
-              <li><strong>Shares Outstanding</strong> — from 10-Q or PR (changes weekly due to ATM issuance)</li>
+              <li><strong>ETH Holdings &amp; Price</strong> — from weekly 8-K/PR filings. <span style={{ color: 'var(--mint)' }}>High reliability.</span></li>
+              <li><strong>Stock Price</strong> — Only 4 of 32 confirmed from SEC filings (Sep 22 8-K, Dec 29 market data, Feb 9 market data, Feb 17 Form 4/A). Other 28 are estimates marked with ≈.</li>
+              <li><strong>Shares Outstanding</strong> — 7 confirmed anchors (10-K, 10-Q, PRs). Other dates linearly interpolated. Inaccurate for Jul–Sep 2025 when shares grew from 5M to 235M in ~8 weeks.</li>
+              <li><strong>NAV/Share</strong> — Simplified: (ETH × price) ÷ shares. <span style={{ color: 'var(--coral)' }}>Excludes cash ($400M–$988M), BTC, and other assets.</span> This <strong>overstates mNAV</strong> by ~0.03–0.15x.</li>
             </ul>
-            <p className="sm-body-sm sm-text3 sm-lh-17 sm-mt-8">
-              mNAV shows &ldquo;—&rdquo; where stock price or shares outstanding were not recorded at time of PR. These can be back-filled from historical market data and 8-K filings as they become available.
-            </p>
+          </div>
+
+          <div className="sm-bmnr-assumptions sm-mt-12">
+            <div className="sm-text2 sm-fw-600 sm-mb-4">Accuracy by Period</div>
+            <ul className="sm-bmnr-list-reset">
+              <li><span style={{ color: 'var(--coral)' }}>Jul 2025</span> — Very low confidence. Stock in freefall ($161→~$38), shares growing ~5M/day. mNAV 3–7x is directional but could be ±50%.</li>
+              <li><span style={{ color: 'var(--gold)' }}>Aug–Sep 2025</span> — Low–moderate. Sep 22 confirmed ($61.29). Others interpolated. Shares interpolation crude.</li>
+              <li><span style={{ color: 'var(--gold)' }}>Oct–Nov 2025</span> — Moderate. Oct 10 crash makes prices unreliable. Nov $42–44 corroborated by multiple sources.</li>
+              <li><span style={{ color: 'var(--mint)' }}>Dec 2025–Feb 2026</span> — Moderate–high. Two confirmed prices, shares anchored by filings. mNAV likely within ±0.05x.</li>
+            </ul>
           </div>
         </div>
       </div>

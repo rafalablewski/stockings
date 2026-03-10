@@ -5,28 +5,102 @@
  * Chronological record of all ETH purchases with key metrics.
  * Extracted from weekly 8-K/PR filings tracked in timeline.ts.
  *
+ * ⚠️ DISCLAIMER — READ BEFORE USING mNAV / prevDayClose / prevDayMarketCap:
+ * ──────────────────────────────────────────────────────────────────────────
+ * 1. STOCK PRICES: Only 4 of 32 entries have confirmed closing prices (see below).
+ *    The remaining 28 are ESTIMATES interpolated from sparse data points, news
+ *    articles, and SEC filings. Jul–Aug 2025 prices are especially unreliable —
+ *    the stock was extremely volatile ($8 IPO → $161 peak → ~$38, all in 8 weeks)
+ *    and trading data for this period is scarce.
+ *
+ * 2. SHARES OUTSTANDING: BMNR issued shares continuously via ATM programs, growing
+ *    from ~5M (Jun 2025) to ~464M (Feb 2026) — a 93x increase. We only have 7
+ *    confirmed anchor points; all other dates are LINEAR INTERPOLATIONS, which
+ *    assume constant daily issuance between anchors. In reality, ATM issuance was
+ *    highly uneven (e.g., the first $4.5B ATM was exhausted in ~5 weeks, then a
+ *    $24.5B ATM launched). This makes Jul–Sep shares estimates especially rough.
+ *
+ * 3. NAV CALCULATION IS SIMPLIFIED: navPerShare = (totalEthAfter × ethPrice) ÷
+ *    sharesOutstanding. This EXCLUDES cash (~$400M–$988M), BTC holdings (193 BTC),
+ *    moonshot investments ($17M–$214M Eightco/ORBS, $200M Beast Industries), and
+ *    liabilities. A full NAV would include these, which would RAISE navPerShare and
+ *    LOWER mNAV. Therefore, mNAV values shown here are BIASED UPWARD (overstated).
+ *
+ * 4. mNAV RELIABILITY BY PERIOD:
+ *    - Jul 2025 (3 entries):  VERY LOW confidence. Stock, shares, and NAV all changing
+ *      rapidly. mNAV 3–7x looks extreme but reflects genuine post-IPO hype premium.
+ *      Actual values could easily be ±50%.
+ *    - Aug 2025 (4 entries):  LOW confidence. Shares growing ~5M/day via ATM.
+ *      Stock stabilizing near $38–42. mNAV 1.0–2.0x is directionally correct.
+ *    - Sep 2025 (5 entries):  MODERATE confidence. Sep 22 price confirmed ($61.29,
+ *      8-K). Surrounding dates interpolated. Shares interpolation more stable.
+ *    - Oct 2025 (3 entries):  LOW-MODERATE. Oct 10 crash caused extreme intraday
+ *      moves. Weekly closing prices are rough estimates. mNAV 0.70x (Oct 13) may
+ *      overstate the discount — intraday lows were likely worse.
+ *    - Nov 2025 (3 entries):  MODERATE. Multiple news sources confirm $42–44 range
+ *      early Nov, $33 by Nov 28. Shares anchored by 10-Q (409M at Nov 30).
+ *    - Dec 2025 (5 entries):  MODERATE-HIGH. Dec 29 price confirmed ($28.40).
+ *      Surrounding dates well-corroborated by news reports ($29.35 Dec 24).
+ *    - Jan 2026 (4 entries):  MODERATE. Jan 12 shares confirmed (434M, PR).
+ *      Stock around $30–32, corroborated by "$31" references in multiple sources.
+ *    - Feb 2026 (5 entries):  HIGH. Two confirmed prices (Feb 9: $27.15, Feb 17:
+ *      $28.84 from Form 4/A). Shares ~460M back-calculated from verified mNAV.
+ *
  * DATA SOURCES:
- * - Weekly press releases (PRNewswire)
- * - 8-K filings (SEC EDGAR)
- * - Stock prices: confirmed from 8-K filings, Form 4 tax withholding, and market data;
- *   estimated (≈) from interpolation between confirmed points and news reports
- * - Shares outstanding: 10-K (Aug 31), 10-Q (Nov 30), PRs (Jan 12, Jul 29), back-calc (Feb 9)
- * - NAV/share: (totalEthAfter × ethPrice) ÷ sharesOutstanding (simplified, excludes cash)
+ * ─────────────
+ * ethBought, ethPrice, totalEthAfter:
+ *   - SOURCE: Weekly press releases (PRNewswire) and 8-K filings (SEC EDGAR)
+ *   - RELIABILITY: HIGH — directly from company filings
  *
- * CONFIRMED PRICE SOURCES:
- * - Sep 22, 2025: $61.29 — 8-K filing ($70 RD offering at 14% premium to close)
- * - Dec 29, 2025: $28.40 — market data (multiple sources)
- * - Feb  9, 2026: $27.15 — market data
- * - Feb 17, 2026: $28.84 — Form 4/A tax withholding price
+ * prevDayClose (BMNR stock price on last trading day before PR):
+ *   - CONFIRMED (4 dates):
+ *     • Sep 22, 2025: $61.29 — SEC 8-K filing, $365M registered direct offering
+ *       priced at $70/share described as "14% premium to $61.29 close"
+ *       (https://www.nasdaq.com/press-release/bitmine-immersion-bmnr-announces-
+ *       pricing-36524mm-registered-direct-offering-70-share)
+ *     • Dec 29, 2025: $28.40 — Corroborated by multiple financial data sources
+ *       (Investing.com, Yahoo Finance search snippets showing Dec 29 close)
+ *     • Feb 9, 2026: $27.15 — Market data (Yahoo Finance, Investing.com)
+ *     • Feb 17, 2026: $28.84 — SEC Form 4/A: Tom Lee RSU tax withholding priced
+ *       at $28.84/share (~$6.7M value for 231,700 shares)
+ *   - SEMI-CONFIRMED (corroborated by news, ±$2–3 margin):
+ *     • Aug 11–18: ~$38 — timeline.ts note: "At 1% ETH stock was ~$38"
+ *     • Nov 3–10: ~$42–44 — Investing.com Nov high $43.77; multiple news reports
+ *     • Nov 28: $33.12 — Financial data search snippets
+ *     • Dec 1: ~$29 — FXLeaders article: "BMNR slips below $30"
+ *     • Dec 24: $29.35 — Financial data search snippets
+ *   - ESTIMATED (28 dates, marked ≈ in notes):
+ *     Linear/smooth interpolation between confirmed and semi-confirmed points.
+ *     Jul 14–17 prices ($85–100) are especially uncertain — the stock was in
+ *     freefall from its $161 peak (Jul 3) and could have been ±30% from estimates.
  *
- * SHARES OUTSTANDING ANCHORS:
- * - Jul 29, 2025: 121.7M FD (PR — $1B buyback announcement)
- * - Aug 25, 2025: ~207M (back-calc from NAV/share $39.84 in PR)
- * - Aug 31, 2025: 234.7M (FY2025 10-K)
- * - Nov 30, 2025: 409M (Q1 FY2026 10-Q)
- * - Dec 29, 2025: ~426M (timeline: 384M→426M transition)
- * - Jan 12, 2026: 434M (PR)
- * - Feb  9, 2026: ~460M (back-calc from confirmed mNAV 1.36)
+ * prevDayMarketCap (= prevDayClose × sharesOutstanding):
+ *   - Compounds both price AND shares uncertainty. Jul–Aug market caps are
+ *     very rough (both inputs are estimated). Dec–Feb are more reliable.
+ *
+ * sharesOutstanding (used to compute navPerShare and prevDayMarketCap):
+ *   - CONFIRMED ANCHORS (7 dates):
+ *     • Jul 29, 2025: 121,739,533 FD — PR ($1B buyback announcement)
+ *     • Aug 25, 2025: ~207M — Back-calculated from NAV/share $39.84 stated in PR
+ *     • Aug 31, 2025: 234,700,000 — FY2025 10-K (audited)
+ *     • Nov 30, 2025: 409,000,000 — Q1 FY2026 10-Q (filed Jan 13, 2026)
+ *     • Dec 29, 2025: ~426M — Timeline transition from 384M (10-Q) to 426M
+ *     • Jan 12, 2026: 434,000,000 — Weekly holdings PR
+ *     • Feb 9, 2026: ~460M — Back-calculated from confirmed mNAV 1.36
+ *   - ALL OTHER DATES: Linear interpolation between anchors. This assumes
+ *     constant daily ATM issuance, which is WRONG — issuance was lumpy
+ *     (e.g., $4.5B ATM exhausted in 5 weeks Jul–Aug). The Jul–Sep interpolation
+ *     is especially crude: shares went from 5M to 235M in ~8 weeks.
+ *
+ * navPerShare:
+ *   - SIMPLIFIED FORMULA: (totalEthAfter × ethPrice) ÷ sharesOutstanding
+ *   - EXCLUDES: Cash ($400M–$988M), BTC (193 BTC, ~$15M–$19M), Eightco/ORBS
+ *     ($17M–$214M), Beast Industries ($200M), and all liabilities/debt.
+ *   - IMPACT: Including cash alone would raise navPerShare by $1–$4 depending
+ *     on the date, which would lower mNAV by 0.03–0.15x. Including all assets
+ *     would lower mNAV further. This means the "premium" shown is overstated
+ *     and the "discount" periods (Oct 13, Dec 8, Dec 15) may actually have been
+ *     even deeper discounts to true NAV.
  *
  * LAST UPDATED: 2026-03-10
  * NEXT UPDATE: After next weekly holdings PR
@@ -72,7 +146,7 @@ export const PURCHASE_HISTORY_METADATA: DataMetadata = {
   lastUpdated: '2026-03-10',
   source: 'Weekly Holdings PRs (PRNewswire) + 8-K filings + market data',
   nextExpectedUpdate: 'After next weekly holdings PR',
-  notes: 'Purchase amounts derived from week-over-week ETH holdings changes. Cash deployed is approximate (ethBought × ethPrice). mNAV uses simplified NAV (ETH value only, excludes cash). Stock prices marked ≈ are interpolated estimates; confirmed prices sourced from 8-K filings, Form 4, or corroborated market data. Shares outstanding interpolated between 10-K/10-Q/PR anchor points.',
+  notes: 'ethBought/ethPrice/totalEthAfter are from PRs (high reliability). prevDayClose: only 4 of 32 confirmed from SEC filings; 28 are interpolated estimates (marked ≈). Shares outstanding: 7 anchor points from 10-K/10-Q/PRs, linearly interpolated between — crude for Jul-Sep when shares grew 5M→235M. navPerShare is SIMPLIFIED (ETH value only, excludes $400M-$988M cash, BTC, moonshots). This overstates mNAV by ~0.03-0.15x. Jul-Aug mNAV (2-7x) is directionally correct but may be ±50% off. See file header for full methodology and disclaimers.',
 };
 
 // ============================================================================
@@ -81,19 +155,27 @@ export const PURCHASE_HISTORY_METADATA: DataMetadata = {
 
 /**
  * All ETH purchases from weekly 8-K/PR filings.
- * Newest first. mNAV computed from prevDayClose / NAV per share.
+ * Newest first. mNAV = prevDayClose / navPerShare.
  *
  * prevDayClose = BMNR closing price on the last trading day before the PR date.
  * prevDayMarketCap = prevDayClose × sharesOutstanding (approximate).
  *
- * Confidence levels (in notes):
- * - No marker = confirmed from filing or corroborated market data
- * - ≈ = estimated/interpolated between confirmed data points
+ * ⚠️ Notes prefix key:
+ * - No prefix  = prevDayClose confirmed from SEC filing or corroborated market data
+ * - ≈ prefix   = prevDayClose estimated via interpolation (may be ±$2–5 for Nov–Feb,
+ *                ±$10–30 for Jul–Aug when stock was in freefall from $161 peak)
+ * - Shares in notes (e.g. "~464M shares") = interpolated, not from a filing
+ * - Shares without ~ (e.g. "434M shares (PR)") = from a confirmed source
+ *
+ * ⚠️ mNAV is overstated because navPerShare excludes cash ($400M–$988M) and other
+ * non-ETH assets. A full NAV calculation would lower mNAV by ~0.03–0.15x.
  *
  * AI AGENT INSTRUCTIONS:
  * - Add new entries at TOP
  * - Always include ethBought, ethPrice, totalEthAfter, cashDeployed
  * - Fill prevDayClose, prevDayMarketCap, navPerShare, mnavAtTime
+ * - Use actual closing price from Yahoo Finance / Nasdaq when possible
+ * - If estimating, prefix notes with ≈ and explain the source
  */
 export const BMNR_PURCHASE_HISTORY: PurchaseRecord[] = [
   // [PR_CHECKLIST_PURCHASE_HISTORY] - Add new purchase entry here at top!
