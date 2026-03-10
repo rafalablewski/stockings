@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { stockList } from "@/lib/stocks";
+import { researchStocks } from "@/lib/stocks";
 import { workflows } from "@/data/workflows";
 import { PromptCard } from "@/components/PromptCard";
+import InitiateResearch from "@/components/InitiateResearch";
 
 export const metadata = {
   title: "Research | ABISON",
@@ -29,7 +30,7 @@ export default function StocksPage() {
         </div>
 
         <div className="grid gap-4">
-          {stockList.map((stock) => (
+          {researchStocks.map((stock) => (
             <Link
               key={stock.ticker}
               href={`/stocks/${stock.ticker}`}
@@ -65,6 +66,9 @@ export default function StocksPage() {
               </div>
             </Link>
           ))}
+
+          {/* Initiate new research */}
+          <InitiateResearch />
         </div>
 
         {/* AI Agents */}

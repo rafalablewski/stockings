@@ -5,6 +5,8 @@ export interface StockMeta {
   name: string;
   sector: string;
   description: string;
+  /** Whether this stock has full research coverage (data files + analysis component) */
+  hasResearch?: boolean;
 }
 
 export const stocks: Record<string, StockMeta> = {
@@ -13,18 +15,21 @@ export const stocks: Record<string, StockMeta> = {
     name: 'AST SpaceMobile',
     sector: 'Space Technology',
     description: 'Space-based cellular broadband network accessible by standard smartphones',
+    hasResearch: true,
   },
   BMNR: {
     ticker: 'BMNR',
     name: 'BitMine Immersion Technologies',
     sector: 'Digital Assets',
     description: 'ETH treasury company with immersion cooling and validator operations',
+    hasResearch: true,
   },
   CRCL: {
     ticker: 'CRCL',
     name: 'Circle Internet Group',
     sector: 'Fintech',
     description: 'Issuer of USDC, the leading regulated digital dollar stablecoin',
+    hasResearch: true,
   },
   MSTR: {
     ticker: 'MSTR',
@@ -108,5 +113,7 @@ export const stocks: Record<string, StockMeta> = {
 
 export const stockList = Object.values(stocks);
 export const tickers = Object.keys(stocks);
+/** Only stocks with full research coverage (data files + analysis) */
+export const researchStocks = stockList.filter(s => s.hasResearch);
 /** Lowercase ticker set — single source of truth for API route validation */
 export const VALID_TICKERS = new Set(Object.keys(stocks).map(t => t.toLowerCase()));
