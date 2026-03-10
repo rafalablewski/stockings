@@ -731,7 +731,7 @@ const FilingRow: React.FC<{
                         <div className="sm-truncate-row"><span className="sm-text3 sm-ed-db-field-label-80">desc:</span> {dbTooltip.description}</div>
                         <div><span className="sm-text3 sm-ed-db-field-label-80">filed:</span> {dbTooltip.filingDate}</div>
                         <div><span className="sm-text3 sm-ed-db-field-label-80">cross-refs:</span> {dbTooltip.crossRefs ? [...new Set(dbTooltip.crossRefs.map(r => r.source))].join(', ') : 'none'}</div>
-                        <div><span className="sm-text3 sm-ed-db-field-label-80">seen:</span> <span className="sm-fw-600" style={{ color: dbTooltip.seen === 'NO' ? 'var(--sky)' : 'var(--text3)' }}>{dbTooltip.seen}</span></div>
+                        <div><span className="sm-text3 sm-ed-db-field-label-80">seen:</span> <span className="sm-fw-600 sm-ed-db-seen" data-seen={dbTooltip.seen}>{dbTooltip.seen}</span></div>
                       </>
                     ) : (
                       <div className="sm-coral sm-fw-600">NOT IN DATABASE</div>
@@ -834,10 +834,7 @@ const FilingRow: React.FC<{
                   type="button"
                   onClick={handleCopy}
                   className="sm-ed-action-btn"
-                  style={{
-                    '--ed-btn-color': copied ? 'var(--mint)' : undefined,
-                    borderColor: copied ? 'rgba(130,200,130,0.15)' : undefined,
-                  } as React.CSSProperties}
+                  data-copied={copied ? 'true' : undefined}
                 >
                   <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                     <rect x={9} y={9} width={13} height={13} rx={2} ry={2} />
@@ -860,17 +857,7 @@ const FilingRow: React.FC<{
                     onClick={handlePreview}
                     disabled={applyStep === 'previewing' || applyStep === 'previewed' || applyStep === 'applying'}
                     className="sm-ed-action-btn"
-                    style={{
-                      '--ed-btn-color': applyStep === 'previewing'
-                        ? 'var(--text3)'
-                        : applyStep === 'error'
-                          ? 'var(--coral)'
-                          : 'rgba(130,200,130,0.5)',
-                      borderColor: applyStep === 'error'
-                        ? 'color-mix(in srgb, var(--coral) 25%, transparent)'
-                        : 'rgba(130,200,130,0.15)',
-                      opacity: applyStep === 'previewing' ? 0.6 : 1,
-                    } as React.CSSProperties}
+                    data-preview={applyStep === 'previewing' ? 'previewing' : applyStep === 'error' ? 'error' : 'default'}
                   >
                     <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                       <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -890,21 +877,7 @@ const FilingRow: React.FC<{
                   onClick={handleCommit}
                   disabled={commitStatus === 'committing' || commitStatus === 'done' || applyStep !== 'applied'}
                   className="sm-ed-action-btn"
-                  style={{
-                    '--ed-btn-color': commitStatus === 'done'
-                      ? 'var(--mint)'
-                      : commitStatus === 'error'
-                        ? 'var(--coral)'
-                        : applyStep !== 'applied'
-                          ? 'var(--text3)'
-                          : 'rgba(168,130,230,0.5)',
-                    borderColor: commitStatus === 'done'
-                      ? 'rgba(130,200,130,0.15)'
-                      : applyStep !== 'applied'
-                        ? undefined
-                        : 'rgba(168,130,230,0.15)',
-                    opacity: applyStep !== 'applied' ? 0.3 : commitStatus === 'committing' ? 0.6 : 1,
-                  } as React.CSSProperties}
+                  data-commit={commitStatus === 'done' ? 'done' : commitStatus === 'error' ? 'error' : applyStep !== 'applied' ? 'disabled' : commitStatus === 'committing' ? 'committing' : 'ready'}
                 >
                   <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                     <circle cx={12} cy={12} r={4} />
@@ -962,11 +935,7 @@ const FilingRow: React.FC<{
                           </span>
                           <span
                             className="sm-ed-diff-action-badge"
-                            style={{
-                              background: p.valid ? 'rgba(130,200,130,0.1)' : 'rgba(255,100,100,0.1)',
-                              color: p.valid ? 'rgba(130,200,130,0.6)' : 'var(--coral)',
-                              border: `1px solid ${p.valid ? 'rgba(130,200,130,0.15)' : 'rgba(255,100,100,0.15)'}`,
-                            }}
+                            data-valid={p.valid ? 'true' : 'false'}
                           >
                             {p.action} {p.valid ? `+${p.linesAdded}` : 'rejected'}
                           </span>
@@ -1016,11 +985,6 @@ const FilingRow: React.FC<{
                         disabled={!patchPreview.validCount}
                         className="sm-ed-action-btn sm-fw-600"
                         data-confirm={patchPreview.validCount ? 'active' : 'disabled'}
-                        style={{
-                          '--ed-btn-color': patchPreview.validCount ? 'rgba(234,179,8,0.8)' : 'var(--text3)',
-                          borderColor: patchPreview.validCount ? 'rgba(234,179,8,0.3)' : undefined,
-                          opacity: patchPreview.validCount ? 1 : 0.4,
-                        } as React.CSSProperties}
                       >
                         <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                           <path d="M12 5v14M5 12h14" />
@@ -1239,7 +1203,7 @@ const FilterPill: React.FC<{
   >
     {label}
     {count !== undefined && (
-      <span className="sm-ed-pill-count" style={{ opacity: active ? 0.8 : 0.35 }}>{count}</span>
+      <span className="sm-ed-pill-count" data-active={active ? 'true' : 'false'}>{count}</span>
     )}
   </button>
 );
@@ -1670,7 +1634,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
         >
           {(['tracked', 'data_only', 'new'] as FilingStatus[]).map(status => (
             <span key={status} title={STATUS_CONFIG[status].desc} className="sm-flex sm-gap-6 sm-ed-legend-item">
-              <span className="sm-shrink-0 sm-ed-legend-dot" style={{ background: STATUS_CONFIG[status].color }} />
+              <span className="sm-shrink-0 sm-ed-legend-dot sm-ed-legend-dot-var" style={{ '--dot-color': STATUS_CONFIG[status].color } as React.CSSProperties} />
               <span className="sm-flex-col sm-gap-1">
                 <span className="sm-fw-500">{status === 'tracked' ? 'In Database' : status === 'data_only' ? 'Data Only' : 'Untracked'}</span>
                 <span className="sm-ed-legend-desc">{STATUS_CONFIG[status].desc}</span>
@@ -1994,14 +1958,14 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             <div className="sm-ed-method-label">Button Distinction: Fetch Filings vs Re-check DB</div>
             <div className="sm-flex-wrap sm-gap-20">
               <div className="sm-ed-info-card-xl">
-                <div className="sm-mono-sm sm-fw-700 sm-ed-info-card-title" style={{ color: 'rgba(130,200,130,0.7)' }}>FETCH FILINGS</div>
+                <div className="sm-mono-sm sm-fw-700 sm-ed-info-card-title sm-ed-title-mint">FETCH FILINGS</div>
                 <div className="sm-mono-sm sm-text3 sm-ed-info-card-body">
                   Calls SEC EDGAR API. Fetches latest filings, matches against local DB,
                   saves all to seen_filings with full metadata. New filings get NEW badge.
                 </div>
               </div>
               <div className="sm-ed-info-card-xl">
-                <div className="sm-mono-sm sm-fw-700 sm-ed-info-card-title" style={{ color: 'rgba(130,180,220,0.7)' }}>RE-CHECK DB</div>
+                <div className="sm-mono-sm sm-fw-700 sm-ed-info-card-title sm-ed-title-sky">RE-CHECK DB</div>
                 <div className="sm-mono-sm sm-text3 sm-ed-info-card-body">
                   Re-reads sec_filings + filing_cross_refs from Postgres.
                   Picks up new tracked entries or cross-refs added by AI Agent patches.

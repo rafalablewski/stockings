@@ -12084,3 +12084,53 @@ input[type="range"]::-webkit-slider-thumb {
 /* Methodology flow gap-32 */
 .sm-src-gap-32 { gap: 32px; }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   § EDGAR INLINE-STYLE EXTRACTIONS
+   Converted from inline style= to CSS classes for SharedEdgarTab.tsx
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Legend dot: use --dot-color custom property instead of inline background ── */
+.sm-ed-legend-dot-var { background: var(--dot-color); }
+
+/* ── FilterPill count: active vs inactive opacity via data-active ── */
+.sm-ed-pill-count[data-active="true"] { opacity: 0.8; }
+.sm-ed-pill-count[data-active="false"] { opacity: 0.35; }
+
+/* ── Diff action badge: valid/invalid states ── */
+.sm-ed-diff-action-badge[data-valid="true"] {
+  background: rgba(130,200,130,0.1);
+  color: rgba(130,200,130,0.6);
+  border: 1px solid rgba(130,200,130,0.15);
+}
+.sm-ed-diff-action-badge[data-valid="false"] {
+  background: rgba(255,100,100,0.1);
+  color: var(--coral);
+  border: 1px solid rgba(255,100,100,0.15);
+}
+
+/* ── DB tooltip: seen field color via data-seen ── */
+.sm-ed-db-seen[data-seen="NO"] { color: var(--sky); }
+.sm-ed-db-seen[data-seen="YES"] { color: var(--text3); }
+
+/* ── Methodology card title static colors ── */
+.sm-ed-title-mint { color: rgba(130,200,130,0.7); }
+.sm-ed-title-sky { color: rgba(130,180,220,0.7); }
+
+/* ── SharedSourcesTab: extracted inline styles ─────────────────────────── */
+
+/* Vertical pipe color variants */
+.sm-src-vpipe-sky { background: var(--sky); }
+.sm-src-vpipe-mint { background: var(--mint); }
+
+/* Dot-6 color variants */
+.sm-src-dot-6-mint { background: var(--mint); }
+.sm-src-dot-6-coral { background: var(--coral); }
+.sm-src-dot-6-gold { background: var(--gold); }
+.sm-src-dot-6-text3 { background: var(--text3); }
+
+/* Detect badge (Fetch PRs in methodology) static colors */
+.sm-src-detect-badge-sky { background: var(--sky-dim); border: 1px solid var(--sky); }
+
+/* Form badge fixed width for source type column alignment */
+.sm-src-badge-w48 { width: 48px; }
+
