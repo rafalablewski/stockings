@@ -111,6 +111,12 @@ export {
 // Timeline
 export { BMNR_TIMELINE_EVENTS } from './timeline';
 
+// Purchase History
+export {
+  BMNR_PURCHASE_HISTORY,
+  PURCHASE_HISTORY_METADATA,
+} from './purchase-history';
+
 // Re-export types for convenience
 export type {
   DataMetadata,
@@ -122,3 +128,5 @@ export type {
   CompletedMilestone,
   CashRunwayScenario,
 } from '../shared/types';
+
+export type { PurchaseRecord } from './purchase-history';
