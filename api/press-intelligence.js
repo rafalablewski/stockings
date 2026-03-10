@@ -367,7 +367,7 @@ const TICKER_CONFIG = {
   SATS: {
     type: 'qm-simple',
     topics: ['SATS'],
-    sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
+    sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire', 'accesswire'],
     filter: (hl) => /echostar|sats|hughes/i.test(hl),
   },
   LUNR: {
@@ -377,45 +377,52 @@ const TICKER_CONFIG = {
     filter: (hl) => /intuitive\s*machines|lunr/i.test(hl),
   },
 
-  // ─── Crypto tickers (QM + optional fallbacks) ───
   MSTR: {
-    type: 'crypto',
+    type: 'qm-simple',
     topics: ['MSTR'],
+    sources: OFFICIAL_SOURCES,
     filter: (hl) => /\bstrategy\b/i.test(hl) || /microstrategy/i.test(hl) || /\bmstr\b/i.test(hl),
   },
   MARA: {
-    type: 'crypto',
+    type: 'qm-simple',
     topics: ['MARA'],
+    sources: OFFICIAL_SOURCES,
     filter: (hl) => /marathon\s*digital/i.test(hl) || /\bmara\b/i.test(hl) || /marathon\s*holdings/i.test(hl),
   },
   RIOT: {
-    type: 'crypto',
+    type: 'qm-simple',
     topics: ['RIOT'],
+    sources: OFFICIAL_SOURCES,
     filter: (hl) => /riot\s*platforms/i.test(hl) || /\briot\b/i.test(hl),
   },
   CLSK: {
-    type: 'crypto',
+    type: 'qm-simple',
     topics: ['CLSK'],
+    sources: OFFICIAL_SOURCES,
     filter: (hl) => /cleanspark/i.test(hl) || /\bclsk\b/i.test(hl),
   },
   HUT: {
-    type: 'crypto',
+    type: 'qm-simple',
     topics: ['HUT'],
+    sources: OFFICIAL_SOURCES,
     filter: (hl) => /hut\s*8|hut8|\bhut\b/i.test(hl),
   },
   IREN: {
-    type: 'crypto',
+    type: 'qm-simple',
     topics: ['IREN'],
+    sources: OFFICIAL_SOURCES,
     filter: (hl) => /\biren\b|iris\s*energy/i.test(hl),
   },
   NBIS: {
-    type: 'crypto',
+    type: 'qm-simple',
     topics: ['NBIS'],
+    sources: OFFICIAL_SOURCES,
     filter: (hl) => /\bnbis\b|nebius/i.test(hl),
   },
   COIN: {
-    type: 'crypto',
+    type: 'qm-simple',
     topics: ['COIN'],
+    sources: OFFICIAL_SOURCES,
     filter: (hl) => /coinbase/i.test(hl) || /\bcoin\b/i.test(hl),
   },
   FRMM: {
