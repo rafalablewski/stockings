@@ -396,15 +396,15 @@ export const BMNR_PURCHASE_HISTORY: PurchaseRecord[] = [
   },
   {
     date: '2025-08-04',
-    ethBought: 833137,
+    ethBought: 266361,
     ethPrice: 3492,
     totalEthAfter: 833137,
-    cashDeployed: 2909314404,
+    cashDeployed: 930132612,
     mnavAtTime: null,
     stockPrice: null,
     navPerShare: null,
     source: 'Aug 4, 2025 PR',
-    notes: 'Initial massive ETH purchase. Treasury strategy launch.',
+    notes: 'Large weekly accumulation continues.',
   },
   // === JULY 2025 ===
   {
