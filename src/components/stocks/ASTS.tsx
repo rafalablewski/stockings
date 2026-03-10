@@ -4854,7 +4854,7 @@ const QuarterlyMetricsPanel = () => {
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                         <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6 sm-ws-nowrap">{d.display}</div>
-                        <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div className="sm-mini-bar-fill" data-color="mint" style={{ height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0 }} />
                         <div className="sm-micro-text sm-text-center sm-mt-6-ws">{d.label}</div>
                       </div>
                     ))}
@@ -4885,7 +4885,7 @@ const QuarterlyMetricsPanel = () => {
                   {data.map((d, i) => (
                     <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                       <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6 sm-ws-nowrap">{d.display}</div>
-                      <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                      <div className="sm-mini-bar-fill" data-color="violet" style={{ height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0 }} />
                       <div className="sm-micro-text sm-text-center sm-mt-6-ws">{d.label}</div>
                     </div>
                   ))}
@@ -4989,7 +4989,7 @@ const QuarterlyMetricsPanel = () => {
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                         <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6 sm-ws-nowrap">{d.display}</div>
-                        <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div className="sm-mini-bar-fill" data-color="coral" style={{ height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0 }} />
                         <div className="sm-micro-text sm-text-center sm-mt-6-ws">{d.label}</div>
                       </div>
                     ))}
@@ -5020,7 +5020,7 @@ const QuarterlyMetricsPanel = () => {
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                         <div className="sm-mono-sm sm-fw-600 sm-text sm-mb-6 sm-ws-nowrap">{d.display}</div>
-                        <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div className="sm-mini-bar-fill" data-color="sky" style={{ height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0 }} />
                         <div className="sm-micro-text sm-text-center sm-mt-6-ws">{d.label}</div>
                       </div>
                     ))}
@@ -6153,7 +6153,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       {/* News Timeline - Flat list */}
       <div className="sm-card sm-mt-8">
         {filteredCompNews.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 48 }}>
+          <div className="sm-text-center sm-empty-state-lg">
             <p className="sm-text3">No competitor news matching current filters.</p>
           </div>
         ) : (
@@ -6182,7 +6182,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                   </span>
                 </div>
                 {isExpanded && (
-                  <div style={{ paddingTop: 16, marginTop: 12, borderTop: '1px solid var(--border)' }}>
+                  <div className="sm-pt-16 sm-mt-12 sm-border-t">
                     <div className="sm-text-13 sm-lh-16">
                       {news.details.map((d, j) => <div key={j} className="sm-flex sm-gap-8" style={{ alignItems: 'initial' }}><span style={{ color: 'var(--accent)', flexShrink: 0 }}>•</span>{d}</div>)}
                     </div>
@@ -6192,7 +6192,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
                         <div className="sm-text-12 sm-text2 sm-lh-15">{news.thesisComparison}</div>
                       </div>
                     )}
-                    {news.source && <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: "'Space Mono', monospace", marginTop: 8 }}>Source: {news.sourceUrl ? <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" className="sm-accent">{news.source} ↗</a> : news.source}</div>}
+                    {news.source && <div className="sm-comp-results">Source: {news.sourceUrl ? <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" className="sm-accent">{news.source} ↗</a> : news.source}</div>}
                   </div>
                 )}
               </div>
@@ -6202,18 +6202,18 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Competitor Profiles (Collapsible) */}
-      <div style={{ background: 'color-mix(in srgb, var(--surface2) 60%, transparent)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
+      <div className="sm-comp-surface2-panel">
         <div className="sm-section-label sm-mb-12">Competitor Profiles</div>
         <div className="sm-flex-col sm-gap-16">
           {COMPETITOR_PROFILES.map(comp => (
-            <div key={comp.id} style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8, border: '1px solid var(--border)' }}>
+            <div key={comp.id} className="sm-comp-profile-card">
               <div className="sm-flex-between sm-items-start">
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--text)' }}>{comp.name}</div>
+                  <div className="sm-fw-600 sm-text-16 sm-text">{comp.name}</div>
                   <div className="sm-text-13">{comp.description}</div>
                 </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12 }}>
+              <div className="sm-grid-autofit-150">
                 <div>
                   <div className="sm-micro-text">Technology</div>
                   <div className="sm-text-12">{comp.technology}</div>

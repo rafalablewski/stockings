@@ -2817,7 +2817,7 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
                 <span className="sm-cap-td" data-align="right">{(sc.authorized / 1e6).toFixed(0)}M</span>
                 <span className="sm-cap-td" data-align="right" data-highlight>{(sc.outstanding / 1e6).toFixed(1)}M</span>
                 <span className="sm-cap-td">{sc.voting}</span>
-                <span className="sm-cap-td"><span style={{ color: statusColor(sc.status) }}>{sc.status}</span></span>
+                <span className="sm-cap-td"><span style={{ '--dynamic-color': statusColor(sc.status), color: 'var(--dynamic-color)' } as React.CSSProperties}>{sc.status}</span></span>
               </div>
             ))}
           </div>
@@ -2884,7 +2884,7 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
                 <span className="sm-cap-td-label">{off.date}</span>
                 <span className="sm-cap-td sm-fw-600">{off.type}</span>
                 <span className="sm-cap-td" data-align="right" data-highlight>${off.amount}B</span>
-                <span className="sm-cap-td"><span style={{ color: statusColor(off.status) }}>{off.status}</span></span>
+                <span className="sm-cap-td"><span style={{ '--dynamic-color': statusColor(off.status), color: 'var(--dynamic-color)' } as React.CSSProperties}>{off.status}</span></span>
               </div>
             ))}
             <div className="sm-cap-table-total sm-bmnr-grid-cols-1-1-100-100">
@@ -3841,7 +3841,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
                 role="button"
                 tabIndex={0}
                 aria-label={`${news.headline} — ${news.implication} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-                className="sm-bmnr-news-row" style={{ '--news-accent': accentColor, borderBottom: i < filteredCompNews.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' } as React.CSSProperties}
+                className="sm-bmnr-news-row sm-bmnr-news-row-sep" style={{ '--news-accent': accentColor } as React.CSSProperties}
                 onClick={() => {
                   const next = new Set(expandedNews);
                   if (isExpanded) next.delete(i);
@@ -3866,7 +3866,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
                     </div>
                     <div className="sm-text sm-fw-600 sm-lh-14 sm-fs-13">{news.headline}</div>
                   </div>
-                  <span className="sm-bmnr-impact-val" style={{ color: accentColor }}>
+                  <span className="sm-bmnr-impact-val" style={{ '--dynamic-color': accentColor, color: 'var(--dynamic-color)' } as React.CSSProperties}>
                     {news.implication === 'positive' ? '+' : news.implication === 'negative' ? '-' : '~'} {news.implication === 'positive' ? 'Good for BMNR' : news.implication === 'negative' ? 'Threat' : 'Neutral'}
                   </span>
                 </div>
@@ -6308,7 +6308,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
                     </div>
                     <div className="sm-text sm-fw-600 sm-lh-14 sm-fs-13">{news.title}</div>
                   </div>
-                  <span className="sm-bmnr-impact-val" style={{ color: accentColor }}>
+                  <span className="sm-bmnr-impact-val" style={{ '--dynamic-color': accentColor, color: 'var(--dynamic-color)' } as React.CSSProperties}>
                     {news.impact === 'Bullish' ? '+' : news.impact === 'Bearish' ? '-' : '~'} {news.impact}
                   </span>
                 </div>
@@ -6715,7 +6715,7 @@ const TimelineTab = () => {
                   </div>
                   <div className="sm-text sm-fw-600 sm-lh-14 sm-fs-13">{entry.title}</div>
                 </div>
-                <span className="sm-bmnr-impact-val" style={{ color: accentColor }}>
+                <span className="sm-bmnr-impact-val" style={{ '--dynamic-color': accentColor, color: 'var(--dynamic-color)' } as React.CSSProperties}>
                   {entry.impact === 'positive' ? '+' : entry.impact === 'negative' ? '-' : '~'} {entry.impact === 'positive' ? 'Bullish' : entry.impact === 'negative' ? 'Bearish' : 'Neutral'}
                 </span>
               </div>

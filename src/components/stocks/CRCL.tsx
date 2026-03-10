@@ -5145,7 +5145,7 @@ const CompsTab = () => {
       <div className="sm-panel sm-rounded-14">
         <div className="sm-flex sm-fw-600 sm-text sm-fs-13 sm-mb-4">Growth vs. P/S Multiple<UpdateIndicators sources={['WS']} /></div>
         <p className="sm-body-sm sm-text3">Circle's positioning relative to peers (bubble size = market cap)</p>
-        <div style={{ height: 300 }}>
+        <div className="sm-h-300">
           <ResponsiveContainer width="100%" height="100%">
             <ScatterChart margin={{ top: 20, right: 30, bottom: 20, left: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5192,7 +5192,7 @@ const CompsTab = () => {
             </ScatterChart>
           </ResponsiveContainer>
         </div>
-        <div className="sm-flex sm-gap-16" style={{ justifyContent: 'center', fontSize: 12 }}>
+        <div className="sm-flex sm-gap-16 sm-flex-center-12">
           <span><span className="sm-mint">★</span> Circle</span>
           <span><span className="sm-sky">●</span> Crypto</span>
           <span><span className="sm-violet">●</span> Networks</span>
@@ -5204,9 +5204,9 @@ const CompsTab = () => {
         {/* SOTP Valuation */}
         <div>
           <div className="sm-card sm-mt-8">
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+            <div className="sm-crcl-section-header">
               <div className="sm-param-label sm-flex sm-gap-8">Sum-of-the-Parts (SOTP)<UpdateIndicators sources={['WS']} /></div>
-              <p className="sm-body-sm sm-text3" style={{ margin: '4px 0 0' }}>Value each business segment separately</p>
+              <p className="sm-body-sm sm-text3 sm-m-4-0-0">Value each business segment separately</p>
             </div>
             <div className="sm-cmp-table-scroll">
               <div className="sm-cmp-table-header sm-cmp-grid-4col">
@@ -5228,11 +5228,11 @@ const CompsTab = () => {
                 </div>
               ))}
               <div className="sm-cmp-table-total sm-cmp-grid-4col">
-                <div className="sm-cmp-td-label" style={{ gridColumn: '1 / 4' }}>SOTP Range</div>
+                <div className="sm-cmp-td-label sm-col-span-1-4">SOTP Range</div>
                 <div className="sm-cmp-td sm-mint" data-align="right">$15.5-17.5B</div>
               </div>
             </div>
-            <div style={{ padding: '12px 20px', fontSize: 12, color: 'var(--text3)' }}>
+            <div className="sm-crcl-footnote">
               Current market cap: $18.9B ({((18.9 / 16.5 - 1) * 100).toFixed(0)}% premium to midpoint)
             </div>
           </div>
@@ -5241,9 +5241,9 @@ const CompsTab = () => {
         {/* Transaction Comps */}
         <div>
           <div className="sm-card sm-mt-8">
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
+            <div className="sm-crcl-section-header">
               <div className="sm-param-label sm-flex sm-gap-8">Transaction Comps<UpdateIndicators sources={['WS']} /></div>
-              <p className="sm-body-sm sm-text3" style={{ margin: '4px 0 0' }}>Recent M&A and funding deals in the space</p>
+              <p className="sm-body-sm sm-text3 sm-m-4-0-0">Recent M&A and funding deals in the space</p>
             </div>
             <div className="sm-cmp-table-scroll">
               <div className="sm-cmp-table-header sm-cmp-grid-100-2-1-100">
@@ -5304,7 +5304,7 @@ const CompsTab = () => {
       {/* Historical Multiple Tracking */}
       <div className="sm-panel sm-rounded-14">
         <div className="sm-flex sm-fw-600 sm-text sm-fs-13 sm-mb-4">P/S Multiple Since IPO<UpdateIndicators sources={['WS']} /></div>
-        <div style={{ height: 280 }}>
+        <div className="sm-h-280">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={HISTORICAL_MULTIPLES} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -5320,7 +5320,7 @@ const CompsTab = () => {
             </LineChart>
           </ResponsiveContainer>
         </div>
-        <div className="sm-flex sm-gap-24" style={{ justifyContent: 'center', fontSize: 12 }}>
+        <div className="sm-flex sm-gap-24 sm-flex-center-12">
           <span><span className="sm-accent">━━</span> Circle P/S</span>
           <span><span className="sm-sky">╌╌</span> Crypto Peer Avg</span>
           <span><span className="sm-gold">╌╌</span> Payments Peer Avg</span>
@@ -5329,7 +5329,7 @@ const CompsTab = () => {
 
       {/* Rule of 40 Analysis */}
       <div className="sm-panel sm-rounded-14">
-        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Rule of 40 Analysis</div>
+        <div className="sm-crcl-presets-title sm-mb-4">Rule of 40 Analysis</div>
         <p className="sm-body-sm sm-text3">Growth Rate + Profit Margin &ge; 40% indicates healthy SaaS/fintech</p>
         <div className="g4">
           <div className="sm-bg-surface2 sm-text-center sm-surface2-pad-card">
