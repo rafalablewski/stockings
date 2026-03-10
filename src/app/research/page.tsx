@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { researchStocks, stockList } from "@/lib/stocks";
+import { workflows } from "@/data/workflows";
+import { PromptCard } from "@/components/PromptCard";
 import InitiateResearch from "@/components/InitiateResearch";
 
 export const metadata = {
@@ -11,8 +13,23 @@ export default function ResearchPage() {
   // Stocks without full research coverage (watchlist)
   const watchlistStocks = stockList.filter((s) => !s.hasResearch);
 
-  // Group research stocks by sector
-  const sectors = Array.from(new Set(researchStocks.map((s) => s.sector)));
+  // Group research stocks by sector in a single pass
+  const stocksBySector = researchStocks.reduce<Record<string, (typeof researchStocks)[number][]>>((acc, stock) => {
+    if (!acc[stock.sector]) acc[stock.sector] = [];
+    acc[stock.sector].push(stock);
+    return acc;
+  }, {});
+  const sectors = Object.keys(stocksBySector);
+
+  // AI agent workflow prompts
+  const workflowPrompts = workflows.map((w) => ({
+    name: w.name,
+    description: w.description,
+    variants: w.variants.map((v) => ({
+      label: v.label,
+      content: v.prompt,
+    })),
+  }));
 
   return (
     <div className="min-h-screen py-20 px-6">
@@ -62,9 +79,7 @@ export default function ResearchPage() {
 
         {/* Active Research — grouped by sector */}
         {sectors.map((sector) => {
-          const sectorStocks = researchStocks.filter(
-            (s) => s.sector === sector,
-          );
+          const sectorStocks = stocksBySector[sector];
           return (
             <div key={sector} className="mb-14">
               <h2 className="text-[10px] uppercase tracking-[0.25em] text-white/25 mb-5">
@@ -140,6 +155,27 @@ export default function ResearchPage() {
         {/* Initiate new research */}
         <div className="pt-8 border-t border-white/[0.04]">
           <InitiateResearch />
+        </div>
+
+        {/* AI Agents */}
+        <div className="mt-20">
+          <h2 className="text-[10px] uppercase tracking-[0.25em] text-white/25 mb-2">
+            AI Agents
+          </h2>
+          <p className="text-[11px] text-white/15 mb-8">
+            Streaming AI agent prompts for structured analysis. Run these from
+            the AI Agents tab inside each stock.
+          </p>
+          <div className="grid gap-4">
+            {workflowPrompts.map((workflow) => (
+              <PromptCard
+                key={workflow.name}
+                name={workflow.name}
+                description={workflow.description}
+                variants={workflow.variants}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
