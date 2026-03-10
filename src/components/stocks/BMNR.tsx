@@ -520,7 +520,7 @@ const BMNRDilutionAnalysis = () => {
     { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
     { id: 'comps', label: 'Comps', type: 'projection' },
     // Tracking
-    { id: 'purchases', label: 'Purchases', type: 'tracking', group: 'BMNR Analysis' },
+    { id: 'purchases', label: 'Purchases', type: 'projection', group: 'BMNR Analysis' },
     { id: 'capital', label: 'Capital', type: 'tracking' },
     { id: 'financials', label: 'Financials', type: 'tracking' },
     { id: 'timeline', label: 'Timeline', type: 'tracking' },
