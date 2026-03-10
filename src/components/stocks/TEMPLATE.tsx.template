@@ -41,8 +41,6 @@ import {
   SharedTimelineTab,
   SharedWallStreetTab,
   SharedAIAgentsTab,
-  SharedEdgarTab,
-  SharedSourcesTab,
   SharedSecFilingsSection,
   // Live Price
   useLiveStockPrice,
@@ -53,7 +51,10 @@ import {
   type HudMarker,
   type MarketData,
 } from '../shared';
-import type { Competitor, SourceGroup } from '../shared/stockModelTypes';
+// These are default exports — import directly
+import SharedEdgarTab from '../shared/SharedEdgarTab';
+import SharedSourcesTab from '../shared/SharedSourcesTab';
+import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import { useHashTab } from '@/hooks/useHashTab';
 
 // ============================================================================
