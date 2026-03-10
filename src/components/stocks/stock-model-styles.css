@@ -12783,6 +12783,12 @@ input[type="range"]::-webkit-slider-thumb {
   margin: 0 0 16px;
 }
 
+/* ── Table row highlight ─────────────────────────────────────────── */
+.sm-table-row[data-highlight="true"] { background: var(--accent-dim); }
+
+/* ── Padding 8px 24px ────────────────────────────────────────────── */
+.sm-p-8-24 { padding: 8px 24px; }
+
 /* ══════════════════════════════════════════════════════════════════════
    BMNR EXTRACTED INLINE STYLES — Batch extraction from BMNR.tsx
    ══════════════════════════════════════════════════════════════════════ */

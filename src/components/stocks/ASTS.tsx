@@ -1006,7 +1006,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
           const impactColor = c.impact === 'Critical' ? '#ef4444' : c.impact === 'High' ? 'var(--gold)' : c.impact === 'Medium' ? 'var(--sky)' : 'var(--text3)';
           const catColor = c.category === 'Constellation' ? 'var(--cyan)' : c.category === 'Regulatory' ? 'var(--violet)' : c.category === 'Commercial' ? 'var(--gold)' : c.category === 'Service' ? 'var(--mint)' : c.category === 'Defense' || c.category === 'Government' ? 'var(--coral)' : c.category === 'Financing' ? 'var(--sky)' : 'var(--text3)';
           return (
-            <div key={i} className="sm-grid-row-lg" style={{ gridTemplateColumns: '100px 1fr auto auto', gap: 16 }}>
+            <div key={i} className="sm-grid-row-lg sm-gtc-100-1-auto-auto sm-gap-16">
               <span className="sm-mono-sm sm-text3 sm-fs-11">{c.timeline}</span>
               <span className="sm-text-13t">{c.event}</span>
               <span className="sm-badge-dynamic" style={{ '--badge-color': catColor } as React.CSSProperties}>{c.category}</span>
@@ -1025,7 +1025,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
         {(showAllMilestones ? completedMilestones : completedMilestones.slice(0, 20)).map((m, i) => {
           const catColor = m.category === 'Constellation' ? 'var(--cyan)' : m.category === 'Regulatory' ? 'var(--violet)' : m.category === 'Commercial' ? 'var(--gold)' : m.category === 'Service' ? 'var(--mint)' : m.category === 'Capital' ? 'var(--sky)' : m.category === 'Defense' || m.category === 'Government' ? 'var(--coral)' : 'var(--text3)';
           return (
-            <div key={i} className="sm-grid-row-lg" style={{ gridTemplateColumns: '110px 1fr auto', gap: 16 }}>
+            <div key={i} className="sm-grid-row-lg sm-gtc-100-1-auto sm-gap-16">
               <span className="sm-mono-sm sm-text3 sm-fs-11">{m.date}</span>
               <span className="sm-text-13">{m.event}</span>
               <span className="sm-badge-dynamic" style={{ '--badge-color': catColor } as React.CSSProperties}>{m.category}</span>
@@ -1566,13 +1566,13 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
           <UpdateIndicators sources={['PR', 'SEC']} />
         </div>
         <div className="sm-overflow-x">
-          <div className="sm-grid-header" style={{ gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', minWidth: 700 }}>
+          <div className="sm-grid-header sm-gtc-120-140-80-140-100x2-1 sm-min-w-700">
             {['Partner', 'Region', 'Subs', 'Spectrum', 'Term', 'Prepay', 'Status'].map(h => (
               <span key={h} className="sm-micro-label">{h}</span>
             ))}
           </div>
           {definitiveAgreements.map((p, i) => (
-            <div key={p.partner} className="sm-grid-row-lg" style={{ gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', minWidth: 700 }}>
+            <div key={p.partner} className="sm-grid-row-lg sm-gtc-120-140-80-140-100x2-1 sm-min-w-700">
               <span className="sm-text-13t sm-fw-500">{p.partner}</span>
               <span className="sm-text-12">{p.region}</span>
               <span className="sm-mono-val" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{p.subs}M</span>
@@ -1582,7 +1582,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
               <span className="sm-text-11">{p.prepayStatus}</span>
             </div>
           ))}
-          <div className="sm-grid-row-lg sm-total-row-mint" style={{ gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', minWidth: 700 }}>
+          <div className="sm-grid-row-lg sm-total-row-mint sm-gtc-120-140-80-140-100x2-1 sm-min-w-700">
             <span className="sm-text-12 sm-fw-600 sm-text" style={{ gridColumn: 'span 2' }}>Total Definitive</span>
             <span className="sm-mono-val sm-fw-700" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{totalDefinitiveSubs}M</span>
             <span /><span />
@@ -2420,7 +2420,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <span className="sm-cap-td"></span>
             </div>
             {/* FD Row */}
-            <div className="sm-cap-table-row" style={{ gridTemplateColumns: '1fr 100px 100px 120px 1fr', borderTop: '2px solid var(--border)', fontWeight: 600 }}>
+            <div className="sm-cap-table-row sm-gtc-1-100-100-120-1 sm-border-top-2-border sm-fw-600">
               <span className="sm-cap-td-label">Fully Diluted</span>
               <span className="sm-cap-td" data-align="right" data-highlight>{fullyDiluted.toFixed(1)}</span>
               <span className="sm-cap-td" data-align="right">{(fullyDiluted / totalBasic * 100).toFixed(1)}%</span>
@@ -2569,7 +2569,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <span className="sm-table-header sm-text-right">G&A</span>
           </div>
           {sbcHistory.map((row, i) => (
-            <div key={i} className="hover-row sm-data-row" style={{ gridTemplateColumns: '1fr 100px 100px 100px', padding: '12px 16px' }}>
+            <div key={i} className="hover-row sm-data-row sm-gtc-1-100-3x sm-p-12-16">
               <span className="sm-text-13t">{row.quarter}</span>
               <span className="sm-mono-right">${row.sbc.toFixed(1)}M</span>
               <span className="sm-mono-right">${row.engineering.toFixed(1)}M</span>
@@ -3152,7 +3152,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <span className="sm-param-label">March 2025 — RSU Vesting Sales & Withholdings</span>
           <span className="sm-mono-sm" style={{ color: 'var(--rose)' }}>~111K shares / $3.4M</span>
         </div>
-        <div className="sm-grid-header sm-th" style={{ gridTemplateColumns: '1fr 90px 80px 80px 90px 70px', padding: '8px 24px' }}>
+        <div className="sm-grid-header sm-th sm-gtc-1-90-80x2-90-70 sm-p-8-24">
           <span>Name</span><span>Date</span><span className="sm-text-right">Shares</span><span className="sm-text-right">Price</span><span className="sm-text-right">Proceeds</span><span>Type</span>
         </div>
         <div>
@@ -4474,7 +4474,7 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
           ].map((row, i) => {
             const pctChange = ((row.value / currentStockPrice - 1) * 100);
             return (
-              <div key={i} className="sm-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : 'transparent' }}>
+              <div key={i} className="sm-table-row sm-gtc-4x1fr" data-highlight={row.highlight || undefined}>
                 <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
                 <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
                 <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", color: 'var(--text2)' }}>${(row.value - currentStockPrice).toFixed(2)}</span>
@@ -6084,18 +6084,18 @@ const CompsTab = ({ calc, currentStockPrice }) => {
       </div>
 
       {/* Filter Bar */}
-      <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, padding: '24px 24px', marginTop: 8 }}>
-        <p style={{ color: 'var(--text2)', fontSize: 13, lineHeight: 1.6, margin: '0 0 4px' }}>Track developments across D2D satellite and terrestrial competitors impacting ASTS SpaceMobile's market position.</p>
-        <p style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', margin: '0 0 16px' }}>Filter by competitor to focus on specific threat vectors.</p>
+      <div className="sm-comp-panel">
+        <p className="sm-desc-text">Track developments across D2D satellite and terrestrial competitors impacting ASTS SpaceMobile's market position.</p>
+        <p className="sm-filter-desc">Filter by competitor to focus on specific threat vectors.</p>
         <div className="sm-flex-between sm-items-center sm-mb-8">
           <span className="sm-section-label">Filter by Competitor</span>
-          {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} style={{ fontSize: 10, padding: '4px 12px', borderRadius: 99, background: 'color-mix(in srgb, var(--coral) 15%, transparent)', color: 'var(--coral)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}>Clear</button>}
+          {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} className="sm-comp-clear-btn">Clear</button>}
         </div>
         <div className="sm-flex-wrap sm-gap-6">
           {(() => { const isActive = competitorFilter === 'all'; return (
           <button
             onClick={() => setCompetitorFilter('all')}
-            style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid', borderColor: isActive ? 'var(--violet)' : 'var(--border)', background: isActive ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'transparent', color: isActive ? 'var(--violet)' : 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }}
+            className="sm-comp-filter-pill" data-active={isActive || undefined}
           >
             All ({COMPETITOR_NEWS.length})
           </button>
@@ -6108,7 +6108,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <button
                 key={comp.id}
                 onClick={() => setCompetitorFilter(comp.id)}
-                style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid', borderColor: isActive ? 'var(--violet)' : 'var(--border)', background: isActive ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'transparent', color: isActive ? 'var(--violet)' : 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }}
+                className="sm-comp-filter-pill" data-active={isActive || undefined}
               >
                 {comp.name.split('/')[0].trim()} ({count})
               </button>
@@ -6117,17 +6117,17 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (() => { const isActive = competitorFilter === 'other'; return (
             <button
               onClick={() => setCompetitorFilter('other')}
-              style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid', borderColor: isActive ? 'var(--violet)' : 'var(--border)', background: isActive ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : 'transparent', color: isActive ? 'var(--violet)' : 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }}
+              className="sm-comp-filter-pill" data-active={isActive || undefined}
             >
               Miscellaneous ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
             </button>
           ); })()}
         </div>
-        {competitorFilter !== 'all' && <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8, fontFamily: "'Space Mono', monospace" }}>{getCompetitorName(competitorFilter)} &rarr; {filteredNews.length} results</div>}
+        {competitorFilter !== 'all' && <div className="sm-comp-results">{getCompetitorName(competitorFilter)} &rarr; {filteredNews.length} results</div>}
       </div>
 
       {/* Category Filter */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12 }}>
+      <div className="sm-flex-between sm-items-center sm-mt-12">
         <div className="sm-flex-wrap sm-gap-6">
           {newsCategories.map(cat => {
             const isActive = newsCategoryFilter === cat;
@@ -6135,7 +6135,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <button
                 key={cat}
                 onClick={() => setNewsCategoryFilter(cat)}
-                style={{ fontSize: 11, padding: '4px 12px', borderRadius: 99, border: '1px solid', borderColor: isActive ? 'var(--sky)' : 'var(--border)', background: isActive ? 'color-mix(in srgb, var(--sky) 15%, transparent)' : 'transparent', color: isActive ? 'var(--sky)' : 'var(--text3)', cursor: 'pointer', transition: 'all 0.2s' }}
+                className="sm-comp-filter-pill" data-color="sky" data-active={isActive || undefined}
               >
                 {cat}
               </button>
@@ -6144,7 +6144,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
         <button
           onClick={() => { if (expandedNews.size > 0) { setExpandedNews(new Set()); } else { setExpandedNews(new Set(filteredCompNews.map((_, i) => i))); } }}
-          style={{ fontSize: 10, padding: '4px 12px', borderRadius: 99, background: 'color-mix(in srgb, var(--violet) 15%, transparent)', color: 'var(--violet)', border: 'none', cursor: 'pointer', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+          className="sm-comp-show-all-btn"
         >
           {expandedNews.size > 0 ? 'Collapse All' : 'Expand All'}
         </button>
@@ -6164,20 +6164,20 @@ const CompsTab = ({ calc, currentStockPrice }) => {
             const competitorName = getCompetitorName(news.competitor);
             return (
               <div key={i} role="button" tabIndex={0}
-                style={{ padding: '16px 24px', cursor: 'pointer', borderLeft: `3px solid ${accentColor}`, borderBottom: i < filteredCompNews.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}
+                className="sm-comp-news-row" style={{ borderLeft: `3px solid ${accentColor}` }}
                 onClick={() => { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); }}
                 onKeyDown={(e) => { if (e.key === 'Enter') { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); } }}
               >
                 <div className="sm-flex-between sm-items-start">
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
-                      <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 10, color: 'var(--text3)' }}>{news.date}</span>
-                      <span style={{ padding: '1px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--violet) 12%, transparent)', color: 'var(--violet)' }}>{news.category}</span>
-                      <span style={{ padding: '1px 8px', borderRadius: 99, fontSize: 10, background: 'color-mix(in srgb, var(--sky) 12%, transparent)', color: 'var(--sky)' }}>{competitorName}</span>
+                  <div className="sm-flex-1">
+                    <div className="sm-flex-wrap sm-gap-6 sm-mb-4">
+                      <span className="sm-mono-date">{news.date}</span>
+                      <span className="sm-comp-badge-category">{news.category}</span>
+                      <span className="sm-comp-badge-name">{competitorName}</span>
                     </div>
-                    <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: 13, lineHeight: 1.4 }}>{news.headline}</div>
+                    <div className="sm-fw-600 sm-text sm-fs-13 sm-lh-14">{news.headline}</div>
                   </div>
-                  <span style={{ fontSize: 11, fontFamily: "'Space Mono', monospace", color: accentColor, marginLeft: 12, whiteSpace: 'nowrap' }}>
+                  <span className="sm-comp-impl-label" style={{ '--impl-color': accentColor } as React.CSSProperties}>
                     {news.implication === 'positive' ? '+' : news.implication === 'negative' ? '-' : '~'} {impLabel}
                   </span>
                 </div>

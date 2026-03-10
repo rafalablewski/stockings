@@ -2238,7 +2238,7 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
               <span className="sm-bmnr-apy-display">{s.apy.toFixed(1)}%</span>
             </div>
             <div className="sm-bmnr-desc-sm">{s.desc}</div>
-            <div className="sm-text-11" style={{ color: s.riskColor }}>{s.risk}</div>
+            <div className="sm-text-11" style={{ '--dynamic-color': s.riskColor, color: 'var(--dynamic-color)' } as React.CSSProperties}>{s.risk}</div>
           </div>
         ))}
       </div>
@@ -3930,7 +3930,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
                 {comp.keyMetrics?.yieldRate && (
                   <div>
                     <div className="sm-micro-text">Yield</div>
-                    <div style={{ fontSize: 12, color: comp.keyMetrics.yieldRate === '0%' ? 'var(--coral)' : 'var(--mint)' }}>{comp.keyMetrics.yieldRate}</div>
+                    <div className="sm-yield-rate" style={{ '--yield-color': comp.keyMetrics.yieldRate === '0%' ? 'var(--coral)' : 'var(--mint)' } as React.CSSProperties}>{comp.keyMetrics.yieldRate}</div>
                   </div>
                 )}
               </div>
@@ -4877,7 +4877,7 @@ const SECFilingTracker = () => {
   };
 
   return (
-    <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '24px 24px', marginBottom: 12 }}><div className="sm-panel-title sm-mb-12">SEC Filing Tracker</div>
+    <div className="sm-sec-tracker-panel"><div className="sm-panel-title sm-mb-12">SEC Filing Tracker</div>
       <div className="sm-grid-2 sm-gap-16">
         <div className="sm-flex-col-gap">
           <div className="sm-section-label sm-ls-005em">Filing History</div>
@@ -4892,14 +4892,14 @@ const SECFilingTracker = () => {
             <div className="sm-bmnr-flex-bar">
               <span className="sm-text-13 sm-text3">Latest Event</span>
               <div className="sm-text-right">
-                <span style={{ fontSize: 13, color: 'var(--gold)' }}>{filingData.latestEvent}</span>
+                <span className="sm-fs-13-gold">{filingData.latestEvent}</span>
                 <div className="sm-text-11">{filingData.latestEventDate}</div>
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 8, background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)', borderRadius: 4 }}>
+            <div className="sm-sec-pr-bar">
               <span className="sm-text-13 sm-text3">Last PR Processed</span>
               <div className="sm-text-right">
-                <span style={{ fontSize: 13, color: 'var(--mint)' }}>{filingData.lastPressRelease}</span>
+                <span className="sm-fs-13-mint">{filingData.lastPressRelease}</span>
                 <div className="sm-text-11">{filingData.lastPressReleaseTitle}</div>
               </div>
             </div>
@@ -4907,7 +4907,7 @@ const SECFilingTracker = () => {
         </div>
         <div className="sm-flex-col-gap">
           <div className="sm-section-label sm-ls-005em">Latest Filings by Type</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 13 }}>
+          <div className="sm-sec-filing-grid">
             {Object.entries(filingData.filings).map(([type, info]) => {
               const colorMap: Record<string, { bg: string; border: string; text: string }> = {
                 blue: { bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.3)', text: '#60a5fa' },
@@ -4919,8 +4919,8 @@ const SECFilingTracker = () => {
               };
               const cs = colorMap[info.color] || colorMap.cyan;
               return (
-                <div key={type} style={{ padding: 8, border: `1px solid ${cs.border}`, borderRadius: 4, background: cs.bg }}>
-                  <div style={{ fontWeight: 500, color: cs.text }}>{type}</div>
+                <div key={type} className="sm-sec-filing-card" style={{ '--sec-card-border': cs.border, '--sec-card-bg': cs.bg, '--sec-card-text': cs.text } as React.CSSProperties}>
+                  <div className="sm-sec-filing-card-title">{type}</div>
                   <div className="sm-text3">{info.date}</div>
                   <div className="sm-text-11">{info.description}</div>
                 </div>
@@ -4929,7 +4929,7 @@ const SECFilingTracker = () => {
           </div>
         </div>
       </div>
-      <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text3)' }}>
+      <div className="sm-sec-footer">
         CIK: {filingData.cik} | EIN: {filingData.ein} | SIC: {filingData.sic} ({filingData.sicDescription}) | {filingData.exchange}: {filingData.ticker} | FYE: {filingData.fiscalYearEnd}
       </div>
     </div>
@@ -5470,7 +5470,7 @@ const BMNRQuarterlyMetricsPanel = () => {
                   {data.map((d, i) => (
                     <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                       <div className="sm-mono-sm sm-text sm-fs-11 sm-mb-6 sm-nowrap">{d.display}</div>
-                      <div style={{ width: '100%', background: 'var(--mint)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                      <div className="sm-fin-chart-bar" style={{ background: 'var(--mint)', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0 }} />
                       <div className="sm-micro-text sm-text-center sm-mt-6 sm-nowrap">{d.label}</div>
                     </div>
                   ))}
@@ -5501,7 +5501,7 @@ const BMNRQuarterlyMetricsPanel = () => {
                 {data.map((d, i) => (
                   <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                     <div className="sm-mono-sm sm-text sm-fs-11 sm-mb-6 sm-nowrap">{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div className="sm-fin-chart-bar" style={{ background: 'var(--violet)', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0 }} />
                     <div className="sm-micro-text sm-text-center sm-mt-6 sm-nowrap">{d.label}</div>
                   </div>
                 ))}
@@ -5544,7 +5544,7 @@ const BMNRQuarterlyMetricsPanel = () => {
                       <span className="sm-violet">${q.opExOther}M</span>
                     </div>
                   </div>
-                  <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                  <div className="sm-sep-top">
                     <div className="sm-flex sm-justify-between sm-fs-11 sm-fw-500">
                       <span className="sm-text2">Total OpEx:</span>
                       <span className="sm-violet">${q.opEx}M</span>
@@ -5578,7 +5578,7 @@ const BMNRQuarterlyMetricsPanel = () => {
                 {data.map((d, i) => (
                   <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                     <div className="sm-mono-sm sm-text sm-fs-11 sm-mb-6 sm-nowrap">{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--coral)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div className="sm-fin-chart-bar" style={{ background: 'var(--coral)', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0 }} />
                     <div className="sm-micro-text sm-text-center sm-mt-6 sm-nowrap">{d.label}</div>
                   </div>
                 ))}
@@ -5602,7 +5602,7 @@ const BMNRQuarterlyMetricsPanel = () => {
                 {data.map((d, i) => (
                   <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                     <div className="sm-mono-sm sm-text sm-fs-11 sm-mb-6 sm-nowrap">{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--sky)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div className="sm-fin-chart-bar" style={{ background: 'var(--sky)', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0 }} />
                     <div className="sm-micro-text sm-text-center sm-mt-6 sm-nowrap">{d.label}</div>
                   </div>
                 ))}
@@ -5633,7 +5633,7 @@ const BMNRQuarterlyMetricsPanel = () => {
                 {data.map((d, i) => (
                   <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                     <div className="sm-mono-sm sm-text sm-fs-11 sm-mb-6 sm-nowrap">{d.display}</div>
-                    <div style={{ width: '100%', background: 'var(--violet)', borderRadius: '4px 4px 0 0', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0, transition: 'height 0.3s' }} />
+                    <div className="sm-fin-chart-bar" style={{ background: 'var(--violet)', height: maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value ? 2 : 0 }} />
                     <div className="sm-micro-text sm-text-center sm-mt-6 sm-nowrap">{d.label}</div>
                   </div>
                 ))}
@@ -5665,22 +5665,22 @@ const BMNRQuarterlyMetricsPanel = () => {
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
                         {d.value >= 0 && <div className="sm-mono-sm sm-text sm-mb-4 sm-fs-11">{d.display}</div>}
-                        <div style={{ width: '100%', background: d.value >= 0 ? 'var(--mint)' : 'transparent', borderRadius: '4px 4px 0 0', height: d.value >= 0 && maxVal > 0 ? `${Math.round((d.value / maxVal) * 72)}%` : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
+                        <div className="sm-fin-chart-bar" style={{ background: d.value >= 0 ? 'var(--mint)' : 'transparent', height: d.value >= 0 && maxVal > 0 ? `${Math.round((d.value / maxVal) * 72)}%` : 0, minHeight: d.value > 0 ? 2 : 0 }} />
                       </div>
                     ))}
                   </div>
                 )}
-                <div style={{ display: 'flex', gap: overflow ? 4 : 8, borderTop: '1px solid var(--border)' }}>
+                <div className="sm-flex-bar-labels" style={{ gap: overflow ? 4 : 8 }}>
                   {data.map((d, i) => (
-                    <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined} style={{ textAlign: 'center', fontSize: 10, color: 'var(--text3)', padding: '4px 0' }}>{d.label}</div>
+                    <div key={i} className="sm-fin-bar sm-fin-bar-label-item" data-overflow={overflow || undefined}>{d.label}</div>
                   ))}
                 </div>
                 {hasNegative && (
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: overflow ? 4 : 8, height: hasPositive ? 100 : 200 }}>
+                  <div className="sm-flex-neg-bars" style={{ gap: overflow ? 4 : 8, height: hasPositive ? 100 : 200 }}>
                     {data.map((d, i) => (
                       <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
-                        <div style={{ width: '100%', background: d.value < 0 ? 'var(--coral)' : 'transparent', borderRadius: '0 0 4px 4px', height: d.value < 0 && maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value < 0 ? 2 : 0, transition: 'height 0.3s' }} />
-                        {d.value < 0 && <div style={{ fontSize: 11, fontWeight: 600, fontFamily: "'Space Mono', monospace", color: 'var(--text)', marginTop: 4 }}>{d.display}</div>}
+                        <div className="sm-fin-chart-bar-down" style={{ background: d.value < 0 ? 'var(--coral)' : 'transparent', height: d.value < 0 && maxVal > 0 ? `${Math.round((Math.abs(d.value) / maxVal) * 72)}%` : 0, minHeight: d.value < 0 ? 2 : 0 }} />
+                        {d.value < 0 && <div className="sm-fin-neg-label">{d.display}</div>}
                       </div>
                     ))}
                   </div>
@@ -5832,14 +5832,14 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   const V1 = () => (
     <div className="sm-flex-col">
       {/* Hero: BMNR-ETH Correlation */}
-      <div style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--violet) 15%, transparent), color-mix(in srgb, var(--sky) 15%, transparent))', borderRadius: 16, padding: 24, border: '1px solid color-mix(in srgb, var(--violet) 30%, transparent)' }}>
+      <div className="sm-eth-hero-gradient">
         <div className="sm-flex-between sm-items-start">
           <div>
-            <h3 className="sm-fw-700" style={{ fontSize: 20 }}>BMNR ↔ ETH Correlation</h3>
+            <h3 className="sm-fw-700 sm-fs-20">BMNR ↔ ETH Correlation</h3>
             <p className="sm-text-13 sm-text3">BMNR functions as a leveraged ETH proxy — tracking Ethereum ecosystem health is essential</p>
           </div>
           <div className="sm-text-right">
-            <div className="sm-bmnr-kpi-val-xl sm-violet" style={{ fontSize: 28, margin: 0 }}>${ethPrice.toLocaleString()}</div>
+            <div className="sm-bmnr-kpi-val-xl sm-violet sm-fs-28-m0">${ethPrice.toLocaleString()}</div>
             <div className="sm-subtle">ETH Price</div>
           </div>
         </div>
@@ -5854,12 +5854,12 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
             <div key={kpi.label} className="sm-kpi-cell">
               <div className="sm-micro-text">{kpi.label}</div>
               <div className="sm-bmnr-kpi-val-lg" style={{ '--kpi-color': kpi.color } as React.CSSProperties}>{kpi.value}</div>
-              <div style={{ fontSize: 11, color: kpi.subColor }}>{kpi.sub}</div>
+              <div className="sm-kpi-sub" style={{ '--kpi-sub-color': kpi.subColor } as React.CSSProperties}>{kpi.sub}</div>
             </div>
           ))}
         </div>
       </div>
-      
+
       {/* Ecosystem Metrics */}
       <div className="sm-card sm-mt-8">
         <div className="sm-card-section">
@@ -5923,7 +5923,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
             <div className="sm-micro-label sm-mt-4 sm-fw-500">Total ETF AUM</div>
           </div>
           <div className="sm-kpi-cell">
-            <div className="sm-bmnr-kpi-val-xl" style={{ margin: 0, '--kpi-color': etfData.netFlows7d >= 0 ? 'var(--mint)' : 'var(--coral)' } as React.CSSProperties}>
+            <div className="sm-bmnr-kpi-val-xl sm-m-0" style={{ '--kpi-color': etfData.netFlows7d >= 0 ? 'var(--mint)' : 'var(--coral)' } as React.CSSProperties}>
               {etfData.netFlows7d >= 0 ? '+' : ''}${etfData.netFlows7d}M
             </div>
             <div className="sm-micro-label sm-mt-4 sm-fw-500">7-Day Net Flows</div>
@@ -5958,8 +5958,8 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
         <div className="sm-card-section">
           <span className="sm-param-label">Institutional Adoption Evidence</span>
         </div>
-        <div style={{ padding: 16, background: 'linear-gradient(135deg, color-mix(in srgb, var(--violet) 10%, transparent), color-mix(in srgb, var(--mint) 10%, transparent))', borderRadius: 8 }}>
-          <div className="sm-lh-16" style={{ fontSize: 13, fontStyle: 'italic' }}>
+        <div className="sm-eth-inst-gradient">
+          <div className="sm-lh-16 sm-eth-quote">
             "The evidence suggests a fundamental shift: the world's largest financial institutions are no longer asking <em>if</em> they should build on Ethereum, but <em>how fast</em> they can deploy."
           </div>
         </div>

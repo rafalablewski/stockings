@@ -1384,8 +1384,8 @@ const ScenariosTab = () => {
         return (
           <>
             {/* Scenario Header */}
-            <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 16, overflow: 'hidden', borderLeft: `4px solid ${selected.color}` }}>
-              <div className="sm-flex-between" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+            <div className="sm-crcl-scenario-header" style={{ '--scenario-color': selected.color } as React.CSSProperties}>
+              <div className="sm-flex-between-start">
                 <div>
                   <h3 style={{ color: selected.color }}>
                     {selected.name} Case — {targetYear}
@@ -1417,7 +1417,7 @@ const ScenariosTab = () => {
               <div className="sm-crcl-scenario-card">
                 <div className="sm-mono-xl sm-text sm-crcl-ls-tight">${projection.usdc}B</div>
                 <div className="sm-section-label sm-mt-8">USDC Circulation</div>
-                <div className="sm-text-12" style={{ color: 'var(--sky)' }}>
+                <div className="sm-text-12 sm-color-sky">
                   +{usdcGrowth.toFixed(0)}% growth
                 </div>
               </div>
@@ -1626,7 +1626,7 @@ const ScenariosTab = () => {
             <>
               <div className="g4">
                 <div className="sm-crcl-scenario-card">
-                  <div className="sm-crcl-scenario-big-num" style={{ color: 'var(--mint)' }}>${pwev.sharePrice.toFixed(0)}</div>
+                  <div className="sm-crcl-scenario-big-num sm-color-mint">${pwev.sharePrice.toFixed(0)}</div>
                   <div className="sm-section-label sm-mt-8">Expected Share Price</div>
                 </div>
                 <div className="sm-crcl-scenario-card">
@@ -1634,7 +1634,7 @@ const ScenariosTab = () => {
                   <div className="sm-section-label sm-mt-8">Expected Equity Value</div>
                 </div>
                 <div className="sm-crcl-scenario-card">
-                  <div className="sm-crcl-scenario-big-num" style={{ color: 'var(--sky)' }}>{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</div>
+                  <div className="sm-crcl-scenario-big-num sm-color-sky">{expectedReturn >= 0 ? '+' : ''}{expectedReturn.toFixed(0)}%</div>
                   <div className="sm-section-label sm-mt-8">Expected Return</div>
                 </div>
                 <div className="sm-crcl-scenario-card">
@@ -1929,7 +1929,7 @@ const DCFTab = () => {
         </div>
         <div className="sm-overflow-x">
           {/* Header */}
-          <div className="sm-grid-header sm-p-12-24" style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))` }}>
+          <div className="sm-grid-header sm-p-12-24" style={{ gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))` }}>
             <span className="sm-micro-label">Metric</span>
             <span className="sm-micro-label sm-text-right">Today</span>
             {dcf.projections.map(p => (
@@ -1937,7 +1937,7 @@ const DCFTab = () => {
             ))}
           </div>
           {/* USDC Circulation */}
-          <div className="sm-grid-row sm-p-12-24" style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))` }}>
+          <div className="sm-grid-row sm-p-12-24" style={{ gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))` }}>
             <span className="sm-text-12">USDC Circulation ($B)</span>
             <span className="sm-mono-sm sm-text-right">{CURRENT_METRICS.usdc.toFixed(1)}</span>
             {dcf.projections.map(p => (
@@ -1945,7 +1945,7 @@ const DCFTab = () => {
             ))}
           </div>
           {/* Reserve Revenue */}
-          <div className="sm-grid-row sm-p-12-24" style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))` }}>
+          <div className="sm-grid-row sm-p-12-24" style={{ gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))` }}>
             <span className="sm-text-12">Reserve Revenue ($B)</span>
             <span className="sm-mono-sm sm-text-right">—</span>
             {dcf.projections.map(p => (
@@ -1953,7 +1953,7 @@ const DCFTab = () => {
             ))}
           </div>
           {/* Net FCF */}
-          <div className="sm-grid-row sm-p-12-24" style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))` }}>
+          <div className="sm-grid-row sm-p-12-24" style={{ gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))` }}>
             <span className="sm-text-12">Net FCF ($B)</span>
             <span className="sm-mono-sm sm-text-right">—</span>
             {dcf.projections.map(p => (
@@ -1961,7 +1961,7 @@ const DCFTab = () => {
             ))}
           </div>
           {/* PV of FCF */}
-          <div className="sm-grid-row sm-p-12-24" style={{ display: 'grid', gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))` }}>
+          <div className="sm-grid-row sm-p-12-24" style={{ gridTemplateColumns: `minmax(140px, 1.5fr) repeat(${dcf.projections.length + 1}, minmax(80px, 1fr))` }}>
             <span className="sm-text-12">PV of FCF ($B)</span>
             <span className="sm-mono-sm sm-text-right">—</span>
             {dcf.projections.map(p => (
@@ -2064,7 +2064,7 @@ const CRCLQuarterlyMetricsPanel = () => {
             <div className="sm-fin-table-header" style={{ gridTemplateColumns: `minmax(100px, 1.5fr) repeat(${quarterlyData.length}, minmax(70px, 1fr))` }}>
               <span className="sm-fin-th" data-sticky="">Metric</span>
               {quarterlyData.map((d, idx) => (
-                <span key={d.quarter} className="sm-fin-th" data-latest={idx === 0 ? '' : undefined} style={{ textAlign: 'right' }}>
+                <span key={d.quarter} className="sm-fin-th sm-text-right" data-latest={idx === 0 ? '' : undefined}>
                   {d.quarter.replace('Q', '').replace(' ', "'")}
                 </span>
               ))}
@@ -2161,7 +2161,7 @@ const CRCLQuarterlyMetricsPanel = () => {
             const overflow = data.length > 8;
             return (
               <>
-                <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+                <div className="sm-card-body sm-overflow-x sm-scroll-hint sm-pb-0">
                   <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                   {data.map((d, i) => (
                     <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
@@ -2275,7 +2275,7 @@ const CRCLQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             const overflow = data.length > 8;
             return (
-              <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+              <div className="sm-card-body sm-overflow-x sm-scroll-hint sm-pb-0">
                 <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                 {data.map((d, i) => (
                   <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
@@ -2307,7 +2307,7 @@ const CRCLQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             const overflow = data.length > 8;
             return (
-              <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+              <div className="sm-card-body sm-overflow-x sm-scroll-hint sm-pb-0">
                 <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                 {data.map((d, i) => (
                   <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
@@ -2338,7 +2338,7 @@ const CRCLQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             const overflow = data.length > 8;
             return (
-              <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+              <div className="sm-card-body sm-overflow-x sm-scroll-hint sm-pb-0">
                 <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                 {data.map((d, i) => (
                   <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
@@ -2366,7 +2366,7 @@ const CRCLQuarterlyMetricsPanel = () => {
             const maxVal = Math.max(...data.map(d => d.value != null ? Math.abs(d.value) : 0), 0);
             const overflow = data.length > 8;
             return (
-              <div className="sm-card-body sm-overflow-x sm-scroll-hint" style={{ paddingBottom: 0 }}>
+              <div className="sm-card-body sm-overflow-x sm-scroll-hint sm-pb-0">
                 <div className="sm-fin-chart" style={{ minWidth: overflow ? data.length * 72 : undefined }}>
                 {data.map((d, i) => (
                   <div key={i} className="sm-fin-bar" data-overflow={overflow || undefined}>
@@ -2764,7 +2764,7 @@ function CRCLModel() {
               <div className="sm-model-grid" style={{ '--cols': 2 } as React.CSSProperties}>
                 <div className="sm-grid-cell">
                   <div className="sm-flex sm-mb-12">
-                    <span className="sm-crcl-case-label" style={{ color: 'var(--mint)' }}>Bull Case</span>
+                    <span className="sm-crcl-case-label sm-color-mint">Bull Case</span>
                     <UpdateIndicators sources="PR" />
                   </div>
                   {[
@@ -2783,7 +2783,7 @@ function CRCLModel() {
                 </div>
                 <div className="sm-grid-cell">
                   <div className="sm-flex sm-mb-12">
-                    <span className="sm-crcl-case-label" style={{ color: 'var(--coral)' }}>Bear Case</span>
+                    <span className="sm-crcl-case-label sm-color-coral">Bear Case</span>
                     <UpdateIndicators sources="PR" />
                   </div>
                   {[
@@ -5078,57 +5078,57 @@ const CompsTab = () => {
         <div className="sm-section-label" style={{ marginBottom: 4 }}>Circle Business Model Metrics<UpdateIndicators sources={['WS']} /></div>
         <p className="sm-body-sm sm-text3">Unique metrics for stablecoin issuers — monetization of reserves</p>
         <div className="g4">
-          <div className="sm-bg-surface2 sm-text-center" style={{ borderRadius: 12, padding: 24 }}>
-            <div className="sm-mono sm-fw-700 sm-accent" style={{ fontSize: 36 }}>{CIRCLE_METRICS.revenuePerUSDC}¢</div>
+          <div className="sm-bg-surface2 sm-text-center sm-surface2-pad-card">
+            <div className="sm-mono sm-fw-700 sm-accent sm-fs-36">{CIRCLE_METRICS.revenuePerUSDC}¢</div>
             <div className="sm-text-13 sm-text3">Rev per $1 USDC</div>
           </div>
-          <div className="sm-bg-surface2 sm-text-center" style={{ borderRadius: 12, padding: 24 }}>
-            <div className="sm-mono sm-fw-700 sm-accent" style={{ fontSize: 36 }}>{CIRCLE_METRICS.grossTakeRate}%</div>
+          <div className="sm-bg-surface2 sm-text-center sm-surface2-pad-card">
+            <div className="sm-mono sm-fw-700 sm-accent sm-fs-36">{CIRCLE_METRICS.grossTakeRate}%</div>
             <div className="sm-text-13 sm-text3">Gross Take Rate</div>
           </div>
-          <div className="sm-bg-surface2 sm-text-center" style={{ borderRadius: 12, padding: 24 }}>
-            <div className="sm-mono sm-fw-700 sm-accent" style={{ fontSize: 36 }}>{CIRCLE_METRICS.distributionCostPct}%</div>
+          <div className="sm-bg-surface2 sm-text-center sm-surface2-pad-card">
+            <div className="sm-mono sm-fw-700 sm-accent sm-fs-36">{CIRCLE_METRICS.distributionCostPct}%</div>
             <div className="sm-text-13 sm-text3">Coinbase Share</div>
           </div>
-          <div className="sm-bg-surface2 sm-text-center" style={{ borderRadius: 12, padding: 24 }}>
-            <div className="sm-mono sm-fw-700 sm-accent" style={{ fontSize: 36 }}>{CIRCLE_METRICS.netTakeRate}%</div>
+          <div className="sm-bg-surface2 sm-text-center sm-surface2-pad-card">
+            <div className="sm-mono sm-fw-700 sm-accent sm-fs-36">{CIRCLE_METRICS.netTakeRate}%</div>
             <div className="sm-text-13 sm-text3">Net Take Rate</div>
           </div>
         </div>
-        <div style={{ padding: 16, background: 'var(--surface2)', borderRadius: 8 }}>
+        <div className="sm-surface2-pad-sm">
           <div className="sm-flex-between" style={{ flexWrap: 'wrap', gap: 16 }}>
             <div>
               <span className="sm-subtle">Reserve Yield</span>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--sky)' }}>{CIRCLE_METRICS.reserveYield}%</div>
+              <div className="sm-mono-18 sm-color-sky">{CIRCLE_METRICS.reserveYield}%</div>
             </div>
             <div>
               <span className="sm-subtle">RLDC Margin</span>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--mint)' }}>{CIRCLE_METRICS.rldcMargin}%</div>
+              <div className="sm-mono-18 sm-color-mint">{CIRCLE_METRICS.rldcMargin}%</div>
             </div>
             <div>
               <span className="sm-subtle">Tether Take Rate</span>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--text2)' }}>4.4%</div>
+              <div className="sm-mono-18 sm-color-text2">4.4%</div>
             </div>
             <div>
               <span className="sm-subtle">Tether Margin</span>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 18, color: 'var(--text2)' }}>85%</div>
+              <div className="sm-mono-18 sm-color-text2">85%</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Multi-Methodology Valuation Matrix */}
-      <div className="sm-panel" style={{ borderRadius: 14 }}>
-        <div className="sm-flex sm-fw-600 sm-text" style={{ fontSize: 13, marginBottom: 4 }}>Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
+      <div className="sm-panel sm-rounded-14">
+        <div className="sm-flex sm-fw-600 sm-text sm-fs-13 sm-mb-4">Implied Valuation Matrix<UpdateIndicators sources={['WS']} /></div>
         <p className="sm-body-sm sm-text3">Circle's value under different peer multiples (current: $18.9B)</p>
         <div className="sm-cmp-table-scroll">
-          <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1.2fr', borderRadius: '10px 10px 0 0' }}>
+          <div className="sm-cmp-table-header sm-cmp-grid-5col sm-cmp-header-rounded">
             {['Method', 'Peer Basis', 'Multiple', 'Implied Value', 'Premium/(Discount)'].map((label, idx) => (
               <div key={label} className="sm-cmp-th" data-align={idx < 2 ? 'left' : 'right'}>{label}</div>
             ))}
           </div>
           {VALUATION_MATRIX.map((v, i) => (
-            <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr 1.2fr' }}>
+            <div key={i} className="sm-cmp-table-row sm-cmp-grid-5col">
               <div className="sm-cmp-td-label">{v.method}</div>
               <div className="sm-cmp-td">{v.basis}</div>
               <div className="sm-cmp-td" data-align="right">{v.multiple}x</div>
@@ -5142,8 +5142,8 @@ const CompsTab = () => {
       </div>
 
       {/* Growth vs P/S Scatter Plot */}
-      <div className="sm-panel" style={{ borderRadius: 14 }}>
-        <div className="sm-flex sm-fw-600 sm-text" style={{ fontSize: 13, marginBottom: 4 }}>Growth vs. P/S Multiple<UpdateIndicators sources={['WS']} /></div>
+      <div className="sm-panel sm-rounded-14">
+        <div className="sm-flex sm-fw-600 sm-text sm-fs-13 sm-mb-4">Growth vs. P/S Multiple<UpdateIndicators sources={['WS']} /></div>
         <p className="sm-body-sm sm-text3">Circle's positioning relative to peers (bubble size = market cap)</p>
         <div style={{ height: 300 }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -5209,13 +5209,13 @@ const CompsTab = () => {
               <p className="sm-body-sm sm-text3" style={{ margin: '4px 0 0' }}>Value each business segment separately</p>
             </div>
             <div className="sm-cmp-table-scroll">
-              <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+              <div className="sm-cmp-table-header sm-cmp-grid-4col">
                 {['Segment', 'Metric', 'Multiple', 'Value'].map((label, idx) => (
                   <div key={label} className="sm-cmp-th" data-align={idx === 0 ? 'left' : 'right'}>{label}</div>
                 ))}
               </div>
               {SOTP.map((s, i) => (
-                <div key={i} className="sm-cmp-table-row" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+                <div key={i} className="sm-cmp-table-row sm-cmp-grid-4col">
                   <div className="sm-cmp-td-label">
                     <div className="sm-fw-500">{s.segment}</div>
                     <div className="sm-text-11">{s.basis}</div>
@@ -5227,7 +5227,7 @@ const CompsTab = () => {
                   </div>
                 </div>
               ))}
-              <div className="sm-cmp-table-total" style={{ gridTemplateColumns: '2fr 1fr 1fr 1fr' }}>
+              <div className="sm-cmp-table-total sm-cmp-grid-4col">
                 <div className="sm-cmp-td-label" style={{ gridColumn: '1 / 4' }}>SOTP Range</div>
                 <div className="sm-cmp-td sm-mint" data-align="right">$15.5-17.5B</div>
               </div>
@@ -5246,7 +5246,7 @@ const CompsTab = () => {
               <p className="sm-body-sm sm-text3" style={{ margin: '4px 0 0' }}>Recent M&A and funding deals in the space</p>
             </div>
             <div className="sm-cmp-table-scroll">
-              <div className="sm-cmp-table-header" style={{ gridTemplateColumns: '100px 2fr 1fr 100px' }}>
+              <div className="sm-cmp-table-header sm-cmp-grid-100-2-1-100">
                 {['Date', 'Target', 'Value', 'Type'].map((label, idx) => (
                   <div key={label} className="sm-cmp-th" data-align={idx === 2 ? 'right' : 'left'}>{label}</div>
                 ))}
@@ -5271,8 +5271,8 @@ const CompsTab = () => {
       </div>
 
       {/* Sensitivity Matrix */}
-      <div className="sm-panel" style={{ borderRadius: 14 }}>
-        <div className="sm-flex sm-fw-600 sm-text" style={{ fontSize: 13, marginBottom: 4 }}>Valuation Sensitivity: USDC × Interest Rates<UpdateIndicators sources={['WS']} /></div>
+      <div className="sm-panel sm-rounded-14">
+        <div className="sm-flex sm-fw-600 sm-text sm-fs-13 sm-mb-4">Valuation Sensitivity: USDC × Interest Rates<UpdateIndicators sources={['WS']} /></div>
         <p className="sm-body-sm sm-text3">Implied enterprise value at Coinbase P/S multiple (13x net revenue)</p>
         <div className="sm-cmp-table-scroll">
           <div className="sm-cmp-table-header" style={{ gridTemplateColumns: `1fr repeat(${SENSITIVITY_RATES.length}, 1fr)`, borderRadius: '10px 10px 0 0' }}>
@@ -5302,8 +5302,8 @@ const CompsTab = () => {
       </div>
 
       {/* Historical Multiple Tracking */}
-      <div className="sm-panel" style={{ borderRadius: 14 }}>
-        <div className="sm-flex sm-fw-600 sm-text" style={{ fontSize: 13, marginBottom: 4 }}>P/S Multiple Since IPO<UpdateIndicators sources={['WS']} /></div>
+      <div className="sm-panel sm-rounded-14">
+        <div className="sm-flex sm-fw-600 sm-text sm-fs-13 sm-mb-4">P/S Multiple Since IPO<UpdateIndicators sources={['WS']} /></div>
         <div style={{ height: 280 }}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={HISTORICAL_MULTIPLES} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
@@ -5328,24 +5328,24 @@ const CompsTab = () => {
       </div>
 
       {/* Rule of 40 Analysis */}
-      <div className="sm-panel" style={{ borderRadius: 14 }}>
+      <div className="sm-panel sm-rounded-14">
         <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>Rule of 40 Analysis</div>
         <p className="sm-body-sm sm-text3">Growth Rate + Profit Margin &ge; 40% indicates healthy SaaS/fintech</p>
         <div className="g4">
-          <div className="sm-bg-surface2 sm-text-center" style={{ borderRadius: 12, padding: 24 }}>
+          <div className="sm-bg-surface2 sm-text-center sm-surface2-pad-card">
             <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 36, fontWeight: 700, color: 'var(--mint)' }}>105</div>
             <div className="sm-text-13 sm-text3">Circle (66% + 39%)</div>
           </div>
-          <div className="sm-bg-surface2 sm-text-center" style={{ borderRadius: 12, padding: 24 }}>
-            <div className="sm-mono sm-fw-700 sm-accent" style={{ fontSize: 36 }}>55</div>
+          <div className="sm-bg-surface2 sm-text-center sm-surface2-pad-card">
+            <div className="sm-mono sm-fw-700 sm-accent sm-fs-36">55</div>
             <div className="sm-text-13 sm-text3">Coinbase (30% + 25%)</div>
           </div>
-          <div className="sm-bg-surface2 sm-text-center" style={{ borderRadius: 12, padding: 24 }}>
-            <div className="sm-mono sm-fw-700 sm-accent" style={{ fontSize: 36 }}>26</div>
+          <div className="sm-bg-surface2 sm-text-center sm-surface2-pad-card">
+            <div className="sm-mono sm-fw-700 sm-accent sm-fs-36">26</div>
             <div className="sm-text-13 sm-text3">PayPal (8% + 18%)</div>
           </div>
-          <div className="sm-bg-surface2 sm-text-center" style={{ borderRadius: 12, padding: 24 }}>
-            <div className="sm-mono sm-fw-700 sm-accent" style={{ fontSize: 36 }}>77</div>
+          <div className="sm-bg-surface2 sm-text-center sm-surface2-pad-card">
+            <div className="sm-mono sm-fw-700 sm-accent sm-fs-36">77</div>
             <div className="sm-text-13 sm-text3">Visa (10% + 67%)</div>
           </div>
         </div>
