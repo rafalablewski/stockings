@@ -7377,6 +7377,9 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-param-btn[data-active="true"] {
   font-weight: 600;
   border-width: 2px;
+  border-color: var(--btn-color, var(--accent));
+  background: color-mix(in srgb, var(--btn-color, var(--accent)) 15%, transparent);
+  color: var(--btn-color, var(--accent));
 }
 
 /* Custom value input wrapper (violet-bordered) */
@@ -12133,4 +12136,333 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* Form badge fixed width for source type column alignment */
 .sm-src-badge-w48 { width: 48px; }
+
+/* § ASTS/BMNR/CRCL SHARED INLINE-STYLE EXTRACTIONS */
+
+/* ── Mono value with dynamic --val-color (sm-mono-xl/lg spacing) ──── */
+.sm-mono-xl-kpi {
+  font-family: 'Space Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+  margin: 8px 0 4px;
+}
+.sm-mono-lg-kpi {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+  margin: 6px 0 4px;
+}
+
+/* ── KPI hero with marginTop 8 (for revenue/grid cells) ──────────── */
+.sm-kpi-hero-mt { margin-top: 8px; }
+
+/* ── KPI hero with marginTop 4 (for smaller cells) ───────────────── */
+.sm-kpi-hero-mt4 { margin-top: 4px; }
+
+/* ── KPI value large (20px mono bold, dynamic color) ─────────────── */
+.sm-kpi-value-lg-dyn {
+  font-family: 'Space Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--kpi-color, var(--text));
+}
+
+/* ── Mono value 12px in kv-rows with dynamic color ───────────────── */
+.sm-kv-mono {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  color: var(--kpi-color, var(--text));
+  font-weight: 400;
+}
+.sm-kv-mono[data-highlight="true"] {
+  color: var(--kpi-color, var(--mint));
+  font-weight: 600;
+}
+
+/* ── Section divider header (th-like with bg tint) ───────────────── */
+.sm-section-divider {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 8px 24px;
+  color: var(--divider-color, var(--text3));
+  background: color-mix(in srgb, var(--divider-color, var(--text3)) 5%, transparent);
+}
+.sm-section-divider[data-border-top="true"] {
+  border-top: 1px solid var(--border);
+}
+
+/* ── Inline grid row (reusable for data tables without sm-grid-row) ─ */
+.sm-data-row {
+  display: grid;
+  padding: 12px 24px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-data-row:last-child { border-bottom: none; }
+.sm-data-row:hover { background: var(--surface2); }
+
+/* ── Data row with accent background (total rows) ────────────────── */
+.sm-data-row-accent {
+  display: grid;
+  padding: 12px 24px;
+  background: var(--accent-dim);
+}
+
+/* ── Total row with tinted background ────────────────────────────── */
+.sm-total-row-mint {
+  background: color-mix(in srgb, var(--mint) 5%, transparent);
+  border-top: 1px solid var(--border);
+  border-bottom: none;
+}
+.sm-total-row-violet {
+  background: color-mix(in srgb, var(--violet) 5%, transparent);
+  border-top: 1px solid var(--border);
+}
+
+/* ── Padding left 16 ─────────────────────────────────────────────── */
+.sm-pl-16 { padding-left: 16px; }
+
+/* ── Height utility ──────────────────────────────────────────────── */
+.sm-h-200 { height: 200px; }
+.sm-h-192 { height: 192px; }
+.sm-h-256 { height: 256px; }
+
+/* ── Progress bar track ──────────────────────────────────────────── */
+.sm-progress-track {
+  height: 4px;
+  background: var(--surface3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+/* ── Progress bar fill ───────────────────────────────────────────── */
+.sm-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--bar-color, var(--cyan));
+  transition: width 0.6s ease;
+}
+
+/* ── Bar chart bar (the colored rectangle) ───────────────────────── */
+.sm-bar-fill {
+  width: 100%;
+  background: var(--accent);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s;
+}
+
+/* ── Chart legend with gap+wrap ──────────────────────────────────── */
+.sm-chart-legend-wrap {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: var(--text3);
+  padding: 8px 0;
+}
+
+/* ── Accent panel item row (py 8, border-bottom conditional) ─────── */
+.sm-accent-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+.sm-accent-item:last-child { border-bottom: none; }
+
+/* ── Spectrum row (left border accent) ───────────────────────────── */
+.sm-spectrum-row {
+  padding: 16px 24px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  border-left: 3px solid var(--accent);
+  transition: background 0.15s;
+}
+.sm-spectrum-row:last-child { border-bottom: none; }
+
+/* ── Partner name styled ─────────────────────────────────────────── */
+.sm-partner-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cyan);
+}
+
+/* ── Muted sub-note ──────────────────────────────────────────────── */
+.sm-sub-note {
+  font-size: 11px;
+  color: var(--text3);
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+/* ── Info bar with accent left border ────────────────────────────── */
+.sm-info-bar-accent {
+  border-left: 3px solid var(--accent);
+}
+
+/* ── sm-grid-sep override for transparent bg ─────────────────────── */
+.sm-grid-sep-transparent { gap: 12px; background: transparent; }
+
+/* ── Custom scenario alert ───────────────────────────────────────── */
+.sm-custom-scenario-alert {
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--violet) 8%, transparent);
+  border-radius: 8px;
+  font-size: 11px;
+  color: var(--violet);
+  margin-top: 8px;
+}
+
+/* ── Scenario card (model tab preset cards) ──────────────────────── */
+.sm-scenario-card {
+  padding: 16px 8px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  border-bottom: 2px solid transparent;
+}
+.sm-scenario-card[data-active="true"] {
+  border-bottom-color: var(--scenario-color, var(--accent));
+  background: color-mix(in srgb, var(--scenario-color, var(--accent)) 8%, transparent);
+}
+
+/* ── Scenario card value ─────────────────────────────────────────── */
+.sm-scenario-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 4px 0 2px;
+}
+.sm-scenario-card[data-active="true"] .sm-scenario-val {
+  color: var(--scenario-color, var(--accent));
+}
+
+/* ── Scenario card sub text ──────────────────────────────────────── */
+.sm-scenario-sub {
+  font-size: 10px;
+  color: var(--text3);
+}
+
+/* ── DCF output cell (bg + padding) ──────────────────────────────── */
+.sm-dcf-cell {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+  padding: 24px 16px;
+  text-align: center;
+}
+
+/* ── Large mono hero for DCF output ──────────────────────────────── */
+.sm-dcf-hero {
+  font-family: 'Space Mono', monospace;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 6px 0 4px;
+}
+
+/* ── Methodology section title ───────────────────────────────────── */
+.sm-method-title { font-size: 16px; }
+
+/* ── Methodology description ─────────────────────────────────────── */
+.sm-method-desc {
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.7;
+  color: var(--text3);
+}
+
+/* ── Conditional value coloring via data-positive ────────────────── */
+.sm-val-color[data-positive="true"] { color: var(--mint); }
+.sm-val-color[data-positive="false"] { color: var(--coral); }
+
+/* ── 10b5-1 plan status ──────────────────────────────────────────── */
+.sm-plan-status {
+  font-size: 11px;
+}
+.sm-plan-status[data-plan="true"] { color: var(--mint); }
+.sm-plan-status[data-plan="false"] { color: var(--text3); }
+
+/* ── Activity type badge (RSU Grant / Vesting / Exercise) ────────── */
+.sm-activity-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 100px;
+}
+.sm-activity-badge[data-type="grant"] {
+  background: color-mix(in srgb, var(--violet) 15%, transparent);
+  color: var(--violet);
+}
+.sm-activity-badge[data-type="vesting"] {
+  background: color-mix(in srgb, var(--mint) 15%, transparent);
+  color: var(--mint);
+}
+.sm-activity-badge[data-type="exercise"] {
+  background: color-mix(in srgb, var(--sky) 15%, transparent);
+  color: var(--sky);
+}
+
+/* ── Sale/withholding type badge ──────────────────────────────────── */
+.sm-sale-type-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.sm-sale-type-badge[data-type="sale"] {
+  color: var(--rose, var(--coral));
+  background: color-mix(in srgb, var(--rose, var(--coral)) 15%, transparent);
+}
+.sm-sale-type-badge[data-type="withholding"] {
+  color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 15%, transparent);
+}
+
+/* ── Dilution scenario row conditional bg ────────────────────────── */
+.sm-data-row[data-scenario="stress"] {
+  background: color-mix(in srgb, var(--coral) 3%, transparent);
+}
+.sm-data-row[data-scenario="current"] { font-weight: 600; }
+
+/* ── Inline card header (flex-between with padding+border) ───────── */
+.sm-inline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Line height 1.5 ─────────────────────────────────────────────── */
+.sm-lh-15 { line-height: 1.5; }
+
+/* ── Line height 1.6 ─────────────────────────────────────────────── */
+.sm-lh-16-alt { line-height: 1.6; }
+
+/* ── Mono-lg with marginTop 4 (for detail grids) ─────────────────── */
+.sm-mono-lg-mt4 { margin-top: 4px; }
+
+/* ── CEO RSU grant row ───────────────────────────────────────────── */
+.sm-ceo-grant-row {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--gold) 3%, transparent);
+}
+
+/* ── Empty state padding override ────────────────────────────────── */
+.sm-empty-state-lg { padding: 48px; }
+
+/* ── sm-highlight-bar overrides for no border-top + extra padding ── */
+.sm-highlight-bar-lg {
+  padding: 24px;
+  border-top: none;
+}
+
+/* ── grid-sep with transparent bg and gap 16 ─────────────────────── */
+.sm-grid-sep-gap16 { gap: 16px; background: transparent; }
 

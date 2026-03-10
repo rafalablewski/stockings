@@ -772,7 +772,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
     <div className="sm-model-grid" style={{ '--cols': 2 } as React.CSSProperties}>
       <div className="sm-card-body sm-bg-surface">
         <div className="sm-flex sm-items-center sm-gap-8 sm-mb-12">
-          <span className="sm-section-label sm-mint" style={{ fontSize: 13 }}>Bull Case</span>
+          <span className="sm-section-label sm-mint sm-fs-13">Bull Case</span>
           <UpdateIndicators sources="PR" />
         </div>
         {[
@@ -790,7 +790,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       </div>
       <div className="sm-card-body sm-bg-surface">
         <div className="sm-flex sm-items-center sm-gap-8 sm-mb-12">
-          <span className="sm-section-label sm-coral" style={{ fontSize: 13 }}>Bear Case</span>
+          <span className="sm-section-label sm-coral sm-fs-13">Bear Case</span>
           <UpdateIndicators sources="PR" />
         </div>
         {[
@@ -836,11 +836,11 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
           })}
         </div>
       </div>
-      <div className="sm-bar-chart" style={{ height: 200 }}>
+      <div className="sm-bar-chart sm-h-200">
         {chartData.map((d, i) => (
           <div key={i} className="sm-bar-col">
             <div className="sm-bar-col-label">{d.display}</div>
-            <div style={{ width: '100%', background: 'var(--accent)', borderRadius: '4px 4px 0 0', height: maxValue > 0 ? Math.round((d.value / maxValue) * 150) : 0, minHeight: d.value > 0 ? 2 : 0, transition: 'height 0.3s' }} />
+            <div className="sm-bar-fill" style={{ height: maxValue > 0 ? Math.round((d.value / maxValue) * 150) : 0, minHeight: d.value > 0 ? 2 : 0 }} />
             <div className="sm-bar-col-foot">{d.label}</div>
           </div>
         ))}
@@ -859,10 +859,10 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         { metric: 'Constellation', value: `${calc.totalSats}/${targetSats2026}`, desc: `${calc.constellationProgress.toFixed(0)}% complete`, color: 'var(--cyan)' },
         { metric: 'Cash Runway', value: `${calc.cashRunwayQuarters.toFixed(1)} quarters`, desc: `~${(calc.cashRunwayQuarters / 4).toFixed(1)} year runway`, color: calc.cashRunwayQuarters > 4 ? 'var(--mint)' : 'var(--gold)' },
       ].map((row, i, arr) => (
-        <div key={row.metric} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 1fr', padding: '12px 24px', borderBottom: i < arr.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
+        <div key={row.metric} className="sm-data-row" style={{ gridTemplateColumns: '1fr 120px 1fr' }}>
           <span className="sm-text-13t">{row.metric}</span>
           <span className="sm-mono-val sm-text-right" data-weight="600" style={{ '--val-color': row.color } as React.CSSProperties}>{row.value}</span>
-          <span className="sm-text-12 sm-text3" style={{ paddingLeft: 16 }}>{row.desc}</span>
+          <span className="sm-text-12 sm-text3 sm-pl-16">{row.desc}</span>
         </div>
       ))}
     </div>
@@ -886,7 +886,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
       ].map(row => (
         <div key={row.metric} className="sm-grid-cell-center">
           <div className="sm-micro-text">{row.metric}</div>
-          <div className="sm-mono-lg" style={{ color: row.color, margin: '6px 0 4px' }}>{row.value}</div>
+          <div className="sm-mono-lg-kpi" style={{ '--kpi-color': row.color } as React.CSSProperties}>{row.value}</div>
           <div className="sm-text-11">{row.sub}</div>
         </div>
       ))}
@@ -915,7 +915,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
         currentValue={DEFAULTS.currentStockPrice}
       />
     </div>
-    <div className="sm-grid-sep-3col sm-mt-12" style={{ gap: 12, background: 'transparent' }}>
+    <div className="sm-grid-sep-3col sm-mt-12 sm-grid-sep-transparent">
       <OverviewParameterCard
         title="Cash ($M)"
         explanation="Cash & equivalents. Determines runway = Cash ÷ Burn. Critical for pre-revenue companies."
@@ -1007,7 +1007,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
           const catColor = c.category === 'Constellation' ? 'var(--cyan)' : c.category === 'Regulatory' ? 'var(--violet)' : c.category === 'Commercial' ? 'var(--gold)' : c.category === 'Service' ? 'var(--mint)' : c.category === 'Defense' || c.category === 'Government' ? 'var(--coral)' : c.category === 'Financing' ? 'var(--sky)' : 'var(--text3)';
           return (
             <div key={i} className="sm-grid-row-lg" style={{ gridTemplateColumns: '100px 1fr auto auto', gap: 16 }}>
-              <span className="sm-mono-sm sm-text3" style={{ fontSize: 11 }}>{c.timeline}</span>
+              <span className="sm-mono-sm sm-text3 sm-fs-11">{c.timeline}</span>
               <span className="sm-text-13t">{c.event}</span>
               <span className="sm-badge-dynamic" style={{ '--badge-color': catColor } as React.CSSProperties}>{c.category}</span>
               <span className="sm-badge-dynamic" data-bold="true" style={{ '--badge-color': impactColor } as React.CSSProperties}>{c.impact}</span>
@@ -1026,7 +1026,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
           const catColor = m.category === 'Constellation' ? 'var(--cyan)' : m.category === 'Regulatory' ? 'var(--violet)' : m.category === 'Commercial' ? 'var(--gold)' : m.category === 'Service' ? 'var(--mint)' : m.category === 'Capital' ? 'var(--sky)' : m.category === 'Defense' || m.category === 'Government' ? 'var(--coral)' : 'var(--text3)';
           return (
             <div key={i} className="sm-grid-row-lg" style={{ gridTemplateColumns: '110px 1fr auto', gap: 16 }}>
-              <span className="sm-mono-sm sm-text3" style={{ fontSize: 11 }}>{m.date}</span>
+              <span className="sm-mono-sm sm-text3 sm-fs-11">{m.date}</span>
               <span className="sm-text-13">{m.event}</span>
               <span className="sm-badge-dynamic" style={{ '--badge-color': catColor } as React.CSSProperties}>{m.category}</span>
             </div>
@@ -1035,8 +1035,8 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
         {completedMilestones.length > 20 && (
           <button
             onClick={() => setShowAllMilestones(!showAllMilestones)}
-            className="sm-pill-toggle sm-w-full"
-            style={{ padding: 8, background: 'var(--surface2)', border: '1px solid var(--border)' }}
+            className="sm-pill-toggle sm-w-full sm-p-8 sm-bg-surface2"
+            style={{ border: '1px solid var(--border)' }}
           >
             {showAllMilestones ? '\u25B2 Show Less' : `\u25BC Show ${completedMilestones.length - 20} More Milestones`}
           </button>
@@ -1091,7 +1091,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
         ].map(kpi => (
           <div key={kpi.label} className="sm-kpi-cell">
             <div className="sm-micro-text">{kpi.label}</div>
-            <div className="sm-mono-xl" style={{ color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div className="sm-mono-xl-kpi" style={{ '--kpi-color': kpi.color } as React.CSSProperties}>{kpi.value}</div>
             <div className="sm-text-11">{kpi.sub}</div>
           </div>
         ))}
@@ -1102,7 +1102,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
         <div className="sm-accent-panel" style={{ '--panel-accent': 'var(--cyan)' } as React.CSSProperties}>
           <div className="sm-accent-panel-title" style={{ '--panel-accent': 'var(--cyan)' } as React.CSSProperties}>Block 1: BW3 + BB1-5</div>
           {['Array size: 693 sq ft each', 'Launched: BW3 Sept 2022, BB1-5 Sept 2024', 'Status: All 6 operational in orbit', 'Purpose: Technology validation, early service'].map((item, i) => (
-            <div key={i} className="sm-flex sm-items-center sm-gap-12" style={{ padding: '8px 0', borderBottom: i < 3 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+            <div key={i} className="sm-accent-item">
               <span className="sm-dot-4" style={{ '--dot-color': 'var(--cyan)' } as React.CSSProperties} />
               <span className="sm-text-13">{item}</span>
             </div>
@@ -1111,7 +1111,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
         <div className="sm-accent-panel" style={{ '--panel-accent': 'var(--gold)' } as React.CSSProperties}>
           <div className="sm-accent-panel-title" style={{ '--panel-accent': 'var(--gold)' } as React.CSSProperties}>Block 2: BB6 onwards</div>
           {['Array size: ~2,400 sq ft (3.5x larger)', 'AST5000 ASIC: Custom silicon, 120 Mbps peak', 'Capacity: 10x improvement over Block 1', 'BB6 launched Dec 23, 2025 (ISRO)', 'BB7-25: In production, 6/month by Dec 2025'].map((item, i) => (
-            <div key={i} className="sm-flex sm-items-center sm-gap-12" style={{ padding: '8px 0', borderBottom: i < 4 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+            <div key={i} className="sm-accent-item">
               <span className="sm-dot-4" style={{ '--dot-color': 'var(--gold)' } as React.CSSProperties} />
               <span className="sm-text-13">{item}</span>
             </div>
@@ -1126,7 +1126,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
         </div>
         <div className="sm-card-body">
           <ResponsiveContainer width="100%" height={200}><ComposedChart data={schedule}><CartesianGrid strokeDasharray="3 3" stroke="var(--border)" /><XAxis dataKey="date" stroke="var(--text3)" fontSize={11} /><YAxis stroke="var(--text3)" /><Tooltip contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }} formatter={(v, name, props) => [name === 'sats' ? `${v} sats (${props.payload.note})` : `${v} cumulative`, name === 'sats' ? 'Launched' : 'Total']} /><Bar dataKey="sats" fill="var(--cyan)" radius={[4, 4, 0, 0]} /><Line dataKey="cum" stroke="var(--gold)" strokeWidth={2} /></ComposedChart></ResponsiveContainer>
-          <div className="sm-chart-legend" style={{ gap: 16, flexWrap: 'wrap' }}>
+          <div className="sm-chart-legend-wrap">
             {['BW3 Sept 2022', 'BB1-5 Sept 2024', 'BB6 Dec 2025', 'BB7 ready'].map((m, i) => (
               <span key={i} className="sm-flex sm-gap-6">
                 <span className="sm-dot-5" style={{ '--dot-color': i < 3 ? 'var(--mint)' : 'var(--gold)' } as React.CSSProperties} />
@@ -1149,8 +1149,8 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
                 <span className="sm-text-13">{c.r}</span>
                 <span className="sm-mono-val" data-weight="600" style={{ '--val-color': c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)' } as React.CSSProperties}>{c.n} sats ({c.pct.toFixed(0)}%)</span>
               </div>
-              <div role="progressbar" aria-label={`${c.r} coverage progress`} aria-valuenow={Math.round(c.pct)} aria-valuemin={0} aria-valuemax={100} className="sm-rounded-3 sm-overflow-hidden" style={{ height: 4, background: 'var(--surface3)' }}>
-                <div style={{ height: '100%', width: `${Math.min(100, c.pct)}%`, borderRadius: 2, background: c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)', transition: 'width 0.6s ease' }} />
+              <div role="progressbar" aria-label={`${c.r} coverage progress`} aria-valuenow={Math.round(c.pct)} aria-valuemin={0} aria-valuemax={100} className="sm-progress-track">
+                <div className="sm-progress-fill" style={{ width: `${Math.min(100, c.pct)}%`, '--bar-color': c.pct >= 100 ? 'var(--mint)' : 'var(--cyan)' } as React.CSSProperties} />
               </div>
             </div>
           ))}
@@ -1204,7 +1204,7 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
         ].map(kpi => (
           <div key={kpi.label} className="sm-kpi-cell">
             <div className="sm-micro-text">{kpi.label}</div>
-            <div className="sm-mono-xl" style={{ color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div className="sm-mono-xl-kpi" style={{ '--kpi-color': kpi.color } as React.CSSProperties}>{kpi.value}</div>
             <div className="sm-text-11">{kpi.sub}</div>
           </div>
         ))}
@@ -1295,7 +1295,7 @@ const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRev
         ].map(kpi => (
           <div key={kpi.label} className="sm-kpi-cell">
             <div className="sm-micro-text">{kpi.label}</div>
-            <div className="sm-kpi-hero" style={{ '--kpi-color': kpi.color, marginTop: 8 } as React.CSSProperties}>{kpi.value}</div>
+            <div className="sm-kpi-hero sm-kpi-hero-mt" style={{ '--kpi-color': kpi.color } as React.CSSProperties}>{kpi.value}</div>
           </div>
         ))}
       </div>
@@ -1529,7 +1529,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         ].map(kpi => (
           <div key={kpi.label} className="sm-kpi-cell">
             <div className="sm-micro-text">{kpi.label}</div>
-            <div className="sm-mono-xl" style={{ color: kpi.color, margin: '8px 0 4px' }}>{kpi.value}</div>
+            <div className="sm-mono-xl-kpi" style={{ '--kpi-color': kpi.color } as React.CSSProperties}>{kpi.value}</div>
             <div className="sm-text-11">{kpi.sub}</div>
           </div>
         ))}
@@ -1572,7 +1572,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             ))}
           </div>
           {definitiveAgreements.map((p, i) => (
-            <div key={p.partner} style={{ display: 'grid', gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', alignItems: 'center', padding: '16px 24px', borderBottom: i < definitiveAgreements.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', minWidth: 700 }}>
+            <div key={p.partner} className="sm-grid-row-lg" style={{ gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', minWidth: 700 }}>
               <span className="sm-text-13t sm-fw-500">{p.partner}</span>
               <span className="sm-text-12">{p.region}</span>
               <span className="sm-mono-val" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{p.subs}M</span>
@@ -1582,7 +1582,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
               <span className="sm-text-11">{p.prepayStatus}</span>
             </div>
           ))}
-          <div className="sm-grid-row-lg" style={{ gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', background: 'color-mix(in srgb, var(--mint) 5%, transparent)', borderTop: '1px solid var(--border)', minWidth: 700, borderBottom: 'none' }}>
+          <div className="sm-grid-row-lg sm-total-row-mint" style={{ gridTemplateColumns: '120px 140px 80px 140px 100px 100px 1fr', minWidth: 700 }}>
             <span className="sm-text-12 sm-fw-600 sm-text" style={{ gridColumn: 'span 2' }}>Total Definitive</span>
             <span className="sm-mono-val sm-fw-700" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{totalDefinitiveSubs}M</span>
             <span /><span />
@@ -1593,11 +1593,11 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
       </div>
 
       {/* Partner Details — Accent-bar panels */}
-      <div className="sm-model-grid" style={{ '--cols': 2, marginTop: 8 } as React.CSSProperties}>
+      <div className="sm-model-grid sm-mt-8" style={{ '--cols': 2 } as React.CSSProperties}>
         {definitiveAgreements.map(p => (
           <div key={p.partner} className="sm-card-body sm-bg-surface">
             <div className="sm-flex-between sm-items-center sm-mb-16">
-              <span className="sm-fw-600 sm-text" style={{ fontSize: 14 }}>{p.partner}</span>
+              <span className="sm-fw-600 sm-text sm-fs-14">{p.partner}</span>
               <UpdateIndicators sources="PR" />
             </div>
             {[
@@ -1609,7 +1609,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             ].map(row => (
               <div key={row.l} className="sm-kv-row">
                 <span className="sm-subtle">{row.l}</span>
-                <span style={{ fontFamily: row.hl ? "'Space Mono', monospace" : 'inherit', fontSize: 12, color: row.hl ? 'var(--mint)' : 'var(--text2)', fontWeight: row.hl ? 600 : 400 }}>{row.v}</span>
+                <span className="sm-kv-mono" data-highlight={row.hl ? "true" : undefined} style={{ '--kpi-color': row.hl ? 'var(--mint)' : 'var(--text2)' } as React.CSSProperties}>{row.v}</span>
               </div>
             ))}
             <div className="sm-inline-note">{p.notes}</div>
@@ -1625,7 +1625,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
         </div>
         <div className="sm-p0">
           {ownedSpectrum.map((s, i) => (
-            <div key={s.name} style={{ padding: '16px 24px', borderBottom: i < ownedSpectrum.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', borderLeft: '3px solid var(--cyan)', transition: 'background 0.15s' }}>
+            <div key={s.name} className="sm-spectrum-row">
               <div className="sm-flex-between sm-items-center sm-mb-8">
                 <span className="sm-text-13t sm-fw-600">{s.name}</span>
                 <span className="sm-status-badge" style={{ '--badge-color': 'var(--mint)' } as React.CSSProperties}>{s.status}</span>
@@ -1656,15 +1656,15 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
           {partnerSpectrum.map(s => (
             <div key={s.partner} className="sm-card-body sm-cell-surface">
               <div className="sm-flex-between sm-items-center sm-mb-6">
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cyan)' }}>{s.partner}</span>
+                <span className="sm-partner-name">{s.partner}</span>
                 <span className="sm-status-badge" style={{ '--badge-color': 'var(--sky)' } as React.CSSProperties}>{s.band}</span>
               </div>
               <div className="sm-text-11">{s.type} · {s.coverage}</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)', opacity: 0.7, marginTop: 2 }}>{s.notes}</div>
+              <div className="sm-sub-note">{s.notes}</div>
             </div>
           ))}
         </div>
-        <div className="sm-info-bar" style={{ borderLeft: '3px solid var(--cyan)' }}>
+        <div className="sm-info-bar sm-info-bar-accent">
           <strong className="sm-cyan">Key:</strong> AT&T + Verizon 850 MHz = ~100% US geographic coverage. Platform tunable across 1,150 MHz globally.
         </div>
       </div>
@@ -1712,7 +1712,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
             </div>
           ))}
           {othersCatchAll && (
-            <div className="sm-grid-row-lg" style={{ gridTemplateColumns: '130px 140px 80px 100px 1fr', background: 'color-mix(in srgb, var(--violet) 5%, transparent)', borderTop: '1px solid var(--border)' }}>
+            <div className="sm-grid-row-lg sm-total-row-violet" style={{ gridTemplateColumns: '130px 140px 80px 100px 1fr' }}>
               <span className="sm-text-12 sm-fw-600 sm-text">{othersCatchAll.name}</span>
               <span className="sm-text-12">{othersCatchAll.region}</span>
               <span className="sm-mono-val" style={{ '--val-color': 'var(--cyan)' } as React.CSSProperties}>{othersCatchAll.subs}M</span>
@@ -1731,7 +1731,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
           { value: '50/50', label: 'Revenue Share Model', sub: 'MNOs handle billing/support', color: 'var(--violet)' },
         ].map(c => (
           <div key={c.label} className="sm-kpi-cell">
-            <div className="sm-mono-xl" style={{ color: c.color }}>{c.value}</div>
+            <div className="sm-mono-xl-kpi" style={{ '--kpi-color': c.color } as React.CSSProperties}>{c.value}</div>
             <div className="sm-text-12 sm-text2 sm-mt-4">{c.label}</div>
             <div className="sm-text-11 sm-text3 sm-mt-2">{c.sub}</div>
           </div>
@@ -2238,7 +2238,7 @@ const ASTSDilutionTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQu
             ))}
           </div>
           {dilution.map((d, i) => (
-            <div key={d.r} style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', padding: '12px 24px', borderBottom: i < dilution.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none', transition: 'background 0.15s' }}>
+            <div key={d.r} className="sm-data-row" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
               <span className="sm-mono-sm sm-text">${d.r}M</span>
               <span className="sm-mono-right">{d.new.toFixed(1)}M</span>
               <span className="sm-mono-right sm-coral">{d.dil.toFixed(1)}%</span>
@@ -2319,8 +2319,8 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             { label: 'FD Mkt Cap', value: `$${(fullyDiluted * currentStockPrice / 1000).toFixed(1)}B`, color: 'var(--gold)' },
           ].map(kpi => (
             <div key={kpi.label} className="sm-kpi-cell">
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 20, fontWeight: 700, color: kpi.color }}>{kpi.value}</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)', letterSpacing: '0.8px', textTransform: 'uppercase', fontWeight: 500, marginTop: 4 }}>{kpi.label}</div>
+              <div className="sm-kpi-value-lg-dyn" style={{ '--kpi-color': kpi.color } as React.CSSProperties}>{kpi.value}</div>
+              <div className="sm-kpi-label-caps">{kpi.label}</div>
             </div>
           ))}
         </div>
@@ -2333,7 +2333,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ].map(row => (
               <div key={row.label} className="sm-kv-row">
                 <span className="sm-subtle">{row.label}</span>
-                <span style={{ fontSize: 12, fontFamily: "'Space Mono', monospace", color: row.color }}>{row.value}</span>
+                <span className="sm-kv-mono" style={{ '--kpi-color': row.color } as React.CSSProperties}>{row.value}</span>
               </div>
             ))}
           </div>
@@ -2345,14 +2345,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ].map(row => (
               <div key={row.label} className="sm-kv-row">
                 <span className="sm-subtle">{row.label}</span>
-                <span style={{ fontSize: 12, fontFamily: "'Space Mono', monospace", color: row.color }}>{row.value}</span>
+                <span className="sm-kv-mono" style={{ '--kpi-color': row.color } as React.CSSProperties}>{row.value}</span>
               </div>
             ))}
           </div>
         </div>
         <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--mint)', '--bar-accent-2': 'var(--violet)' } as React.CSSProperties}>
-          <div style={{ fontSize: 11, color: 'var(--mint)', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase' }}>Multi-Class Structure</div>
-          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5, marginTop: 4 }}>
+          <div className="sm-section-divider" style={{ padding: 0, '--divider-color': 'var(--mint)' } as React.CSSProperties}>Multi-Class Structure</div>
+          <div className="sm-text-12 sm-text2 sm-lh-15" style={{ marginTop: 4 }}>
             Three share classes with different voting rights. Significant dilution from warrants, RSUs, and convertible instruments.
           </div>
         </div>
@@ -2446,7 +2446,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           ].map(r => (
             <div key={r.l} className="sm-kv-row-lg">
               <span className="sm-subtle">{r.l}</span>
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: r.color, fontWeight: 600 }}>{r.v}</span>
+              <span className="sm-kv-mono" data-highlight="true" style={{ '--kpi-color': r.color } as React.CSSProperties}>{r.v}</span>
             </div>
           ))}
         </div>
@@ -2458,8 +2458,8 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             { l: 'Class C (Abel Avellan)', v: `${(78.2 * 10 / totalVotingShares * 100).toFixed(1)}%`, color: 'var(--gold)', hl: true },
           ].map(r => (
             <div key={r.l} className="sm-kv-row-lg">
-              <span style={{ fontSize: 12, color: r.hl ? 'var(--text)' : 'var(--text3)', fontWeight: r.hl ? 600 : 400 }}>{r.l}</span>
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: r.color, fontWeight: 600 }}>{r.v}</span>
+              <span className={r.hl ? 'sm-text-12 sm-text sm-fw-600' : 'sm-subtle'}>{r.l}</span>
+              <span className="sm-kv-mono" data-highlight="true" style={{ '--kpi-color': r.color } as React.CSSProperties}>{r.v}</span>
             </div>
           ))}
         </div>
@@ -2562,14 +2562,14 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
         <div className="sm-card-body">
         <div>
-          <div className="sm-grid-header" style={{ gridTemplateColumns: '1fr 100px 100px 100px', padding: 0 }}>
+          <div className="sm-grid-header sm-grid-header-p0" style={{ gridTemplateColumns: '1fr 100px 100px 100px' }}>
             <span className="sm-table-header">Quarter</span>
             <span className="sm-table-header sm-text-right">Total SBC</span>
             <span className="sm-table-header sm-text-right">Engineering</span>
             <span className="sm-table-header sm-text-right">G&A</span>
           </div>
           {sbcHistory.map((row, i) => (
-            <div key={i} className="hover-row" style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px 100px', padding: '12px 16px', borderBottom: i < sbcHistory.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' }}>
+            <div key={i} className="hover-row sm-data-row" style={{ gridTemplateColumns: '1fr 100px 100px 100px', padding: '12px 16px' }}>
               <span className="sm-text-13t">{row.quarter}</span>
               <span className="sm-mono-right">${row.sbc.toFixed(1)}M</span>
               <span className="sm-mono-right">${row.engineering.toFixed(1)}M</span>
@@ -2579,7 +2579,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
 
         {/* SBC Chart */}
-        <div style={{ height: 192 }}>
+        <div className="sm-h-192">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={[...sbcHistory].reverse()}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -2786,12 +2786,12 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         <div className="sm-grid-sep-2col">
           <div className="sm-card-body sm-bg-surface">
             <div className="sm-subtle">2025 YTD SBC (Q1-Q3)</div>
-            <div className="sm-kpi-hero" style={{ '--kpi-color': 'var(--violet)', marginTop: 4 } as React.CSSProperties}>${sbc2025YTD.toFixed(1)}M</div>
+            <div className="sm-kpi-hero sm-kpi-hero-mt4" style={{ '--kpi-color': 'var(--violet)' } as React.CSSProperties}>${sbc2025YTD.toFixed(1)}M</div>
             <div className="sm-text-11 sm-mt-8 sm-mt-4">Engineering ${sbc2025Eng.toFixed(1)}M + G&A ${sbc2025GA.toFixed(1)}M</div>
           </div>
           <div className="sm-card-body sm-bg-surface">
             <div className="sm-subtle">FY2024 Total SBC</div>
-            <div className="sm-kpi-hero" style={{ '--kpi-color': 'var(--violet)', marginTop: 4 } as React.CSSProperties}>${sbcFY2024.toFixed(1)}M</div>
+            <div className="sm-kpi-hero sm-kpi-hero-mt4" style={{ '--kpi-color': 'var(--violet)' } as React.CSSProperties}>${sbcFY2024.toFixed(1)}M</div>
             <div className="sm-text-11 sm-mt-8 sm-mt-4">Full year from 10-K</div>
           </div>
         </div>
@@ -2899,7 +2899,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           ].map(r => (
             <div key={r.l} className="sm-kv-row-lg">
               <span className="sm-subtle">{r.l}</span>
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: r.hl ? 'var(--mint)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
+              <span className="sm-kv-mono" data-highlight={r.hl ? "true" : undefined} style={{ '--kpi-color': r.hl ? 'var(--mint)' : 'var(--text)' } as React.CSSProperties}>{r.v}</span>
             </div>
           ))}
         </div>
@@ -2913,7 +2913,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           ].map(r => (
             <div key={r.l} className="sm-kv-row-lg">
               <span className="sm-subtle">{r.l}</span>
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: r.hl ? 'var(--violet)' : 'var(--text)', fontWeight: r.hl ? 600 : 400 }}>{r.v}</span>
+              <span className="sm-kv-mono" data-highlight={r.hl ? "true" : undefined} style={{ '--kpi-color': r.hl ? 'var(--violet)' : 'var(--text)' } as React.CSSProperties}>{r.v}</span>
             </div>
           ))}
         </div>
@@ -2921,8 +2921,8 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       {/* Recent Capital Activity */}
       <div className="sm-card sm-mt-8">
-        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--mint)', '--bar-accent-2': 'var(--sky)', padding: '24px', borderTop: 'none' } as React.CSSProperties}>
-          <div className="sm-section-label sm-mint" style={{ fontSize: 13 }}>Feb 2026 Capital Activity</div>
+        <div className="sm-highlight-bar sm-highlight-bar-lg" style={{ '--bar-accent-1': 'var(--mint)', '--bar-accent-2': 'var(--sky)' } as React.CSSProperties}>
+          <div className="sm-section-label sm-mint sm-fs-13">Feb 2026 Capital Activity</div>
           <div className="sm-text-12 sm-lh-16">
             $1B 2.25% converts issued. $46.5M of 4.25% and $250M of 2.375% repurchased. ~$614M registered directs. Net new cash ~$980M.
           </div>
@@ -2945,7 +2945,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         ].map(kpi => (
           <div key={kpi.label} className="sm-kpi-cell">
             <div className="sm-micro-text">{kpi.label}</div>
-            <div className="sm-kpi-hero-md" style={{ '--kpi-color': kpi.color, margin: '8px 0 4px' } as React.CSSProperties}>{kpi.value}</div>
+            <div className="sm-kpi-hero-md sm-kpi-hero-mt" style={{ '--kpi-color': kpi.color } as React.CSSProperties}>{kpi.value}</div>
             <div className="sm-text-11">{kpi.sub}</div>
           </div>
         ))}
@@ -2958,13 +2958,13 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <UpdateIndicators sources="SEC" />
         </div>
         {/* CEO Aug 2025 Grant */}
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)', background: 'color-mix(in srgb, var(--gold) 3%, transparent)' }}>
+        <div className="sm-ceo-grant-row">
           <div className="sm-flex-between">
             <div>
               <span className="sm-text-13t sm-fw-600">{AUG_2025_CEO_RSU_GRANT.name}</span>
-              <span className="sm-text-11 sm-text3 sm-ml-4" style={{ marginLeft: 8 }}>{AUG_2025_CEO_RSU_GRANT.role}</span>
+              <span className="sm-text-11 sm-text3" style={{ marginLeft: 8 }}>{AUG_2025_CEO_RSU_GRANT.role}</span>
             </div>
-            <span className="sm-mono-sm sm-text3" style={{ fontSize: 11 }}>{AUG_2025_CEO_RSU_GRANT.date}</span>
+            <span className="sm-mono-sm sm-text3 sm-fs-11">{AUG_2025_CEO_RSU_GRANT.date}</span>
           </div>
           <div className="sm-flex sm-gap-24 sm-mt-8">
             <div><span className="sm-text-11">Units: </span><span className="sm-mono-val" style={{ '--val-color': 'var(--gold)' } as React.CSSProperties}>{(AUG_2025_CEO_RSU_GRANT.units / 1000).toFixed(0)}K</span></div>
@@ -3064,7 +3064,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ))}
           </div>
           {/* Dec 2025 Sales */}
-          <div className="sm-th" style={{ padding: '8px 24px', letterSpacing: '1px', color: 'var(--coral)', background: 'color-mix(in srgb, var(--coral) 5%, transparent)' }}>December 2025</div>
+          <div className="sm-section-divider" style={{ '--divider-color': 'var(--coral)' } as React.CSSProperties}>December 2025</div>
           {DEC_2025_INSIDER_SALES.map((s, i) => (
             <div key={`dec-${i}`} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 80px 80px 100px 80px' }}>
               <span className="sm-text-13t">{s.name} <span className="sm-text-11">({s.role})</span></span>
@@ -3072,11 +3072,11 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <span className="sm-mono-right">{(s.shares / 1000).toFixed(0)}K</span>
               <span className="sm-mono-right">${s.price.toFixed(2)}</span>
               <span className="sm-mono-right sm-coral">${(s.proceeds / 1e6).toFixed(1)}M</span>
-              <span style={{ fontSize: 11, color: s.plan10b5_1 ? 'var(--mint)' : 'var(--text3)' }}>{s.plan10b5_1 ? 'Yes' : 'No'}</span>
+              <span className="sm-plan-status" data-plan={s.plan10b5_1 ? "true" : "false"}>{s.plan10b5_1 ? 'Yes' : 'No'}</span>
             </div>
           ))}
           {/* Aug-Sep 2025 Sales */}
-          <div className="sm-th" style={{ padding: '8px 24px', letterSpacing: '1px', color: 'var(--coral)', background: 'color-mix(in srgb, var(--coral) 5%, transparent)' }}>August-September 2025</div>
+          <div className="sm-section-divider" style={{ '--divider-color': 'var(--coral)' } as React.CSSProperties}>August-September 2025</div>
           {AUG_SEP_2025_INSIDER_SALES.map((s, i) => (
             <div key={`aug-${i}`} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 80px 80px 100px 80px' }}>
               <span className="sm-text-13t">{s.name} <span className="sm-text-11">({s.role})</span></span>
@@ -3084,7 +3084,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <span className="sm-mono-right">{(s.shares / 1000).toFixed(0)}K</span>
               <span className="sm-mono-right">${s.avgPrice.toFixed(2)}</span>
               <span className="sm-mono-right sm-coral">${(s.proceeds / 1e6).toFixed(1)}M</span>
-              <span style={{ fontSize: 11, color: s.plan10b5_1 ? 'var(--mint)' : 'var(--text3)' }}>{s.plan10b5_1 ? 'Yes' : 'No'}</span>
+              <span className="sm-plan-status" data-plan={s.plan10b5_1 ? "true" : "false"}>{s.plan10b5_1 ? 'Yes' : 'No'}</span>
             </div>
           ))}
         </div>
@@ -3116,7 +3116,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           Director Larson accumulated {DEC_2025_INSIDER_PURCHASES.reduce((s, p) => s + p.shares, 0).toLocaleString()} shares via IRA under 10b5-1 plan (adopted Sep 8, 2025). Post-purchase holdings: {DEC_2025_INSIDER_PURCHASES[DEC_2025_INSIDER_PURCHASES.length - 1].postPurchaseHoldings.toLocaleString()} shares.
         </div>
         {/* June 2025 Insider Purchases */}
-        <div className="sm-th" style={{ padding: '8px 24px', letterSpacing: '1px', color: 'var(--mint)', background: 'color-mix(in srgb, var(--mint) 5%, transparent)', borderTop: '1px solid var(--border)' }}>June 2025 — Insider Buys at $25 Dip</div>
+        <div className="sm-section-divider" data-border-top="true" style={{ '--divider-color': 'var(--mint)' } as React.CSSProperties}>June 2025 — Insider Buys at $25 Dip</div>
         <div>
           {JUN_2025_INSIDER_PURCHASES.map((p, i) => (
             <div key={`jun-${i}`} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 80px 80px 100px' }}>
@@ -3129,7 +3129,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           ))}
         </div>
         {/* April-May 2025 Insider Purchases */}
-        <div className="sm-th" style={{ padding: '8px 24px', letterSpacing: '1px', color: 'var(--mint)', background: 'color-mix(in srgb, var(--mint) 5%, transparent)', borderTop: '1px solid var(--border)' }}>Apr–May 2025 — Insider Buys at $25 Dip</div>
+        <div className="sm-section-divider" data-border-top="true" style={{ '--divider-color': 'var(--mint)' } as React.CSSProperties}>Apr–May 2025 — Insider Buys at $25 Dip</div>
         <div>
           {APR_MAY_2025_INSIDER_PURCHASES.map((p, i) => (
             <div key={`apr-${i}`} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 80px 80px 100px' }}>
@@ -3148,7 +3148,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       {/* March 2025 Insider Sales */}
       <div className="sm-card sm-mt-8">
-        <div className="sm-flex-between sm-items-center" style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
+        <div className="sm-inline-header">
           <span className="sm-param-label">March 2025 — RSU Vesting Sales & Withholdings</span>
           <span className="sm-mono-sm" style={{ color: 'var(--rose)' }}>~111K shares / $3.4M</span>
         </div>
@@ -3163,7 +3163,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <span className="sm-mono-right" style={{ color: 'var(--rose)' }}>{s.shares.toLocaleString()}</span>
               <span className="sm-mono-right">${s.price.toFixed(2)}</span>
               <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: s.proceeds > 0 ? 'var(--rose)' : 'var(--text3)', textAlign: 'right' }}>{s.proceeds > 0 ? `$${(s.proceeds / 1000).toFixed(0)}K` : '—'}</span>
-              <span style={{ fontSize: 10, color: s.type === 'sale' ? 'var(--rose)' : 'var(--gold)', background: s.type === 'sale' ? 'color-mix(in srgb, var(--rose) 15%, transparent)' : 'color-mix(in srgb, var(--gold) 15%, transparent)', padding: '2px 6px', borderRadius: 4, textTransform: 'uppercase', fontWeight: 600 }}>{s.type === 'withholding' ? 'W/H' : 'Sale'}</span>
+              <span className="sm-sale-type-badge" data-type={s.type === 'sale' ? 'sale' : 'withholding'}>{s.type === 'withholding' ? 'W/H' : 'Sale'}</span>
             </div>
           ))}
         </div>
@@ -3174,9 +3174,9 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       {/* Ligado Deal */}
       <div className="sm-card sm-mt-8">
-        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--gold)', '--bar-accent-2': 'var(--violet)', padding: '24px', borderTop: 'none' } as React.CSSProperties}>
-          <div className="sm-section-label sm-gold" style={{ fontSize: 13 }}>Mar 2025 Ligado Material Agreement</div>
-          <div className="sm-detail-grid-4 sm-mt-12" style={{ gap: 16 }}>
+        <div className="sm-highlight-bar sm-highlight-bar-lg" style={{ '--bar-accent-1': 'var(--gold)', '--bar-accent-2': 'var(--violet)' } as React.CSSProperties}>
+          <div className="sm-section-label sm-gold sm-fs-13">Mar 2025 Ligado Material Agreement</div>
+          <div className="sm-detail-grid-4 sm-mt-12 sm-grid-sep-gap16">
             {[
               { label: 'Initial Investment', value: `$${MAR_2025_LIGADO_DEAL.initialInvestment}M`, color: 'var(--gold)' },
               { label: 'Total Consideration', value: `$${MAR_2025_LIGADO_DEAL.totalConsideration}M`, color: 'var(--sky)' },
@@ -3185,11 +3185,11 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ].map(item => (
               <div key={item.label}>
                 <div className="sm-micro-text">{item.label}</div>
-                <div className="sm-mono-lg sm-fw-600" style={{ color: item.color, marginTop: 4 }}>{item.value}</div>
+                <div className="sm-mono-lg sm-fw-600 sm-mono-lg-mt4" style={{ color: item.color }}>{item.value}</div>
               </div>
             ))}
           </div>
-          <div className="sm-grid-sep-2col sm-mt-16" style={{ gap: 16, background: 'transparent' }}>
+          <div className="sm-grid-sep-2col sm-mt-16 sm-grid-sep-gap16">
             <div className="sm-text-12 sm-lh-16">
               <span className="sm-detail-label">Bands:</span> {MAR_2025_LIGADO_DEAL.spectrumBands}
             </div>
@@ -3205,7 +3205,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       {/* S-3ASR Shelf Registration */}
       <div className="sm-card sm-mt-8">
-        <div className="sm-flex-between sm-items-center" style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
+        <div className="sm-inline-header">
           <span className="sm-param-label">S-3ASR Shelf Registration (Mar 17, 2025)</span>
           <span className="sm-mono-sm sm-gold">~{(MAR_2025_SHELF_REGISTRATION.dilutionPct)}% Dilution Potential</span>
         </div>
@@ -3217,7 +3217,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           ].map(item => (
             <div key={item.label} className="sm-cell-surface-center"  >
               <div className="sm-micro-text">{item.label}</div>
-              <div className="sm-mono-lg sm-fw-600" style={{ color: item.color, marginTop: 4 }}>{item.value}</div>
+              <div className="sm-mono-lg sm-fw-600 sm-mono-lg-mt4" style={{ color: item.color }}>{item.value}</div>
             </div>
           ))}
         </div>
@@ -3228,12 +3228,12 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       {/* Jan-Feb 2025 Governance */}
       <div className="sm-card sm-mt-8">
-        <div className="sm-flex-between sm-items-center" style={{ padding: '16px 24px', borderBottom: '1px solid var(--border)' }}>
+        <div className="sm-inline-header">
           <span className="sm-param-label">Jan–Feb 2025 Governance & Grants</span>
           <span className="sm-mono-sm sm-sky">Board + AT&T + RSU</span>
         </div>
         {/* Board Changes */}
-        <div className="sm-th" style={{ padding: '8px 24px', letterSpacing: '1px', color: 'var(--sky)', background: 'color-mix(in srgb, var(--sky) 5%, transparent)' }}>Board Appointments</div>
+        <div className="sm-section-divider" style={{ '--divider-color': 'var(--sky)' } as React.CSSProperties}>Board Appointments</div>
         {JAN_FEB_2025_GOVERNANCE.boardChanges.map((bc, i) => (
           <div key={`bc-${i}`} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 130px 1fr' }}>
             <span className="sm-text-13t">{bc.name} <span className="sm-text-11">({bc.role})</span></span>
@@ -3242,12 +3242,12 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           </div>
         ))}
         {/* Stockholders' Amendment */}
-        <div className="sm-th" style={{ padding: '8px 24px', letterSpacing: '1px', color: 'var(--mint)', background: 'color-mix(in srgb, var(--mint) 5%, transparent)', borderTop: '1px solid var(--border)' }}>Stockholders&apos; Agreement (Feb 7)</div>
+        <div className="sm-section-divider" data-border-top="true" style={{ '--divider-color': 'var(--mint)' } as React.CSSProperties}>Stockholders&apos; Agreement (Feb 7)</div>
         <div className="hover-row" style={{ padding: '12px 24px', borderBottom: '1px solid color-mix(in srgb, var(--border) 50%, transparent)' }}>
           <span className="sm-text-12">{JAN_FEB_2025_GOVERNANCE.stockholdersAmendment.description}. {JAN_FEB_2025_GOVERNANCE.stockholdersAmendment.attDesigneeRights}.</span>
         </div>
         {/* Bernal RSU */}
-        <div className="sm-th" style={{ padding: '8px 24px', letterSpacing: '1px', color: 'var(--violet)', background: 'color-mix(in srgb, var(--violet) 5%, transparent)', borderTop: '1px solid var(--border)' }}>RSU Grant (Feb 27)</div>
+        <div className="sm-section-divider" data-border-top="true" style={{ '--divider-color': 'var(--violet)' } as React.CSSProperties}>RSU Grant (Feb 27)</div>
         <div className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 100px' }}>
           <span className="sm-text-13t">Maya Bernal <span className="sm-text-11">(CAO)</span></span>
           <span className="sm-mono-val" style={{ '--val-color': 'var(--violet)' } as React.CSSProperties}>{JAN_FEB_2025_GOVERNANCE.bernalRsuGrant.shares.toLocaleString()} RSUs</span>
@@ -3260,9 +3260,9 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
 
       {/* Credit Facility */}
       <div className="sm-card sm-mt-8">
-        <div className="sm-highlight-bar" style={{ '--bar-accent-1': 'var(--sky)', '--bar-accent-2': 'var(--mint)', padding: '24px', borderTop: 'none' } as React.CSSProperties}>
-          <div className="sm-section-label sm-sky" style={{ fontSize: 13 }}>Jul 2025 UBS Credit Facility</div>
-          <div className="sm-detail-grid-4 sm-mt-12" style={{ gap: 16 }}>
+        <div className="sm-highlight-bar sm-highlight-bar-lg" style={{ '--bar-accent-1': 'var(--sky)', '--bar-accent-2': 'var(--mint)' } as React.CSSProperties}>
+          <div className="sm-section-label sm-sky sm-fs-13">Jul 2025 UBS Credit Facility</div>
+          <div className="sm-detail-grid-4 sm-mt-12 sm-grid-sep-gap16">
             {[
               { label: 'Amount', value: `$${JUL_2025_CREDIT_FACILITY.amount}M`, color: 'var(--sky)' },
               { label: 'Expandable To', value: `$${JUL_2025_CREDIT_FACILITY.expandableTo}M`, color: 'var(--mint)' },
@@ -3271,7 +3271,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             ].map(item => (
               <div key={item.label}>
                 <div className="sm-micro-text">{item.label}</div>
-                <div className="sm-mono-lg sm-fw-600" style={{ color: item.color, marginTop: 4 }}>{item.value}</div>
+                <div className="sm-mono-lg sm-fw-600 sm-mono-lg-mt4" style={{ color: item.color }}>{item.value}</div>
               </div>
             ))}
           </div>
@@ -3296,7 +3296,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <div key={c.label} className="sm-cell-surface-center"  >
               <div className="sm-micro-text">{c.label}</div>
               <div className="sm-mono-lg sm-fw-600" style={{ color: c.change > 0 ? 'var(--gold)' : 'var(--text2)', margin: '4px 0' }}>{c.now}M</div>
-              <div style={{ fontSize: 11, color: c.change > 0 ? 'var(--gold)' : 'var(--text3)' }}>{c.change > 0 ? `+${c.change}M` : 'No change'}</div>
+              <div className="sm-fs-11" style={{ color: c.change > 0 ? 'var(--gold)' : 'var(--text3)' }}>{c.change > 0 ? `+${c.change}M` : 'No change'}</div>
             </div>
           ))}
         </div>
@@ -3321,7 +3321,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
             <div key={i} className="hover-row sm-grid-row" style={{ gridTemplateColumns: '1fr 100px 100px 90px 1fr' }}>
               <span className="sm-text-13t">{a.name} <span className="sm-text-11">({a.role})</span></span>
               <span className="sm-text-12">{a.date.slice(5)}</span>
-              <span style={{ fontSize: 11, fontWeight: 600, padding: '2px 8px', borderRadius: 100, background: a.type === 'RSU Grant' ? 'color-mix(in srgb, var(--violet) 15%, transparent)' : a.type === 'RSU Vesting' ? 'color-mix(in srgb, var(--mint) 15%, transparent)' : 'color-mix(in srgb, var(--sky) 15%, transparent)', color: a.type === 'RSU Grant' ? 'var(--violet)' : a.type === 'RSU Vesting' ? 'var(--mint)' : 'var(--sky)' }}>{a.type}</span>
+              <span className="sm-activity-badge" data-type={a.type === 'RSU Grant' ? 'grant' : a.type === 'RSU Vesting' ? 'vesting' : 'exercise'}>{a.type}</span>
               <span className="sm-mono-right">{(a.units / 1000).toFixed(0)}K</span>
               <span className="sm-text-11">{a.note}</span>
             </div>
@@ -3727,7 +3727,7 @@ const ModelTab = ({
 
       {/* ASSUMPTIONS SECTION */}
       <>
-          <div className="sm-model-grid" style={{ '--cols': 6, marginTop: 8 } as React.CSSProperties}>
+          <div className="sm-model-grid sm-mt-8" style={{ '--cols': 6 } as React.CSSProperties}>
             {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
               const preset = SCENARIO_PRESETS[s];
               const isActive = selectedScenario === s;
@@ -3735,20 +3735,15 @@ const ModelTab = ({
                 <div
                   key={s}
                   onClick={() => applyScenario(s)}
-                  style={{
-                    padding: '16px 8px',
-                    background: isActive ? `${preset.color}15` : 'var(--surface)',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s',
-                    textAlign: 'center',
-                    borderBottom: isActive ? `2px solid ${preset.color}` : '2px solid transparent',
-                  }}
+                  className="sm-scenario-card"
+                  data-active={isActive || undefined}
+                  style={{ '--scenario-color': preset.color } as React.CSSProperties}
                 >
                   <div className="sm-micro-text">{preset.label}</div>
-                  <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 16, fontWeight: 700, color: isActive ? preset.color : 'var(--text)', margin: '4px 0 2px' }}>
+                  <div className="sm-scenario-val">
                     {preset.penetrationRate}%
                   </div>
-                  <div className="sm-micro-text" style={{ letterSpacing: 'normal', textTransform: 'none', fontWeight: 400 }}>
+                  <div className="sm-scenario-sub">
                     ${preset.blendedARPU}/mo
                   </div>
                 </div>
@@ -3756,7 +3751,7 @@ const ModelTab = ({
             })}
           </div>
           {selectedScenario === 'custom' && (
-            <div style={{ padding: '8px 12px', background: 'color-mix(in srgb, var(--violet) 8%, transparent)', borderRadius: 8, fontSize: 11, color: 'var(--violet)', marginTop: 8 }}>
+            <div className="sm-custom-scenario-alert">
               Custom scenario — parameters modified from preset
             </div>
           )}
@@ -3883,7 +3878,7 @@ const ModelTab = ({
           <div className="sm-divider">
             <span className="sm-param-label">Risk Probability Factors</span>
             <span className="sm-divider-line" />
-            <span className="sm-mono-sm sm-text3" style={{ fontSize: 11 }}>{(riskFactor * 100).toFixed(0)}% success</span>
+            <span className="sm-mono-sm sm-text3 sm-fs-11">{(riskFactor * 100).toFixed(0)}% success</span>
           </div>
 
           <div className="sm-grid-sep-3col" style={{ gap: 12, background: 'transparent' }}>
@@ -3924,20 +3919,20 @@ const ModelTab = ({
 
           {/* Primary Output — Hero KPIs */}
           <div className="sm-grid-sep-2col sm-rounded-16 sm-overflow-hidden" style={{ background: 'color-mix(in srgb, var(--accent) 30%, var(--border))' }}>
-            <div className="sm-text-center" style={{ background: 'color-mix(in srgb, var(--accent) 8%, var(--surface))', padding: '24px 16px' }}>
-              <div className="sm-th" style={{ color: 'var(--accent)' }}>Target Price</div>
+            <div className="sm-dcf-cell">
+              <div className="sm-th sm-accent">Target Price</div>
               <div className="sm-mono-2xl sm-accent" style={{ margin: '6px 0 4px' }}>{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
               <div className="sm-text-11">vs ${currentStockPrice} current</div>
             </div>
-            <div className="sm-text-center" style={{ background: 'color-mix(in srgb, var(--accent) 8%, var(--surface))', padding: '24px 16px' }}>
-              <div className="sm-th" style={{ color: 'var(--accent)' }}>Implied Upside</div>
-              <div style={{ fontFamily: "'Space Mono', monospace", fontSize: 32, fontWeight: 700, color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--coral)', margin: '6px 0 4px' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
+            <div className="sm-dcf-cell">
+              <div className="sm-th sm-accent">Implied Upside</div>
+              <div className="sm-dcf-hero" style={{ color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--coral)' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
               <div className="sm-text-11">{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
             </div>
           </div>
 
           {/* Valuation Metrics Grid */}
-          <div className="sm-model-grid" style={{ '--cols': 4, marginTop: 12 } as React.CSSProperties}>
+          <div className="sm-model-grid sm-mt-12" style={{ '--cols': 4 } as React.CSSProperties}>
             {[
               { label: 'PV Enterprise Value', value: `$${riskAdjustedEV.toFixed(1)}B`, sub: `${(riskFactor * 100).toFixed(0)}% prob`, color: 'var(--text)' },
               { label: 'Equity Value', value: `$${equityValue.toFixed(1)}B`, sub: netDebtB < 0 ? `+$${Math.abs(netDebtB).toFixed(2)}B cash` : `-$${netDebtB.toFixed(2)}B debt`, color: 'var(--text)' },
@@ -3954,7 +3949,7 @@ const ModelTab = ({
             ].map(kpi => (
               <div key={kpi.label} className="sm-grid-cell-center">
                 <div className="sm-micro-text">{kpi.label}</div>
-                <div className="sm-mono-lg" style={{ color: kpi.color, margin: '6px 0 4px' }}>{kpi.value}</div>
+                <div className="sm-mono-lg-kpi" style={{ '--kpi-color': kpi.color } as React.CSSProperties}>{kpi.value}</div>
                 <div className="sm-text-11">{kpi.sub}</div>
               </div>
             ))}
@@ -3967,14 +3962,14 @@ const ModelTab = ({
           </div>
           <div className="sm-card">
             <div className="sm-card-section">
-              <div className="sm-fw-600 sm-text sm-mb-6" style={{ fontSize: 16 }}>DCF Valuation — Gordon Growth Model</div>
-              <p className="sm-text3" style={{ fontSize: 13, margin: 0, lineHeight: 1.7 }}>
+              <div className="sm-fw-600 sm-text sm-mb-6 sm-method-title">DCF Valuation — Gordon Growth Model</div>
+              <p className="sm-method-desc">
                 Terminal value approach with Gordon Growth Model, discounted to present value and adjusted for execution risk.
                 Terminal year: {2025 + discountYears} ({discountYears} years).
               </p>
             </div>
             <div className="sm-card-body">
-              <div className="sm-grid-sep-2col" style={{ gap: 16, background: 'transparent' }}>
+              <div className="sm-grid-sep-2col sm-grid-sep-gap16">
                 {[
                   { step: '1-5', title: 'Terminal Year Metrics', color: 'var(--accent)', items: [
                     { label: 'Subscribers', formula: `${(partnerReach/1000).toFixed(1)}B × ${penetrationRate}% × (1 - ${competitionDiscount}%)`, result: `${terminalSubs.toFixed(0)}M` },
@@ -5889,7 +5884,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         <span className="sm-param-label">Peer Valuation — EV/Revenue & $/Subscriber</span>
         <span className="sm-divider-line" />
       </div>
-      <div className="sm-grid-sep-2col" style={{ gap: 16, background: 'transparent' }}>
+      <div className="sm-grid-sep-2col sm-grid-sep-gap16">
         <div className="sm-card">
           <div className="sm-card-section" style={{ padding: '16px 20px' }}>
             <div className="sm-section-label sm-flex">EV/Rev Comparison</div>
