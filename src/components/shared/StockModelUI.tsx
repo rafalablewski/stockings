@@ -10,21 +10,6 @@ import React from 'react';
 import type { StatProps, CardProps, RowProps, InputProps, PanelProps, GuideProps, CFANotesProps } from './stockModelTypes';
 import { UpdateIndicators } from './UpdateIndicators';
 
-// ── Card color map ──────────────────────────────────────────────────────────
-// Uses CSS color-mix() with design-token variables for theme consistency.
-const CARD_COLOR_MAP: Record<string, { bg: string; border: string; text: string }> = {
-  blue:    { bg: 'color-mix(in srgb, var(--sky) 15%, transparent)',    border: 'color-mix(in srgb, var(--sky) 30%, transparent)',    text: '#60a5fa' },
-  green:   { bg: 'color-mix(in srgb, var(--mint) 15%, transparent)',   border: 'color-mix(in srgb, var(--mint) 30%, transparent)',   text: '#4ade80' },
-  red:     { bg: 'color-mix(in srgb, var(--coral) 15%, transparent)',  border: 'color-mix(in srgb, var(--coral) 30%, transparent)',  text: '#f87171' },
-  yellow:  { bg: 'color-mix(in srgb, var(--gold) 15%, transparent)',   border: 'color-mix(in srgb, var(--gold) 30%, transparent)',   text: '#facc15' },
-  purple:  { bg: 'color-mix(in srgb, var(--violet) 15%, transparent)', border: 'color-mix(in srgb, var(--violet) 30%, transparent)', text: '#c084fc' },
-  orange:  { bg: 'color-mix(in srgb, var(--gold) 15%, transparent)',  border: 'color-mix(in srgb, var(--gold) 30%, transparent)',  text: '#fb923c' },
-  cyan:    { bg: 'color-mix(in srgb, var(--cyan) 15%, transparent)',   border: 'color-mix(in srgb, var(--cyan) 30%, transparent)',   text: '#22d3ee' },
-  violet:  { bg: 'color-mix(in srgb, var(--violet) 15%, transparent)', border: 'color-mix(in srgb, var(--violet) 30%, transparent)', text: '#a78bfa' },
-  mint:    { bg: 'color-mix(in srgb, var(--mint) 15%, transparent)',   border: 'color-mix(in srgb, var(--mint) 30%, transparent)',   text: '#34d399' },
-  emerald: { bg: 'color-mix(in srgb, var(--mint) 15%, transparent)',   border: 'color-mix(in srgb, var(--mint) 30%, transparent)',   text: '#34d399' },
-};
-
 // ── Components ──────────────────────────────────────────────────────────────
 
 export const Stat = React.memo<StatProps>(({ label, value, color = 'white', updateSource }) => (
@@ -39,9 +24,8 @@ export const Stat = React.memo<StatProps>(({ label, value, color = 'white', upda
 Stat.displayName = 'Stat';
 
 export const Card = React.memo<CardProps>(({ label, value, sub, color, updateSource }) => {
-  const c = CARD_COLOR_MAP[color || 'blue'] || CARD_COLOR_MAP.blue;
   return (
-    <div className="sm-card-colored" style={{ '--card-bg': c.bg, '--card-border': c.border, '--card-text': c.text } as React.CSSProperties}>
+    <div className="sm-card-colored" data-color={color || 'blue'}>
       <div className="sm-card-label">
         {label}
         <UpdateIndicators sources={updateSource} />

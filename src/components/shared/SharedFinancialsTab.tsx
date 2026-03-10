@@ -63,7 +63,7 @@ export const SharedFinancialsTab: React.FC<SharedFinancialsTabProps> = ({
               {milestones.map((m, i) => (
                 <div key={i} className="sm-fin-milestone-row">
                   <span className="sm-fin-td-label">
-                    <span className="sm-news-tag" style={{ '--tag-color': i === milestones.length - 1 ? 'var(--gold)' : 'var(--accent)' } as React.CSSProperties}>{m.date}</span>
+                    <span className="sm-news-tag" data-last={i === milestones.length - 1 ? 'true' : undefined}>{m.date}</span>
                   </span>
                   <span className="sm-fin-td">{m.event}</span>
                 </div>

@@ -26,7 +26,7 @@ export class FinancialModelErrorBoundary extends Component<ErrorBoundaryProps, E
     if (this.state.hasError) {
       return (
         <div className="sm-error-boundary">
-          <div style={{ fontSize: '48px' }}>⚠️</div>
+          <div className="sm-error-emoji">⚠️</div>
           <h2>Calculation Error</h2>
           <p>
             An error occurred in the financial model. This may be due to invalid input parameters.

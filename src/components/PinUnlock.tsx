@@ -89,54 +89,18 @@ export default function PinUnlock({ onSuccess }: PinUnlockProps) {
   }, [digits, onSuccess]);
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      zIndex: 9999,
-      background: '#000',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
-      userSelect: 'none',
-      WebkitUserSelect: 'none',
-    }}>
+    <div className="pin-unlock">
       {/* Subtle radial glow */}
-      <div style={{
-        position: 'absolute',
-        top: '30%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 600,
-        height: 600,
-        borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(255,255,255,0.015) 0%, transparent 70%)',
-        pointerEvents: 'none',
-      }} />
+      <div className="pin-unlock-glow" />
 
       {/* Brand */}
-      <div style={{
-        marginBottom: 56,
-        textAlign: 'center',
-      }}>
-        <div style={{
-          fontSize: 14,
-          fontWeight: 300,
-          letterSpacing: '0.5em',
-          textTransform: 'uppercase' as const,
-          color: 'rgba(255,255,255,0.9)',
-          marginBottom: 40,
-        }}>
+      <div className="pin-unlock-brand">
+        <div className="pin-unlock-title">
           a b i s o n
         </div>
 
         {/* Lock icon */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          marginBottom: 24,
-        }}>
+        <div className="pin-unlock-icon-wrap">
           <svg
             width={28}
             height={28}
@@ -152,68 +116,34 @@ export default function PinUnlock({ onSuccess }: PinUnlockProps) {
           </svg>
         </div>
 
-        <div style={{
-          fontSize: 13,
-          fontWeight: 400,
-          color: 'rgba(255,255,255,0.3)',
-          letterSpacing: '0.05em',
-        }}>
+        <div className="pin-unlock-subtitle">
           Enter your security PIN
         </div>
       </div>
 
       {/* PIN dots */}
-      <div
-        style={{
-          display: 'flex',
-          gap: 16,
-          marginBottom: 48,
-          animation: shake ? 'pinShake 0.5s ease-in-out' : undefined,
-        }}
-      >
-        {Array.from({ length: PIN_LENGTH }).map((_, i) => {
-          const filled = i < digits.length;
-          return (
-            <div
-              key={i}
-              style={{
-                width: 14,
-                height: 14,
-                borderRadius: '50%',
-                border: filled ? 'none' : '1.5px solid rgba(255,255,255,0.15)',
-                background: filled ? 'rgba(255,255,255,0.85)' : 'transparent',
-                transition: 'all 0.15s cubic-bezier(0.4, 0, 0.2, 1)',
-                transform: filled ? 'scale(1)' : 'scale(0.85)',
-              }}
-            />
-          );
-        })}
+      <div className={`pin-unlock-dots${shake ? ' pin-unlock-dots--shake' : ''}`}>
+        {Array.from({ length: PIN_LENGTH }).map((_, i) => (
+          <div
+            key={i}
+            className="pin-unlock-dot"
+            data-filled={i < digits.length ? 'true' : undefined}
+          />
+        ))}
       </div>
 
       {/* Error message */}
-      <div style={{
-        height: 20,
-        marginBottom: 16,
-        fontSize: 12,
-        fontWeight: 500,
-        color: error ? 'rgba(255,100,100,0.8)' : 'transparent',
-        letterSpacing: '0.05em',
-        transition: 'color 0.2s',
-      }}>
+      <div className="pin-unlock-error" data-visible={error ? 'true' : undefined}>
         {error || '\u00A0'}
       </div>
 
       {/* Keypad */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 12,
-      }}>
+      <div className="pin-unlock-keypad">
         {KEYS.map((row, ri) => (
-          <div key={ri} style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+          <div key={ri} className="pin-unlock-keyrow">
             {row.map((key, ci) => {
               if (key === null) {
-                return <div key={ci} style={{ width: 76, height: 76 }} />;
+                return <div key={ci} className="pin-unlock-spacer" />;
               }
 
               const isDelete = key === 'delete';
@@ -223,50 +153,7 @@ export default function PinUnlock({ onSuccess }: PinUnlockProps) {
                   key={ci}
                   onClick={() => handleKey(key)}
                   disabled={verifying}
-                  style={{
-                    width: 76,
-                    height: 76,
-                    borderRadius: '50%',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    background: 'rgba(255,255,255,0.03)',
-                    color: 'rgba(255,255,255,0.85)',
-                    fontSize: isDelete ? 0 : 24,
-                    fontWeight: 300,
-                    fontFamily: 'inherit',
-                    cursor: verifying ? 'default' : 'pointer',
-                    opacity: verifying ? 0.4 : 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.15s',
-                    outline: 'none',
-                    WebkitTapHighlightColor: 'transparent',
-                  }}
-                  onMouseDown={(e) => {
-                    const btn = e.currentTarget;
-                    btn.style.background = 'rgba(255,255,255,0.10)';
-                    btn.style.transform = 'scale(0.95)';
-                  }}
-                  onMouseUp={(e) => {
-                    const btn = e.currentTarget;
-                    btn.style.background = 'rgba(255,255,255,0.03)';
-                    btn.style.transform = 'scale(1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    const btn = e.currentTarget;
-                    btn.style.background = 'rgba(255,255,255,0.03)';
-                    btn.style.transform = 'scale(1)';
-                  }}
-                  onTouchStart={(e) => {
-                    const btn = e.currentTarget;
-                    btn.style.background = 'rgba(255,255,255,0.10)';
-                    btn.style.transform = 'scale(0.95)';
-                  }}
-                  onTouchEnd={(e) => {
-                    const btn = e.currentTarget;
-                    btn.style.background = 'rgba(255,255,255,0.03)';
-                    btn.style.transform = 'scale(1)';
-                  }}
+                  className={`pin-unlock-key${isDelete ? ' pin-unlock-key--delete' : ''}`}
                 >
                   {isDelete ? (
                     <svg
@@ -292,15 +179,6 @@ export default function PinUnlock({ onSuccess }: PinUnlockProps) {
           </div>
         ))}
       </div>
-
-      {/* Shake animation */}
-      <style>{`
-        @keyframes pinShake {
-          0%, 100% { transform: translateX(0); }
-          10%, 50%, 90% { transform: translateX(-8px); }
-          30%, 70% { transform: translateX(8px); }
-        }
-      `}</style>
     </div>
   );
 }

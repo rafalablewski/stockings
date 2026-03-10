@@ -1271,6 +1271,15 @@ input[type="range"]::-webkit-slider-thumb {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
 }
+.sm-card-colored[data-color="blue"]    { --card-bg: color-mix(in srgb, var(--sky) 15%, transparent);    --card-border: color-mix(in srgb, var(--sky) 30%, transparent);    --card-text: #60a5fa; }
+.sm-card-colored[data-color="green"]   { --card-bg: color-mix(in srgb, var(--mint) 15%, transparent);   --card-border: color-mix(in srgb, var(--mint) 30%, transparent);   --card-text: #4ade80; }
+.sm-card-colored[data-color="red"]     { --card-bg: color-mix(in srgb, var(--coral) 15%, transparent);  --card-border: color-mix(in srgb, var(--coral) 30%, transparent);  --card-text: #f87171; }
+.sm-card-colored[data-color="yellow"]  { --card-bg: color-mix(in srgb, var(--gold) 15%, transparent);   --card-border: color-mix(in srgb, var(--gold) 30%, transparent);   --card-text: #facc15; }
+.sm-card-colored[data-color="purple"]  { --card-bg: color-mix(in srgb, var(--violet) 15%, transparent); --card-border: color-mix(in srgb, var(--violet) 30%, transparent); --card-text: #c084fc; }
+.sm-card-colored[data-color="orange"]  { --card-bg: color-mix(in srgb, var(--gold) 15%, transparent);   --card-border: color-mix(in srgb, var(--gold) 30%, transparent);   --card-text: #fb923c; }
+.sm-card-colored[data-color="cyan"]    { --card-bg: color-mix(in srgb, var(--cyan) 15%, transparent);   --card-border: color-mix(in srgb, var(--cyan) 30%, transparent);   --card-text: #22d3ee; }
+.sm-card-colored[data-color="violet"]  { --card-bg: color-mix(in srgb, var(--violet) 15%, transparent); --card-border: color-mix(in srgb, var(--violet) 30%, transparent); --card-text: #a78bfa; }
+.sm-card-colored[data-color="mint"], .sm-card-colored[data-color="emerald"] { --card-bg: color-mix(in srgb, var(--mint) 15%, transparent); --card-border: color-mix(in srgb, var(--mint) 30%, transparent); --card-text: #34d399; }
 .sm-card-label {
   font-size: 11px;
   text-transform: uppercase;
@@ -5870,6 +5879,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* Edgar methodology — patch preview header label */
 /* Error boundary */
+.sm-error-emoji { font-size: 48px; }
 .sm-error-boundary {
   padding: 48px;
   background: linear-gradient(135deg, color-mix(in srgb, var(--coral) 10%, transparent) 0%, color-mix(in srgb, var(--coral) 5%, transparent) 100%);
@@ -7184,9 +7194,10 @@ input[type="range"]::-webkit-slider-thumb {
   padding: 1px 6px;
   border-radius: 4px;
   font-size: 10px;
-  color: var(--tag-color, var(--cyan));
-  background: color-mix(in srgb, var(--tag-color, var(--cyan)) 20%, transparent);
+  color: var(--tag-color, var(--accent));
+  background: color-mix(in srgb, var(--tag-color, var(--accent)) 20%, transparent);
 }
+.sm-news-tag[data-last="true"] { --tag-color: var(--gold); }
 
 /* ── Empty state (centered message) ───────────────────────────────────── */
 .sm-empty-state {

@@ -202,11 +202,8 @@ a, a:visited {
   transform: rotate(180deg);
 }
 
-.mobile-nav-children {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
+/* Grid accordion: see .mobile-nav-children / --expanded below */
+.mobile-nav-children { overflow: hidden; }
 
 .mobile-nav-child-link {
   display: flex;
@@ -767,3 +764,220 @@ a, a:visited {
 .markdown-body th { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
 .markdown-body td { padding: 0.4rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
 .markdown-body tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* ═══ NAV BADGE VARIANTS (AI toggle + PIN status) ═══ */
+
+.nav-ai-badge {
+  --badge-rgb: 255,255,255;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 9px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.1em; padding: 4px 10px; border-radius: 6px;
+  height: 24px; line-height: 1; cursor: pointer;
+  background: rgba(var(--badge-rgb), 0.08);
+  color: rgba(var(--badge-rgb), 0.7);
+  border: 1px solid rgba(var(--badge-rgb), 0.18);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: navBadgeFadeIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.06s;
+}
+.nav-ai-badge[data-enabled="true"] { --badge-rgb: 126,231,135; }
+.nav-ai-badge:hover {
+  background: rgba(var(--badge-rgb), 0.16) !important;
+  border-color: rgba(var(--badge-rgb), 0.32) !important;
+  transform: scale(1.04);
+}
+.nav-ai-badge:active { transform: scale(0.96); }
+.nav-ai-badge .nav-ai-icon {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.nav-ai-badge:hover .nav-ai-icon { transform: rotate(12deg) scale(1.15); }
+
+.nav-pin-badge {
+  --badge-rgb: 126,231,135;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 9px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.1em; padding: 4px 10px; border-radius: 6px;
+  height: 24px; line-height: 1; cursor: default;
+  background: rgba(var(--badge-rgb), 0.08);
+  color: rgba(var(--badge-rgb), 0.7);
+  border: 1px solid rgba(var(--badge-rgb), 0.18);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: navBadgeFadeIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.nav-pin-badge[data-status="closed"] { --badge-rgb: 255,77,79; }
+.nav-pin-badge:hover {
+  background: rgba(var(--badge-rgb), 0.16) !important;
+  border-color: rgba(var(--badge-rgb), 0.32) !important;
+}
+.nav-pin-badge svg { transition: transform 0.25s; }
+
+.nav-badge-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: rgba(var(--badge-rgb), 0.7);
+  margin-left: 1px;
+  animation: navDotPulse 3s ease-in-out infinite;
+}
+@keyframes navDotPulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.35); }
+}
+
+/* ═══ MOBILE NAV ACCORDION ═══ */
+
+.mobile-nav-children {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.mobile-nav-children--expanded { grid-template-rows: 1fr; }
+.mobile-nav-children-inner { overflow: hidden; }
+
+/* ═══ PIN GATE (fullscreen overlay — components/PinGate.tsx) ═══ */
+
+.pin-gate-overlay {
+  position: fixed; inset: 0; z-index: 9999; background: #000;
+}
+.pin-gate-denied {
+  position: fixed; inset: 0; z-index: 9999; background: #000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+}
+.pin-gate-denied-icon { margin-bottom: 20px; }
+.pin-gate-denied-text {
+  font-size: 14px; color: rgba(255,255,255,0.4); text-align: center; line-height: 1.8;
+}
+.pin-gate-denied-sub { font-size: 12px; color: rgba(255,255,255,0.2); }
+
+/* ═══ PIN GATE (inline card — shared/PinGate.tsx) ═══ */
+
+.pin-gate-container {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 240px; padding: 32px;
+}
+.pin-gate-card {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  padding: 32px 40px; background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06); border-radius: 10px;
+  max-width: 280px; width: 100%;
+}
+.pin-gate-card--denied { border-color: rgba(255,77,79,0.15); }
+.pin-gate-label {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.1em; color: rgba(255,255,255,0.35);
+}
+.pin-gate-label--denied { color: rgba(255,77,79,0.7); }
+.pin-gate-hint {
+  font-size: 10px; color: rgba(255,255,255,0.3);
+  text-align: center; line-height: 1.5;
+}
+.pin-gate-input {
+  width: 100%; text-align: center; font-size: 18px;
+  font-family: 'Space Mono', monospace; letter-spacing: 0.3em;
+  padding: 8px 12px; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03); color: #F0F6FC;
+  outline: none; transition: border-color 0.15s;
+}
+.pin-gate-input[data-error="true"] { border-color: rgba(255,77,79,0.4); }
+.pin-gate-error {
+  font-size: 10px; font-weight: 600; color: #FF4D4F;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.pin-gate-submit {
+  width: 100%; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 8px 16px; border-radius: 5px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.2); cursor: default;
+  transition: all 0.15s;
+}
+.pin-gate-submit[data-active="true"] {
+  background: rgba(121,192,255,0.08);
+  border-color: rgba(121,192,255,0.25);
+  color: rgba(121,192,255,0.9); cursor: pointer;
+}
+
+/* ═══ PIN UNLOCK (fullscreen keypad) ═══ */
+
+.pin-unlock {
+  position: fixed; inset: 0; z-index: 9999; background: #000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+  user-select: none; -webkit-user-select: none;
+}
+.pin-unlock-glow {
+  position: absolute; top: 30%; left: 50%;
+  transform: translate(-50%, -50%); width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.015) 0%, transparent 70%);
+  pointer-events: none;
+}
+.pin-unlock-brand { margin-bottom: 56px; text-align: center; }
+.pin-unlock-title {
+  font-size: 14px; font-weight: 300; letter-spacing: 0.5em;
+  text-transform: uppercase; color: rgba(255,255,255,0.9); margin-bottom: 40px;
+}
+.pin-unlock-icon-wrap { display: flex; justify-content: center; margin-bottom: 24px; }
+.pin-unlock-subtitle {
+  font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.3); letter-spacing: 0.05em;
+}
+.pin-unlock-dots { display: flex; gap: 16px; margin-bottom: 48px; }
+.pin-unlock-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.15); background: transparent;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1); transform: scale(0.85);
+}
+.pin-unlock-dot[data-filled="true"] {
+  border: none; background: rgba(255,255,255,0.85); transform: scale(1);
+}
+.pin-unlock-error {
+  height: 20px; margin-bottom: 16px; font-size: 12px;
+  font-weight: 500; color: transparent; letter-spacing: 0.05em;
+  transition: color 0.2s;
+}
+.pin-unlock-error[data-visible="true"] { color: rgba(255,100,100,0.8); }
+.pin-unlock-keypad { display: flex; flex-direction: column; gap: 12px; }
+.pin-unlock-keyrow { display: flex; gap: 12px; justify-content: center; }
+.pin-unlock-spacer { width: 76px; height: 76px; }
+.pin-unlock-key {
+  width: 76px; height: 76px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.85);
+  font-size: 24px; font-weight: 300; font-family: inherit;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.pin-unlock-key:active { background: rgba(255,255,255,0.10); transform: scale(0.95); }
+.pin-unlock-key:disabled { opacity: 0.4; cursor: default; }
+.pin-unlock-key--delete { font-size: 0; }
+@keyframes pinShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 50%, 90% { transform: translateX(-8px); }
+  30%, 70% { transform: translateX(8px); }
+}
+.pin-unlock-dots--shake { animation: pinShake 0.5s ease-in-out; }
+
+/* ═══ DB SETUP PAGE ═══ */
+
+.db-setup-page { max-width: 720px; margin: 4rem auto; font-family: monospace; padding: 0 1rem; }
+.db-setup-btn {
+  padding: 0.75rem 1.5rem; font-size: 1rem; cursor: pointer;
+  background: #0070f3; color: #fff; border: none; border-radius: 6px;
+}
+.db-setup-btn:disabled { cursor: wait; background: #666; }
+.db-setup-result {
+  margin-top: 1.5rem; padding: 1rem;
+  background: #0a1a0a; color: #8f8;
+  border-radius: 6px; overflow: auto; max-height: 60vh; font-size: 0.85rem;
+}
+.db-setup-result[data-error="true"] { background: #2a0000; color: #f88; }
+
+/* ═══ HOOK CARD PROMPT ═══ */
+
+.hook-prompt-box { border-left: 2px solid var(--border); }
+.hook-prompt-pre {
+  font-family: var(--font-mono, monospace);
+  line-height: 1.7; white-space: pre-wrap; margin: 0;
+}
