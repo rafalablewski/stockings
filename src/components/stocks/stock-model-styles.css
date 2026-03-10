@@ -11661,3 +11661,426 @@ input[type="range"]::-webkit-slider-thumb {
   white-space: pre-wrap; margin: 0;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   § EDGAR TAB — Extracted inline styles (SharedEdgarTab.tsx)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Hidden row inner padding */
+.sm-ed-hidden-row-pad { padding: 3px 12px; border-radius: 6px; }
+
+/* Hidden row — description (truncated, line-through) */
+.sm-ed-hidden-desc {
+  flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  text-decoration: line-through;
+}
+
+/* Hidden row — date */
+.sm-ed-hidden-date { font-family: 'Space Mono', monospace; font-size: 10px; }
+
+/* Hidden row — "hidden" label */
+.sm-ed-hidden-label {
+  font-size: 8px; font-family: 'Space Mono', monospace; text-transform: uppercase;
+}
+
+/* Expanded analysis body padding */
+.sm-ed-expanded-body { padding: 0 12px 12px; }
+
+/* Action toolbar wrapper */
+.sm-ed-toolbar { margin: 8px 0 2px 7px; }
+
+/* Diff panel header / footer — shared padding + amber border */
+.sm-ed-diff-header { padding: 12px 16px; border-bottom: 1px solid rgba(234,179,8,0.1); }
+.sm-ed-diff-footer { padding: 12px 16px; border-top: 1px solid rgba(234,179,8,0.1); }
+
+/* Diff panel — "Patch Preview" title label */
+.sm-ed-diff-title {
+  font-size: 11px; color: rgba(234,179,8,0.7);
+  letter-spacing: 1px; text-transform: uppercase;
+}
+
+/* Diff panel — per-file section */
+.sm-ed-diff-file { padding: 10px 16px; }
+.sm-ed-diff-file + .sm-ed-diff-file { border-top: 1px solid rgba(255,255,255,0.04); }
+
+/* Diff panel — file path text */
+.sm-ed-diff-filepath {
+  font-size: 10px; font-family: var(--font-mono, monospace); font-weight: 500; color: var(--text2);
+}
+.sm-ed-diff-filepath[data-invalid="true"] { color: var(--coral); }
+
+/* Diff panel — file action badge */
+.sm-ed-diff-action-badge {
+  font-size: 8px; text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 1px 5px; border-radius: 3px;
+}
+
+/* Diff panel — confirm button active state */
+.sm-ed-action-btn[data-confirm="active"] { font-weight: 600; }
+
+/* Diff panel — warning text */
+.sm-ed-diff-warning {
+  font-size: 9px; color: rgba(234,179,8,0.5); letter-spacing: 0.05em;
+}
+
+/* Rejected diff detail text */
+.sm-ed-diff-rejected { font-size: 10px; opacity: 0.7; }
+
+/* Filter pills wrapper */
+.sm-ed-filter-wrap { padding: 8px 0 16px; flex-wrap: wrap; }
+
+/* Legend item layout */
+.sm-ed-legend-item { align-items: flex-start; max-width: 260px; }
+
+/* Legend dot (small colored circle) */
+.sm-ed-legend-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  opacity: 0.9; margin-top: 3px;
+}
+
+/* Legend description text */
+.sm-ed-legend-desc { font-size: 9px; opacity: 0.5; line-height: 1.4; }
+
+/* Methodology flowbox column — centered alignment */
+.sm-ed-method-flowcol { align-items: center; }
+
+/* Methodology tier branch layout */
+.sm-ed-method-branch { gap: 32px; }
+
+/* Methodology — branch sub-column */
+.sm-ed-method-branch-col { align-items: center; }
+
+/* Methodology — flowline note text */
+.sm-ed-method-note-sm {
+  font-size: 9px; line-height: 1.6;
+}
+
+/* Methodology — endpoint result text */
+.sm-ed-method-result { font-size: 11px; }
+
+/* Methodology — flow highlight (mint text with pad) */
+.sm-ed-method-highlight { padding: 4px 10px; font-size: 10px; }
+
+/* Info card title (sky, bold, 10px) */
+.sm-ed-info-card-title { font-size: 10px; margin-bottom: 4px; }
+
+/* Info card body (text3, 10px, 1.8 leading) */
+.sm-ed-info-card-body { font-size: 10px; line-height: 1.8; }
+
+/* Info card body wider (9.5px, 1.7 leading) */
+.sm-ed-info-card-body-sm { font-size: 9.5px; line-height: 1.7; }
+
+/* DB tooltip — field row with 80px label */
+.sm-ed-db-field-label-80 { min-width: 80px; display: inline-block; }
+
+/* Methodology — micro-text detail under flowbox */
+.sm-ed-method-micro {
+  margin-top: 2px; letter-spacing: normal; text-transform: none; font-weight: 400;
+}
+
+/* Methodology — tier result inline (fontSize: 10) */
+.sm-ed-method-tier-result { font-size: 10px; }
+
+/* Status bar title */
+.sm-ed-status-title { font-size: 13px; }
+
+/* Cross-ref source info text */
+.sm-ed-crossref-info { font-size: 10px; line-height: 1.6; }
+
+/* Cross-ref method footer text */
+.sm-ed-crossref-footer { margin-top: 10px; font-size: 10px; line-height: 2; }
+
+/* Methodology — persisted data coral note */
+.sm-ed-persisted-note { margin-top: 4px; opacity: 0.7; }
+
+/* DB status indicator — flex gap layout with mb */
+.sm-ed-db-status-header { margin-bottom: 6px; }
+
+/* Gap utility */
+.sm-gap-20 { gap: 20px; }
+
+/* Methodology note max-width constraint */
+.sm-ed-method-note-narrow { max-width: 340px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   § SOURCES TAB — Extracted inline styles (SharedSourcesTab.tsx)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Hidden row inner flex container */
+.sm-src-hidden-inner { padding: 3px 12px; border-radius: 6px; }
+
+/* Small type badge (9px, mono, 600) in hidden rows */
+.sm-src-type-badge-sm {
+  font-size: 9px; font-family: 'Space Mono', monospace; font-weight: 600;
+  padding: 1px 6px; border-radius: 4px;
+}
+
+/* Truncated headline with line-through */
+.sm-src-headline-hidden {
+  flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  text-decoration: line-through;
+}
+
+/* Date in hidden rows */
+.sm-src-date-hidden { font-family: 'Space Mono', monospace; font-size: 10px; }
+
+/* "hidden" label */
+.sm-src-hidden-label { font-size: 8px; font-family: 'Space Mono', monospace; text-transform: uppercase; }
+
+/* DB tooltip header */
+.sm-src-tooltip-header {
+  font-size: 9px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1.5px; margin-bottom: 6px;
+  padding-bottom: 6px; border-bottom: 1px solid var(--border);
+}
+
+/* DB tooltip label (inline-block for alignment) */
+.sm-src-tooltip-label { min-width: 70px; display: inline-block; }
+
+/* Expanded analysis body padding */
+.sm-src-analysis-body { padding: 0 12px 12px; }
+
+/* Expanded verdict badge (inline-flex variant with extra spacing) */
+.sm-src-verdict-expanded {
+  margin: 12px 0 0 7px; display: inline-flex; gap: 6px;
+  font-size: 9px; padding: 3px 8px; border-radius: 4px;
+}
+
+/* Verdict explanation text */
+.sm-src-verdict-explanation {
+  font-weight: 400; text-transform: none; letter-spacing: 0;
+  opacity: 0.7; font-size: 10px;
+}
+
+/* Section label with padding/opacity/letterSpacing */
+.sm-src-section-label { padding: 8px 12px 4px; opacity: 0.7; letter-spacing: 1.5px; }
+
+/* "All N items are hidden" message */
+.sm-src-all-hidden-msg { padding: 4px 12px; font-size: 11px; }
+
+/* Load-more / collapse hidden button */
+.sm-src-hidden-toggle {
+  display: block; padding: 4px 12px; margin: 2px 0;
+  font-size: 9px; font-family: 'Space Mono', monospace;
+  background: transparent; border: none; text-align: left;
+}
+
+/* Empty state message */
+.sm-src-empty-msg { padding: 16px 12px; }
+
+/* Card with zero padding */
+.sm-src-card-no-pad { padding: 0; }
+
+/* Card header */
+.sm-src-card-header { padding: 16px 24px; }
+
+/* Card heading (truncated) */
+.sm-src-card-heading {
+  margin: 0; font-weight: 700;
+  white-space: nowrap; text-overflow: ellipsis;
+}
+.sm-src-card-heading[data-primary="true"] { font-size: 15px; }
+.sm-src-card-heading[data-primary="false"] { font-size: 14px; }
+
+/* External link arrow */
+.sm-src-ext-link { text-decoration: none; padding: 2px 6px; border-radius: 4px; }
+
+/* Freshness timestamp */
+.sm-src-freshness {
+  font-size: 10px; opacity: 0.6;
+  font-family: 'Space Mono', monospace; margin-left: 4px;
+}
+
+/* Card body padding */
+.sm-src-card-body { padding: 16px 20px; }
+.sm-src-card-body[data-loaded="true"] { padding: 16px 20px 20px; }
+
+/* Loading area padding */
+.sm-src-loading-pad { padding: 24px 0; }
+
+/* Spin animation for SVGs */
+.sm-src-spin { animation: spin 1s linear infinite; }
+
+/* Loading text */
+.sm-src-loading-text { font-size: 12px; }
+
+/* Status bar title */
+.sm-src-status-title { font-size: 13px; font-weight: 600; }
+
+/* Legend item */
+.sm-src-legend-item { display: flex; align-items: flex-start; gap: 6px; max-width: 260px; }
+
+/* Status dot in legend */
+.sm-src-legend-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 3px; }
+
+/* Legend description text */
+.sm-src-legend-desc { font-size: 9px; opacity: 0.5; line-height: 1.4; }
+
+/* Toggle row gap + padding */
+.sm-src-toggle-row { gap: 10px; padding: 0 4px 12px; }
+
+/* Toggle button (AI/Local) */
+.sm-src-toggle-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 6px;
+  font-size: 10px; font-family: 'Space Mono', monospace;
+}
+
+/* Toggle track */
+.sm-src-toggle-track { width: 24px; height: 12px; border-radius: 6px; position: relative; }
+
+/* Toggle knob */
+.sm-src-toggle-knob { position: absolute; top: 1px; width: 8px; height: 8px; border-radius: 50%; }
+
+/* Match-method badge */
+.sm-src-match-badge {
+  font-size: 10px; font-family: 'Space Mono', monospace;
+  padding: 2px 8px; border-radius: 5px;
+}
+
+/* Research source link */
+.sm-src-research-link { text-decoration: none; padding: 6px 8px; gap: 6px; }
+
+/* Methodology toggle label */
+.sm-src-method-toggle { font-size: 18px; }
+
+/* Flowbox small text padding variant */
+.sm-src-flowbox-sm { padding: 5px 12px; font-size: 10px; }
+
+/* Methodology mono description */
+.sm-src-method-desc {
+  font-size: 9px; font-family: 'Space Mono', monospace; line-height: 1.6;
+}
+
+/* Pipeline type label (PR/News) */
+.sm-src-pipeline-label {
+  padding: 4px 10px; font-size: 10px;
+  font-family: 'Space Mono', monospace; font-weight: 600;
+}
+
+/* Vertical pipe connector (colored) */
+.sm-src-vpipe { width: 2px; height: 10px; }
+
+/* Methodology data extraction block */
+.sm-src-data-extract { font-size: 11px; font-family: 'Space Mono', monospace; line-height: 2; }
+
+/* Flowbox column with alignment center */
+.sm-src-flow-center { align-items: center; }
+
+/* Analysis routing flow labels */
+.sm-src-routing-label { font-size: 10px; font-family: 'Space Mono', monospace; gap: 6px; }
+.sm-src-routing-label-height { height: 28px; }
+
+/* Routing arrow */
+.sm-src-routing-arrow { font-size: 11px; }
+
+/* Spacer divs */
+.sm-src-spacer-22 { height: 22px; }
+
+/* Flow "Yes/No" label */
+.sm-src-flow-yn { font-size: 9px; }
+
+/* Right-column routing with padding */
+.sm-src-routing-right { justify-content: center; gap: 4px; padding-top: 28px; }
+
+/* Dollar-amount guard box */
+.sm-src-guard-box {
+  padding: 6px 14px; border: 1px solid var(--gold);
+  font-size: 11px; font-family: 'Space Mono', monospace;
+}
+
+/* Guard title */
+.sm-src-guard-title { font-weight: 600; }
+
+/* Guard note text (with margin-top) */
+.sm-src-guard-note { margin-top: 2px; letter-spacing: normal; text-transform: none; font-weight: 400; }
+
+/* Guard note continuation (no margin-top) */
+.sm-src-guard-note-cont { letter-spacing: normal; text-transform: none; font-weight: 400; }
+
+/* Guard italic footer */
+.sm-src-guard-footer { font-size: 10px; font-style: italic; }
+
+/* Stemmer notes */
+.sm-src-stemmer-note {
+  padding: 4px 10px; font-size: 10px;
+  font-family: 'Space Mono', monospace; margin-bottom: 4px;
+}
+
+/* Tier match result label */
+.sm-src-tier-match { font-size: 10px; font-family: 'Space Mono', monospace; gap: 6px; }
+
+/* Status dot (inline, 6px) */
+.sm-src-dot-6 { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+
+/* TRACKED/UNTRACKED result labels */
+.sm-src-tracked-label { font-size: 11px; font-family: 'Space Mono', monospace; font-weight: 600; }
+
+/* Guard notes footer (italic, centered) */
+.sm-src-guard-notes {
+  padding: 4px 10px; font-size: 10px;
+  font-family: 'Space Mono', monospace; font-style: italic;
+}
+
+/* New Article Detection: fetch button badges */
+.sm-src-detect-badge {
+  padding: 6px 14px; font-size: 11px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* "or" label between fetch buttons */
+.sm-src-detect-or { font-size: 10px; font-family: 'Space Mono', monospace; align-self: center; }
+
+/* Fetch News button in methodology (with custom colors) */
+.sm-src-fetch-news-badge { font-weight: 400; }
+
+/* Upsert metadata label */
+.sm-src-upsert-label { font-size: 10px; font-family: 'Space Mono', monospace; }
+
+/* Button distinction header label */
+.sm-src-btn-label {
+  font-size: 10px; font-weight: 700;
+  font-family: 'Space Mono', monospace; margin-bottom: 6px;
+}
+.sm-src-btn-label-blue { color: rgba(130,180,220,0.7); }
+
+/* Methodology bottom section */
+.sm-src-method-bottom { font-size: 10px; font-family: 'Space Mono', monospace; line-height: 1.8; }
+
+/* Legend & config section */
+.sm-src-config-section { gap: 24px; font-size: 11px; line-height: 2; }
+
+/* Config label (micro-text with 2px letter-spacing) */
+.sm-src-config-label { letter-spacing: 2px; }
+
+/* Config code snippet */
+.sm-src-config-code { font-size: 11px; font-family: 'Space Mono', monospace; padding: 1px 5px; }
+
+/* Config separator */
+.sm-src-config-sep { margin: 0 8px; }
+
+/* Section divider (thin line between PR/News) */
+.sm-src-section-divider {
+  height: 1px; background: color-mix(in srgb, var(--border) 40%, transparent);
+  margin: 4px 12px;
+}
+
+/* Status indicator dot (8px, in card header) */
+.sm-src-status-indicator { width: 8px; height: 8px; border-radius: 50%; }
+
+/* DB dot in button (5px) */
+.sm-src-db-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+/* Research sources letter-spacing */
+.sm-src-research-ls { letter-spacing: 1.5px; }
+
+/* Flowbox column pipe (flex:1 1 220px) */
+.sm-src-pipe-col { flex: 1 1 220px; }
+
+/* Min-width helper */
+.sm-src-min-w-180 { min-width: 180px; }
+
+/* Methodology flow gap-32 */
+.sm-src-gap-32 { gap: 32px; }
+
