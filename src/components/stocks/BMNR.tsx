@@ -252,6 +252,8 @@ import { BMNR_TIMELINE_EVENTS } from '@/data/bmnr/timeline';
 import { BMNR_COMPETITOR_NEWS } from '@/data/bmnr/competitor-news';
 import type { CompetitorNewsEntry } from '@/data/shared/competitor-schema';
 import { BMNR_ADOPTION_TIMELINE } from '@/data/bmnr/ethereum-adoption';
+import { BMNR_PURCHASE_HISTORY } from '@/data/bmnr/purchase-history';
+import type { PurchaseRecord } from '@/data/bmnr/purchase-history';
 
 // ============================================================================
 // BMNR - BitMine Immersion Technologies Financial Model
@@ -513,6 +515,7 @@ const BMNRDilutionAnalysis = () => {
     { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
     { id: 'comps', label: 'Comps', type: 'projection' },
     // Tracking
+    { id: 'purchases', label: 'Purchases', type: 'tracking', group: 'BMNR Analysis' },
     { id: 'capital', label: 'Capital', type: 'tracking' },
     { id: 'financials', label: 'Financials', type: 'tracking' },
     { id: 'timeline', label: 'Timeline', type: 'tracking' },
@@ -656,6 +659,7 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'staking' && <TabPanel id="staking"><StakingTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} stakingType={stakingType} setStakingType={setStakingType} baseStakingAPY={baseStakingAPY} setBaseStakingAPY={setBaseStakingAPY} restakingBonus={restakingBonus} setRestakingBonus={setRestakingBonus} stakingRatio={stakingRatio} setStakingRatio={setStakingRatio} slashingRisk={slashingRisk} setSlashingRisk={setSlashingRisk} /></TabPanel>}
         {activeTab === 'dilution' && <TabPanel id="dilution"><DilutionTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} currentStockPrice={currentStockPrice} tranches={tranches} setTranches={setTranches} dilutionPercent={dilutionPercent} setDilutionPercent={setDilutionPercent} saleDiscount={saleDiscount} setSaleDiscount={setSaleDiscount} navMultiple={navMultiple} setNavMultiple={setNavMultiple} maxAuthorizedShares={maxAuthorizedShares} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} regulatoryRisk={regulatoryRisk} /></TabPanel>}
         {activeTab === 'debt' && <TabPanel id="debt"><DebtTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} currentStockPrice={currentStockPrice} useDebt={useDebt} setUseDebt={setUseDebt} debtAmount={debtAmount} setDebtAmount={setDebtAmount} debtRate={debtRate} setDebtRate={setDebtRate} debtMaturity={debtMaturity} setDebtMaturity={setDebtMaturity} conversionPremium={conversionPremium} setConversionPremium={setConversionPremium} debtCovenantLTV={debtCovenantLTV} setDebtCovenantLTV={setDebtCovenantLTV} /></TabPanel>}
+        {activeTab === 'purchases' && <TabPanel id="purchases"><PurchasesTab currentETH={currentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} /></TabPanel>}
         {activeTab === 'capital' && <TabPanel id="capital"><CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} currentETH={currentETH} ethPrice={ethPrice} /></TabPanel>}
         {activeTab === 'comps' && <TabPanel id="comps"><CompsTab comparables={comparables} ethPrice={ethPrice} /></TabPanel>}
         {activeTab === 'sensitivity' && <TabPanel id="sensitivity"><SensitivityTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} /></TabPanel>}
@@ -2667,6 +2671,156 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
         { term: 'Death Spiral Risk', def: 'ETH drops → LTV rises → covenant breach → forced selling → price drops more → feedback loop. The "death spiral trigger" is the ETH price where LTV hits covenant.' },
         { term: 'Conversion Price', def: 'Stock Price × (1 + Premium). If stock rises above this, debt converts to equity, eliminating repayment obligation but diluting shareholders.' },
         { term: 'Interest Coverage', def: 'Staking yield must exceed interest expense for positive carry. At current rates, staking income typically covers debt service with margin.' },
+      ]} />
+    </div>
+  );
+};
+
+// ============================================================================
+// PURCHASES TAB - ETH Purchase History with mNAV, ETH Price, Cost Basis
+// ============================================================================
+
+const PurchasesTab = ({ currentETH, ethPrice, currentShares, currentStockPrice }: { currentETH: number; ethPrice: number; currentShares: number; currentStockPrice: number }) => {
+  const purchases: PurchaseRecord[] = BMNR_PURCHASE_HISTORY;
+
+  // Compute summary stats (chronological order for weighted avg)
+  const totalEthBought = purchases.reduce((sum, p) => sum + p.ethBought, 0);
+  const totalCashDeployed = purchases.reduce((sum, p) => sum + p.cashDeployed, 0);
+  const weightedAvgEthPrice = totalCashDeployed / totalEthBought;
+  const currentNAV = (currentETH * ethPrice) / (currentShares * 1e6);
+  const currentMNAV = currentStockPrice / currentNAV;
+  const unrealizedPL = (ethPrice - weightedAvgEthPrice) * totalEthBought;
+  const unrealizedPLPct = ((ethPrice / weightedAvgEthPrice) - 1) * 100;
+
+  const fmtNum = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 0 });
+  const fmtUSD = (n: number) => {
+    if (Math.abs(n) >= 1e9) return `$${(n / 1e9).toFixed(2)}B`;
+    if (Math.abs(n) >= 1e6) return `$${(n / 1e6).toFixed(1)}M`;
+    return `$${fmtNum(n)}`;
+  };
+
+  const mnavColor = (mnav: number | null) => {
+    if (mnav === null) return 'var(--text3)';
+    if (mnav < 1.0) return 'var(--mint)';
+    if (mnav <= 1.5) return 'var(--gold)';
+    return 'var(--coral)';
+  };
+
+  return (
+    <div className="sm-flex-col">
+      <div className="sm-tab-hero">
+        <div className="sm-section-label">Purchase History<UpdateIndicators sources="PR" /></div>
+        <h2>ETH Purchases<span className="sm-accent">.</span></h2>
+        <p>Complete record of all ETH purchases from weekly 8-K/PR filings. Shows ETH acquired, price paid, mNAV at time of purchase, and total capital deployed. {purchases.length} purchase events tracked from Jul 2025 to present.</p>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="sm-divider">
+        <span className="sm-param-label">Accumulation Summary</span>
+        <span className="sm-divider-line" />
+      </div>
+
+      <div className="sm-card">
+        <div className="sm-card-section">
+          <span className="sm-param-label">Purchase Overview</span>
+        </div>
+        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
+          {[
+            { label: 'Total ETH Bought', value: `${(totalEthBought / 1e6).toFixed(3)}M`, color: 'var(--mint)' },
+            { label: 'Total Deployed', value: fmtUSD(totalCashDeployed), color: 'var(--gold)' },
+            { label: 'Avg ETH Price', value: `$${fmtNum(Math.round(weightedAvgEthPrice))}`, color: 'var(--sky)' },
+            { label: 'Current mNAV', value: `${currentMNAV.toFixed(2)}x`, color: mnavColor(currentMNAV) },
+          ].map(kpi => (
+            <div key={kpi.label} className="sm-kpi-cell">
+              <div className="sm-bmnr-kpi-val sm-bmnr-kpi-val--md sm-m-0" style={{ '--kpi-color': kpi.color } as React.CSSProperties}>{kpi.value}</div>
+              <div className="sm-micro-label sm-mt-4 sm-fw-500">{kpi.label}</div>
+            </div>
+          ))}
+        </div>
+        <div className="sm-model-grid" style={{ '--cols': 2 } as React.CSSProperties}>
+          <div className="sm-card-body sm-grid-cell sm-bmnr-cell sm-p-16-24">
+            {[
+              { label: 'Current ETH Price', value: `$${fmtNum(ethPrice)}`, color: 'var(--text)' },
+              { label: 'Unrealized P/L', value: `${unrealizedPL >= 0 ? '+' : ''}${fmtUSD(unrealizedPL)}`, color: unrealizedPL >= 0 ? 'var(--mint)' : 'var(--coral)' },
+              { label: 'Unrealized P/L %', value: `${unrealizedPLPct >= 0 ? '+' : ''}${unrealizedPLPct.toFixed(1)}%`, color: unrealizedPLPct >= 0 ? 'var(--mint)' : 'var(--coral)' },
+            ].map(row => (
+              <div key={row.label} className="sm-bmnr-row-item-sm">
+                <span className="sm-subtle">{row.label}</span>
+                <span className="sm-bmnr-mono-val" style={{ '--val-color': row.color } as React.CSSProperties}>{row.value}</span>
+              </div>
+            ))}
+          </div>
+          <div className="sm-card-body sm-grid-cell sm-bmnr-cell sm-p-16-24">
+            {[
+              { label: 'NAV/Share', value: `$${currentNAV.toFixed(2)}`, color: 'var(--text)' },
+              { label: 'Stock Price', value: `$${currentStockPrice.toFixed(2)}`, color: 'var(--text)' },
+              { label: 'Purchase Events', value: `${purchases.length}`, color: 'var(--text3)' },
+            ].map(row => (
+              <div key={row.label} className="sm-bmnr-row-item-sm">
+                <span className="sm-subtle">{row.label}</span>
+                <span className="sm-bmnr-mono-val" style={{ '--val-color': row.color } as React.CSSProperties}>{row.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Purchase History Table */}
+      <div className="sm-divider">
+        <span className="sm-param-label">Purchase Log (Newest First)</span>
+        <span className="sm-divider-line" />
+      </div>
+
+      <div className="sm-card">
+        <div className="sm-card-section">
+          <span className="sm-param-label">All ETH Purchases</span>
+        </div>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid var(--border)', textAlign: 'left' }}>
+                <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, whiteSpace: 'nowrap' }}>Date</th>
+                <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>ETH Bought</th>
+                <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>ETH Price</th>
+                <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>USD Deployed</th>
+                <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>mNAV</th>
+                <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>Total ETH</th>
+                <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, whiteSpace: 'nowrap' }}>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {purchases.map((p, i) => (
+                <tr key={p.date} style={{ borderBottom: '1px solid var(--border-dim)', background: i % 2 === 0 ? 'transparent' : 'var(--bg-hover)' }}>
+                  <td style={{ padding: '8px 12px', whiteSpace: 'nowrap', fontFamily: 'var(--font-mono)', color: 'var(--text2)' }}>{p.date}</td>
+                  <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--mint)' }}>{fmtNum(p.ethBought)}</td>
+                  <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text)' }}>${fmtNum(p.ethPrice)}</td>
+                  <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--gold)' }}>{fmtUSD(p.cashDeployed)}</td>
+                  <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: mnavColor(p.mnavAtTime) }}>{p.mnavAtTime !== null ? `${p.mnavAtTime.toFixed(2)}x` : '—'}</td>
+                  <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text2)' }}>{(p.totalEthAfter / 1e6).toFixed(3)}M</td>
+                  <td style={{ padding: '8px 12px', color: 'var(--text3)', fontSize: '12px', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.notes || '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr style={{ borderTop: '2px solid var(--border)', fontWeight: 600 }}>
+                <td style={{ padding: '10px 12px', color: 'var(--text)' }}>Total</td>
+                <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--mint)' }}>{fmtNum(totalEthBought)}</td>
+                <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text2)' }}>avg ${fmtNum(Math.round(weightedAvgEthPrice))}</td>
+                <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--gold)' }}>{fmtUSD(totalCashDeployed)}</td>
+                <td colSpan={3} />
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      {/* Glossary */}
+      <CFANotes title="CFA Level III — Purchase History Concepts" items={[
+        { term: 'mNAV (NAV Multiple)', def: 'Stock Price / NAV per Share. Measures premium or discount to net asset value. mNAV > 1 = premium (market pays more than assets are worth), mNAV < 1 = discount. Purchases at high mNAV are more accretive to ETH/share.' },
+        { term: 'Weighted Average Cost Basis', def: 'Total USD deployed / Total ETH purchased. Represents the blended average price paid per ETH across all purchases. Compare to current ETH price for unrealized P/L.' },
+        { term: 'Accretive Issuance', def: 'When shares are sold above NAV (mNAV > 1), the proceeds buy more ETH per share than the dilution costs. At 1.5x mNAV, each $1 of stock sold adds $1.50 of ETH value per existing share equivalent.' },
+        { term: 'Dollar-Cost Averaging (DCA)', def: 'Systematic purchasing over time regardless of price. BMNR buys ETH weekly through ATM share issuance, naturally DCA-ing into their position. This reduces timing risk vs lump-sum purchases.' },
+        { term: 'Unrealized P/L', def: 'Current value of holdings minus total cost basis. Positive = paper profit, negative = paper loss. BMNR marks ETH to market per ASC 350, so unrealized gains/losses flow through income statement.' },
       ]} />
     </div>
   );
