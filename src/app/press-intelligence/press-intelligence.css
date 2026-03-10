@@ -442,6 +442,44 @@
   margin-bottom: 8px;
 }
 
+/* ── Pagination ── */
+.pi-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
+  padding: 12px 0;
+}
+
+.pi-page-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text2);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pi-page-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.08);
+  color: var(--text);
+}
+
+.pi-page-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pi-page-info {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+}
+
 /* ── Feed timestamp ── */
 .pi-timestamp {
   font-size: 10px;

@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { stocks, tickers } from "@/lib/stocks";
+import GenericResearch from "@/components/stocks/GenericResearch";
 
 const stockComponents: Record<string, React.ComponentType> = {
   ASTS: dynamic(() => import("@/components/stocks/ASTS"), {
@@ -40,7 +41,7 @@ function NotFoundState({ ticker }: { ticker: string }) {
           No analysis available for {ticker}.
         </p>
         <Link
-          href="/stocks"
+          href="/research"
           className="text-[13px] text-white/40 hover:text-white transition-colors"
         >
           ← Back to Research
@@ -54,15 +55,23 @@ export default function StockPage() {
   const params = useParams();
   const ticker = (params.ticker as string)?.toUpperCase();
 
-  if (!ticker || !tickers.includes(ticker)) {
+  const stock = ticker ? stocks[ticker] : undefined;
+
+  if (!ticker || !stock) {
     return <NotFoundState ticker={ticker || "Unknown"} />;
   }
 
   const StockComponent = stockComponents[ticker];
 
-  if (!StockComponent) {
-    return <NotFoundState ticker={ticker} />;
+  // Stocks with custom analysis components get the full view;
+  // stocks with hasResearch but no custom component get the generic scaffold view.
+  if (StockComponent) {
+    return <StockComponent />;
   }
 
-  return <StockComponent />;
+  if (stock.hasResearch) {
+    return <GenericResearch ticker={ticker} />;
+  }
+
+  return <NotFoundState ticker={ticker} />;
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { stockList } from "@/lib/stocks";
+import { stockList, researchStocks } from "@/lib/stocks";
 import PinStatus from "@/components/shared/PinStatus";
 import AiToggle from "@/components/shared/AiToggle";
 import NotesPanel from "@/components/shared/NotesPanel";
@@ -75,7 +75,7 @@ const mobileNavItems = [
   },
   {
     label: 'Research',
-    children: stockList.map((s) => ({ label: `${s.ticker} — ${s.name}`, href: `/stocks/${s.ticker}` })),
+    children: researchStocks.map((s) => ({ label: `${s.ticker} — ${s.name}`, href: `/research/${s.ticker}` })),
   },
   {
     label: 'Intelligence',
@@ -177,10 +177,10 @@ function Navigation() {
               </span>
               <div className="absolute top-full right-0 pt-3 hidden group-hover/research:block">
                 <div className="bg-black/95 backdrop-blur-xl border border-white/[0.08] rounded-xl py-2 min-w-[220px] shadow-2xl">
-                  {stockList.map((stock) => (
+                  {researchStocks.map((stock) => (
                     <Link
                       key={stock.ticker}
-                      href={`/stocks/${stock.ticker}`}
+                      href={`/research/${stock.ticker}`}
                       className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
                     >
                       <span className="text-[12px] font-mono font-medium text-white/80 w-10">

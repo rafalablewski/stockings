@@ -450,6 +450,7 @@ export default function PressIntelligencePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
+  const [page, setPage] = useState(1);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const cacheRef = useRef<Record<string, { data: NewsItem[]; ts: number }>>({});
 
@@ -538,6 +539,14 @@ export default function PressIntelligencePage() {
 
     return items;
   }, [allItems, activeCategory, searchQuery]);
+
+  /* Reset to page 1 when filters change */
+  useEffect(() => { setPage(1); }, [activeTicker, activeCategory, searchQuery]);
+
+  /* ── Pagination ── */
+  const PAGE_SIZE = 20;
+  const totalPages = Math.max(1, Math.ceil(visibleItems.length / PAGE_SIZE));
+  const pagedItems = visibleItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   /* ── Aggregate stats ── */
   const stats = useMemo(() => {
@@ -691,7 +700,7 @@ export default function PressIntelligencePage() {
         {!loading && (
           <div className="pi-result-bar">
             <span className="pi-result-count">
-              <strong>{visibleItems.length}</strong> of {allItems.length} releases
+              <strong>{(page - 1) * PAGE_SIZE + 1}&ndash;{Math.min(page * PAGE_SIZE, visibleItems.length)}</strong> of {visibleItems.length} releases
               {activeTicker !== "ALL" && <> &middot; {activeTicker}</>}
               {activeCategory !== "All" && <> &middot; {activeCategory}</>}
               {searchQuery && <> &middot; &ldquo;{searchQuery}&rdquo;</>}
@@ -723,7 +732,7 @@ export default function PressIntelligencePage() {
         )}
 
         {/* News cards */}
-        {!loading && visibleItems.map((item) => {
+        {!loading && pagedItems.map((item) => {
           const id = `${item._ticker}-${item.newsid || item.id}`;
           const expanded = expandedId === id;
           const headline = item.headline || item.title || "";
@@ -779,7 +788,7 @@ export default function PressIntelligencePage() {
                       &#x2197; Full Release
                     </a>
                     <a
-                      href={`/stocks/${cfg.ticker}`}
+                      href={`/research/${cfg.ticker}`}
                       className="pi-card-link"
                       onClick={(e) => e.stopPropagation()}
                     >
@@ -791,6 +800,29 @@ export default function PressIntelligencePage() {
             </div>
           );
         })}
+
+        {/* Pagination */}
+        {!loading && totalPages > 1 && (
+          <div className="pi-pagination">
+            <button
+              className="pi-page-btn"
+              disabled={page <= 1}
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+            >
+              &larr; Prev
+            </button>
+            <span className="pi-page-info">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              className="pi-page-btn"
+              disabled={page >= totalPages}
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            >
+              Next &rarr;
+            </button>
+          </div>
+        )}
 
         {/* Timestamp */}
         {lastUpdated && !loading && (

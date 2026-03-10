@@ -1,246 +1,138 @@
 import Link from "next/link";
-import { stockList } from "@/lib/stocks";
-import { workflows } from "@/data/workflows";
-import { PromptCard } from "@/components/PromptCard";
-const CODE_AUDIT_IDS = new Set([
-  "code-audit",
-  "dependency-vulnerability",
-  "api-endpoint-security",
-  "performance-audit",
-  "secrets-exposure",
-]);
-
-const codeAuditWorkflows = workflows.filter(
-  (w) => w.category === "audit" && CODE_AUDIT_IDS.has(w.id)
-);
-
-const dataAuditWorkflows = workflows.filter(
-  (w) => w.category === "audit" && !CODE_AUDIT_IDS.has(w.id)
-);
-
-const AUDIT_BADGE: Record<string, string> = {
-  "code-audit": "Code",
-  "dependency-vulnerability": "Deps",
-  "api-endpoint-security": "API",
-  "performance-audit": "Perf",
-  "secrets-exposure": "Secrets",
-  "capital-parity": "Capital",
-  "crossref-integrity": "Integrity",
-  "sources-completeness": "Sources",
-  "data-freshness": "Freshness",
-  "earnings-quality": "Earnings",
-  "peer-comparables": "Comps",
-  "disclosure-completeness": "Disclosure",
-  "model-consistency": "Model",
-};
+import { researchStocks } from "@/lib/stocks";
 
 export default function HomePage() {
-  const workflowPrompts = workflows.map((w) => ({
-    name: w.name,
-    description: w.description,
-    variants: w.variants.map((v) => ({
-      label: v.label,
-      content: v.prompt,
-    })),
-  }));
-
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="py-32 px-6">
+      <section className="py-40 px-6">
         <div className="max-w-2xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-semibold tracking-tight text-white mb-6">
+          <p className="text-[11px] uppercase tracking-[0.4em] text-white/25 mb-6">
             Investment Research
-          </h1>
-          <p className="text-lg text-white/50 mb-10 leading-relaxed">
-            Deep-dive analysis on high-conviction opportunities.
           </p>
-          <Link
-            href="/stocks"
-            className="inline-block text-[13px] text-white/50 hover:text-white transition-colors"
-          >
-            View all research →
-          </Link>
+          <h1 className="text-5xl md:text-6xl font-light tracking-tight text-white mb-8">
+            <span className="tracking-[0.15em]">ABISON</span>
+          </h1>
+          <div className="w-12 h-px bg-white/10 mx-auto mb-8" />
+          <p className="text-[15px] text-white/35 leading-relaxed max-w-md mx-auto">
+            Deep-dive analysis on high-conviction opportunities across space technology, digital assets, and fintech infrastructure.
+          </p>
         </div>
       </section>
 
-      {/* Coverage */}
+      {/* Stats bar */}
+      <section className="border-y border-white/[0.04] py-10 px-6">
+        <div className="max-w-3xl mx-auto flex items-center justify-center gap-16 md:gap-24">
+          <div className="text-center">
+            <div className="text-2xl font-light text-white/80 mb-1">{researchStocks.length}</div>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-white/25">Active Research</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-light text-white/80 mb-1">3</div>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-white/25">Sectors</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-light text-white/80 mb-1">20+</div>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-white/25">Press Coverage</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Navigation cards */}
+      <section className="py-24 px-6">
+        <div className="max-w-3xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Research */}
+            <Link
+              href="/research"
+              className="group block p-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300"
+            >
+              <div className="text-[10px] uppercase tracking-[0.2em] text-white/20 mb-4">
+                Research
+              </div>
+              <h3 className="text-lg text-white/80 group-hover:text-white transition-colors mb-3">
+                Equity Analysis
+              </h3>
+              <p className="text-[12px] text-white/30 leading-relaxed mb-6">
+                Financial models, investment theses, catalysts, and multi-perspective analysis across our coverage universe.
+              </p>
+              <div className="flex items-center gap-2">
+                {researchStocks.map((s) => (
+                  <span
+                    key={s.ticker}
+                    className="text-[10px] font-mono text-white/30 px-2 py-0.5 rounded bg-white/[0.04]"
+                  >
+                    {s.ticker}
+                  </span>
+                ))}
+              </div>
+            </Link>
+
+            {/* Press Intelligence */}
+            <Link
+              href="/press-intelligence"
+              className="group block p-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300"
+            >
+              <div className="text-[10px] uppercase tracking-[0.2em] text-white/20 mb-4">
+                Intelligence
+              </div>
+              <h3 className="text-lg text-white/80 group-hover:text-white transition-colors mb-3">
+                Press &amp; Wire Feed
+              </h3>
+              <p className="text-[12px] text-white/30 leading-relaxed mb-6">
+                Real-time aggregation of press releases, SEC filings, and corporate announcements across 20+ tickers.
+              </p>
+              <span className="text-[10px] font-mono text-white/20">
+                Live feed &rarr;
+              </span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Holdings */}
       <section className="py-20 px-6">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
-            Coverage
+          <h2 className="text-[10px] uppercase tracking-[0.3em] text-white/20 mb-10 text-center">
+            Coverage Universe
           </h2>
 
           <div className="grid gap-4">
-            {stockList.map((stock) => (
+            {researchStocks.map((stock) => (
               <Link
                 key={stock.ticker}
-                href={`/stocks/${stock.ticker}`}
-                className="group relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300"
+                href={`/research/${stock.ticker}`}
+                className="group flex items-center justify-between p-5 rounded-xl bg-white/[0.015] border border-white/[0.05] hover:bg-white/[0.03] hover:border-white/[0.08] transition-all duration-300"
               >
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                <div className="relative flex items-start justify-between gap-6">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-[13px] font-mono font-medium text-white tracking-wide">
-                        {stock.ticker}
-                      </span>
-                      <span className="text-[11px] uppercase tracking-wider text-white/20">
-                        {stock.sector}
-                      </span>
-                    </div>
-                    <p className="text-[13px] text-white/40 leading-relaxed">
-                      {stock.name}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/[0.03] group-hover:bg-white/[0.08] transition-colors">
-                    <svg
-                      className="w-3.5 h-3.5 text-white/30 group-hover:text-white/60 transition-colors"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-[13px] font-mono font-medium text-white/70 w-12">
+                    {stock.ticker}
+                  </span>
+                  <span className="text-[13px] text-white/35">
+                    {stock.name}
+                  </span>
                 </div>
+                <span className="text-[10px] uppercase tracking-[0.15em] text-white/15 group-hover:text-white/30 transition-colors">
+                  {stock.sector}
+                </span>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Audits */}
-      <section className="py-20 px-6">
+      {/* Philosophy */}
+      <section className="py-20 px-6 border-t border-white/[0.04]">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
-            Audits
-          </h2>
-
-          {/* Code & Security */}
-          <p className="text-[10px] uppercase tracking-[0.15em] text-white/20 mb-4">
-            Code &amp; Security
-          </p>
-          <div className="grid gap-4 mb-10">
-            {codeAuditWorkflows.map((audit) => (
-              <div
-                key={audit.id}
-                className="relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]"
-              >
-                <div className="flex items-start justify-between gap-6">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-[13px] font-medium text-white tracking-wide">
-                        {audit.name}
-                      </span>
-                      <span className="text-[9px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded bg-violet-500/10 text-violet-400/70 border border-violet-500/20">
-                        {AUDIT_BADGE[audit.id] ?? "Audit"}
-                      </span>
-                    </div>
-                    <p className="text-[13px] text-white/40 leading-relaxed mb-3">
-                      {audit.description}
-                    </p>
-                    <div className="flex items-center gap-2">
-                      {audit.variants.map((v) => (
-                        <span
-                          key={v.ticker}
-                          className="text-[10px] font-mono text-white/20 px-1.5 py-0.5 rounded bg-white/[0.03]"
-                        >
-                          {v.label}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Research Data Quality */}
-          <p className="text-[10px] uppercase tracking-[0.15em] text-white/20 mb-4">
-            Research Data Quality
-          </p>
-          <div className="grid gap-4">
-            {dataAuditWorkflows.map((audit) => (
-              <div
-                key={audit.id}
-                className="relative block p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]"
-              >
-                <div className="flex items-start justify-between gap-6">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-[13px] font-medium text-white tracking-wide">
-                        {audit.name}
-                      </span>
-                      <span className="text-[9px] font-semibold uppercase tracking-[0.1em] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400/70 border border-amber-500/20">
-                        {AUDIT_BADGE[audit.id] ?? "Audit"}
-                      </span>
-                    </div>
-                    <p className="text-[13px] text-white/40 leading-relaxed mb-3">
-                      {audit.description}
-                    </p>
-                    <div className="flex items-center gap-2">
-                      {audit.variants.map((v) => (
-                        <span
-                          key={v.ticker}
-                          className="text-[10px] font-mono text-white/20 px-1.5 py-0.5 rounded bg-white/[0.03]"
-                        >
-                          {v.label}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="text-[11px] text-white/15 mt-4">
-            All audits run from the AI Agents tab on each stock page.
-          </p>
-        </div>
-      </section>
-
-      {/* Workflows */}
-      <section className="py-20 px-6">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-3">
-            Workflow
-          </h2>
-          <p className="text-[12px] text-white/20 mb-10">
-            AI agent prompts for structured analysis. Run these from the AI Agents tab inside each stock.
-          </p>
-
-          <div className="grid gap-4">
-            {workflowPrompts.map((workflow) => (
-              <PromptCard
-                key={workflow.name}
-                name={workflow.name}
-                description={workflow.description}
-                variants={workflow.variants}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Methodology */}
-      <section className="py-20 px-6">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-[11px] uppercase tracking-[0.2em] text-white/25 mb-10">
-            Methodology
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-12">
             {[
-              { title: "Financial Models", desc: "Quarterly metrics, balance sheets, cash flow projections" },
-              { title: "Valuation", desc: "DCF analysis, Monte Carlo simulations, comparable multiples" },
-              { title: "Perspectives", desc: "CFA fundamental, hedge fund catalyst, CIO portfolio views" },
+              { title: "Fundamental Analysis", desc: "Quarterly metrics, balance sheets, DCF models, and scenario analysis" },
+              { title: "Catalyst Tracking", desc: "Real-time monitoring of milestones, filings, and inflection points" },
+              { title: "Multi-Perspective", desc: "CFA fundamental, hedge fund catalyst, and CIO portfolio viewpoints" },
             ].map((item) => (
-              <div key={item.title} className="space-y-2">
-                <h3 className="text-[13px] text-white/70">{item.title}</h3>
-                <p className="text-[12px] text-white/30 leading-relaxed">{item.desc}</p>
+              <div key={item.title}>
+                <h3 className="text-[12px] text-white/50 mb-2">{item.title}</h3>
+                <p className="text-[11px] text-white/20 leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>

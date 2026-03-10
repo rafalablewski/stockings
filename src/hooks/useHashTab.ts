@@ -5,7 +5,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 /**
  * Syncs the active tab with the URL hash so that:
  * - Browser back/forward navigates between tabs
- * - Links like /stocks/ASTS#model open the correct tab
+ * - Links like /research/ASTS#model open the correct tab
  * - Page refresh preserves the active tab
  */
 export function useHashTab(validIds: string[], defaultId: string = 'overview') {
