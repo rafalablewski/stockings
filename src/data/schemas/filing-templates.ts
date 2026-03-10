@@ -25,17 +25,17 @@ export const FILING_TEMPLATES: Record<string, FilingTemplate> = {
   '8-K': {
     filingType: '8-K',
     description: 'Current report — material events. Most common filing type.',
-    typicalTargetFiles: ['sec-filings.ts', 'timeline-events.ts', 'capital.ts', 'catalysts.ts'],
+    typicalTargetFiles: ['sec-filings.ts', 'timeline.ts', 'capital.ts', 'catalysts.ts'],
     perTicker: {
       asts: {
         secFilingEntry: `{ date: 'MMM DD, YYYY', type: '8-K', description: 'Short description', period: '—', color: 'yellow' }`,
         crossRefEntry: `'8-K|YYYY-MM-DD': [\n  { source: 'capital', data: "Key capital change" },\n  { source: 'financials', data: "Key financial data" },\n]`,
-        targetFileNotes: 'timeline-events.ts: use details[], sources[], impact Capitalized. capital.ts: update EQUITY_OFFERINGS or SHARE_CLASSES. financials.ts: add/update quarterly data.',
+        targetFileNotes: 'timeline.ts: use details[], sources[], impact Capitalized. capital.ts: update EQUITY_OFFERINGS or SHARE_CLASSES. financials.ts: add/update quarterly data.',
       },
       bmnr: {
         secFilingEntry: `{ date: 'MMM DD, YYYY', type: '8-K', description: 'Short description', period: '—', color: 'yellow' }`,
         crossRefEntry: `'8-K|YYYY-MM-DD': [\n  { source: 'timeline', data: "Key event description" },\n  { source: 'company', data: "Updated metrics" },\n]`,
-        targetFileNotes: 'timeline-events.ts: use changes[] array with {metric,previous,new,change}, impact LOWERCASE. For weekly ETH holdings updates: include ALL metrics (ETH Holdings, ETH Price, Supply%, Staked ETH, Cash, Holdings Value, Staking Revenue, CESR Rate). company.ts: update currentETH, ethPrice, cashOnHand.',
+        targetFileNotes: 'timeline.ts: use changes[] array with {metric,previous,new,change}, impact LOWERCASE. For weekly ETH holdings updates: include ALL metrics (ETH Holdings, ETH Price, Supply%, Staked ETH, Cash, Holdings Value, Staking Revenue, CESR Rate). company.ts: update currentETH, ethPrice, cashOnHand.',
       },
     },
   },
@@ -143,7 +143,7 @@ export const FILING_TEMPLATES: Record<string, FilingTemplate> = {
       bmnr: {
         secFilingEntry: `{ date: 'MMM DD, YYYY', type: 'S-8', description: 'Plan Name Registration', period: '—', color: 'cyan' }`,
         crossRefEntry: `'S-8|YYYY-MM-DD': [\n  { source: 'capital', data: "Plan registered" },\n  { source: 'timeline', data: "S-8 filed for plan" },\n]`,
-        targetFileNotes: 'capital.ts: note in CAPITAL_METADATA. timeline-events.ts: add SEC Filing category entry.',
+        targetFileNotes: 'capital.ts: note in CAPITAL_METADATA. timeline.ts: add SEC Filing category entry.',
       },
     },
   },

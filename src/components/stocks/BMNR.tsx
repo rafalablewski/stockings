@@ -248,7 +248,7 @@ import {
 import { BMNR_SEC_FILINGS, BMNR_SEC_META, BMNR_SEC_TYPE_COLORS, BMNR_SEC_FILTER_TYPES, BMNR_FILING_CROSS_REFS } from '@/data/bmnr/sec-filings';
 import { BMNR_QUARTERLY_DATA, BMNR_MARKET_CAP_DATA } from '@/data/bmnr/quarterly-metrics';
 import { BMNR_ANALYST_COVERAGE } from '@/data/bmnr/analyst-coverage';
-import { BMNR_TIMELINE_EVENTS } from '@/data/bmnr/timeline-events';
+import { BMNR_TIMELINE_EVENTS } from '@/data/bmnr/timeline';
 import { BMNR_COMPETITOR_NEWS } from '@/data/bmnr/competitor-news';
 import type { CompetitorNewsEntry } from '@/data/shared/competitor-schema';
 import { BMNR_ADOPTION_TIMELINE } from '@/data/bmnr/ethereum-adoption';

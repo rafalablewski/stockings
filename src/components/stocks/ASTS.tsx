@@ -132,7 +132,7 @@ const COMPETITOR_NEWS: CompetitorNewsEntry[] = COMPS_TIMELINE;
 import { ASTS_SEC_FILINGS, ASTS_SEC_META, ASTS_SEC_TYPE_COLORS, ASTS_SEC_FILTER_TYPES, ASTS_FILING_CROSS_REFS } from '@/data/asts/sec-filings';
 import { ASTS_QUARTERLY_DATA } from '@/data/asts/quarterly-metrics';
 import { ASTS_ANALYST_COVERAGE } from '@/data/asts/analyst-coverage';
-import { ASTS_TIMELINE_EVENTS } from '@/data/asts/timeline-events';
+import { ASTS_TIMELINE_EVENTS } from '@/data/asts/timeline';
 import StockChart from '../shared/StockChart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ComposedChart, Cell, PieChart, Pie, Legend, ReferenceLine } from 'recharts';
 

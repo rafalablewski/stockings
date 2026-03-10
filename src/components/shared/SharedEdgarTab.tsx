@@ -1951,7 +1951,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div className="sm-mono-sm sm-mint sm-fw-600" style={{ padding: '4px 10px', fontSize: 10 }}>Cross-ref appears in preview &amp; gets applied with patches</div>
             </div>
             <div className="sm-ed-method-text sm-mt-12">
-              <div><span className="sm-text">Source derivation:</span> capital.ts &rarr; capital, financials.ts &rarr; financials, timeline-events.ts &rarr; timeline, catalysts.ts &rarr; catalysts, company.ts &rarr; company</div>
+              <div><span className="sm-text">Source derivation:</span> capital.ts &rarr; capital, financials.ts &rarr; financials, timeline.ts &rarr; timeline, catalysts.ts &rarr; catalysts, company.ts &rarr; company</div>
               <div><span className="sm-text">Summary extraction:</span> description/event/title fields from sibling patches, or first 120 chars cleaned up</div>
               <div><span className="sm-text">Dedup:</span> skips if Claude already generated the cross-ref, or if key exists in file</div>
               <div><span className="sm-text">Stock-agnostic:</span> derives paths and anchors from ticker &mdash; works for any stock with FILING_CROSS_REFS</div>

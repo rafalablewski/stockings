@@ -11,13 +11,13 @@ import {
 
 // ── Data imports ─────────────────────────────────────────────────────────────
 import { ASTS_SEC_FILINGS, ASTS_FILING_CROSS_REFS } from '@/data/asts/sec-filings';
-import { ASTS_TIMELINE_EVENTS } from '@/data/asts/timeline-events';
+import { ASTS_TIMELINE_EVENTS } from '@/data/asts/timeline';
 import { UPCOMING_CATALYSTS as ASTS_CATALYSTS, COMPLETED_MILESTONES as ASTS_MILESTONES } from '@/data/asts/catalysts';
 import { PARTNER_NEWS } from '@/data/asts/partners';
 import { COMPS_TIMELINE } from '@/data/asts/comps-timeline';
 
 import { BMNR_SEC_FILINGS, BMNR_FILING_CROSS_REFS } from '@/data/bmnr/sec-filings';
-import { BMNR_TIMELINE_EVENTS } from '@/data/bmnr/timeline-events';
+import { BMNR_TIMELINE_EVENTS } from '@/data/bmnr/timeline';
 import { UPCOMING_CATALYSTS as BMNR_CATALYSTS, COMPLETED_MILESTONES as BMNR_MILESTONES } from '@/data/bmnr/catalysts';
 import { BMNR_COMPETITOR_NEWS } from '@/data/bmnr/competitor-news';
 import { BMNR_ADOPTION_TIMELINE } from '@/data/bmnr/ethereum-adoption';
