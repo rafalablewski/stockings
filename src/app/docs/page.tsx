@@ -491,6 +491,7 @@ const dataFileStructure: DataFileEntry[] = [
 const stockSpecificFiles: Array<{ ticker: string; file: string; exports: string; purpose: string }> = [
   { ticker: 'ASTS', file: 'partners.ts',           exports: 'PARTNERS, PARTNER_NEWS, REVENUE_SOURCES',      purpose: 'MNO partnerships (AT&T, Vodafone, etc.) & revenue model' },
   { ticker: 'BMNR', file: 'ethereum-adoption.ts',  exports: 'BMNR_ADOPTION_TIMELINE',                       purpose: 'Institutional ETH adoption tracking' },
+  { ticker: 'BMNR', file: 'purchase-history.ts',   exports: 'BMNR_PURCHASE_HISTORY, PURCHASE_HISTORY_METADATA', purpose: 'ETH purchase log with mNAV, price, cost basis per acquisition' },
   { ticker: 'CRCL', file: 'usdc.ts',               exports: 'USDC_METADATA, USDC_*',                        purpose: 'USDC stablecoin circulation, reserves, market share' },
 ];
 

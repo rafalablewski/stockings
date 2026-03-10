@@ -2,6 +2,9 @@
 
 ## 2026-03-10
 
+- feat: add BMNR Purchases tab — ETH purchase history with mNAV, price, cost basis (32 entries, Jul 2025–Feb 2026)
+- feat: add purchase-history.ts data file with PurchaseRecord type and AI agent schema
+- docs: add purchase-history.ts to /docs data file structure and PR ingestion checklist
 - refactor: remove all inline styles from StockChart.tsx — correlation labels, metric values, volume profile bars, and guide swatches now use CSS classes
 - docs: add StockChart Classes (sm-chart-*) section to /docs design page with 30 class entries
 
