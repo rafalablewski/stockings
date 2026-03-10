@@ -3983,7 +3983,7 @@ function CRCLModel() {
                         <span className="sm-cap-td" data-align="right" data-highlight>${w.fairValue}M</span>
                         <span className="sm-cap-td" data-align="right">{w.volatility}%</span>
                         <span className="sm-cap-td">{w.expiry}</span>
-                        <span className="sm-cap-td" className="sm-gold">{w.status}</span>
+                        <span className="sm-cap-td sm-gold">{w.status}</span>
                       </div>
                     ))}
                     <div className="sm-cap-table-total sm-cap-grid-1p5-6x1fr">
@@ -4534,7 +4534,7 @@ function CRCLModel() {
                         ))}
                       </div>
                       {hiddenPRCount > 0 && (
-                        <div className="sm-text-center" className="sm-pt-16">
+                        <div className="sm-text-center sm-pt-16">
                           <button
                             onClick={() => setShowAllPR(!showAllPR)}
                             className="sm-expand-btn"
@@ -4554,14 +4554,14 @@ function CRCLModel() {
                 <span className="sm-param-label">Event Timeline</span>
                 <span className="sm-divider-line" />
               </div>
-              <h3 className="sm-flex sm-gap-12 sm-text sm-fw-600" className="sm-fs-18 sm-m-0">
+              <h3 className="sm-flex sm-gap-12 sm-text sm-fw-600 sm-fs-18 sm-m-0">
                 <span>Event Timeline</span>
                 <span className="sm-body-sm sm-text3">({filteredEvents.length} events)</span>
                 <UpdateIndicators sources="PR" />
               </h3>
 
               {/* Topic Filters (AND logic multi-select) */}
-              <div className="sm-card" className="sm-p-16">
+              <div className="sm-card sm-p-16">
                 <div className="sm-flex-between">
                   <span className="sm-text-13t sm-fw-600">Filter by Topic</span>
                   {selectedTopics.length > 0 && (
@@ -4650,7 +4650,7 @@ function CRCLModel() {
                       {isExpanded && (
                         <div className="sm-tl-detail-panel">
                           <div className="sm-py-12">
-                            <div className="sm-text-13" className="sm-lh-16">{p.details}</div>
+                            <div className="sm-text-13 sm-lh-16">{p.details}</div>
                             <div className="sm-grid-3 sm-mt-12 sm-gap-12">
                               <div className="sm-bg-surface2 sm-rounded-8 sm-p-8-12">
                                 <div className="sm-micro-label">Impact</div>
@@ -5034,7 +5034,7 @@ const CompsTab = () => {
                 <div className="sm-cmp-metric"><div className="sm-cmp-metric-value">{p.ebitda > 0 ? `$${p.ebitda}B` : p.ebitda < 0 ? `($${Math.abs(p.ebitda)}B)` : '—'}</div><div className="sm-cmp-metric-label">EBITDA</div></div>
                 <div className="sm-cmp-metric"><div className="sm-cmp-metric-value" style={{ color: p.margin >= 30 ? 'var(--mint)' : p.margin < 0 ? 'var(--coral)' : undefined }}>{p.margin}%</div><div className="sm-cmp-metric-label">Margin</div></div>
                 <div className="sm-cmp-metric"><div className="sm-cmp-metric-value" style={{ color: p.growth >= 30 ? 'var(--mint)' : undefined }}>{p.growth}%</div><div className="sm-cmp-metric-label">Growth</div></div>
-                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value" className="sm-accent">{p.cap ? `${(p.cap / p.rev).toFixed(1)}x` : '—'}</div><div className="sm-cmp-metric-label">P/S</div></div>
+                <div className="sm-cmp-metric"><div className="sm-cmp-metric-value sm-accent">{p.cap ? `${(p.cap / p.rev).toFixed(1)}x` : '—'}</div><div className="sm-cmp-metric-label">P/S</div></div>
               </div>
               {qual && (
                 <>
@@ -5091,7 +5091,7 @@ const CompsTab = () => {
           </div>
         </div>
         <div className="sm-surface2-pad-sm">
-          <div className="sm-flex-between" className="sm-flex-wrap sm-gap-16">
+          <div className="sm-flex-between sm-flex-wrap sm-gap-16">
             <div>
               <span className="sm-subtle">Reserve Yield</span>
               <div className="sm-mono-18 sm-color-sky">{CIRCLE_METRICS.reserveYield}%</div>
@@ -5278,7 +5278,7 @@ const CompsTab = () => {
           </div>
           {SENSITIVITY_USDC.map(usdc => (
             <div key={usdc} className="sm-cmp-table-row" style={{ gridTemplateColumns: `1fr repeat(${SENSITIVITY_RATES.length}, 1fr)` }}>
-              <div className="sm-cmp-td-label" className="sm-fw-600">${usdc}B</div>
+              <div className="sm-cmp-td-label sm-fw-600">${usdc}B</div>
               {SENSITIVITY_RATES.map(rate => {
                 const val = calcSensitivity(usdc, rate, 13);
                 const isNear = Math.abs(usdc - 73.7) < 15 && Math.abs(rate - 4.0) < 0.5;
@@ -5445,7 +5445,7 @@ const CompsTab = () => {
                 onClick={() => { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); }}
                 onKeyDown={(e) => { if (e.key === 'Enter') { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); } }}
               >
-                <div className="sm-flex-between" className="sm-items-start">
+                <div className="sm-flex-between sm-items-start">
                   <div className="sm-flex-1">
                     <div className="sm-flex-wrap sm-gap-6 sm-mb-4">
                       <span className="sm-text3 sm-mono-10">{news.date}</span>
@@ -5461,7 +5461,7 @@ const CompsTab = () => {
                 {isExpanded && (
                   <div className="sm-crcl-news-detail">
                     <div className="sm-text-13 sm-lh-16">
-                      {news.details.map((d, j) => <div key={j} className="sm-flex sm-gap-8" className="sm-items-initial"><span className="sm-accent sm-shrink-0">•</span>{d}</div>)}
+                      {news.details.map((d, j) => <div key={j} className="sm-flex sm-gap-8 sm-items-initial"><span className="sm-accent sm-shrink-0">•</span>{d}</div>)}
                     </div>
                     {news.thesisComparison && (
                       <div className="sm-crcl-comparison-box">
@@ -5484,7 +5484,7 @@ const CompsTab = () => {
         <div className="sm-flex-col-gap sm-gap-16">
           {COMPETITOR_PROFILES.map(comp => (
             <div key={comp.id} className="sm-crcl-comp-profile">
-              <div className="sm-flex-between" className="sm-items-start">
+              <div className="sm-flex-between sm-items-start">
                 <div>
                   <div className="sm-text sm-fw-600 sm-text-16">{comp.name}</div>
                   <div className="sm-text-13">{comp.description}</div>

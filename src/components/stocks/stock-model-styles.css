@@ -13843,3 +13843,7 @@ input[type="range"]::-webkit-slider-thumb {
 /* Items start/initial */
 .sm-items-start { align-items: flex-start; }
 .sm-items-initial { align-items: initial; }
+
+/* Missing utilities */
+.sm-mt-0 { margin-top: 0; }
+.sm-p-8-12 { padding: 8px 12px; }
