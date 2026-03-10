@@ -88,7 +88,7 @@ const plugins = [
     config: [
       { key: "Sources Pipeline", value: "6 watch paths" },
       { key: "EDGAR Pipeline", value: "3 watch paths" },
-      { key: "Data globs", value: "research-sources, sec-filings" },
+      { key: "Data globs", value: "sec-filings, press-releases" },
       { key: "Schema files", value: "schema.ts (both)" },
     ],
     scriptFile: "sync-hook.sh",

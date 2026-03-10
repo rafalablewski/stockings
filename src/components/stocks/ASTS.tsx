@@ -126,7 +126,7 @@ import { ASTS_INVESTMENT_CURRENT, ASTS_INVESTMENT_ARCHIVE } from '@/data/asts/in
 import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
-import { COMPS_TIMELINE } from '@/data/asts/comps-timeline';
+import { COMPS_TIMELINE } from '@/data/asts/competitor-news';
 import type { CompetitorNewsEntry } from '@/data/shared/competitor-schema';
 const COMPETITOR_NEWS: CompetitorNewsEntry[] = COMPS_TIMELINE;
 import { ASTS_SEC_FILINGS, ASTS_SEC_META, ASTS_SEC_TYPE_COLORS, ASTS_SEC_FILTER_TYPES, ASTS_FILING_CROSS_REFS } from '@/data/asts/sec-filings';
@@ -5665,7 +5665,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
     }
   ];
 
-  // Competitor news timeline — imported from @/data/asts/comps-timeline.ts
+  // Competitor news timeline — imported from @/data/asts/competitor-news.ts
   // Add new entries there, not here.
 
   // Filter news by competitor, sort by date (newest first)

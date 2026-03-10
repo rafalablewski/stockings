@@ -22,7 +22,7 @@ import { ASTS_SEC_FILINGS, ASTS_FILING_CROSS_REFS } from '../src/data/asts/sec-f
 import { ASTS_TIMELINE_EVENTS } from '../src/data/asts/timeline';
 import { UPCOMING_CATALYSTS as ASTS_CATALYSTS, COMPLETED_MILESTONES as ASTS_MILESTONES } from '../src/data/asts/catalysts';
 import { PARTNER_NEWS } from '../src/data/asts/partners';
-import { COMPS_TIMELINE } from '../src/data/asts/comps-timeline';
+import { COMPS_TIMELINE } from '../src/data/asts/competitor-news';
 
 // ── BMNR data imports ────────────────────────────────────────────────────────
 import { BMNR_SEC_FILINGS, BMNR_FILING_CROSS_REFS } from '../src/data/bmnr/sec-filings';

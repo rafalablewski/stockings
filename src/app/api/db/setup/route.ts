@@ -14,7 +14,7 @@ import { ASTS_SEC_FILINGS, ASTS_FILING_CROSS_REFS } from '@/data/asts/sec-filing
 import { ASTS_TIMELINE_EVENTS } from '@/data/asts/timeline';
 import { UPCOMING_CATALYSTS as ASTS_CATALYSTS, COMPLETED_MILESTONES as ASTS_MILESTONES } from '@/data/asts/catalysts';
 import { PARTNER_NEWS } from '@/data/asts/partners';
-import { COMPS_TIMELINE } from '@/data/asts/comps-timeline';
+import { COMPS_TIMELINE } from '@/data/asts/competitor-news';
 
 import { BMNR_SEC_FILINGS, BMNR_FILING_CROSS_REFS } from '@/data/bmnr/sec-filings';
 import { BMNR_TIMELINE_EVENTS } from '@/data/bmnr/timeline';

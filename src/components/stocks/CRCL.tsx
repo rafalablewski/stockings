@@ -142,7 +142,7 @@ import {
 import { CRCL_COMPETITOR_NEWS, CRCL_COMPETITOR_PROFILES, type CRCLCompetitorProfile } from '@/data/crcl/competitor-news';
 import type { CompetitorNewsEntry } from '@/data/shared/competitor-schema';
 import { CRCL_ANALYST_COVERAGE } from '@/data/crcl/analyst-coverage';
-import { CRCL_RESEARCH_SOURCES } from '@/data/crcl/research-sources';
+
 
 // ============================================================================
 // CRCL - Circle Internet Group Financial Model
@@ -553,7 +553,7 @@ const crclCompetitors: Competitor[] = [
   { name: 'Ripple RLUSD', url: 'https://ripple.com' },
 ];
 
-const crclResearchSources = CRCL_RESEARCH_SOURCES;
+const crclResearchSources: Array<{ category: string; sources: Array<{ name: string; url: string }> }> = [];
 
 // CSS imported from stock-model-styles.css (see import at top of file)
 

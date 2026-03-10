@@ -33,8 +33,8 @@ export {
   getDefinitivePartners,
 } from './partners';
 
-// Competitor Intelligence (Comps Timeline)
-export { COMPS_TIMELINE } from './comps-timeline';
+// Competitor Intelligence
+export { COMPS_TIMELINE } from './competitor-news';
 
 // Press Releases
 export {
@@ -100,6 +100,12 @@ export {
   getLatestCompleteQuarter,
   getQoQChange,
 } from './financials';
+
+// Historical
+export {
+  HISTORICAL_METADATA,
+  HISTORICAL_PRICES,
+} from './historical';
 
 // Re-export types for convenience
 export type { CompetitorNewsEntry } from '../shared/competitor-schema';

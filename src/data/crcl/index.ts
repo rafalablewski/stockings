@@ -55,6 +55,49 @@ export {
   getCatalystCategories,
 } from './catalysts';
 
+// Capital Structure
+export {
+  CAPITAL_METADATA,
+  SHARE_CLASSES,
+  MAJOR_SHAREHOLDERS,
+  EQUITY_OFFERINGS,
+} from './capital';
+
+// Historical
+export {
+  HISTORICAL_METADATA,
+  HISTORICAL_PRICES,
+} from './historical';
+
+// Press Releases
+export {
+  PRESS_RELEASES_METADATA,
+  PRESS_RELEASES,
+} from './press-releases';
+
+// Quarterly Metrics
+export {
+  QUARTERLY_METRICS_METADATA,
+  CRCL_QUARTERLY_DATA,
+  CRCL_MARKET_CAP_DATA,
+} from './quarterly-metrics';
+
+// SEC Filings
+export {
+  SEC_METADATA,
+  CRCL_SEC_META,
+  CRCL_SEC_FILINGS,
+  CRCL_FILING_CROSS_REFS,
+} from './sec-filings';
+
+// USDC (stock-specific)
+export {
+  USDC_METADATA,
+  USDC_CIRCULATION,
+  USDC_RESERVES,
+  USDC_MARKET_SHARE,
+} from './usdc';
+
 // Re-export types for convenience
 export type {
   DataMetadata,

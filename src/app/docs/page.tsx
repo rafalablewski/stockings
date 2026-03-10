@@ -448,12 +448,68 @@ const dbTables: DBTable[] = [
 ];
 
 const dataArchitecture = [
-  { layer: "Data Files",   path: "src/data/{asts,bmnr,crcl}/",       note: "Hardcoded .ts files — company, capital, financials, sec-filings, timeline, catalysts, partners, analyst-coverage, comps" },
+  { layer: "Data Files",   path: "src/data/{asts,bmnr,crcl}/",       note: "Hardcoded .ts files — scaffold (5) + standard (8) + stock-specific per ticker" },
   { layer: "Shared Types", path: "src/data/shared/types.ts",          note: "Central TypeScript interfaces for all data shapes (Partner, ShareClass, Catalyst, Timeline, etc.)" },
   { layer: "Schemas",      path: "src/data/schemas/",                 note: "Zod validation schemas per stock + filing templates" },
   { layer: "DB Schema",    path: "src/lib/schema.ts",                 note: "Drizzle ORM table definitions (10 tables in Neon PostgreSQL)" },
   { layer: "Seed Path",    path: "/api/db/setup → seed-helpers.ts",   note: "Reads .ts data files → inserts into PostgreSQL tables" },
   { layer: "AI Workflows", path: "src/data/workflows.ts",             note: "Agent prompts (earnings calls, code audit, data quality)" },
+];
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DATA FILE STRUCTURE — Canonical per-stock file layout.
+   Every stock directory follows: Scaffold (5) + Standard (8) + Stock-specific.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+interface DataFileEntry {
+  file: string;
+  tier: 'scaffold' | 'standard' | 'stock-specific';
+  type: string;
+  exports: string;
+  unified: boolean;
+  notes?: string;
+}
+
+const dataFileStructure: DataFileEntry[] = [
+  // ── Scaffold (5) — created by POST /api/research/init ──
+  { file: 'company.ts',           tier: 'scaffold',       type: 'DataMetadata, StockDefaults',                  exports: '{TICKER}_METADATA, COMPANY_INFO, DEFAULTS',           unified: false, notes: 'CRCL uses custom MARKET object instead of StockDefaults' },
+  { file: 'catalysts.ts',         tier: 'scaffold',       type: 'Catalyst[], CompletedMilestone[]',             exports: 'CATALYSTS_METADATA, UPCOMING_CATALYSTS, COMPLETED_MILESTONES', unified: true },
+  { file: 'investment.ts',        tier: 'scaffold',       type: 'InvestmentCurrent, ArchiveEntry[]',            exports: '{TICKER}_INVESTMENT_CURRENT, {TICKER}_INVESTMENT_ARCHIVE',     unified: true, notes: '8-category scorecard framework' },
+  { file: 'timeline.ts',          tier: 'scaffold',       type: 'TimelineEntry[] (varies)',                     exports: '{TICKER}_TIMELINE_EVENTS or TIMELINE',                unified: false, notes: 'ASTS/BMNR use custom entry shapes; CRCL uses shared TimelineEntry' },
+  { file: 'index.ts',             tier: 'scaffold',       type: 'Barrel',                                       exports: 'Re-exports all files',                                 unified: true },
+  // ── Standard (8) — every stock must have ──
+  { file: 'analyst-coverage.ts',  tier: 'standard',       type: 'AnalystCoverage[]',                            exports: '{TICKER}_ANALYST_COVERAGE',                            unified: true },
+  { file: 'capital.ts',           tier: 'standard',       type: 'ShareClass[], MajorShareholder[], EquityOffering[]', exports: 'CAPITAL_METADATA, SHARE_CLASSES, MAJOR_SHAREHOLDERS, EQUITY_OFFERINGS', unified: false, notes: 'BMNR uses custom share class structure' },
+  { file: 'competitor-news.ts',   tier: 'standard',       type: 'CompetitorNewsEntry[] (Zod schema)',           exports: '{TICKER}_COMPETITOR_NEWS or COMPS_TIMELINE',           unified: true, notes: 'All use shared competitor-schema.ts' },
+  { file: 'financials.ts',        tier: 'standard',       type: 'QuarterlyFinancials (varies)',                  exports: 'FINANCIALS_METADATA, QUARTERLY_DATA',                  unified: false, notes: 'CRCL uses custom CRCLQuarterlyData interface' },
+  { file: 'historical.ts',        tier: 'standard',       type: 'HistoricalPrices, Comparable[]',               exports: 'HISTORICAL_METADATA, HISTORICAL_*',                    unified: true },
+  { file: 'press-releases.ts',    tier: 'standard',       type: 'PressRelease[]',                               exports: 'PRESS_RELEASES_METADATA, PRESS_RELEASES',              unified: true },
+  { file: 'quarterly-metrics.ts', tier: 'standard',       type: 'Record<string, any> (custom)',                 exports: '{TICKER}_QUARTERLY_DATA',                              unified: false, notes: 'Custom inline objects, not shared type' },
+  { file: 'sec-filings.ts',       tier: 'standard',       type: 'SECFiling[], CrossRefs',                       exports: '{TICKER}_SEC_FILINGS, {TICKER}_SEC_META, {TICKER}_FILING_CROSS_REFS', unified: true },
+];
+
+const stockSpecificFiles: Array<{ ticker: string; file: string; exports: string; purpose: string }> = [
+  { ticker: 'ASTS', file: 'partners.ts',           exports: 'PARTNERS, PARTNER_NEWS, REVENUE_SOURCES',      purpose: 'MNO partnerships (AT&T, Vodafone, etc.) & revenue model' },
+  { ticker: 'BMNR', file: 'ethereum-adoption.ts',  exports: 'BMNR_ADOPTION_TIMELINE',                       purpose: 'Institutional ETH adoption tracking' },
+  { ticker: 'CRCL', file: 'usdc.ts',               exports: 'USDC_METADATA, USDC_*',                        purpose: 'USDC stablecoin circulation, reserves, market share' },
+];
+
+const dataFileAlignment: Array<{ file: string; asts: string; bmnr: string; crcl: string }> = [
+  // Scaffold
+  { file: 'company.ts',           asts: '✓',       bmnr: '✓',       crcl: '✓ (divergent)' },
+  { file: 'catalysts.ts',         asts: '✓',       bmnr: '✓',       crcl: '✓' },
+  { file: 'investment.ts',        asts: '✓',       bmnr: '✓',       crcl: '✓' },
+  { file: 'timeline.ts',          asts: '✓',       bmnr: '✓',       crcl: '✓ (divergent)' },
+  { file: 'index.ts',             asts: '✓',       bmnr: '✓',       crcl: '✓' },
+  // Standard
+  { file: 'analyst-coverage.ts',  asts: '✓',       bmnr: '✓',       crcl: '✓' },
+  { file: 'capital.ts',           asts: '✓',       bmnr: '✓ (divergent)', crcl: '✓' },
+  { file: 'competitor-news.ts',   asts: '✓',       bmnr: '✓',       crcl: '✓' },
+  { file: 'financials.ts',        asts: '✓',       bmnr: '✓',       crcl: '✓ (divergent)' },
+  { file: 'historical.ts',        asts: '✓',       bmnr: '✓',       crcl: '✓' },
+  { file: 'press-releases.ts',    asts: '✓',       bmnr: '✓',       crcl: '✓' },
+  { file: 'quarterly-metrics.ts', asts: '✓',       bmnr: '✓',       crcl: '✓' },
+  { file: 'sec-filings.ts',       asts: '✓',       bmnr: '✓',       crcl: '✓' },
 ];
 
 const breakpoints = [
@@ -873,6 +929,7 @@ export default function DocsPage() {
             { id: "api",         label: "API Routes" },
             { id: "database",    label: "Database" },
             { id: "data-flow",   label: "Data Flow" },
+            { id: "data-files",  label: "Data Files" },
             { id: "tokens",      label: "Tokens" },
             { id: "layout",      label: "Layout" },
             { id: "typography",  label: "Typography" },
@@ -1025,6 +1082,113 @@ export default function DocsPage() {
               {i < dataArchitecture.length - 1 && (
                 <div className="text-[14px] text-white/10 flex-shrink-0 pt-0.5">↓</div>
               )}
+            </div>
+          ))}
+        </div>
+
+        {/* ── Data File Structure ──────────────────────────────────────── */}
+        <SectionHeader id="data-files" title="Data File Structure" count={dataFileStructure.length + stockSpecificFiles.length} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Every stock directory follows a canonical layout: <span className="font-mono text-white/40">Scaffold (5)</span> files
+          created by <span className="font-mono text-white/40">POST /api/research/init</span>,
+          <span className="font-mono text-white/40"> Standard (8)</span> files every stock must have, plus optional stock-specific files.
+        </p>
+
+        {/* Directory tree */}
+        <div className="mt-4 p-5 rounded-xl bg-white/[0.02] border border-white/[0.06] font-mono text-[12px] leading-[1.8]">
+          <div className="text-white/50">src/data/&lt;ticker&gt;/</div>
+          <div className="text-white/20 ml-4">│</div>
+          <div className="text-white/20 ml-4">│   <span className="text-cyan-400/40">SCAFFOLD (5) — init creates these</span></div>
+          <div className="text-white/35 ml-4">├── company.ts</div>
+          <div className="text-white/35 ml-4">├── catalysts.ts</div>
+          <div className="text-white/35 ml-4">├── investment.ts</div>
+          <div className="text-white/35 ml-4">├── timeline.ts</div>
+          <div className="text-white/35 ml-4">├── index.ts</div>
+          <div className="text-white/20 ml-4">│</div>
+          <div className="text-white/20 ml-4">│   <span className="text-cyan-400/40">STANDARD (8) — every stock must have</span></div>
+          <div className="text-white/35 ml-4">├── analyst-coverage.ts</div>
+          <div className="text-white/35 ml-4">├── capital.ts</div>
+          <div className="text-white/35 ml-4">├── competitor-news.ts</div>
+          <div className="text-white/35 ml-4">├── financials.ts</div>
+          <div className="text-white/35 ml-4">├── historical.ts</div>
+          <div className="text-white/35 ml-4">├── press-releases.ts</div>
+          <div className="text-white/35 ml-4">├── quarterly-metrics.ts</div>
+          <div className="text-white/35 ml-4">├── sec-filings.ts</div>
+          <div className="text-white/20 ml-4">│</div>
+          <div className="text-white/20 ml-4">│   <span className="text-cyan-400/40">STOCK-SPECIFIC — optional per domain</span></div>
+          <div className="text-white/35 ml-4">├── partners.ts              <span className="text-white/15">ASTS only</span></div>
+          <div className="text-white/35 ml-4">├── ethereum-adoption.ts     <span className="text-white/15">BMNR only</span></div>
+          <div className="text-white/35 ml-4">└── usdc.ts                  <span className="text-white/15">CRCL only</span></div>
+        </div>
+
+        {/* File detail table */}
+        <div className="mt-6 mb-2">
+          <h3 className="text-[13px] font-semibold text-white/60">Scaffold &amp; Standard Files</h3>
+          <p className="text-[11px] text-white/25 mt-1">Types, exports, and structural alignment across all three stocks.</p>
+        </div>
+        <div className="rounded-xl border border-white/[0.06] overflow-hidden">
+          <div className="grid grid-cols-[140px_60px_1fr_1fr] bg-white/[0.03] border-b border-white/[0.06]">
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">File</div>
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">Tier</div>
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">Type / Interface</div>
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">Notes</div>
+          </div>
+          {dataFileStructure.map((f) => (
+            <div key={f.file} className="grid grid-cols-[140px_60px_1fr_1fr] border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.02] transition-colors">
+              <div className="px-4 py-2.5 text-[12px] font-mono text-cyan-400/70">{f.file}</div>
+              <div className="px-4 py-2.5">
+                <span className={`text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded ${f.tier === 'scaffold' ? 'text-cyan-400/50 bg-cyan-400/[0.06]' : 'text-violet-400/50 bg-violet-400/[0.06]'}`}>
+                  {f.tier === 'scaffold' ? 'SCAF' : 'STD'}
+                </span>
+              </div>
+              <div className="px-4 py-2.5 text-[11px] font-mono text-white/30">{f.type}</div>
+              <div className="px-4 py-2.5 text-[11px] text-white/25">
+                {f.unified ? <span className="text-emerald-400/50">Unified</span> : <span className="text-amber-400/50">Divergent</span>}
+                {f.notes && <span className="text-white/20"> — {f.notes}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Stock-specific files */}
+        <div className="mt-6 mb-2">
+          <h3 className="text-[13px] font-semibold text-white/60">Stock-Specific Files</h3>
+        </div>
+        <div className="rounded-xl border border-white/[0.06] overflow-hidden">
+          <div className="grid grid-cols-[60px_160px_1fr_1fr] bg-white/[0.03] border-b border-white/[0.06]">
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">Ticker</div>
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">File</div>
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">Exports</div>
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">Purpose</div>
+          </div>
+          {stockSpecificFiles.map((f) => (
+            <div key={f.file} className="grid grid-cols-[60px_160px_1fr_1fr] border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.02] transition-colors">
+              <div className="px-4 py-2.5 text-[12px] font-mono text-white/50">{f.ticker}</div>
+              <div className="px-4 py-2.5 text-[12px] font-mono text-cyan-400/70">{f.file}</div>
+              <div className="px-4 py-2.5 text-[11px] font-mono text-white/30">{f.exports}</div>
+              <div className="px-4 py-2.5 text-[11px] text-white/25">{f.purpose}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Per-stock alignment matrix */}
+        <div className="mt-6 mb-2">
+          <h3 className="text-[13px] font-semibold text-white/60">Per-Stock Alignment</h3>
+          <p className="text-[11px] text-white/25 mt-1">Whether each stock has the file and uses the shared type.</p>
+        </div>
+        <div className="rounded-xl border border-white/[0.06] overflow-hidden">
+          <div className="grid grid-cols-[160px_1fr_1fr_1fr] bg-white/[0.03] border-b border-white/[0.06]">
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25">File</div>
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-cyan-400/40">ASTS</div>
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-violet-400/40">BMNR</div>
+            <div className="px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-400/40">CRCL</div>
+          </div>
+          {dataFileAlignment.map((f) => (
+            <div key={f.file} className="grid grid-cols-[160px_1fr_1fr_1fr] border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.02] transition-colors">
+              <div className="px-4 py-2.5 text-[12px] font-mono text-white/40">{f.file}</div>
+              <div className={`px-4 py-2.5 text-[11px] ${f.asts.includes('divergent') ? 'text-amber-400/50' : 'text-emerald-400/40'}`}>{f.asts}</div>
+              <div className={`px-4 py-2.5 text-[11px] ${f.bmnr.includes('divergent') ? 'text-amber-400/50' : 'text-emerald-400/40'}`}>{f.bmnr}</div>
+              <div className={`px-4 py-2.5 text-[11px] ${f.crcl.includes('divergent') ? 'text-amber-400/50' : 'text-emerald-400/40'}`}>{f.crcl}</div>
             </div>
           ))}
         </div>
