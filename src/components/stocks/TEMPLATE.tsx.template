@@ -42,6 +42,10 @@ import {
   SharedWallStreetTab,
   SharedAIAgentsTab,
   SharedSecFilingsSection,
+  SharedModelTab,
+  SharedMonteCarloTab,
+  SharedCompsTab,
+  SharedCapitalTab,
   // Live Price
   useLiveStockPrice,
   // Error Boundary & Disclaimer
@@ -398,67 +402,78 @@ const OverviewTab = ({ calc, currentStockPrice }: { calc: any; currentStockPrice
 };
 
 /**
- * MODEL TAB — Unified valuation (Scenarios + DCF + Sensitivity).
- * See ASTS.tsx ModelTab for full implementation reference.
+ * MODEL TAB — Uses SharedModelTab with stock-specific content as children.
+ * See ASTS.tsx for full implementation reference.
  */
 const ModelTab = (props: any) => {
   // TODO: Implement scenario presets, DCF, sensitivity analysis
   return (
-    <div className="sm-flex-col sm-flex-col-gap-16">
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Valuation Model <UpdateIndicators sources="PR" /></div>
-        <h2>Fair Value Model<span className="sm-accent">.</span></h2>
-      </div>
+    <SharedModelTab
+      sectionLabel="Valuation Model"
+      description="Configure assumptions and scenario presets. All changes flow directly to DCF projections and terminal value calculation."
+      sources="PR"
+    >
       <p className="sm-text2">Implement DCF, scenario analysis, and sensitivity tables.</p>
-    </div>
+    </SharedModelTab>
   );
 };
 
 /**
- * MONTE CARLO TAB — Probabilistic simulation.
- * See ASTS.tsx MonteCarloTab for full implementation reference.
+ * MONTE CARLO TAB — Uses SharedMonteCarloTab with stock-specific render props.
+ * See ASTS.tsx for full implementation reference.
+ *
+ * SharedMonteCarloTab provides: hero, preset grid, horizon/sim controls,
+ * run button, percentile table, risk metrics, histogram, CFA notes.
+ * Stock provides: simulation engine (useMemo), parameter UI (renderParameters).
  */
 const MonteCarloTab = (props: any) => {
+  // TODO: Implement simulation engine and parameter UI
+  // See ASTS.tsx MonteCarloTab for the full render-prop pattern:
+  //   <SharedMonteCarloTab
+  //     sectionLabel="..."
+  //     presets={mcPresets}
+  //     sim={mcSim}           // McSimResults from useMemo
+  //     renderParameters={...} // Stock-specific parameter cards
+  //   />
   return (
-    <div className="sm-flex-col sm-flex-col-gap-16">
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Monte Carlo Simulation</div>
-        <h2>Probabilistic Fair Value<span className="sm-accent">.</span></h2>
-      </div>
-      <p className="sm-text2">Implement Monte Carlo simulation with risk metrics.</p>
-    </div>
+    <SharedModelTab
+      sectionLabel="Monte Carlo Simulation"
+      description="Probabilistic fair value simulation."
+    >
+      <p className="sm-text2">Implement Monte Carlo simulation with risk metrics using SharedMonteCarloTab.</p>
+    </SharedModelTab>
   );
 };
 
 /**
- * COMPS TAB — Trading comparables and multiples.
- * See ASTS.tsx CompsTab for full implementation reference.
+ * COMPS TAB — Uses SharedCompsTab with stock-specific content as children.
+ * See ASTS.tsx for full implementation reference.
  */
 const CompsTab = ({ calc, currentStockPrice }: any) => {
   return (
-    <div className="sm-flex-col sm-flex-col-gap-16">
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Comparable Analysis</div>
-        <h2>Trading Comps<span className="sm-accent">.</span></h2>
-      </div>
-      <p className="sm-text2">Implement peer comparison tables and relative valuation.</p>
-    </div>
+    <SharedCompsTab
+      sectionLabel="Comparable Analysis"
+      description="Trading comparables and relative valuation vs industry peers."
+      renderValuationComps={() => <p className="sm-text2">TODO: Implement valuation comparables table.</p>}
+      renderCompetitorProfiles={() => <p className="sm-text2">TODO: Implement competitor profile cards.</p>}
+      renderCompetitorNews={() => <p className="sm-text2">TODO: Implement competitor news feed.</p>}
+    />
   );
 };
 
 /**
- * CAPITAL TAB — Share structure, dilution, offerings.
- * See ASTS.tsx CapitalTab for full implementation reference.
+ * CAPITAL TAB — Uses SharedCapitalTab with stock-specific content as children.
+ * See ASTS.tsx for full implementation reference.
  */
 const CapitalTab = ({ currentShares, currentStockPrice }: any) => {
   return (
-    <div className="sm-flex-col sm-flex-col-gap-16">
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Capital Structure <UpdateIndicators sources="SEC" /></div>
-        <h2>Shares & Dilution<span className="sm-accent">.</span></h2>
-      </div>
+    <SharedCapitalTab
+      sectionLabel="Capital Structure"
+      description="Share classes, convertible notes, offering history, and dilution scenarios."
+      sources="SEC"
+    >
       <p className="sm-text2">Implement share classes, convertible notes, offering history, dilution scenarios.</p>
-    </div>
+    </SharedCapitalTab>
   );
 };
 

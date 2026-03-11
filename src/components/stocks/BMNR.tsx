@@ -212,7 +212,8 @@
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import './stock-model-styles.css';
-import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab, StockHeader, buildHudMarkers } from '../shared';
+import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab, SharedCapitalTab, SharedCompsTab, SharedMonteCarloTab, SharedModelTab, StockHeader, buildHudMarkers } from '../shared';
+import type { McSimResults } from '../shared';
 import type { UpdateSource } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
@@ -1001,14 +1002,11 @@ const ModelTab = ({
   const effectiveTerminalEV = terminalEquityValue; // Terminal market cap
 
   return (
-    <div className="sm-flex-col">
-      {/* Hero — Ive×Tesla */}
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">DCF Valuation<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <h2>Model<span className="sm-accent">.</span></h2>
-        <p>Configure assumptions and scenario presets. All changes flow directly to DCF projections and terminal value calculation.</p>
-      </div>
-
+    <SharedModelTab
+      sectionLabel="DCF Valuation"
+      description="Configure assumptions and scenario presets. All changes flow directly to DCF projections and terminal value calculation."
+      sources={['PR', 'SEC']}
+    >
       {/* ASSUMPTIONS SECTION */}
       <>
           <div className="sm-bmnr-scenario-grid">
@@ -1286,7 +1284,7 @@ const ModelTab = ({
           </div>
         </div>
       </>
-    </div>
+    </SharedModelTab>
   );
 };
 
@@ -2959,12 +2957,17 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
   };
 
   return (
-    <div className="sm-flex-col">
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Financial Position<UpdateIndicators sources="SEC" /></div>
-        <h2>Capital Structure<span className="sm-accent">.</span></h2>
-        <p>ETH treasury capital strategy, share structure, ATM programs, warrant detail, and dilution analysis. Single-class common stock with rapid execution capability.</p>
-      </div>
+    <SharedCapitalTab
+      sectionLabel="Financial Position"
+      description="ETH treasury capital strategy, share structure, ATM programs, warrant detail, and dilution analysis. Single-class common stock with rapid execution capability."
+      sources="SEC"
+      cfaItems={[
+        { term: 'ATM (At-The-Market) Programs', def: 'Shelf offerings allowing companies to sell shares directly into the open market. BMNR uses ATMs to fund ETH purchases — share dilution funds treasury growth.' },
+        { term: 'Fully Diluted Shares', def: 'Total shares if all warrants and options are exercised. Pre-funded warrants ($0.0001 strike) are essentially committed — include in FD count.' },
+        { term: 'Pre-Funded Warrants', def: 'Warrants with nominal strike price ($0.0001). Economically equivalent to common shares. Used to avoid exceeding authorized share limits while raising capital.' },
+        { term: 'NAV Accretion vs Dilution', def: 'If shares are sold at a premium to NAV, the offering is NAV-accretive for existing shareholders. BMNR targets accretive offerings when stock trades above NAV.' },
+      ]}
+    >
 
       {/* Section Divider: Key Metrics */}
       <div className="sm-divider">
@@ -3521,13 +3524,7 @@ const CapitalTab = ({ currentShares, currentStockPrice, currentETH, ethPrice }) 
       </>
       )}
 
-      <CFANotes title="CFA Level III — Capital Structure" items={[
-        { term: 'ATM (At-The-Market) Programs', def: 'Shelf offerings allowing companies to sell shares directly into the open market. BMNR uses ATMs to fund ETH purchases — share dilution funds treasury growth.' },
-        { term: 'Fully Diluted Shares', def: 'Total shares if all warrants and options are exercised. Pre-funded warrants ($0.0001 strike) are essentially committed — include in FD count.' },
-        { term: 'Pre-Funded Warrants', def: 'Warrants with nominal strike price ($0.0001). Economically equivalent to common shares. Used to avoid exceeding authorized share limits while raising capital.' },
-        { term: 'NAV Accretion vs Dilution', def: 'If shares are sold at a premium to NAV, the offering is NAV-accretive for existing shareholders. BMNR targets accretive offerings when stock trades above NAV.' },
-      ]} />
-    </div>
+    </SharedCapitalTab>
   );
 };
 
@@ -3760,13 +3757,11 @@ const CompsTab = ({ comparables, ethPrice }) => {
   });
 
   return (
-    <div className="sm-flex-col">
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Unified Peer Analysis<UpdateIndicators sources={['PR', 'WS']} /></div>
-        <h2>Comparables & Competitor Intelligence<span className="sm-accent">.</span></h2>
-        <p>Each card combines quantitative metrics (holdings, NAV, premium) with qualitative intelligence (threat level, competitive focus). BMNR's ETH staking yield vs BTC treasuries' 0% is the key structural differentiator.</p>
-      </div>
-
+    <SharedCompsTab
+      sectionLabel="Unified Peer Analysis"
+      description="Each card combines quantitative metrics (holdings, NAV, premium) with qualitative intelligence (threat level, competitive focus). BMNR's ETH staking yield vs BTC treasuries' 0% is the key structural differentiator."
+      sources={['PR', 'WS']}
+      renderValuationComps={() => (<>
       {/* Peer Group Selector */}
       <div className="sm-flex-wrap">
         {categories.map(cat => (
@@ -3981,6 +3976,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
         </div>
       </div>
 
+      </>)}
+      renderCompetitorNews={() => (<>
       {/* Competitor News Intelligence Section */}
       <div className="sm-divider">
         <div className="sm-section-label">Competitive Intelligence<UpdateIndicators sources="PR" /></div>
@@ -4149,6 +4146,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
         )}
       </div>
 
+      </>)}
+      renderCompetitorProfiles={() => (<>
       {/* Competitor Profiles */}
       <div className="sm-divider">
         <div className="sm-section-label">Peer Analysis</div>
@@ -4196,14 +4195,15 @@ const CompsTab = ({ comparables, ethPrice }) => {
         </div>
       </div>
 
-      <CFANotes title="CFA Level III — Comparable Analysis" items={[
+      </>)}
+      cfaItems={[
         { term: 'Relative Valuation', def: 'Benchmarks BMNR against peers. If MSTR trades at 2x NAV and BMNR at 1.2x, is BMNR undervalued or MSTR overvalued? Context matters.' },
         { term: 'Crypto/Share', def: 'Fundamental backing metric. Higher = more crypto per share of ownership. Affected by dilution and accumulation.' },
         { term: 'NAV Premium', def: 'Market sentiment indicator. Premium implies growth expectations; discount implies skepticism or liquidity concerns.' },
         { term: 'MSTR (MicroStrategy)', def: 'BTC treasury pioneer with ~528K BTC. Trades at significant premium. No yield generation capability.' },
         { term: 'ETH Yield Advantage', def: 'ETH staking generates 3-5% APY vs BTC\'s 0%. This compounds NAV even if crypto price is flat — structural advantage.' },
-      ]} />
-    </div>
+      ]}
+    />
   );
 };
 
@@ -4790,299 +4790,177 @@ const MonteCarloTab = ({ currentETH, currentShares, currentStockPrice, ethPrice,
     return { p5, p25, p50, p75, p95, mean, winProb, var5, cvar5Pct, sharpe, sortino, avgMaxDD, medianMaxDD, annualVol, percentiles, paths, histogram };
   }, [currentNAV, years, sims, drift, vol, multVol, corr, stakingYield, slashingRisk, liquidityDiscount, operatingCosts, regulatoryRisk, runKey]);
 
-  const fanData = sim.percentiles.map((p, i) => ({ year: ((i / 20) * years).toFixed(1), ...p }));
+  // Map presets to McPreset format for SharedMonteCarloTab
+  const mcPresets: Record<string, { label: string; color: string; headerValue: string; headerSub?: string }> = Object.fromEntries(
+    Object.entries(presets).map(([key, p]) => [key, {
+      label: p.label,
+      color: p.color,
+      headerValue: `${p.drift > 0 ? '+' : ''}${p.drift}%`,
+      headerSub: `${p.vol}% vol`,
+    }])
+  );
+
+  // Map sim results to McSimResults format
+  const mcSim: McSimResults = {
+    n: sims,
+    p5: sim.p5,
+    p25: sim.p25,
+    p50: sim.p50,
+    p75: sim.p75,
+    p95: sim.p95,
+    mean: sim.mean,
+    winProbability: sim.winProb,
+    sharpe: sim.sharpe,
+    sortino: sim.sortino,
+    var5: sim.var5,
+    cvar5: sim.cvar5Pct,
+    histogram: sim.histogram,
+  };
 
   return (
-    <div className="sm-flex-col">
-      <div>
-        <div className="sm-tab-hero">
-          <div className="sm-section-label">GBM Price Path Simulation<UpdateIndicators sources={['PR', 'SEC']} /></div>
-          <h2>Monte Carlo<span className="sm-accent">.</span></h2>
-          <p>Runs {sims.toLocaleString()} simulations over {years} years using Geometric Brownian Motion for ETH price with correlated NAV multiple dynamics. Includes staking yield, slashing, and liquidity discounts.</p>
-        </div>
-      </div>
-
-      {/* Scenario Presets */}
-      <div>
-        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
-          {Object.entries(presets).map(([key, p]) => {
-            const isActive = activePreset === key;
-            return (
-              <div
-                key={key}
-                onClick={() => loadPreset(key)}
-                className="sm-bmnr-mc-preset"
-                data-active={isActive}
-                style={isActive ? { '--preset-color': p.color } as React.CSSProperties : undefined}
-              >
-                <div className="sm-micro-text">{p.label}</div>
-                <div className="sm-bmnr-kpi-val sm-bmnr-kpi-val--sm" style={{ '--kpi-color': isActive ? p.color : 'var(--text)' } as React.CSSProperties}>
-                  {p.drift > 0 ? '+' : ''}{p.drift}%
-                </div>
-                <div className="sm-micro-text sm-bmnr-reset-label">
-                  {p.vol}% vol
-                </div>
+    <SharedMonteCarloTab
+      sectionLabel="GBM Price Path Simulation"
+      description={`Runs ${sims.toLocaleString()} simulations over ${years} years using Geometric Brownian Motion for ETH price with correlated NAV multiple dynamics. Includes staking yield, slashing, and liquidity discounts.`}
+      sources={['PR', 'SEC']}
+      currentStockPrice={currentNAV}
+      referenceLabel="current NAV"
+      presets={mcPresets}
+      presetOrder={Object.keys(mcPresets)}
+      activePreset={activePreset}
+      onPresetChange={loadPreset}
+      years={years}
+      onYearsChange={setYears}
+      sims={sims}
+      onSimsChange={setSims}
+      onRun={() => setRunKey(k => k + 1)}
+      sim={mcSim}
+      renderParameters={() => (
+        <>
+          <div className="sm-divider">
+            <span className="sm-param-label">GBM Parameters</span>
+            <span className="sm-divider-line" />
+          </div>
+          <div className="sm-grid-2">
+            <div className="sm-card">
+              <div className="sm-card-section"><span className="sm-section-label">ETH DRIFT (%)</span></div>
+              <div className="sm-card-body">
+              <p className="sm-note-list">
+                Expected annual ETH price appreciation. Negative = bear, positive = bull.
+              </p>
+              <div className="sm-grid-sep sm-bmnr-param-gap" style={{ '--cols': 6 } as React.CSSProperties}>
+                {[-10, -5, 5, 12, 20, 30].map((opt, idx) => {
+                  const isActive = drift === opt;
+                  const colors = [
+                    { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                    { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                    { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                    { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                    { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                    { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                  ][idx];
+                  return (
+                    <div key={opt} onClick={() => updateParam(setDrift)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt > 0 ? '+' : ''}{opt}%</div>
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Horizon & Simulation Controls */}
-      <div>
-        <div className="sm-grid-2">
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">TIME HORIZON</span></div>
-            <div className="sm-card-body">
-            <div className="sm-flex sm-gap-8">
-              {[3, 5, 7].map(yr => (
-                <button
-                  key={yr}
-                  onClick={() => setYears(yr)}
-                  className="sm-pill-toggle"
-                  data-active={years === yr ? "true" : undefined}
-                >
-                  {yr}Y
-                </button>
-              ))}
-            </div>
-            </div>
-          </div>
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">SIMULATIONS</span></div>
-            <div className="sm-card-body">
-            <div className="sm-flex sm-gap-8">
-              {[1000, 2000, 5000].map(simCount => (
-                <button
-                  key={simCount}
-                  onClick={() => setSims(simCount)}
-                  className="sm-pill-toggle"
-                  data-active={sims === simCount ? "true" : undefined}
-                >
-                  {simCount.toLocaleString()}
-                </button>
-              ))}
-            </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Parameters - Model Tab Style */}
-      <div>
-        <div className="sm-divider">
-          <span className="sm-param-label">GBM Parameters</span>
-          <span className="sm-divider-line" />
-        </div>
-        <div className="sm-grid-2">
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">ETH DRIFT (%)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Expected annual ETH price appreciation. Negative = bear, positive = bull.
-            </p>
-            <div className="sm-grid-sep sm-bmnr-param-gap" style={{ '--cols': 6 } as React.CSSProperties}>
-              {[-10, -5, 5, 12, 20, 30].map((opt, idx) => {
-                const isActive = drift === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setDrift)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt > 0 ? '+' : ''}{opt}%</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">ETH VOLATILITY (%)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              Annual volatility. Crypto typically 50-80%. Higher = wider outcomes.
-            </p>
-            <div className="sm-grid-sep sm-bmnr-param-gap" style={{ '--cols': 6 } as React.CSSProperties}>
-              {[90, 80, 70, 65, 55, 45].map((opt, idx) => {
-                const isActive = vol === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setVol)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="sm-divider">
-          <span className="sm-param-label">NAV Multiple Dynamics</span>
-          <span className="sm-divider-line" />
-        </div>
-        <div className="sm-grid-2">
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">MULTIPLE VOLATILITY (%)</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              How much the NAV multiple (mNAV) varies. Higher = more premium/discount swings.
-            </p>
-            <div className="sm-grid-sep sm-bmnr-param-gap" style={{ '--cols': 6 } as React.CSSProperties}>
-              {[40, 35, 30, 25, 20, 15].map((opt, idx) => {
-                const isActive = multVol === opt;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setMultVol)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">ETH-MULTIPLE CORRELATION</span></div>
-            <div className="sm-card-body">
-            <p className="sm-note-list">
-              How NAV multiple moves with ETH. Higher = more correlated swings.
-            </p>
-            <div className="sm-grid-sep sm-bmnr-param-gap" style={{ '--cols': 6 } as React.CSSProperties}>
-              {[0.6, 0.5, 0.4, 0.3, 0.2, 0.1].map((opt, idx) => {
-                const isActive = Math.abs(corr - opt) < 0.05;
-                const colors = [
-                  { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
-                  { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
-                  { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
-                  { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
-                  { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
-                  { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
-                ][idx];
-                return (
-                  <div key={opt} onClick={() => updateParam(setCorr)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}</div>
-                );
-              })}
-            </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Current NAV Info */}
-        <div className="sm-nav-info-box">
-          Current NAV: <strong className="sm-accent">${currentNAV.toFixed(0)}</strong> | Adjustments: +{stakingYield.toFixed(1)}% yield, -{slashingRisk}% slash, -{liquidityDiscount + regulatoryRisk}% disc
-        </div>
-
-        {/* Run Button */}
-        <button onClick={() => setRunKey(k => k + 1)} className="sm-run-btn">🎲 Run Simulation</button>
-      </div>
-
-      {/* Percentile Distribution */}
-      <div>
-        <div className="sm-card">
-          <div className="sm-table-header sm-mc-grid-4">
-            <span className="sm-text-left">Percentile</span>
-            <span className="sm-text-right">Price Target</span>
-            <span className="sm-text-right">vs Current</span>
-            <span className="sm-text-right">Implied Return</span>
-          </div>
-          {[
-            { label: 'P5 (Bear Case)', value: sim.p5 },
-            { label: 'P25', value: sim.p25 },
-            { label: 'P50 (Median)', value: sim.p50, highlight: true },
-            { label: 'P75', value: sim.p75 },
-            { label: 'P95 (Bull Case)', value: sim.p95 },
-          ].map((row, i) => {
-            const pctChange = ((row.value / currentNAV - 1) * 100);
-            return (
-              <div key={i} className="sm-table-row sm-mc-grid-4 sm-mc-row" data-highlight={row.highlight || undefined}
-              >
-                <span className="sm-mc-label" data-highlight={row.highlight || undefined}>{row.label}</span>
-                <span className="sm-mc-val" data-highlight={row.highlight || undefined}>${row.value.toFixed(2)}</span>
-                <span className="sm-mc-val-muted">${(row.value - currentNAV).toFixed(2)}</span>
-                <span className="sm-mc-val-sign" data-positive={pctChange >= 0}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</span>
               </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Risk Metrics */}
-      <div>
-        <div className="sm-card">
-          <div className="sm-table-header sm-mc-grid-3">
-            <span className="sm-text-left">Risk Metric</span>
-            <span className="sm-text-right">Value</span>
-            <span className="sm-text-left">Interpretation</span>
-          </div>
-          {[
-            { label: 'Win Probability', value: <span className="sm-mc-risk-val" data-signal={sim.winProb > 50 ? 'good' : undefined}>{sim.winProb.toFixed(1)}%</span>, interp: 'Prob. of exceeding current NAV' },
-            { label: 'Expected Value', value: <span className="sm-mc-risk-val">${sim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
-            { label: 'Sharpe Ratio', value: <span className="sm-mc-risk-val" data-signal={sim.sharpe > 1 ? 'good' : sim.sharpe > 0.5 ? 'ok' : 'neutral'}>{sim.sharpe.toFixed(2)}</span>, interp: sim.sharpe > 1 ? 'Excellent risk-adj return' : sim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
-            { label: 'Sortino Ratio', value: <span className="sm-mc-risk-val" data-signal={sim.sortino > 1 ? 'good' : sim.sortino > 0.5 ? 'ok' : 'neutral'}>{sim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
-            { label: 'VaR (5%)', value: <span className="sm-mono sm-fw-600 sm-red">{sim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
-            { label: 'CVaR (5%)', value: <span className="sm-mono sm-fw-600 sm-red">{sim.cvar5Pct.toFixed(1)}%</span>, interp: 'Expected tail loss' },
-          ].map((row, i) => (
-            <div key={i} className="sm-table-row sm-mc-grid-3">
-              <span className="sm-text2">{row.label}</span>
-              <span className="sm-text-right">{row.value}</span>
-              <span className="sm-text3">{row.interp}</span>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Distribution Chart */}
-      <div>
-        <div className="sm-card">
-          <div className="sm-card-section"><span className="sm-section-label">FAIR VALUE DISTRIBUTION</span></div>
-          <div className="sm-card-body">
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={sim.histogram}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="price" stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} />
-              <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
-              <Tooltip
-                contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
-                formatter={(v) => [`${Number(v).toFixed(2)}%`, 'Probability']}
-                labelFormatter={(v) => `$${Number(v).toFixed(0)}`}
-              />
-              <Bar dataKey="pct" fill="var(--accent)" radius={[2, 2, 0, 0]} />
-              <ReferenceLine x={currentNAV} stroke="#fff" strokeDasharray="5 5" />
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="sm-flex-between sm-subtle-sm">
-            <span>White line = current NAV (${currentNAV.toFixed(0)})</span>
-            <span>Simulations: {sims.toLocaleString()}</span>
+            <div className="sm-card">
+              <div className="sm-card-section"><span className="sm-section-label">ETH VOLATILITY (%)</span></div>
+              <div className="sm-card-body">
+              <p className="sm-note-list">
+                Annual volatility. Crypto typically 50-80%. Higher = wider outcomes.
+              </p>
+              <div className="sm-grid-sep sm-bmnr-param-gap" style={{ '--cols': 6 } as React.CSSProperties}>
+                {[90, 80, 70, 65, 55, 45].map((opt, idx) => {
+                  const isActive = vol === opt;
+                  const colors = [
+                    { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                    { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                    { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                    { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                    { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                    { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                  ][idx];
+                  return (
+                    <div key={opt} onClick={() => updateParam(setVol)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
+                  );
+                })}
+              </div>
+              </div>
+            </div>
           </div>
-          </div>
-        </div>
-      </div>
 
-      {/* CFA Notes */}
-      <div>
-        <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
-          { term: 'Geometric Brownian Motion (GBM)', def: 'dS = S(μdt + σdW). Standard model for equity/crypto. Log-normal returns ensure prices stay positive. ETH price and NAV multiple are correlated.' },
-          { term: 'Sharpe Ratio', def: '(Return - Risk-Free) / Volatility. Measures risk-adjusted return. >0.5 decent, >1.0 good, >2.0 excellent. Uses 4% risk-free rate.' },
-          { term: 'Sortino Ratio', def: 'Like Sharpe but only penalizes downside volatility. Better for asymmetric return distributions common in crypto.' },
-          { term: 'VaR (Value at Risk) 5%', def: 'The loss level that won\'t be exceeded with 95% confidence. If VaR = -40%, there\'s 5% chance of losing more than 40%.' },
-          { term: 'CVaR (Conditional VaR) 5%', def: 'Expected loss in the worst 5% of scenarios. Also called Expected Shortfall. More conservative than VaR.' },
-          { term: 'Max Drawdown', def: 'Largest peak-to-trough decline. Shows worst-case loss experience during the holding period.' },
-        ]} />
-      </div>
-    </div>
+          <div className="sm-divider">
+            <span className="sm-param-label">NAV Multiple Dynamics</span>
+            <span className="sm-divider-line" />
+          </div>
+          <div className="sm-grid-2">
+            <div className="sm-card">
+              <div className="sm-card-section"><span className="sm-section-label">MULTIPLE VOLATILITY (%)</span></div>
+              <div className="sm-card-body">
+              <p className="sm-note-list">
+                How much the NAV multiple (mNAV) varies. Higher = more premium/discount swings.
+              </p>
+              <div className="sm-grid-sep sm-bmnr-param-gap" style={{ '--cols': 6 } as React.CSSProperties}>
+                {[40, 35, 30, 25, 20, 15].map((opt, idx) => {
+                  const isActive = multVol === opt;
+                  const colors = [
+                    { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                    { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                    { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                    { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                    { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                    { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                  ][idx];
+                  return (
+                    <div key={opt} onClick={() => updateParam(setMultVol)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}%</div>
+                  );
+                })}
+              </div>
+              </div>
+            </div>
+            <div className="sm-card">
+              <div className="sm-card-section"><span className="sm-section-label">ETH-MULTIPLE CORRELATION</span></div>
+              <div className="sm-card-body">
+              <p className="sm-note-list">
+                How NAV multiple moves with ETH. Higher = more correlated swings.
+              </p>
+              <div className="sm-grid-sep sm-bmnr-param-gap" style={{ '--cols': 6 } as React.CSSProperties}>
+                {[0.6, 0.5, 0.4, 0.3, 0.2, 0.1].map((opt, idx) => {
+                  const isActive = Math.abs(corr - opt) < 0.05;
+                  const colors = [
+                    { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+                    { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+                    { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+                    { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+                    { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+                    { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
+                  ][idx];
+                  return (
+                    <div key={opt} onClick={() => updateParam(setCorr)(opt)} className="sm-param-btn" data-active={isActive ? "true" : undefined} style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}>{opt}</div>
+                  );
+                })}
+              </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Current NAV Info */}
+          <div className="sm-nav-info-box">
+            Current NAV: <strong className="sm-accent">${currentNAV.toFixed(0)}</strong> | Adjustments: +{stakingYield.toFixed(1)}% yield, -{slashingRisk}% slash, -{liquidityDiscount + regulatoryRisk}% disc
+          </div>
+        </>
+      )}
+      cfaItems={[
+        { term: 'Geometric Brownian Motion (GBM)', def: 'dS = S(μdt + σdW). Standard model for equity/crypto. Log-normal returns ensure prices stay positive. ETH price and NAV multiple are correlated.' },
+        { term: 'Sharpe Ratio', def: '(Return - Risk-Free) / Volatility. Measures risk-adjusted return. >0.5 decent, >1.0 good, >2.0 excellent. Uses 4% risk-free rate.' },
+        { term: 'Sortino Ratio', def: 'Like Sharpe but only penalizes downside volatility. Better for asymmetric return distributions common in crypto.' },
+        { term: 'VaR (Value at Risk) 5%', def: 'The loss level that won\'t be exceeded with 95% confidence. If VaR = -40%, there\'s 5% chance of losing more than 40%.' },
+        { term: 'CVaR (Conditional VaR) 5%', def: 'Expected loss in the worst 5% of scenarios. Also called Expected Shortfall. More conservative than VaR.' },
+        { term: 'Max Drawdown', def: 'Largest peak-to-trough decline. Shows worst-case loss experience during the holding period.' },
+      ]}
+    />
   );
 };
 

@@ -1,5 +1,27 @@
 # Changelog
 
+## 2026-03-12
+
+- docs: add SharedModelTab, SharedMonteCarloTab, SharedCompsTab, SharedCapitalTab + type files + TEMPLATE.tsx.template to /docs file listing
+- docs: update /docs component tree — Model, Monte Carlo, Comps, Capital now use shared components (no longer inline)
+- docs: add "Shared projection tabs" pattern section with usage examples for all 4 tabs
+- docs: add "Adding a New Stock — TEMPLATE.tsx.template" guide with placeholder list and data directory structure
+- fix: add 53 missing BMNR CSS class definitions lost during inline style extraction
+- fix: restore Comps tab rendering — crypto-badge, profile-metrics-grid, cmp-5col/6col, competitor-badge, thesis-comparison, source-line, rounded-top, col-span-3
+- fix: restore Monte Carlo tab rendering — mc-preset (with --preset-color), param-gap
+- fix: restore DCF tab rendering — info-box (sky/mint variants), div-grid, toggle-btn
+- fix: restore Sensitivity tab rendering — matrix-grid/cell, tornado chart (5 classes)
+- fix: restore Capital tab rendering — insider-sales/grants/shareholders grids, runway-grid, row-border, total-row, th-cell, grid-1-120-100, tranche-footer
+- fix: restore Model tab rendering — scenario-5col, pwev-footer, kpi-val size variants (hero/md/sm), kpi-margin, tab-title, tab-accent-bar, mode-color, active-text
+- fix: restore BMNR utilities — checkbox, bullet, color-red, justify-center, min-width variants, w-48, ls-1, year-bg, p-12-8, grid-gap-24
+- docs: add 53 new BMNR extracted-inline classes to /docs BMNR Classes section
+- fix: add 65 missing CRCL CSS class definitions lost during inline style extraction
+- fix: restore CRCL DCF tab rendering — section-title, accent-bar, card-header, case-label, chart-area, bar-chart, rev-bar-col/val/label, bar color variants (6), dcf-summary-row, dcf-total-row, method-grid/header/body/item, step-badge, formula, assumptions-box
+- fix: restore CRCL Comps tab rendering — hero-kpi-row/cell, current-grid, 2col-grid, metrics-header/row/th, mint-header/row, scenario-card/big-num, year-btn, insights-grid, dot, prob-num, split-grid, kv-row, econ-panel/title/body
+- fix: restore CRCL utilities — spacing (mb-4/6, mt-4/6/8, pt-8/12, pl-16), line-height (lh-15/16/17), ls-tight, max-w-600, select, opex-grid, risk-grid, bar-label/footer
+- fix: add sm-val-color-sky shared class (FCF positive/negative coloring)
+- docs: add 65 new CRCL extracted-inline classes to /docs CRCL Classes section
+
 ## 2026-03-11
 
 - refactor: press-intelligence is now DB-first — page load reads from database only, Refresh button fetches upstream + marks NEW items + persists to DB

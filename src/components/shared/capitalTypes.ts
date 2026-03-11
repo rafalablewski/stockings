@@ -100,6 +100,20 @@ export interface CapitalNavItem {
   sub: string;
 }
 
+/**
+ * Thin layout shell props for SharedCapitalTab (render-props / children approach).
+ * The Capital tab is highly divergent across stocks, so the shared component
+ * only owns the hero header and CFA notes — all content comes via children.
+ */
+export interface SharedCapitalTabShellProps {
+  sectionLabel: string;
+  description: string;
+  sources?: import('./stockModelTypes').UpdateSource | import('./stockModelTypes').UpdateSource[];
+  children: import('react').ReactNode;
+  cfaItems?: { term: string; def: string }[];
+}
+
+/** @deprecated Data-driven props — kept for reference but not used by SharedCapitalTab shell. */
 export interface SharedCapitalTabProps {
   ticker: string;
   currentShares: number;

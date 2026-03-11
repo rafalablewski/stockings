@@ -111,7 +111,8 @@
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import './stock-model-styles.css';
-import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab, StockHeader, buildHudMarkers } from '../shared';
+import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab, SharedCompsTab, SharedCapitalTab, SharedMonteCarloTab, SharedModelTab, StockHeader, buildHudMarkers } from '../shared';
+import type { McSimResults } from '../shared';
 import type { UpdateSource } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
@@ -1012,13 +1013,11 @@ const CRCLModelTab = ({
   const currentPSRatio = currentNetRevenue > 0 ? currentMarketCap / currentNetRevenue : 0;
 
   return (
-    <div className="sm-flex-col">
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Stablecoin DCF Valuation<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <h2>Model<span className="sm-accent">.</span></h2>
-        <p>Configure model assumptions for Circle's USDC business. Changes flow to revenue projections and DCF valuation. Key drivers: USDC circulation growth, Fed funds rate (reserve yield), and Coinbase distribution cost.</p>
-      </div>
-
+    <SharedModelTab
+      sectionLabel="Stablecoin DCF Valuation"
+      description="Configure model assumptions for Circle's USDC business. Changes flow to revenue projections and DCF valuation. Key drivers: USDC circulation growth, Fed funds rate (reserve yield), and Coinbase distribution cost."
+      sources={['PR', 'SEC']}
+    >
       {/* ASSUMPTIONS SECTION */}
       <>
 
@@ -1307,7 +1306,7 @@ const CRCLModelTab = ({
           </div>
         </div>
       </>
-    </div>
+    </SharedModelTab>
   );
 };
 
@@ -3727,12 +3726,16 @@ function CRCLModel() {
           </TabPanel>)}
 
           {activeTab === 'capital' && (<TabPanel id="capital">
-            <>
-              <div className="sm-tab-hero">
-                <div className="sm-section-label">Financial Position<UpdateIndicators sources="SEC" /></div>
-                <h2>Capital Structure<span className="sm-accent">.</span></h2>
-                <p>Share structure, institutional ownership, capital raises, and treasury management. Circle's path from private to public company via SPAC merger.</p>
-              </div>
+            <SharedCapitalTab
+              sectionLabel="Financial Position"
+              description="Share structure, institutional ownership, capital raises, and treasury management. Circle's path from private to public company via SPAC merger."
+              sources="SEC"
+              cfaItems={[
+                { term: 'SPAC Merger', def: 'Special Purpose Acquisition Company merger allows private companies to go public without traditional IPO. Circle merged with Concord Acquisition Corp.' },
+                { term: 'Share Authorization', def: 'Maximum shares a company can issue, set in charter. Circle authorized additional shares to support growth and potential acquisitions.' },
+                { term: 'Institutional Ownership', def: 'Percentage of shares held by institutional investors (mutual funds, pension funds, etc.). High institutional ownership signals professional conviction.' },
+              ]}
+            >
 
               {/* Highlight Box */}
               <div className="highlight">
@@ -4116,340 +4119,209 @@ function CRCLModel() {
               </>
               )}
 
-              <CFANotes title="CFA Level III — Capital Structure" items={[
-                { term: 'SPAC Merger', def: 'Special Purpose Acquisition Company merger allows private companies to go public without traditional IPO. Circle merged with Concord Acquisition Corp.' },
-                { term: 'Share Authorization', def: 'Maximum shares a company can issue, set in charter. Circle authorized additional shares to support growth and potential acquisitions.' },
-                { term: 'Institutional Ownership', def: 'Percentage of shares held by institutional investors (mutual funds, pension funds, etc.). High institutional ownership signals professional conviction.' },
-              ]} />
-            </>
+            </SharedCapitalTab>
           </TabPanel>)}
 
           {activeTab === 'monte-carlo' && (<TabPanel id="monte-carlo">
-            <div className="sm-flex-col">
-              <div>
-                <div className="sm-tab-hero">
-                  <div className="sm-section-label">Stablecoin DCF Simulation<UpdateIndicators sources={['PR', 'SEC']} /></div>
-                  <h2>Monte Carlo<span className="sm-accent">.</span></h2>
-                  <p>Runs {mcSim.n.toLocaleString()} simulations over {mcYears} years with randomized inputs (USDC growth, margins, rates, multiples) to generate a probability distribution of fair values.</p>
-                </div>
-              </div>
-
-              {/* Scenario Presets */}
-              <div>
-                <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
-                  {(['bear', 'base', 'bull', 'custom'] as const).map(key => {
-                    const p = mcPresets[key];
-                    const isActive = mcPreset === key;
-                    return (
-                      <div
-                        key={key}
-                        onClick={() => applyMcPreset(key)}
-                        className="sm-preset-card"
-                        data-active={isActive || undefined}
-                        style={{ '--preset-color': p.color } as React.CSSProperties}
-                      >
-                        <div className="sm-micro-text">{p.label}</div>
-                        <div className="sm-scenario-card-header" style={{ color: isActive ? p.color : 'var(--text)' }}>
-                          {p.revMin}–{p.revMax}%
-                        </div>
-                        <div className="sm-micro-text sm-scenario-subtitle">
-                          rev growth
-                        </div>
+            <SharedMonteCarloTab
+              sectionLabel="Stablecoin DCF Simulation"
+              description={`Runs ${mcSim.n.toLocaleString()} simulations over ${mcYears} years with randomized inputs (USDC growth, margins, rates, multiples) to generate a probability distribution of fair values.`}
+              sources={['PR', 'SEC']}
+              currentStockPrice={MARKET.price}
+              presets={Object.fromEntries(
+                Object.entries(mcPresets).map(([key, p]) => [key, {
+                  label: p.label,
+                  color: p.color,
+                  headerValue: `${p.revMin}–${p.revMax}%`,
+                  headerSub: 'rev growth',
+                }])
+              )}
+              presetOrder={['bear', 'base', 'bull', 'custom']}
+              activePreset={mcPreset}
+              onPresetChange={applyMcPreset}
+              years={mcYears}
+              onYearsChange={(yr) => { setMcYears(yr); setRunKey(k => k + 1); }}
+              sims={mcSims}
+              onSimsChange={(n) => { setMcSims(n); setRunKey(k => k + 1); }}
+              onRun={() => setRunKey(k => k + 1)}
+              sim={{
+                n: mcSim.n,
+                p5: mcSim.p5,
+                p25: mcSim.p25,
+                p50: mcSim.p50,
+                p75: mcSim.p75,
+                p95: mcSim.p95,
+                mean: mcSim.mean,
+                winProbability: mcSim.winProb,
+                sharpe: mcSim.sharpe,
+                sortino: mcSim.sortino,
+                var5: mcSim.var5,
+                cvar5: mcSim.cvar5,
+                histogram: mcSim.histogram,
+              }}
+              renderParameters={() => (
+                <>
+                  <div className="sm-divider">
+                    <span className="sm-param-label">USDC Growth Parameters</span>
+                    <span className="sm-divider-line" />
+                  </div>
+                  <div className="sm-grid-2">
+                    <div className="sm-card">
+                      <div className="sm-card-section"><span className="sm-section-label">REVENUE GROWTH MIN (%)</span></div>
+                      <div className="sm-card-body">
+                      <p className="sm-note-list">
+                        Lower bound for annual USDC revenue growth in simulation.
+                      </p>
+                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
+                        {[5, 10, 15, 20, 25, 30].map(opt => {
+                          const currentVal = mcPreset === 'custom' ? mcRevenueGrowthMin : mcPresets[mcPreset].revMin;
+                          return (
+                            <div key={opt} onClick={() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
+                          );
+                        })}
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Horizon & Simulation Controls */}
-              <div>
-                <div className="sm-grid-2">
-                  <div className="sm-card">
-                    <div className="sm-card-section"><span className="sm-section-label">TIME HORIZON</span></div>
-                    <div className="sm-card-body">
-                    <div className="sm-flex sm-gap-8">
-                      {[3, 5, 7].map(yr => (
-                        <button
-                          key={yr}
-                          onClick={() => { setMcYears(yr); setRunKey(k => k + 1); }}
-                          className="sm-pill-toggle"
-                          data-active={mcYears === yr ? "true" : undefined}
-                        >
-                          {yr}Y
-                        </button>
-                      ))}
-                    </div>
-                    </div>
-                  </div>
-                  <div className="sm-card">
-                    <div className="sm-card-section"><span className="sm-section-label">SIMULATIONS</span></div>
-                    <div className="sm-card-body">
-                    <div className="sm-flex sm-gap-8">
-                      {[1000, 2000, 5000].map(simCount => (
-                        <button
-                          key={simCount}
-                          onClick={() => { setMcSims(simCount); setRunKey(k => k + 1); }}
-                          className="sm-pill-toggle"
-                          data-active={mcSims === simCount ? "true" : undefined}
-                        >
-                          {simCount.toLocaleString()}
-                        </button>
-                      ))}
-                    </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Parameters - Model Tab Style */}
-              <div>
-                <div className="sm-divider">
-                  <span className="sm-param-label">USDC Growth Parameters</span>
-                  <span className="sm-divider-line" />
-                </div>
-                <div className="sm-grid-2">
-                  <div className="sm-card">
-                    <div className="sm-card-section"><span className="sm-section-label">REVENUE GROWTH MIN (%)</span></div>
-                    <div className="sm-card-body">
-                    <p className="sm-note-list">
-                      Lower bound for annual USDC revenue growth in simulation.
-                    </p>
-                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                      {[5, 10, 15, 20, 25, 30].map(opt => {
-                        const currentVal = mcPreset === 'custom' ? mcRevenueGrowthMin : mcPresets[mcPreset].revMin;
-                        return (
-                          <div key={opt} onClick={() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
-                        );
-                      })}
-                    </div>
-                    </div>
-                  </div>
-                  <div className="sm-card">
-                    <div className="sm-card-section"><span className="sm-section-label">REVENUE GROWTH MAX (%)</span></div>
-                    <div className="sm-card-body">
-                    <p className="sm-note-list">
-                      Upper bound for annual USDC revenue growth in simulation.
-                    </p>
-                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                      {[25, 35, 45, 55, 65, 75].map(opt => {
-                        const currentVal = mcPreset === 'custom' ? mcRevenueGrowthMax : mcPresets[mcPreset].revMax;
-                        return (
-                          <div key={opt} onClick={() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
-                        );
-                      })}
-                    </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="sm-divider">
-                  <span className="sm-param-label">Profitability Parameters</span>
-                  <span className="sm-divider-line" />
-                </div>
-                <div className="sm-grid-2">
-                  <div className="sm-card">
-                    <div className="sm-card-section"><span className="sm-section-label">MARGIN MIN (%)</span></div>
-                    <div className="sm-card-body">
-                    <p className="sm-note-list">
-                      Lower bound for EBITDA margin assumption in DCF model.
-                    </p>
-                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                      {[30, 40, 50, 55, 60, 65].map(opt => {
-                        const currentVal = mcPreset === 'custom' ? mcMarginMin : mcPresets[mcPreset].marginMin;
-                        return (
-                          <div key={opt} onClick={() => { setMcMarginMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcMarginMin(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
-                        );
-                      })}
-                    </div>
-                    </div>
-                  </div>
-                  <div className="sm-card">
-                    <div className="sm-card-section"><span className="sm-section-label">MARGIN MAX (%)</span></div>
-                    <div className="sm-card-body">
-                    <p className="sm-note-list">
-                      Upper bound for EBITDA margin assumption in DCF model.
-                    </p>
-                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                      {[55, 60, 65, 70, 75, 80].map(opt => {
-                        const currentVal = mcPreset === 'custom' ? mcMarginMax : mcPresets[mcPreset].marginMax;
-                        return (
-                          <div key={opt} onClick={() => { setMcMarginMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcMarginMax(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
-                        );
-                      })}
-                    </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="sm-divider">
-                  <span className="sm-param-label">Valuation Parameters</span>
-                  <span className="sm-divider-line" />
-                </div>
-                <div className="sm-grid-2">
-                  <div className="sm-card">
-                    <div className="sm-card-section"><span className="sm-section-label">DISCOUNT RATE MIN (%)</span></div>
-                    <div className="sm-card-body">
-                    <p className="sm-note-list">
-                      Lower bound for WACC / required return in DCF model.
-                    </p>
-                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                      {[8, 10, 12, 14, 16, 18].map(opt => {
-                        const currentVal = mcPreset === 'custom' ? mcDiscountMin : mcPresets[mcPreset].discMin;
-                        return (
-                          <div key={opt} onClick={() => { setMcDiscountMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcDiscountMin(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
-                        );
-                      })}
-                    </div>
-                    </div>
-                  </div>
-                  <div className="sm-card">
-                    <div className="sm-card-section"><span className="sm-section-label">DISCOUNT RATE MAX (%)</span></div>
-                    <div className="sm-card-body">
-                    <p className="sm-note-list">
-                      Upper bound for WACC / required return in DCF model.
-                    </p>
-                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                      {[12, 14, 16, 18, 20, 22].map(opt => {
-                        const currentVal = mcPreset === 'custom' ? mcDiscountMax : mcPresets[mcPreset].discMax;
-                        return (
-                          <div key={opt} onClick={() => { setMcDiscountMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcDiscountMax(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
-                        );
-                      })}
-                    </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="sm-grid-2">
-                  <div className="sm-card">
-                    <div className="sm-card-section"><span className="sm-section-label">TERMINAL MULTIPLE MIN</span></div>
-                    <div className="sm-card-body">
-                    <p className="sm-note-list">
-                      Lower bound for exit EV/EBITDA multiple in DCF terminal value.
-                    </p>
-                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                      {[8, 10, 12, 15, 18, 20].map(opt => {
-                        const currentVal = mcPreset === 'custom' ? mcTerminalMultMin : mcPresets[mcPreset].termMin;
-                        return (
-                          <div key={opt} onClick={() => { setMcTerminalMultMin(opt); setMcPreset('custom'); }} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}x</div>
-                        );
-                      })}
-                    </div>
-                    </div>
-                  </div>
-                  <div className="sm-card">
-                    <div className="sm-card-section"><span className="sm-section-label">TERMINAL MULTIPLE MAX</span></div>
-                    <div className="sm-card-body">
-                    <p className="sm-note-list">
-                      Upper bound for exit EV/EBITDA multiple in DCF terminal value.
-                    </p>
-                    <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                      {[15, 18, 22, 25, 30, 35].map(opt => {
-                        const currentVal = mcPreset === 'custom' ? mcTerminalMultMax : mcPresets[mcPreset].termMax;
-                        return (
-                          <div key={opt} onClick={() => { setMcTerminalMultMax(opt); setMcPreset('custom'); }} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}x</div>
-                        );
-                      })}
-                    </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Run Button */}
-                <button onClick={() => setRunKey(k => k + 1)} className="sm-run-btn">🎲 Run Simulation</button>
-              </div>
-
-              {/* Percentile Distribution */}
-              <div>
-                <div className="sm-card">
-                  <div className="sm-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
-                    <span className="sm-text-left">Percentile</span>
-                    <span className="sm-text-right">Price Target</span>
-                    <span className="sm-text-right">vs Current</span>
-                    <span className="sm-text-right">Implied Return</span>
-                  </div>
-                  {[
-                    { label: 'P5 (Bear Case)', value: mcSim.p5 },
-                    { label: 'P25', value: mcSim.p25 },
-                    { label: 'P50 (Median)', value: mcSim.p50, highlight: true },
-                    { label: 'P75', value: mcSim.p75 },
-                    { label: 'P95 (Bull Case)', value: mcSim.p95 },
-                  ].map((row, i) => {
-                    const pctChange = ((row.value / MARKET.price - 1) * 100);
-                    return (
-                      <div key={i} className="sm-table-row" style={{ gridTemplateColumns: '1fr 1fr 1fr 1fr', background: row.highlight ? 'var(--accent-dim)' : 'transparent', cursor: 'default' }}
-                      >
-                        <span style={{ fontWeight: row.highlight ? 600 : 400, color: row.highlight ? 'var(--accent)' : 'var(--text2)' }}>{row.label}</span>
-                        <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: row.highlight ? 700 : 500, color: row.highlight ? 'var(--accent)' : 'var(--text)' }}>${row.value.toFixed(2)}</span>
-                        <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", color: 'var(--text2)' }}>${(row.value - MARKET.price).toFixed(2)}</span>
-                        <span style={{ textAlign: 'right', fontFamily: "'Space Mono', monospace", fontWeight: 500, color: pctChange >= 0 ? 'var(--mint)' : 'var(--red)' }}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</span>
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Risk Metrics */}
-              <div>
-                <div className="sm-card">
-                  <div className="sm-table-header" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
-                    <span className="sm-text-left">Risk Metric</span>
-                    <span className="sm-text-right">Value</span>
-                    <span className="sm-text-left">Interpretation</span>
-                  </div>
-                  {[
-                    { label: 'Win Probability', value: <span className="sm-mc-risk-val" data-color={mcSim.winProb > 50 ? 'mint' : 'red'}>{mcSim.winProb.toFixed(1)}%</span>, interp: 'Prob. of exceeding current price' },
-                    { label: 'Expected Value', value: <span className="sm-mc-risk-val">${mcSim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
-                    { label: 'Sharpe Ratio', value: <span className="sm-mc-risk-val" data-color={mcSim.sharpe > 1 ? 'mint' : mcSim.sharpe > 0.5 ? 'gold' : 'text2'}>{mcSim.sharpe.toFixed(2)}</span>, interp: mcSim.sharpe > 1 ? 'Excellent risk-adj return' : mcSim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
-                    { label: 'Sortino Ratio', value: <span className="sm-mc-risk-val" data-color={mcSim.sortino > 1 ? 'mint' : mcSim.sortino > 0.5 ? 'gold' : 'text2'}>{mcSim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
-                    { label: 'VaR (5%)', value: <span className="sm-mc-risk-val" data-color="red">{mcSim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
-                    { label: 'CVaR (5%)', value: <span className="sm-mc-risk-val" data-color="red">{mcSim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
-                  ].map((row, i) => (
-                    <div key={i} className="sm-table-row sm-gtc-3x1"
-                    >
-                      <span className="sm-text2">{row.label}</span>
-                      <span className="sm-text-right">{row.value}</span>
-                      <span className="sm-text3">{row.interp}</span>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Distribution Chart */}
-              <div>
-                <div className="sm-card">
-                  <div className="sm-card-section"><span className="sm-section-label">FAIR VALUE DISTRIBUTION</span></div>
-                  <div className="sm-card-body">
-                  <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={mcSim.histogram}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                      <XAxis dataKey="price" stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} />
-                      <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
-                      <RechartsTooltip
-                        contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
-                        formatter={(v) => [`${Number(v).toFixed(2)}%`, 'Probability']}
-                        labelFormatter={(v) => `$${Number(v).toFixed(0)}`}
-                      />
-                      <Bar dataKey="pct" fill="var(--accent)" radius={[2, 2, 0, 0]} />
-                      <ReferenceLine x={MARKET.price} stroke="#fff" strokeDasharray="5 5" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                  <div className="sm-flex-between sm-subtle-sm">
-                    <span>White line = current price (${MARKET.price.toFixed(0)})</span>
-                    <span>Simulations: {mcSim.n.toLocaleString()}</span>
+                    <div className="sm-card">
+                      <div className="sm-card-section"><span className="sm-section-label">REVENUE GROWTH MAX (%)</span></div>
+                      <div className="sm-card-body">
+                      <p className="sm-note-list">
+                        Upper bound for annual USDC revenue growth in simulation.
+                      </p>
+                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
+                        {[25, 35, 45, 55, 65, 75].map(opt => {
+                          const currentVal = mcPreset === 'custom' ? mcRevenueGrowthMax : mcPresets[mcPreset].revMax;
+                          return (
+                            <div key={opt} onClick={() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
+                          );
+                        })}
+                      </div>
+                      </div>
+                    </div>
                   </div>
-                  </div>
-                </div>
-              </div>
 
-              <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
+                  <div className="sm-divider">
+                    <span className="sm-param-label">Profitability Parameters</span>
+                    <span className="sm-divider-line" />
+                  </div>
+                  <div className="sm-grid-2">
+                    <div className="sm-card">
+                      <div className="sm-card-section"><span className="sm-section-label">MARGIN MIN (%)</span></div>
+                      <div className="sm-card-body">
+                      <p className="sm-note-list">
+                        Lower bound for EBITDA margin assumption in DCF model.
+                      </p>
+                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
+                        {[30, 40, 50, 55, 60, 65].map(opt => {
+                          const currentVal = mcPreset === 'custom' ? mcMarginMin : mcPresets[mcPreset].marginMin;
+                          return (
+                            <div key={opt} onClick={() => { setMcMarginMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcMarginMin(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
+                          );
+                        })}
+                      </div>
+                      </div>
+                    </div>
+                    <div className="sm-card">
+                      <div className="sm-card-section"><span className="sm-section-label">MARGIN MAX (%)</span></div>
+                      <div className="sm-card-body">
+                      <p className="sm-note-list">
+                        Upper bound for EBITDA margin assumption in DCF model.
+                      </p>
+                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
+                        {[55, 60, 65, 70, 75, 80].map(opt => {
+                          const currentVal = mcPreset === 'custom' ? mcMarginMax : mcPresets[mcPreset].marginMax;
+                          return (
+                            <div key={opt} onClick={() => { setMcMarginMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcMarginMax(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
+                          );
+                        })}
+                      </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="sm-divider">
+                    <span className="sm-param-label">Valuation Parameters</span>
+                    <span className="sm-divider-line" />
+                  </div>
+                  <div className="sm-grid-2">
+                    <div className="sm-card">
+                      <div className="sm-card-section"><span className="sm-section-label">DISCOUNT RATE MIN (%)</span></div>
+                      <div className="sm-card-body">
+                      <p className="sm-note-list">
+                        Lower bound for WACC / required return in DCF model.
+                      </p>
+                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
+                        {[8, 10, 12, 14, 16, 18].map(opt => {
+                          const currentVal = mcPreset === 'custom' ? mcDiscountMin : mcPresets[mcPreset].discMin;
+                          return (
+                            <div key={opt} onClick={() => { setMcDiscountMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcDiscountMin(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
+                          );
+                        })}
+                      </div>
+                      </div>
+                    </div>
+                    <div className="sm-card">
+                      <div className="sm-card-section"><span className="sm-section-label">DISCOUNT RATE MAX (%)</span></div>
+                      <div className="sm-card-body">
+                      <p className="sm-note-list">
+                        Upper bound for WACC / required return in DCF model.
+                      </p>
+                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
+                        {[12, 14, 16, 18, 20, 22].map(opt => {
+                          const currentVal = mcPreset === 'custom' ? mcDiscountMax : mcPresets[mcPreset].discMax;
+                          return (
+                            <div key={opt} onClick={() => { setMcDiscountMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcDiscountMax(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
+                          );
+                        })}
+                      </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="sm-grid-2">
+                    <div className="sm-card">
+                      <div className="sm-card-section"><span className="sm-section-label">TERMINAL MULTIPLE MIN</span></div>
+                      <div className="sm-card-body">
+                      <p className="sm-note-list">
+                        Lower bound for exit EV/EBITDA multiple in DCF terminal value.
+                      </p>
+                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
+                        {[8, 10, 12, 15, 18, 20].map(opt => {
+                          const currentVal = mcPreset === 'custom' ? mcTerminalMultMin : mcPresets[mcPreset].termMin;
+                          return (
+                            <div key={opt} onClick={() => { setMcTerminalMultMin(opt); setMcPreset('custom'); }} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}x</div>
+                          );
+                        })}
+                      </div>
+                      </div>
+                    </div>
+                    <div className="sm-card">
+                      <div className="sm-card-section"><span className="sm-section-label">TERMINAL MULTIPLE MAX</span></div>
+                      <div className="sm-card-body">
+                      <p className="sm-note-list">
+                        Upper bound for exit EV/EBITDA multiple in DCF terminal value.
+                      </p>
+                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
+                        {[15, 18, 22, 25, 30, 35].map(opt => {
+                          const currentVal = mcPreset === 'custom' ? mcTerminalMultMax : mcPresets[mcPreset].termMax;
+                          return (
+                            <div key={opt} onClick={() => { setMcTerminalMultMax(opt); setMcPreset('custom'); }} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}x</div>
+                          );
+                        })}
+                      </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+              cfaItems={[
                 { term: 'Stochastic Modeling', def: 'Uses random sampling to model uncertainty. Each iteration draws from probability distributions for key inputs.' },
                 { term: 'Input Distributions', def: 'USDC growth, margins, rates, multiples vary within defined ranges. Uniform distributions based on confidence.' },
                 { term: 'Percentile Interpretation', def: 'P5 = 5% chance price is lower. P50 = median outcome. P95 = 5% chance price is higher.' },
                 { term: 'VaR (Value at Risk)', def: 'The loss level that won\'t be exceeded with 95% confidence. Shows downside risk.' },
                 { term: 'CVaR (Expected Shortfall)', def: 'Average loss in worst 5% of scenarios. More conservative than VaR for tail risk.' },
                 { term: 'Sharpe/Sortino Ratios', def: 'Risk-adjusted return metrics. Sortino only penalizes downside volatility.' },
-              ]} />
-            </div>
+              ]}
+            />
           </TabPanel>)}
 
           {activeTab === 'timeline' && (<TabPanel id="timeline">
@@ -4990,13 +4862,11 @@ const CompsTab = () => {
   };
 
   return (
-    <div className="sm-flex-col">
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Peer Analysis Framework<UpdateIndicators sources={['WS']} /></div>
-        <h2>Comparables & Competitor Intelligence<span className="sm-accent">.</span></h2>
-        <p>Circle sits at the intersection of multiple peer groups: crypto infrastructure (Coinbase), payments networks (Visa, PayPal), and high-growth fintech. Each lens provides different valuation context. Crypto peers trade at premium P/S; payments peers show margin potential.</p>
-      </div>
-
+    <SharedCompsTab
+      sectionLabel="Peer Analysis Framework"
+      description="Circle sits at the intersection of multiple peer groups: crypto infrastructure (Coinbase), payments networks (Visa, PayPal), and high-growth fintech. Each lens provides different valuation context. Crypto peers trade at premium P/S; payments peers show margin potential."
+      sources={['WS']}
+      renderValuationComps={() => (<>
       {/* Peer Group Selector */}
       <div className="sm-flex-wrap">
         {Object.entries(PEER_GROUPS).map(([key, group]) => (
@@ -5346,6 +5216,8 @@ const CompsTab = () => {
         </div>
       </div>
 
+      </>)}
+      renderCompetitorNews={() => (<>
       {/* Competitor News Intelligence Section - Eyebrow + Title + Dot Header */}
       <div className="sm-divider">
         <div className="sm-section-label">Competitive Intelligence<UpdateIndicators sources="PR" /></div>
@@ -5478,6 +5350,8 @@ const CompsTab = () => {
         )}
       </div>
 
+      </>)}
+      renderCompetitorProfiles={() => (<>
       {/* Competitor Profiles (Reference) */}
       <div className="sm-crcl-surface2-panel">
         <div className="sm-section-label sm-mb-12">Competitor Profiles</div>
@@ -5499,15 +5373,16 @@ const CompsTab = () => {
         </div>
       </div>
 
-      <CFANotes title="CFA Level III — Comparable Analysis" items={[
+      </>)}
+      cfaItems={[
         { term: 'Peer Selection', def: 'Choose comps based on business model similarity, growth profile, and market positioning. No perfect comps for novel businesses like Circle.' },
         { term: 'P/S (Price/Sales)', def: 'Primary multiple for high-growth, pre-profit companies. Compare Circle to fintech and payments peers.' },
         { term: 'EV/EBITDA', def: 'Enterprise value relative to operating profit. Better for profitable companies. Removes capital structure differences.' },
         { term: 'Growth-Adjusted Multiples', def: 'PEG ratio = P/E ÷ Growth Rate. Higher growth justifies higher multiples. Circle\'s growth should command premium.' },
         { term: 'Sum-of-Parts (SOTP)', def: 'Value each business segment separately and sum. Useful for conglomerates or platform businesses with distinct units.' },
         { term: 'Relative Valuation Caveats', def: 'Market may misprice entire sector. Use comps for context but anchor to intrinsic value (DCF).' },
-      ]} />
-    </div>
+      ]}
+    />
   );
 };
 

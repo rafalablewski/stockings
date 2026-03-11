@@ -353,6 +353,15 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/shared/SharedEdgarTab.tsx",         type: "Component", description: "SEC EDGAR filings browser" },
   { path: "src/components/shared/SharedSourcesTab.tsx",       type: "Component", description: "Research sources / news feed tab" },
   { path: "src/components/shared/SharedAIAgentsTab.tsx",      type: "Component", description: "AI analysis agents status tab" },
+  { path: "src/components/shared/SharedModelTab.tsx",         type: "Component", description: "Model tab shell: hero header + children (scenario presets, DCF, sensitivity — all stock-specific)" },
+  { path: "src/components/shared/modelTypes.ts",              type: "Types",     description: "SharedModelTabProps, ModelCfaItem" },
+  { path: "src/components/shared/SharedMonteCarloTab.tsx",    type: "Component", description: "Monte Carlo tab: hero, preset grid, horizon/sim controls, percentile table, risk metrics, histogram, CFA notes; stock-specific params via renderParameters render prop" },
+  { path: "src/components/shared/monteCarloTypes.ts",         type: "Types",     description: "SharedMonteCarloTabProps, McPreset, McSimResults, McHistogramBucket, McCfaItem" },
+  { path: "src/components/shared/SharedCompsTab.tsx",         type: "Component", description: "Comps tab shell: hero + render props (renderValuationComps, renderCompetitorProfiles, renderCompetitorNews)" },
+  { path: "src/components/shared/compsTypes.ts",              type: "Types",     description: "SharedCompsTabProps, CompsCfaItem" },
+  { path: "src/components/shared/SharedCapitalTab.tsx",       type: "Component", description: "Capital tab shell: hero header + children (share classes, dilution, offerings — all stock-specific)" },
+  { path: "src/components/shared/capitalTypes.ts",            type: "Types",     description: "SharedCapitalTabShellProps, ShareClass, MajorShareholder, EquityOffering, Warrant, CapitalNavItem" },
+  { path: "src/components/stocks/TEMPLATE.tsx.template",      type: "Template",  description: "New stock scaffold — pre-wired shared tabs, placeholder data imports, find-and-replace placeholders ({TICKER}, {COMPANY}, {ACCENT})" },
   { path: "src/components/shared/UpdateIndicators.tsx",       type: "Component", description: "Colored dot indicators for data freshness" },
   { path: "src/components/shared/StockHeader.tsx",             type: "Component", description: "Concept 11c Edge Markers header — three-column cockpit layout (identity · price gauge · HUD spine), buildHudMarkers helper, responsive pills on mobile" },
   { path: "src/components/shared/LivePrice.tsx",              type: "Component", description: "Real-time stock price display + MarketData (open, dayHigh/Low, 52W high/low)" },
@@ -438,7 +447,11 @@ const stockPageTree = [
   { depth: 3, name: "LivePrice",                          note: "Real-time price from Yahoo Finance" },
   { depth: 2, name: "StockNavigation",                    note: "Tab bar with dropdown groups" },
   { depth: 2, name: "Tab Content (conditional)",           note: "One of the following shared tabs:" },
-  { depth: 3, name: "Overview / Model / Capital / Comps",  note: "Stock-specific — rendered inline in ASTS/BMNR/CRCL" },
+  { depth: 3, name: "Overview",                             note: "Stock-specific — rendered inline in ASTS/BMNR/CRCL" },
+  { depth: 3, name: "SharedModelTab",                       note: "Hero shell + children (scenario presets, DCF, sensitivity)" },
+  { depth: 3, name: "SharedMonteCarloTab",                  note: "Presets, sim controls, percentile table, histogram; params via render prop" },
+  { depth: 3, name: "SharedCompsTab",                       note: "Hero + render props (valuation comps, competitor profiles, news)" },
+  { depth: 3, name: "SharedCapitalTab",                     note: "Hero shell + children (share classes, dilution, offerings)" },
   { depth: 3, name: "SharedFinancialsTab",                 note: "Quarterly metrics, bar charts, CFA notes" },
   { depth: 3, name: "SharedTimelineTab",                   note: "Event timeline with topic filters" },
   { depth: 4, name: "SharedSecFilingsSection",             note: "SEC filing cards with KPI summary, cross-ref dots" },
@@ -670,6 +683,44 @@ function MobileNav() {
 />`,
   },
   {
+    title: "Shared projection tabs (Model / Monte Carlo / Comps / Capital)",
+    description: "All four projection tabs now use shared components across ASTS, BMNR, and CRCL. Model and Capital are thin hero shells (children pattern). Monte Carlo and Comps use render props for stock-specific content. New stocks get these pre-wired via TEMPLATE.tsx.template.",
+    code: `// Model: SharedModelTab — thin hero shell, children = all stock-specific content
+<SharedModelTab sectionLabel="Valuation Model" description="Configure assumptions..." sources="PR">
+  {/* Scenario presets, parameter cards, DCF output, sensitivity tables */}
+</SharedModelTab>
+
+// Monte Carlo: SharedMonteCarloTab — hero + preset grid + sim controls + histogram
+// Stock provides: simulation engine (useMemo → McSimResults), parameter UI (renderParameters)
+<SharedMonteCarloTab
+  sectionLabel="Monte Carlo Simulation" description="Probabilistic fair value..."
+  currentStockPrice={currentStockPrice}
+  presets={mcPresets}          // Record<string, McPreset>
+  presetOrder={['bear','base','bull','custom']}
+  activePreset={activePreset} onPresetChange={setActivePreset}
+  years={years} onYearsChange={setYears}
+  sims={sims} onSimsChange={setSims}
+  onRun={runSimulation}
+  sim={mcSim}                  // McSimResults from useMemo
+  renderParameters={() => (
+    <>{/* Stock-specific sliders, toggles, parameter cards */}</>
+  )}
+/>
+
+// Comps: SharedCompsTab — hero + 3 render-prop slots
+<SharedCompsTab
+  sectionLabel="Comparable Analysis" description="Trading comparables..."
+  renderValuationComps={() => <ValuationTable />}
+  renderCompetitorProfiles={() => <CompetitorCards />}
+  renderCompetitorNews={() => <NewsFeed />}
+/>
+
+// Capital: SharedCapitalTab — thin hero shell, children = all stock-specific content
+<SharedCapitalTab sectionLabel="Capital Structure" description="Share classes..." sources="SEC">
+  {/* Share class tables, dilution scenarios, offering history */}
+</SharedCapitalTab>`,
+  },
+  {
     title: "Gold-Standard Visual Patterns",
     description: "All tabs use a consistent set of sm-* classes for visual elements. Badges use sm-news-tag with --tag-color. Callout panels use sm-callout with --callout-color. Footnotes and info boxes use sm-note-panel. Data tables (milestones, quarterly metrics) use sm-fin-table-header/row with sm-fin-th/td. SEC filings in Timeline use sm-sec-* card layout (sm-sec-card, sm-sec-badge, sm-sec-desc) with KPI summary and cross-ref source dots. KPI metrics use sm-kpi-cell with sm-kpi-label/value/sub. The Capital tab is the golden standard — all other tabs mirror its visual patterns.",
     code: `// Badge — sm-news-tag
@@ -804,6 +855,31 @@ const archive: ArchiveEntry[] = [];
 // 5. All sm-inv-* classes work automatically — no new CSS needed
 //    Only style={{}} allowed: CSS custom property pass-throughs
 //    e.g. style={{ '--inv-accent': 'var(--mint)' } as React.CSSProperties}`,
+  },
+  {
+    title: "Adding a New Stock — TEMPLATE.tsx.template",
+    description: "Copy src/components/stocks/TEMPLATE.tsx.template to {TICKER}.tsx and find-and-replace 6 placeholders: {TICKER}, {ticker}, {COMPANY}, {ACCENT}, {SECTOR}, {INDUSTRY}, {EXCHANGE}. The template pre-wires all 12 tabs (Overview, Model, Monte Carlo, Comps, Capital, Financials, Timeline, Investment, Wall Street, AI Agents, Sources, EDGAR) using shared components. Create a data directory at src/data/{ticker}/ with: index.ts, company.ts, investment.ts, analyst-coverage.ts, sec-filings.ts, quarterly-metrics.ts, timeline.ts, capital.ts. No new CSS needed — all sm-* classes work automatically via data-accent.",
+    code: `// 1. Copy template
+cp src/components/stocks/TEMPLATE.tsx.template src/components/stocks/PLTR.tsx
+
+// 2. Find-and-replace placeholders:
+//    {TICKER}   → PLTR          {ticker}    → pltr
+//    {COMPANY}  → Palantir      {ACCENT}    → cyan | violet | mint | gold | coral | sky
+//    {SECTOR}   → Technology    {INDUSTRY}  → Enterprise Software
+//    {EXCHANGE} → NYSE
+
+// 3. Create data directory: src/data/pltr/
+//    index.ts              — central exports (DEFAULTS, DATA_FRESHNESS)
+//    company.ts            — currentShares, currentStockPrice, cashOnHand, quarterlyBurn, totalDebt
+//    investment.ts         — PLTR_INVESTMENT_CURRENT, PLTR_INVESTMENT_ARCHIVE
+//    analyst-coverage.ts   — PLTR_ANALYST_COVERAGE
+//    sec-filings.ts        — PLTR_SEC_FILINGS, PLTR_SEC_META, PLTR_SEC_TYPE_COLORS
+//    quarterly-metrics.ts  — PLTR_QUARTERLY_DATA
+//    timeline.ts           — PLTR_TIMELINE_EVENTS
+//    capital.ts            — share classes, offerings, dilution scenarios
+
+// 4. Register in src/lib/stocks.ts
+// 5. All 12 tabs work out of the box — implement stock-specific logic in each tab function`,
   },
 ];
 
@@ -1508,10 +1584,11 @@ export default function DocsPage() {
         />
 
         {/* ── BMNR Classes ──────────────────────────────────────────────── */}
-        <SectionHeader id="bmnr-classes" title="BMNR Model Classes (sm-bmnr-*)" count={38} />
+        <SectionHeader id="bmnr-classes" title="BMNR Model Classes (sm-bmnr-*)" count={91} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
           BitMine-specific classes — parameter panels, scenario selectors, staking cells, KPI values, methodology badges,
-          purchase history table helpers, debt/LTV stress testing, and tranche management.
+          purchase history table helpers, debt/LTV stress testing, tranche management, and extracted inline style classes
+          for Comps, Monte Carlo, DCF, Sensitivity, and Capital tabs.
         </p>
         <SmallTable
           headers={["Class", "Description"]}
@@ -1529,7 +1606,10 @@ export default function DocsPage() {
             [".sm-bmnr-mode-card", "Mode toggle card (current/growth) — 16px pad, rounded-12. data-active + --mode-color."],
             [".sm-bmnr-mode-icon / -label", "Mode icon (20px) and label (13px/600)."],
             [".sm-bmnr-mode-status", "Mode status banner — data-mode='current' (mint 10%) or 'growth' (cyan 10%)."],
+            [".sm-bmnr-mode-color", "ETH input mode color — data-active + data-mode: current=mint, growth=cyan, inactive=text."],
             [".sm-bmnr-kpi-val / -lg / -xl", "KPI values — Space Mono 18px/22px/28px, bold, --kpi-color."],
+            [".sm-bmnr-kpi-val--hero / --md / --sm", "KPI size overrides — hero: 32px, md: 20px, sm: 16px + margin 4px 0 2px."],
+            [".sm-bmnr-kpi-margin / -sm", "KPI margin variants — standard: 6px 0 4px, sm: 6px 0."],
             [".sm-bmnr-hero-kpi-grid / -cell", "2-col hero KPI grid — 8% accent bg cells, border, rounded-12."],
             [".sm-bmnr-assumptions", "Key assumptions box — 16px pad, surface bg, border, rounded-12."],
             [".sm-bmnr-step-badge", "Methodology step badge — --step-color bg, --bg text, 10px mono bold, rounded-4."],
@@ -1537,16 +1617,23 @@ export default function DocsPage() {
             [".sm-bmnr-formula", "Monospace formula — 10px Space Mono, nowrap, text-ellipsis."],
             [".sm-bmnr-cell", "Table cell utility — 12px 16px padding. data-highlight for mint tint."],
             [".sm-bmnr-th", "Table header — 10px/600 uppercase, text3."],
+            [".sm-bmnr-th-cell", "Table header cell — 10px/600 uppercase, text3. data-align='left'|'right', data-highlight for cyan."],
             [".sm-bmnr-mono-val", "Monospace data value — 12px Space Mono, --val-color, --align. data-align='right'."],
             [".sm-bmnr-row-item / -sm", "Flex-between rows with border-bottom — standard (12px pad) and small (6px pad)."],
+            [".sm-bmnr-row-border", "Grid row border — 1px bottom, 50% opacity. data-last='true' removes border."],
+            [".sm-bmnr-total-row", "Summary/total row — 2px top border, font-weight 600."],
             [".sm-bmnr-staking-cell", "Staking strategy card — surface bg, rounded-12. data-active for 8% violet tint."],
+            [".sm-bmnr-active-text", "Active-state text color — text2 default, text on data-active='true'."],
             [".sm-bmnr-apy-display", "APY value — Space Mono 14px/700, --apy-color."],
             [".sm-bmnr-tranche-row / -grid", "Multi-tranche debt row — 16px 20px pad. data-enabled for 3% violet tint. Grid: 4-col."],
+            [".sm-bmnr-tranche-footer", "Tranche footer — flex, justify-end, 16px vertical padding."],
+            [".sm-bmnr-checkbox", "Tranche enable checkbox — 16×16px."],
             [".sm-bmnr-factor-card / -title", "Factor card — surface2, 12px 16px pad, 3px left border via --factor-color."],
             [".sm-bmnr-stress-cell", "Stress test cell — 24px 16px pad. data-safe (mint 3%) or data-danger (coral 3%)."],
             [".sm-bmnr-ltv-cell", "LTV cell — 24px 12px pad. data-breach for coral 5% tint."],
             [".sm-bmnr-breach-label", "Breach warning label — 10px bold."],
             [".sm-bmnr-year-btn", "Year selector — 12px 20px pad, mono 14px. data-active + --btn-color."],
+            [".sm-bmnr-year-bg", "Projection year header — data-target='true' for 8% accent tint + bold."],
             [".sm-bmnr-analyst-card / -badge / -summary", "ETH tab analyst card — surface bg, rounded-12, 10px badge, mono summary."],
             [".sm-bmnr-invest-banner", "Investment case banner — 12px pad, accent-tinted."],
             [".sm-bmnr-capital-summary", "Capital summary banner — 16px 24px pad, accent tint."],
@@ -1554,6 +1641,102 @@ export default function DocsPage() {
             [".sm-bmnr-return-text", "Return text — 12px. data-sentiment='positive' (mint) or 'negative' (coral)."],
             [".sm-bmnr-desc-sm", "Small description text — 11px, text3, 4px margin-bottom."],
             [".sm-bmnr-micro-plain", "Micro label override — removes uppercase/letter-spacing from sm-micro-label."],
+            [".sm-bmnr-tab-title", "Tab hero title — flex, center-aligned, 28px/700, letter-spacing -0.5px."],
+            [".sm-bmnr-tab-accent-bar", "Tab accent bar — 6×32px, accent bg, rounded-3."],
+            [".sm-bmnr-scenario-5col", "Scenario table 5-column grid — 2fr 1fr 1fr 1fr 1.5fr."],
+            [".sm-bmnr-pwev-footer", "PWEV footer — grid, 2px top border (pairs with scenario-5col)."],
+            [".sm-bmnr-grid-gap-24", "Model grid gap override — 24px."],
+            [".sm-bmnr-crypto-badge", "Crypto type badge — 4px 12px pad, rounded-4, 11px/600. data-type='ETH' (violet) | 'BTC' (gold) | default (surface3)."],
+            [".sm-bmnr-competitor-badge", "Competitor name badge — pill, 10px, sky-tinted (matches ASTS comp-badge-name)."],
+            [".sm-bmnr-profile-metrics-grid", "Competitor profile metrics — auto-fit grid, minmax(150px, 1fr), 12px gap."],
+            [".sm-bmnr-thesis-comparison", "Thesis comparison box — 12px 16px pad, mint 5% bg, mint left border, rounded-12."],
+            [".sm-bmnr-source-line", "News source attribution — 10px mono, text3, 8px margin-top."],
+            [".sm-bmnr-bullet", "News detail bullet — flex-shrink: 0 (accent color set by parent)."],
+            [".sm-bmnr-ls-1", "Letter-spacing 1px utility."],
+            [".sm-bmnr-cmp-5col", "Comps table 5-column grid — 1fr repeat(4, 1fr)."],
+            [".sm-bmnr-cmp-6col", "Comps table 6-column grid — 1fr repeat(5, 1fr)."],
+            [".sm-bmnr-col-span-3", "SOTP total label — grid-column: 1 / 4."],
+            [".sm-bmnr-rounded-top", "Table header rounded top — border-radius: 10px 10px 0 0."],
+            [".sm-bmnr-justify-center", "Flex justify center utility."],
+            [".sm-bmnr-mc-preset", "MC scenario preset card — 16px 8px pad, surface bg, cursor pointer, transparent 2px bottom border. data-active uses --preset-color for border + 8% tint bg."],
+            [".sm-bmnr-param-gap", "MC parameter grid gap override — 6px."],
+            [".sm-bmnr-info-box / --sky / --mint", "DCF info callout — rounded-8, 12px pad, 16px margin-top. --sky: blue-tinted. --mint: green-tinted."],
+            [".sm-bmnr-div-grid", "DCF dividend grid — 2-column, 16px gap, 14px font-size."],
+            [".sm-bmnr-matrix-grid", "Sensitivity matrix grid — 180px + repeat(6, 1fr)."],
+            [".sm-bmnr-matrix-cell", "Sensitivity matrix cell — 12px 8px pad, centered. data-current for bold + cyan 10% bg."],
+            [".sm-bmnr-tornado-label", "Tornado chart param label — 100px width, 12px, text2, fw-500."],
+            [".sm-bmnr-tornado-track", "Tornado chart bar track — flex-1, 28px height, 40% border bg, relative, overflow hidden."],
+            [".sm-bmnr-tornado-center", "Tornado chart center line — absolute, 1px wide, border color."],
+            [".sm-bmnr-tornado-bar-up / -down", "Tornado chart bars — absolute, coral 25% (down, right-anchored) / mint 25% (up, left-anchored)."],
+            [".sm-bmnr-tornado-values", "Tornado chart value overlay — absolute, centered, 24px gap, bold, z-2."],
+            [".sm-bmnr-grid-1-120-100", "Debt table grid — 1fr 120px 100px."],
+            [".sm-bmnr-runway-grid", "Runway stress grid — 1fr 100px 100px 100px 100px."],
+            [".sm-bmnr-insider-sales-grid", "Insider sales grid — 1.5fr 100px 100px 80px 1fr 1.5fr."],
+            [".sm-bmnr-insider-grants-grid", "Insider grants grid — 1.5fr 100px 100px 100px 100px 1.5fr."],
+            [".sm-bmnr-early-shareholders-grid", "Early shareholders grid — 1.5fr 100px 80px 100px 1.5fr."],
+            [".sm-bmnr-color-red", "Red color utility — var(--red, #f87171)."],
+            [".sm-bmnr-w-48", "Width utility — 48px."],
+            [".sm-bmnr-min-w-320 / -460 / -480 / -700", "Min-width utilities for scrollable table containers."],
+          ]}
+        />
+
+        {/* ── CRCL Classes ──────────────────────────────────────────────── */}
+        <SectionHeader id="crcl-classes" title="CRCL Model Classes (sm-crcl-*)" count={65} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Circle-specific classes — DCF valuation layout, revenue bar charts, hero KPIs, metrics tables,
+          mint/redeem grids, scenario cards, method step badges, OpEx breakdown, stablecoin economics panel,
+          and extracted inline style classes for Comps and DCF tabs.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".sm-crcl-section-title", "DCF heading — 28px, letter-spacing -0.5px."],
+            [".sm-crcl-accent-bar", "Vertical accent bar — 6×32px, var(--accent), rounded-3."],
+            [".sm-crcl-card-header", "Card header — padding 24px, bottom border."],
+            [".sm-crcl-case-label", "Bull/Bear case label — 13px, uppercase, tracking 1.5px."],
+            [".sm-crcl-chart-area", "Chart container — padding 24px, overflow-x auto."],
+            [".sm-crcl-bar-chart", "Bar chart flex container — flex-end, 200px height, 8px gap."],
+            [".sm-crcl-rev-bar-col", "Revenue bar column — flex column, centered, min-w 56px."],
+            [".sm-crcl-rev-bar-val", "Bar value label — 11px mono bold."],
+            [".sm-crcl-rev-bar-label", "Bar quarter label — 10px text3."],
+            [".sm-crcl-bar", "Generic bar base — full width, rounded top, min-h 2px, transition."],
+            [".sm-crcl-bar-accent / -mint / -violet / -coral / -sky / -cyan", "Bar color variants — background color."],
+            [".sm-crcl-bar-label / -footer", "Bar annotation labels — whitespace nowrap, 6px spacing."],
+            [".sm-crcl-hero-kpi-row", "Hero KPI 2-col grid — 1px gap border separator, rounded-14."],
+            [".sm-crcl-hero-kpi-cell", "Hero KPI cell — accent-dim bg, 24px padding, centered."],
+            [".sm-crcl-current-grid", "Current position grid — repeat(4, 1fr), 8px gap, 12px font."],
+            [".sm-crcl-risk-grid", "Risk parameter grid — repeat(3, 1fr), 12px gap."],
+            [".sm-crcl-method-grid", "DCF method grid — 2 columns, 16px gap."],
+            [".sm-crcl-method-header", "Method step header — 12px 16px padding, bottom border."],
+            [".sm-crcl-method-body", "Method step body — 12px 16px padding, 8px gap."],
+            [".sm-crcl-method-item / -item-left", "Method row — baseline aligned, 8px gap. Left side flex-1."],
+            [".sm-crcl-step-badge", "Step badge — bg pill, 10px mono bold, rounded-4."],
+            [".sm-crcl-formula", "Formula text — 10px mono, text3, ellipsis overflow."],
+            [".sm-crcl-assumptions-box", "Assumptions box — accent-tinted bg, 12px, rounded-10, 1.7 line-height."],
+            [".sm-crcl-dcf-summary-row", "DCF summary row — 2-col grid (220px label + value), 12px 24px padding."],
+            [".sm-crcl-dcf-total-row", "DCF total row — accent-dim bg, no bottom border."],
+            [".sm-crcl-prob-num", "Probability number — 32px mono bold."],
+            [".sm-crcl-scenario-card", "Scenario card — surface bg, centered, rounded-16, 24px padding."],
+            [".sm-crcl-scenario-big-num", "Scenario big number — 28px mono bold, tracking -1px."],
+            [".sm-crcl-year-btn", "Year button — 12px 20px padding, rounded-8, 16px mono."],
+            [".sm-crcl-insights-grid", "Insights grid — 2 columns, 16px gap, 24px padding."],
+            [".sm-crcl-dot", "Dot indicator — 12px circle, 8px right margin."],
+            [".sm-crcl-2col-grid", "2-column grid — 12px gap."],
+            [".sm-crcl-metrics-header / -row / -th", "Metrics table — 3-col (1fr 120px 1fr), padded, bordered. data-align, data-last."],
+            [".sm-crcl-mint-header / -row", "Mint/Redeem table — 4-col (80px 1fr 1fr 1fr), padded, bordered. data-last."],
+            [".sm-crcl-opex-grid", "OpEx breakdown — 2-col, 24px gap, 11px font."],
+            [".sm-crcl-select", "Dropdown — surface2 bg, pill shape, 11px, bordered."],
+            [".sm-crcl-split-grid", "Split grid — 2-col, 1px gap, border bg (glass-edge)."],
+            [".sm-crcl-kv-row", "Key-value row — 6px vertical padding, faint bottom border."],
+            [".sm-crcl-econ-panel", "Stablecoin economics panel — mint→violet gradient bg, top border."],
+            [".sm-crcl-econ-title", "Econ title — 11px mint, uppercase, tracking 0.5px."],
+            [".sm-crcl-econ-body", "Econ body — 12px text2, 1.5 line-height."],
+            [".sm-crcl-mb-4 / -6, mt-4 / -6 / -8", "Spacing utilities — margin-bottom/top variants."],
+            [".sm-crcl-pt-8 / -12, pl-16", "Padding utilities — padding-top/left variants."],
+            [".sm-crcl-lh-15 / -16 / -17", "Line-height utilities — 1.5, 1.6, 1.7."],
+            [".sm-crcl-ls-tight", "Letter spacing — -1px."],
+            [".sm-crcl-max-w-600", "Max width — 600px."],
+            [".sm-val-color-sky", "FCF color — sky when data-positive=true, coral when false."],
           ]}
         />
 
