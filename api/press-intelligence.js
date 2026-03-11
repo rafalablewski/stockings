@@ -1,8 +1,10 @@
 // api/press-intelligence.js
-// Unified press-release proxy for all 14 tickers
+// Unified press-release proxy for all 38 tickers
 // Usage: /api/press-intelligence?ticker=ASTS
 // Supported: ASTS, BMNR, IRDM, GSAT, VZ, T, AMZLEO, LYNK,
-//            MSTR, MARA, RIOT, CLSK, FRMM, COIN
+//            MSTR, MARA, RIOT, CLSK, FRMM, COIN, HUT, IREN, NBIS, VSAT, RKLB, SATS, LUNR,
+//            MA, V, SOFI, AXP, AFRM, SEZL, SQ, PYPL, UPST, HOOD, GLXY, BITF,
+//            BLK, HSBC, C, CME, ICE, VOD, ORAN, TU, BCE, AMT, RKUNF, GOOGL
 
 const { neon } = require('@neondatabase/serverless');
 
@@ -569,6 +571,160 @@ const TICKER_CONFIG = {
       'https://ir.forum-markets.com/rss/news-releases.xml',
       'https://ir.forum-markets.com/rss/press-releases.xml',
     ],
+  },
+
+  // ─── Fintech & Payments ───
+  MA: {
+    type: 'qm-simple',
+    topics: ['MA'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /mastercard/i.test(hl) || /\bma\b/i.test(hl),
+  },
+  V: {
+    type: 'qm-simple',
+    topics: ['V'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /\bvisa\b/i.test(hl),
+  },
+  SOFI: {
+    type: 'qm-simple',
+    topics: ['SOFI'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /sofi/i.test(hl),
+  },
+  AXP: {
+    type: 'qm-simple',
+    topics: ['AXP'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /american\s*express/i.test(hl) || /\bamex\b/i.test(hl) || /\baxp\b/i.test(hl),
+  },
+  AFRM: {
+    type: 'qm-simple',
+    topics: ['AFRM'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /affirm/i.test(hl) || /\bafrm\b/i.test(hl),
+  },
+  SEZL: {
+    type: 'qm-simple',
+    topics: ['SEZL'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /sezzle/i.test(hl) || /\bsezl\b/i.test(hl),
+  },
+  SQ: {
+    type: 'qm-simple',
+    topics: ['SQ'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /\bblock\b/i.test(hl) || /\bsquare\b/i.test(hl) || /cash\s*app/i.test(hl) || /\bsq\b/i.test(hl),
+  },
+  PYPL: {
+    type: 'qm-simple',
+    topics: ['PYPL'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /paypal/i.test(hl) || /\bpypl\b/i.test(hl) || /venmo/i.test(hl),
+  },
+  UPST: {
+    type: 'qm-simple',
+    topics: ['UPST'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /upstart/i.test(hl) || /\bupst\b/i.test(hl),
+  },
+  HOOD: {
+    type: 'qm-simple',
+    topics: ['HOOD'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /robinhood/i.test(hl) || /\bhood\b/i.test(hl),
+  },
+
+  // ─── Digital Assets (new) ───
+  GLXY: {
+    type: 'qm-simple',
+    topics: ['GLXY'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /galaxy\s*digital/i.test(hl) || /\bglxy\b/i.test(hl),
+  },
+  BITF: {
+    type: 'qm-simple',
+    topics: ['BITF'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /bitfarms/i.test(hl) || /\bbitf\b/i.test(hl),
+  },
+
+  // ─── Financial Services ───
+  BLK: {
+    type: 'qm-simple',
+    topics: ['BLK'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /blackrock/i.test(hl) || /\bblk\b/i.test(hl),
+  },
+  HSBC: {
+    type: 'qm-simple',
+    topics: ['HSBC'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /hsbc/i.test(hl),
+  },
+  C: {
+    type: 'qm-simple',
+    topics: ['C'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /citigroup/i.test(hl) || /\bciti\b/i.test(hl) || /citibank/i.test(hl),
+  },
+  CME: {
+    type: 'qm-simple',
+    topics: ['CME'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /cme\s*group/i.test(hl) || /\bcme\b/i.test(hl),
+  },
+  ICE: {
+    type: 'qm-simple',
+    topics: ['ICE'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /intercontinental\s*exchange/i.test(hl) || /\bice\b/i.test(hl) || /\bnyse\b/i.test(hl),
+  },
+
+  // ─── Telecom (new) ───
+  VOD: {
+    type: 'qm-simple',
+    topics: ['VOD'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /vodafone/i.test(hl) || /\bvod\b/i.test(hl),
+  },
+  ORAN: {
+    type: 'qm-simple',
+    topics: ['ORAN'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /\borange\b/i.test(hl) && /telecom|network|mobile|5g|fiber|group|s\.a/i.test(hl),
+  },
+  TU: {
+    type: 'qm-simple',
+    topics: ['TU'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /telus/i.test(hl) || /\btu\b/i.test(hl),
+  },
+  BCE: {
+    type: 'qm-simple',
+    topics: ['BCE'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /\bbce\b/i.test(hl) || /\bbell\b/i.test(hl) && /canada|media|wireless/i.test(hl),
+  },
+
+  // ─── Infrastructure & Tech ───
+  AMT: {
+    type: 'qm-simple',
+    topics: ['AMT'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /american\s*tower/i.test(hl) || /\bamt\b/i.test(hl),
+  },
+  RKUNF: {
+    type: 'qm-simple',
+    topics: ['RKUNF'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /rakuten/i.test(hl) || /\brkunf\b/i.test(hl),
+  },
+  GOOGL: {
+    type: 'qm-simple',
+    topics: ['GOOGL'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /alphabet/i.test(hl) || /\bgoogle\b/i.test(hl) || /\bgoogl\b/i.test(hl),
   },
 
   // ─── Complex multi-source tickers ───
