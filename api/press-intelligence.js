@@ -6,9 +6,7 @@
 
 const { neon } = require('@neondatabase/serverless');
 
-const caches = {};
-const CACHE_TTL_DEFAULT = 5 * 60 * 1000;
-const CACHE_TTL_SHORT = 60 * 1000;
+// No in-memory cache — DB is the source of truth
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  DATABASE PERSISTENCE — stores every press release permanently
@@ -903,7 +901,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const ticker = (req.query.ticker || '').toUpperCase();
-  const force = req.query.force === 'true';
+  const mode = req.query.mode || 'db';   // "db" = page load, "refresh" = upstream fetch
   const config = TICKER_CONFIG[ticker];
   if (!config) {
     return res.status(400).json({
@@ -911,17 +909,28 @@ export default async function handler(req, res) {
     });
   }
 
-  const ttl = (config.type === 'att' || config.type === 'amazon-leo' || config.type === 'lynk')
-    ? CACHE_TTL_SHORT : CACHE_TTL_DEFAULT;
+  const wrapInNews = config.type === 'amazon-leo' || config.type === 'lynk';
 
-  const now = Date.now();
-  const cached = caches[ticker];
-  if (!force && cached && now - cached.ts < ttl) {
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('X-Cache', 'HIT');
-    return res.status(200).send(cached.payload);
+  // ── MODE: DB — serve from database only (page load) ──
+  if (mode === 'db') {
+    try {
+      const dbItems = await loadFromDB(ticker);
+      for (const item of dbItems) item._inDb = true;
+      const body = wrapInNews ? { news: dbItems } : dbItems;
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('X-Source', 'db');
+      res.setHeader('X-Total-DB', dbItems.length);
+      return res.status(200).send(JSON.stringify(body));
+    } catch (err) {
+      console.error(`press-intelligence DB load error (${ticker}):`, err.message);
+      // DB failed — return empty so frontend still works
+      const body = wrapInNews ? { news: [] } : [];
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(200).send(JSON.stringify(body));
+    }
   }
 
+  // ── MODE: REFRESH — fetch upstream, compare with DB, persist new items ──
   try {
     let items;
 
@@ -945,7 +954,7 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: `Unknown type: ${config.type}` });
     }
 
-    // Load existing DB items first (to know what's already stored)
+    // Load existing DB items to know what's already stored
     let dbHashes = new Set();
     let dbItems = [];
     try {
@@ -961,7 +970,7 @@ export default async function handler(req, res) {
     // Merge fresh upstream + historical DB items, deduplicated
     let merged = items;
     if (dbItems.length > 0) {
-      merged = dedupe([...items, ...dbItems]); // fresh items first = higher priority in dedupe
+      merged = dedupe([...items, ...dbItems]);
     }
 
     // Mark each item: _inDb = true if it was already in the database BEFORE this fetch
@@ -969,28 +978,21 @@ export default async function handler(req, res) {
       item._inDb = dbHashes.has(normalizeHl(item.headline));
     }
 
-    // Wrap in { news: [...] } for AMZLEO and LYNK to match original response format
-    const wrapInNews = config.type === 'amazon-leo' || config.type === 'lynk';
     const body = wrapInNews ? { news: merged } : merged;
-    const payload = JSON.stringify(body);
-
-    caches[ticker] = { payload, ts: now };
-
     res.setHeader('Content-Type', 'application/json');
-    res.setHeader('X-Cache', 'MISS');
+    res.setHeader('X-Source', 'refresh');
     res.setHeader('X-Total-Upstream', items.length);
     res.setHeader('X-Total-Merged', merged.length);
-    return res.status(200).send(payload);
+    return res.status(200).send(JSON.stringify(body));
   } catch (err) {
     // If upstream fetch failed entirely, try serving from database
     try {
       const dbItems = await loadFromDB(ticker);
       if (dbItems.length > 0) {
         for (const item of dbItems) item._inDb = true;
-        const wrapInNews = config.type === 'amazon-leo' || config.type === 'lynk';
         const body = wrapInNews ? { news: dbItems } : dbItems;
         res.setHeader('Content-Type', 'application/json');
-        res.setHeader('X-Cache', 'DB-FALLBACK');
+        res.setHeader('X-Source', 'db-fallback');
         res.setHeader('X-Total-DB', dbItems.length);
         return res.status(200).send(JSON.stringify(body));
       }

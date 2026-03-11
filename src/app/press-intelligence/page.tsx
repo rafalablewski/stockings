@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { stocks, stockList } from "@/lib/stocks";
 import "./press-intelligence.css";
 
@@ -435,8 +435,6 @@ const isToday = (str: string) => {
   return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
 };
 
-const TTL = 5 * 60 * 1000;
-
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
 export default function PressIntelligencePage() {
@@ -453,23 +451,16 @@ export default function PressIntelligencePage() {
 
   const [page, setPage] = useState(1);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const cacheRef = useRef<Record<string, { data: NewsItem[]; ts: number }>>({});
 
   /* ── Fetch all feeds in parallel ── */
-  const loadAll = useCallback(async (force = false) => {
+  const loadAll = useCallback(async (mode: "db" | "refresh" = "db") => {
     const results: Record<string, NewsItem[]> = {};
     const errs: Record<string, string> = {};
 
     await Promise.allSettled(
       FEED_CONFIGS.map(async (cfg) => {
-        /* Check cache */
-        const cached = cacheRef.current[cfg.ticker];
-        if (!force && cached && Date.now() - cached.ts < TTL) {
-          results[cfg.ticker] = cached.data;
-          return;
-        }
         try {
-          const url = force ? `${cfg.endpoint}&force=true` : cfg.endpoint;
+          const url = `${cfg.endpoint}&mode=${mode}`;
           const res = await fetch(url);
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
@@ -479,13 +470,9 @@ export default function PressIntelligencePage() {
             .filter((item: any) => cfg.sourceFilter(item.source || "") && cfg.headlineFilter(item.headline || item.title || ""))
             .sort((a: any, b: any) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime())
             .map((item: any) => ({ ...item, _ticker: cfg.ticker, _config: cfg }));
-          cacheRef.current[cfg.ticker] = { data: filtered, ts: Date.now() };
           results[cfg.ticker] = filtered;
         } catch (e: any) {
           errs[cfg.ticker] = e.message;
-          /* Keep stale data if available */
-          const stale = cacheRef.current[cfg.ticker];
-          if (stale) results[cfg.ticker] = stale.data;
         }
       })
     );
@@ -497,11 +484,13 @@ export default function PressIntelligencePage() {
     setRefreshing(false);
   }, []);
 
-  useEffect(() => { loadAll(); }, [loadAll]);
+  /* Page load: serve from database only */
+  useEffect(() => { loadAll("db"); }, [loadAll]);
 
+  /* Refresh button: fetch upstream, compare with DB, mark new items */
   const handleRefresh = () => {
     setRefreshing(true);
-    loadAll(true);
+    loadAll("refresh");
   };
 
   /* ── Merged & filtered feed ── */
