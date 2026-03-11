@@ -831,6 +831,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const ticker = (req.query.ticker || '').toUpperCase();
+  const force = req.query.force === 'true';
   const config = TICKER_CONFIG[ticker];
   if (!config) {
     return res.status(400).json({
@@ -843,7 +844,7 @@ export default async function handler(req, res) {
 
   const now = Date.now();
   const cached = caches[ticker];
-  if (cached && now - cached.ts < ttl) {
+  if (!force && cached && now - cached.ts < ttl) {
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('X-Cache', 'HIT');
     return res.status(200).send(cached.payload);

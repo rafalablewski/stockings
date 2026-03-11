@@ -468,7 +468,8 @@ export default function PressIntelligencePage() {
           return;
         }
         try {
-          const res = await fetch(cfg.endpoint);
+          const url = force ? `${cfg.endpoint}&force=true` : cfg.endpoint;
+          const res = await fetch(url);
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const json = await res.json();
           const parse = cfg.parseResponse || ((j: any) => j?.results?.news?.[0]?.newsitem || []);
