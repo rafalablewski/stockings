@@ -178,7 +178,7 @@ export const pressReleases = pgTable('press_releases', {
   ticker: text('ticker').notNull(),
   headlineHash: text('headline_hash').notNull(),  // normalised headline for dedup
   headline: text('headline').notNull(),
-  datetime: text('datetime').notNull(),            // ISO date string
+  datetime: timestamp('datetime').notNull(),        // ISO date → TIMESTAMPTZ
   source: text('source'),
   summary: text('summary'),
   permalink: text('permalink'),

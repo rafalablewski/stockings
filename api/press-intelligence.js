@@ -43,7 +43,7 @@ async function ensureTable() {
       ticker TEXT NOT NULL,
       headline_hash TEXT NOT NULL,
       headline TEXT NOT NULL,
-      datetime TEXT NOT NULL,
+      datetime TIMESTAMPTZ NOT NULL,
       source TEXT,
       summary TEXT,
       permalink TEXT,
@@ -85,27 +85,24 @@ async function persistItems(ticker, items) {
   });
   if (validItems.length === 0) return 0;
 
-  let saved = 0;
-  const BATCH = 20;
-  for (let i = 0; i < validItems.length; i += BATCH) {
-    const batch = validItems.slice(i, i + BATCH);
-    try {
-      await Promise.all(batch.map(item => {
-        const hlHash = normalizeHl(item.headline);
-        return sql`
-          INSERT INTO press_releases (ticker, headline_hash, headline, datetime, source, summary, permalink, storyurl, newsid, internal_source)
-          VALUES (${ticker}, ${hlHash}, ${item.headline || ''}, ${item.datetime || ''}, ${item.source || ''}, ${(item.qmsummary || item.summary || '').slice(0, 2000)}, ${item.permalink || ''}, ${item.storyurl || ''}, ${item.newsid || ''}, ${item._source || ''})
-          ON CONFLICT (ticker, headline_hash)
-          DO UPDATE SET fetch_count = press_releases.fetch_count + 1, last_seen_at = NOW()
-        `;
-      }));
-      saved += batch.length;
-    } catch (err) {
-      console.error(`press-intelligence DB persist error (${ticker}, batch ${i}):`, err.message);
-    }
+  const queries = validItems.map(item => {
+    const hlHash = normalizeHl(item.headline);
+    return sql`
+      INSERT INTO press_releases (ticker, headline_hash, headline, datetime, source, summary, permalink, storyurl, newsid, internal_source)
+      VALUES (${ticker}, ${hlHash}, ${item.headline || ''}, ${item.datetime || ''}, ${item.source || ''}, ${(item.qmsummary || item.summary || '').slice(0, 2000)}, ${item.permalink || ''}, ${item.storyurl || ''}, ${item.newsid || ''}, ${item._source || ''})
+      ON CONFLICT (ticker, headline_hash)
+      DO UPDATE SET fetch_count = press_releases.fetch_count + 1, last_seen_at = NOW()
+    `;
+  });
+
+  try {
+    await sql.transaction(queries);
+    console.log(`press-intelligence: persisted ${queries.length} items for ${ticker}`);
+    return queries.length;
+  } catch (err) {
+    console.error(`press-intelligence DB persist error (${ticker}):`, err.message);
+    return 0;
   }
-  console.log(`press-intelligence: persisted ${saved}/${validItems.length} items for ${ticker}`);
-  return saved;
 }
 
 /**
@@ -125,6 +122,7 @@ async function loadFromDB(ticker) {
       FROM press_releases
       WHERE ticker = ${ticker}
       ORDER BY datetime DESC
+      LIMIT 1000
     `;
     console.log(`press-intelligence loadFromDB(${ticker}): ${rows.length} rows`);
     return rows.map(r => ({

@@ -181,7 +181,7 @@ CREATE TABLE IF NOT EXISTS press_releases (
   ticker TEXT NOT NULL,
   headline_hash TEXT NOT NULL,
   headline TEXT NOT NULL,
-  datetime TEXT NOT NULL,
+  datetime TIMESTAMPTZ NOT NULL,
   source TEXT,
   summary TEXT,
   permalink TEXT,
