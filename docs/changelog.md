@@ -7,6 +7,9 @@
 - refactor: eliminate all sm-bmnr-* cross-stock CSS leakage in ASTS.tsx (7 references → 0)
 - feat: enrich CRCL competitor profiles to match BMNR/ASTS pattern — add ticker, productType, capabilities, keyMetrics
 - refactor: rename CRCLModelTab to ModelTab for consistency with BMNR/ASTS naming convention
+- fix: align CRCL Model tab to ASTS visual pattern — replace sm-crcl-* classes with shared sm-dcf-*, sm-scenario-card, sm-model-grid, sm-grid-sep-2col
+- fix: align CRCL Monte Carlo renderParameters to ASTS pattern — replace sm-card/sm-card-section/sm-card-body + inline --cols with ParameterCard components
+- fix: align CRCL ParameterCard + OverviewParameterCard to ASTS pattern — sm-panel, rgba() colors, direct inline border/bg/color instead of --btn-color CSS var
 - docs: add Tab-by-Tab Map section to /docs — complete S/W/C audit of all 26 tabs across 3 stocks with summary scorecard
 - docs: add 11 shared news/competitor CSS classes to Component Patterns section
 - docs: add SharedModelTab, SharedMonteCarloTab, SharedCompsTab, SharedCapitalTab + type files + TEMPLATE.tsx.template to /docs file listing

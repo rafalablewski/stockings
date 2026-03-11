@@ -671,7 +671,7 @@ const CRCL_SCENARIO_PRESETS = {
 };
 
 // ParameterCard component with color gradient based on value
-const CRCLParameterCard = ({
+const ParameterCard = ({
   title,
   explanation,
   options,
@@ -693,7 +693,7 @@ const CRCLParameterCard = ({
   const isCustomValue = !options.includes(value);
 
   const formatValue = (v: number) => {
-    if (format === '$') return `$${v}B`;
+    if (format === '$') return `$${v}`;
     if (format === '%') return `${v}%`;
     if (format === 'x') return `${v.toFixed(1)}x`;
     return String(v);
@@ -701,20 +701,15 @@ const CRCLParameterCard = ({
 
   // 6 colors for 6 preset positions: red → orange → yellow → lime → green → emerald
   const presetColors = [
-    { border: 'var(--coral)', bg: 'color-mix(in srgb, var(--coral) 20%, transparent)', text: 'var(--coral)' },
-    { border: '#f97316', bg: 'color-mix(in srgb, var(--coral) 15%, transparent)', text: '#f97316' },
-    { border: 'var(--gold)', bg: 'color-mix(in srgb, var(--gold) 15%, transparent)', text: 'var(--gold)' },
-    { border: '#a3e635', bg: 'color-mix(in srgb, #a3e635 15%, transparent)', text: '#84cc16' },
-    { border: 'var(--mint)', bg: 'color-mix(in srgb, var(--mint) 15%, transparent)', text: 'var(--mint)' },
-    { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
+    { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+    { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+    { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+    { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+    { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+    { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
   ];
 
-  // Colors map directly to position: idx 0 = red (bearish), idx 5 = green (bullish)
-  // Options arrays are always ordered from bearish to bullish scenarios
-  // (for inverse params like risk/costs, HIGH values come first since they're bearish)
-  const getButtonColor = (idx: number) => {
-    return presetColors[idx];
-  };
+  const getButtonColor = (idx: number) => presetColors[idx];
 
   const handleCustomSubmit = () => {
     const num = parseFloat(customInput);
@@ -726,8 +721,8 @@ const CRCLParameterCard = ({
   };
 
   return (
-    <div className="sm-card">
-      <div className="sm-card-section"><span className="sm-section-label">{title}</span></div>
+    <div className="sm-panel sm-mb-12">
+      <div className="sm-panel-title sm-mb-12">{title}</div>
       <p className="sm-note-list">
         {explanation}
       </p>
@@ -739,12 +734,9 @@ const CRCLParameterCard = ({
             <div
               key={opt}
               onClick={() => { onChange(opt); setCustomMode(false); }}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && (() => { onChange(opt); setCustomMode(false); })()}
               className="sm-param-btn"
-              data-active={isActive}
-              style={isActive ? { '--btn-color': colors.border } as React.CSSProperties : undefined}
+              data-active={isActive ? "true" : undefined}
+              style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}
             >
               {formatValue(opt)}
             </div>
@@ -766,13 +758,9 @@ const CRCLParameterCard = ({
         ) : (
           <div
             onClick={() => setCustomMode(true)}
-            role="button"
-            tabIndex={0}
-            aria-label="Enter custom value"
-            onKeyDown={(e) => e.key === 'Enter' && setCustomMode(true)}
             className="sm-param-btn"
-            data-active={isCustomValue}
-            style={isCustomValue ? { '--btn-color': 'var(--violet)' } as React.CSSProperties : undefined}
+            data-active={isCustomValue ? "true" : undefined}
+            style={isCustomValue ? { borderColor: 'var(--violet)', background: 'rgba(167,139,250,0.15)', color: 'var(--violet)' } : undefined}
           >
             {isCustomValue ? formatValue(value) : '...'}
           </div>
@@ -816,12 +804,12 @@ const OverviewParameterCard = ({
   };
 
   const presetColors = [
-    { border: 'var(--coral)', bg: 'color-mix(in srgb, var(--coral) 20%, transparent)', text: 'var(--coral)' },
-    { border: '#f97316', bg: 'color-mix(in srgb, var(--coral) 15%, transparent)', text: '#f97316' },
-    { border: 'var(--gold)', bg: 'color-mix(in srgb, var(--gold) 15%, transparent)', text: 'var(--gold)' },
-    { border: '#a3e635', bg: 'color-mix(in srgb, #a3e635 15%, transparent)', text: '#84cc16' },
-    { border: 'var(--mint)', bg: 'color-mix(in srgb, var(--mint) 15%, transparent)', text: 'var(--mint)' },
-    { border: '#22c55e', bg: 'color-mix(in srgb, #22c55e 20%, transparent)', text: '#22c55e' },
+    { border: 'var(--coral)', bg: 'rgba(248,113,113,0.2)', text: 'var(--coral)' },
+    { border: '#f97316', bg: 'rgba(249,115,22,0.15)', text: '#f97316' },
+    { border: 'var(--gold)', bg: 'rgba(251,191,36,0.15)', text: 'var(--gold)' },
+    { border: '#a3e635', bg: 'rgba(163,230,53,0.15)', text: '#84cc16' },
+    { border: 'var(--mint)', bg: 'rgba(52,211,153,0.15)', text: 'var(--mint)' },
+    { border: '#22c55e', bg: 'rgba(34,197,94,0.2)', text: '#22c55e' },
   ];
 
   const handleCustomSubmit = () => {
@@ -834,7 +822,7 @@ const OverviewParameterCard = ({
   };
 
   return (
-    <div className="sm-panel sm-mb-12 sm-rounded-14">
+    <div className="sm-panel sm-mb-12">
       <div className="sm-panel-title sm-mb-12">{title}</div>
       <p className="sm-note-list">
         {explanation}
@@ -842,24 +830,19 @@ const OverviewParameterCard = ({
       <div className="sm-param-grid-7">
         {options.slice(0, 6).map((opt, idx) => {
           const isActive = value === opt;
-          const isCurrent = currentValue !== undefined && opt === currentValue;
           const colors = presetColors[idx];
           return (
             <div
               key={opt}
               onClick={() => { onChange(opt); setCustomMode(false); }}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => e.key === 'Enter' && (() => { onChange(opt); setCustomMode(false); })()}
               className="sm-param-btn"
-              data-active={isActive}
-              style={isActive ? { '--btn-color': colors.border } as React.CSSProperties : undefined}
+              data-active={isActive ? "true" : undefined}
+              style={isActive ? { borderColor: colors.border, background: colors.bg, color: colors.text } : undefined}
             >
               {formatValue(opt)}
             </div>
           );
         })}
-        {/* Custom input button/field */}
         {customMode ? (
           <div className="sm-custom-input-wrap">
             <input
@@ -875,19 +858,15 @@ const OverviewParameterCard = ({
         ) : (
           <div
             onClick={() => setCustomMode(true)}
-            role="button"
-            tabIndex={0}
-            aria-label="Enter custom value"
-            onKeyDown={(e) => e.key === 'Enter' && setCustomMode(true)}
             className="sm-param-btn"
-            data-active={isCustomValue}
-            style={isCustomValue ? { '--btn-color': 'var(--violet)' } as React.CSSProperties : undefined}
+            data-active={isCustomValue ? "true" : undefined}
+            style={isCustomValue ? { borderColor: 'var(--violet)', background: 'rgba(167,139,250,0.15)', color: 'var(--violet)' } : undefined}
           >
             {isCustomValue ? formatValue(value) : '...'}
           </div>
         )}
       </div>
-      <div className="sm-subtle-sm sm-text-center sm-mt-6">
+      <div className="sm-subtle-sm sm-text-center">
         ← Bearish | Bullish →
       </div>
     </div>
@@ -1022,40 +1001,34 @@ const ModelTab = ({
       <>
 
         {/* Scenario Presets - 6 scenarios from Worst to Moon */}
-        <div className="sm-panel sm-rounded-14">
-          <div className="sm-crcl-presets-title">Scenario Presets</div>
-          <div className="sm-crcl-preset-grid">
-            {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
-              const preset = CRCL_SCENARIO_PRESETS[s];
-              const isActive = selectedScenario === s;
-              return (
-                <div
-                  key={s}
-                  onClick={() => applyScenario(s)}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`${preset.label} scenario`}
-                  onKeyDown={(e) => e.key === 'Enter' && applyScenario(s)}
-                  className="sm-crcl-preset-item"
-                  data-active={isActive}
-                  style={{ '--preset-color': preset.color } as React.CSSProperties}
-                >
-                  <div className="sm-crcl-preset-icon">{preset.icon}</div>
-                  <div className="sm-crcl-preset-label" style={{ color: isActive ? preset.color : 'var(--text)' }}>
-                    {preset.label}
-                  </div>
-                  <div className="sm-crcl-preset-detail">
-                    {preset.usdcGrowthRate > 0 ? '+' : ''}{preset.usdcGrowthRate}% · {preset.reserveYield}%
-                  </div>
+        <div className="sm-model-grid sm-mt-8" style={{ '--cols': 6 } as React.CSSProperties}>
+          {(['worst', 'bear', 'base', 'mgmt', 'bull', 'moon'] as const).map(s => {
+            const preset = CRCL_SCENARIO_PRESETS[s];
+            const isActive = selectedScenario === s;
+            return (
+              <div
+                key={s}
+                onClick={() => applyScenario(s)}
+                className="sm-scenario-card"
+                data-active={isActive || undefined}
+                style={{ '--scenario-color': preset.color } as React.CSSProperties}
+              >
+                <div className="sm-micro-text">{preset.label}</div>
+                <div className="sm-scenario-val">
+                  {preset.usdcGrowthRate > 0 ? '+' : ''}{preset.usdcGrowthRate}%
                 </div>
-              );
-            })}
-          </div>
-          {/* Always show to prevent layout shift */}
-          <div className="sm-crcl-custom-hint" data-active={selectedScenario === 'custom'}>
-            ⚙️ {selectedScenario === 'custom' ? 'Custom scenario - parameters modified from preset' : 'Click any value below to create custom scenario'}
-          </div>
+                <div className="sm-scenario-sub">
+                  {preset.reserveYield}% yield
+                </div>
+              </div>
+            );
+          })}
         </div>
+        {selectedScenario === 'custom' && (
+          <div className="sm-custom-scenario-alert">
+            Custom scenario — parameters modified from preset
+          </div>
+        )}
 
         {/* USDC & REVENUE PARAMETERS */}
         <div className="sm-divider">
@@ -1064,7 +1037,7 @@ const ModelTab = ({
         </div>
 
         <div className="sm-grid-2">
-          <CRCLParameterCard
+          <ParameterCard
             title="USDC Annual Growth Rate (%)"
             explanation="Expected annual USDC circulation growth. Historical: 500%+ (2020-21), -50% (2022-23), +40% (2024). Crypto cycles are volatile. Stablecoin TAM could grow 10x+ with institutional adoption and regulatory clarity."
             options={[-20, 5, 15, 25, 40, 60]}
@@ -1072,7 +1045,7 @@ const ModelTab = ({
             onChange={v => { setUsdcGrowthRate(v); setSelectedScenario('custom'); }}
             format="%"
           />
-          <CRCLParameterCard
+          <ParameterCard
             title="Reserve Yield / Fed Funds (%)"
             explanation="Yield on USDC reserves (short-term Treasuries). Currently ~4.5%. Fed projections: cuts to 3-3.5% by 2026. Key revenue driver - 1% rate = ~$625M gross revenue per $62.5B USDC. Lower rates = lower yield income."
             options={[1.0, 2.5, 3.5, 3.5, 4.0, 4.5]}
@@ -1083,7 +1056,7 @@ const ModelTab = ({
         </div>
 
         <div className="sm-grid-2">
-          <CRCLParameterCard
+          <ParameterCard
             title="Market Share (%)"
             explanation="USDC % of total stablecoin market. Currently ~29%. USDT dominates at ~68%. USDC's advantage: regulatory compliance, transparency, US-friendly. Risk: CBDCs, new entrants (PayPal USD), USDT resilience."
             options={[15, 22, 28, 32, 38, 45]}
@@ -1091,7 +1064,7 @@ const ModelTab = ({
             onChange={v => { setMarketShare(v); setSelectedScenario('custom'); }}
             format="%"
           />
-          <CRCLParameterCard
+          <ParameterCard
             title="Coinbase Distribution Cost (%)"
             explanation="Revenue share to Coinbase for USDC distribution. Current estimate: ~54% of reserve income. Coinbase is critical partner but takes majority of economics. Lower % = better Circle unit economics."
             options={[60, 56, 54, 50, 45, 40]}
@@ -1109,7 +1082,7 @@ const ModelTab = ({
         </div>
 
         <div className="sm-grid-2">
-          <CRCLParameterCard
+          <ParameterCard
             title="Operating Margin (%)"
             explanation="EBITDA margin on net revenue (after Coinbase). Fintech peers: 30-50%+. Scale benefits: compliance/tech costs spread over larger base. 25% = pressured, 40%+ = scale achieved, 60% = best-in-class."
             options={[15, 28, 35, 42, 50, 60]}
@@ -1117,16 +1090,16 @@ const ModelTab = ({
             onChange={v => { setOperatingMargin(v); setSelectedScenario('custom'); }}
             format="%"
           />
-          <div className="sm-panel sm-mb-12 sm-rounded-14">
+          <div className="sm-panel sm-mb-12">
             <div className="sm-panel-title sm-mb-12">Current Position</div>
             <p className="sm-note-list">
               Live data from Circle financials. Used as starting point for projections.
             </p>
-            <div className="sm-crcl-current-grid">
-              <div><span className="sm-text3">USDC Circulation:</span> <strong>${currentUSDC}B</strong></div>
-              <div><span className="sm-text3">Market Share:</span> <strong>{currentMarketShare}%</strong></div>
-              <div><span className="sm-text3">Est. Gross Rev:</span> <strong>${currentGrossRevenue.toFixed(2)}B</strong></div>
-              <div><span className="sm-text3">Est. Net Rev:</span> <strong>${currentNetRevenue.toFixed(2)}B</strong></div>
+            <div className="sm-model-grid" style={{ '--cols': 2 } as React.CSSProperties}>
+              <div className="sm-grid-cell-center"><div className="sm-micro-text">USDC Circulation</div><div className="sm-mono-lg-kpi">${currentUSDC}B</div></div>
+              <div className="sm-grid-cell-center"><div className="sm-micro-text">Market Share</div><div className="sm-mono-lg-kpi">{currentMarketShare}%</div></div>
+              <div className="sm-grid-cell-center"><div className="sm-micro-text">Est. Gross Rev</div><div className="sm-mono-lg-kpi">${currentGrossRevenue.toFixed(2)}B</div></div>
+              <div className="sm-grid-cell-center"><div className="sm-micro-text">Est. Net Rev</div><div className="sm-mono-lg-kpi">${currentNetRevenue.toFixed(2)}B</div></div>
             </div>
           </div>
         </div>
@@ -1138,7 +1111,7 @@ const ModelTab = ({
         </div>
 
         <div className="sm-grid-2">
-          <CRCLParameterCard
+          <ParameterCard
             title="Discount Rate / WACC (%)"
             explanation="Required return for discounting future cash flows. 10% = mature fintech. 14% = growth with execution risk. 20%+ = speculative. Higher if rate/regulatory risk is elevated."
             options={[25, 18, 14, 12, 11, 10]}
@@ -1147,7 +1120,7 @@ const ModelTab = ({
             format="%"
             inverse
           />
-          <CRCLParameterCard
+          <ParameterCard
             title="Terminal Growth Rate (%)"
             explanation="Perpetual growth rate after terminal year. For stablecoin infrastructure: 2-3% is reasonable (GDP-like). 4%+ assumes continued crypto economy outgrowth. Should not exceed long-term nominal GDP."
             options={[0, 1.5, 2.5, 3, 3.5, 4]}
@@ -1166,8 +1139,8 @@ const ModelTab = ({
           Probability of adverse events that could significantly impair value. Combined as: (1-Reg) × (1-Comp) × (1-Rate) = {(riskFactor * 100).toFixed(0)}% success probability.
         </p>
 
-        <div className="sm-crcl-risk-grid">
-          <CRCLParameterCard
+        <div className="sm-grid-sep-3col sm-gap-12-bg-transparent">
+          <ParameterCard
             title="Regulatory Risk (%)"
             explanation="Probability of adverse stablecoin regulation. SEC/banking agency scrutiny, reserve requirements, licensing issues. 5% = favorable legislation. 30%+ = CBDC mandates or stablecoin restrictions."
             options={[40, 20, 10, 5, 3, 1]}
@@ -1176,7 +1149,7 @@ const ModelTab = ({
             format="%"
             inverse
           />
-          <CRCLParameterCard
+          <ParameterCard
             title="Competition Risk (%)"
             explanation="Probability competitors (USDT, CBDC, PayPal USD) significantly erode market share or pricing. 5% = strong moat. 25%+ = commoditization risk."
             options={[35, 20, 12, 8, 5, 2]}
@@ -1185,7 +1158,7 @@ const ModelTab = ({
             format="%"
             inverse
           />
-          <CRCLParameterCard
+          <ParameterCard
             title="Interest Rate Risk (%)"
             explanation="Probability Fed cuts rates more than expected, compressing yield income. 5% = higher for longer. 25%+ = aggressive easing cycle. Circle's revenue is highly rate-sensitive."
             options={[30, 20, 10, 8, 5, 2]}
@@ -1201,39 +1174,39 @@ const ModelTab = ({
           <span className="sm-param-label">DCF Valuation Output (5-Year Terminal)</span>
           <span className="sm-divider-line" />
         </div>
-        {/* Hero KPI row - 2 column */}
-        <div className="sm-crcl-hero-kpi-row">
-          <div className="sm-crcl-hero-kpi-cell">
-            <div className="sm-section-label sm-accent">Target Stock Price</div>
-            <div className="sm-comps-big-num sm-color-accent sm-lh-1">{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
-            <div className="sm-subtle sm-crcl-mt-6">vs ${currentStockPrice.toFixed(0)} current</div>
+        {/* Primary Output — Hero KPIs */}
+        <div className="sm-grid-sep-2col sm-rounded-16 sm-overflow-hidden sm-dcf-summary-accent">
+          <div className="sm-dcf-cell">
+            <div className="sm-th sm-accent">Target Price</div>
+            <div className="sm-mono-2xl sm-accent sm-m-6-0-4">{targetStockPrice > 0 ? `$${targetStockPrice.toFixed(0)}` : 'N/A'}</div>
+            <div className="sm-text-11">vs ${currentStockPrice.toFixed(0)} current</div>
           </div>
-          <div className="sm-crcl-hero-kpi-cell">
-            <div className="sm-section-label sm-accent">Implied Upside</div>
-            <div className="sm-comps-big-num sm-lh-1" style={{ color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--red)' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
-            <div className="sm-subtle sm-crcl-mt-6">{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
+          <div className="sm-dcf-cell">
+            <div className="sm-th sm-accent">Implied Upside</div>
+            <div className="sm-dcf-hero" style={{ color: impliedUpside > 50 ? 'var(--mint)' : impliedUpside > 0 ? 'var(--gold)' : 'var(--coral)' }}>{targetStockPrice > 0 ? `${impliedUpside > 0 ? '+' : ''}${impliedUpside.toFixed(0)}%` : 'N/A'}</div>
+            <div className="sm-text-11">{impliedUpside > 100 ? 'Strong Buy' : impliedUpside > 25 ? 'Buy' : impliedUpside > 0 ? 'Hold' : 'Sell'}</div>
           </div>
         </div>
-        {/* 4-column metrics grid */}
-        <div className="sm-kpi-grid-4">
+        {/* Valuation Metrics Grid */}
+        <div className="sm-model-grid sm-mt-12" style={{ '--cols': 4 } as React.CSSProperties}>
           {[
-            { label: 'Present Value', value: `$${riskAdjustedEV.toFixed(1)}B`, detail: `${(riskFactor * 100).toFixed(0)}% prob` },
-            { label: 'Market Cap', value: `$${currentMarketCap.toFixed(1)}B`, detail: `${currentPSRatio.toFixed(1)}x Net Rev` },
-            { label: 'Terminal USDC', value: `$${terminalUSDC.toFixed(0)}B`, detail: `${usdcGrowthRate > 0 ? '+' : ''}${usdcGrowthRate}%/yr` },
-            { label: 'Terminal Gross Rev', value: `$${terminalGrossRevenue.toFixed(2)}B`, detail: `${reserveYield}% yield` },
-            { label: 'Terminal Net Rev', value: `$${terminalNetRevenue.toFixed(2)}B`, detail: `After ${distributionCost}% dist.` },
-            { label: 'Terminal EBITDA', value: `$${terminalEBITDA.toFixed(2)}B`, detail: `${operatingMargin}% margin` },
-            { label: 'Terminal EV/Rev', value: `${terminalEVperRev.toFixed(1)}x`, detail: `$${terminalEV.toFixed(1)}B EV` },
-            { label: 'Terminal EV/EBITDA', value: `${terminalEVperEBITDA.toFixed(1)}x`, detail: 'Terminal multiple' },
-            { label: 'Terminal FCF', value: `$${terminalFCF.toFixed(2)}B`, detail: `${(fcfConversion * 100).toFixed(0)}% conversion` },
-            { label: 'Diluted Shares', value: `${terminalShares.toFixed(0)}M`, detail: `+${((terminalShares / currentShares - 1) * 100).toFixed(0)}% dilution` },
-            { label: 'Risk Factor', value: `${(riskFactor * 100).toFixed(0)}%`, detail: 'Success prob.' },
-            { label: 'Equity Value', value: `$${equityValue.toFixed(1)}B`, detail: 'Risk-adj' },
-          ].map((m, i) => (
-            <div key={i} className="sm-kpi-cell sm-text-center">
-              <div className="sm-kpi-label">{m.label}</div>
-              <div className="sm-kpi-value sm-text-16">{m.value}</div>
-              <div className="sm-kpi-sub">{m.detail}</div>
+            { label: 'PV Enterprise Value', value: `$${riskAdjustedEV.toFixed(1)}B`, sub: `${(riskFactor * 100).toFixed(0)}% prob` },
+            { label: 'Market Cap', value: `$${currentMarketCap.toFixed(1)}B`, sub: `${currentPSRatio.toFixed(1)}x Net Rev` },
+            { label: 'Terminal USDC', value: `$${terminalUSDC.toFixed(0)}B`, sub: `${usdcGrowthRate > 0 ? '+' : ''}${usdcGrowthRate}%/yr` },
+            { label: 'Terminal Gross Rev', value: `$${terminalGrossRevenue.toFixed(2)}B`, sub: `${reserveYield}% yield` },
+            { label: 'Terminal Net Rev', value: `$${terminalNetRevenue.toFixed(2)}B`, sub: `After ${distributionCost}% dist.` },
+            { label: 'Terminal EBITDA', value: `$${terminalEBITDA.toFixed(2)}B`, sub: `${operatingMargin}% margin` },
+            { label: 'Terminal EV/Rev', value: `${terminalEVperRev.toFixed(1)}x`, sub: `$${terminalEV.toFixed(1)}B EV` },
+            { label: 'Terminal EV/EBITDA', value: `${terminalEVperEBITDA.toFixed(1)}x`, sub: 'Terminal multiple' },
+            { label: 'Terminal FCF', value: `$${terminalFCF.toFixed(2)}B`, sub: `${(fcfConversion * 100).toFixed(0)}% conversion` },
+            { label: 'Diluted Shares', value: `${terminalShares.toFixed(0)}M`, sub: `+${((terminalShares / currentShares - 1) * 100).toFixed(0)}% dilution` },
+            { label: 'Risk Factor', value: `${(riskFactor * 100).toFixed(0)}%`, sub: 'Success prob.' },
+            { label: 'Equity Value', value: `$${equityValue.toFixed(1)}B`, sub: 'Risk-adj' },
+          ].map(kpi => (
+            <div key={kpi.label} className="sm-grid-cell-center">
+              <div className="sm-micro-text">{kpi.label}</div>
+              <div className="sm-mono-lg-kpi">{kpi.value}</div>
+              <div className="sm-text-11">{kpi.sub}</div>
             </div>
           ))}
         </div>
@@ -1245,13 +1218,13 @@ const ModelTab = ({
         </div>
         <div className="sm-card">
           <div className="sm-card-section">
-            <div className="sm-text sm-fw-600 sm-text-16 sm-crcl-mb-6">Stablecoin DCF — Revenue-Based Terminal Value</div>
-            <p className="sm-body-sm sm-text3 sm-m-0 sm-crcl-lh-17">
+            <div className="sm-fw-600 sm-text sm-mb-6 sm-method-title">Stablecoin DCF — Revenue-Based Terminal Value</div>
+            <p className="sm-method-desc">
               Revenue-based terminal value approach incorporating USDC growth, reserve yield, distribution costs, and risk-adjusted discounting.
             </p>
           </div>
           <div className="sm-card-body">
-            <div className="sm-crcl-method-grid">
+            <div className="sm-grid-sep-2col sm-grid-sep-gap16">
               {[
                 { step: '1-3', title: 'Terminal Year Revenue', color: 'var(--accent)', items: [
                   { label: 'Terminal USDC', formula: `$${currentUSDC}B × (1+${usdcGrowthRate}%)^5`, result: `$${terminalUSDC.toFixed(0)}B` },
@@ -1274,19 +1247,19 @@ const ModelTab = ({
                   { label: 'Target Price', formula: `$${equityValue.toFixed(1)}B ÷ ${terminalShares.toFixed(0)}M`, result: `$${targetStockPrice.toFixed(0)}` },
                 ]},
               ].map((section, si) => (
-                <div key={si} className="sm-bg-surface2 sm-overflow-hidden sm-rounded-12">
-                  <div className="sm-flex sm-crcl-method-header">
-                    <span className="sm-step-badge" style={{ '--step-color': section.color } as React.CSSProperties}>Step {section.step}</span>
-                    <span className="sm-text sm-fw-600 sm-text-12">{section.title}</span>
+                <div key={si} className="sm-rounded-12 sm-overflow-hidden sm-bg-surface2">
+                  <div className="sm-dcf-step-header">
+                    <span className="sm-dcf-step-badge" style={{ background: section.color }}>Step {section.step}</span>
+                    <span className="sm-text-12 sm-fw-600 sm-text">{section.title}</span>
                   </div>
-                  <div className="sm-flex-col sm-crcl-method-body">
+                  <div className="sm-dcf-step-body">
                     {section.items.map((item, ii) => (
-                      <div key={ii} className="sm-flex-between sm-crcl-method-item">
-                        <div className="sm-crcl-method-item-left">
-                          <div className="sm-subtle-sm sm-text2 sm-fw-600">{item.label}</div>
-                          <div className="sm-crcl-formula">{item.formula}</div>
+                      <div key={ii} className="sm-flex-between sm-items-baseline sm-gap-8">
+                        <div className="sm-min-w-0 sm-flex-1">
+                          <div className="sm-text-11 sm-fw-600 sm-text2">{item.label}</div>
+                          <div className="sm-micro-text sm-dcf-formula">{item.formula}</div>
                         </div>
-                        <div className="sm-mono sm-fw-700 sm-shrink-0 sm-fs-13" style={{ color: section.color }}>{item.result}</div>
+                        <div className="sm-dcf-result" style={{ color: section.color }}>{item.result}</div>
                       </div>
                     ))}
                   </div>
@@ -1294,9 +1267,9 @@ const ModelTab = ({
               ))}
             </div>
 
-            <div className="sm-tinted-box sm-crcl-assumptions-box">
-              <div className="sm-text2 sm-fw-600 sm-crcl-mb-4">Key Assumptions</div>
-              <ul className="sm-m-0 sm-pl-16">
+            <div className="sm-rounded-12 sm-mt-16 sm-dcf-notes">
+              <div className="sm-text2 sm-fw-600 sm-mb-4">Key Assumptions</div>
+              <ul className="sm-dcf-notes-list">
                 <li>Terminal year: {new Date().getFullYear() + 5} (5 years out)</li>
                 <li>FCF conversion = 85% of EBITDA (asset-light model)</li>
                 <li>Coinbase distribution cost applied to gross yield revenue</li>
@@ -4166,38 +4139,22 @@ function CRCLModel() {
                     <span className="sm-divider-line" />
                   </div>
                   <div className="sm-grid-2">
-                    <div className="sm-card">
-                      <div className="sm-card-section"><span className="sm-section-label">REVENUE GROWTH MIN (%)</span></div>
-                      <div className="sm-card-body">
-                      <p className="sm-note-list">
-                        Lower bound for annual USDC revenue growth in simulation.
-                      </p>
-                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                        {[5, 10, 15, 20, 25, 30].map(opt => {
-                          const currentVal = mcPreset === 'custom' ? mcRevenueGrowthMin : mcPresets[mcPreset].revMin;
-                          return (
-                            <div key={opt} onClick={() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcRevenueGrowthMin(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
-                          );
-                        })}
-                      </div>
-                      </div>
-                    </div>
-                    <div className="sm-card">
-                      <div className="sm-card-section"><span className="sm-section-label">REVENUE GROWTH MAX (%)</span></div>
-                      <div className="sm-card-body">
-                      <p className="sm-note-list">
-                        Upper bound for annual USDC revenue growth in simulation.
-                      </p>
-                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                        {[25, 35, 45, 55, 65, 75].map(opt => {
-                          const currentVal = mcPreset === 'custom' ? mcRevenueGrowthMax : mcPresets[mcPreset].revMax;
-                          return (
-                            <div key={opt} onClick={() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcRevenueGrowthMax(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
-                          );
-                        })}
-                      </div>
-                      </div>
-                    </div>
+                    <ParameterCard
+                      title="Revenue Growth Min (%)"
+                      explanation="Lower bound for annual USDC revenue growth in simulation."
+                      options={[5, 10, 15, 20, 25, 30]}
+                      value={mcRevenueGrowthMin}
+                      onChange={v => { setMcRevenueGrowthMin(v); setMcPreset('custom'); }}
+                      format="%"
+                    />
+                    <ParameterCard
+                      title="Revenue Growth Max (%)"
+                      explanation="Upper bound for annual USDC revenue growth in simulation."
+                      options={[25, 35, 45, 55, 65, 75]}
+                      value={mcRevenueGrowthMax}
+                      onChange={v => { setMcRevenueGrowthMax(v); setMcPreset('custom'); }}
+                      format="%"
+                    />
                   </div>
 
                   <div className="sm-divider">
@@ -4205,38 +4162,22 @@ function CRCLModel() {
                     <span className="sm-divider-line" />
                   </div>
                   <div className="sm-grid-2">
-                    <div className="sm-card">
-                      <div className="sm-card-section"><span className="sm-section-label">MARGIN MIN (%)</span></div>
-                      <div className="sm-card-body">
-                      <p className="sm-note-list">
-                        Lower bound for EBITDA margin assumption in DCF model.
-                      </p>
-                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                        {[30, 40, 50, 55, 60, 65].map(opt => {
-                          const currentVal = mcPreset === 'custom' ? mcMarginMin : mcPresets[mcPreset].marginMin;
-                          return (
-                            <div key={opt} onClick={() => { setMcMarginMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcMarginMin(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
-                          );
-                        })}
-                      </div>
-                      </div>
-                    </div>
-                    <div className="sm-card">
-                      <div className="sm-card-section"><span className="sm-section-label">MARGIN MAX (%)</span></div>
-                      <div className="sm-card-body">
-                      <p className="sm-note-list">
-                        Upper bound for EBITDA margin assumption in DCF model.
-                      </p>
-                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                        {[55, 60, 65, 70, 75, 80].map(opt => {
-                          const currentVal = mcPreset === 'custom' ? mcMarginMax : mcPresets[mcPreset].marginMax;
-                          return (
-                            <div key={opt} onClick={() => { setMcMarginMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcMarginMax(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
-                          );
-                        })}
-                      </div>
-                      </div>
-                    </div>
+                    <ParameterCard
+                      title="EBITDA Margin Min (%)"
+                      explanation="Lower bound for EBITDA margin assumption in DCF model."
+                      options={[30, 40, 50, 55, 60, 65]}
+                      value={mcMarginMin}
+                      onChange={v => { setMcMarginMin(v); setMcPreset('custom'); }}
+                      format="%"
+                    />
+                    <ParameterCard
+                      title="EBITDA Margin Max (%)"
+                      explanation="Upper bound for EBITDA margin assumption in DCF model."
+                      options={[55, 60, 65, 70, 75, 80]}
+                      value={mcMarginMax}
+                      onChange={v => { setMcMarginMax(v); setMcPreset('custom'); }}
+                      format="%"
+                    />
                   </div>
 
                   <div className="sm-divider">
@@ -4244,72 +4185,40 @@ function CRCLModel() {
                     <span className="sm-divider-line" />
                   </div>
                   <div className="sm-grid-2">
-                    <div className="sm-card">
-                      <div className="sm-card-section"><span className="sm-section-label">DISCOUNT RATE MIN (%)</span></div>
-                      <div className="sm-card-body">
-                      <p className="sm-note-list">
-                        Lower bound for WACC / required return in DCF model.
-                      </p>
-                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                        {[8, 10, 12, 14, 16, 18].map(opt => {
-                          const currentVal = mcPreset === 'custom' ? mcDiscountMin : mcPresets[mcPreset].discMin;
-                          return (
-                            <div key={opt} onClick={() => { setMcDiscountMin(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcDiscountMin(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
-                          );
-                        })}
-                      </div>
-                      </div>
-                    </div>
-                    <div className="sm-card">
-                      <div className="sm-card-section"><span className="sm-section-label">DISCOUNT RATE MAX (%)</span></div>
-                      <div className="sm-card-body">
-                      <p className="sm-note-list">
-                        Upper bound for WACC / required return in DCF model.
-                      </p>
-                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                        {[12, 14, 16, 18, 20, 22].map(opt => {
-                          const currentVal = mcPreset === 'custom' ? mcDiscountMax : mcPresets[mcPreset].discMax;
-                          return (
-                            <div key={opt} onClick={() => { setMcDiscountMax(opt); setMcPreset('custom'); }} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && (() => { setMcDiscountMax(opt); setMcPreset('custom'); })()} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}%</div>
-                          );
-                        })}
-                      </div>
-                      </div>
-                    </div>
+                    <ParameterCard
+                      title="Discount Rate Min (%)"
+                      explanation="Lower bound for WACC / required return in DCF model."
+                      options={[8, 10, 12, 14, 16, 18]}
+                      value={mcDiscountMin}
+                      onChange={v => { setMcDiscountMin(v); setMcPreset('custom'); }}
+                      format="%"
+                    />
+                    <ParameterCard
+                      title="Discount Rate Max (%)"
+                      explanation="Upper bound for WACC / required return in DCF model."
+                      options={[12, 14, 16, 18, 20, 22]}
+                      value={mcDiscountMax}
+                      onChange={v => { setMcDiscountMax(v); setMcPreset('custom'); }}
+                      format="%"
+                    />
                   </div>
-                  <div className="sm-grid-2">
-                    <div className="sm-card">
-                      <div className="sm-card-section"><span className="sm-section-label">TERMINAL MULTIPLE MIN</span></div>
-                      <div className="sm-card-body">
-                      <p className="sm-note-list">
-                        Lower bound for exit EV/EBITDA multiple in DCF terminal value.
-                      </p>
-                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                        {[8, 10, 12, 15, 18, 20].map(opt => {
-                          const currentVal = mcPreset === 'custom' ? mcTerminalMultMin : mcPresets[mcPreset].termMin;
-                          return (
-                            <div key={opt} onClick={() => { setMcTerminalMultMin(opt); setMcPreset('custom'); }} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}x</div>
-                          );
-                        })}
-                      </div>
-                      </div>
-                    </div>
-                    <div className="sm-card">
-                      <div className="sm-card-section"><span className="sm-section-label">TERMINAL MULTIPLE MAX</span></div>
-                      <div className="sm-card-body">
-                      <p className="sm-note-list">
-                        Upper bound for exit EV/EBITDA multiple in DCF terminal value.
-                      </p>
-                      <div className="sm-grid-sep" style={{ '--cols': 6 } as React.CSSProperties}>
-                        {[15, 18, 22, 25, 30, 35].map(opt => {
-                          const currentVal = mcPreset === 'custom' ? mcTerminalMultMax : mcPresets[mcPreset].termMax;
-                          return (
-                            <div key={opt} onClick={() => { setMcTerminalMultMax(opt); setMcPreset('custom'); }} className="sm-param-btn" data-active={currentVal === opt ? "true" : undefined}>{opt}x</div>
-                          );
-                        })}
-                      </div>
-                      </div>
-                    </div>
+                  <div className="sm-grid-2 sm-mt-12">
+                    <ParameterCard
+                      title="Terminal Multiple Min"
+                      explanation="Lower bound for exit EV/EBITDA multiple in DCF terminal value."
+                      options={[8, 10, 12, 15, 18, 20]}
+                      value={mcTerminalMultMin}
+                      onChange={v => { setMcTerminalMultMin(v); setMcPreset('custom'); }}
+                      format="x"
+                    />
+                    <ParameterCard
+                      title="Terminal Multiple Max"
+                      explanation="Upper bound for exit EV/EBITDA multiple in DCF terminal value."
+                      options={[15, 18, 22, 25, 30, 35]}
+                      value={mcTerminalMultMax}
+                      onChange={v => { setMcTerminalMultMax(v); setMcPreset('custom'); }}
+                      format="x"
+                    />
                   </div>
                 </>
               )}
