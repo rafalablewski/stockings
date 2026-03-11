@@ -1508,10 +1508,11 @@ export default function DocsPage() {
         />
 
         {/* ── BMNR Classes ──────────────────────────────────────────────── */}
-        <SectionHeader id="bmnr-classes" title="BMNR Model Classes (sm-bmnr-*)" count={38} />
+        <SectionHeader id="bmnr-classes" title="BMNR Model Classes (sm-bmnr-*)" count={91} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
           BitMine-specific classes — parameter panels, scenario selectors, staking cells, KPI values, methodology badges,
-          purchase history table helpers, debt/LTV stress testing, and tranche management.
+          purchase history table helpers, debt/LTV stress testing, tranche management, and extracted inline style classes
+          for Comps, Monte Carlo, DCF, Sensitivity, and Capital tabs.
         </p>
         <SmallTable
           headers={["Class", "Description"]}
@@ -1529,7 +1530,10 @@ export default function DocsPage() {
             [".sm-bmnr-mode-card", "Mode toggle card (current/growth) — 16px pad, rounded-12. data-active + --mode-color."],
             [".sm-bmnr-mode-icon / -label", "Mode icon (20px) and label (13px/600)."],
             [".sm-bmnr-mode-status", "Mode status banner — data-mode='current' (mint 10%) or 'growth' (cyan 10%)."],
+            [".sm-bmnr-mode-color", "ETH input mode color — data-active + data-mode: current=mint, growth=cyan, inactive=text."],
             [".sm-bmnr-kpi-val / -lg / -xl", "KPI values — Space Mono 18px/22px/28px, bold, --kpi-color."],
+            [".sm-bmnr-kpi-val--hero / --md / --sm", "KPI size overrides — hero: 32px, md: 20px, sm: 16px + margin 4px 0 2px."],
+            [".sm-bmnr-kpi-margin / -sm", "KPI margin variants — standard: 6px 0 4px, sm: 6px 0."],
             [".sm-bmnr-hero-kpi-grid / -cell", "2-col hero KPI grid — 8% accent bg cells, border, rounded-12."],
             [".sm-bmnr-assumptions", "Key assumptions box — 16px pad, surface bg, border, rounded-12."],
             [".sm-bmnr-step-badge", "Methodology step badge — --step-color bg, --bg text, 10px mono bold, rounded-4."],
@@ -1537,16 +1541,23 @@ export default function DocsPage() {
             [".sm-bmnr-formula", "Monospace formula — 10px Space Mono, nowrap, text-ellipsis."],
             [".sm-bmnr-cell", "Table cell utility — 12px 16px padding. data-highlight for mint tint."],
             [".sm-bmnr-th", "Table header — 10px/600 uppercase, text3."],
+            [".sm-bmnr-th-cell", "Table header cell — 10px/600 uppercase, text3. data-align='left'|'right', data-highlight for cyan."],
             [".sm-bmnr-mono-val", "Monospace data value — 12px Space Mono, --val-color, --align. data-align='right'."],
             [".sm-bmnr-row-item / -sm", "Flex-between rows with border-bottom — standard (12px pad) and small (6px pad)."],
+            [".sm-bmnr-row-border", "Grid row border — 1px bottom, 50% opacity. data-last='true' removes border."],
+            [".sm-bmnr-total-row", "Summary/total row — 2px top border, font-weight 600."],
             [".sm-bmnr-staking-cell", "Staking strategy card — surface bg, rounded-12. data-active for 8% violet tint."],
+            [".sm-bmnr-active-text", "Active-state text color — text2 default, text on data-active='true'."],
             [".sm-bmnr-apy-display", "APY value — Space Mono 14px/700, --apy-color."],
             [".sm-bmnr-tranche-row / -grid", "Multi-tranche debt row — 16px 20px pad. data-enabled for 3% violet tint. Grid: 4-col."],
+            [".sm-bmnr-tranche-footer", "Tranche footer — flex, justify-end, 16px vertical padding."],
+            [".sm-bmnr-checkbox", "Tranche enable checkbox — 16×16px."],
             [".sm-bmnr-factor-card / -title", "Factor card — surface2, 12px 16px pad, 3px left border via --factor-color."],
             [".sm-bmnr-stress-cell", "Stress test cell — 24px 16px pad. data-safe (mint 3%) or data-danger (coral 3%)."],
             [".sm-bmnr-ltv-cell", "LTV cell — 24px 12px pad. data-breach for coral 5% tint."],
             [".sm-bmnr-breach-label", "Breach warning label — 10px bold."],
             [".sm-bmnr-year-btn", "Year selector — 12px 20px pad, mono 14px. data-active + --btn-color."],
+            [".sm-bmnr-year-bg", "Projection year header — data-target='true' for 8% accent tint + bold."],
             [".sm-bmnr-analyst-card / -badge / -summary", "ETH tab analyst card — surface bg, rounded-12, 10px badge, mono summary."],
             [".sm-bmnr-invest-banner", "Investment case banner — 12px pad, accent-tinted."],
             [".sm-bmnr-capital-summary", "Capital summary banner — 16px 24px pad, accent tint."],
@@ -1554,6 +1565,42 @@ export default function DocsPage() {
             [".sm-bmnr-return-text", "Return text — 12px. data-sentiment='positive' (mint) or 'negative' (coral)."],
             [".sm-bmnr-desc-sm", "Small description text — 11px, text3, 4px margin-bottom."],
             [".sm-bmnr-micro-plain", "Micro label override — removes uppercase/letter-spacing from sm-micro-label."],
+            [".sm-bmnr-tab-title", "Tab hero title — flex, center-aligned, 28px/700, letter-spacing -0.5px."],
+            [".sm-bmnr-tab-accent-bar", "Tab accent bar — 6×32px, accent bg, rounded-3."],
+            [".sm-bmnr-scenario-5col", "Scenario table 5-column grid — 2fr 1fr 1fr 1fr 1.5fr."],
+            [".sm-bmnr-pwev-footer", "PWEV footer — grid, 2px top border (pairs with scenario-5col)."],
+            [".sm-bmnr-grid-gap-24", "Model grid gap override — 24px."],
+            [".sm-bmnr-crypto-badge", "Crypto type badge — 4px 12px pad, rounded-4, 11px/600. data-type='ETH' (violet) | 'BTC' (gold) | default (surface3)."],
+            [".sm-bmnr-competitor-badge", "Competitor name badge — pill, 10px, sky-tinted (matches ASTS comp-badge-name)."],
+            [".sm-bmnr-profile-metrics-grid", "Competitor profile metrics — auto-fit grid, minmax(150px, 1fr), 12px gap."],
+            [".sm-bmnr-thesis-comparison", "Thesis comparison box — 12px 16px pad, mint 5% bg, mint left border, rounded-12."],
+            [".sm-bmnr-source-line", "News source attribution — 10px mono, text3, 8px margin-top."],
+            [".sm-bmnr-bullet", "News detail bullet — flex-shrink: 0 (accent color set by parent)."],
+            [".sm-bmnr-ls-1", "Letter-spacing 1px utility."],
+            [".sm-bmnr-cmp-5col", "Comps table 5-column grid — 1fr repeat(4, 1fr)."],
+            [".sm-bmnr-cmp-6col", "Comps table 6-column grid — 1fr repeat(5, 1fr)."],
+            [".sm-bmnr-col-span-3", "SOTP total label — grid-column: 1 / 4."],
+            [".sm-bmnr-rounded-top", "Table header rounded top — border-radius: 10px 10px 0 0."],
+            [".sm-bmnr-justify-center", "Flex justify center utility."],
+            [".sm-bmnr-mc-preset", "MC scenario preset card — 16px 8px pad, surface bg, cursor pointer, transparent 2px bottom border. data-active uses --preset-color for border + 8% tint bg."],
+            [".sm-bmnr-param-gap", "MC parameter grid gap override — 6px."],
+            [".sm-bmnr-info-box / --sky / --mint", "DCF info callout — rounded-8, 12px pad, 16px margin-top. --sky: blue-tinted. --mint: green-tinted."],
+            [".sm-bmnr-div-grid", "DCF dividend grid — 2-column, 16px gap, 14px font-size."],
+            [".sm-bmnr-matrix-grid", "Sensitivity matrix grid — 180px + repeat(6, 1fr)."],
+            [".sm-bmnr-matrix-cell", "Sensitivity matrix cell — 12px 8px pad, centered. data-current for bold + cyan 10% bg."],
+            [".sm-bmnr-tornado-label", "Tornado chart param label — 100px width, 12px, text2, fw-500."],
+            [".sm-bmnr-tornado-track", "Tornado chart bar track — flex-1, 28px height, 40% border bg, relative, overflow hidden."],
+            [".sm-bmnr-tornado-center", "Tornado chart center line — absolute, 1px wide, border color."],
+            [".sm-bmnr-tornado-bar-up / -down", "Tornado chart bars — absolute, coral 25% (down, right-anchored) / mint 25% (up, left-anchored)."],
+            [".sm-bmnr-tornado-values", "Tornado chart value overlay — absolute, centered, 24px gap, bold, z-2."],
+            [".sm-bmnr-grid-1-120-100", "Debt table grid — 1fr 120px 100px."],
+            [".sm-bmnr-runway-grid", "Runway stress grid — 1fr 100px 100px 100px 100px."],
+            [".sm-bmnr-insider-sales-grid", "Insider sales grid — 1.5fr 100px 100px 80px 1fr 1.5fr."],
+            [".sm-bmnr-insider-grants-grid", "Insider grants grid — 1.5fr 100px 100px 100px 100px 1.5fr."],
+            [".sm-bmnr-early-shareholders-grid", "Early shareholders grid — 1.5fr 100px 80px 100px 1.5fr."],
+            [".sm-bmnr-color-red", "Red color utility — var(--red, #f87171)."],
+            [".sm-bmnr-w-48", "Width utility — 48px."],
+            [".sm-bmnr-min-w-320 / -460 / -480 / -700", "Min-width utilities for scrollable table containers."],
           ]}
         />
 
