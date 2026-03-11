@@ -1668,13 +1668,23 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               <div className="sm-ed-vline sm-ed-vline-12" />
               <div className="sm-ed-flowbox">Load saved articles from Neon PostgreSQL</div>
               <div className="sm-ed-vline sm-ed-vline-12" />
-              <div className="sm-mint sm-src-pipeline-label">Render from DB &mdash; no external API calls on mount</div>
+              <div className="sm-mint sm-src-pipeline-label">Render from DB &mdash; no upstream API calls on mount</div>
+            </div>
+            <div className="sm-flex-col sm-src-flow-center sm-mt-12">
+              <div className="sm-ed-flowbox">After seen_articles loaded</div>
+              <div className="sm-ed-vline sm-ed-vline-12" />
+              <div className="sm-ed-flowbox-accent">GET /api/press-intelligence?ticker=X (mode=db)</div>
+              <div className="sm-ed-vline sm-ed-vline-12" />
+              <div className="sm-ed-flowbox">Merge PRs not already in seen_articles &rarr; auto-save new ones</div>
+              <div className="sm-ed-vline sm-ed-vline-12" />
+              <div className="sm-mint sm-src-pipeline-label">PRs always survive page reloads (hydrated from press_releases)</div>
             </div>
             <div className="sm-ed-method-text sm-mt-12">
               <div><span className="sm-text">Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_articles table</div>
               <div><span className="sm-text">Self-healing:</span> ensureTable() creates table + indexes on first request</div>
-              <div><span className="sm-text">Graceful fallback:</span> returns empty array if table cannot be created</div>
-              <div><span className="sm-text">Merge on init:</span> DB load merges with existing state so Fetch PRs result is not overwritten when /api/seen-articles finishes</div>
+              <div><span className="sm-text">Graceful fallback:</span> returns empty array if table cannot be created; press-intelligence hydration is non-fatal</div>
+              <div><span className="sm-text">PR hydration:</span> on init, fetches press_releases (mode=db) and auto-persists new PRs to seen_articles &mdash; stock-agnostic, uses ticker prop</div>
+              <div><span className="sm-text">Merge on init:</span> DB load merges with existing state so Fetch PRs result is not overwritten</div>
               <div><span className="sm-text">Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites url, source, headline, date, articleType; save-from-fetch also sets hidden=false so fetched articles show in the main list</div>
             </div>
 
@@ -1886,7 +1896,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
               </div>
             </div>
             <div className="sm-ed-method-text sm-mt-12">
-              <div><span className="sm-text">On mount:</span> loads articles from DB only &mdash; no external API calls; result merged with existing state so Fetch PRs is not overwritten</div>
+              <div><span className="sm-text">On mount:</span> loads seen_articles from DB, then hydrates PRs from press_releases (mode=db) &mdash; new PRs auto-saved to seen_articles</div>
               <div><span className="sm-text">Fetch PRs / Fetch News:</span> independent buttons, each searches its own API; saved articles marked visible (hidden=false) so they show in the main list</div>
               <div><span className="sm-text">AI Fetch All:</span> fires both pipelines in parallel</div>
               <div><span className="sm-text">NEW badge:</span> bright clickable badge &mdash; article not yet acknowledged</div>
