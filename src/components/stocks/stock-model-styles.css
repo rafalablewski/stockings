@@ -13847,3 +13847,320 @@ input[type="range"]::-webkit-slider-thumb {
 /* Missing utilities */
 .sm-mt-0 { margin-top: 0; }
 .sm-p-8-12 { padding: 8px 12px; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   BMNR missing CSS classes — extracted from inline styles
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Active text (staking type selector) ───────────────────────────── */
+.sm-bmnr-active-text { color: var(--text2); }
+.sm-bmnr-active-text[data-active="true"] { color: var(--text); }
+
+/* ── Bullet point (competitor news detail) ─────────────────────────── */
+.sm-bmnr-bullet { color: var(--accent); flex-shrink: 0; }
+
+/* ── Checkbox (tranche enable) ─────────────────────────────────────── */
+.sm-bmnr-checkbox { width: 16px; height: 16px; }
+
+/* ── Comps table grid columns ──────────────────────────────────────── */
+.sm-bmnr-cmp-5col { grid-template-columns: 1fr repeat(4, 1fr); }
+.sm-bmnr-cmp-6col { grid-template-columns: 1fr repeat(5, 1fr); }
+
+/* ── Column span for SOTP total ────────────────────────────────────── */
+.sm-bmnr-col-span-3 { grid-column: 1 / 4; }
+
+/* ── Red color for shares sold ─────────────────────────────────────── */
+.sm-bmnr-color-red { color: var(--red, #f87171); }
+
+/* ── Competitor badge (sky) ────────────────────────────────────────── */
+.sm-bmnr-competitor-badge {
+  padding: 1px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  background: color-mix(in srgb, var(--sky) 12%, transparent);
+  color: var(--sky);
+}
+
+/* ── Crypto type badge (ETH/BTC) ───────────────────────────────────── */
+.sm-bmnr-crypto-badge {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--surface3);
+  color: var(--text2);
+}
+.sm-bmnr-crypto-badge[data-type="ETH"] {
+  background: var(--violet-dim);
+  color: var(--violet);
+}
+.sm-bmnr-crypto-badge[data-type="BTC"] {
+  background: var(--gold-dim);
+  color: var(--gold);
+}
+
+/* ── DCF dividend grid ─────────────────────────────────────────────── */
+.sm-bmnr-div-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  font-size: 14px;
+}
+
+/* ── Early shareholders grid ───────────────────────────────────────── */
+.sm-bmnr-early-shareholders-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 100px 80px 100px 1.5fr;
+}
+
+/* ── Debt table grid (1fr 120px 100px) ─────────────────────────────── */
+.sm-bmnr-grid-1-120-100 {
+  display: grid;
+  grid-template-columns: 1fr 120px 100px;
+}
+
+/* ── Model grid gap override ───────────────────────────────────────── */
+.sm-bmnr-grid-gap-24 { gap: 24px !important; }
+
+/* ── Info box (DCF method explainer) ───────────────────────────────── */
+.sm-bmnr-info-box {
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 16px;
+}
+.sm-bmnr-info-box--sky {
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+.sm-bmnr-info-box--mint {
+  background: rgba(0, 212, 170, 0.1);
+  border: 1px solid rgba(0, 212, 170, 0.3);
+}
+
+/* ── Insider grants grid ───────────────────────────────────────────── */
+.sm-bmnr-insider-grants-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 100px 100px 100px 100px 1.5fr;
+}
+
+/* ── Insider sales grid ────────────────────────────────────────────── */
+.sm-bmnr-insider-sales-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 100px 100px 80px 1fr 1.5fr;
+}
+
+/* ── Justify center ────────────────────────────────────────────────── */
+.sm-bmnr-justify-center { justify-content: center; }
+
+/* ── KPI margin variants ───────────────────────────────────────────── */
+.sm-bmnr-kpi-margin { margin: 4px 0 2px; }
+.sm-bmnr-kpi-margin-sm { margin: 4px 0 0; }
+
+/* ── KPI value size variants ───────────────────────────────────────── */
+.sm-bmnr-kpi-val--hero { font-size: 32px; }
+.sm-bmnr-kpi-val--md { font-size: 20px; }
+.sm-bmnr-kpi-val--sm { font-size: 16px; margin: 4px 0 2px; }
+
+/* ── Letter-spacing 1px ────────────────────────────────────────────── */
+.sm-bmnr-ls-1 { letter-spacing: 1px; }
+
+/* ── Sensitivity matrix grid ───────────────────────────────────────── */
+.sm-bmnr-matrix-grid {
+  display: grid;
+  grid-template-columns: 180px repeat(6, 1fr);
+}
+.sm-bmnr-matrix-cell {
+  padding: 12px 8px;
+  text-align: center;
+  font-weight: 400;
+}
+.sm-bmnr-matrix-cell[data-current="true"] {
+  font-weight: 700;
+  background: color-mix(in srgb, var(--cyan) 10%, transparent);
+}
+
+/* ── Monte Carlo preset card ───────────────────────────────────────── */
+.sm-bmnr-mc-preset {
+  padding: 16px 8px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+  border-bottom: 2px solid transparent;
+}
+.sm-bmnr-mc-preset[data-active="true"] {
+  background: color-mix(in srgb, var(--preset-color, var(--accent)) 8%, transparent);
+  border-bottom: 2px solid var(--preset-color, var(--accent));
+}
+
+/* ── Min-width utilities ───────────────────────────────────────────── */
+.sm-bmnr-min-w-320 { min-width: 320px; }
+.sm-bmnr-min-w-460 { min-width: 460px; }
+.sm-bmnr-min-w-480 { min-width: 480px; }
+.sm-bmnr-min-w-700 { min-width: 700px; }
+
+/* ── Mode color (ETH input mode) ───────────────────────────────────── */
+.sm-bmnr-mode-color[data-active="true"][data-mode="current"] { color: var(--mint); }
+.sm-bmnr-mode-color[data-active="true"][data-mode="growth"] { color: var(--cyan); }
+.sm-bmnr-mode-color[data-active="false"] { color: var(--text); }
+
+/* ── MC param gap override ─────────────────────────────────────────── */
+.sm-bmnr-param-gap { gap: 6px; }
+
+/* ── Profile metrics grid (competitor cards) ───────────────────────── */
+.sm-bmnr-profile-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+/* ── PWEV footer row ───────────────────────────────────────────────── */
+.sm-bmnr-pwev-footer {
+  display: grid;
+  border-top: 2px solid var(--border);
+}
+
+/* ── Rounded top (table header border-radius) ──────────────────────── */
+.sm-bmnr-rounded-top { border-radius: 10px 10px 0 0; }
+
+/* ── Row border (grid list rows) ───────────────────────────────────── */
+.sm-bmnr-row-border {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+.sm-bmnr-row-border[data-last="true"] { border-bottom: none; }
+
+/* ── Runway grid ───────────────────────────────────────────────────── */
+.sm-bmnr-runway-grid {
+  display: grid;
+  grid-template-columns: 1fr 100px 100px 100px 100px;
+  transition: background 0.15s;
+}
+
+/* ── Scenario 5-column grid ────────────────────────────────────────── */
+.sm-bmnr-scenario-5col {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+}
+
+/* ── Source line (news attribution) ────────────────────────────────── */
+.sm-bmnr-source-line {
+  font-size: 10px;
+  color: var(--text3);
+  font-family: 'Space Mono', monospace;
+  margin-top: 8px;
+}
+
+/* ── Tab accent bar ────────────────────────────────────────────────── */
+.sm-bmnr-tab-accent-bar {
+  width: 6px;
+  height: 32px;
+  background: var(--accent);
+  border-radius: 3px;
+}
+
+/* ── Tab title ─────────────────────────────────────────────────────── */
+.sm-bmnr-tab-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+/* ── Table header cell ─────────────────────────────────────────────── */
+.sm-bmnr-th-cell {
+  padding: 12px 16px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.sm-bmnr-th-cell[data-align="right"] { text-align: right; }
+.sm-bmnr-th-cell[data-align="left"] { text-align: left; }
+.sm-bmnr-th-cell[data-highlight="true"] { color: var(--cyan); }
+
+/* ── Thesis comparison box (BMNR news) ─────────────────────────────── */
+.sm-bmnr-thesis-comparison {
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--mint) 5%, var(--surface));
+  border-radius: 12px;
+  border-left: 3px solid var(--mint);
+  margin-top: 12px;
+}
+
+/* ── Tornado chart ─────────────────────────────────────────────────── */
+.sm-bmnr-tornado-label {
+  width: 100px;
+  font-size: 12px;
+  color: var(--text2);
+  font-weight: 500;
+}
+.sm-bmnr-tornado-track {
+  flex: 1;
+  height: 28px;
+  background: color-mix(in srgb, var(--border) 40%, transparent);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+.sm-bmnr-tornado-center {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+  z-index: 1;
+}
+.sm-bmnr-tornado-bar-down {
+  position: absolute;
+  height: 100%;
+  background: color-mix(in srgb, var(--coral) 25%, transparent);
+  right: 50%;
+  border-radius: 4px 0 0 4px;
+}
+.sm-bmnr-tornado-bar-up {
+  position: absolute;
+  height: 100%;
+  background: color-mix(in srgb, var(--mint) 25%, transparent);
+  left: 50%;
+  border-radius: 0 4px 4px 0;
+}
+.sm-bmnr-tornado-values {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  font-weight: 600;
+  z-index: 2;
+}
+
+/* ── Total row (debt summary) ──────────────────────────────────────── */
+.sm-bmnr-total-row {
+  border-top: 2px solid var(--border);
+  font-weight: 600;
+}
+
+/* ── Tranche footer ────────────────────────────────────────────────── */
+.sm-bmnr-tranche-footer {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  justify-content: flex-end;
+  display: flex;
+}
+
+/* ── Width 48px ────────────────────────────────────────────────────── */
+.sm-bmnr-w-48 { width: 48px; }
+
+/* ── Year background (projection table header) ─────────────────────── */
+.sm-bmnr-year-bg[data-target="true"] {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  font-weight: 700;
+}
+
+/* ── Padding 12px 8px ──────────────────────────────────────────────── */
+.sm-p-12-8 { padding: 12px 8px; }
