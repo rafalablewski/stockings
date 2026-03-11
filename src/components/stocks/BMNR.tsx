@@ -3758,7 +3758,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
   return (
     <SharedCompsTab
-      sectionLabel="Unified Peer Analysis"
+      sectionLabel="Comparables & Competitor Intelligence"
       description="Each card combines quantitative metrics (holdings, NAV, premium) with qualitative intelligence (threat level, competitive focus). BMNR's ETH staking yield vs BTC treasuries' 0% is the key structural differentiator."
       sources={['PR', 'WS']}
       renderValuationComps={() => (<>
@@ -4149,13 +4149,8 @@ const CompsTab = ({ comparables, ethPrice }) => {
       </>)}
       renderCompetitorProfiles={() => (<>
       {/* Competitor Profiles */}
-      <div className="sm-divider">
-        <div className="sm-section-label">Peer Analysis</div>
-        <span className="sm-param-label">Competitor Profiles</span>
-        <span className="sm-mono-sm sm-text3 sm-ml-12">{COMPETITOR_PROFILES.length} companies</span>
-        <span className="sm-divider-line" />
-      </div>
-      <div className="sm-mt-8">
+      <div className="sm-bmnr-card-surface2">
+        <div className="sm-section-label sm-mb-12">Competitor Profiles</div>
         <div className="sm-flex-col-gap sm-gap-16">
           {COMPETITOR_PROFILES.map(comp => (
             <div key={comp.id} className="sm-bmnr-card-surface2">
