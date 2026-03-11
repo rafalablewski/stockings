@@ -11,6 +11,9 @@
 - refactor: replace N+1 insert loop with sql.transaction() batch upsert (code review)
 - fix: add LIMIT 1000 to loadFromDB to prevent unbounded result sets (code review)
 - refactor: change datetime column from TEXT to TIMESTAMPTZ in ensureTable, db/setup DDL, and drizzle schema (code review)
+- fix: Sources tab PRs now auto-hydrate from press_releases DB on init — no longer disappear on page reload
+- fix: remove one-time PR migration (fragile localStorage dependency, deleted PRs on first load after deploy)
+- fix: add save validation warnings when POST /api/seen-articles silently filters all items (filtered=0)
 
 ## 2026-03-10
 
