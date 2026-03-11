@@ -1,4 +1,4 @@
-import { pgTable, serial, text, timestamp, uniqueIndex, index, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, timestamp, uniqueIndex, index, boolean, integer } from 'drizzle-orm/pg-core';
 
 // ============================================================================
 // ANALYSIS CACHE — replaces analysis-cache.json files
@@ -165,6 +165,33 @@ export const auditChecks = pgTable('audit_checks', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => [
   uniqueIndex('audit_checks_finding_id_idx').on(table.findingId),
+]);
+
+// ============================================================================
+// PRESS RELEASES — permanent archive of all press releases fetched via
+// Press Intelligence. New items are upserted on every API fetch so the
+// database accumulates a complete history over time.
+// ============================================================================
+
+export const pressReleases = pgTable('press_releases', {
+  id: serial('id').primaryKey(),
+  ticker: text('ticker').notNull(),
+  headlineHash: text('headline_hash').notNull(),  // normalised headline for dedup
+  headline: text('headline').notNull(),
+  datetime: timestamp('datetime').notNull(),        // ISO date → TIMESTAMPTZ
+  source: text('source'),
+  summary: text('summary'),
+  permalink: text('permalink'),
+  storyurl: text('storyurl'),
+  newsid: text('newsid'),                          // original source ID
+  internalSource: text('internal_source'),         // _source field (quotemedia, gnw-rss, etc.)
+  fetchCount: integer('fetch_count').default(1).notNull(), // times seen from upstream
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  lastSeenAt: timestamp('last_seen_at').defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex('press_releases_ticker_hash_idx').on(table.ticker, table.headlineHash),
+  index('press_releases_ticker_idx').on(table.ticker),
+  index('press_releases_ticker_datetime_idx').on(table.ticker, table.datetime),
 ]);
 
 // ============================================================================

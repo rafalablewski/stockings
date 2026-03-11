@@ -380,7 +380,7 @@ const routingTree = [
   { path: "/docs",                                 label: "Docs",             file: "app/docs/page.tsx",                     note: "This page — design system + architecture" },
   { path: "/hooks",                                label: "Hooks",            file: "app/hooks/page.tsx",                    note: "Agent hooks documentation" },
   { path: "/audit/comprehensive-code-audit",       label: "Code Audit",       file: "app/audit/comprehensive-code-audit/page.tsx", note: "35-category audit results" },
-  { path: "/press-intelligence",                    label: "Press Intelligence", file: "app/press-intelligence/page.tsx",      note: "Unified press-release feeds for all 20 tickers" },
+  { path: "/press-intelligence",                    label: "Press Intelligence", file: "app/press-intelligence/page.tsx",      note: "DB-first feed: page load reads DB, Refresh fetches upstream + marks NEW + persists" },
   { path: "/db-setup",                             label: "DB Setup",         file: "app/db-setup/page.tsx",                 note: "Browser-based database initialization" },
 ];
 
@@ -397,7 +397,7 @@ const apiRoutes = [
     { method: "POST", path: "/api/sources/analyze",             auth: "PIN", note: "AI analysis of news article (Claude)" },
     { method: "GET",  path: "/api/news/[symbol]",               auth: "—",   note: "Press intelligence news by ticker" },
     { method: "GET",  path: "/api/press-releases/[symbol]",     auth: "—",   note: "IR press releases via RSS" },
-    { method: "GET",  path: "/api/press-intelligence?ticker=",  auth: "—",   note: "Unified press-release proxy for all 20 tickers (QM, GNW RSS, Stock Titan, IR scrape)" },
+    { method: "GET",  path: "/api/press-intelligence?ticker=&mode=",  auth: "—",   note: "Press releases: mode=db (page load, DB-only) or mode=refresh (upstream fetch, mark NEW, persist)" },
     { method: "GET",  path: "/api/competitor-feed/[company]",   auth: "—",   note: "Competitor intelligence feed" },
     { method: "GET",  path: "/api/asts-story",                  auth: "—",   note: "ASTS long-form company narrative" },
   ]},

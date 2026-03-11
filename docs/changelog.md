@@ -1,5 +1,20 @@
 # Changelog
 
+## 2026-03-11
+
+- refactor: press-intelligence is now DB-first — page load reads from database only, Refresh button fetches upstream + marks NEW items + persists to DB
+- fix: add ensureTable() with CREATE TABLE IF NOT EXISTS to press-intelligence API (same pattern as seen-articles)
+- fix: remove all caching (backend in-memory cache + frontend cacheRef/TTL) — database is the single source of truth
+- fix: batch DB inserts (20 parallel) instead of sequential loop to avoid Vercel timeout
+- feat: replace subtle DB status dot with pulsing "NEW" text badge for items not yet in database
+- docs: update /docs page with new press-intelligence API mode param and DB-first page description
+- refactor: replace N+1 insert loop with sql.transaction() batch upsert (code review)
+- fix: add LIMIT 1000 to loadFromDB to prevent unbounded result sets (code review)
+- refactor: change datetime column from TEXT to TIMESTAMPTZ in ensureTable, db/setup DDL, and drizzle schema (code review)
+- fix: Sources tab PRs now auto-hydrate from press_releases DB on init — no longer disappear on page reload
+- fix: remove one-time PR migration (fragile localStorage dependency, deleted PRs on first load after deploy)
+- fix: add save validation warnings when POST /api/seen-articles silently filters all items (filtered=0)
+
 ## 2026-03-10
 
 - feat: add BMNR Purchases tab — ETH purchase history with mNAV, price, cost basis (32 entries, Jul 2025–Feb 2026)

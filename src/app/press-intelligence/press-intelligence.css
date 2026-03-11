@@ -381,6 +381,25 @@
   white-space: nowrap;
 }
 
+/* ── NEW badge for items not yet in DB ── */
+.pi-new-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #fff;
+  background: var(--coral, #ef4444);
+  padding: 1px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  line-height: 1.4;
+  animation: pi-new-pulse 2s ease-in-out infinite;
+}
+
+@keyframes pi-new-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
 /* ── Expanded Card Content ── */
 .pi-card-expand {
   padding: 0 20px 14px;
