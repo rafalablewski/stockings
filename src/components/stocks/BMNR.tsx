@@ -4149,11 +4149,11 @@ const CompsTab = ({ comparables, ethPrice }) => {
       </>)}
       renderCompetitorProfiles={() => (<>
       {/* Competitor Profiles */}
-      <div className="sm-bmnr-card-surface2">
+      <div className="sm-comp-surface2-panel">
         <div className="sm-section-label sm-mb-12">Competitor Profiles</div>
         <div className="sm-flex-col-gap sm-gap-16">
           {COMPETITOR_PROFILES.map(comp => (
-            <div key={comp.id} className="sm-bmnr-card-surface2">
+            <div key={comp.id} className="sm-comp-profile-card">
               <div className="sm-flex-between sm-items-start sm-mb-12">
                 <div>
                   <div className="sm-fw-600 sm-text-16">{comp.name}</div>
@@ -4163,7 +4163,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
                   {comp.cryptoType}
                 </span>
               </div>
-              <div className="sm-bmnr-profile-metrics-grid">
+              <div className="sm-grid-autofit-150">
                 <div>
                   <div className="sm-micro-text">Ticker</div>
                   <div className="sm-text-12">{comp.ticker}</div>

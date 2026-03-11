@@ -8821,7 +8821,7 @@ input[type="range"]::-webkit-slider-thumb {
   margin-top: 16px;
 }
 
-/* ── Card Surface2 ─────────────────────────────────────────────────────── */
+/* DEPRECATED: use .sm-comp-surface2-panel / .sm-comp-profile-card instead */
 .sm-bmnr-card-surface2 {
   padding: 16px;
   background: var(--surface2);
@@ -13473,7 +13473,7 @@ input[type="range"]::-webkit-slider-thumb {
   border: 1px solid var(--border);
 }
 
-/* ── Panel surface2 transparent bg ───────────────────────────────── */
+/* DEPRECATED: use .sm-comp-surface2-panel instead */
 .sm-crcl-surface2-panel {
   background: color-mix(in srgb, var(--surface2) 60%, transparent);
   border: 1px solid var(--border);
@@ -14097,7 +14097,7 @@ input[type="range"]::-webkit-slider-thumb {
 /* ── MC param gap override ─────────────────────────────────────────── */
 .sm-bmnr-param-gap { gap: 6px; }
 
-/* ── Profile metrics grid (competitor cards) ───────────────────────── */
+/* DEPRECATED: use .sm-grid-autofit-150 instead */
 .sm-bmnr-profile-metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));

@@ -4939,7 +4939,7 @@ const CompsTab = () => {
       </div>
 
       {/* Circle-Specific Business Model Metrics */}
-      <div className="sm-crcl-surface2-panel">
+      <div className="sm-comp-surface2-panel">
         <div className="sm-section-label sm-mb-4">Circle Business Model Metrics<UpdateIndicators sources={['WS']} /></div>
         <p className="sm-body-sm sm-text3">Unique metrics for stablecoin issuers — monetization of reserves</p>
         <div className="g4">
@@ -5355,7 +5355,7 @@ const CompsTab = () => {
       </>)}
       renderCompetitorProfiles={() => (<>
       {/* Competitor Profiles (Reference) */}
-      <div className="sm-crcl-surface2-panel">
+      <div className="sm-comp-surface2-panel">
         <div className="sm-section-label sm-mb-12">Competitor Profiles</div>
         <div className="sm-flex-col-gap sm-gap-16">
           {COMPETITOR_PROFILES.map(comp => (
