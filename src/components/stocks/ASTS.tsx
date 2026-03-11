@@ -1745,14 +1745,14 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
 
       {/* Partner Filter */}
       <div className="sm-panel sm-mt-8 sm-p-24 sm-rounded-16">
-        <p className="sm-text2 sm-lh-16 sm-fs-13 sm-bmnr-mb-4-reset">Track news about <strong>ASTS MNO partners</strong> — IoT expansion, connected vehicles, 5G rollouts, coverage expansion</p>
-        <p className="sm-subtle-sm sm-italic sm-bmnr-mb-16-reset">Partner-level news affecting commercial deployment and revenue</p>
+        <p className="sm-text2 sm-lh-16 sm-fs-13 sm-mb-4-reset">Track news about <strong>ASTS MNO partners</strong> — IoT expansion, connected vehicles, 5G rollouts, coverage expansion</p>
+        <p className="sm-subtle-sm sm-italic sm-mb-16-reset">Partner-level news affecting commercial deployment and revenue</p>
         <div className="sm-flex-between sm-mb-8">
           <span className="sm-section-label">Filter by Partner</span>
           {partnerFilter !== 'All' && (
             <button
               onClick={() => setPartnerFilter('All')}
-              className="sm-bmnr-clear-btn"
+              className="sm-clear-btn"
               aria-label="Clear partner filter"
             >
               Clear
@@ -1830,7 +1830,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
                 role="button"
                 tabIndex={0}
                 aria-label={`${news.headline} — ${news.impact} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-                className="sm-bmnr-news-row"
+                className="sm-news-row"
                 style={{ '--news-accent': accentColor, borderBottom: i < filteredPartnerNews.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' } as React.CSSProperties}
                 onClick={() => {
                   const next = new Set(expandedPartnerNews);
@@ -1851,27 +1851,27 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
                   <div className="sm-flex-1">
                     <div className="sm-flex-wrap sm-gap-6 sm-mb-4">
                       <span className="sm-mono-sm sm-text3 sm-fs-10">{news.date}</span>
-                      <span className="sm-micro-badge sm-bmnr-cat-badge" data-type="category">{news.category}</span>
-                      <span className="sm-micro-badge sm-bmnr-cat-badge" data-type="company">{news.partner}</span>
+                      <span className="sm-micro-badge sm-news-badge" data-type="category">{news.category}</span>
+                      <span className="sm-micro-badge sm-news-badge" data-type="company">{news.partner}</span>
                     </div>
                     <div className="sm-text sm-fw-600 sm-lh-14 sm-fs-13">{news.headline}</div>
                   </div>
-                  <span className="sm-bmnr-impact-val" style={{ color: accentColor }}>
+                  <span className="sm-news-impact" style={{ color: accentColor }}>
                     {news.impact === 'Bullish' ? '+' : news.impact === 'Bearish' ? '-' : '~'} {news.impact}
                   </span>
                 </div>
                 {isExpanded && (
-                  <div className="sm-bmnr-news-detail">
+                  <div className="sm-news-detail">
                     <div className="sm-text-13 sm-lh-16">{news.summary}</div>
 
                     {news.astsRelevance && (
-                      <div className="sm-bmnr-insight-card" style={{ '--insight-color': 'var(--mint)' } as React.CSSProperties}>
+                      <div className="sm-news-insight" style={{ '--insight-color': 'var(--mint)' } as React.CSSProperties}>
                         <div className="sm-micro-label sm-mint sm-mb-4 sm-ls-1">ASTS Relevance</div>
                         <div className="sm-subtle sm-text2 sm-lh-15">{news.astsRelevance}</div>
                       </div>
                     )}
 
-                    <div className="sm-bmnr-source-text">Source: {news.source}</div>
+                    <div className="sm-news-source">Source: {news.source}</div>
                   </div>
                 )}
               </div>
@@ -5226,14 +5226,14 @@ const TimelineTab = () => {
 
       {/* Topic Filter */}
       <div className="sm-panel sm-mt-8 sm-p-24 sm-rounded-16">
-        <p className="sm-text2 sm-lh-16 sm-fs-13 sm-bmnr-mb-4-reset">Track <strong>key events</strong> for AST SpaceMobile — partnerships, launches, regulatory milestones, capital raises, earnings, and guidance updates</p>
-        <p className="sm-subtle-sm sm-italic sm-bmnr-mb-16-reset">Company-level catalysts and developments in chronological order</p>
+        <p className="sm-text2 sm-lh-16 sm-fs-13 sm-mb-4-reset">Track <strong>key events</strong> for AST SpaceMobile — partnerships, launches, regulatory milestones, capital raises, earnings, and guidance updates</p>
+        <p className="sm-subtle-sm sm-italic sm-mb-16-reset">Company-level catalysts and developments in chronological order</p>
         <div className="sm-flex-between sm-mb-8">
           <span className="sm-section-label">Filter by Topic</span>
           {selectedTopics.length > 0 && (
             <button
               onClick={() => setSelectedTopics([])}
-              className="sm-bmnr-clear-btn"
+              className="sm-clear-btn"
               aria-label="Clear topic filter"
             >
               Clear ({selectedTopics.length})
@@ -5311,7 +5311,7 @@ const TimelineTab = () => {
                 role="button"
                 tabIndex={0}
                 aria-label={`${entry.title} — ${entry.impact} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-                className="sm-bmnr-news-row"
+                className="sm-news-row"
                 style={{ '--news-accent': accentColor, borderBottom: i < filteredEntries.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' } as React.CSSProperties}
                 onClick={() => {
                   const next = new Set(expanded);
@@ -5332,20 +5332,20 @@ const TimelineTab = () => {
                   <div className="sm-flex-1">
                     <div className="sm-flex-wrap sm-gap-6 sm-mb-4">
                       <span className="sm-mono-sm sm-text3 sm-fs-10">{entry.date}</span>
-                      <span className="sm-micro-badge sm-bmnr-cat-badge" data-type="category">{entry.category}</span>
+                      <span className="sm-micro-badge sm-news-badge" data-type="category">{entry.category}</span>
                     </div>
                     <div className="sm-text sm-fw-600 sm-lh-14 sm-fs-13">{entry.title}</div>
                   </div>
-                  <span className="sm-bmnr-impact-val" style={{ color: accentColor }}>
+                  <span className="sm-news-impact" style={{ color: accentColor }}>
                     {entry.impact === 'Positive' ? '+' : entry.impact === 'Negative' ? '-' : '~'} {entry.impact === 'Positive' ? 'Bullish' : entry.impact === 'Negative' ? 'Bearish' : 'Neutral'}
                   </span>
                 </div>
                 {isExpanded && (
-                  <div className="sm-bmnr-news-detail">
+                  <div className="sm-news-detail">
                     <div className="sm-text-13 sm-lh-16">{entry.summary}</div>
 
                     {entry.details && entry.details.length > 0 && (
-                      <div className="sm-bmnr-insight-card" style={{ '--insight-color': 'var(--cyan)' } as React.CSSProperties}>
+                      <div className="sm-news-insight" style={{ '--insight-color': 'var(--cyan)' } as React.CSSProperties}>
                         <div className="sm-micro-label sm-cyan sm-mb-4 sm-ls-1">Key Details</div>
                         <ul className="sm-subtle sm-text2 sm-lh-15 sm-pl-16 sm-list-reset">
                           {entry.details.map((detail, j) => (
@@ -5356,7 +5356,7 @@ const TimelineTab = () => {
                     )}
 
                     {entry.prevValue && (
-                      <div className="sm-bmnr-insight-card" style={{ '--insight-color': 'var(--mint)', marginTop: 8 } as React.CSSProperties}>
+                      <div className="sm-news-insight" style={{ '--insight-color': 'var(--mint)', marginTop: 8 } as React.CSSProperties}>
                         <div className="sm-micro-label sm-mint sm-mb-4 sm-ls-1">Change Indicator</div>
                         <div className="sm-subtle sm-text2 sm-lh-15">
                           <span className="sm-diff-old">{entry.prevValue}</span>
@@ -5366,7 +5366,7 @@ const TimelineTab = () => {
                       </div>
                     )}
 
-                    <div className="sm-bmnr-source-text">Source: {entry.sources.join(', ')}</div>
+                    <div className="sm-news-source">Source: {entry.sources.join(', ')}</div>
                   </div>
                 )}
               </div>
@@ -5958,13 +5958,13 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         <p className="sm-filter-desc">Filter by competitor to focus on specific threat vectors.</p>
         <div className="sm-flex-between sm-items-center sm-mb-8">
           <span className="sm-section-label">Filter by Competitor</span>
-          {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} className="sm-comp-clear-btn">Clear</button>}
+          {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} className="sm-clear-btn">Clear</button>}
         </div>
         <div className="sm-flex-wrap sm-gap-6">
           {(() => { const isActive = competitorFilter === 'all'; return (
           <button
             onClick={() => setCompetitorFilter('all')}
-            className="sm-comp-filter-pill" data-active={isActive || undefined}
+            className="sm-filter-pill" data-active={isActive || undefined} style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}
           >
             All ({COMPETITOR_NEWS.length})
           </button>
@@ -5977,7 +5977,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <button
                 key={comp.id}
                 onClick={() => setCompetitorFilter(comp.id)}
-                className="sm-comp-filter-pill" data-active={isActive || undefined}
+                className="sm-filter-pill" data-active={isActive || undefined} style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}
               >
                 {comp.name.split('/')[0].trim()} ({count})
               </button>
@@ -5986,7 +5986,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (() => { const isActive = competitorFilter === 'other'; return (
             <button
               onClick={() => setCompetitorFilter('other')}
-              className="sm-comp-filter-pill" data-active={isActive || undefined}
+              className="sm-filter-pill" data-active={isActive || undefined} style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}
             >
               Miscellaneous ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
             </button>
@@ -6004,7 +6004,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <button
                 key={cat}
                 onClick={() => setNewsCategoryFilter(cat)}
-                className="sm-comp-filter-pill" data-color="sky" data-active={isActive || undefined}
+                className="sm-filter-pill" data-active={isActive || undefined} style={{ '--pill-accent': 'var(--sky)' } as React.CSSProperties}
               >
                 {cat}
               </button>

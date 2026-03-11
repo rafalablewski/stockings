@@ -839,7 +839,7 @@ const BMNRParameterCard = ({
             <div
               key={opt}
               onClick={() => { if (!disabled) { onChange(opt); setCustomMode(false); } }}
-              className="sm-bmnr-param-btn"
+              className="sm-param-btn"
               data-active={isActive}
               data-disabled={disabled}
               style={isActive && !disabled ? { '--btn-color': colors.border } as React.CSSProperties : undefined}
@@ -864,7 +864,7 @@ const BMNRParameterCard = ({
         ) : (
           <div
             onClick={() => !disabled && setCustomMode(true)}
-            className="sm-bmnr-param-btn"
+            className="sm-param-btn"
             data-active={isCustomValue}
             data-disabled={disabled}
           >
@@ -1255,7 +1255,7 @@ const ModelTab = ({
               ].map((section, si) => (
                 <div key={si} className="sm-bg-surface2 sm-overflow-hidden sm-rounded-12">
                   <div className="sm-flex sm-border-b sm-bmnr-cell">
-                    <span className="sm-bmnr-step-badge" style={{ '--step-color': section.color } as React.CSSProperties}>Step {section.step}</span>
+                    <span className="sm-step-badge" style={{ '--step-color': section.color } as React.CSSProperties}>Step {section.step}</span>
                     <span className="sm-subtle sm-text sm-fw-600">{section.title}</span>
                   </div>
                   <div className="sm-flex-col-gap sm-bmnr-cell sm-gap-8">
@@ -1353,7 +1353,7 @@ const OverviewParameterCard = ({
             <div
               key={opt}
               onClick={() => { onChange(opt); setCustomMode(false); }}
-              className="sm-bmnr-param-btn"
+              className="sm-param-btn"
               data-active={isActive}
               style={isActive ? { '--btn-color': colors.border } as React.CSSProperties : undefined}
             >
@@ -1377,7 +1377,7 @@ const OverviewParameterCard = ({
         ) : (
           <div
             onClick={() => setCustomMode(true)}
-            className="sm-bmnr-param-btn"
+            className="sm-param-btn"
             data-active={isCustomValue}
           >
             {isCustomValue ? formatValue(value) : '...'}
@@ -2842,7 +2842,7 @@ const PurchasesTab = ({ ethPrice, currentShares, currentStockPrice }: { ethPrice
           <div className="sm-grid-2 sm-gap-16">
             <div className="sm-bg-surface2 sm-overflow-hidden sm-rounded-12">
               <div className="sm-flex sm-border-b sm-bmnr-cell">
-                <span className="sm-bmnr-step-badge" style={{ '--step-color': 'var(--accent)' } as React.CSSProperties}>Step 1</span>
+                <span className="sm-step-badge" style={{ '--step-color': 'var(--accent)' } as React.CSSProperties}>Step 1</span>
                 <span className="sm-subtle sm-text sm-fw-600">NAV per Share</span>
               </div>
               <div className="sm-flex-col-gap sm-bmnr-cell sm-gap-8">
@@ -2863,7 +2863,7 @@ const PurchasesTab = ({ ethPrice, currentShares, currentStockPrice }: { ethPrice
             </div>
             <div className="sm-bg-surface2 sm-overflow-hidden sm-rounded-12">
               <div className="sm-flex sm-border-b sm-bmnr-cell">
-                <span className="sm-bmnr-step-badge" style={{ '--step-color': 'var(--sky)' } as React.CSSProperties}>Step 2</span>
+                <span className="sm-step-badge" style={{ '--step-color': 'var(--sky)' } as React.CSSProperties}>Step 2</span>
                 <span className="sm-subtle sm-text sm-fw-600">mNAV Multiple</span>
               </div>
               <div className="sm-flex-col-gap sm-bmnr-cell sm-gap-8">
@@ -3758,7 +3758,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
   return (
     <SharedCompsTab
-      sectionLabel="Unified Peer Analysis"
+      sectionLabel="Comparables & Competitor Intelligence"
       description="Each card combines quantitative metrics (holdings, NAV, premium) with qualitative intelligence (threat level, competitive focus). BMNR's ETH staking yield vs BTC treasuries' 0% is the key structural differentiator."
       sources={['PR', 'WS']}
       renderValuationComps={() => (<>
@@ -3988,14 +3988,14 @@ const CompsTab = ({ comparables, ethPrice }) => {
 
       {/* Competitor Filter */}
       <div className="sm-panel sm-mt-8 sm-p-24 sm-rounded-16">
-        <p className="sm-text2 sm-lh-16 sm-fs-13 sm-bmnr-mb-4-reset">Track what peer companies are doing — <strong>treasury purchases</strong>, financing activities, strategic moves by crypto treasury competitors.</p>
-        <p className="sm-subtle-sm sm-italic sm-bmnr-mb-16-reset">Company-level news affecting BMNR's competitive positioning</p>
+        <p className="sm-text2 sm-lh-16 sm-fs-13 sm-mb-4-reset">Track what peer companies are doing — <strong>treasury purchases</strong>, financing activities, strategic moves by crypto treasury competitors.</p>
+        <p className="sm-subtle-sm sm-italic sm-mb-16-reset">Company-level news affecting BMNR's competitive positioning</p>
         <div className="sm-flex-between sm-mb-8">
           <span className="sm-section-label">Filter by Competitor</span>
           {competitorFilter !== 'all' && (
             <button
               onClick={() => setCompetitorFilter('all')}
-              className="sm-bmnr-clear-btn"
+              className="sm-clear-btn"
               aria-label="Clear competitor filter"
             >
               Clear
@@ -4095,7 +4095,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
                 role="button"
                 tabIndex={0}
                 aria-label={`${news.headline} — ${news.implication} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-                className="sm-bmnr-news-row sm-bmnr-news-row-sep" style={{ '--news-accent': accentColor } as React.CSSProperties}
+                className="sm-news-row sm-news-row-sep" style={{ '--news-accent': accentColor } as React.CSSProperties}
                 onClick={() => {
                   const next = new Set(expandedNews);
                   if (isExpanded) next.delete(i);
@@ -4115,17 +4115,17 @@ const CompsTab = ({ comparables, ethPrice }) => {
                   <div className="sm-flex-1">
                     <div className="sm-flex-wrap sm-gap-6 sm-mb-4">
                       <span className="sm-mono-sm sm-text3 sm-fs-10">{news.date}</span>
-                      <span className="sm-micro-badge sm-bmnr-cat-badge" data-type="category">{news.category}</span>
+                      <span className="sm-micro-badge sm-news-badge" data-type="category">{news.category}</span>
                       <span className="sm-bmnr-competitor-badge">{getCompetitorName(news.competitor)}</span>
                     </div>
                     <div className="sm-text sm-fw-600 sm-lh-14 sm-fs-13">{news.headline}</div>
                   </div>
-                  <span className="sm-bmnr-impact-val" style={{ '--dynamic-color': accentColor, color: 'var(--dynamic-color)' } as React.CSSProperties}>
+                  <span className="sm-news-impact" style={{ '--dynamic-color': accentColor, color: 'var(--dynamic-color)' } as React.CSSProperties}>
                     {news.implication === 'positive' ? '+' : news.implication === 'negative' ? '-' : '~'} {news.implication === 'positive' ? 'Good for BMNR' : news.implication === 'negative' ? 'Threat' : 'Neutral'}
                   </span>
                 </div>
                 {isExpanded && (
-                  <div className="sm-bmnr-news-detail">
+                  <div className="sm-news-detail">
                     <div className="sm-text-13 sm-lh-16">
                       {news.details.map((d, di) => (
                         <div key={di} className="sm-flex sm-gap-8 sm-items-initial"><span className="sm-accent sm-bmnr-bullet">•</span>{d}</div>
@@ -4149,16 +4149,11 @@ const CompsTab = ({ comparables, ethPrice }) => {
       </>)}
       renderCompetitorProfiles={() => (<>
       {/* Competitor Profiles */}
-      <div className="sm-divider">
-        <div className="sm-section-label">Peer Analysis</div>
-        <span className="sm-param-label">Competitor Profiles</span>
-        <span className="sm-mono-sm sm-text3 sm-ml-12">{COMPETITOR_PROFILES.length} companies</span>
-        <span className="sm-divider-line" />
-      </div>
-      <div className="sm-mt-8">
+      <div className="sm-comp-surface2-panel">
+        <div className="sm-section-label sm-mb-12">Competitor Profiles</div>
         <div className="sm-flex-col-gap sm-gap-16">
           {COMPETITOR_PROFILES.map(comp => (
-            <div key={comp.id} className="sm-bmnr-card-surface2">
+            <div key={comp.id} className="sm-comp-profile-card">
               <div className="sm-flex-between sm-items-start sm-mb-12">
                 <div>
                   <div className="sm-fw-600 sm-text-16">{comp.name}</div>
@@ -4168,7 +4163,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
                   {comp.cryptoType}
                 </span>
               </div>
-              <div className="sm-bmnr-profile-metrics-grid">
+              <div className="sm-grid-autofit-150">
                 <div>
                   <div className="sm-micro-text">Ticker</div>
                   <div className="sm-text-12">{comp.ticker}</div>
@@ -6340,14 +6335,14 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
 
       {/* Company Filter */}
       <div className="sm-panel sm-mt-8 sm-p-24 sm-rounded-16">
-        <p className="sm-text2 sm-lh-16 sm-fs-13 sm-bmnr-mb-4-reset">Track news about the <strong>ETH ecosystem</strong> — institutional adoption, stablecoin launches, L2 growth, protocol upgrades, and enterprise partnerships building on Ethereum</p>
-        <p className="sm-subtle-sm sm-italic sm-bmnr-mb-16-reset">Asset-level news affecting ETH value and BMNR's NAV</p>
+        <p className="sm-text2 sm-lh-16 sm-fs-13 sm-mb-4-reset">Track news about the <strong>ETH ecosystem</strong> — institutional adoption, stablecoin launches, L2 growth, protocol upgrades, and enterprise partnerships building on Ethereum</p>
+        <p className="sm-subtle-sm sm-italic sm-mb-16-reset">Asset-level news affecting ETH value and BMNR's NAV</p>
         <div className="sm-flex-between sm-mb-8">
           <span className="sm-section-label">Filter by Company</span>
           {companyFilter !== 'All' && (
             <button
               onClick={() => setCompanyFilter('All')}
-              className="sm-bmnr-clear-btn"
+              className="sm-clear-btn"
               aria-label="Clear company filter"
             >
               Clear
@@ -6418,7 +6413,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
                 role="button"
                 tabIndex={0}
                 aria-label={`${news.title} — ${news.impact} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-                className="sm-bmnr-news-row sm-bmnr-news-row-sep" style={{ '--news-accent': accentColor } as React.CSSProperties}
+                className="sm-news-row sm-news-row-sep" style={{ '--news-accent': accentColor } as React.CSSProperties}
                 onClick={() => {
                   const next = new Set(expandedNews);
                   if (isExpanded) next.delete(i);
@@ -6438,34 +6433,34 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
                   <div className="sm-flex-1">
                     <div className="sm-flex-wrap sm-gap-6 sm-mb-4">
                       <span className="sm-mono-sm sm-text3 sm-fs-10">{news.date}</span>
-                      <span className="sm-micro-badge sm-bmnr-cat-badge" data-type="category">{news.category}</span>
-                      <span className="sm-micro-badge sm-bmnr-cat-badge" data-type="company">{news.company}</span>
+                      <span className="sm-micro-badge sm-news-badge" data-type="category">{news.category}</span>
+                      <span className="sm-micro-badge sm-news-badge" data-type="company">{news.company}</span>
                     </div>
                     <div className="sm-text sm-fw-600 sm-lh-14 sm-fs-13">{news.title}</div>
                   </div>
-                  <span className="sm-bmnr-impact-val" style={{ '--dynamic-color': accentColor, color: 'var(--dynamic-color)' } as React.CSSProperties}>
+                  <span className="sm-news-impact" style={{ '--dynamic-color': accentColor, color: 'var(--dynamic-color)' } as React.CSSProperties}>
                     {news.impact === 'Bullish' ? '+' : news.impact === 'Bearish' ? '-' : '~'} {news.impact}
                   </span>
                 </div>
                 {isExpanded && (
-                  <div className="sm-bmnr-news-detail">
+                  <div className="sm-news-detail">
                     <div className="sm-text-13 sm-lh-16">{news.summary}</div>
 
                     {news.significance && (
-                      <div className="sm-bmnr-insight-card" style={{ '--insight-color': 'var(--violet)' } as React.CSSProperties}>
+                      <div className="sm-news-insight" style={{ '--insight-color': 'var(--violet)' } as React.CSSProperties}>
                         <div className="sm-micro-label sm-violet sm-mb-4 sm-ls-1">Significance for Ethereum</div>
                         <div className="sm-subtle sm-text2 sm-lh-15">{news.significance}</div>
                       </div>
                     )}
 
                     {news.bmnrImplication && (
-                      <div className="sm-bmnr-insight-card sm-bmnr-insight-mt8" style={{ '--insight-color': 'var(--mint)' } as React.CSSProperties}>
+                      <div className="sm-news-insight sm-bmnr-insight-mt8" style={{ '--insight-color': 'var(--mint)' } as React.CSSProperties}>
                         <div className="sm-micro-label sm-mint sm-mb-4 sm-ls-1">BMNR Implication</div>
                         <div className="sm-subtle sm-text2 sm-lh-15">{news.bmnrImplication}</div>
                       </div>
                     )}
 
-                    <div className="sm-bmnr-source-text">Source: {news.source}</div>
+                    <div className="sm-news-source">Source: {news.source}</div>
                   </div>
                 )}
               </div>
@@ -6741,14 +6736,14 @@ const TimelineTab = () => {
 
       {/* Topic Filter */}
       <div className="sm-panel sm-mt-8 sm-p-24 sm-rounded-16">
-        <p className="sm-text2 sm-lh-16 sm-fs-13 sm-bmnr-mb-4-reset">Track <strong>key events</strong> for BMNR — ETH accumulation, SEC filings, capital raises, corporate strategy, and product launches</p>
-        <p className="sm-subtle-sm sm-italic sm-bmnr-mb-16-reset">Company-level catalysts and developments in chronological order</p>
+        <p className="sm-text2 sm-lh-16 sm-fs-13 sm-mb-4-reset">Track <strong>key events</strong> for BMNR — ETH accumulation, SEC filings, capital raises, corporate strategy, and product launches</p>
+        <p className="sm-subtle-sm sm-italic sm-mb-16-reset">Company-level catalysts and developments in chronological order</p>
         <div className="sm-flex-between sm-mb-8">
           <span className="sm-section-label">Filter by Topic</span>
           {selectedTopics.length > 0 && (
             <button
               onClick={() => setSelectedTopics([])}
-              className="sm-bmnr-clear-btn"
+              className="sm-clear-btn"
               aria-label="Clear topic filter"
             >
               Clear ({selectedTopics.length})
@@ -6825,7 +6820,7 @@ const TimelineTab = () => {
               role="button"
               tabIndex={0}
               aria-label={`${entry.title} — ${entry.impact} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-              className="sm-bmnr-news-row sm-bmnr-news-row-sep"
+              className="sm-news-row sm-news-row-sep"
               style={{ '--news-accent': accentColor } as React.CSSProperties}
               onClick={() => {
                 const next = new Set(expanded);
@@ -6846,18 +6841,18 @@ const TimelineTab = () => {
                 <div className="sm-flex-1">
                   <div className="sm-flex-wrap sm-gap-6 sm-mb-4">
                     <span className="sm-mono-sm sm-text3 sm-fs-10">{entry.date}</span>
-                    <span className="sm-micro-badge sm-bmnr-cat-badge" data-type="category">{entry.category}</span>
+                    <span className="sm-micro-badge sm-news-badge" data-type="category">{entry.category}</span>
                   </div>
                   <div className="sm-text sm-fw-600 sm-lh-14 sm-fs-13">{entry.title}</div>
                 </div>
-                <span className="sm-bmnr-impact-val" style={{ '--dynamic-color': accentColor, color: 'var(--dynamic-color)' } as React.CSSProperties}>
+                <span className="sm-news-impact" style={{ '--dynamic-color': accentColor, color: 'var(--dynamic-color)' } as React.CSSProperties}>
                   {entry.impact === 'positive' ? '+' : entry.impact === 'negative' ? '-' : '~'} {entry.impact === 'positive' ? 'Bullish' : entry.impact === 'negative' ? 'Bearish' : 'Neutral'}
                 </span>
               </div>
               {isExpanded && (
-                <div className="sm-bmnr-news-detail">
+                <div className="sm-news-detail">
                   {/* Changes Table */}
-                  <div className="sm-bmnr-insight-card" style={{ '--insight-color': 'var(--cyan)' } as React.CSSProperties}>
+                  <div className="sm-news-insight" style={{ '--insight-color': 'var(--cyan)' } as React.CSSProperties}>
                     <div className="sm-micro-label sm-cyan sm-mb-4 sm-ls-1">Key Changes</div>
                     <div>
                       <div className="sm-bmnr-changes-header">
@@ -6877,13 +6872,13 @@ const TimelineTab = () => {
                   </div>
 
                   {entry.notes && (
-                    <div className="sm-bmnr-insight-card sm-bmnr-insight-mt8" style={{ '--insight-color': 'var(--violet)' } as React.CSSProperties}>
+                    <div className="sm-news-insight sm-bmnr-insight-mt8" style={{ '--insight-color': 'var(--violet)' } as React.CSSProperties}>
                       <div className="sm-micro-label sm-violet sm-mb-4 sm-ls-1">Notes</div>
                       <div className="sm-subtle sm-text2 sm-lh-15">{entry.notes}</div>
                     </div>
                   )}
 
-                  <div className="sm-bmnr-source-text">Source: {entry.source}</div>
+                  <div className="sm-news-source">Source: {entry.source}</div>
                 </div>
               )}
             </div>

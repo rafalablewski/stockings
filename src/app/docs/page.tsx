@@ -145,6 +145,18 @@ const componentClasses: CSSClass[] = [
   { name: ".sm-note-panel",      description: "Muted info/footnote box — surface bg, border, rounded-16, 14px padding",   usage: "className=\"sm-note-panel sm-text-11\"" },
   { name: ".sm-model-grid",      description: "Responsive grid with CSS var --cols. Auto-adjusts at breakpoints",          usage: "style={{ '--cols': 3 }}" },
   { name: ".sm-overflow-x",      description: "Horizontal scroll container (overflow-x: auto)",                            usage: "className=\"sm-overflow-x sm-scroll-hint\"" },
+  // ── Shared News / Competitor Classes (unified across BMNR, ASTS, CRCL) ──
+  { name: ".sm-news-detail",    description: "Expanded news content area — top border, 16px padding-top, 12px margin-top",   usage: "className=\"sm-news-detail\"" },
+  { name: ".sm-news-badge",     description: "News category/company pill — 10px, 99px radius. Color via data-type",          usage: "data-type=\"category\" or data-type=\"company\"" },
+  { name: ".sm-news-impact",    description: "Impact value label — 11px Space Mono, 12px margin-left, nowrap",               usage: "className=\"sm-news-impact\"" },
+  { name: ".sm-news-insight",   description: "Insight callout card — 12px radius, 3px left border via --insight-color",      usage: "style={{ '--insight-color': 'var(--violet)' }}" },
+  { name: ".sm-news-source",    description: "Source attribution text — 10px Space Mono, text3 color",                       usage: "className=\"sm-news-source\"" },
+  { name: ".sm-step-badge",     description: "Numbered step indicator — bg via --step-color, 10px/700 mono, 4px radius",     usage: "style={{ '--step-color': 'var(--accent)' }}" },
+  { name: ".sm-comp-surface2-panel", description: "Competitor profiles outer container — 60% surface2 bg, 14px radius, 24px pad", usage: "className=\"sm-comp-surface2-panel\"" },
+  { name: ".sm-comp-profile-card",   description: "Individual competitor profile card — surface2 bg, 8px radius, 1px border",    usage: "className=\"sm-comp-profile-card\"" },
+  { name: ".sm-grid-autofit-150",    description: "Auto-fit responsive grid (minmax 150px, 1fr), 12px gap",                      usage: "className=\"sm-grid-autofit-150\"" },
+  { name: ".sm-mb-4-reset",     description: "Margin reset utility — margin: 0 0 4px",                                       usage: "className=\"sm-mb-4-reset\"" },
+  { name: ".sm-mb-16-reset",    description: "Margin reset utility — margin: 0 0 16px",                                      usage: "className=\"sm-mb-16-reset\"" },
   // ── Stock Header (Concept 11c — Edge Markers) ──
   { name: ".hdr",                description: "11c header container — gradient bg, red accent line, HUD grid overlay",    usage: "Rendered by <StockHeader />" },
   { name: ".hdr-grid",           description: "Three-column grid (1fr auto 1fr) — identity | price | HUD spine",          usage: "grid-template-columns: 1fr auto 1fr" },
@@ -461,6 +473,51 @@ const stockPageTree = [
   { depth: 3, name: "SharedEdgarTab",                      note: "SEC filings browser with DB tracking" },
   { depth: 3, name: "SharedAIAgentsTab",                   note: "Workflow execution & diff preview" },
   { depth: 2, name: "DisclaimerBanner",                    note: "Collapsible — localStorage key: disclaimer-collapsed" },
+];
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   TAB-BY-TAB BREAKDOWN — Complete audit of shared vs custom tabs per stock.
+   S = Shared (thin wrapper, stock data via props only)
+   W = Wrapped (Shared*Tab shell + heavy custom children / render props)
+   C = Custom (no shared wrapper, stock-specific implementation)
+   ───────────────────────────────────────────────────────────────────────────── */
+interface TabEntry { tab: string; bmnr: string; asts: string; crcl: string; wrapper: string; }
+const tabBreakdown: TabEntry[] = [
+  // ── Common tabs (all 3 stocks) ──
+  { tab: 'Overview',      bmnr: 'C', asts: 'C', crcl: 'C', wrapper: '—' },
+  { tab: 'Model',         bmnr: 'W', asts: 'W', crcl: 'W', wrapper: 'SharedModelTab' },
+  { tab: 'Monte Carlo',   bmnr: 'W', asts: 'W', crcl: 'W', wrapper: 'SharedMonteCarloTab' },
+  { tab: 'Comps',         bmnr: 'W', asts: 'W', crcl: 'W', wrapper: 'SharedCompsTab' },
+  { tab: 'Capital',       bmnr: 'W', asts: 'W', crcl: 'W', wrapper: 'SharedCapitalTab' },
+  { tab: 'Investment',    bmnr: 'W', asts: 'W', crcl: 'W', wrapper: 'SharedInvestmentTab' },
+  { tab: 'Financials',    bmnr: 'W', asts: 'W', crcl: 'S', wrapper: 'SharedFinancialsTab' },
+  { tab: 'Timeline',      bmnr: 'W', asts: 'W', crcl: 'W', wrapper: 'SharedTimelineTab' },
+  { tab: 'Wall Street',   bmnr: 'W', asts: 'W', crcl: 'S', wrapper: 'SharedWallStreetTab' },
+  { tab: 'AI Agents',     bmnr: 'S', asts: 'S', crcl: 'S', wrapper: 'SharedAIAgentsTab' },
+  { tab: 'Sources',       bmnr: 'S', asts: 'S', crcl: 'S', wrapper: 'SharedSourcesTab' },
+  { tab: 'EDGAR',         bmnr: 'S', asts: 'S', crcl: 'S', wrapper: 'SharedEdgarTab' },
+  // ── BMNR-only tabs ──
+  { tab: 'Ethereum',      bmnr: 'C', asts: '—', crcl: '—', wrapper: '—' },
+  { tab: 'Staking',       bmnr: 'C', asts: '—', crcl: '—', wrapper: '—' },
+  { tab: 'Dilution',      bmnr: 'C', asts: '—', crcl: '—', wrapper: '—' },
+  { tab: 'Debt',          bmnr: 'C', asts: '—', crcl: '—', wrapper: '—' },
+  { tab: 'Purchases',     bmnr: 'C', asts: '—', crcl: '—', wrapper: '—' },
+  { tab: 'Sensitivity',   bmnr: 'C', asts: '—', crcl: '—', wrapper: '—' },
+  { tab: 'Backtest',      bmnr: 'C', asts: '—', crcl: '—', wrapper: '—' },
+  // ── ASTS-only tabs ──
+  { tab: 'Catalysts',     bmnr: '—', asts: 'C', crcl: '—', wrapper: '—' },
+  { tab: 'Constellation', bmnr: '—', asts: 'C', crcl: '—', wrapper: '—' },
+  { tab: 'Subscribers',   bmnr: '—', asts: 'C', crcl: '—', wrapper: '—' },
+  { tab: 'Revenue',       bmnr: '—', asts: 'C', crcl: '—', wrapper: '—' },
+  { tab: 'Partners',      bmnr: '—', asts: 'C', crcl: '—', wrapper: '—' },
+  { tab: 'Dilution (ASTS)', bmnr: '—', asts: 'C', crcl: '—', wrapper: '—' },
+  // ── CRCL-only tabs ──
+  { tab: 'USDC',          bmnr: '—', asts: '—', crcl: 'C', wrapper: '—' },
+];
+const tabSummary = [
+  { stock: 'BMNR', total: 19, shared: 3, wrapped: 8, custom: 8, pct: '58%' },
+  { stock: 'ASTS', total: 18, shared: 3, wrapped: 8, custom: 7, pct: '61%' },
+  { stock: 'CRCL', total: 13, shared: 5, wrapped: 6, custom: 2, pct: '85%' },
 ];
 
 interface DBTable {
@@ -1046,6 +1103,7 @@ export default function DocsPage() {
             { id: "data-attrs",  label: "Data Attrs" },
             { id: "css-vars",    label: "CSS Vars" },
             { id: "responsive",  label: "Responsive" },
+            { id: "tab-map",     label: "Tab Map" },
             { id: "conventions", label: "Conventions" },
             { id: "structure",   label: "Files" },
             { id: "fonts",       label: "Fonts" },
@@ -1127,6 +1185,54 @@ export default function DocsPage() {
         <div className="mt-4 p-5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
           {stockPageTree.map((c, i) => (
             <TreeRow key={i} depth={c.depth} name={c.name} detail={c.note} />
+          ))}
+        </div>
+
+        {/* ── Tab-by-Tab Map ─────────────────────────────────────────────── */}
+        <SectionHeader id="tab-map" title="Tab-by-Tab Map: Shared vs Custom" count={tabBreakdown.length} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Complete audit of every tab across all three stocks.{' '}
+          <span className="font-mono text-emerald-400/50">S</span> = Shared (thin wrapper),{' '}
+          <span className="font-mono text-sky-400/50">W</span> = Wrapped (Shared*Tab + custom children),{' '}
+          <span className="font-mono text-amber-400/50">C</span> = Custom (no shared wrapper),{' '}
+          <span className="font-mono text-white/20">—</span> = tab does not exist for this stock.
+        </p>
+        <div className="mt-4 rounded-xl border border-white/[0.06] overflow-hidden">
+          <div className="grid grid-cols-[1fr_50px_50px_50px_1fr] text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25 border-b border-white/[0.06] bg-white/[0.02]">
+            <div className="px-4 py-2">Tab</div>
+            <div className="px-2 py-2 text-center">BMNR</div>
+            <div className="px-2 py-2 text-center">ASTS</div>
+            <div className="px-2 py-2 text-center">CRCL</div>
+            <div className="px-4 py-2">Wrapper</div>
+          </div>
+          {tabBreakdown.map((t) => (
+            <div key={t.tab} className="grid grid-cols-[1fr_50px_50px_50px_1fr] border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.02] transition-colors">
+              <div className="px-4 py-1.5 text-[12px] text-white/50">{t.tab}</div>
+              {[t.bmnr, t.asts, t.crcl].map((v, i) => (
+                <div key={i} className={`px-2 py-1.5 text-[11px] font-mono text-center ${v === 'S' ? 'text-emerald-400/60' : v === 'W' ? 'text-sky-400/60' : v === 'C' ? 'text-amber-400/60' : 'text-white/15'}`}>{v}</div>
+              ))}
+              <div className="px-4 py-1.5 text-[11px] font-mono text-white/25">{t.wrapper}</div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 rounded-xl border border-white/[0.06] overflow-hidden">
+          <div className="grid grid-cols-[60px_50px_50px_60px_60px_50px] text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25 border-b border-white/[0.06] bg-white/[0.02]">
+            <div className="px-3 py-2">Stock</div>
+            <div className="px-2 py-2 text-center">Total</div>
+            <div className="px-2 py-2 text-center text-emerald-400/40">S</div>
+            <div className="px-2 py-2 text-center text-sky-400/40">W</div>
+            <div className="px-2 py-2 text-center text-amber-400/40">C</div>
+            <div className="px-2 py-2 text-center">Shared</div>
+          </div>
+          {tabSummary.map((s) => (
+            <div key={s.stock} className="grid grid-cols-[60px_50px_50px_60px_60px_50px] border-b border-white/[0.04] last:border-b-0">
+              <div className="px-3 py-1.5 text-[12px] font-mono text-white/50">{s.stock}</div>
+              <div className="px-2 py-1.5 text-[11px] font-mono text-center text-white/40">{s.total}</div>
+              <div className="px-2 py-1.5 text-[11px] font-mono text-center text-emerald-400/50">{s.shared}</div>
+              <div className="px-2 py-1.5 text-[11px] font-mono text-center text-sky-400/50">{s.wrapped}</div>
+              <div className="px-2 py-1.5 text-[11px] font-mono text-center text-amber-400/50">{s.custom}</div>
+              <div className="px-2 py-1.5 text-[11px] font-mono text-center text-white/40">{s.pct}</div>
+            </div>
           ))}
         </div>
 
@@ -1681,10 +1787,10 @@ export default function DocsPage() {
         />
 
         {/* ── CRCL Classes ──────────────────────────────────────────────── */}
-        <SectionHeader id="crcl-classes" title="CRCL Model Classes (sm-crcl-*)" count={65} />
+        <SectionHeader id="crcl-classes" title="CRCL Model Classes (sm-crcl-*)" count={54} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
-          Circle-specific classes — DCF valuation layout, revenue bar charts, hero KPIs, metrics tables,
-          mint/redeem grids, scenario cards, method step badges, OpEx breakdown, stablecoin economics panel,
+          Circle-specific classes — DCF valuation layout, revenue bar charts, metrics tables,
+          mint/redeem grids, scenario cards, OpEx breakdown, stablecoin economics panel,
           and extracted inline style classes for Comps and DCF tabs.
         </p>
         <SmallTable
@@ -1702,17 +1808,7 @@ export default function DocsPage() {
             [".sm-crcl-bar", "Generic bar base — full width, rounded top, min-h 2px, transition."],
             [".sm-crcl-bar-accent / -mint / -violet / -coral / -sky / -cyan", "Bar color variants — background color."],
             [".sm-crcl-bar-label / -footer", "Bar annotation labels — whitespace nowrap, 6px spacing."],
-            [".sm-crcl-hero-kpi-row", "Hero KPI 2-col grid — 1px gap border separator, rounded-14."],
-            [".sm-crcl-hero-kpi-cell", "Hero KPI cell — accent-dim bg, 24px padding, centered."],
-            [".sm-crcl-current-grid", "Current position grid — repeat(4, 1fr), 8px gap, 12px font."],
-            [".sm-crcl-risk-grid", "Risk parameter grid — repeat(3, 1fr), 12px gap."],
-            [".sm-crcl-method-grid", "DCF method grid — 2 columns, 16px gap."],
-            [".sm-crcl-method-header", "Method step header — 12px 16px padding, bottom border."],
-            [".sm-crcl-method-body", "Method step body — 12px 16px padding, 8px gap."],
-            [".sm-crcl-method-item / -item-left", "Method row — baseline aligned, 8px gap. Left side flex-1."],
-            [".sm-crcl-step-badge", "Step badge — bg pill, 10px mono bold, rounded-4."],
-            [".sm-crcl-formula", "Formula text — 10px mono, text3, ellipsis overflow."],
-            [".sm-crcl-assumptions-box", "Assumptions box — accent-tinted bg, 12px, rounded-10, 1.7 line-height."],
+            ["↑ Model/MC/Risk now use shared classes", "sm-dcf-cell, sm-dcf-step-header/body/badge, sm-grid-sep-2col/3col, sm-model-grid, sm-scenario-card, ParameterCard — same as ASTS."],
             [".sm-crcl-dcf-summary-row", "DCF summary row — 2-col grid (220px label + value), 12px 24px padding."],
             [".sm-crcl-dcf-total-row", "DCF total row — accent-dim bg, no bottom border."],
             [".sm-crcl-prob-num", "Probability number — 32px mono bold."],
