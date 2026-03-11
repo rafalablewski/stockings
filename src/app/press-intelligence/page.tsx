@@ -770,9 +770,9 @@ export default function PressIntelligencePage() {
                       {isToday(item.datetime) ? time : date}
                     </span>
                     {item._inDb ? (
-                      <span className="pi-db-badge" data-status="saved" title="Stored in database">SAVED</span>
+                      <span className="pi-db-dot" data-status="saved" title="Stored in database" />
                     ) : (
-                      <span className="pi-db-badge" data-status="new" title="New — just added to database">NEW</span>
+                      <span className="pi-db-dot" data-status="missing" title="Not in database" />
                     )}
                   </div>
                 </div>
