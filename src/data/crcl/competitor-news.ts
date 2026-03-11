@@ -15,34 +15,66 @@ import { CompetitorNewsEntry } from '../shared/competitor-schema';
 export interface CRCLCompetitorProfile {
   id: string;
   name: string;
+  ticker: string;
   description: string;
+  productType: 'Stablecoin' | 'Exchange' | 'Payments' | 'Infrastructure';
   currentStatus: string;
+  capabilities: {
+    stablecoinIssuer: boolean;
+    fiatOnRamp: boolean;
+    defiIntegration: boolean;
+    institutionalCustody: boolean;
+    crossBorderPayments: boolean;
+    regulatoryCompliance: boolean;
+  };
+  keyMetrics?: {
+    aum?: string;
+    marketShare?: string;
+    circulation?: string;
+    revenue?: string;
+  };
 }
 
 export const CRCL_COMPETITOR_PROFILES: CRCLCompetitorProfile[] = [
   {
     id: 'kraken',
     name: 'Kraken',
+    ticker: 'Private',
     description: 'Major crypto exchange and USDC/EURC distribution partner with institutional custody, DeFi yield, and tokenized equities products',
+    productType: 'Exchange',
     currentStatus: 'Active USDC/EURC distribution, DeFi Earn (USDC-based yield), xStocks tokenized equities, Ethena USDe custody partner',
+    capabilities: { stablecoinIssuer: false, fiatOnRamp: true, defiIntegration: true, institutionalCustody: true, crossBorderPayments: false, regulatoryCompliance: true },
+    keyMetrics: { aum: 'N/A (private)', marketShare: 'Top-5 exchange', circulation: 'N/A', revenue: 'N/A' }
   },
   {
     id: 'tether',
     name: 'Tether',
+    ticker: 'Private',
     description: 'Largest stablecoin by AUM ($140B+), offshore operations with no US bank relationships',
+    productType: 'Stablecoin',
     currentStatus: 'Dominant market share but increasing regulatory scrutiny',
+    capabilities: { stablecoinIssuer: true, fiatOnRamp: false, defiIntegration: true, institutionalCustody: false, crossBorderPayments: true, regulatoryCompliance: false },
+    keyMetrics: { aum: '$140B+', marketShare: '~65% stablecoin', circulation: 'USDT $140B+', revenue: '~$6B (est. 2024)' }
   },
   {
     id: 'coinbase',
     name: 'Coinbase',
+    ticker: 'COIN',
     description: 'Leading US crypto exchange and USDC distribution partner (50% revenue share)',
+    productType: 'Exchange',
     currentStatus: 'Key USDC distribution partner via Coinbase One, expanding institutional services',
+    capabilities: { stablecoinIssuer: false, fiatOnRamp: true, defiIntegration: true, institutionalCustody: true, crossBorderPayments: false, regulatoryCompliance: true },
+    keyMetrics: { aum: '~$300B custody', marketShare: '#1 US exchange', circulation: 'N/A', revenue: '~$6.6B (2024)' }
   },
   {
     id: 'paypal',
     name: 'PayPal',
+    ticker: 'PYPL',
     description: 'Global payments giant with PYUSD stablecoin (~$1B AUM)',
+    productType: 'Payments',
     currentStatus: 'Distribution advantage via PayPal ecosystem but limited adoption',
+    capabilities: { stablecoinIssuer: true, fiatOnRamp: true, defiIntegration: false, institutionalCustody: false, crossBorderPayments: true, regulatoryCompliance: true },
+    keyMetrics: { aum: '~$1B (PYUSD)', marketShare: '<1% stablecoin', circulation: 'PYUSD ~$1B', revenue: '~$31B (total co.)' }
   },
 ];
 

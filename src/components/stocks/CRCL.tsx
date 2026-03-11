@@ -5360,15 +5360,37 @@ const CompsTab = () => {
         <div className="sm-flex-col-gap sm-gap-16">
           {COMPETITOR_PROFILES.map(comp => (
             <div key={comp.id} className="sm-comp-profile-card">
-              <div className="sm-flex-between sm-items-start">
+              <div className="sm-flex-between sm-items-start sm-mb-12">
                 <div>
-                  <div className="sm-text sm-fw-600 sm-text-16">{comp.name}</div>
+                  <div className="sm-fw-600 sm-text-16 sm-text">{comp.name}</div>
                   <div className="sm-text-13">{comp.description}</div>
                 </div>
               </div>
-              <div className="sm-mt-8">
-                <div className="sm-micro-text">Status</div>
-                <div className="sm-text-12">{comp.currentStatus}</div>
+              <div className="sm-grid-autofit-150">
+                <div>
+                  <div className="sm-micro-text">Ticker</div>
+                  <div className="sm-text-12">{comp.ticker}</div>
+                </div>
+                <div>
+                  <div className="sm-micro-text">Type</div>
+                  <div className="sm-text-12">{comp.productType}</div>
+                </div>
+                <div>
+                  <div className="sm-micro-text">Status</div>
+                  <div className="sm-text-12">{comp.currentStatus}</div>
+                </div>
+                {comp.keyMetrics?.aum && (
+                  <div>
+                    <div className="sm-micro-text">AUM</div>
+                    <div className="sm-text-12">{comp.keyMetrics.aum}</div>
+                  </div>
+                )}
+                {comp.keyMetrics?.marketShare && (
+                  <div>
+                    <div className="sm-micro-text">Market Share</div>
+                    <div className="sm-text-12">{comp.keyMetrics.marketShare}</div>
+                  </div>
+                )}
               </div>
             </div>
           ))}
