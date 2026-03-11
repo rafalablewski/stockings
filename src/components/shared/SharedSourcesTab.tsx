@@ -914,6 +914,9 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       throw new Error(saveBody?.error || `Save failed: ${saveRes.status}`);
     }
     console.log('[ai-fetch] save OK:', saveBody);
+    if (saveBody.filtered === 0 && articles.length > 0) {
+      console.warn('[ai-fetch] WARNING: all articles filtered out during save — check cacheKey/headline values', articles.slice(0, 2));
+    }
     for (const a of articles) {
       const existingRec = dbRecordsRef.current.get(a.cacheKey);
       const rec: DbRecord = { cacheKey: a.cacheKey, headline: a.headline, date: a.date || null, url: a.url || null, source: a.source || null, articleType: a.articleType || null, dismissed: newKeys.has(a.cacheKey) ? false : (existingRec?.dismissed ?? false), hidden: false };
@@ -1246,22 +1249,44 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
           }
         }
 
-        // One-time migration: purge old PR data so fresh press-intelligence data takes over
-        const migrationKey = `pr-source-migrated-${ticker}`;
-        if (typeof localStorage !== 'undefined' && !localStorage.getItem(migrationKey)) {
-          const prKeys: string[] = [];
-          for (const [key, rec] of records) {
-            if (rec.articleType === 'pr') prKeys.push(key);
+        // ── DB-first PR hydration ───────────────────────────────────────
+        // Always merge press_releases DB into seen_articles so PRs survive
+        // page reloads without requiring the user to click "Fetch PRs".
+        if (!cancelled) {
+          try {
+            const piPrs = await fetchPRsFromPressIntelligence(ticker, SECTION_MAX);
+            if (piPrs.length > 0) {
+              const existingPrKeys = new Set(prs.map(articleCacheKey));
+              const newFromPI: ArticleItem[] = [];
+              for (const pr of piPrs) {
+                const key = articleCacheKey(pr);
+                if (!existingPrKeys.has(key)) {
+                  newFromPI.push(pr);
+                  prs.push(pr);
+                  const rec: DbRecord = { cacheKey: key, headline: pr.headline, date: pr.date || null, url: pr.url || null, source: pr.source || null, articleType: 'pr', dismissed: true, hidden: false };
+                  records.set(key, rec);
+                  newKeys.add(key);
+                }
+              }
+              // Persist any new PRs to seen_articles so they survive future reloads
+              if (newFromPI.length > 0) {
+                const toSave = newFromPI.map(a => ({ cacheKey: articleCacheKey(a), headline: a.headline, date: a.date, url: a.url, source: a.source, articleType: 'pr' }));
+                fetch('/api/seen-articles', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ ticker, articles: toSave }),
+                }).then(r => r.json()).then(body => {
+                  console.log(`[db-init] auto-saved ${newFromPI.length} PRs from press-intelligence to seen_articles:`, body);
+                  if (body.filtered === 0 && toSave.length > 0) {
+                    console.warn('[db-init] WARNING: all PRs were filtered out during save — check cacheKey/headline values', toSave.slice(0, 2));
+                  }
+                }).catch(err => console.error('[db-init] auto-save PRs failed:', err));
+              }
+              console.log(`[db-init] press-intelligence hydration: ${piPrs.length} total, ${newFromPI.length} new (not in seen_articles)`);
+            }
+          } catch (err) {
+            console.warn('[db-init] press-intelligence hydration failed (non-fatal):', err);
           }
-          if (prKeys.length > 0) {
-            // Delete PR rows from DB
-            await fetch(`/api/seen-articles?ticker=${ticker}&articleType=pr`, { method: 'DELETE' }).catch(() => {});
-            // Remove from local map
-            for (const key of prKeys) records.delete(key);
-            // Clear PR items from the arrays
-            prs.length = 0;
-          }
-          localStorage.setItem(migrationKey, Date.now().toString());
         }
 
         dbRecordsRef.current = records;
