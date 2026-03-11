@@ -14164,3 +14164,392 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* ── Padding 12px 8px ──────────────────────────────────────────────── */
 .sm-p-12-8 { padding: 12px 8px; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CRCL — Missing extracted classes (66 total)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Utility spacing / line-height ──────────────────────────────────── */
+.sm-crcl-mb-4 { margin-bottom: 4px; }
+.sm-crcl-mb-6 { margin-bottom: 6px; }
+.sm-crcl-mt-4 { margin-top: 4px; }
+.sm-crcl-mt-6 { margin-top: 6px; }
+.sm-crcl-mt-8 { margin-top: 8px; }
+.sm-crcl-pt-8 { padding-top: 8px; }
+.sm-crcl-pt-12 { padding-top: 12px; }
+.sm-crcl-pl-16 { padding-left: 16px; }
+.sm-crcl-lh-15 { line-height: 1.5; }
+.sm-crcl-lh-16 { line-height: 1.6; }
+.sm-crcl-lh-17 { line-height: 1.7; }
+.sm-crcl-ls-tight { letter-spacing: -1px; }
+.sm-crcl-max-w-600 { max-width: 600px; }
+
+/* ── Section title (DCF heading bar) ────────────────────────────────── */
+.sm-crcl-section-title {
+  font-size: 28px;
+  letter-spacing: -0.5px;
+}
+
+/* ── Accent bar (vertical bar next to DCF title) ────────────────────── */
+.sm-crcl-accent-bar {
+  width: 6px;
+  height: 32px;
+  background: var(--accent);
+  border-radius: 3px;
+}
+
+/* ── Card header (padding + bottom border) ──────────────────────────── */
+.sm-crcl-card-header {
+  padding: 24px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Case label (Bull / Bear) ───────────────────────────────────────── */
+.sm-crcl-case-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* ── Chart area (padding + overflow) ────────────────────────────────── */
+.sm-crcl-chart-area {
+  padding: 24px 24px 0;
+  overflow-x: auto;
+}
+
+/* ── Bar chart container ────────────────────────────────────────────── */
+.sm-crcl-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 200px;
+}
+
+/* ── Revenue bar column ─────────────────────────────────────────────── */
+.sm-crcl-rev-bar-col {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  flex: 1;
+  min-width: 56px;
+}
+
+/* ── Revenue bar value label ────────────────────────────────────────── */
+.sm-crcl-rev-bar-val {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+/* ── Revenue bar bottom label (quarter) ─────────────────────────────── */
+.sm-crcl-rev-bar-label {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* ── Generic bar (shared base for chart bars) ───────────────────────── */
+.sm-crcl-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.3s;
+}
+
+/* ── Bar color variants ─────────────────────────────────────────────── */
+.sm-crcl-bar-accent { background: var(--accent); }
+.sm-crcl-bar-mint   { background: var(--mint); }
+.sm-crcl-bar-violet { background: var(--violet); }
+.sm-crcl-bar-coral  { background: var(--coral); }
+.sm-crcl-bar-sky    { background: var(--sky); }
+.sm-crcl-bar-cyan   { background: var(--cyan); }
+
+/* ── Bar label (value above bar) ────────────────────────────────────── */
+.sm-crcl-bar-label {
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+
+/* ── Bar footer (quarter label below bar) ───────────────────────────── */
+.sm-crcl-bar-footer {
+  margin-top: 6px;
+  white-space: nowrap;
+}
+
+/* ── Hero KPI row (2-column split with border separator) ────────────── */
+.sm-crcl-hero-kpi-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+/* ── Hero KPI cell ──────────────────────────────────────────────────── */
+.sm-crcl-hero-kpi-cell {
+  background: var(--accent-dim);
+  padding: 24px;
+  text-align: center;
+}
+
+/* ── Current position grid ──────────────────────────────────────────── */
+.sm-crcl-current-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  font-size: 12px;
+}
+
+/* ── Risk parameter grid ────────────────────────────────────────────── */
+.sm-crcl-risk-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* ── Method grid (DCF steps, 2 columns) ─────────────────────────────── */
+.sm-crcl-method-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Method header (step title bar) ─────────────────────────────────── */
+.sm-crcl-method-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Method body (step items container) ─────────────────────────────── */
+.sm-crcl-method-body {
+  padding: 12px 16px;
+  gap: 8px;
+}
+
+/* ── Method item (single row) ───────────────────────────────────────── */
+.sm-crcl-method-item {
+  align-items: baseline;
+  gap: 8px;
+}
+
+/* ── Method item left side ──────────────────────────────────────────── */
+.sm-crcl-method-item-left {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Step badge (Step 1-3, Step 4, etc.) ────────────────────────────── */
+.sm-crcl-step-badge {
+  color: var(--bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Space Mono', monospace;
+}
+
+/* ── Formula text ───────────────────────────────────────────────────── */
+.sm-crcl-formula {
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Assumptions box ────────────────────────────────────────────────── */
+.sm-crcl-assumptions-box {
+  padding: 16px 16px;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.7;
+  margin-top: 16px;
+  border: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+/* ── DCF summary row (2-column: label + value) ──────────────────────── */
+.sm-crcl-dcf-summary-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) 1fr;
+  padding: 12px 24px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+/* ── DCF total row (equity value highlight) ─────────────────────────── */
+.sm-crcl-dcf-total-row {
+  background: var(--accent-dim);
+  border-bottom: none;
+}
+
+/* ── Probability number (large mono) ────────────────────────────────── */
+.sm-crcl-prob-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+/* ── Scenario card (key metric cards) ───────────────────────────────── */
+.sm-crcl-scenario-card {
+  background: var(--surface);
+  text-align: center;
+  border-radius: 16px;
+  padding: 24px 24px;
+}
+
+/* ── Scenario big number ────────────────────────────────────────────── */
+.sm-crcl-scenario-big-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+/* ── Year button override for CRCL scenario tab ─────────────────────── */
+.sm-crcl-year-btn {
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+}
+
+/* ── Insights grid (2-column) ───────────────────────────────────────── */
+.sm-crcl-insights-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 24px 24px;
+  font-size: 14px;
+}
+
+/* ── Dot indicator (scenario table) ─────────────────────────────────── */
+.sm-crcl-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+/* ── 2-column grid ──────────────────────────────────────────────────── */
+.sm-crcl-2col-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── Metrics header (3-column: Metric / Value / Description) ────────── */
+.sm-crcl-metrics-header {
+  display: grid;
+  grid-template-columns: 1fr 120px 1fr;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Metrics table header cell ──────────────────────────────────────── */
+.sm-crcl-metrics-th {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.sm-crcl-metrics-th[data-align="right"] { text-align: right; }
+.sm-crcl-metrics-th[data-align="left"]  { text-align: left; }
+
+/* ── Metrics row ────────────────────────────────────────────────────── */
+.sm-crcl-metrics-row {
+  display: grid;
+  grid-template-columns: 1fr 120px 1fr;
+  padding: 12px 24px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-crcl-metrics-row[data-last="true"] { border-bottom: none; }
+
+/* ── Mint/Redeem header ─────────────────────────────────────────────── */
+.sm-crcl-mint-header {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr 1fr;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Mint/Redeem row ────────────────────────────────────────────────── */
+.sm-crcl-mint-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr 1fr;
+  padding: 12px 24px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  transition: background 0.15s;
+}
+.sm-crcl-mint-row[data-last="true"] { border-bottom: none; }
+
+/* ── OpEx breakdown grid ────────────────────────────────────────────── */
+.sm-crcl-opex-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  font-size: 11px;
+}
+
+/* ── Select dropdown (OpEx quarter picker) ──────────────────────────── */
+.sm-crcl-select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--text1);
+}
+
+/* ── Split grid (border-separated 2-column) ─────────────────────────── */
+.sm-crcl-split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+}
+
+/* ── Key-value row ──────────────────────────────────────────────────── */
+.sm-crcl-kv-row {
+  padding: 6px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+
+/* ── Econ panel (stablecoin economics footer) ───────────────────────── */
+.sm-crcl-econ-panel {
+  padding: 16px 24px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--mint) 8%, var(--surface)), color-mix(in srgb, var(--violet) 8%, var(--surface)));
+  border-top: 1px solid var(--border);
+}
+
+/* ── Econ title ─────────────────────────────────────────────────────── */
+.sm-crcl-econ-title {
+  font-size: 11px;
+  color: var(--mint);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* ── Econ body text ─────────────────────────────────────────────────── */
+.sm-crcl-econ-body {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+/* ── Value color sky variant (FCF rows: sky when positive, coral when negative) */
+.sm-val-color-sky[data-positive="true"]  { color: var(--sky); }
+.sm-val-color-sky[data-positive="false"] { color: var(--coral); }
