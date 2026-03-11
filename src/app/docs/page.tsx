@@ -1787,10 +1787,10 @@ export default function DocsPage() {
         />
 
         {/* ── CRCL Classes ──────────────────────────────────────────────── */}
-        <SectionHeader id="crcl-classes" title="CRCL Model Classes (sm-crcl-*)" count={65} />
+        <SectionHeader id="crcl-classes" title="CRCL Model Classes (sm-crcl-*)" count={54} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
-          Circle-specific classes — DCF valuation layout, revenue bar charts, hero KPIs, metrics tables,
-          mint/redeem grids, scenario cards, method step badges, OpEx breakdown, stablecoin economics panel,
+          Circle-specific classes — DCF valuation layout, revenue bar charts, metrics tables,
+          mint/redeem grids, scenario cards, OpEx breakdown, stablecoin economics panel,
           and extracted inline style classes for Comps and DCF tabs.
         </p>
         <SmallTable
@@ -1808,17 +1808,7 @@ export default function DocsPage() {
             [".sm-crcl-bar", "Generic bar base — full width, rounded top, min-h 2px, transition."],
             [".sm-crcl-bar-accent / -mint / -violet / -coral / -sky / -cyan", "Bar color variants — background color."],
             [".sm-crcl-bar-label / -footer", "Bar annotation labels — whitespace nowrap, 6px spacing."],
-            [".sm-crcl-hero-kpi-row", "Hero KPI 2-col grid — 1px gap border separator, rounded-14."],
-            [".sm-crcl-hero-kpi-cell", "Hero KPI cell — accent-dim bg, 24px padding, centered."],
-            [".sm-crcl-current-grid", "Current position grid — repeat(4, 1fr), 8px gap, 12px font."],
-            [".sm-crcl-risk-grid", "Risk parameter grid — repeat(3, 1fr), 12px gap."],
-            [".sm-crcl-method-grid", "DCF method grid — 2 columns, 16px gap."],
-            [".sm-crcl-method-header", "Method step header — 12px 16px padding, bottom border."],
-            [".sm-crcl-method-body", "Method step body — 12px 16px padding, 8px gap."],
-            [".sm-crcl-method-item / -item-left", "Method row — baseline aligned, 8px gap. Left side flex-1."],
-            [".sm-crcl-step-badge", "Step badge — bg pill, 10px mono bold, rounded-4."],
-            [".sm-crcl-formula", "Formula text — 10px mono, text3, ellipsis overflow."],
-            [".sm-crcl-assumptions-box", "Assumptions box — accent-tinted bg, 12px, rounded-10, 1.7 line-height."],
+            ["↑ Model/MC/Risk now use shared classes", "sm-dcf-cell, sm-dcf-step-header/body/badge, sm-grid-sep-2col/3col, sm-model-grid, sm-scenario-card, ParameterCard — same as ASTS."],
             [".sm-crcl-dcf-summary-row", "DCF summary row — 2-col grid (220px label + value), 12px 24px padding."],
             [".sm-crcl-dcf-total-row", "DCF total row — accent-dim bg, no bottom border."],
             [".sm-crcl-prob-num", "Probability number — 32px mono bold."],
