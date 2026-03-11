@@ -353,6 +353,15 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/shared/SharedEdgarTab.tsx",         type: "Component", description: "SEC EDGAR filings browser" },
   { path: "src/components/shared/SharedSourcesTab.tsx",       type: "Component", description: "Research sources / news feed tab" },
   { path: "src/components/shared/SharedAIAgentsTab.tsx",      type: "Component", description: "AI analysis agents status tab" },
+  { path: "src/components/shared/SharedModelTab.tsx",         type: "Component", description: "Model tab shell: hero header + children (scenario presets, DCF, sensitivity — all stock-specific)" },
+  { path: "src/components/shared/modelTypes.ts",              type: "Types",     description: "SharedModelTabProps, ModelCfaItem" },
+  { path: "src/components/shared/SharedMonteCarloTab.tsx",    type: "Component", description: "Monte Carlo tab: hero, preset grid, horizon/sim controls, percentile table, risk metrics, histogram, CFA notes; stock-specific params via renderParameters render prop" },
+  { path: "src/components/shared/monteCarloTypes.ts",         type: "Types",     description: "SharedMonteCarloTabProps, McPreset, McSimResults, McHistogramBucket, McCfaItem" },
+  { path: "src/components/shared/SharedCompsTab.tsx",         type: "Component", description: "Comps tab shell: hero + render props (renderValuationComps, renderCompetitorProfiles, renderCompetitorNews)" },
+  { path: "src/components/shared/compsTypes.ts",              type: "Types",     description: "SharedCompsTabProps, CompsCfaItem" },
+  { path: "src/components/shared/SharedCapitalTab.tsx",       type: "Component", description: "Capital tab shell: hero header + children (share classes, dilution, offerings — all stock-specific)" },
+  { path: "src/components/shared/capitalTypes.ts",            type: "Types",     description: "SharedCapitalTabShellProps, ShareClass, MajorShareholder, EquityOffering, Warrant, CapitalNavItem" },
+  { path: "src/components/stocks/TEMPLATE.tsx.template",      type: "Template",  description: "New stock scaffold — pre-wired shared tabs, placeholder data imports, find-and-replace placeholders ({TICKER}, {COMPANY}, {ACCENT})" },
   { path: "src/components/shared/UpdateIndicators.tsx",       type: "Component", description: "Colored dot indicators for data freshness" },
   { path: "src/components/shared/StockHeader.tsx",             type: "Component", description: "Concept 11c Edge Markers header — three-column cockpit layout (identity · price gauge · HUD spine), buildHudMarkers helper, responsive pills on mobile" },
   { path: "src/components/shared/LivePrice.tsx",              type: "Component", description: "Real-time stock price display + MarketData (open, dayHigh/Low, 52W high/low)" },
@@ -438,7 +447,11 @@ const stockPageTree = [
   { depth: 3, name: "LivePrice",                          note: "Real-time price from Yahoo Finance" },
   { depth: 2, name: "StockNavigation",                    note: "Tab bar with dropdown groups" },
   { depth: 2, name: "Tab Content (conditional)",           note: "One of the following shared tabs:" },
-  { depth: 3, name: "Overview / Model / Capital / Comps",  note: "Stock-specific — rendered inline in ASTS/BMNR/CRCL" },
+  { depth: 3, name: "Overview",                             note: "Stock-specific — rendered inline in ASTS/BMNR/CRCL" },
+  { depth: 3, name: "SharedModelTab",                       note: "Hero shell + children (scenario presets, DCF, sensitivity)" },
+  { depth: 3, name: "SharedMonteCarloTab",                  note: "Presets, sim controls, percentile table, histogram; params via render prop" },
+  { depth: 3, name: "SharedCompsTab",                       note: "Hero + render props (valuation comps, competitor profiles, news)" },
+  { depth: 3, name: "SharedCapitalTab",                     note: "Hero shell + children (share classes, dilution, offerings)" },
   { depth: 3, name: "SharedFinancialsTab",                 note: "Quarterly metrics, bar charts, CFA notes" },
   { depth: 3, name: "SharedTimelineTab",                   note: "Event timeline with topic filters" },
   { depth: 4, name: "SharedSecFilingsSection",             note: "SEC filing cards with KPI summary, cross-ref dots" },
@@ -670,6 +683,44 @@ function MobileNav() {
 />`,
   },
   {
+    title: "Shared projection tabs (Model / Monte Carlo / Comps / Capital)",
+    description: "All four projection tabs now use shared components across ASTS, BMNR, and CRCL. Model and Capital are thin hero shells (children pattern). Monte Carlo and Comps use render props for stock-specific content. New stocks get these pre-wired via TEMPLATE.tsx.template.",
+    code: `// Model: SharedModelTab — thin hero shell, children = all stock-specific content
+<SharedModelTab sectionLabel="Valuation Model" description="Configure assumptions..." sources="PR">
+  {/* Scenario presets, parameter cards, DCF output, sensitivity tables */}
+</SharedModelTab>
+
+// Monte Carlo: SharedMonteCarloTab — hero + preset grid + sim controls + histogram
+// Stock provides: simulation engine (useMemo → McSimResults), parameter UI (renderParameters)
+<SharedMonteCarloTab
+  sectionLabel="Monte Carlo Simulation" description="Probabilistic fair value..."
+  currentStockPrice={currentStockPrice}
+  presets={mcPresets}          // Record<string, McPreset>
+  presetOrder={['bear','base','bull','custom']}
+  activePreset={activePreset} onPresetChange={setActivePreset}
+  years={years} onYearsChange={setYears}
+  sims={sims} onSimsChange={setSims}
+  onRun={runSimulation}
+  sim={mcSim}                  // McSimResults from useMemo
+  renderParameters={() => (
+    <>{/* Stock-specific sliders, toggles, parameter cards */}</>
+  )}
+/>
+
+// Comps: SharedCompsTab — hero + 3 render-prop slots
+<SharedCompsTab
+  sectionLabel="Comparable Analysis" description="Trading comparables..."
+  renderValuationComps={() => <ValuationTable />}
+  renderCompetitorProfiles={() => <CompetitorCards />}
+  renderCompetitorNews={() => <NewsFeed />}
+/>
+
+// Capital: SharedCapitalTab — thin hero shell, children = all stock-specific content
+<SharedCapitalTab sectionLabel="Capital Structure" description="Share classes..." sources="SEC">
+  {/* Share class tables, dilution scenarios, offering history */}
+</SharedCapitalTab>`,
+  },
+  {
     title: "Gold-Standard Visual Patterns",
     description: "All tabs use a consistent set of sm-* classes for visual elements. Badges use sm-news-tag with --tag-color. Callout panels use sm-callout with --callout-color. Footnotes and info boxes use sm-note-panel. Data tables (milestones, quarterly metrics) use sm-fin-table-header/row with sm-fin-th/td. SEC filings in Timeline use sm-sec-* card layout (sm-sec-card, sm-sec-badge, sm-sec-desc) with KPI summary and cross-ref source dots. KPI metrics use sm-kpi-cell with sm-kpi-label/value/sub. The Capital tab is the golden standard — all other tabs mirror its visual patterns.",
     code: `// Badge — sm-news-tag
@@ -804,6 +855,31 @@ const archive: ArchiveEntry[] = [];
 // 5. All sm-inv-* classes work automatically — no new CSS needed
 //    Only style={{}} allowed: CSS custom property pass-throughs
 //    e.g. style={{ '--inv-accent': 'var(--mint)' } as React.CSSProperties}`,
+  },
+  {
+    title: "Adding a New Stock — TEMPLATE.tsx.template",
+    description: "Copy src/components/stocks/TEMPLATE.tsx.template to {TICKER}.tsx and find-and-replace 6 placeholders: {TICKER}, {ticker}, {COMPANY}, {ACCENT}, {SECTOR}, {INDUSTRY}, {EXCHANGE}. The template pre-wires all 12 tabs (Overview, Model, Monte Carlo, Comps, Capital, Financials, Timeline, Investment, Wall Street, AI Agents, Sources, EDGAR) using shared components. Create a data directory at src/data/{ticker}/ with: index.ts, company.ts, investment.ts, analyst-coverage.ts, sec-filings.ts, quarterly-metrics.ts, timeline.ts, capital.ts. No new CSS needed — all sm-* classes work automatically via data-accent.",
+    code: `// 1. Copy template
+cp src/components/stocks/TEMPLATE.tsx.template src/components/stocks/PLTR.tsx
+
+// 2. Find-and-replace placeholders:
+//    {TICKER}   → PLTR          {ticker}    → pltr
+//    {COMPANY}  → Palantir      {ACCENT}    → cyan | violet | mint | gold | coral | sky
+//    {SECTOR}   → Technology    {INDUSTRY}  → Enterprise Software
+//    {EXCHANGE} → NYSE
+
+// 3. Create data directory: src/data/pltr/
+//    index.ts              — central exports (DEFAULTS, DATA_FRESHNESS)
+//    company.ts            — currentShares, currentStockPrice, cashOnHand, quarterlyBurn, totalDebt
+//    investment.ts         — PLTR_INVESTMENT_CURRENT, PLTR_INVESTMENT_ARCHIVE
+//    analyst-coverage.ts   — PLTR_ANALYST_COVERAGE
+//    sec-filings.ts        — PLTR_SEC_FILINGS, PLTR_SEC_META, PLTR_SEC_TYPE_COLORS
+//    quarterly-metrics.ts  — PLTR_QUARTERLY_DATA
+//    timeline.ts           — PLTR_TIMELINE_EVENTS
+//    capital.ts            — share classes, offerings, dilution scenarios
+
+// 4. Register in src/lib/stocks.ts
+// 5. All 12 tabs work out of the box — implement stock-specific logic in each tab function`,
   },
 ];
 

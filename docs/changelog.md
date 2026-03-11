@@ -2,6 +2,10 @@
 
 ## 2026-03-12
 
+- docs: add SharedModelTab, SharedMonteCarloTab, SharedCompsTab, SharedCapitalTab + type files + TEMPLATE.tsx.template to /docs file listing
+- docs: update /docs component tree — Model, Monte Carlo, Comps, Capital now use shared components (no longer inline)
+- docs: add "Shared projection tabs" pattern section with usage examples for all 4 tabs
+- docs: add "Adding a New Stock — TEMPLATE.tsx.template" guide with placeholder list and data directory structure
 - fix: add 53 missing BMNR CSS class definitions lost during inline style extraction
 - fix: restore Comps tab rendering — crypto-badge, profile-metrics-grid, cmp-5col/6col, competitor-badge, thesis-comparison, source-line, rounded-top, col-span-3
 - fix: restore Monte Carlo tab rendering — mc-preset (with --preset-color), param-gap
