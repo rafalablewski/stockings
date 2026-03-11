@@ -1752,7 +1752,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
           {partnerFilter !== 'All' && (
             <button
               onClick={() => setPartnerFilter('All')}
-              className="sm-bmnr-clear-btn"
+              className="sm-clear-btn"
               aria-label="Clear partner filter"
             >
               Clear
@@ -1830,7 +1830,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
                 role="button"
                 tabIndex={0}
                 aria-label={`${news.headline} — ${news.impact} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-                className="sm-bmnr-news-row"
+                className="sm-news-row"
                 style={{ '--news-accent': accentColor, borderBottom: i < filteredPartnerNews.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' } as React.CSSProperties}
                 onClick={() => {
                   const next = new Set(expandedPartnerNews);
@@ -5233,7 +5233,7 @@ const TimelineTab = () => {
           {selectedTopics.length > 0 && (
             <button
               onClick={() => setSelectedTopics([])}
-              className="sm-bmnr-clear-btn"
+              className="sm-clear-btn"
               aria-label="Clear topic filter"
             >
               Clear ({selectedTopics.length})
@@ -5311,7 +5311,7 @@ const TimelineTab = () => {
                 role="button"
                 tabIndex={0}
                 aria-label={`${entry.title} — ${entry.impact} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-                className="sm-bmnr-news-row"
+                className="sm-news-row"
                 style={{ '--news-accent': accentColor, borderBottom: i < filteredEntries.length - 1 ? '1px solid color-mix(in srgb, var(--border) 50%, transparent)' : 'none' } as React.CSSProperties}
                 onClick={() => {
                   const next = new Set(expanded);
@@ -5958,13 +5958,13 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         <p className="sm-filter-desc">Filter by competitor to focus on specific threat vectors.</p>
         <div className="sm-flex-between sm-items-center sm-mb-8">
           <span className="sm-section-label">Filter by Competitor</span>
-          {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} className="sm-comp-clear-btn">Clear</button>}
+          {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} className="sm-clear-btn">Clear</button>}
         </div>
         <div className="sm-flex-wrap sm-gap-6">
           {(() => { const isActive = competitorFilter === 'all'; return (
           <button
             onClick={() => setCompetitorFilter('all')}
-            className="sm-comp-filter-pill" data-active={isActive || undefined}
+            className="sm-filter-pill" data-active={isActive || undefined} style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}
           >
             All ({COMPETITOR_NEWS.length})
           </button>
@@ -5977,7 +5977,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <button
                 key={comp.id}
                 onClick={() => setCompetitorFilter(comp.id)}
-                className="sm-comp-filter-pill" data-active={isActive || undefined}
+                className="sm-filter-pill" data-active={isActive || undefined} style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}
               >
                 {comp.name.split('/')[0].trim()} ({count})
               </button>
@@ -5986,7 +5986,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
           {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (() => { const isActive = competitorFilter === 'other'; return (
             <button
               onClick={() => setCompetitorFilter('other')}
-              className="sm-comp-filter-pill" data-active={isActive || undefined}
+              className="sm-filter-pill" data-active={isActive || undefined} style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}
             >
               Miscellaneous ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
             </button>
@@ -6004,7 +6004,7 @@ const CompsTab = ({ calc, currentStockPrice }) => {
               <button
                 key={cat}
                 onClick={() => setNewsCategoryFilter(cat)}
-                className="sm-comp-filter-pill" data-color="sky" data-active={isActive || undefined}
+                className="sm-filter-pill" data-active={isActive || undefined} style={{ '--pill-accent': 'var(--sky)' } as React.CSSProperties}
               >
                 {cat}
               </button>

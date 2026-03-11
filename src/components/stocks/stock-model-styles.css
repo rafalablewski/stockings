@@ -6962,6 +6962,32 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--pill-accent, var(--accent));
 }
 
+/* ── Clear filter button (shared across all stocks) ─────────────────── */
+.sm-clear-btn {
+  font-size: 10px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--coral) 15%, transparent);
+  color: var(--coral);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ── News row (shared across all stocks) ────────────────────────────── */
+.sm-news-row {
+  padding: 16px 24px;
+  cursor: pointer;
+  border-left: 3px solid var(--news-accent, var(--accent));
+  transition: background 0.15s;
+}
+.sm-news-row:hover { background: var(--surface2); }
+.sm-news-row-sep {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+}
+.sm-news-row-sep:last-child { border-bottom: none; }
+
 /* ── Pill toggle (chart type selector, scenario selector) ─────────────── */
 .sm-pill-toggle {
   padding: 4px 12px;
@@ -7798,7 +7824,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .sm-bmnr-param-grid[data-disabled="true"] { pointer-events: none; }
 
-/* ── Parameter Button (preset value selector) ────────────────────────────── */
+/* DEPRECATED: use .sm-param-btn instead */
 .sm-bmnr-param-btn {
   padding: 12px 4px;
   border-radius: 8px;
@@ -8253,6 +8279,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* sm-bmnr-filter-pill: removed — use .sm-filter-pill with --pill-accent instead */
+/* DEPRECATED: use .sm-clear-btn instead */
 .sm-bmnr-clear-btn {
   font-size: 10px;
   padding: 4px 12px;
@@ -8265,7 +8292,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-family: 'Outfit', sans-serif;
 }
 
-/* ── News Row ────────────────────────────────────────────────────────────── */
+/* DEPRECATED: use .sm-news-row / .sm-news-row-sep instead */
 .sm-bmnr-news-row {
   padding: 16px 24px;
   cursor: pointer;
@@ -10276,7 +10303,7 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-filter-subdesc { font-size: 11px; color: var(--text3); font-style: italic; margin: 0 0 16px; }
 .sm-filter-result-text { font-size: 11px; color: var(--text3); margin-top: 8px; font-family: 'Space Mono', monospace; }
 
-/* Comp filter pill */
+/* DEPRECATED: use .sm-filter-pill with --pill-accent instead */
 .sm-comp-filter-pill {
   font-size: 11px;
   padding: 4px 12px;
@@ -10308,7 +10335,7 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--sky);
 }
 
-/* Clear button (comps) */
+/* DEPRECATED: use .sm-clear-btn instead */
 .sm-comp-clear-btn {
   font-size: 10px;
   padding: 4px 12px;
@@ -12523,7 +12550,7 @@ input[type="range"]::-webkit-slider-thumb {
 .sm-gtc-2fr-3x1 { grid-template-columns: 2fr 1fr 1fr 1fr; }
 .sm-gtc-autofit-150 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
 
-/* ── Competitor filter pill ──────────────────────────────────────── */
+/* DEPRECATED: use .sm-filter-pill with --pill-accent instead */
 .sm-comp-filter-pill {
   font-size: 11px;
   padding: 4px 12px;
@@ -12545,7 +12572,7 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--sky);
 }
 
-/* ── Competitor clear button ─────────────────────────────────────── */
+/* DEPRECATED: use .sm-clear-btn instead */
 .sm-comp-clear-btn {
   font-size: 10px;
   padding: 4px 12px;
@@ -13264,7 +13291,7 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--text3);
 }
 
-/* ── Competitor filter pill button ────────────────────────────────── */
+/* DEPRECATED: use .sm-filter-pill with --pill-accent instead */
 .sm-crcl-filter-pill {
   font-size: 11px;
   padding: 4px 12px;
@@ -13281,7 +13308,7 @@ input[type="range"]::-webkit-slider-thumb {
   color: var(--filter-color, var(--violet));
 }
 
-/* ── Clear filter button ─────────────────────────────────────────── */
+/* DEPRECATED: use .sm-clear-btn instead */
 .sm-crcl-clear-btn {
   font-size: 10px;
   padding: 4px 12px;
@@ -13306,7 +13333,7 @@ input[type="range"]::-webkit-slider-thumb {
   white-space: nowrap;
 }
 
-/* ── Competitor news item ────────────────────────────────────────── */
+/* DEPRECATED: use .sm-news-row .sm-news-row-sep instead */
 .sm-crcl-news-item {
   padding: 16px 24px;
   cursor: pointer;
@@ -13375,7 +13402,7 @@ input[type="range"]::-webkit-slider-thumb {
   margin-top: 8px;
 }
 
-/* ── Competitor profile card ─────────────────────────────────────── */
+/* DEPRECATED: use .sm-comp-profile-card instead */
 .sm-crcl-comp-profile {
   padding: 16px;
   background: var(--surface2);

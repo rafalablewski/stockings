@@ -839,7 +839,7 @@ const BMNRParameterCard = ({
             <div
               key={opt}
               onClick={() => { if (!disabled) { onChange(opt); setCustomMode(false); } }}
-              className="sm-bmnr-param-btn"
+              className="sm-param-btn"
               data-active={isActive}
               data-disabled={disabled}
               style={isActive && !disabled ? { '--btn-color': colors.border } as React.CSSProperties : undefined}
@@ -864,7 +864,7 @@ const BMNRParameterCard = ({
         ) : (
           <div
             onClick={() => !disabled && setCustomMode(true)}
-            className="sm-bmnr-param-btn"
+            className="sm-param-btn"
             data-active={isCustomValue}
             data-disabled={disabled}
           >
@@ -1353,7 +1353,7 @@ const OverviewParameterCard = ({
             <div
               key={opt}
               onClick={() => { onChange(opt); setCustomMode(false); }}
-              className="sm-bmnr-param-btn"
+              className="sm-param-btn"
               data-active={isActive}
               style={isActive ? { '--btn-color': colors.border } as React.CSSProperties : undefined}
             >
@@ -1377,7 +1377,7 @@ const OverviewParameterCard = ({
         ) : (
           <div
             onClick={() => setCustomMode(true)}
-            className="sm-bmnr-param-btn"
+            className="sm-param-btn"
             data-active={isCustomValue}
           >
             {isCustomValue ? formatValue(value) : '...'}
@@ -3995,7 +3995,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
           {competitorFilter !== 'all' && (
             <button
               onClick={() => setCompetitorFilter('all')}
-              className="sm-bmnr-clear-btn"
+              className="sm-clear-btn"
               aria-label="Clear competitor filter"
             >
               Clear
@@ -4095,7 +4095,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
                 role="button"
                 tabIndex={0}
                 aria-label={`${news.headline} — ${news.implication} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-                className="sm-bmnr-news-row sm-bmnr-news-row-sep" style={{ '--news-accent': accentColor } as React.CSSProperties}
+                className="sm-news-row sm-news-row-sep" style={{ '--news-accent': accentColor } as React.CSSProperties}
                 onClick={() => {
                   const next = new Set(expandedNews);
                   if (isExpanded) next.delete(i);
@@ -6342,7 +6342,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
           {companyFilter !== 'All' && (
             <button
               onClick={() => setCompanyFilter('All')}
-              className="sm-bmnr-clear-btn"
+              className="sm-clear-btn"
               aria-label="Clear company filter"
             >
               Clear
@@ -6413,7 +6413,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
                 role="button"
                 tabIndex={0}
                 aria-label={`${news.title} — ${news.impact} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-                className="sm-bmnr-news-row sm-bmnr-news-row-sep" style={{ '--news-accent': accentColor } as React.CSSProperties}
+                className="sm-news-row sm-news-row-sep" style={{ '--news-accent': accentColor } as React.CSSProperties}
                 onClick={() => {
                   const next = new Set(expandedNews);
                   if (isExpanded) next.delete(i);
@@ -6743,7 +6743,7 @@ const TimelineTab = () => {
           {selectedTopics.length > 0 && (
             <button
               onClick={() => setSelectedTopics([])}
-              className="sm-bmnr-clear-btn"
+              className="sm-clear-btn"
               aria-label="Clear topic filter"
             >
               Clear ({selectedTopics.length})
@@ -6820,7 +6820,7 @@ const TimelineTab = () => {
               role="button"
               tabIndex={0}
               aria-label={`${entry.title} — ${entry.impact} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-              className="sm-bmnr-news-row sm-bmnr-news-row-sep"
+              className="sm-news-row sm-news-row-sep"
               style={{ '--news-accent': accentColor } as React.CSSProperties}
               onClick={() => {
                 const next = new Set(expanded);

@@ -5232,13 +5232,13 @@ const CompsTab = () => {
         <p className="sm-subtle-sm sm-crcl-subtitle">Company-level news affecting CRCL's competitive positioning</p>
         <div className="sm-flex-between sm-mb-8">
           <span className="sm-section-label">Filter by Competitor</span>
-          {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} className="sm-crcl-clear-btn">Clear</button>}
+          {competitorFilter !== 'all' && <button onClick={() => setCompetitorFilter('all')} className="sm-clear-btn">Clear</button>}
         </div>
         <div className="sm-flex-wrap sm-gap-6">
           {(() => { const isActive = competitorFilter === 'all'; return (
             <button
               onClick={() => setCompetitorFilter('all')}
-              className="sm-crcl-filter-pill" data-active={isActive}
+              className="sm-filter-pill" data-active={isActive} style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}
             >
               All ({COMPETITOR_NEWS.length})
             </button>
@@ -5251,7 +5251,7 @@ const CompsTab = () => {
               <button
                 key={comp.id}
                 onClick={() => setCompetitorFilter(comp.id)}
-                className="sm-crcl-filter-pill" data-active={isActive}
+                className="sm-filter-pill" data-active={isActive} style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}
               >
                 {comp.name} ({count})
               </button>
@@ -5260,7 +5260,7 @@ const CompsTab = () => {
           {COMPETITOR_NEWS.filter(n => n.competitor === 'other').length > 0 && (() => { const isActive = competitorFilter === 'other'; return (
             <button
               onClick={() => setCompetitorFilter('other')}
-              className="sm-crcl-filter-pill" data-active={isActive}
+              className="sm-filter-pill" data-active={isActive} style={{ '--pill-accent': 'var(--violet)' } as React.CSSProperties}
             >
               Miscellaneous ({COMPETITOR_NEWS.filter(n => n.competitor === 'other').length})
             </button>
@@ -5278,7 +5278,7 @@ const CompsTab = () => {
               <button
                 key={cat}
                 onClick={() => setNewsCategoryFilter(cat)}
-                className="sm-crcl-filter-pill" data-active={isActive} style={{ '--filter-color': 'var(--sky)' } as React.CSSProperties}
+                className="sm-filter-pill" data-active={isActive} style={{ '--pill-accent': 'var(--sky)' } as React.CSSProperties}
               >
                 {cat}
               </button>
@@ -5314,7 +5314,7 @@ const CompsTab = () => {
             return (
               <div key={i} role="button" tabIndex={0}
                 aria-label={`${news.headline} — click to ${isExpanded ? 'collapse' : 'expand'}`}
-                className="sm-crcl-news-item"
+                className="sm-news-row sm-news-row-sep"
                 style={{ '--news-accent': accentColor } as React.CSSProperties}
                 onClick={() => { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); }}
                 onKeyDown={(e) => { if (e.key === 'Enter') { const next = new Set(expandedNews); if (isExpanded) next.delete(i); else next.add(i); setExpandedNews(next); } }}
@@ -5359,7 +5359,7 @@ const CompsTab = () => {
         <div className="sm-section-label sm-mb-12">Competitor Profiles</div>
         <div className="sm-flex-col-gap sm-gap-16">
           {COMPETITOR_PROFILES.map(comp => (
-            <div key={comp.id} className="sm-crcl-comp-profile">
+            <div key={comp.id} className="sm-comp-profile-card">
               <div className="sm-flex-between sm-items-start">
                 <div>
                   <div className="sm-text sm-fw-600 sm-text-16">{comp.name}</div>
