@@ -1276,7 +1276,7 @@ const CRCLModelTab = ({
               ].map((section, si) => (
                 <div key={si} className="sm-bg-surface2 sm-overflow-hidden sm-rounded-12">
                   <div className="sm-flex sm-crcl-method-header">
-                    <span className="sm-crcl-step-badge" style={{ background: section.color }}>Step {section.step}</span>
+                    <span className="sm-step-badge" style={{ '--step-color': section.color } as React.CSSProperties}>Step {section.step}</span>
                     <span className="sm-text sm-fw-600 sm-text-12">{section.title}</span>
                   </div>
                   <div className="sm-flex-col sm-crcl-method-body">
@@ -5323,17 +5323,17 @@ const CompsTab = () => {
                   <div className="sm-flex-1">
                     <div className="sm-flex-wrap sm-gap-6 sm-mb-4">
                       <span className="sm-text3 sm-mono-10">{news.date}</span>
-                      <span className="sm-crcl-news-badge sm-crcl-news-badge-violet">{news.category}</span>
-                      <span className="sm-crcl-news-badge sm-crcl-news-badge-sky">{competitorName}</span>
+                      <span className="sm-news-badge" data-type="category">{news.category}</span>
+                      <span className="sm-news-badge" data-type="company">{competitorName}</span>
                     </div>
                     <div className="sm-text sm-fw-600 sm-fs-13 sm-lh-14">{news.headline}</div>
                   </div>
-                  <span className="sm-crcl-news-impact" style={{ color: accentColor }}>
+                  <span className="sm-news-impact" style={{ color: accentColor }}>
                     {news.implication === 'positive' ? '+' : news.implication === 'negative' ? '-' : '~'} {impLabel}
                   </span>
                 </div>
                 {isExpanded && (
-                  <div className="sm-crcl-news-detail">
+                  <div className="sm-news-detail">
                     <div className="sm-text-13 sm-lh-16">
                       {news.details.map((d, j) => <div key={j} className="sm-flex sm-gap-8 sm-items-initial"><span className="sm-accent sm-shrink-0">•</span>{d}</div>)}
                     </div>
@@ -5343,7 +5343,7 @@ const CompsTab = () => {
                         <div className="sm-crcl-comparison-text">{news.thesisComparison}</div>
                       </div>
                     )}
-                    {news.source && <div className="sm-text3 sm-crcl-news-source">Source: {news.sourceUrl ? <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" className="sm-accent">{news.source} ↗</a> : news.source}</div>}
+                    {news.source && <div className="sm-text3 sm-news-source">Source: {news.sourceUrl ? <a href={news.sourceUrl} target="_blank" rel="noopener noreferrer" className="sm-accent">{news.source} ↗</a> : news.source}</div>}
                   </div>
                 )}
               </div>
