@@ -16,10 +16,59 @@ let _sql = null;
 function getSQL() {
   if (!_sql) {
     const url = process.env.DATABASE_URL;
-    if (!url) return null;
+    if (!url) {
+      console.error('press-intelligence: DATABASE_URL is not set!');
+      return null;
+    }
     _sql = neon(url);
   }
   return _sql;
+}
+
+// ---------------------------------------------------------------------------
+// ensureTable — creates press_releases if it doesn't exist.
+// Uses the raw neon() HTTP driver (same pattern as seen-articles).
+// ---------------------------------------------------------------------------
+let _tableVerified = false;
+
+async function ensureTable() {
+  if (_tableVerified) return;
+
+  const sql = getSQL();
+  if (!sql) return;
+
+  try {
+    await sql`CREATE TABLE IF NOT EXISTS press_releases (
+      id SERIAL PRIMARY KEY,
+      ticker TEXT NOT NULL,
+      headline_hash TEXT NOT NULL,
+      headline TEXT NOT NULL,
+      datetime TEXT NOT NULL,
+      source TEXT,
+      summary TEXT,
+      permalink TEXT,
+      storyurl TEXT,
+      newsid TEXT,
+      internal_source TEXT,
+      fetch_count INTEGER NOT NULL DEFAULT 1,
+      created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+      last_seen_at TIMESTAMP DEFAULT NOW() NOT NULL
+    )`;
+
+    await sql`CREATE UNIQUE INDEX IF NOT EXISTS press_releases_ticker_hash_idx
+      ON press_releases (ticker, headline_hash)`;
+
+    await sql`CREATE INDEX IF NOT EXISTS press_releases_ticker_idx
+      ON press_releases (ticker)`;
+
+    await sql`CREATE INDEX IF NOT EXISTS press_releases_ticker_datetime_idx
+      ON press_releases (ticker, datetime)`;
+
+    _tableVerified = true;
+    console.log('press-intelligence: press_releases table verified/created');
+  } catch (err) {
+    console.error('press-intelligence: ensureTable failed:', err.message);
+  }
 }
 
 /**
@@ -65,7 +114,10 @@ async function persistItems(ticker, items) {
  */
 async function loadFromDB(ticker) {
   const sql = getSQL();
-  if (!sql) return [];
+  if (!sql) {
+    console.error(`press-intelligence loadFromDB(${ticker}): no SQL connection`);
+    return [];
+  }
 
   try {
     const rows = await sql`
@@ -74,6 +126,7 @@ async function loadFromDB(ticker) {
       WHERE ticker = ${ticker}
       ORDER BY datetime DESC
     `;
+    console.log(`press-intelligence loadFromDB(${ticker}): ${rows.length} rows`);
     return rows.map(r => ({
       newsid: r.newsid || '',
       headline: r.headline,
@@ -922,6 +975,9 @@ export default async function handler(req, res) {
   }
 
   const wrapInNews = config.type === 'amazon-leo' || config.type === 'lynk';
+
+  // Ensure DB table exists before any DB operations
+  await ensureTable();
 
   // ── MODE: DB — serve from database only (page load) ──
   if (mode === 'db') {
