@@ -176,6 +176,32 @@ CREATE TABLE IF NOT EXISTS audit_checks (
 CREATE UNIQUE INDEX IF NOT EXISTS audit_checks_finding_id_idx
   ON audit_checks (finding_id);
 
+CREATE TABLE IF NOT EXISTS press_releases (
+  id SERIAL PRIMARY KEY,
+  ticker TEXT NOT NULL,
+  headline_hash TEXT NOT NULL,
+  headline TEXT NOT NULL,
+  datetime TEXT NOT NULL,
+  source TEXT,
+  summary TEXT,
+  permalink TEXT,
+  storyurl TEXT,
+  newsid TEXT,
+  internal_source TEXT,
+  fetch_count INTEGER NOT NULL DEFAULT 1,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  last_seen_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS press_releases_ticker_hash_idx
+  ON press_releases (ticker, headline_hash);
+
+CREATE INDEX IF NOT EXISTS press_releases_ticker_idx
+  ON press_releases (ticker);
+
+CREATE INDEX IF NOT EXISTS press_releases_ticker_datetime_idx
+  ON press_releases (ticker, datetime);
+
 ${NOTES_CREATE_TABLE_SQL};
 `;
 

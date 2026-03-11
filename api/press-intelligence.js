@@ -4,9 +4,81 @@
 // Supported: ASTS, BMNR, IRDM, GSAT, VZ, T, AMZLEO, LYNK,
 //            MSTR, MARA, RIOT, CLSK, FRMM, COIN
 
+const { neon } = require('@neondatabase/serverless');
+
 const caches = {};
 const CACHE_TTL_DEFAULT = 5 * 60 * 1000;
 const CACHE_TTL_SHORT = 60 * 1000;
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  DATABASE PERSISTENCE — stores every press release permanently
+// ═══════════════════════════════════════════════════════════════════════════
+
+let _sql = null;
+function getSQL() {
+  if (!_sql) {
+    const url = process.env.DATABASE_URL;
+    if (!url) return null;
+    _sql = neon(url);
+  }
+  return _sql;
+}
+
+/**
+ * Upsert fresh items into press_releases table.
+ * On conflict (ticker + headline_hash), bump fetch_count and last_seen_at.
+ */
+async function persistItems(ticker, items) {
+  const sql = getSQL();
+  if (!sql || items.length === 0) return;
+
+  try {
+    for (const item of items) {
+      const hlHash = normalizeHl(item.headline);
+      if (!hlHash || hlHash.length < 4) continue;
+
+      await sql`
+        INSERT INTO press_releases (ticker, headline_hash, headline, datetime, source, summary, permalink, storyurl, newsid, internal_source)
+        VALUES (${ticker}, ${hlHash}, ${item.headline || ''}, ${item.datetime || ''}, ${item.source || ''}, ${(item.qmsummary || item.summary || '').slice(0, 2000)}, ${item.permalink || ''}, ${item.storyurl || ''}, ${item.newsid || ''}, ${item._source || ''})
+        ON CONFLICT (ticker, headline_hash)
+        DO UPDATE SET fetch_count = press_releases.fetch_count + 1, last_seen_at = NOW()
+      `;
+    }
+  } catch (err) {
+    console.error(`press-intelligence DB persist error (${ticker}):`, err.message);
+  }
+}
+
+/**
+ * Load all stored press releases for a ticker from the database.
+ * Returns items in the same shape as upstream fetchers.
+ */
+async function loadFromDB(ticker) {
+  const sql = getSQL();
+  if (!sql) return [];
+
+  try {
+    const rows = await sql`
+      SELECT headline, datetime, source, summary AS qmsummary, permalink, storyurl, newsid, internal_source
+      FROM press_releases
+      WHERE ticker = ${ticker}
+      ORDER BY datetime DESC
+    `;
+    return rows.map(r => ({
+      newsid: r.newsid || '',
+      headline: r.headline,
+      datetime: r.datetime,
+      source: r.source || '',
+      qmsummary: r.qmsummary || '',
+      permalink: r.permalink || '',
+      storyurl: r.storyurl || '',
+      _source: r.internal_source || 'db',
+    }));
+  } catch (err) {
+    console.error(`press-intelligence DB load error (${ticker}):`, err.message);
+    return [];
+  }
+}
 
 const BROWSER_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
@@ -873,18 +945,48 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: `Unknown type: ${config.type}` });
     }
 
+    // Persist fresh items to database (non-blocking — don't slow down the response)
+    const persistPromise = persistItems(ticker, items).catch(() => {});
+
+    // Load historical items from database and merge with fresh upstream results
+    let merged = items;
+    try {
+      const dbItems = await loadFromDB(ticker);
+      if (dbItems.length > 0) {
+        merged = dedupe([...items, ...dbItems]); // fresh items first = higher priority in dedupe
+      }
+    } catch {
+      // DB read failed — just use upstream items
+    }
+
+    // Wait for persist to finish before responding (fast — just inserts)
+    await persistPromise;
+
     // Wrap in { news: [...] } for AMZLEO and LYNK to match original response format
     const wrapInNews = config.type === 'amazon-leo' || config.type === 'lynk';
-    const body = wrapInNews ? { news: items } : items;
+    const body = wrapInNews ? { news: merged } : merged;
     const payload = JSON.stringify(body);
 
     caches[ticker] = { payload, ts: now };
 
     res.setHeader('Content-Type', 'application/json');
     res.setHeader('X-Cache', 'MISS');
-    res.setHeader('X-Total', items.length);
+    res.setHeader('X-Total-Upstream', items.length);
+    res.setHeader('X-Total-Merged', merged.length);
     return res.status(200).send(payload);
   } catch (err) {
+    // If upstream fetch failed entirely, try serving from database
+    try {
+      const dbItems = await loadFromDB(ticker);
+      if (dbItems.length > 0) {
+        const wrapInNews = config.type === 'amazon-leo' || config.type === 'lynk';
+        const body = wrapInNews ? { news: dbItems } : dbItems;
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('X-Cache', 'DB-FALLBACK');
+        res.setHeader('X-Total-DB', dbItems.length);
+        return res.status(200).send(JSON.stringify(body));
+      }
+    } catch { /* DB also failed */ }
     console.error(`press-intelligence error (${ticker}):`, err);
     return res.status(500).json({ error: err.message });
   }
