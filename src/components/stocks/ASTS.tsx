@@ -115,8 +115,8 @@
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import './stock-model-styles.css';
-import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab, StockHeader, buildHudMarkers } from '../shared';
-import type { UpdateSource } from '../shared';
+import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab, SharedCapitalTab, SharedCompsTab, SharedMonteCarloTab, SharedModelTab, StockHeader, buildHudMarkers } from '../shared';
+import type { UpdateSource, McSimResults } from '../shared';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
 import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
@@ -2294,12 +2294,19 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
   const totalVotingShares = TOTAL_VOTING_SHARES;
 
   return (
-    <div className="sm-flex-col">
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Financial Position<UpdateIndicators sources="SEC" /></div>
-        <h2>Capital Structure<span className="sm-accent">.</span></h2>
-        <p>Three-class voting structure with founder control via Class C super-voting shares. ~$5B+ total raised since SPAC. Class A grew from 5.75M (SPAC) to ~290M (Feb 2026). Fully funded for 100+ satellites.</p>
-      </div>
+    <SharedCapitalTab
+      sectionLabel="Financial Position"
+      description="Three-class voting structure with founder control via Class C super-voting shares. ~$5B+ total raised since SPAC. Class A grew from 5.75M (SPAC) to ~290M (Feb 2026). Fully funded for 100+ satellites."
+      sources="SEC"
+      cfaItems={[
+        { term: 'Dual/Multi-Class Shares', def: 'Multiple share classes with different voting rights. Class C (10x votes) allows founder to maintain control despite minority economic ownership. Common in tech/growth companies.' },
+        { term: 'Fully Diluted Shares', def: 'Total shares if all options, RSUs, warrants, and convertible securities are exercised. Always higher than basic shares outstanding. Use FD for conservative valuation.' },
+        { term: 'ATM (At-The-Market) Programs', def: 'Shelf offerings allowing companies to sell shares directly into the open market at prevailing prices. Less dilutive than block offerings but can create selling pressure.' },
+        { term: 'SBC (Stock-Based Compensation)', def: 'Non-cash expense for employee equity compensation (options, RSUs). Reduces reported earnings but doesn\'t affect cash flow. Creates future dilution when vested.' },
+        { term: 'Cash Runway', def: 'Cash / Quarterly Burn = Quarters of funding. Pre-revenue companies need sufficient runway to reach profitability. ASTS fully funded for 100+ satellites.' },
+        { term: 'Convertible Debt', def: 'Hybrid instruments that can convert to equity above a strike price. May not dilute if repurchased for cash. Track conversion prices vs current stock price.' },
+      ]}
+    >
 
       {/* Summary Cards */}
       <div className="sm-divider">
@@ -3330,15 +3337,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       </>
       )}
 
-      <CFANotes title="CFA Level III — Capital Structure" items={[
-        { term: 'Dual/Multi-Class Shares', def: 'Multiple share classes with different voting rights. Class C (10x votes) allows founder to maintain control despite minority economic ownership. Common in tech/growth companies.' },
-        { term: 'Fully Diluted Shares', def: 'Total shares if all options, RSUs, warrants, and convertible securities are exercised. Always higher than basic shares outstanding. Use FD for conservative valuation.' },
-        { term: 'ATM (At-The-Market) Programs', def: 'Shelf offerings allowing companies to sell shares directly into the open market at prevailing prices. Less dilutive than block offerings but can create selling pressure.' },
-        { term: 'SBC (Stock-Based Compensation)', def: 'Non-cash expense for employee equity compensation (options, RSUs). Reduces reported earnings but doesn\'t affect cash flow. Creates future dilution when vested.' },
-        { term: 'Cash Runway', def: 'Cash ÷ Quarterly Burn = Quarters of funding. Pre-revenue companies need sufficient runway to reach profitability. ASTS fully funded for 100+ satellites.' },
-        { term: 'Convertible Debt', def: 'Hybrid instruments that can convert to equity above a strike price. May not dilute if repurchased for cash. Track conversion prices vs current stock price.' },
-      ]} />
-    </div>
+    </SharedCapitalTab>
   );
 };
 
@@ -3716,14 +3715,11 @@ const ModelTab = ({
   const terminalFCFyield = terminalEV > 0 ? (terminalFCF / terminalEV) * 100 : 0;
 
   return (
-    <div className="sm-flex-col">
-      {/* Hero — Ive×Tesla */}
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">DCF Valuation<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <h2>Model<span className="sm-accent">.</span></h2>
-        <p>Configure assumptions and scenario presets. All changes flow directly to DCF projections and terminal value calculation.</p>
-      </div>
-
+    <SharedModelTab
+      sectionLabel="DCF Valuation"
+      description="Configure assumptions and scenario presets. All changes flow directly to DCF projections and terminal value calculation."
+      sources={['PR', 'SEC']}
+    >
       {/* ASSUMPTIONS SECTION */}
       <>
           <div className="sm-model-grid sm-mt-8" style={{ '--cols': 6 } as React.CSSProperties}>
@@ -4024,7 +4020,7 @@ const ModelTab = ({
             </div>
           </div>
         </>
-    </div>
+    </SharedModelTab>
   );
 };
 
@@ -4290,259 +4286,138 @@ const MonteCarloTab = ({ currentShares, currentStockPrice, totalDebt, cashOnHand
     { param: 'Discount Rate (%)', value: discountRate, desc: 'Rate used to discount future equity value to today. Should match your required return for this risk level. Pre-revenue space: 12-18% typical.' },
   ];
 
+  // Map presets to McPreset format for SharedMonteCarloTab
+  const mcPresets: Record<string, { label: string; color: string; headerValue: string; headerSub?: string }> = Object.fromEntries(
+    Object.entries(presets).filter(([key]) => key !== 'mgmt').map(([key, p]) => [key, {
+      label: p.label,
+      color: p.color,
+      headerValue: `$${p.baseRev}B`,
+      headerSub: `${p.margin}% margin`,
+    }])
+  );
+
+  // Map sim results to McSimResults format
+  const mcSim: McSimResults = {
+    n: sim.n,
+    p5: sim.p5,
+    p25: sim.p25,
+    p50: sim.p50,
+    p75: sim.p75,
+    p95: sim.p95,
+    mean: sim.mean,
+    winProbability: sim.winProbability,
+    sharpe: sim.sharpe,
+    sortino: sim.sortino,
+    var5: sim.var5,
+    cvar5: sim.cvar5,
+    histogram: sim.histogram,
+  };
+
   return (
-    <div className="sm-flex-col">
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Revenue-Based Valuation Simulation<UpdateIndicators sources={['PR', 'SEC']} /></div>
-        <h2>Monte Carlo<span className="sm-accent">.</span></h2>
-        <p>
-          Runs {sim.n.toLocaleString()} simulations over {years} years with binary risk events (launch failure, regulatory)
-          and log-normal revenue distribution. Terminal value discounted to present.
-        </p>
-      </div>
-
-      {/* Scenario Presets */}
-      <div>
-        <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
-          {Object.entries(presets).filter(([key]) => key !== 'mgmt').map(([key, p]) => {
-            const isActive = activePreset === key;
-            return (
-              <div
-                key={key}
-                onClick={() => loadPreset(key)}
-                className="sm-preset-card"
-                data-active={isActive || undefined}
-                style={{ '--preset-color': p.color } as React.CSSProperties}
-              >
-                <div className="sm-micro-text">{p.label}</div>
-                <div className="sm-scenario-card-header" style={{ color: isActive ? p.color : 'var(--text)' }}>
-                  ${p.baseRev}B
-                </div>
-                <div className="sm-micro-text sm-scenario-subtitle">
-                  {p.margin}% margin
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Horizon & Simulation Controls */}
-      <div>
-        <div className="sm-grid-2">
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">TIME HORIZON</span></div>
-            <div className="sm-card-body">
-            <div className="sm-flex sm-gap-8">
-              {[3, 5, 7].map(yr => (
-                <button
-                  key={yr}
-                  onClick={() => setYears(yr)}
-                  className="sm-pill-toggle"
-                  data-active={years === yr ? "true" : undefined}
-                >
-                  {yr}Y
-                </button>
-              ))}
-            </div>
-            </div>
+    <SharedMonteCarloTab
+      sectionLabel="Revenue-Based Valuation Simulation"
+      description={`Runs ${sim.n.toLocaleString()} simulations over ${years} years with binary risk events (launch failure, regulatory) and log-normal revenue distribution. Terminal value discounted to present.`}
+      sources={['PR', 'SEC']}
+      currentStockPrice={currentStockPrice}
+      presets={mcPresets}
+      presetOrder={Object.keys(mcPresets)}
+      activePreset={activePreset}
+      onPresetChange={loadPreset}
+      years={years}
+      onYearsChange={setYears}
+      sims={sims}
+      onSimsChange={setSims}
+      onRun={() => setRunKey(k => k + 1)}
+      sim={mcSim}
+      renderParameters={() => (
+        <>
+          <div className="sm-divider">
+            <span className="sm-param-label">Revenue Model</span>
+            <span className="sm-divider-line" />
           </div>
-          <div className="sm-card">
-            <div className="sm-card-section"><span className="sm-section-label">SIMULATIONS</span></div>
-            <div className="sm-card-body">
-            <div className="sm-flex sm-gap-8">
-              {[1000, 2000, 5000].map(simCount => (
-                <button
-                  key={simCount}
-                  onClick={() => setSims(simCount)}
-                  className="sm-pill-toggle"
-                  data-active={sims === simCount ? "true" : undefined}
-                >
-                  {simCount.toLocaleString()}
-                </button>
-              ))}
-            </div>
-            </div>
+          <div className="sm-grid-2">
+            <ParameterCard
+              title="Base Revenue ($B)"
+              explanation="Expected terminal year revenue. Source: DCF model or analyst estimates."
+              options={[1.5, 2.5, 4.0, 5.5, 8.0, 12.0]}
+              value={baseRev}
+              onChange={updateParam(setBaseRev)}
+              format="$"
+            />
+            <ParameterCard
+              title="Revenue Volatility (%)"
+              explanation="Log-normal std dev. 35% = outcomes range 0.7x-1.4x base revenue."
+              options={[50, 45, 40, 35, 30, 25]}
+              value={revVol}
+              onChange={updateParam(setRevVol)}
+              format="%"
+            />
           </div>
-        </div>
-      </div>
 
-      {/* Parameters - Model Tab Style */}
-      <div>
-        <div className="sm-divider">
-          <span className="sm-param-label">Revenue Model</span>
-          <span className="sm-divider-line" />
-        </div>
-        <div className="sm-grid-2">
-          <ParameterCard
-            title="Base Revenue ($B)"
-            explanation="Expected terminal year revenue. Source: DCF model or analyst estimates."
-            options={[1.5, 2.5, 4.0, 5.5, 8.0, 12.0]}
-            value={baseRev}
-            onChange={updateParam(setBaseRev)}
-            format="$"
-          />
-          <ParameterCard
-            title="Revenue Volatility (%)"
-            explanation="Log-normal std dev. 35% = outcomes range 0.7x-1.4x base revenue."
-            options={[50, 45, 40, 35, 30, 25]}
-            value={revVol}
-            onChange={updateParam(setRevVol)}
-            format="%"
-          />
-        </div>
-
-        <div className="sm-divider">
-          <span className="sm-param-label">Operating Model</span>
-          <span className="sm-divider-line" />
-        </div>
-        <div className="sm-grid-2">
-          <ParameterCard
-            title="EBITDA Margin (%)"
-            explanation="Terminal margin at scale. Satellite/telecom: 40-60%. Operating leverage applies."
-            options={[25, 35, 40, 45, 52, 58]}
-            value={margin}
-            onChange={updateParam(setMargin)}
-            format="%"
-          />
-          <ParameterCard
-            title="EV/EBITDA Multiple"
-            explanation="Terminal valuation multiple. Growth: 10-15x, Mature telcos: 6-8x."
-            options={[6, 8, 10, 12, 14, 16]}
-            value={mult}
-            onChange={updateParam(setMult)}
-            format="x"
-          />
-        </div>
-
-        <div className="sm-divider">
-          <span className="sm-param-label">Risk Factors</span>
-          <span className="sm-divider-line" />
-        </div>
-        <div className="sm-grid-sep-3col sm-gap-12-bg-transparent">
-          <ParameterCard
-            title="Launch Risk (%)"
-            explanation="Prob. of constellation failure. If triggered: -40% revenue."
-            options={[30, 25, 20, 15, 10, 5]}
-            value={launchRisk}
-            onChange={updateParam(setLaunchRisk)}
-            format="%"
-          />
-          <ParameterCard
-            title="Regulatory Risk (%)"
-            explanation="Prob. of FCC/spectrum issues. If triggered: -30% revenue."
-            options={[25, 20, 15, 10, 8, 5]}
-            value={regRisk}
-            onChange={updateParam(setRegRisk)}
-            format="%"
-          />
-          <ParameterCard
-            title="Discount Rate (%)"
-            explanation="Required return / WACC. Pre-revenue space: 12-18%."
-            options={[20, 18, 16, 15, 13, 11]}
-            value={discountRate}
-            onChange={(v) => setDiscountRate(v)}
-            format="%"
-          />
-        </div>
-
-        {/* Run Button */}
-        <button onClick={() => setRunKey(k => k + 1)} className="sm-run-btn">🎲 Run Simulation</button>
-      </div>
-
-      {/* Percentile Distribution */}
-      <div>
-        <div className="sm-card sm-mt-8">
-          <div className="sm-table-header sm-gtc-4x1fr">
-            <span className="sm-text-left">Percentile</span>
-            <span className="sm-text-right">Price Target</span>
-            <span className="sm-text-right">vs Current</span>
-            <span className="sm-text-right">Implied Return</span>
+          <div className="sm-divider">
+            <span className="sm-param-label">Operating Model</span>
+            <span className="sm-divider-line" />
           </div>
-          {[
-            { label: 'P5 (Bear Case)', value: sim.p5 },
-            { label: 'P25', value: sim.p25 },
-            { label: 'P50 (Median)', value: sim.p50, highlight: true },
-            { label: 'P75', value: sim.p75 },
-            { label: 'P95 (Bull Case)', value: sim.p95 },
-          ].map((row, i) => {
-            const pctChange = ((row.value / currentStockPrice - 1) * 100);
-            return (
-              <div key={i} className="sm-table-row sm-gtc-4x1fr" data-highlight={row.highlight || undefined}>
-                <span className="sm-mc-label" data-highlight={row.highlight || undefined}>{row.label}</span>
-                <span className="sm-mc-value" data-highlight={row.highlight || undefined} data-weight={row.highlight ? undefined : "500"}>${row.value.toFixed(2)}</span>
-                <span className="sm-mc-diff">${(row.value - currentStockPrice).toFixed(2)}</span>
-                <span className="sm-mc-pct" data-positive={pctChange >= 0 || undefined} data-negative={pctChange < 0 || undefined}>{pctChange >= 0 ? '+' : ''}{pctChange.toFixed(1)}%</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Risk Metrics */}
-      <div>
-        <div className="sm-card sm-mt-8">
-          <div className="sm-table-header sm-gtc-3x1">
-            <span className="sm-text-left">Risk Metric</span>
-            <span className="sm-text-right">Value</span>
-            <span className="sm-text-left">Interpretation</span>
+          <div className="sm-grid-2">
+            <ParameterCard
+              title="EBITDA Margin (%)"
+              explanation="Terminal margin at scale. Satellite/telecom: 40-60%. Operating leverage applies."
+              options={[25, 35, 40, 45, 52, 58]}
+              value={margin}
+              onChange={updateParam(setMargin)}
+              format="%"
+            />
+            <ParameterCard
+              title="EV/EBITDA Multiple"
+              explanation="Terminal valuation multiple. Growth: 10-15x, Mature telcos: 6-8x."
+              options={[6, 8, 10, 12, 14, 16]}
+              value={mult}
+              onChange={updateParam(setMult)}
+              format="x"
+            />
           </div>
-          {[
-            { label: 'Win Probability', value: <span className="sm-mc-risk-val" data-color={sim.winProbability > 50 ? 'mint' : 'red'}>{sim.winProbability.toFixed(1)}%</span>, interp: 'Prob. of exceeding current price' },
-            { label: 'Expected Value', value: <span className="sm-mc-risk-val">${sim.mean.toFixed(2)}</span>, interp: 'Mean simulated fair value' },
-            { label: 'Sharpe Ratio', value: <span className="sm-mc-risk-val" data-color={sim.sharpe > 1 ? 'mint' : sim.sharpe > 0.5 ? 'gold' : 'text2'}>{sim.sharpe.toFixed(2)}</span>, interp: sim.sharpe > 1 ? 'Excellent risk-adj return' : sim.sharpe > 0.5 ? 'Good risk-adj return' : 'Moderate risk-adj return' },
-            { label: 'Sortino Ratio', value: <span className="sm-mc-risk-val" data-color={sim.sortino > 1 ? 'mint' : sim.sortino > 0.5 ? 'gold' : 'text2'}>{sim.sortino.toFixed(2)}</span>, interp: 'Downside-adjusted return' },
-            { label: 'VaR (5%)', value: <span className="sm-mc-risk-val" data-color="red">{sim.var5.toFixed(1)}%</span>, interp: '95% confidence floor' },
-            { label: 'CVaR (5%)', value: <span className="sm-mc-risk-val" data-color="red">{sim.cvar5.toFixed(1)}%</span>, interp: 'Expected tail loss' },
-          ].map((row, i) => (
-            <div key={i} className="sm-table-row sm-gtc-3x1">
-              <span className="sm-text2">{row.label}</span>
-              <span className="sm-text-right">{row.value}</span>
-              <span className="sm-text3">{row.interp}</span>
-            </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Distribution Chart */}
-      <div>
-        <div className="sm-card">
-          <div className="sm-card-section"><span className="sm-section-label">FAIR VALUE DISTRIBUTION</span></div>
-          <div className="sm-card-body">
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={sim.histogram}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-              <XAxis dataKey="price" stroke="var(--text3)" tickFormatter={v => `$${v.toFixed(0)}`} />
-              <YAxis stroke="var(--text3)" tickFormatter={v => `${v.toFixed(1)}%`} />
-              <Tooltip
-                contentStyle={{ backgroundColor: 'var(--surface2)', border: '1px solid var(--border)', borderRadius: 8 }}
-                formatter={(v) => [`${Number(v).toFixed(2)}%`, 'Probability']}
-                labelFormatter={(v) => `$${Number(v).toFixed(0)}`}
-              />
-              <Bar dataKey="pct" fill="var(--accent)" radius={[2, 2, 0, 0]} />
-              <ReferenceLine x={currentStockPrice} stroke="#fff" strokeDasharray="5 5" />
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="sm-flex-between sm-fs-11 sm-text3">
-            <span>White line = current price (${currentStockPrice})</span>
-            <span>Simulations: {sim.n.toLocaleString()}</span>
+          <div className="sm-divider">
+            <span className="sm-param-label">Risk Factors</span>
+            <span className="sm-divider-line" />
           </div>
+          <div className="sm-grid-sep-3col sm-gap-12-bg-transparent">
+            <ParameterCard
+              title="Launch Risk (%)"
+              explanation="Prob. of constellation failure. If triggered: -40% revenue."
+              options={[30, 25, 20, 15, 10, 5]}
+              value={launchRisk}
+              onChange={updateParam(setLaunchRisk)}
+              format="%"
+            />
+            <ParameterCard
+              title="Regulatory Risk (%)"
+              explanation="Prob. of FCC/spectrum issues. If triggered: -30% revenue."
+              options={[25, 20, 15, 10, 8, 5]}
+              value={regRisk}
+              onChange={updateParam(setRegRisk)}
+              format="%"
+            />
+            <ParameterCard
+              title="Discount Rate (%)"
+              explanation="Required return / WACC. Pre-revenue space: 12-18%."
+              options={[20, 18, 16, 15, 13, 11]}
+              value={discountRate}
+              onChange={(v) => setDiscountRate(v)}
+              format="%"
+            />
           </div>
-        </div>
-      </div>
-
-      {/* CFA Notes */}
-      <div>
-      <CFANotes title="CFA Level III — Monte Carlo Simulation" items={[
-          { term: 'Monte Carlo Method', def: 'Run thousands of random simulations with input volatility. Distribution of outcomes shows probability-weighted fair values.' },
-          { term: 'Revenue Volatility', def: 'Standard deviation of revenue growth assumptions. Higher volatility = wider distribution of outcomes.' },
-          { term: 'Binary Risk Events', def: 'Launch failure, regulatory rejection. Model as probability of total loss in affected scenarios.' },
-          { term: 'Percentile Interpretation', def: 'P5 = 5% chance of being below this. P50 = median. P95 = 5% chance of exceeding.' },
-          { term: 'VaR (Value at Risk)', def: 'The loss level that won\'t be exceeded with 95% confidence. Shows downside risk.' },
-          { term: 'Expected Value', def: 'Probability-weighted average of all outcomes. Compare to current price for buy/sell signal.' },
-        ]} />
-      </div>
-    </div>
+        </>
+      )}
+      cfaItems={[
+        { term: 'Monte Carlo Method', def: 'Run thousands of random simulations with input volatility. Distribution of outcomes shows probability-weighted fair values.' },
+        { term: 'Revenue Volatility', def: 'Standard deviation of revenue growth assumptions. Higher volatility = wider distribution of outcomes.' },
+        { term: 'Binary Risk Events', def: 'Launch failure, regulatory rejection. Model as probability of total loss in affected scenarios.' },
+        { term: 'Percentile Interpretation', def: 'P5 = 5% chance of being below this. P50 = median. P95 = 5% chance of exceeding.' },
+        { term: 'VaR (Value at Risk)', def: 'The loss level that won\'t be exceeded with 95% confidence. Shows downside risk.' },
+        { term: 'Expected Value', def: 'Probability-weighted average of all outcomes. Compare to current price for buy/sell signal.' },
+      ]}
+    />
   );
 };
 
@@ -5769,13 +5644,11 @@ const CompsTab = ({ calc, currentStockPrice }) => {
   });
 
   return (
-    <div className="sm-flex-col">
-      <div className="sm-tab-hero">
-        <div className="sm-section-label">Comparables & Competitor Intelligence<UpdateIndicators sources={['PR', 'WS']} /></div>
-        <h2>Comparables & Competitor Intelligence<span className="sm-accent">.</span></h2>
-        <p>Unified view: valuation metrics, qualitative assessment, and D2D capabilities per company. No direct comps — Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature.</p>
-      </div>
-
+    <SharedCompsTab
+      sectionLabel="Comparables & Competitor Intelligence"
+      description="Unified view: valuation metrics, qualitative assessment, and D2D capabilities per company. No direct comps — Starlink ~$175B private, D2C model. Telcos 1-3x rev, mature."
+      sources={['PR', 'WS']}
+      renderValuationComps={() => (<>
       {/* Peer Group Selector */}
       <div className="sm-flex-wrap">
         {compCategories.map(cat => (
@@ -6071,6 +5944,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
       </div>
 
+      </>)}
+      renderCompetitorNews={() => (<>
       {/* Competitor News Intelligence Section */}
       <div className="sm-divider">
         <span className="sm-param-label">Competitive Intelligence — Competitor News</span>
@@ -6195,6 +6070,8 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         )}
       </div>
 
+      </>)}
+      renderCompetitorProfiles={() => (<>
       {/* Competitor Profiles (Collapsible) */}
       <div className="sm-comp-surface2-panel">
         <div className="sm-section-label sm-mb-12">Competitor Profiles</div>
@@ -6234,15 +6111,16 @@ const CompsTab = ({ calc, currentStockPrice }) => {
         </div>
       </div>
 
-      <CFANotes title="CFA Level III — Competitive Analysis" items={[
+      </>)}
+      cfaItems={[
         { term: 'No Direct Comps', def: 'ASTS is unique — space-based D2C cellular. Starlink (D2C satellite) and telcos (terrestrial) are imperfect proxies.' },
         { term: 'Competitive Moat', def: 'Track competitor progress to assess durability of ASTS technology lead. 4+ year head start but competitors catching up.' },
         { term: 'Capability Gap', def: 'ASTS offers voice/text/data/video. Competitors mostly text-only. Gap may narrow over time.' },
         { term: 'News Sentiment', def: 'Positive = validates market, neutral = expected progress, negative = direct competitive threat.' },
         { term: 'Market Expansion', def: 'Competitor activity can grow the overall D2D market, benefiting all players including ASTS.' },
         { term: 'Partnership Watch', def: 'Monitor competitor MNO deals. Exclusive deals can lock out markets; non-exclusive validates demand.' },
-      ]} />
-    </div>
+      ]}
+    />
   );
 };
 

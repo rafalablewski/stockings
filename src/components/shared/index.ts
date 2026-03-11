@@ -23,6 +23,21 @@ export { SharedWallStreetTab } from './SharedWallStreetTab';
 // AI Agents Tab
 export { SharedAIAgentsTab } from './SharedAIAgentsTab';
 
+// Monte Carlo Tab
+export * from './monteCarloTypes';
+export { SharedMonteCarloTab } from './SharedMonteCarloTab';
+
+// Comps Tab
+export * from './compsTypes';
+export { SharedCompsTab } from './SharedCompsTab';
+
+// Model Tab
+export * from './modelTypes';
+export { SharedModelTab } from './SharedModelTab';
+
+// Capital Tab
+export { SharedCapitalTab } from './SharedCapitalTab';
+
 // Capital Structure Types
 export * from './capitalTypes';
 
