@@ -5222,6 +5222,7 @@ const CompsTab = () => {
       <div className="sm-divider">
         <div className="sm-section-label">Competitive Intelligence<UpdateIndicators sources="PR" /></div>
         <span className="sm-param-label">Competitor News</span>
+        <span className="sm-mono-sm sm-text3 sm-ml-12">{filteredCompNews.length} events</span>
         <span className="sm-divider-line" />
       </div>
 
@@ -5265,6 +5266,7 @@ const CompsTab = () => {
             </button>
           ); })()}
         </div>
+        {competitorFilter !== 'all' && <div className="sm-mono-sm sm-text3 sm-mt-8 sm-fs-11">{getCompetitorName(competitorFilter)} &rarr; {filteredNews.length} results</div>}
       </div>
 
       {/* Category Filter Row */}
