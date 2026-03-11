@@ -381,6 +381,32 @@
   white-space: nowrap;
 }
 
+/* ── DB status badge (inspired by Edgar NEW/SEEN badges) ── */
+.pi-db-badge {
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  line-height: 1.4;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.pi-db-badge[data-status="saved"] {
+  color: var(--mint, #7ee787);
+  background: color-mix(in srgb, var(--mint, #7ee787) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--mint, #7ee787) 20%, transparent);
+  opacity: 0.5;
+}
+
+.pi-db-badge[data-status="new"] {
+  color: var(--sky, #38bdf8);
+  background: color-mix(in srgb, var(--sky, #38bdf8) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--sky, #38bdf8) 20%, transparent);
+}
+
 /* ── Expanded Card Content ── */
 .pi-card-expand {
   padding: 0 20px 14px;

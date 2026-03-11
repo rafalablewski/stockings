@@ -945,22 +945,29 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: `Unknown type: ${config.type}` });
     }
 
-    // Persist fresh items to database (non-blocking — don't slow down the response)
-    const persistPromise = persistItems(ticker, items).catch(() => {});
-
-    // Load historical items from database and merge with fresh upstream results
-    let merged = items;
+    // Load existing DB items first (to know what's already stored)
+    let dbHashes = new Set();
+    let dbItems = [];
     try {
-      const dbItems = await loadFromDB(ticker);
-      if (dbItems.length > 0) {
-        merged = dedupe([...items, ...dbItems]); // fresh items first = higher priority in dedupe
-      }
+      dbItems = await loadFromDB(ticker);
+      for (const d of dbItems) dbHashes.add(normalizeHl(d.headline));
     } catch {
-      // DB read failed — just use upstream items
+      // DB read failed — continue without it
     }
 
-    // Wait for persist to finish before responding (fast — just inserts)
-    await persistPromise;
+    // Persist fresh upstream items to database
+    await persistItems(ticker, items).catch(() => {});
+
+    // Merge fresh upstream + historical DB items, deduplicated
+    let merged = items;
+    if (dbItems.length > 0) {
+      merged = dedupe([...items, ...dbItems]); // fresh items first = higher priority in dedupe
+    }
+
+    // Mark each item: _inDb = true if it was already in the database BEFORE this fetch
+    for (const item of merged) {
+      item._inDb = dbHashes.has(normalizeHl(item.headline));
+    }
 
     // Wrap in { news: [...] } for AMZLEO and LYNK to match original response format
     const wrapInNews = config.type === 'amazon-leo' || config.type === 'lynk';
@@ -979,6 +986,7 @@ export default async function handler(req, res) {
     try {
       const dbItems = await loadFromDB(ticker);
       if (dbItems.length > 0) {
+        for (const item of dbItems) item._inDb = true;
         const wrapInNews = config.type === 'amazon-leo' || config.type === 'lynk';
         const body = wrapInNews ? { news: dbItems } : dbItems;
         res.setHeader('Content-Type', 'application/json');

@@ -404,6 +404,7 @@ interface NewsItem {
   source?: string;
   _ticker: string;      // injected after fetch
   _config: FeedConfig;   // injected after fetch
+  _inDb?: boolean;       // true if item was already stored in database
 }
 
 const formatDate = (str: string) => {
@@ -768,6 +769,11 @@ export default function PressIntelligencePage() {
                     <span className="pi-card-date">
                       {isToday(item.datetime) ? time : date}
                     </span>
+                    {item._inDb ? (
+                      <span className="pi-db-badge" data-status="saved" title="Stored in database">SAVED</span>
+                    ) : (
+                      <span className="pi-db-badge" data-status="new" title="New — just added to database">NEW</span>
+                    )}
                   </div>
                 </div>
               </div>
