@@ -758,10 +758,8 @@ export default function PressIntelligencePage() {
                     <span className="pi-card-date">
                       {isToday(item.datetime) ? time : date}
                     </span>
-                    {item._inDb ? (
-                      <span className="pi-db-dot" data-status="saved" title="Stored in database" />
-                    ) : (
-                      <span className="pi-db-dot" data-status="missing" title="Not in database" />
+                    {!item._inDb && (
+                      <span className="pi-new-badge">NEW</span>
                     )}
                   </div>
                 </div>

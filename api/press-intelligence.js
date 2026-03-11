@@ -28,23 +28,35 @@ function getSQL() {
  */
 async function persistItems(ticker, items) {
   const sql = getSQL();
-  if (!sql || items.length === 0) return;
+  if (!sql || items.length === 0) return 0;
 
-  try {
-    for (const item of items) {
-      const hlHash = normalizeHl(item.headline);
-      if (!hlHash || hlHash.length < 4) continue;
+  const validItems = items.filter(item => {
+    const hlHash = normalizeHl(item.headline);
+    return hlHash && hlHash.length >= 4;
+  });
+  if (validItems.length === 0) return 0;
 
-      await sql`
-        INSERT INTO press_releases (ticker, headline_hash, headline, datetime, source, summary, permalink, storyurl, newsid, internal_source)
-        VALUES (${ticker}, ${hlHash}, ${item.headline || ''}, ${item.datetime || ''}, ${item.source || ''}, ${(item.qmsummary || item.summary || '').slice(0, 2000)}, ${item.permalink || ''}, ${item.storyurl || ''}, ${item.newsid || ''}, ${item._source || ''})
-        ON CONFLICT (ticker, headline_hash)
-        DO UPDATE SET fetch_count = press_releases.fetch_count + 1, last_seen_at = NOW()
-      `;
+  let saved = 0;
+  const BATCH = 20;
+  for (let i = 0; i < validItems.length; i += BATCH) {
+    const batch = validItems.slice(i, i + BATCH);
+    try {
+      await Promise.all(batch.map(item => {
+        const hlHash = normalizeHl(item.headline);
+        return sql`
+          INSERT INTO press_releases (ticker, headline_hash, headline, datetime, source, summary, permalink, storyurl, newsid, internal_source)
+          VALUES (${ticker}, ${hlHash}, ${item.headline || ''}, ${item.datetime || ''}, ${item.source || ''}, ${(item.qmsummary || item.summary || '').slice(0, 2000)}, ${item.permalink || ''}, ${item.storyurl || ''}, ${item.newsid || ''}, ${item._source || ''})
+          ON CONFLICT (ticker, headline_hash)
+          DO UPDATE SET fetch_count = press_releases.fetch_count + 1, last_seen_at = NOW()
+        `;
+      }));
+      saved += batch.length;
+    } catch (err) {
+      console.error(`press-intelligence DB persist error (${ticker}, batch ${i}):`, err.message);
     }
-  } catch (err) {
-    console.error(`press-intelligence DB persist error (${ticker}):`, err.message);
   }
+  console.log(`press-intelligence: persisted ${saved}/${validItems.length} items for ${ticker}`);
+  return saved;
 }
 
 /**
@@ -960,12 +972,17 @@ export default async function handler(req, res) {
     try {
       dbItems = await loadFromDB(ticker);
       for (const d of dbItems) dbHashes.add(normalizeHl(d.headline));
-    } catch {
-      // DB read failed — continue without it
+      console.log(`press-intelligence refresh (${ticker}): ${dbItems.length} existing DB items, ${items.length} upstream items`);
+    } catch (dbErr) {
+      console.error(`press-intelligence DB read error (${ticker}):`, dbErr.message);
     }
 
     // Persist fresh upstream items to database
-    await persistItems(ticker, items).catch(() => {});
+    try {
+      await persistItems(ticker, items);
+    } catch (persistErr) {
+      console.error(`press-intelligence persist failed (${ticker}):`, persistErr.message);
+    }
 
     // Merge fresh upstream + historical DB items, deduplicated
     let merged = items;
