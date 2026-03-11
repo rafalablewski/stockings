@@ -8,6 +8,9 @@
 - fix: batch DB inserts (20 parallel) instead of sequential loop to avoid Vercel timeout
 - feat: replace subtle DB status dot with pulsing "NEW" text badge for items not yet in database
 - docs: update /docs page with new press-intelligence API mode param and DB-first page description
+- refactor: replace N+1 insert loop with sql.transaction() batch upsert (code review)
+- fix: add LIMIT 1000 to loadFromDB to prevent unbounded result sets (code review)
+- refactor: change datetime column from TEXT to TIMESTAMPTZ in ensureTable, db/setup DDL, and drizzle schema (code review)
 
 ## 2026-03-10
 
