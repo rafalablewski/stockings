@@ -11,6 +11,12 @@
 - fix: restore Model tab rendering — scenario-5col, pwev-footer, kpi-val size variants (hero/md/sm), kpi-margin, tab-title, tab-accent-bar, mode-color, active-text
 - fix: restore BMNR utilities — checkbox, bullet, color-red, justify-center, min-width variants, w-48, ls-1, year-bg, p-12-8, grid-gap-24
 - docs: add 53 new BMNR extracted-inline classes to /docs BMNR Classes section
+- fix: add 65 missing CRCL CSS class definitions lost during inline style extraction
+- fix: restore CRCL DCF tab rendering — section-title, accent-bar, card-header, case-label, chart-area, bar-chart, rev-bar-col/val/label, bar color variants (6), dcf-summary-row, dcf-total-row, method-grid/header/body/item, step-badge, formula, assumptions-box
+- fix: restore CRCL Comps tab rendering — hero-kpi-row/cell, current-grid, 2col-grid, metrics-header/row/th, mint-header/row, scenario-card/big-num, year-btn, insights-grid, dot, prob-num, split-grid, kv-row, econ-panel/title/body
+- fix: restore CRCL utilities — spacing (mb-4/6, mt-4/6/8, pt-8/12, pl-16), line-height (lh-15/16/17), ls-tight, max-w-600, select, opex-grid, risk-grid, bar-label/footer
+- fix: add sm-val-color-sky shared class (FCF positive/negative coloring)
+- docs: add 65 new CRCL extracted-inline classes to /docs CRCL Classes section
 
 ## 2026-03-11
 

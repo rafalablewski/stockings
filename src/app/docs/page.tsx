@@ -1604,6 +1604,66 @@ export default function DocsPage() {
           ]}
         />
 
+        {/* ── CRCL Classes ──────────────────────────────────────────────── */}
+        <SectionHeader id="crcl-classes" title="CRCL Model Classes (sm-crcl-*)" count={65} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Circle-specific classes — DCF valuation layout, revenue bar charts, hero KPIs, metrics tables,
+          mint/redeem grids, scenario cards, method step badges, OpEx breakdown, stablecoin economics panel,
+          and extracted inline style classes for Comps and DCF tabs.
+        </p>
+        <SmallTable
+          headers={["Class", "Description"]}
+          rows={[
+            [".sm-crcl-section-title", "DCF heading — 28px, letter-spacing -0.5px."],
+            [".sm-crcl-accent-bar", "Vertical accent bar — 6×32px, var(--accent), rounded-3."],
+            [".sm-crcl-card-header", "Card header — padding 24px, bottom border."],
+            [".sm-crcl-case-label", "Bull/Bear case label — 13px, uppercase, tracking 1.5px."],
+            [".sm-crcl-chart-area", "Chart container — padding 24px, overflow-x auto."],
+            [".sm-crcl-bar-chart", "Bar chart flex container — flex-end, 200px height, 8px gap."],
+            [".sm-crcl-rev-bar-col", "Revenue bar column — flex column, centered, min-w 56px."],
+            [".sm-crcl-rev-bar-val", "Bar value label — 11px mono bold."],
+            [".sm-crcl-rev-bar-label", "Bar quarter label — 10px text3."],
+            [".sm-crcl-bar", "Generic bar base — full width, rounded top, min-h 2px, transition."],
+            [".sm-crcl-bar-accent / -mint / -violet / -coral / -sky / -cyan", "Bar color variants — background color."],
+            [".sm-crcl-bar-label / -footer", "Bar annotation labels — whitespace nowrap, 6px spacing."],
+            [".sm-crcl-hero-kpi-row", "Hero KPI 2-col grid — 1px gap border separator, rounded-14."],
+            [".sm-crcl-hero-kpi-cell", "Hero KPI cell — accent-dim bg, 24px padding, centered."],
+            [".sm-crcl-current-grid", "Current position grid — repeat(4, 1fr), 8px gap, 12px font."],
+            [".sm-crcl-risk-grid", "Risk parameter grid — repeat(3, 1fr), 12px gap."],
+            [".sm-crcl-method-grid", "DCF method grid — 2 columns, 16px gap."],
+            [".sm-crcl-method-header", "Method step header — 12px 16px padding, bottom border."],
+            [".sm-crcl-method-body", "Method step body — 12px 16px padding, 8px gap."],
+            [".sm-crcl-method-item / -item-left", "Method row — baseline aligned, 8px gap. Left side flex-1."],
+            [".sm-crcl-step-badge", "Step badge — bg pill, 10px mono bold, rounded-4."],
+            [".sm-crcl-formula", "Formula text — 10px mono, text3, ellipsis overflow."],
+            [".sm-crcl-assumptions-box", "Assumptions box — accent-tinted bg, 12px, rounded-10, 1.7 line-height."],
+            [".sm-crcl-dcf-summary-row", "DCF summary row — 2-col grid (220px label + value), 12px 24px padding."],
+            [".sm-crcl-dcf-total-row", "DCF total row — accent-dim bg, no bottom border."],
+            [".sm-crcl-prob-num", "Probability number — 32px mono bold."],
+            [".sm-crcl-scenario-card", "Scenario card — surface bg, centered, rounded-16, 24px padding."],
+            [".sm-crcl-scenario-big-num", "Scenario big number — 28px mono bold, tracking -1px."],
+            [".sm-crcl-year-btn", "Year button — 12px 20px padding, rounded-8, 16px mono."],
+            [".sm-crcl-insights-grid", "Insights grid — 2 columns, 16px gap, 24px padding."],
+            [".sm-crcl-dot", "Dot indicator — 12px circle, 8px right margin."],
+            [".sm-crcl-2col-grid", "2-column grid — 12px gap."],
+            [".sm-crcl-metrics-header / -row / -th", "Metrics table — 3-col (1fr 120px 1fr), padded, bordered. data-align, data-last."],
+            [".sm-crcl-mint-header / -row", "Mint/Redeem table — 4-col (80px 1fr 1fr 1fr), padded, bordered. data-last."],
+            [".sm-crcl-opex-grid", "OpEx breakdown — 2-col, 24px gap, 11px font."],
+            [".sm-crcl-select", "Dropdown — surface2 bg, pill shape, 11px, bordered."],
+            [".sm-crcl-split-grid", "Split grid — 2-col, 1px gap, border bg (glass-edge)."],
+            [".sm-crcl-kv-row", "Key-value row — 6px vertical padding, faint bottom border."],
+            [".sm-crcl-econ-panel", "Stablecoin economics panel — mint→violet gradient bg, top border."],
+            [".sm-crcl-econ-title", "Econ title — 11px mint, uppercase, tracking 0.5px."],
+            [".sm-crcl-econ-body", "Econ body — 12px text2, 1.5 line-height."],
+            [".sm-crcl-mb-4 / -6, mt-4 / -6 / -8", "Spacing utilities — margin-bottom/top variants."],
+            [".sm-crcl-pt-8 / -12, pl-16", "Padding utilities — padding-top/left variants."],
+            [".sm-crcl-lh-15 / -16 / -17", "Line-height utilities — 1.5, 1.6, 1.7."],
+            [".sm-crcl-ls-tight", "Letter spacing — -1px."],
+            [".sm-crcl-max-w-600", "Max width — 600px."],
+            [".sm-val-color-sky", "FCF color — sky when data-positive=true, coral when false."],
+          ]}
+        />
+
         {/* ── Financials Tab Classes ─────────────────────────────────────── */}
         <SectionHeader id="financials-classes" title="Financials Tab Classes (sm-fin-*)" count={9} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
