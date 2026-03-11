@@ -895,7 +895,7 @@ const OverviewParameterCard = ({
 };
 
 // ModelTab component for CRCL - USDC/Reserve yield DCF valuation
-const CRCLModelTab = ({
+const ModelTab = ({
   currentUSDC,
   currentShares,
   currentStockPrice,
@@ -3607,7 +3607,7 @@ function CRCLModel() {
           </TabPanel>)}
 
           {activeTab === 'model' && (<TabPanel id="model">
-            <CRCLModelTab
+            <ModelTab
               currentUSDC={currentUSDC}
               currentShares={currentShares}
               currentStockPrice={currentStockPrice}
