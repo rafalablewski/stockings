@@ -131,7 +131,7 @@ async function loadFromDB(ticker) {
     console.log(`press-intelligence loadFromDB(${ticker}): ${rows.length} rows`);
     return rows.map(r => ({
       newsid: r.newsid || '',
-      headline: r.headline,
+      headline: cleanHeadline(r.headline),
       datetime: r.datetime,
       source: r.source || '',
       qmsummary: r.qmsummary || '',
@@ -155,13 +155,36 @@ const BROWSER_HEADERS = {
 //  JUNK HEADLINE FILTER — blocks navigation/category links from all sources
 // ═══════════════════════════════════════════════════════════════════════════
 
-const JUNK_HEADLINE_RE = /^(stock news live|merger\s*&\s*acquisitions?|clinical trials?|market research|ipo\b|insider trad|analyst rat|stock buyback|dividend\b|sec filing|media room|investor relations|press room|newsroom|contact us|about us|home|back to|all news|all press|view all|see more|read more|load more)/i;
+const JUNK_HEADLINE_RE = /^(stock news live|merger\s*&\s*acquisitions?|clinical trials?|market research|ipo\b|insider trad|analyst rat|stock buyback|dividend\b|sec filing|media room|investor relations|press room|newsroom|contact us|about us|home|back to|all news|all press|view all|see more|read more|load more|subscribe|sign up|log ?in|cookie|privacy|terms of|footer|header|navigation|menu|skip to|jump to|link to\b)/i;
+
+const JUNK_CONTENT_RE = /\b(share on (facebook|twitter|linkedin|x|whatsapp|messenger|email|reddit)|email a link|open in new window|opens in new window|link to .{1,30} page|follow us|cookie settings|accept cookies|manage preferences|subscribe for|sign up for|download the app|get the app|read media release|download pdf|\(pdf\b|\bpdf \d+kb\b|\d+ min read$)/i;
 
 function isJunkHeadline(text) {
   if (!text) return true;
-  if (JUNK_HEADLINE_RE.test(text.trim())) return true;
-  if (text.trim().split(/\s+/).length < 4) return true; // real headlines have 4+ words
+  const t = text.trim();
+  if (JUNK_HEADLINE_RE.test(t)) return true;
+  if (JUNK_CONTENT_RE.test(t)) return true;
+  if (t.split(/\s+/).length < 4) return true; // real headlines have 4+ words
+  if (t.length > 300) return true; // real headlines are not full article bodies
   return false;
+}
+
+/**
+ * Clean scraped headline text — strip common prefixes/suffixes
+ * that are navigation artifacts, not part of the actual headline.
+ */
+function cleanHeadline(text) {
+  if (!text) return '';
+  let t = text.trim();
+  // Strip "Link to " prefix (Vodafone-style navigation)
+  t = t.replace(/^link to\s+/i, '');
+  // Strip trailing metadata like "| 4 min read", "• March 06, 2026", category tags
+  t = t.replace(/\s*\|\s*\d+\s*min\s*read\s*$/i, '');
+  // Strip leading category/type labels like "Research •", "Podcasts •"
+  t = t.replace(/^(?:Research|Podcasts?|Blog|News|Press Release|Article|Insight|Report)\s*[•·|–—-]\s*/i, '');
+  // Strip trailing date patterns that got scraped into headline
+  t = t.replace(/\s*[•·|]\s*(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s*\d{4}\s*$/i, '');
+  return t.trim();
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -217,17 +240,31 @@ function extractDateFromContext(html, idx) {
   const start = Math.max(0, idx - 500);
   const end = Math.min(html.length, idx + 1000);
   const ctx = html.slice(start, end);
+
+  // 1. <time datetime="..."> is the most reliable signal
+  const timeTag = ctx.match(/<time[^>]+datetime=["']([^"']+)["']/i);
+  if (timeTag) {
+    try {
+      const d = new Date(timeTag[1]);
+      if (!isNaN(d.getTime())) return d.toISOString();
+    } catch { /* skip */ }
+  }
+
   const patterns = [
-    /(\d{4}-\d{2}-\d{2})/,
-    /(\w+ \d{1,2},?\s*\d{4})/,
-    /(\d{1,2}\/\d{1,2}\/\d{4})/,
+    /(\d{4}-\d{2}-\d{2})/,                                         // 2026-03-12
+    /(\d{1,2}\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4})/i,  // 12 March 2026
+    /(\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4})/i,  // 12 Mar 2026
+    /((?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s*\d{4})/i, // March 12, 2026
+    /((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s*\d{4})/i, // Mar 12, 2026
+    /(\d{1,2}\/\d{1,2}\/\d{4})/,                                   // 03/12/2026
+    /(\d{1,2}\.\d{1,2}\.\d{4})/,                                   // 12.03.2026
   ];
   for (const p of patterns) {
     const m = ctx.match(p);
     if (m) {
       try {
         const d = new Date(m[1]);
-        if (!isNaN(d.getTime())) return d.toISOString();
+        if (!isNaN(d.getTime()) && d.getFullYear() >= 2020 && d.getFullYear() <= 2030) return d.toISOString();
       } catch { /* skip */ }
     }
   }
@@ -439,19 +476,21 @@ async function fetchIRPage(irUrl) {
     const html = await res.text();
     const items = [];
     const origin = new URL(irUrl).origin;
-    const linkRe = /<a[^>]+href=["']([^"']*(?:press-release|news-release|press_release|\/detail\/|\/news\/)[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
+    const linkRe = /<a[^>]+href=["']([^"']*(?:press-release|news-release|press_release|media-release|\/detail\/|\/news\/|\/release\/|\/announcement)[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
     let m;
     while ((m = linkRe.exec(html)) !== null && items.length < 30) {
       const href = m[1];
-      const text = decode(strip(m[2]));
+      const rawText = decode(strip(m[2]));
+      const text = cleanHeadline(rawText);
       if (!text || text.length < 20) continue;
       if (isJunkHeadline(text)) continue;
       const url = href.startsWith('http') ? href : `${origin}${href.startsWith('/') ? '' : '/'}${href}`;
       const datetime = extractDateFromContext(html, m.index);
+      if (!datetime) continue; // skip items without a discoverable date
       items.push({
         newsid: `ir-${items.length}`,
         headline: text,
-        datetime: datetime || new Date().toISOString(),
+        datetime,
         source: 'Investor Relations',
         permalink: url,
         storyurl: url,
@@ -465,6 +504,97 @@ async function fetchIRPage(irUrl) {
   }
 }
 
+// ─── Newsroom page scrape (broader link matching than IR scrape) ───
+
+async function fetchNewsroomPage(url) {
+  try {
+    const res = await fetch(url, {
+      headers: BROWSER_HEADERS,
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) return [];
+    const html = await res.text();
+    const items = [];
+    const origin = new URL(url).origin;
+    const linkRe = /<a[^>]+href=["']([^"']*(?:press-release|news-release|press_release|media-release|\/detail\/|\/news\/|\/article\/|\/story\/|\/stories\/|\/blog\/|\/insight|\/announcement|\/statement|\/release|\/post\/|\/update\/)[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
+    let m;
+    while ((m = linkRe.exec(html)) !== null && items.length < 40) {
+      const href = m[1];
+      // Skip social media / sharing / tracking links
+      if (/\b(facebook|twitter|linkedin|share|mailto:|javascript:|#$)/i.test(href)) continue;
+      const rawText = decode(strip(m[2]));
+      const text = cleanHeadline(rawText);
+      if (!text || text.length < 15) continue;
+      if (isJunkHeadline(text)) continue;
+      if (/^(home|about|contact|careers|privacy|terms|login|sign)/i.test(text.trim())) continue;
+      const fullUrl = href.startsWith('http') ? href : `${origin}${href.startsWith('/') ? '' : '/'}${href}`;
+      if (fullUrl === url || href.startsWith('#')) continue;
+      const datetime = extractDateFromContext(html, m.index);
+      if (!datetime) continue; // skip items without a discoverable date
+      items.push({
+        newsid: `newsroom-${items.length}`,
+        headline: text,
+        datetime,
+        source: 'Newsroom',
+        permalink: fullUrl,
+        storyurl: fullUrl,
+        _source: 'newsroom-scrape',
+      });
+    }
+    return items;
+  } catch (e) {
+    console.warn(`[press-intelligence] Newsroom scrape failed for ${url}:`, e.message);
+    return [];
+  }
+}
+
+// ─── Generic RSS fetcher (for arbitrary RSS/Atom feed URLs) ───
+
+async function fetchGenericRss(rssUrls) {
+  const items = [];
+  for (const url of rssUrls) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; StockingsBot/1.0)',
+          'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
+        },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!res.ok) continue;
+      const xml = await res.text();
+      let parsed = [];
+      if (xml.includes('<item>')) parsed = parseRssXml(xml);
+      else if (xml.includes('<entry>')) parsed = parseAtomXml(xml);
+      for (const item of parsed) {
+        item.source = item.source || 'RSS Feed';
+        item._source = 'generic-rss';
+      }
+      items.push(...parsed);
+    } catch (e) {
+      console.warn(`[press-intelligence] Generic RSS failed for "${url}":`, e.message);
+    }
+  }
+  return items;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  TICKER GRADES — snapshot from comprehensive review (2026-03-12)
+//  A = perfect, no changes needed
+//  B = was working, enhanced with additional sources (new sources may break)
+//  C = had missing articles, fixed via config/threshold changes
+//  D = had quality issues (junk headlines, wrong dates, metadata noise)
+//  F = was broken, showing old/wrong data, or returning wrong company
+// ═══════════════════════════════════════════════════════════════════════════
+
+const GRADE_META = {
+  A: { label: 'Perfect',       monitorPriority: 0, description: 'No changes needed during review' },
+  B: { label: 'Enhanced',      monitorPriority: 1, description: 'Working but enhanced with new sources' },
+  C: { label: 'Config-fixed',  monitorPriority: 2, description: 'Had missing articles, fixed via config changes' },
+  D: { label: 'Quality-fixed', monitorPriority: 3, description: 'Had quality issues (junk/noise), fixes applied' },
+  F: { label: 'Broken-fixed',  monitorPriority: 4, description: 'Was broken or showing wrong data, fixed' },
+};
+
 // ═══════════════════════════════════════════════════════════════════════════
 //  TICKER CONFIGURATIONS
 // ═══════════════════════════════════════════════════════════════════════════
@@ -474,54 +604,63 @@ const OFFICIAL_SOURCES = ['pr newswire', 'business wire', 'globe newswire', 'glo
 const TICKER_CONFIG = {
   // ─── Simple QM tickers ───
   ASTS: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['ASTS'],
     sources: ['business wire'],
     filter: (hl) => /ast\s*spacemobile|asts/i.test(hl),
   },
   BMNR: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['BMNR'],
     sources: ['pr newswire', 'prnewswire', 'business wire', 'accesswire', 'globe newswire'],
     filter: (hl) => /bitmine|bmnr|bit\s*mine/i.test(hl),
   },
   IRDM: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['IRDM'],
     sources: ['pr newswire', 'canada newswire', 'business wire'],
     filter: (hl) => /iridium/i.test(hl),
   },
   GSAT: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['GSAT'],
     sources: ['business wire', 'pr newswire', 'canada newswire'],
     filter: (hl) => /globalstar/i.test(hl),
   },
   VZ: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['VZ'],
     sources: ['globenewswire', 'pr newswire', 'business wire'],
     filter: (hl) => /verizon/i.test(hl),
   },
   VSAT: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['VSAT'],
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
     filter: (hl) => /viasat/i.test(hl),
   },
   RKLB: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['RKLB'],
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
     filter: (hl) => /rocket\s*lab|rklb/i.test(hl),
   },
   SATS: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['SATS'],
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire', 'accesswire'],
     filter: (hl) => /echostar|sats|hughes/i.test(hl),
   },
   LUNR: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['LUNR'],
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
@@ -530,36 +669,46 @@ const TICKER_CONFIG = {
   },
 
   MSTR: {
+    grade: 'C',
     type: 'qm-simple',
-    topics: ['MSTR'],
+    topics: ['MSTR', 'STRC'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /\bstrategy\b/i.test(hl) || /microstrategy/i.test(hl) || /\bmstr\b/i.test(hl),
+    filter: (hl) => /\bstrategy\b/i.test(hl) || /microstrategy/i.test(hl) || /\bmstr\b/i.test(hl) || /\bstrc\b/i.test(hl),
+    gnwRssKeywords: ['Strategy', 'MicroStrategy', 'STRC'],
   },
   MARA: {
+    grade: 'C',
     type: 'qm-simple',
     topics: ['MARA'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /marathon\s*digital/i.test(hl) || /\bmara\b/i.test(hl) || /marathon\s*holdings/i.test(hl),
+    filter: (hl) => /marathon\s*digital/i.test(hl) || /\bmara\b/i.test(hl) || /marathon\s*holdings/i.test(hl) || /mara\s*holdings/i.test(hl),
+    gnwRssKeywords: ['MARA Holdings', 'Marathon Digital'],
+    irUrl: 'https://ir.mara.com/news-events/press-releases',
+    notifiedApiUrls: ['https://ir.mara.com/rss/news-releases.xml'],
   },
   RIOT: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['RIOT'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /riot\s*platforms/i.test(hl) || /\briot\b/i.test(hl),
   },
   CLSK: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['CLSK'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /cleanspark/i.test(hl) || /\bclsk\b/i.test(hl),
   },
   HUT: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['HUT'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /hut\s*8|hut8|\bhut\b/i.test(hl),
   },
   IREN: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['IREN'],
     sources: OFFICIAL_SOURCES,
@@ -568,18 +717,25 @@ const TICKER_CONFIG = {
     notifiedApiUrls: ['https://irisenergy.gcs-web.com/rss/news-releases.xml'],
   },
   NBIS: {
+    grade: 'C',
     type: 'qm-simple',
     topics: ['NBIS'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /\bnbis\b|nebius/i.test(hl),
+    gnwRssKeywords: ['Nebius'],
+    newsroomUrls: ['https://nebius.com/blog'],
   },
   COIN: {
+    grade: 'B',
     type: 'qm-simple',
     topics: ['COIN'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /coinbase/i.test(hl) || /\bcoin\b/i.test(hl),
+    newsroomUrls: ['https://www.coinbase.com/blog/landing'],
+    rssUrls: ['https://www.coinbase.com/blog/rss.xml'],
   },
   FRMM: {
+    grade: 'A',
     type: 'crypto',
     topics: ['FRMM', 'ETHZ'],
     filter: (hl) => /forum\s*markets/i.test(hl) || /\bforum\b/i.test(hl) || /ethzilla/i.test(hl) || /\bfrmm\b/i.test(hl) || /\bethz\b/i.test(hl),
@@ -594,30 +750,43 @@ const TICKER_CONFIG = {
 
   // ─── Fintech & Payments ───
   MA: {
+    grade: 'C',
     type: 'qm-simple',
     topics: ['MA'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /mastercard/i.test(hl) || (/\bma\b/i.test(hl) && /payment|transaction|card|network/i.test(hl)),
+    gnwRssKeywords: ['Mastercard'],
+    irUrl: 'https://investor.mastercard.com/news-events/press-releases/default.aspx',
+    newsroomUrls: [
+      'https://www.mastercard.com/news/press/press-releases',
+      'https://www.mastercard.com/us/en/news-and-trends/stories.html',
+    ],
   },
   V: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['V'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /\bvisa\b/i.test(hl),
   },
   SOFI: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['SOFI'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /sofi/i.test(hl),
   },
   AXP: {
+    grade: 'B',
     type: 'qm-simple',
     topics: ['AXP'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /american\s*express/i.test(hl) || /\bamex\b/i.test(hl) || /\baxp\b/i.test(hl),
+    newsroomUrls: ['https://www.americanexpress.com/en-us/newsroom/'],
+    irUrl: 'https://ir.americanexpress.com/news/news-details/default.aspx',
   },
   AFRM: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['AFRM'],
     sources: OFFICIAL_SOURCES,
@@ -630,12 +799,14 @@ const TICKER_CONFIG = {
     ],
   },
   SEZL: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['SEZL'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /sezzle/i.test(hl) || /\bsezl\b/i.test(hl),
   },
   SQ: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['SQ', 'XYZ'],
     sources: OFFICIAL_SOURCES,
@@ -644,12 +815,18 @@ const TICKER_CONFIG = {
     irUrl: 'https://investors.block.xyz/investor-news/default.aspx',
   },
   PYPL: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['PYPL'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /paypal/i.test(hl) || /\bpypl\b/i.test(hl) || /venmo/i.test(hl),
+    gnwRssKeywords: ['PayPal'],
+    irUrl: 'https://newsroom.paypal-corp.com/news',
+    newsroomUrls: ['https://newsroom.paypal-corp.com/news'],
+    rssUrls: ['https://newsroom.paypal-corp.com/rss/news-releases.xml'],
   },
   UPST: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['UPST'],
     sources: OFFICIAL_SOURCES,
@@ -659,6 +836,7 @@ const TICKER_CONFIG = {
     notifiedApiUrls: ['https://ir.upstart.com/rss/news-releases.xml'],
   },
   HOOD: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['HOOD'],
     sources: OFFICIAL_SOURCES,
@@ -670,14 +848,18 @@ const TICKER_CONFIG = {
 
   // ─── Digital Assets (new) ───
   GLXY: {
+    grade: 'D',
     type: 'qm-simple',
     topics: ['GLXY'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /galaxy\s*digital/i.test(hl) || /\bglxy\b/i.test(hl) || /galaxy\s*(?:asset|fund)/i.test(hl),
+    filter: (hl) => /galaxy\s*digital/i.test(hl) || /\bglxy\b/i.test(hl) || /galaxy\s*(?:asset|fund)/i.test(hl) || (/\bgalaxy\b/i.test(hl) && /crypto|bitcoin|digital|blockchain|mining|asset/i.test(hl)),
     stockTitanSlugs: ['GLXY'],
+    gnwRssKeywords: ['Galaxy Digital'],
     irUrl: 'https://investor.galaxy.com/',
+    newsroomUrls: ['https://www.galaxy.com/all-news'],
   },
   BITF: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['BITF'],
     sources: OFFICIAL_SOURCES,
@@ -690,6 +872,7 @@ const TICKER_CONFIG = {
 
   // ─── Financial Services ───
   BLK: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['BLK'],
     sources: OFFICIAL_SOURCES,
@@ -697,25 +880,35 @@ const TICKER_CONFIG = {
     irUrl: 'https://ir.blackrock.com/news-and-events/press-releases/default.aspx',
   },
   HSBC: {
+    grade: 'D',
     type: 'qm-simple',
     topics: ['HSBC'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /hsbc/i.test(hl),
+    newsroomUrls: [
+      'https://www.hsbc.com/news-and-views/news/media-releases',
+      'https://www.hsbc.com/news-and-views/news',
+    ],
   },
   C: {
+    grade: 'C',
     type: 'qm-simple',
     topics: ['C'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /citigroup/i.test(hl) || /\bciti\b/i.test(hl) || /citibank/i.test(hl),
+    gnwRssKeywords: ['Citigroup', 'Citi'],
     irUrl: 'https://www.citigroup.com/global/news/press-release',
+    newsroomUrls: ['https://www.citigroup.com/global/news'],
   },
   CME: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['CME'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /cme\s*group/i.test(hl) || /\bcme\b/i.test(hl),
   },
   ICE: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['ICE'],
     sources: OFFICIAL_SOURCES,
@@ -724,24 +917,39 @@ const TICKER_CONFIG = {
 
   // ─── Telecom (new) ───
   VOD: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['VOD'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /vodafone/i.test(hl) || /\bvod\b/i.test(hl),
+    gnwRssKeywords: ['Vodafone'],
+    irUrl: 'https://investors.vodafone.com/news-and-results/news',
+    newsroomUrls: [
+      'https://www.vodafone.com/news/press-releases',
+      'https://www.vodafone.com/news',
+    ],
   },
   ORAN: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['ORAN'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /\borange\b/i.test(hl) && /telecom|network|mobile|5g|fiber|group|s\.a/i.test(hl),
+    filter: (hl) => /\borange\b/i.test(hl) && /telecom|network|mobile|5g|fiber|group|s\.a|press|ceo|quarter|revenue|result|partner|launch|invest/i.test(hl),
+    gnwRssKeywords: ['Orange S.A.', 'Orange Telecom'],
+    newsroomUrls: [
+      'https://www.orange.com/en/newsroom/press-releases',
+      'https://www.orange.com/en/newsroom/news',
+    ],
   },
   TU: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['TU'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /telus/i.test(hl) || /\btu\b/i.test(hl),
   },
   BCE: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['BCE'],
     sources: OFFICIAL_SOURCES,
@@ -752,6 +960,7 @@ const TICKER_CONFIG = {
 
   // ─── Infrastructure & Tech ───
   AMT: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['AMT'],
     sources: OFFICIAL_SOURCES,
@@ -761,56 +970,79 @@ const TICKER_CONFIG = {
     notifiedApiUrls: ['https://americantower.gcs-web.com/rss/news-releases.xml'],
   },
   RKUNF: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['RKUNF'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /rakuten/i.test(hl) || /\brkunf\b/i.test(hl),
     irUrl: 'https://global.rakuten.com/corp/news/press/',
+    rssUrls: ['https://global.rakuten.com/corp/rss/press.xml'],
+    newsroomUrls: ['https://corp.mobile.rakuten.co.jp/english/news/'],
   },
   GOOGL: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['GOOGL', 'GOOG'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /alphabet/i.test(hl) || /\bgoogle\b/i.test(hl) || /\bgoogl\b/i.test(hl),
-    irUrl: 'https://abc.xyz/investor/news/default.aspx',
+    filter: (hl) => /alphabet/i.test(hl) || /\bgoogle\b/i.test(hl) || /\bgoogl\b/i.test(hl) || /google\s*cloud/i.test(hl),
+    gnwRssKeywords: ['Alphabet', 'Google'],
+    irUrl: 'https://abc.xyz/investor/',
+    newsroomUrls: [
+      'https://www.googlecloudpresscorner.com/latest-news',
+      'https://blog.google/press/',
+    ],
   },
 
   // ─── Aerospace & Defense ───
   PL: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['PL'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /planet\s*lab/i.test(hl) || (/\bplanet\b/i.test(hl) && /satellite|earth|imaging|data/i.test(hl)) || /\bpl\b/i.test(hl),
     stockTitanSlugs: ['PL'],
+    gnwRssKeywords: ['Planet Labs'],
     irUrl: 'https://investors.planet.com/news/default.aspx',
+    notifiedApiUrls: ['https://investors.planet.com/rss/news-releases.xml'],
   },
   BA: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['BA'],
     sources: ['pr newswire', 'business wire'],
     filter: (hl) => /boeing/i.test(hl),
     stockTitanSlugs: ['BA'],
+    gnwRssKeywords: ['Boeing'],
     irUrl: 'https://boeing.mediaroom.com/news-releases-statements',
+    rssUrls: ['https://boeing.mediaroom.com/rss'],
   },
   LMT: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['LMT'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /lockheed\s*martin/i.test(hl) || /\blmt\b/i.test(hl),
     stockTitanSlugs: ['LMT'],
+    gnwRssKeywords: ['Lockheed Martin'],
     irUrl: 'https://news.lockheedmartin.com/news-releases',
+    newsroomUrls: ['https://news.lockheedmartin.com/home'],
+    rssUrls: ['https://news.lockheedmartin.com/rss/news-releases.xml'],
   },
 
   // ─── Semiconductors & Telecom Equipment ───
   QCOM: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['QCOM'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /qualcomm/i.test(hl) || /\bqcom\b/i.test(hl) || /snapdragon/i.test(hl),
     stockTitanSlugs: ['QCOM'],
+    gnwRssKeywords: ['Qualcomm'],
     irUrl: 'https://investor.qualcomm.com/news-events/press-releases/default.aspx',
+    newsroomUrls: ['https://www.qualcomm.com/news/releases'],
   },
   NOK: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['NOK'],
     sources: OFFICIAL_SOURCES,
@@ -818,8 +1050,11 @@ const TICKER_CONFIG = {
     stockTitanSlugs: ['NOK'],
     gnwRssKeywords: ['Nokia'],
     irUrl: 'https://www.nokia.com/about-us/investors/news',
+    newsroomUrls: ['https://www.nokia.com/about-us/newsroom/'],
+    rssUrls: ['https://www.nokia.com/rss/press-releases.xml'],
   },
   ERIC: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['ERIC'],
     sources: OFFICIAL_SOURCES,
@@ -827,16 +1062,21 @@ const TICKER_CONFIG = {
     stockTitanSlugs: ['ERIC'],
     gnwRssKeywords: ['Ericsson'],
     irUrl: 'https://www.ericsson.com/en/press-releases',
+    newsroomUrls: ['https://www.ericsson.com/en/newsroom'],
+    rssUrls: ['https://www.ericsson.com/en/rss?type=press-releases'],
   },
   TMUS: {
+    grade: 'D',
     type: 'qm-simple',
     topics: ['TMUS'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /t.mobile/i.test(hl) || /\btmus\b/i.test(hl),
     stockTitanSlugs: ['TMUS'],
     irUrl: 'https://investor.t-mobile.com/events-and-presentations/news/default.aspx',
+    newsroomUrls: ['https://www.t-mobile.com/news/stories'],
   },
   NVDA: {
+    grade: 'B',
     type: 'qm-simple',
     topics: ['NVDA'],
     sources: OFFICIAL_SOURCES,
@@ -844,18 +1084,24 @@ const TICKER_CONFIG = {
     stockTitanSlugs: ['NVDA'],
     gnwRssKeywords: ['NVIDIA'],
     irUrl: 'https://nvidianews.nvidia.com/news',
+    newsroomUrls: ['https://nvidianews.nvidia.com/news/all'],
+    notifiedApiUrls: ['https://investor.nvidia.com/rss/news-releases.xml'],
   },
   IBM: {
+    grade: 'B',
     type: 'qm-simple',
     topics: ['IBM'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /\bibm\b/i.test(hl),
     stockTitanSlugs: ['IBM'],
     irUrl: 'https://newsroom.ibm.com/announcements',
+    newsroomUrls: ['https://newsroom.ibm.com/press-releases'],
+    rssUrls: ['https://newsroom.ibm.com/rss/news-releases.xml'],
   },
 
   // ─── Bitcoin Mining (additional) ───
   CIFR: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['CIFR'],
     sources: OFFICIAL_SOURCES,
@@ -863,8 +1109,10 @@ const TICKER_CONFIG = {
     stockTitanSlugs: ['CIFR'],
     gnwRssKeywords: ['Cipher Mining'],
     irUrl: 'https://investors.ciphermining.com/news-events/press-releases',
+    notifiedApiUrls: ['https://investors.ciphermining.com/rss/news-releases.xml'],
   },
   HIVE: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['HIVE'],
     sources: OFFICIAL_SOURCES,
@@ -874,6 +1122,7 @@ const TICKER_CONFIG = {
     irUrl: 'https://www.hivedigitaltechnologies.com/news',
   },
   CORZ: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['CORZ'],
     sources: OFFICIAL_SOURCES,
@@ -882,6 +1131,7 @@ const TICKER_CONFIG = {
     irUrl: 'https://investors.corescientific.com/news-events/press-releases',
   },
   APLD: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['APLD'],
     sources: OFFICIAL_SOURCES,
@@ -891,6 +1141,7 @@ const TICKER_CONFIG = {
     irUrl: 'https://ir.applieddigital.com/news-events/press-releases',
   },
   CAN: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['CAN'],
     sources: OFFICIAL_SOURCES,
@@ -899,14 +1150,18 @@ const TICKER_CONFIG = {
     irUrl: 'https://investor.canaaninc.com/news-releases',
   },
   ARBK: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['ARBK'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /argo\s*blockchain/i.test(hl) || /\barbk\b/i.test(hl),
     stockTitanSlugs: ['ARBK'],
+    gnwRssKeywords: ['Argo Blockchain'],
     irUrl: 'https://www.argoblockchain.com/investors/news',
+    newsroomUrls: ['https://www.argoblockchain.com/news'],
   },
   BKKT: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['BKKT'],
     sources: OFFICIAL_SOURCES,
@@ -917,8 +1172,8 @@ const TICKER_CONFIG = {
   },
 
   // ─── Complex multi-source tickers ───
-  T: { type: 'att' },
-  AMZLEO: { type: 'amazon-leo' },
+  T: { grade: 'B', type: 'att' },
+  AMZLEO: { grade: 'A', type: 'amazon-leo' },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -934,21 +1189,27 @@ async function fetchQmSimple(config) {
   });
   let finalItems = dedupe(filtered);
 
-  // Fallback sources when QM returns too few results
-  if ((config.gnwRssKeywords || config.irUrl || config.stockTitanSlugs || config.notifiedApiUrls) && finalItems.length < 3) {
+  // Always fetch additional sources when configured for comprehensive coverage
+  if (config.gnwRssKeywords || config.irUrl || config.stockTitanSlugs || config.notifiedApiUrls || config.newsroomUrls || config.rssUrls) {
     const fallbackPromises = [];
     if (config.stockTitanSlugs) fallbackPromises.push(fetchStockTitan(config.stockTitanSlugs));
     if (config.notifiedApiUrls) fallbackPromises.push(fetchNotifiedRss(config.notifiedApiUrls));
     if (config.gnwRssKeywords) fallbackPromises.push(fetchGnwRss(config.gnwRssKeywords));
     if (config.irUrl) fallbackPromises.push(fetchIRPage(config.irUrl));
+    if (config.newsroomUrls) {
+      for (const url of config.newsroomUrls) {
+        fallbackPromises.push(fetchNewsroomPage(url));
+      }
+    }
+    if (config.rssUrls) fallbackPromises.push(fetchGenericRss(config.rssUrls));
 
     const results = await Promise.allSettled(fallbackPromises);
+    const TRUSTED = new Set(['stocktitan', 'notified-rss', 'notified-json', 'ir-scrape', 'newsroom-scrape', 'generic-rss', 'newsfile-company']);
     const filterFallback = (items) => items.filter((item) => {
       const hl = (item.headline || '').toLowerCase();
       if (hl.length < 15) return false;
-      const src = item._source || '';
-      if (src === 'stocktitan' || src === 'notified-rss' || src === 'ir-scrape' || src === 'gnw-rss' || src === 'gnw-atom') return true;
-      return hl.length >= 20 && config.filter(hl);
+      if (TRUSTED.has(item._source || '')) return true;
+      return config.filter(hl);
     });
 
     let fallbackItems = [];
@@ -979,22 +1240,28 @@ async function fetchCrypto(config) {
 
   let finalItems = qmFiltered;
 
-  // Fallback for tickers with extra sources (FRMM)
-  if ((config.stockTitanSlugs || config.gnwRssKeywords || config.notifiedApiUrls || config.irUrl) && finalItems.length < 3) {
+  // Always fetch additional sources when configured for comprehensive coverage
+  if (config.stockTitanSlugs || config.gnwRssKeywords || config.notifiedApiUrls || config.irUrl || config.newsroomUrls || config.rssUrls) {
     const fallbackPromises = [];
     if (config.stockTitanSlugs) fallbackPromises.push(fetchStockTitan(config.stockTitanSlugs));
     if (config.notifiedApiUrls) fallbackPromises.push(fetchNotifiedRss(config.notifiedApiUrls));
     if (config.gnwRssKeywords) fallbackPromises.push(fetchGnwRss(config.gnwRssKeywords));
     if (config.irUrl) fallbackPromises.push(fetchIRPage(config.irUrl));
+    if (config.newsroomUrls) {
+      for (const url of config.newsroomUrls) {
+        fallbackPromises.push(fetchNewsroomPage(url));
+      }
+    }
+    if (config.rssUrls) fallbackPromises.push(fetchGenericRss(config.rssUrls));
 
     const results = await Promise.allSettled(fallbackPromises);
 
+    const TRUSTED = new Set(['stocktitan', 'notified-rss', 'notified-json', 'ir-scrape', 'newsroom-scrape', 'generic-rss', 'newsfile-company']);
     const filterFallback = (items) => items.filter((item) => {
       const hl = (item.headline || '').toLowerCase();
       if (hl.length < 15) return false;
-      const src = item._source || '';
-      if (src === 'stocktitan' || src === 'notified-json' || src === 'notified-rss' || src === 'newsfile-company') return true;
-      return hl.length >= 20 && config.filter(hl);
+      if (TRUSTED.has(item._source || '')) return true;
+      return config.filter(hl);
     });
 
     let fallbackItems = [];
@@ -1207,11 +1474,38 @@ async function fetchAttAllNews() {
   } catch (e) { return { items: [], error: e.message }; }
 }
 
+async function fetchAttInvestorNews() {
+  try {
+    const url = 'https://services.att.com/search/v1/newsroom' +
+      '?app-id=attnews&q=*:*&fq=-rejectDoc:true&fq=tags:Investors&rows=200&sort=published_date+desc&wt=json';
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://about.att.com/', 'Origin': 'https://about.att.com',
+        'Accept': 'application/json, text/javascript, */*; q=0.01', 'X-Requested-With': 'XMLHttpRequest',
+      },
+    });
+    if (!res.ok) return { items: [], error: `InvestorNews HTTP ${res.status}` };
+    const json = await res.json();
+    const docs = json?.response?.docs ?? [];
+    const items = docs.map(doc => ({
+      newsid: `investor-${(doc.article_url || doc.id || '').replace(/[^a-z0-9]/gi, '-').slice(-60)}`,
+      datetime: doc.published_date || new Date().toISOString(),
+      source: 'AT&T Investor News',
+      headline: decode(doc.article_header || doc.title || ''),
+      qmsummary: decode(doc.article_description || doc.description || ''),
+      permalink: doc.article_url || (Array.isArray(doc.og_url) ? doc.og_url[0] : doc.og_url) || '',
+      storyurl: doc.article_url || '', _source: 'investor-news',
+    })).filter(i => i.headline);
+    return { items, error: null };
+  } catch (e) { return { items: [], error: e.message }; }
+}
+
 async function fetchAtt() {
-  const [qm, corpPR, edgar, prnDirect, allNews] = await Promise.all([
-    fetchAttQuoteMedia(), fetchAttCorpPR(), fetchAttEdgar(), fetchAttPRNDirect(), fetchAttAllNews(),
+  const [qm, corpPR, edgar, prnDirect, allNews, investorNews] = await Promise.all([
+    fetchAttQuoteMedia(), fetchAttCorpPR(), fetchAttEdgar(), fetchAttPRNDirect(), fetchAttAllNews(), fetchAttInvestorNews(),
   ]);
-  return dedupe([...qm.items, ...prnDirect.items, ...allNews.items, ...corpPR.items, ...edgar.items]);
+  return dedupe([...qm.items, ...prnDirect.items, ...allNews.items, ...investorNews.items, ...corpPR.items, ...edgar.items]);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1294,6 +1588,7 @@ export default async function handler(req, res) {
       error: `Unknown ticker: ${ticker}. Supported: ${Object.keys(TICKER_CONFIG).join(', ')}`,
     });
   }
+  res.setHeader('X-Ticker-Grade', config.grade || 'U');
 
   const wrapInNews = config.type === 'amazon-leo';
 
@@ -1305,15 +1600,32 @@ export default async function handler(req, res) {
     const sql = getSQL();
     if (sql) {
       await sql`DELETE FROM press_releases WHERE
-        headline ~* '^(stock news live|merger\\s*&\\s*acquisitions?|clinical trials?|market research|media room|investor relations|press room|newsroom)' OR
-        array_length(string_to_array(trim(headline), ' '), 1) < 4`;
+        headline ~* '^(stock news live|merger\\s*&\\s*acquisitions?|clinical trials?|market research|media room|investor relations|press room|newsroom|link to\\b)' OR
+        headline ~* '(opens in new window|read media release|\\(pdf\\b|\\d+ min read$)' OR
+        array_length(string_to_array(trim(headline), ' '), 1) < 4 OR
+        length(trim(headline)) > 300`;
+      // Purge NOK Group (Japanese rubber company) entries — wrong company
+      await sql`DELETE FROM press_releases WHERE
+        ticker = 'NOK' AND
+        headline ~* '(rubber|hydrogen energy|workplace|workshop|seal|gasket|nok group|carbon.neutral|global one nok)'`;
     }
   } catch { /* cleanup is best-effort */ }
+
+  // Filter DB items: trust ticker-specific sources (newsroom, IR, RSS), but
+  // apply headline filter to keyword-search sources (GNW) that can return cross-ticker results
+  const TRUSTED_SOURCES = new Set(['newsroom-scrape', 'ir-scrape', 'notified-rss', 'stocktitan', 'generic-rss', 'notified-json', 'newsfile-company']);
+  const applyTickerFilter = (items) => {
+    if (!config.filter) return items; // T and AMZLEO have no filter
+    return items.filter(item => {
+      if (TRUSTED_SOURCES.has(item._source)) return true;
+      return config.filter((item.headline || '').toLowerCase());
+    });
+  };
 
   // ── MODE: DB — serve from database only (page load) ──
   if (mode === 'db') {
     try {
-      const dbItems = await loadFromDB(ticker);
+      const dbItems = applyTickerFilter(await loadFromDB(ticker));
       for (const item of dbItems) item._inDb = true;
       const body = wrapInNews ? { news: dbItems } : dbItems;
       res.setHeader('Content-Type', 'application/json');
@@ -1354,9 +1666,9 @@ export default async function handler(req, res) {
     let dbHashes = new Set();
     let dbItems = [];
     try {
-      dbItems = await loadFromDB(ticker);
+      dbItems = applyTickerFilter(await loadFromDB(ticker));
       for (const d of dbItems) dbHashes.add(normalizeHl(d.headline));
-      console.log(`press-intelligence refresh (${ticker}): ${dbItems.length} existing DB items, ${items.length} upstream items`);
+      console.log(`press-intelligence refresh (${ticker}) [grade=${config.grade}]: ${dbItems.length} existing DB items, ${items.length} upstream items`);
     } catch (dbErr) {
       console.error(`press-intelligence DB read error (${ticker}):`, dbErr.message);
     }
@@ -1388,7 +1700,7 @@ export default async function handler(req, res) {
   } catch (err) {
     // If upstream fetch failed entirely, try serving from database
     try {
-      const dbItems = await loadFromDB(ticker);
+      const dbItems = applyTickerFilter(await loadFromDB(ticker));
       if (dbItems.length > 0) {
         for (const item of dbItems) item._inDb = true;
         const body = wrapInNews ? { news: dbItems } : dbItems;

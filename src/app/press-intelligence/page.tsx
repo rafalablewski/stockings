@@ -15,6 +15,7 @@ interface FeedConfig {
   accent: string;        // CSS variable name (cyan, violet, mint)
   color: string;         // hex for pill & badge
   colorDim: string;      // hex at 15% for badge bg
+  grade: "A" | "B" | "C" | "D" | "F";  // monitoring priority from review 2026-03-12
   sourceFilter: (source: string) => boolean;
   headlineFilter: (headline: string) => boolean;  // relevance gate — must mention company
   parseResponse?: (json: any) => any[];  // custom response parser (default: QuoteMedia nested)
@@ -55,6 +56,7 @@ const QM_DEFAULTS = {
 const FEED_CONFIGS: FeedConfig[] = [
   {
     ticker: "ASTS",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=ASTS",
     accent: "cyan",
     color: "#22D3EE",
@@ -71,6 +73,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "BMNR",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=BMNR",
     accent: "violet",
     color: "#A78BFA",
@@ -90,6 +93,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "IRDM",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=IRDM",
     accent: "gold",
     color: "#F59E0B",
@@ -107,6 +111,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "GSAT",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=GSAT",
     accent: "orange",
     color: "#FB923C",
@@ -124,6 +129,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "VZ",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=VZ",
     accent: "rose",
     color: "#F472B6",
@@ -141,6 +147,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "VSAT",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=VSAT",
     accent: "indigo",
     color: "#818CF8",
@@ -158,6 +165,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "RKLB",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=RKLB",
     accent: "fuchsia",
     color: "#D946EF",
@@ -176,6 +184,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "SATS",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=SATS",
     accent: "pink",
     color: "#EC4899",
@@ -193,6 +202,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "LUNR",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=LUNR",
     accent: "yellow",
     color: "#FACC15",
@@ -211,6 +221,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "T",
+    grade: "B",
     endpoint: "/api/press-intelligence?ticker=T",
     accent: "sky",
     color: "#38BDF8",
@@ -228,6 +239,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "AMZLEO",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=AMZLEO",
     accent: "emerald",
     color: "#34D399",
@@ -244,6 +256,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "MSTR",
+    grade: "C",
     endpoint: "/api/press-intelligence?ticker=MSTR",
     accent: "amber",
     color: "#F59E0B",
@@ -260,6 +273,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "MARA",
+    grade: "C",
     endpoint: "/api/press-intelligence?ticker=MARA",
     accent: "lime",
     color: "#84CC16",
@@ -277,6 +291,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "RIOT",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=RIOT",
     accent: "red",
     color: "#EF4444",
@@ -294,6 +309,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "CLSK",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=CLSK",
     accent: "green",
     color: "#22C55E",
@@ -311,6 +327,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "HUT",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=HUT",
     accent: "stone",
     color: "#A8A29E",
@@ -328,6 +345,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "IREN",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=IREN",
     accent: "teal",
     color: "#2DD4BF",
@@ -345,6 +363,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "NBIS",
+    grade: "C",
     endpoint: "/api/press-intelligence?ticker=NBIS",
     accent: "indigo",
     color: "#818CF8",
@@ -362,6 +381,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "FRMM",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=FRMM",
     accent: "purple",
     color: "#A855F7",
@@ -379,6 +399,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "COIN",
+    grade: "B",
     endpoint: "/api/press-intelligence?ticker=COIN",
     accent: "blue",
     color: "#3B82F6",
@@ -397,6 +418,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   // ─── Fintech & Payments ───
   {
     ticker: "MA",
+    grade: "C",
     endpoint: "/api/press-intelligence?ticker=MA",
     accent: "orange",
     color: "#F97316",
@@ -406,6 +428,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "V",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=V",
     accent: "blue",
     color: "#2563EB",
@@ -415,6 +438,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "SOFI",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=SOFI",
     accent: "cyan",
     color: "#06B6D4",
@@ -430,6 +454,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "AXP",
+    grade: "B",
     endpoint: "/api/press-intelligence?ticker=AXP",
     accent: "sky",
     color: "#0EA5E9",
@@ -445,6 +470,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "AFRM",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=AFRM",
     accent: "violet",
     color: "#7C3AED",
@@ -460,6 +486,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "SEZL",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=SEZL",
     accent: "purple",
     color: "#9333EA",
@@ -475,6 +502,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "SQ",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=SQ",
     accent: "emerald",
     color: "#10B981",
@@ -490,6 +518,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "PYPL",
+    grade: "F",
     endpoint: "/api/press-intelligence?ticker=PYPL",
     accent: "blue",
     color: "#3B82F6",
@@ -505,6 +534,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "UPST",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=UPST",
     accent: "fuchsia",
     color: "#C026D3",
@@ -521,6 +551,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   // ─── Digital Assets ───
   {
     ticker: "GLXY",
+    grade: "D",
     endpoint: "/api/press-intelligence?ticker=GLXY",
     accent: "amber",
     color: "#D97706",
@@ -536,6 +567,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "HOOD",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=HOOD",
     accent: "lime",
     color: "#65A30D",
@@ -551,6 +583,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "BITF",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=BITF",
     accent: "yellow",
     color: "#CA8A04",
@@ -567,6 +600,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   // ─── Financial Services ───
   {
     ticker: "BLK",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=BLK",
     accent: "slate",
     color: "#64748B",
@@ -582,6 +616,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "HSBC",
+    grade: "D",
     endpoint: "/api/press-intelligence?ticker=HSBC",
     accent: "red",
     color: "#DC2626",
@@ -597,6 +632,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "C",
+    grade: "C",
     endpoint: "/api/press-intelligence?ticker=C",
     accent: "sky",
     color: "#0284C7",
@@ -612,6 +648,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "CME",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=CME",
     accent: "indigo",
     color: "#4F46E5",
@@ -627,6 +664,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "ICE",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=ICE",
     accent: "teal",
     color: "#0D9488",
@@ -643,6 +681,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   // ─── Telecom ───
   {
     ticker: "VOD",
+    grade: "F",
     endpoint: "/api/press-intelligence?ticker=VOD",
     accent: "rose",
     color: "#E11D48",
@@ -655,6 +694,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "ORAN",
+    grade: "F",
     endpoint: "/api/press-intelligence?ticker=ORAN",
     accent: "orange",
     color: "#EA580C",
@@ -664,6 +704,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "TU",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=TU",
     accent: "green",
     color: "#16A34A",
@@ -676,6 +717,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "BCE",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=BCE",
     accent: "sky",
     color: "#0369A1",
@@ -689,6 +731,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   // ─── Infrastructure & Tech ───
   {
     ticker: "AMT",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=AMT",
     accent: "zinc",
     color: "#71717A",
@@ -704,6 +747,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "RKUNF",
+    grade: "F",
     endpoint: "/api/press-intelligence?ticker=RKUNF",
     accent: "rose",
     color: "#BE123C",
@@ -719,6 +763,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "GOOGL",
+    grade: "F",
     endpoint: "/api/press-intelligence?ticker=GOOGL",
     accent: "emerald",
     color: "#059669",
@@ -735,6 +780,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   // ─── Aerospace & Defense ───
   {
     ticker: "PL",
+    grade: "F",
     endpoint: "/api/press-intelligence?ticker=PL",
     accent: "sky",
     color: "#0284C7",
@@ -750,6 +796,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "BA",
+    grade: "F",
     endpoint: "/api/press-intelligence?ticker=BA",
     accent: "blue",
     color: "#1D4ED8",
@@ -765,6 +812,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "LMT",
+    grade: "F",
     endpoint: "/api/press-intelligence?ticker=LMT",
     accent: "slate",
     color: "#475569",
@@ -781,6 +829,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   // ─── Semiconductors & Telecom Equipment ───
   {
     ticker: "QCOM",
+    grade: "F",
     endpoint: "/api/press-intelligence?ticker=QCOM",
     accent: "blue",
     color: "#2563EB",
@@ -796,6 +845,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "NOK",
+    grade: "F",
     endpoint: "/api/press-intelligence?ticker=NOK",
     accent: "indigo",
     color: "#4338CA",
@@ -811,6 +861,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "ERIC",
+    grade: "F",
     endpoint: "/api/press-intelligence?ticker=ERIC",
     accent: "blue",
     color: "#1E40AF",
@@ -826,6 +877,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "TMUS",
+    grade: "D",
     endpoint: "/api/press-intelligence?ticker=TMUS",
     accent: "pink",
     color: "#DB2777",
@@ -841,6 +893,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "NVDA",
+    grade: "B",
     endpoint: "/api/press-intelligence?ticker=NVDA",
     accent: "lime",
     color: "#65A30D",
@@ -856,6 +909,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "IBM",
+    grade: "B",
     endpoint: "/api/press-intelligence?ticker=IBM",
     accent: "blue",
     color: "#1E3A8A",
@@ -872,6 +926,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   // ─── Bitcoin Mining (additional) ───
   {
     ticker: "CIFR",
+    grade: "F",
     endpoint: "/api/press-intelligence?ticker=CIFR",
     accent: "emerald",
     color: "#047857",
@@ -887,6 +942,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "HIVE",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=HIVE",
     accent: "yellow",
     color: "#CA8A04",
@@ -902,6 +958,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "CORZ",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=CORZ",
     accent: "orange",
     color: "#C2410C",
@@ -917,6 +974,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "APLD",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=APLD",
     accent: "violet",
     color: "#7C3AED",
@@ -932,6 +990,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "CAN",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=CAN",
     accent: "amber",
     color: "#D97706",
@@ -947,6 +1006,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "ARBK",
+    grade: "F",
     endpoint: "/api/press-intelligence?ticker=ARBK",
     accent: "cyan",
     color: "#0891B2",
@@ -962,6 +1022,7 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
   {
     ticker: "BKKT",
+    grade: "A",
     endpoint: "/api/press-intelligence?ticker=BKKT",
     accent: "fuchsia",
     color: "#A21CAF",
@@ -1214,10 +1275,11 @@ export default function PressIntelligencePage() {
             <div className="pi-stock-summary-wrap">
               <div className="pi-stock-summary">
                 {FEED_CONFIGS.map((cfg) => (
-                  <div key={cfg.ticker} className="pi-stock-stat">
+                  <div key={cfg.ticker} className="pi-stock-stat" data-grade={cfg.grade}>
                     <span className="pi-stock-dot" data-accent={cfg.accent} />
                     <span className="pi-stock-stat-count">{stats.perStock[cfg.ticker] || 0}</span>
                     <span className="pi-stock-stat-label">{cfg.ticker}</span>
+                    <span className="pi-grade-dot" data-grade={cfg.grade} title={`Grade ${cfg.grade}`} />
                   </div>
                 ))}
               </div>
@@ -1243,9 +1305,13 @@ export default function PressIntelligencePage() {
                 className="pi-stock-pill"
                 data-active={activeTicker === cfg.ticker}
                 data-accent={cfg.accent}
+                data-grade={cfg.grade}
                 onClick={() => setActiveTicker(cfg.ticker)}
               >
                 {cfg.ticker}
+                {cfg.grade !== "A" && (
+                  <span className="pi-grade-badge" data-grade={cfg.grade}>{cfg.grade}</span>
+                )}
               </button>
             ))}
           </div>
