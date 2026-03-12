@@ -1090,6 +1090,10 @@ const TICKER_CONFIG = {
     gnwRssKeywords: ['NVIDIA'],
     newsroomUrls: ['https://nvidianews.nvidia.com/news/all'],
     notifiedApiUrls: ['https://investor.nvidia.com/rss/news-releases.xml'],
+    rssUrls: [
+      'https://nvidianews.nvidia.com/releases.xml',
+      'https://feeds.feedburner.com/nvidiablog',
+    ],
   },
   IBM: {
     grade: 'B',
