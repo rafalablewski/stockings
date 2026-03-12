@@ -603,6 +603,8 @@ const TICKER_CONFIG = {
     topics: ['AFRM'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /affirm/i.test(hl) || /\bafrm\b/i.test(hl),
+    gnwRssKeywords: ['Affirm Holdings'],
+    irUrl: 'https://investors.affirm.com/news-releases',
   },
   SEZL: {
     type: 'qm-simple',
@@ -615,6 +617,8 @@ const TICKER_CONFIG = {
     topics: ['SQ'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /\bblock\b/i.test(hl) || /\bsquare\b/i.test(hl) || /cash\s*app/i.test(hl) || /\bsq\b/i.test(hl),
+    gnwRssKeywords: ['Block Inc'],
+    irUrl: 'https://investors.block.xyz/news/news-details',
   },
   PYPL: {
     type: 'qm-simple',
@@ -627,12 +631,16 @@ const TICKER_CONFIG = {
     topics: ['UPST'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /upstart/i.test(hl) || /\bupst\b/i.test(hl),
+    gnwRssKeywords: ['Upstart Holdings'],
+    irUrl: 'https://ir.upstart.com/news-releases',
   },
   HOOD: {
     type: 'qm-simple',
     topics: ['HOOD'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /robinhood/i.test(hl) || /\bhood\b/i.test(hl),
+    gnwRssKeywords: ['Robinhood Markets'],
+    irUrl: 'https://investors.robinhood.com/news/press-releases',
   },
 
   // ─── Digital Assets (new) ───
@@ -641,12 +649,16 @@ const TICKER_CONFIG = {
     topics: ['GLXY'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /galaxy\s*digital/i.test(hl) || /\bglxy\b/i.test(hl),
+    gnwRssKeywords: ['Galaxy Digital'],
+    irUrl: 'https://investor.galaxydigital.io/news-events/press-releases',
   },
   BITF: {
     type: 'qm-simple',
     topics: ['BITF'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /bitfarms/i.test(hl) || /\bbitf\b/i.test(hl),
+    gnwRssKeywords: ['Bitfarms'],
+    irUrl: 'https://bitfarms.com/investors/news-events',
   },
 
   // ─── Financial Services ───
@@ -655,6 +667,8 @@ const TICKER_CONFIG = {
     topics: ['BLK'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /blackrock/i.test(hl) || /\bblk\b/i.test(hl),
+    gnwRssKeywords: ['BlackRock'],
+    irUrl: 'https://ir.blackrock.com/news-and-events/press-releases',
   },
   HSBC: {
     type: 'qm-simple',
@@ -667,6 +681,8 @@ const TICKER_CONFIG = {
     topics: ['C'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /citigroup/i.test(hl) || /\bciti\b/i.test(hl) || /citibank/i.test(hl),
+    gnwRssKeywords: ['Citigroup'],
+    irUrl: 'https://www.citigroup.com/global/news/press-release',
   },
   CME: {
     type: 'qm-simple',
@@ -704,7 +720,9 @@ const TICKER_CONFIG = {
     type: 'qm-simple',
     topics: ['BCE'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /\bbce\b/i.test(hl) || /\bbell\b/i.test(hl) && /canada|media|wireless/i.test(hl),
+    filter: (hl) => /\bbce\b/i.test(hl) || (/\bbell\b/i.test(hl) && /canada|media|wireless/i.test(hl)),
+    gnwRssKeywords: ['BCE Inc'],
+    irUrl: 'https://bce.ca/news-and-media/releases',
   },
 
   // ─── Infrastructure & Tech ───
@@ -713,24 +731,34 @@ const TICKER_CONFIG = {
     topics: ['AMT'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /american\s*tower/i.test(hl) || /\bamt\b/i.test(hl),
+    gnwRssKeywords: ['American Tower'],
+    irUrl: 'https://www.americantower.com/investor-relations/news-and-events/press-releases',
   },
   RKUNF: {
     type: 'qm-simple',
     topics: ['RKUNF'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /rakuten/i.test(hl) || /\brkunf\b/i.test(hl),
+    gnwRssKeywords: ['Rakuten Group', 'Rakuten Mobile'],
+    irUrl: 'https://global.rakuten.com/corp/news/',
   },
   GOOGL: {
     type: 'qm-simple',
-    topics: ['GOOGL'],
+    topics: ['GOOGL', 'GOOG'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /alphabet/i.test(hl) || /\bgoogle\b/i.test(hl) || /\bgoogl\b/i.test(hl),
+    gnwRssKeywords: ['Alphabet Inc'],
+    irUrl: 'https://abc.xyz/investor/',
   },
 
   // ─── Complex multi-source tickers ───
   T: { type: 'att' },
   AMZLEO: { type: 'amazon-leo' },
-  LYNK: { type: 'lynk' },
+  LYNK: {
+    type: 'lynk',
+    gnwRssKeywords: ['Lynk Global'],
+    irUrl: 'https://lynk.world/news/',
+  },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -744,7 +772,35 @@ async function fetchQmSimple(config) {
     const hl = (item.headline || '').toLowerCase();
     return config.sources.some((s) => src.includes(s)) && config.filter(hl);
   });
-  return dedupe(filtered);
+  let finalItems = dedupe(filtered);
+
+  // Fallback sources when QM returns too few results
+  if ((config.gnwRssKeywords || config.irUrl || config.stockTitanSlugs || config.notifiedApiUrls) && finalItems.length < 3) {
+    const fallbackPromises = [];
+    if (config.stockTitanSlugs) fallbackPromises.push(fetchStockTitan(config.stockTitanSlugs));
+    if (config.notifiedApiUrls) fallbackPromises.push(fetchNotifiedRss(config.notifiedApiUrls));
+    if (config.gnwRssKeywords) fallbackPromises.push(fetchGnwRss(config.gnwRssKeywords));
+    if (config.irUrl) fallbackPromises.push(fetchIRPage(config.irUrl));
+
+    const results = await Promise.allSettled(fallbackPromises);
+    const filterFallback = (items) => items.filter((item) => {
+      const hl = (item.headline || '').toLowerCase();
+      if (hl.length < 15) return false;
+      const src = item._source || '';
+      if (src === 'stocktitan' || src === 'notified-rss' || src === 'ir-scrape' || src === 'gnw-rss' || src === 'gnw-atom') return true;
+      return hl.length >= 20 && config.filter(hl);
+    });
+
+    let fallbackItems = [];
+    for (const r of results) {
+      if (r.status === 'fulfilled' && r.value.length > 0) {
+        fallbackItems.push(...filterFallback(r.value));
+      }
+    }
+    finalItems = dedupe([...finalItems, ...fallbackItems]);
+  }
+
+  return finalItems;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1169,9 +1225,21 @@ export default async function handler(req, res) {
       case 'amazon-leo':
         items = await fetchAmazonLeo();
         break;
-      case 'lynk':
+      case 'lynk': {
         items = await fetchLynk();
+        // Fallback to GNW/IR if WordPress returns empty
+        if (items.length < 3 && (config.gnwRssKeywords || config.irUrl)) {
+          const fallbackPromises = [];
+          if (config.gnwRssKeywords) fallbackPromises.push(fetchGnwRss(config.gnwRssKeywords));
+          if (config.irUrl) fallbackPromises.push(fetchIRPage(config.irUrl));
+          const results = await Promise.allSettled(fallbackPromises);
+          for (const r of results) {
+            if (r.status === 'fulfilled') items.push(...r.value);
+          }
+          items = dedupe(items);
+        }
         break;
+      }
       default:
         return res.status(500).json({ error: `Unknown type: ${config.type}` });
     }
