@@ -365,6 +365,9 @@ async function fetchStockTitan(slugs) {
         const text = decode(strip(m[2]));
         if (!text || text.length < 15) continue;
         if (/view all|see more|read more|load more/i.test(text)) continue;
+        // Filter out StockTitan navigation/category links
+        if (/^(stock news live|merger|clinical trial|market research|ipo|insider trad|analyst rat|stock buyback|dividend|sec filing|earning)/i.test(text)) continue;
+        if (text.split(/\s+/).length < 4) continue; // real headlines have 4+ words
         const fullUrl = href.startsWith('http') ? href : `https://www.stocktitan.net${href}`;
         const datetime = extractDateFromContext(html, m.index);
         items.push({
@@ -432,6 +435,9 @@ async function fetchIRPage(irUrl) {
       const href = m[1];
       const text = decode(strip(m[2]));
       if (!text || text.length < 20) continue;
+      // Filter out navigation/menu links
+      if (/^(investor relations|media room|press room|newsroom|contact|about|home|back to|all news|all press)/i.test(text)) continue;
+      if (text.split(/\s+/).length < 4) continue; // real headlines have 4+ words
       const url = href.startsWith('http') ? href : `${origin}${href.startsWith('/') ? '' : '/'}${href}`;
       const datetime = extractDateFromContext(html, m.index);
       items.push({
