@@ -1204,9 +1204,11 @@ async function fetchQmSimple(config) {
     if (config.rssUrls) fallbackPromises.push(fetchGenericRss(config.rssUrls));
 
     const results = await Promise.allSettled(fallbackPromises);
+    const TRUSTED = new Set(['stocktitan', 'notified-rss', 'notified-json', 'ir-scrape', 'newsroom-scrape', 'generic-rss', 'newsfile-company']);
     const filterFallback = (items) => items.filter((item) => {
       const hl = (item.headline || '').toLowerCase();
       if (hl.length < 15) return false;
+      if (TRUSTED.has(item._source || '')) return true;
       return config.filter(hl);
     });
 
@@ -1254,9 +1256,11 @@ async function fetchCrypto(config) {
 
     const results = await Promise.allSettled(fallbackPromises);
 
+    const TRUSTED = new Set(['stocktitan', 'notified-rss', 'notified-json', 'ir-scrape', 'newsroom-scrape', 'generic-rss', 'newsfile-company']);
     const filterFallback = (items) => items.filter((item) => {
       const hl = (item.headline || '').toLowerCase();
       if (hl.length < 15) return false;
+      if (TRUSTED.has(item._source || '')) return true;
       return config.filter(hl);
     });
 
@@ -1607,10 +1611,15 @@ export default async function handler(req, res) {
     }
   } catch { /* cleanup is best-effort */ }
 
-  // Filter DB items through the ticker's headline filter to prevent cross-contamination
+  // Filter DB items: trust ticker-specific sources (newsroom, IR, RSS), but
+  // apply headline filter to keyword-search sources (GNW) that can return cross-ticker results
+  const TRUSTED_SOURCES = new Set(['newsroom-scrape', 'ir-scrape', 'notified-rss', 'stocktitan', 'generic-rss', 'notified-json', 'newsfile-company']);
   const applyTickerFilter = (items) => {
     if (!config.filter) return items; // T and AMZLEO have no filter
-    return items.filter(item => config.filter((item.headline || '').toLowerCase()));
+    return items.filter(item => {
+      if (TRUSTED_SOURCES.has(item._source)) return true;
+      return config.filter((item.headline || '').toLowerCase());
+    });
   };
 
   // ── MODE: DB — serve from database only (page load) ──
