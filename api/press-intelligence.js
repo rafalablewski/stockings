@@ -439,7 +439,7 @@ async function fetchIRPage(irUrl) {
     const html = await res.text();
     const items = [];
     const origin = new URL(irUrl).origin;
-    const linkRe = /<a[^>]+href=["']([^"']*(?:press-release|news-release|press_release|\/detail\/|\/news\/)[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
+    const linkRe = /<a[^>]+href=["']([^"']*(?:press-release|news-release|press_release|media-release|\/detail\/|\/news\/|\/release\/|\/announcement)[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
     let m;
     while ((m = linkRe.exec(html)) !== null && items.length < 30) {
       const href = m[1];
@@ -463,6 +463,76 @@ async function fetchIRPage(irUrl) {
     console.warn(`[press-intelligence] IR scrape failed for ${irUrl}:`, e.message);
     return [];
   }
+}
+
+// ─── Newsroom page scrape (broader link matching than IR scrape) ───
+
+async function fetchNewsroomPage(url) {
+  try {
+    const res = await fetch(url, {
+      headers: BROWSER_HEADERS,
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) return [];
+    const html = await res.text();
+    const items = [];
+    const origin = new URL(url).origin;
+    const linkRe = /<a[^>]+href=["']([^"']*(?:press-release|news-release|press_release|media-release|\/detail\/|\/news\/|\/article\/|\/story\/|\/stories\/|\/blog\/|\/insight|\/announcement|\/statement|\/release|\/post\/|\/update\/|\/media\/)[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
+    let m;
+    while ((m = linkRe.exec(html)) !== null && items.length < 40) {
+      const href = m[1];
+      const text = decode(strip(m[2]));
+      if (!text || text.length < 15) continue;
+      if (isJunkHeadline(text)) continue;
+      if (/^(home|about|contact|careers|privacy|terms|login|sign)/i.test(text.trim())) continue;
+      const fullUrl = href.startsWith('http') ? href : `${origin}${href.startsWith('/') ? '' : '/'}${href}`;
+      if (fullUrl === url || href.startsWith('#')) continue;
+      const datetime = extractDateFromContext(html, m.index);
+      items.push({
+        newsid: `newsroom-${items.length}`,
+        headline: text,
+        datetime: datetime || new Date().toISOString(),
+        source: 'Newsroom',
+        permalink: fullUrl,
+        storyurl: fullUrl,
+        _source: 'newsroom-scrape',
+      });
+    }
+    return items;
+  } catch (e) {
+    console.warn(`[press-intelligence] Newsroom scrape failed for ${url}:`, e.message);
+    return [];
+  }
+}
+
+// ─── Generic RSS fetcher (for arbitrary RSS/Atom feed URLs) ───
+
+async function fetchGenericRss(rssUrls) {
+  const items = [];
+  for (const url of rssUrls) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; StockingsBot/1.0)',
+          'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
+        },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!res.ok) continue;
+      const xml = await res.text();
+      let parsed = [];
+      if (xml.includes('<item>')) parsed = parseRssXml(xml);
+      else if (xml.includes('<entry>')) parsed = parseAtomXml(xml);
+      for (const item of parsed) {
+        item.source = item.source || 'RSS Feed';
+        item._source = 'generic-rss';
+      }
+      items.push(...parsed);
+    } catch (e) {
+      console.warn(`[press-intelligence] Generic RSS failed for "${url}":`, e.message);
+    }
+  }
+  return items;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -531,15 +601,19 @@ const TICKER_CONFIG = {
 
   MSTR: {
     type: 'qm-simple',
-    topics: ['MSTR'],
+    topics: ['MSTR', 'STRC'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /\bstrategy\b/i.test(hl) || /microstrategy/i.test(hl) || /\bmstr\b/i.test(hl),
+    filter: (hl) => /\bstrategy\b/i.test(hl) || /microstrategy/i.test(hl) || /\bmstr\b/i.test(hl) || /\bstrc\b/i.test(hl),
+    gnwRssKeywords: ['Strategy', 'MicroStrategy', 'STRC'],
   },
   MARA: {
     type: 'qm-simple',
     topics: ['MARA'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /marathon\s*digital/i.test(hl) || /\bmara\b/i.test(hl) || /marathon\s*holdings/i.test(hl),
+    filter: (hl) => /marathon\s*digital/i.test(hl) || /\bmara\b/i.test(hl) || /marathon\s*holdings/i.test(hl) || /mara\s*holdings/i.test(hl),
+    gnwRssKeywords: ['MARA Holdings', 'Marathon Digital'],
+    irUrl: 'https://ir.mara.com/news-events/press-releases',
+    notifiedApiUrls: ['https://ir.mara.com/rss/news-releases.xml'],
   },
   RIOT: {
     type: 'qm-simple',
@@ -572,12 +646,16 @@ const TICKER_CONFIG = {
     topics: ['NBIS'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /\bnbis\b|nebius/i.test(hl),
+    gnwRssKeywords: ['Nebius'],
+    newsroomUrls: ['https://nebius.com/blog'],
   },
   COIN: {
     type: 'qm-simple',
     topics: ['COIN'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /coinbase/i.test(hl) || /\bcoin\b/i.test(hl),
+    newsroomUrls: ['https://www.coinbase.com/blog/landing'],
+    rssUrls: ['https://www.coinbase.com/blog/rss.xml'],
   },
   FRMM: {
     type: 'crypto',
@@ -598,6 +676,12 @@ const TICKER_CONFIG = {
     topics: ['MA'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /mastercard/i.test(hl) || (/\bma\b/i.test(hl) && /payment|transaction|card|network/i.test(hl)),
+    gnwRssKeywords: ['Mastercard'],
+    irUrl: 'https://investor.mastercard.com/news-events/press-releases/default.aspx',
+    newsroomUrls: [
+      'https://www.mastercard.com/news/press/press-releases',
+      'https://www.mastercard.com/us/en/news-and-trends/stories.html',
+    ],
   },
   V: {
     type: 'qm-simple',
@@ -616,6 +700,8 @@ const TICKER_CONFIG = {
     topics: ['AXP'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /american\s*express/i.test(hl) || /\bamex\b/i.test(hl) || /\baxp\b/i.test(hl),
+    newsroomUrls: ['https://www.americanexpress.com/en-us/newsroom/'],
+    irUrl: 'https://ir.americanexpress.com/news/news-details/default.aspx',
   },
   AFRM: {
     type: 'qm-simple',
@@ -648,6 +734,10 @@ const TICKER_CONFIG = {
     topics: ['PYPL'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /paypal/i.test(hl) || /\bpypl\b/i.test(hl) || /venmo/i.test(hl),
+    gnwRssKeywords: ['PayPal'],
+    irUrl: 'https://newsroom.paypal-corp.com/news',
+    newsroomUrls: ['https://newsroom.paypal-corp.com/news'],
+    rssUrls: ['https://newsroom.paypal-corp.com/rss/news-releases.xml'],
   },
   UPST: {
     type: 'qm-simple',
@@ -673,9 +763,11 @@ const TICKER_CONFIG = {
     type: 'qm-simple',
     topics: ['GLXY'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /galaxy\s*digital/i.test(hl) || /\bglxy\b/i.test(hl) || /galaxy\s*(?:asset|fund)/i.test(hl),
+    filter: (hl) => /galaxy\s*digital/i.test(hl) || /\bglxy\b/i.test(hl) || /galaxy\s*(?:asset|fund)/i.test(hl) || (/\bgalaxy\b/i.test(hl) && /crypto|bitcoin|digital|blockchain|mining|asset/i.test(hl)),
     stockTitanSlugs: ['GLXY'],
+    gnwRssKeywords: ['Galaxy Digital'],
     irUrl: 'https://investor.galaxy.com/',
+    newsroomUrls: ['https://www.galaxy.com/all-news'],
   },
   BITF: {
     type: 'qm-simple',
@@ -701,13 +793,19 @@ const TICKER_CONFIG = {
     topics: ['HSBC'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /hsbc/i.test(hl),
+    newsroomUrls: [
+      'https://www.hsbc.com/news-and-views/news/media-releases',
+      'https://www.hsbc.com/news-and-views/news',
+    ],
   },
   C: {
     type: 'qm-simple',
     topics: ['C'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /citigroup/i.test(hl) || /\bciti\b/i.test(hl) || /citibank/i.test(hl),
+    gnwRssKeywords: ['Citigroup', 'Citi'],
     irUrl: 'https://www.citigroup.com/global/news/press-release',
+    newsroomUrls: ['https://www.citigroup.com/global/news'],
   },
   CME: {
     type: 'qm-simple',
@@ -728,12 +826,23 @@ const TICKER_CONFIG = {
     topics: ['VOD'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /vodafone/i.test(hl) || /\bvod\b/i.test(hl),
+    gnwRssKeywords: ['Vodafone'],
+    irUrl: 'https://investors.vodafone.com/news-and-results/news',
+    newsroomUrls: [
+      'https://www.vodafone.com/news/press-releases',
+      'https://www.vodafone.com/news',
+    ],
   },
   ORAN: {
     type: 'qm-simple',
     topics: ['ORAN'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /\borange\b/i.test(hl) && /telecom|network|mobile|5g|fiber|group|s\.a/i.test(hl),
+    filter: (hl) => /\borange\b/i.test(hl) && /telecom|network|mobile|5g|fiber|group|s\.a|press|ceo|quarter|revenue|result|partner|launch|invest/i.test(hl),
+    gnwRssKeywords: ['Orange S.A.', 'Orange Telecom'],
+    newsroomUrls: [
+      'https://www.orange.com/en/newsroom/press-releases',
+      'https://www.orange.com/en/newsroom/news',
+    ],
   },
   TU: {
     type: 'qm-simple',
@@ -766,13 +875,20 @@ const TICKER_CONFIG = {
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /rakuten/i.test(hl) || /\brkunf\b/i.test(hl),
     irUrl: 'https://global.rakuten.com/corp/news/press/',
+    rssUrls: ['https://global.rakuten.com/corp/rss/press.xml'],
+    newsroomUrls: ['https://corp.mobile.rakuten.co.jp/english/news/'],
   },
   GOOGL: {
     type: 'qm-simple',
     topics: ['GOOGL', 'GOOG'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /alphabet/i.test(hl) || /\bgoogle\b/i.test(hl) || /\bgoogl\b/i.test(hl),
-    irUrl: 'https://abc.xyz/investor/news/default.aspx',
+    filter: (hl) => /alphabet/i.test(hl) || /\bgoogle\b/i.test(hl) || /\bgoogl\b/i.test(hl) || /google\s*cloud/i.test(hl),
+    gnwRssKeywords: ['Alphabet', 'Google'],
+    irUrl: 'https://abc.xyz/investor/',
+    newsroomUrls: [
+      'https://www.googlecloudpresscorner.com/latest-news',
+      'https://blog.google/press/',
+    ],
   },
 
   // ─── Aerospace & Defense ───
@@ -782,7 +898,9 @@ const TICKER_CONFIG = {
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /planet\s*lab/i.test(hl) || (/\bplanet\b/i.test(hl) && /satellite|earth|imaging|data/i.test(hl)) || /\bpl\b/i.test(hl),
     stockTitanSlugs: ['PL'],
+    gnwRssKeywords: ['Planet Labs'],
     irUrl: 'https://investors.planet.com/news/default.aspx',
+    notifiedApiUrls: ['https://investors.planet.com/rss/news-releases.xml'],
   },
   BA: {
     type: 'qm-simple',
@@ -790,7 +908,9 @@ const TICKER_CONFIG = {
     sources: ['pr newswire', 'business wire'],
     filter: (hl) => /boeing/i.test(hl),
     stockTitanSlugs: ['BA'],
+    gnwRssKeywords: ['Boeing'],
     irUrl: 'https://boeing.mediaroom.com/news-releases-statements',
+    rssUrls: ['https://boeing.mediaroom.com/rss'],
   },
   LMT: {
     type: 'qm-simple',
@@ -798,7 +918,10 @@ const TICKER_CONFIG = {
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /lockheed\s*martin/i.test(hl) || /\blmt\b/i.test(hl),
     stockTitanSlugs: ['LMT'],
+    gnwRssKeywords: ['Lockheed Martin'],
     irUrl: 'https://news.lockheedmartin.com/news-releases',
+    newsroomUrls: ['https://news.lockheedmartin.com/home'],
+    rssUrls: ['https://news.lockheedmartin.com/rss/news-releases.xml'],
   },
 
   // ─── Semiconductors & Telecom Equipment ───
@@ -808,7 +931,9 @@ const TICKER_CONFIG = {
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /qualcomm/i.test(hl) || /\bqcom\b/i.test(hl) || /snapdragon/i.test(hl),
     stockTitanSlugs: ['QCOM'],
+    gnwRssKeywords: ['Qualcomm'],
     irUrl: 'https://investor.qualcomm.com/news-events/press-releases/default.aspx',
+    newsroomUrls: ['https://www.qualcomm.com/news/releases'],
   },
   NOK: {
     type: 'qm-simple',
@@ -818,6 +943,8 @@ const TICKER_CONFIG = {
     stockTitanSlugs: ['NOK'],
     gnwRssKeywords: ['Nokia'],
     irUrl: 'https://www.nokia.com/about-us/investors/news',
+    newsroomUrls: ['https://www.nokgrp.com/en/news/'],
+    rssUrls: ['https://www.nokia.com/rss/press-releases.xml'],
   },
   ERIC: {
     type: 'qm-simple',
@@ -827,6 +954,8 @@ const TICKER_CONFIG = {
     stockTitanSlugs: ['ERIC'],
     gnwRssKeywords: ['Ericsson'],
     irUrl: 'https://www.ericsson.com/en/press-releases',
+    newsroomUrls: ['https://www.ericsson.com/en/newsroom'],
+    rssUrls: ['https://www.ericsson.com/en/rss?type=press-releases'],
   },
   TMUS: {
     type: 'qm-simple',
@@ -835,6 +964,7 @@ const TICKER_CONFIG = {
     filter: (hl) => /t.mobile/i.test(hl) || /\btmus\b/i.test(hl),
     stockTitanSlugs: ['TMUS'],
     irUrl: 'https://investor.t-mobile.com/events-and-presentations/news/default.aspx',
+    newsroomUrls: ['https://www.t-mobile.com/news/stories'],
   },
   NVDA: {
     type: 'qm-simple',
@@ -844,6 +974,8 @@ const TICKER_CONFIG = {
     stockTitanSlugs: ['NVDA'],
     gnwRssKeywords: ['NVIDIA'],
     irUrl: 'https://nvidianews.nvidia.com/news',
+    newsroomUrls: ['https://nvidianews.nvidia.com/news/all'],
+    notifiedApiUrls: ['https://investor.nvidia.com/rss/news-releases.xml'],
   },
   IBM: {
     type: 'qm-simple',
@@ -852,6 +984,8 @@ const TICKER_CONFIG = {
     filter: (hl) => /\bibm\b/i.test(hl),
     stockTitanSlugs: ['IBM'],
     irUrl: 'https://newsroom.ibm.com/announcements',
+    newsroomUrls: ['https://newsroom.ibm.com/press-releases'],
+    rssUrls: ['https://newsroom.ibm.com/rss/news-releases.xml'],
   },
 
   // ─── Bitcoin Mining (additional) ───
@@ -863,6 +997,7 @@ const TICKER_CONFIG = {
     stockTitanSlugs: ['CIFR'],
     gnwRssKeywords: ['Cipher Mining'],
     irUrl: 'https://investors.ciphermining.com/news-events/press-releases',
+    notifiedApiUrls: ['https://investors.ciphermining.com/rss/news-releases.xml'],
   },
   HIVE: {
     type: 'qm-simple',
@@ -904,7 +1039,9 @@ const TICKER_CONFIG = {
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /argo\s*blockchain/i.test(hl) || /\barbk\b/i.test(hl),
     stockTitanSlugs: ['ARBK'],
+    gnwRssKeywords: ['Argo Blockchain'],
     irUrl: 'https://www.argoblockchain.com/investors/news',
+    newsroomUrls: ['https://www.argoblockchain.com/news'],
   },
   BKKT: {
     type: 'qm-simple',
@@ -934,20 +1071,26 @@ async function fetchQmSimple(config) {
   });
   let finalItems = dedupe(filtered);
 
-  // Fallback sources when QM returns too few results
-  if ((config.gnwRssKeywords || config.irUrl || config.stockTitanSlugs || config.notifiedApiUrls) && finalItems.length < 3) {
+  // Always fetch additional sources when configured for comprehensive coverage
+  if (config.gnwRssKeywords || config.irUrl || config.stockTitanSlugs || config.notifiedApiUrls || config.newsroomUrls || config.rssUrls) {
     const fallbackPromises = [];
     if (config.stockTitanSlugs) fallbackPromises.push(fetchStockTitan(config.stockTitanSlugs));
     if (config.notifiedApiUrls) fallbackPromises.push(fetchNotifiedRss(config.notifiedApiUrls));
     if (config.gnwRssKeywords) fallbackPromises.push(fetchGnwRss(config.gnwRssKeywords));
     if (config.irUrl) fallbackPromises.push(fetchIRPage(config.irUrl));
+    if (config.newsroomUrls) {
+      for (const url of config.newsroomUrls) {
+        fallbackPromises.push(fetchNewsroomPage(url));
+      }
+    }
+    if (config.rssUrls) fallbackPromises.push(fetchGenericRss(config.rssUrls));
 
     const results = await Promise.allSettled(fallbackPromises);
     const filterFallback = (items) => items.filter((item) => {
       const hl = (item.headline || '').toLowerCase();
       if (hl.length < 15) return false;
       const src = item._source || '';
-      if (src === 'stocktitan' || src === 'notified-rss' || src === 'ir-scrape' || src === 'gnw-rss' || src === 'gnw-atom') return true;
+      if (src === 'stocktitan' || src === 'notified-rss' || src === 'ir-scrape' || src === 'gnw-rss' || src === 'gnw-atom' || src === 'newsroom-scrape' || src === 'generic-rss') return true;
       return hl.length >= 20 && config.filter(hl);
     });
 
@@ -979,13 +1122,19 @@ async function fetchCrypto(config) {
 
   let finalItems = qmFiltered;
 
-  // Fallback for tickers with extra sources (FRMM)
-  if ((config.stockTitanSlugs || config.gnwRssKeywords || config.notifiedApiUrls || config.irUrl) && finalItems.length < 3) {
+  // Always fetch additional sources when configured for comprehensive coverage
+  if (config.stockTitanSlugs || config.gnwRssKeywords || config.notifiedApiUrls || config.irUrl || config.newsroomUrls || config.rssUrls) {
     const fallbackPromises = [];
     if (config.stockTitanSlugs) fallbackPromises.push(fetchStockTitan(config.stockTitanSlugs));
     if (config.notifiedApiUrls) fallbackPromises.push(fetchNotifiedRss(config.notifiedApiUrls));
     if (config.gnwRssKeywords) fallbackPromises.push(fetchGnwRss(config.gnwRssKeywords));
     if (config.irUrl) fallbackPromises.push(fetchIRPage(config.irUrl));
+    if (config.newsroomUrls) {
+      for (const url of config.newsroomUrls) {
+        fallbackPromises.push(fetchNewsroomPage(url));
+      }
+    }
+    if (config.rssUrls) fallbackPromises.push(fetchGenericRss(config.rssUrls));
 
     const results = await Promise.allSettled(fallbackPromises);
 
@@ -993,7 +1142,7 @@ async function fetchCrypto(config) {
       const hl = (item.headline || '').toLowerCase();
       if (hl.length < 15) return false;
       const src = item._source || '';
-      if (src === 'stocktitan' || src === 'notified-json' || src === 'notified-rss' || src === 'newsfile-company') return true;
+      if (src === 'stocktitan' || src === 'notified-json' || src === 'notified-rss' || src === 'newsfile-company' || src === 'newsroom-scrape' || src === 'generic-rss') return true;
       return hl.length >= 20 && config.filter(hl);
     });
 
@@ -1207,11 +1356,38 @@ async function fetchAttAllNews() {
   } catch (e) { return { items: [], error: e.message }; }
 }
 
+async function fetchAttInvestorNews() {
+  try {
+    const url = 'https://services.att.com/search/v1/newsroom' +
+      '?app-id=attnews&q=*:*&fq=-rejectDoc:true&fq=tags:Investors&rows=200&sort=published_date+desc&wt=json';
+    const res = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Referer': 'https://about.att.com/', 'Origin': 'https://about.att.com',
+        'Accept': 'application/json, text/javascript, */*; q=0.01', 'X-Requested-With': 'XMLHttpRequest',
+      },
+    });
+    if (!res.ok) return { items: [], error: `InvestorNews HTTP ${res.status}` };
+    const json = await res.json();
+    const docs = json?.response?.docs ?? [];
+    const items = docs.map(doc => ({
+      newsid: `investor-${(doc.article_url || doc.id || '').replace(/[^a-z0-9]/gi, '-').slice(-60)}`,
+      datetime: doc.published_date || new Date().toISOString(),
+      source: 'AT&T Investor News',
+      headline: decode(doc.article_header || doc.title || ''),
+      qmsummary: decode(doc.article_description || doc.description || ''),
+      permalink: doc.article_url || (Array.isArray(doc.og_url) ? doc.og_url[0] : doc.og_url) || '',
+      storyurl: doc.article_url || '', _source: 'investor-news',
+    })).filter(i => i.headline);
+    return { items, error: null };
+  } catch (e) { return { items: [], error: e.message }; }
+}
+
 async function fetchAtt() {
-  const [qm, corpPR, edgar, prnDirect, allNews] = await Promise.all([
-    fetchAttQuoteMedia(), fetchAttCorpPR(), fetchAttEdgar(), fetchAttPRNDirect(), fetchAttAllNews(),
+  const [qm, corpPR, edgar, prnDirect, allNews, investorNews] = await Promise.all([
+    fetchAttQuoteMedia(), fetchAttCorpPR(), fetchAttEdgar(), fetchAttPRNDirect(), fetchAttAllNews(), fetchAttInvestorNews(),
   ]);
-  return dedupe([...qm.items, ...prnDirect.items, ...allNews.items, ...corpPR.items, ...edgar.items]);
+  return dedupe([...qm.items, ...prnDirect.items, ...allNews.items, ...investorNews.items, ...corpPR.items, ...edgar.items]);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
