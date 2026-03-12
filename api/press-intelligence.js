@@ -603,8 +603,11 @@ const TICKER_CONFIG = {
     topics: ['AFRM'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /affirm/i.test(hl) || /\bafrm\b/i.test(hl),
-    gnwRssKeywords: ['Affirm Holdings'],
-    irUrl: 'https://investors.affirm.com/news-releases',
+    irUrl: 'https://investors.affirm.com/news-events/all-news',
+    notifiedApiUrls: [
+      'https://investors.affirm.com/rss/news-releases.xml',
+      'https://investors.affirm.com/rss/press-releases.xml',
+    ],
   },
   SEZL: {
     type: 'qm-simple',
@@ -614,11 +617,10 @@ const TICKER_CONFIG = {
   },
   SQ: {
     type: 'qm-simple',
-    topics: ['SQ'],
+    topics: ['SQ', 'XYZ'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /\bblock\b/i.test(hl) || /\bsquare\b/i.test(hl) || /cash\s*app/i.test(hl) || /\bsq\b/i.test(hl),
-    gnwRssKeywords: ['Block Inc'],
-    irUrl: 'https://investors.block.xyz/news/news-details',
+    filter: (hl) => /\bblock\b/i.test(hl) || /\bsquare\b/i.test(hl) || /cash\s*app/i.test(hl) || /\bsq\b/i.test(hl) || /\bxyz\b/i.test(hl),
+    irUrl: 'https://investors.block.xyz/investor-news/default.aspx',
   },
   PYPL: {
     type: 'qm-simple',
@@ -631,8 +633,8 @@ const TICKER_CONFIG = {
     topics: ['UPST'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /upstart/i.test(hl) || /\bupst\b/i.test(hl),
-    gnwRssKeywords: ['Upstart Holdings'],
-    irUrl: 'https://ir.upstart.com/news-releases',
+    irUrl: 'https://ir.upstart.com/news-and-events/news-releases',
+    notifiedApiUrls: ['https://ir.upstart.com/rss/news-releases.xml'],
   },
   HOOD: {
     type: 'qm-simple',
@@ -640,7 +642,8 @@ const TICKER_CONFIG = {
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /robinhood/i.test(hl) || /\bhood\b/i.test(hl),
     gnwRssKeywords: ['Robinhood Markets'],
-    irUrl: 'https://investors.robinhood.com/news/press-releases',
+    irUrl: 'https://investors.robinhood.com/press-releases',
+    notifiedApiUrls: ['https://investors.robinhood.com/rss/news-releases.xml'],
   },
 
   // ─── Digital Assets (new) ───
@@ -648,9 +651,8 @@ const TICKER_CONFIG = {
     type: 'qm-simple',
     topics: ['GLXY'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /galaxy\s*digital/i.test(hl) || /\bglxy\b/i.test(hl),
-    gnwRssKeywords: ['Galaxy Digital'],
-    irUrl: 'https://investor.galaxydigital.io/news-events/press-releases',
+    filter: (hl) => /galaxy\s*digital/i.test(hl) || /\bglxy\b/i.test(hl) || /galaxy\s*(?:asset|fund)/i.test(hl),
+    irUrl: 'https://investor.galaxy.com/',
   },
   BITF: {
     type: 'qm-simple',
@@ -658,7 +660,8 @@ const TICKER_CONFIG = {
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /bitfarms/i.test(hl) || /\bbitf\b/i.test(hl),
     gnwRssKeywords: ['Bitfarms'],
-    irUrl: 'https://bitfarms.com/investors/news-events',
+    irUrl: 'https://investor.bitfarms.com/news-events/press-releases',
+    notifiedApiUrls: ['https://investor.bitfarms.com/rss/news-releases.xml'],
   },
 
   // ─── Financial Services ───
@@ -667,8 +670,7 @@ const TICKER_CONFIG = {
     topics: ['BLK'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /blackrock/i.test(hl) || /\bblk\b/i.test(hl),
-    gnwRssKeywords: ['BlackRock'],
-    irUrl: 'https://ir.blackrock.com/news-and-events/press-releases',
+    irUrl: 'https://ir.blackrock.com/news-and-events/press-releases/default.aspx',
   },
   HSBC: {
     type: 'qm-simple',
@@ -681,7 +683,6 @@ const TICKER_CONFIG = {
     topics: ['C'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /citigroup/i.test(hl) || /\bciti\b/i.test(hl) || /citibank/i.test(hl),
-    gnwRssKeywords: ['Citigroup'],
     irUrl: 'https://www.citigroup.com/global/news/press-release',
   },
   CME: {
@@ -721,8 +722,7 @@ const TICKER_CONFIG = {
     topics: ['BCE'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /\bbce\b/i.test(hl) || (/\bbell\b/i.test(hl) && /canada|media|wireless/i.test(hl)),
-    gnwRssKeywords: ['BCE Inc'],
-    irUrl: 'https://bce.ca/news-and-media/releases',
+    irUrl: 'https://www.bce.ca/news-and-media/newsroom',
   },
 
   // ─── Infrastructure & Tech ───
@@ -731,24 +731,22 @@ const TICKER_CONFIG = {
     topics: ['AMT'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /american\s*tower/i.test(hl) || /\bamt\b/i.test(hl),
-    gnwRssKeywords: ['American Tower'],
-    irUrl: 'https://www.americantower.com/investor-relations/news-and-events/press-releases',
+    irUrl: 'https://americantower.gcs-web.com/press-releases',
+    notifiedApiUrls: ['https://americantower.gcs-web.com/rss/news-releases.xml'],
   },
   RKUNF: {
     type: 'qm-simple',
     topics: ['RKUNF'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /rakuten/i.test(hl) || /\brkunf\b/i.test(hl),
-    gnwRssKeywords: ['Rakuten Group', 'Rakuten Mobile'],
-    irUrl: 'https://global.rakuten.com/corp/news/',
+    irUrl: 'https://global.rakuten.com/corp/news/press/',
   },
   GOOGL: {
     type: 'qm-simple',
     topics: ['GOOGL', 'GOOG'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /alphabet/i.test(hl) || /\bgoogle\b/i.test(hl) || /\bgoogl\b/i.test(hl),
-    gnwRssKeywords: ['Alphabet Inc'],
-    irUrl: 'https://abc.xyz/investor/',
+    irUrl: 'https://abc.xyz/investor/news/default.aspx',
   },
 
   // ─── Complex multi-source tickers ───
@@ -756,8 +754,7 @@ const TICKER_CONFIG = {
   AMZLEO: { type: 'amazon-leo' },
   LYNK: {
     type: 'lynk',
-    gnwRssKeywords: ['Lynk Global'],
-    irUrl: 'https://lynk.world/news/',
+    irUrl: 'https://lynk.world/press-releases/',
   },
 };
 
@@ -1227,16 +1224,13 @@ export default async function handler(req, res) {
         break;
       case 'lynk': {
         items = await fetchLynk();
-        // Fallback to GNW/IR if WordPress returns empty
-        if (items.length < 3 && (config.gnwRssKeywords || config.irUrl)) {
-          const fallbackPromises = [];
-          if (config.gnwRssKeywords) fallbackPromises.push(fetchGnwRss(config.gnwRssKeywords));
-          if (config.irUrl) fallbackPromises.push(fetchIRPage(config.irUrl));
-          const results = await Promise.allSettled(fallbackPromises);
-          for (const r of results) {
-            if (r.status === 'fulfilled') items.push(...r.value);
-          }
-          items = dedupe(items);
+        // Fallback to IR page scrape if WordPress returns empty
+        if (items.length < 3 && config.irUrl) {
+          try {
+            const irItems = await fetchIRPage(config.irUrl);
+            items.push(...irItems);
+            items = dedupe(items);
+          } catch { /* IR fallback failed */ }
         }
         break;
       }
