@@ -773,10 +773,10 @@ const TICKER_CONFIG = {
   BA: {
     type: 'qm-simple',
     topics: ['BA'],
-    sources: OFFICIAL_SOURCES,
-    filter: (hl) => /boeing/i.test(hl) || /\bba\b/i.test(hl),
+    sources: ['pr newswire', 'business wire'],
+    filter: (hl) => /boeing/i.test(hl),
     stockTitanSlugs: ['BA'],
-    irUrl: 'https://investors.boeing.com/investors/news/default.aspx',
+    irUrl: 'https://boeing.mediaroom.com/news-releases-statements',
   },
   LMT: {
     type: 'qm-simple',
