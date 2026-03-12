@@ -85,7 +85,7 @@ async function persistItems(ticker, items) {
 
   const validItems = items.filter(item => {
     const hlHash = normalizeHl(item.headline);
-    return hlHash && hlHash.length >= 4;
+    return hlHash && hlHash.length >= 4 && !isJunkHeadline(item.headline);
   });
   if (validItems.length === 0) return 0;
 
@@ -138,7 +138,7 @@ async function loadFromDB(ticker) {
       permalink: r.permalink || '',
       storyurl: r.storyurl || '',
       _source: r.internal_source || 'db',
-    }));
+    })).filter(item => !isJunkHeadline(item.headline));
   } catch (err) {
     console.error(`press-intelligence DB load error (${ticker}):`, err.message);
     return [];
@@ -150,6 +150,19 @@ const BROWSER_HEADERS = {
   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
   'Accept-Language': 'en-US,en;q=0.9',
 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  JUNK HEADLINE FILTER — blocks navigation/category links from all sources
+// ═══════════════════════════════════════════════════════════════════════════
+
+const JUNK_HEADLINE_RE = /^(stock news live|merger\s*&\s*acquisitions?|clinical trials?|market research|ipo\b|insider trad|analyst rat|stock buyback|dividend\b|sec filing|media room|investor relations|press room|newsroom|contact us|about us|home|back to|all news|all press|view all|see more|read more|load more)/i;
+
+function isJunkHeadline(text) {
+  if (!text) return true;
+  if (JUNK_HEADLINE_RE.test(text.trim())) return true;
+  if (text.trim().split(/\s+/).length < 4) return true; // real headlines have 4+ words
+  return false;
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  SHARED UTILITIES
@@ -364,10 +377,7 @@ async function fetchStockTitan(slugs) {
         const href = m[1];
         const text = decode(strip(m[2]));
         if (!text || text.length < 15) continue;
-        if (/view all|see more|read more|load more/i.test(text)) continue;
-        // Filter out StockTitan navigation/category links
-        if (/^(stock news live|merger|clinical trial|market research|ipo|insider trad|analyst rat|stock buyback|dividend|sec filing|earning)/i.test(text)) continue;
-        if (text.split(/\s+/).length < 4) continue; // real headlines have 4+ words
+        if (isJunkHeadline(text)) continue;
         const fullUrl = href.startsWith('http') ? href : `https://www.stocktitan.net${href}`;
         const datetime = extractDateFromContext(html, m.index);
         items.push({
@@ -435,9 +445,7 @@ async function fetchIRPage(irUrl) {
       const href = m[1];
       const text = decode(strip(m[2]));
       if (!text || text.length < 20) continue;
-      // Filter out navigation/menu links
-      if (/^(investor relations|media room|press room|newsroom|contact|about|home|back to|all news|all press)/i.test(text)) continue;
-      if (text.split(/\s+/).length < 4) continue; // real headlines have 4+ words
+      if (isJunkHeadline(text)) continue;
       const url = href.startsWith('http') ? href : `${origin}${href.startsWith('/') ? '' : '/'}${href}`;
       const datetime = extractDateFromContext(html, m.index);
       items.push({
@@ -1291,6 +1299,16 @@ export default async function handler(req, res) {
 
   // Ensure DB table exists before any DB operations
   await ensureTable();
+
+  // Clean up junk headlines from DB (one-time purge of nav/category links)
+  try {
+    const sql = getSQL();
+    if (sql) {
+      await sql`DELETE FROM press_releases WHERE
+        headline ~* '^(stock news live|merger\\s*&\\s*acquisitions?|clinical trials?|market research|media room|investor relations|press room|newsroom)' OR
+        array_length(string_to_array(trim(headline), ' '), 1) < 4`;
+    }
+  } catch { /* cleanup is best-effort */ }
 
   // ── MODE: DB — serve from database only (page load) ──
   if (mode === 'db') {
