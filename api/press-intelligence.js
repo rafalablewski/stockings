@@ -967,7 +967,7 @@ const TICKER_CONFIG = {
     type: 'qm-simple',
     topics: ['NOK'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /nokia/i.test(hl) || (/\bnok\b/i.test(hl) && /network|5g|telecom|mobile/i.test(hl)),
+    filter: (hl) => /nokia/i.test(hl) || /\bnok\b/i.test(hl),
     stockTitanSlugs: ['NOK'],
     gnwRssKeywords: ['Nokia'],
     irUrl: 'https://www.nokia.com/about-us/investors/news',
