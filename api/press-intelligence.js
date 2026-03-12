@@ -1,10 +1,12 @@
 // api/press-intelligence.js
-// Unified press-release proxy for all 38 tickers
+// Unified press-release proxy for all tickers
 // Usage: /api/press-intelligence?ticker=ASTS
 // Supported: ASTS, BMNR, IRDM, GSAT, VZ, T, AMZLEO,
 //            MSTR, MARA, RIOT, CLSK, FRMM, COIN, HUT, IREN, NBIS, VSAT, RKLB, SATS, LUNR,
 //            MA, V, SOFI, AXP, AFRM, SEZL, SQ, PYPL, UPST, HOOD, GLXY, BITF,
-//            BLK, HSBC, C, CME, ICE, VOD, ORAN, TU, BCE, AMT, RKUNF, GOOGL
+//            BLK, HSBC, C, CME, ICE, VOD, ORAN, TU, BCE, AMT, RKUNF, GOOGL,
+//            PL, BA, LMT, QCOM, NOK, ERIC, TMUS, NVDA, IBM,
+//            CIFR, HIVE, CORZ, APLD, CAN, ARBK, BKKT
 
 const { neon } = require('@neondatabase/serverless');
 
@@ -510,6 +512,7 @@ const TICKER_CONFIG = {
     topics: ['LUNR'],
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
     filter: (hl) => /intuitive\s*machines|lunr/i.test(hl),
+    irUrl: 'https://investors.intuitivemachines.com/news-releases',
   },
 
   MSTR: {
@@ -547,6 +550,8 @@ const TICKER_CONFIG = {
     topics: ['IREN'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /\biren\b|iris\s*energy/i.test(hl),
+    irUrl: 'https://irisenergy.gcs-web.com/news-releases',
+    notifiedApiUrls: ['https://irisenergy.gcs-web.com/rss/news-releases.xml'],
   },
   NBIS: {
     type: 'qm-simple',
@@ -754,6 +759,147 @@ const TICKER_CONFIG = {
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /alphabet/i.test(hl) || /\bgoogle\b/i.test(hl) || /\bgoogl\b/i.test(hl),
     irUrl: 'https://abc.xyz/investor/news/default.aspx',
+  },
+
+  // ─── Aerospace & Defense ───
+  PL: {
+    type: 'qm-simple',
+    topics: ['PL'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /planet\s*lab/i.test(hl) || (/\bplanet\b/i.test(hl) && /satellite|earth|imaging|data/i.test(hl)) || /\bpl\b/i.test(hl),
+    stockTitanSlugs: ['PL'],
+    irUrl: 'https://investors.planet.com/news/default.aspx',
+  },
+  BA: {
+    type: 'qm-simple',
+    topics: ['BA'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /boeing/i.test(hl) || /\bba\b/i.test(hl),
+    stockTitanSlugs: ['BA'],
+    irUrl: 'https://investors.boeing.com/investors/news/default.aspx',
+  },
+  LMT: {
+    type: 'qm-simple',
+    topics: ['LMT'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /lockheed\s*martin/i.test(hl) || /\blmt\b/i.test(hl),
+    stockTitanSlugs: ['LMT'],
+    irUrl: 'https://news.lockheedmartin.com/news-releases',
+  },
+
+  // ─── Semiconductors & Telecom Equipment ───
+  QCOM: {
+    type: 'qm-simple',
+    topics: ['QCOM'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /qualcomm/i.test(hl) || /\bqcom\b/i.test(hl) || /snapdragon/i.test(hl),
+    stockTitanSlugs: ['QCOM'],
+    irUrl: 'https://investor.qualcomm.com/news-events/press-releases/default.aspx',
+  },
+  NOK: {
+    type: 'qm-simple',
+    topics: ['NOK'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /nokia/i.test(hl) || /\bnok\b/i.test(hl),
+    stockTitanSlugs: ['NOK'],
+    gnwRssKeywords: ['Nokia'],
+    irUrl: 'https://www.nokia.com/about-us/investors/news',
+  },
+  ERIC: {
+    type: 'qm-simple',
+    topics: ['ERIC'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /ericsson/i.test(hl) || /\beric\b/i.test(hl),
+    stockTitanSlugs: ['ERIC'],
+    gnwRssKeywords: ['Ericsson'],
+    irUrl: 'https://www.ericsson.com/en/press-releases',
+  },
+  TMUS: {
+    type: 'qm-simple',
+    topics: ['TMUS'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /t.mobile/i.test(hl) || /\btmus\b/i.test(hl),
+    stockTitanSlugs: ['TMUS'],
+    irUrl: 'https://investor.t-mobile.com/events-and-presentations/news/default.aspx',
+  },
+  NVDA: {
+    type: 'qm-simple',
+    topics: ['NVDA'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /nvidia/i.test(hl) || /\bnvda\b/i.test(hl),
+    stockTitanSlugs: ['NVDA'],
+    gnwRssKeywords: ['NVIDIA'],
+    irUrl: 'https://nvidianews.nvidia.com/news',
+  },
+  IBM: {
+    type: 'qm-simple',
+    topics: ['IBM'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /\bibm\b/i.test(hl),
+    stockTitanSlugs: ['IBM'],
+    irUrl: 'https://newsroom.ibm.com/announcements',
+  },
+
+  // ─── Bitcoin Mining (additional) ───
+  CIFR: {
+    type: 'qm-simple',
+    topics: ['CIFR'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /cipher\s*mining/i.test(hl) || /\bcifr\b/i.test(hl),
+    stockTitanSlugs: ['CIFR'],
+    gnwRssKeywords: ['Cipher Mining'],
+    irUrl: 'https://investors.ciphermining.com/news-events/press-releases',
+  },
+  HIVE: {
+    type: 'qm-simple',
+    topics: ['HIVE'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /hive\s*digital/i.test(hl) || /\bhive\b/i.test(hl),
+    stockTitanSlugs: ['HIVE'],
+    gnwRssKeywords: ['HIVE Digital'],
+    irUrl: 'https://www.hivedigitaltechnologies.com/news',
+  },
+  CORZ: {
+    type: 'qm-simple',
+    topics: ['CORZ'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /core\s*scientific/i.test(hl) || /\bcorz\b/i.test(hl),
+    stockTitanSlugs: ['CORZ'],
+    irUrl: 'https://investors.corescientific.com/news-events/press-releases',
+  },
+  APLD: {
+    type: 'qm-simple',
+    topics: ['APLD'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /applied\s*digital/i.test(hl) || /\bapld\b/i.test(hl),
+    stockTitanSlugs: ['APLD'],
+    gnwRssKeywords: ['Applied Digital'],
+    irUrl: 'https://ir.applieddigital.com/news-events/press-releases',
+  },
+  CAN: {
+    type: 'qm-simple',
+    topics: ['CAN'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /canaan/i.test(hl) || (/\bcan\b/i.test(hl) && /mining|bitcoin|miner|asic/i.test(hl)),
+    stockTitanSlugs: ['CAN'],
+    irUrl: 'https://investor.canaaninc.com/news-releases',
+  },
+  ARBK: {
+    type: 'qm-simple',
+    topics: ['ARBK'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /argo\s*blockchain/i.test(hl) || /\barbk\b/i.test(hl),
+    stockTitanSlugs: ['ARBK'],
+    irUrl: 'https://www.argoblockchain.com/investors/news',
+  },
+  BKKT: {
+    type: 'qm-simple',
+    topics: ['BKKT'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /bakkt/i.test(hl) || /\bbkkt\b/i.test(hl),
+    stockTitanSlugs: ['BKKT'],
+    gnwRssKeywords: ['Bakkt'],
+    irUrl: 'https://investors.bakkt.com/news-and-events/news-releases',
   },
 
   // ─── Complex multi-source tickers ───

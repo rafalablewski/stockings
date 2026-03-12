@@ -253,6 +253,102 @@ export const stocks: Record<string, StockMeta> = {
     sector: 'Financial Services',
     description: 'Operator of global exchanges and clearing houses including NYSE and ICE Futures',
   },
+  PL: {
+    ticker: 'PL',
+    name: 'Planet Labs',
+    sector: 'Space & Satellite',
+    description: 'Earth imaging company operating the largest constellation of Earth observation satellites',
+  },
+  BA: {
+    ticker: 'BA',
+    name: 'Boeing',
+    sector: 'Aerospace & Defense',
+    description: 'Global aerospace company manufacturing commercial jets, defense systems, and space vehicles',
+  },
+  LMT: {
+    ticker: 'LMT',
+    name: 'Lockheed Martin',
+    sector: 'Aerospace & Defense',
+    description: 'World\'s largest defense contractor producing F-35, missiles, and space systems',
+  },
+  QCOM: {
+    ticker: 'QCOM',
+    name: 'Qualcomm',
+    sector: 'Semiconductors',
+    description: 'Leading designer of wireless technology and Snapdragon mobile processors',
+  },
+  NOK: {
+    ticker: 'NOK',
+    name: 'Nokia',
+    sector: 'Telecom Equipment',
+    description: 'Finnish telecom equipment maker providing 5G network infrastructure and IP licensing',
+  },
+  ERIC: {
+    ticker: 'ERIC',
+    name: 'Ericsson',
+    sector: 'Telecom Equipment',
+    description: 'Swedish telecom equipment company providing 5G, cloud RAN, and managed network services',
+  },
+  TMUS: {
+    ticker: 'TMUS',
+    name: 'T-Mobile US',
+    sector: 'Telecom',
+    description: 'Third-largest US wireless carrier with leading 5G mid-band spectrum deployment',
+  },
+  NVDA: {
+    ticker: 'NVDA',
+    name: 'NVIDIA',
+    sector: 'Semiconductors',
+    description: 'Leading GPU and AI chip designer powering data centers, gaming, and autonomous vehicles',
+  },
+  IBM: {
+    ticker: 'IBM',
+    name: 'IBM',
+    sector: 'Technology',
+    description: 'Enterprise technology company providing hybrid cloud, AI (watsonx), and consulting services',
+  },
+  CIFR: {
+    ticker: 'CIFR',
+    name: 'Cipher Mining',
+    sector: 'Digital Assets',
+    description: 'Bitcoin mining company focused on US-based sustainable data center operations',
+  },
+  HIVE: {
+    ticker: 'HIVE',
+    name: 'HIVE Digital',
+    sector: 'Digital Assets',
+    description: 'Digital asset mining company operating green-energy data centers for Bitcoin and HPC',
+  },
+  CORZ: {
+    ticker: 'CORZ',
+    name: 'Core Scientific',
+    sector: 'Digital Assets',
+    description: 'Bitcoin mining and AI/HPC hosting company operating large-scale data center infrastructure',
+  },
+  APLD: {
+    ticker: 'APLD',
+    name: 'Applied Digital',
+    sector: 'Digital Assets',
+    description: 'Next-generation digital infrastructure company providing HPC, AI cloud, and mining services',
+  },
+  CAN: {
+    ticker: 'CAN',
+    name: 'Canaan',
+    sector: 'Digital Assets',
+    description: 'Chinese ASIC chip designer and manufacturer of Bitcoin mining hardware (Avalon series)',
+  },
+  ARBK: {
+    ticker: 'ARBK',
+    name: 'Argo Blockchain',
+    sector: 'Digital Assets',
+    description: 'UK-based Bitcoin mining company operating data centers in North America',
+  },
+  BKKT: {
+    ticker: 'BKKT',
+    name: 'Bakkt',
+    sector: 'Digital Assets',
+    description: 'Digital asset marketplace providing crypto custody, trading, and loyalty solutions',
+  },
 };
 
 export const stockList = Object.values(stocks);
