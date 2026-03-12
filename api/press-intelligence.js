@@ -914,7 +914,7 @@ const TICKER_CONFIG = {
       'https://www.hsbc.com/news-and-views/news/media-releases',
       'https://www.hsbc.com/news-and-views/news',
     ],
-    rssUrls: ['https://www.hsbc.com/xml/news/news.rss'],
+    rssUrls: ['https://www.hsbc.com/rss-feed/all-news'],
   },
   C: {
     grade: 'C',
