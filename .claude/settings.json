@@ -1,1 +1,18 @@
-{"hooks":{"PreToolUse":[],"PostToolUse":[]},"permissions":{"allow":["Bash(npx eslint *)","Bash(npx tsc --noEmit *)","Bash(npm run lint *)","Bash(npm run build *)"]},"customInstructions":"When reviewing or modifying code in this project, follow the code review guidelines in .claude/plugins/code-review/review-rules.json. Run lint and type checks after making changes to TypeScript/TSX files (or set CLAUDE_RUN_LINT=1 / CLAUDE_FULL_TYPECHECK=1 to run them automatically on each edit)."}
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx eslint *)",
+      "Bash(npx tsc --noEmit *)",
+      "Bash(npm run lint *)",
+      "Bash(npm run build *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [],
+    "PostToolUse": []
+  },
+  "customInstructions": "When reviewing or modifying code in this project, follow the code review guidelines in .claude/plugins/code-review/review-rules.json. Run lint and type checks after making changes to TypeScript/TSX files (or set CLAUDE_RUN_LINT=1 / CLAUDE_FULL_TYPECHECK=1 to run them automatically on each edit).",
+  "enabledPlugins": {
+    "firecrawl@claude-plugins-official": true
+  }
+}
