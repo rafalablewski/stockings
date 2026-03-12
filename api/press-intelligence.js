@@ -1604,16 +1604,19 @@ export default async function handler(req, res) {
       await sql`DELETE FROM press_releases WHERE
         ticker = 'NOK' AND
         headline ~* '(rubber|hydrogen energy|workplace|workshop|seal|gasket|nok group|carbon.neutral|global one nok)'`;
-      // Purge cross-contaminated entries (e.g. NVDA articles stored under wrong tickers)
-      await sql`DELETE FROM press_releases WHERE
-        headline ~* '\\bnvidia\\b' AND ticker != 'NVDA' AND internal_source IN ('newsroom-scrape', 'ir-scrape', 'gnw-rss', 'gnw-atom', 'generic-rss')`;
     }
   } catch { /* cleanup is best-effort */ }
+
+  // Filter DB items through the ticker's headline filter to prevent cross-contamination
+  const applyTickerFilter = (items) => {
+    if (!config.filter) return items; // T and AMZLEO have no filter
+    return items.filter(item => config.filter((item.headline || '').toLowerCase()));
+  };
 
   // ── MODE: DB — serve from database only (page load) ──
   if (mode === 'db') {
     try {
-      const dbItems = await loadFromDB(ticker);
+      const dbItems = applyTickerFilter(await loadFromDB(ticker));
       for (const item of dbItems) item._inDb = true;
       const body = wrapInNews ? { news: dbItems } : dbItems;
       res.setHeader('Content-Type', 'application/json');
@@ -1654,7 +1657,7 @@ export default async function handler(req, res) {
     let dbHashes = new Set();
     let dbItems = [];
     try {
-      dbItems = await loadFromDB(ticker);
+      dbItems = applyTickerFilter(await loadFromDB(ticker));
       for (const d of dbItems) dbHashes.add(normalizeHl(d.headline));
       console.log(`press-intelligence refresh (${ticker}) [grade=${config.grade}]: ${dbItems.length} existing DB items, ${items.length} upstream items`);
     } catch (dbErr) {
@@ -1688,7 +1691,7 @@ export default async function handler(req, res) {
   } catch (err) {
     // If upstream fetch failed entirely, try serving from database
     try {
-      const dbItems = await loadFromDB(ticker);
+      const dbItems = applyTickerFilter(await loadFromDB(ticker));
       if (dbItems.length > 0) {
         for (const item of dbItems) item._inDb = true;
         const body = wrapInNews ? { news: dbItems } : dbItems;
