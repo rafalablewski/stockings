@@ -129,7 +129,7 @@ async function loadFromDB(ticker) {
       FROM press_releases
       WHERE ticker = ${ticker}
       ORDER BY datetime DESC
-      LIMIT 1000
+      LIMIT 5000
     `;
     console.log(`press-intelligence loadFromDB(${ticker}): ${rows.length} rows`);
     return rows.map(r => ({
