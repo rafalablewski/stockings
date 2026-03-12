@@ -128,6 +128,66 @@
   color: var(--text2);
 }
 
+/* ── Refresh Log ── */
+.pi-refresh-log {
+  margin: 8px 0 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(0,0,0,0.3);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 11px;
+  overflow: hidden;
+}
+
+.pi-refresh-log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid var(--border);
+}
+
+.pi-refresh-log-title {
+  color: var(--text2);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.pi-refresh-log-close {
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.pi-refresh-log-close:hover {
+  color: var(--text);
+}
+
+.pi-refresh-log-body {
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 6px 12px;
+}
+
+.pi-refresh-log-entry {
+  color: var(--text3);
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.pi-refresh-log-entry.pi-log-success {
+  color: #4ade80;
+}
+
+.pi-refresh-log-entry.pi-log-error {
+  color: #f87171;
+}
+
 /* ── KPI Strip ── */
 .pi-kpi-strip {
   display: flex;

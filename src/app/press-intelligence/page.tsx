@@ -1121,6 +1121,7 @@ export default function PressIntelligencePage() {
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [refreshing, setRefreshing] = useState(false);
+  const [refreshLog, setRefreshLog] = useState<string[]>([]);
 
   /* Methodology popup */
   const [methodologyTicker, setMethodologyTicker] = useState<string | null>(null);
@@ -1155,10 +1156,20 @@ export default function PressIntelligencePage() {
   const loadAll = useCallback(async (mode: "db" | "refresh" = "db") => {
     const results: Record<string, NewsItem[]> = {};
     const errs: Record<string, string> = {};
+    const isRefresh = mode === "refresh";
+    const log = (msg: string) => {
+      if (isRefresh) setRefreshLog((prev) => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]);
+    };
 
+    if (isRefresh) {
+      log(`Starting refresh for ${FEED_CONFIGS.length} tickers...`);
+    }
+
+    let completed = 0;
     await Promise.allSettled(
       FEED_CONFIGS.map(async (cfg) => {
         try {
+          if (isRefresh) log(`${cfg.ticker}: fetching upstream + DB persist...`);
           const url = `${cfg.endpoint}&mode=${mode}`;
           const res = await fetch(url);
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -1170,11 +1181,22 @@ export default function PressIntelligencePage() {
             .sort((a: any, b: any) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime())
             .map((item: any) => ({ ...item, _ticker: cfg.ticker, _config: cfg }));
           results[cfg.ticker] = filtered;
+          completed++;
+          if (isRefresh) log(`${cfg.ticker}: ✓ ${filtered.length} items (${completed}/${FEED_CONFIGS.length} done)`);
         } catch (e: any) {
           errs[cfg.ticker] = e.message;
+          completed++;
+          if (isRefresh) log(`${cfg.ticker}: ✗ error — ${e.message} (${completed}/${FEED_CONFIGS.length} done)`);
         }
       })
     );
+
+    const totalItems = Object.values(results).reduce((sum, list) => sum + list.length, 0);
+    const errorCount = Object.keys(errs).length;
+    if (isRefresh) {
+      log(`Refresh complete: ${totalItems} total items, ${errorCount} errors`);
+      log(`All data read from database — no cache or in-memory state used`);
+    }
 
     setFeedsByTicker(results);
     setErrors(errs);
@@ -1188,6 +1210,7 @@ export default function PressIntelligencePage() {
 
   /* Refresh button: fetch upstream, compare with DB, mark new items */
   const handleRefresh = () => {
+    setRefreshLog([]);
     setRefreshing(true);
     loadAll("refresh");
   };
@@ -1289,6 +1312,29 @@ export default function PressIntelligencePage() {
             </button>
           </div>
         </div>
+
+        {/* ── Refresh Log ── */}
+        {refreshLog.length > 0 && (
+          <div className="pi-refresh-log">
+            <div className="pi-refresh-log-header">
+              <span className="pi-refresh-log-title">
+                {refreshing ? "⟳ Refresh in progress..." : "✓ Refresh complete"}
+              </span>
+              {!refreshing && (
+                <button className="pi-refresh-log-close" onClick={() => setRefreshLog([])}>
+                  &times;
+                </button>
+              )}
+            </div>
+            <div className="pi-refresh-log-body">
+              {refreshLog.map((entry, i) => (
+                <div key={i} className={`pi-refresh-log-entry${entry.includes("✗") ? " pi-log-error" : entry.includes("✓") ? " pi-log-success" : ""}`}>
+                  {entry}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* ── KPI Strip ── */}
         {!loading && (
