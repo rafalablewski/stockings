@@ -597,7 +597,7 @@ const TICKER_CONFIG = {
     type: 'qm-simple',
     topics: ['MA'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /mastercard/i.test(hl) || /\bma\b/i.test(hl),
+    filter: (hl) => /mastercard/i.test(hl) || (/\bma\b/i.test(hl) && /payment|transaction|card|network/i.test(hl)),
   },
   V: {
     type: 'qm-simple',
@@ -639,7 +639,7 @@ const TICKER_CONFIG = {
     type: 'qm-simple',
     topics: ['SQ', 'XYZ'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /\bblock\b/i.test(hl) || /\bsquare\b/i.test(hl) || /cash\s*app/i.test(hl) || /\bsq\b/i.test(hl) || /\bxyz\b/i.test(hl),
+    filter: (hl) => /block,?\s*inc/i.test(hl) || /\bsquare\b/i.test(hl) || /cash\s*app/i.test(hl) || /\bsq\b/i.test(hl) || /\bxyz\b/i.test(hl),
     stockTitanSlugs: ['XYZ', 'SQ'],
     irUrl: 'https://investors.block.xyz/investor-news/default.aspx',
   },
@@ -719,7 +719,7 @@ const TICKER_CONFIG = {
     type: 'qm-simple',
     topics: ['ICE'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /intercontinental\s*exchange/i.test(hl) || /\bice\b/i.test(hl) || /\bnyse\b/i.test(hl),
+    filter: (hl) => /intercontinental\s*exchange/i.test(hl) || /\bnyse\b/i.test(hl) || (/\bice\b/i.test(hl) && /exchange|futures|data|mortgage|clearing|nyse/i.test(hl)),
   },
 
   // ─── Telecom (new) ───
