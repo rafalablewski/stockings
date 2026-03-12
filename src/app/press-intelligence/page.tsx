@@ -212,23 +212,6 @@ const FEED_CONFIGS: FeedConfig[] = [
     },
   },
   {
-    ticker: "LYNK",
-    endpoint: "/api/press-intelligence?ticker=LYNK",
-    accent: "teal",
-    color: "#2DD4BF",
-    colorDim: "rgba(45,212,191,0.15)",
-    sourceFilter: () => true,
-    headlineFilter: () => true,
-    parseResponse: (json: any) => json?.news || [],
-    categories: {
-      Satellite: (h) => /satellite|leo|orbit|launch|space|constellation|cell tower/i.test(h),
-      Connectivity: (h) => /connect|broadband|coverage|direct.to.cell|d2d|cellular|network/i.test(h),
-      Partnerships: (h) => /partner|agreement|contract|carrier|telco|operator|government|mno/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|funding|raise/i.test(h),
-      "Media & Opinion": (h) => /podcast|video|op.ed|interview|panel|keynote|conference/i.test(h),
-    },
-  },
-  {
     ticker: "MSTR",
     endpoint: "/api/press-intelligence?ticker=MSTR",
     accent: "amber",

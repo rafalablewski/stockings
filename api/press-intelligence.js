@@ -1,7 +1,7 @@
 // api/press-intelligence.js
 // Unified press-release proxy for all 38 tickers
 // Usage: /api/press-intelligence?ticker=ASTS
-// Supported: ASTS, BMNR, IRDM, GSAT, VZ, T, AMZLEO, LYNK,
+// Supported: ASTS, BMNR, IRDM, GSAT, VZ, T, AMZLEO,
 //            MSTR, MARA, RIOT, CLSK, FRMM, COIN, HUT, IREN, NBIS, VSAT, RKLB, SATS, LUNR,
 //            MA, V, SOFI, AXP, AFRM, SEZL, SQ, PYPL, UPST, HOOD, GLXY, BITF,
 //            BLK, HSBC, C, CME, ICE, VOD, ORAN, TU, BCE, AMT, RKUNF, GOOGL
@@ -759,11 +759,6 @@ const TICKER_CONFIG = {
   // ─── Complex multi-source tickers ───
   T: { type: 'att' },
   AMZLEO: { type: 'amazon-leo' },
-  LYNK: {
-    type: 'lynk',
-    stockTitanSlugs: ['SLAM'],
-    irUrl: 'https://lynk.world/press-releases/',
-  },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1121,55 +1116,6 @@ async function fetchAmazonLeo() {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  LYNK GLOBAL (LYNK) — WordPress REST API
-// ═══════════════════════════════════════════════════════════════════════════
-
-const LYNK_HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-  'Accept': 'application/json',
-};
-
-async function fetchLynkPosts(page = 1) {
-  const url = `https://lynk.world/wp-json/wp/v2/posts?per_page=100&page=${page}&_fields=id,title,link,date,excerpt,categories,tags&orderby=date&order=desc`;
-  try {
-    const res = await fetch(url, { headers: LYNK_HEADERS });
-    const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1');
-    if (!res.ok) return { posts: [], totalPages: 0, error: `HTTP ${res.status}` };
-    const posts = await res.json();
-    return { posts, totalPages, error: null };
-  } catch (e) {
-    return { posts: [], totalPages: 0, error: e.message };
-  }
-}
-
-async function fetchLynk() {
-  const first = await fetchLynkPosts(1);
-  if (first.error) return [];
-  let all = [...first.posts];
-  if (first.totalPages > 1) {
-    const rest = await Promise.all(
-      Array.from({ length: first.totalPages - 1 }, (_, i) => fetchLynkPosts(i + 2))
-    );
-    for (const r of rest) {
-      if (!r.error) all = all.concat(r.posts);
-    }
-  }
-  const items = all.map(post => {
-    const title = decode(strip(post.title?.rendered || ''));
-    if (!title || title.length < 5) return null;
-    const summary = decode(strip(post.excerpt?.rendered || '')).slice(0, 300);
-    const link = post.link || '';
-    const datetime = post.date ? new Date(post.date).toISOString() : new Date().toISOString();
-    return {
-      newsid: `lynk-${post.id}`, datetime,
-      source: 'Lynk Global', headline: title, qmsummary: summary,
-      permalink: link, storyurl: link,
-      category: 'all', _source: 'lynk-wp-api',
-    };
-  }).filter(Boolean);
-  return dedupe(items);
-}
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  MAIN HANDLER
@@ -1189,7 +1135,7 @@ export default async function handler(req, res) {
     });
   }
 
-  const wrapInNews = config.type === 'amazon-leo' || config.type === 'lynk';
+  const wrapInNews = config.type === 'amazon-leo';
 
   // Ensure DB table exists before any DB operations
   await ensureTable();
@@ -1230,21 +1176,6 @@ export default async function handler(req, res) {
       case 'amazon-leo':
         items = await fetchAmazonLeo();
         break;
-      case 'lynk': {
-        items = await fetchLynk();
-        // Fallback to StockTitan + IR page scrape if WordPress returns empty
-        if (items.length < 3 && (config.stockTitanSlugs || config.irUrl)) {
-          const fallbackPromises = [];
-          if (config.stockTitanSlugs) fallbackPromises.push(fetchStockTitan(config.stockTitanSlugs));
-          if (config.irUrl) fallbackPromises.push(fetchIRPage(config.irUrl));
-          const results = await Promise.allSettled(fallbackPromises);
-          for (const r of results) {
-            if (r.status === 'fulfilled') items.push(...r.value);
-          }
-          items = dedupe(items);
-        }
-        break;
-      }
       default:
         return res.status(500).json({ error: `Unknown type: ${config.type}` });
     }
