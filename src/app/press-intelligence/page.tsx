@@ -1093,11 +1093,54 @@ const isToday = (str: string) => {
 
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
+/* ── Methodology types ── */
+interface MethodologySource {
+  name: string;
+  type: string;
+  detail: string;
+  sourceFilter?: string;
+}
+
+interface MethodologyData {
+  ticker: string;
+  grade: string;
+  type: string;
+  sources: MethodologySource[];
+  headlineFilter: string | null;
+  dbStats?: {
+    totalRows: number;
+    oldest: string;
+    newest: string;
+    distinctSources: number;
+    topSources: { source: string; count: number }[];
+  };
+}
+
 export default function PressIntelligencePage() {
   const [feedsByTicker, setFeedsByTicker] = useState<Record<string, NewsItem[]>>({});
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [refreshing, setRefreshing] = useState(false);
+
+  /* Methodology popup */
+  const [methodologyTicker, setMethodologyTicker] = useState<string | null>(null);
+  const [methodologyData, setMethodologyData] = useState<MethodologyData | null>(null);
+  const [methodologyLoading, setMethodologyLoading] = useState(false);
+
+  const openMethodology = useCallback(async (ticker: string) => {
+    setMethodologyTicker(ticker);
+    setMethodologyLoading(true);
+    setMethodologyData(null);
+    try {
+      const res = await fetch(`/api/press-intelligence?ticker=${ticker}&mode=methodology`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      setMethodologyData(data);
+    } catch (e: any) {
+      setMethodologyData(null);
+    }
+    setMethodologyLoading(false);
+  }, []);
 
   /* Filters */
   const [activeTicker, setActiveTicker] = useState("ALL");
@@ -1271,11 +1314,17 @@ export default function PressIntelligencePage() {
               <span className="pi-kpi-label">Latest</span>
             </div>
 
-            {/* Per-stock counts */}
+            {/* Per-stock counts — click to open methodology */}
             <div className="pi-stock-summary-wrap">
               <div className="pi-stock-summary">
                 {FEED_CONFIGS.map((cfg) => (
-                  <div key={cfg.ticker} className="pi-stock-stat" data-grade={cfg.grade}>
+                  <div
+                    key={cfg.ticker}
+                    className="pi-stock-stat pi-stock-stat-clickable"
+                    data-grade={cfg.grade}
+                    onClick={() => openMethodology(cfg.ticker)}
+                    title={`Click for ${cfg.ticker} methodology`}
+                  >
                     <span className="pi-stock-dot" data-accent={cfg.accent} />
                     <span className="pi-stock-stat-count">{stats.perStock[cfg.ticker] || 0}</span>
                     <span className="pi-stock-stat-label">{cfg.ticker}</span>
@@ -1483,6 +1532,129 @@ export default function PressIntelligencePage() {
           </div>
         )}
       </div>
+
+      {/* ── Methodology Modal ── */}
+      {methodologyTicker && (
+        <div className="pi-modal-overlay" onClick={() => setMethodologyTicker(null)}>
+          <div className="pi-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="pi-modal-header">
+              <h2 className="pi-modal-title">
+                {methodologyTicker} &mdash; Data Methodology
+              </h2>
+              <button className="pi-modal-close" onClick={() => setMethodologyTicker(null)}>
+                &times;
+              </button>
+            </div>
+
+            {methodologyLoading && (
+              <div className="pi-modal-body">
+                <div className="pi-modal-loading">Loading methodology...</div>
+              </div>
+            )}
+
+            {!methodologyLoading && methodologyData && (
+              <div className="pi-modal-body">
+                {/* Grade & type */}
+                <div className="pi-method-section">
+                  <div className="pi-method-row">
+                    <span className="pi-method-label">Grade</span>
+                    <span className="pi-method-value">
+                      <span className="pi-grade-dot-lg" data-grade={methodologyData.grade} />
+                      {methodologyData.grade}
+                    </span>
+                  </div>
+                  <div className="pi-method-row">
+                    <span className="pi-method-label">Fetcher Type</span>
+                    <span className="pi-method-value">{methodologyData.type}</span>
+                  </div>
+                </div>
+
+                {/* Sources */}
+                <div className="pi-method-section">
+                  <h3 className="pi-method-heading">Data Sources</h3>
+                  {methodologyData.sources.map((src, i) => (
+                    <div key={i} className="pi-method-source">
+                      <div className="pi-method-source-header">
+                        <span className="pi-method-source-name">{src.name}</span>
+                        <span className="pi-method-source-type" data-type={src.type}>
+                          {src.type}
+                        </span>
+                      </div>
+                      <div className="pi-method-source-detail">{src.detail}</div>
+                      {src.sourceFilter && (
+                        <div className="pi-method-source-detail">
+                          <strong>Source filter:</strong> {src.sourceFilter}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Headline filter */}
+                {methodologyData.headlineFilter && (
+                  <div className="pi-method-section">
+                    <h3 className="pi-method-heading">Headline Filter</h3>
+                    <code className="pi-method-code">{methodologyData.headlineFilter}</code>
+                  </div>
+                )}
+
+                {/* DB stats */}
+                {methodologyData.dbStats && (
+                  <div className="pi-method-section">
+                    <h3 className="pi-method-heading">Database Statistics</h3>
+                    <div className="pi-method-row">
+                      <span className="pi-method-label">Total rows</span>
+                      <span className="pi-method-value">{methodologyData.dbStats.totalRows.toLocaleString()}</span>
+                    </div>
+                    <div className="pi-method-row">
+                      <span className="pi-method-label">Date range</span>
+                      <span className="pi-method-value">
+                        {methodologyData.dbStats.oldest ? formatDate(methodologyData.dbStats.oldest) : "n/a"}
+                        {" "}&mdash;{" "}
+                        {methodologyData.dbStats.newest ? formatDate(methodologyData.dbStats.newest) : "n/a"}
+                      </span>
+                    </div>
+                    <div className="pi-method-row">
+                      <span className="pi-method-label">Distinct sources</span>
+                      <span className="pi-method-value">{methodologyData.dbStats.distinctSources}</span>
+                    </div>
+                    {methodologyData.dbStats.topSources && methodologyData.dbStats.topSources.length > 0 && (
+                      <>
+                        <h4 className="pi-method-subheading">Top Sources in DB</h4>
+                        <div className="pi-method-table">
+                          {methodologyData.dbStats.topSources.map((s, i) => (
+                            <div key={i} className="pi-method-table-row">
+                              <span className="pi-method-table-source">{s.source}</span>
+                              <span className="pi-method-table-count">{s.count.toLocaleString()}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* Frontend count */}
+                <div className="pi-method-section">
+                  <h3 className="pi-method-heading">Frontend Display</h3>
+                  <div className="pi-method-row">
+                    <span className="pi-method-label">Items shown</span>
+                    <span className="pi-method-value">
+                      {stats.perStock[methodologyTicker] || 0} (after source + headline filters)
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!methodologyLoading && !methodologyData && (
+              <div className="pi-modal-body">
+                <div className="pi-modal-loading">Failed to load methodology data.</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

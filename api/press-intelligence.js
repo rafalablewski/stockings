@@ -11,6 +11,7 @@
 const { neon } = require('@neondatabase/serverless');
 
 // No in-memory cache — DB is the source of truth
+let _lastJunkPurge = 0; // timestamp of last junk purge (throttle to once per hour)
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  DATABASE PERSISTENCE — stores every press release permanently
@@ -84,16 +85,18 @@ async function persistItems(ticker, items) {
   if (!sql || items.length === 0) return 0;
 
   const validItems = items.filter(item => {
-    const hlHash = normalizeHl(item.headline);
-    return hlHash && hlHash.length >= 4 && !isJunkHeadline(item.headline);
+    const cleaned = cleanHeadline(item.headline);
+    const hlHash = normalizeHl(cleaned);
+    return hlHash && hlHash.length >= 4 && !isJunkHeadline(cleaned);
   });
   if (validItems.length === 0) return 0;
 
   const queries = validItems.map(item => {
-    const hlHash = normalizeHl(item.headline);
+    const cleaned = cleanHeadline(item.headline);
+    const hlHash = normalizeHl(cleaned);
     return sql`
       INSERT INTO press_releases (ticker, headline_hash, headline, datetime, source, summary, permalink, storyurl, newsid, internal_source)
-      VALUES (${ticker}, ${hlHash}, ${item.headline || ''}, ${item.datetime || ''}, ${item.source || ''}, ${(item.qmsummary || item.summary || '').slice(0, 2000)}, ${item.permalink || ''}, ${item.storyurl || ''}, ${item.newsid || ''}, ${item._source || ''})
+      VALUES (${ticker}, ${hlHash}, ${cleaned}, ${item.datetime || ''}, ${item.source || ''}, ${(item.qmsummary || item.summary || '').slice(0, 2000)}, ${item.permalink || ''}, ${item.storyurl || ''}, ${item.newsid || ''}, ${item._source || ''})
       ON CONFLICT (ticker, headline_hash)
       DO UPDATE SET fetch_count = press_releases.fetch_count + 1, last_seen_at = NOW()
     `;
@@ -1580,31 +1583,147 @@ export default async function handler(req, res) {
   }
   res.setHeader('X-Ticker-Grade', config.grade || 'U');
 
+  // ── MODE: METHODOLOGY — return source configuration for this ticker ──
+  if (mode === 'methodology') {
+    const methodology = {
+      ticker,
+      grade: config.grade || 'U',
+      type: config.type,
+      sources: [],
+      headlineFilter: config.filter ? config.filter.toString() : null,
+    };
+
+    // Primary source
+    if (config.type === 'qm-simple' || config.type === 'crypto') {
+      methodology.sources.push({
+        name: 'QuoteMedia / AccessWire',
+        type: 'primary',
+        detail: `Topics: ${(config.topics || []).join(', ')}`,
+        sourceFilter: (config.sources || []).join(', '),
+      });
+    } else if (config.type === 'att') {
+      methodology.sources.push({
+        name: 'AT&T Multi-Source Fetcher',
+        type: 'primary',
+        detail: '6 dedicated AT&T sources (IR, newsroom, RSS)',
+        sourceFilter: 'AT&T-specific',
+      });
+    } else if (config.type === 'amazon-leo') {
+      methodology.sources.push({
+        name: 'Amazon LEO Page Parser',
+        type: 'primary',
+        detail: 'Dedicated Amazon Kuiper/LEO page scraper',
+        sourceFilter: 'Amazon-specific',
+      });
+    }
+
+    // Additional sources
+    if (config.stockTitanSlugs) {
+      methodology.sources.push({
+        name: 'Stock Titan',
+        type: 'supplementary',
+        detail: `Slugs: ${config.stockTitanSlugs.join(', ')}`,
+      });
+    }
+    if (config.notifiedApiUrls) {
+      methodology.sources.push({
+        name: 'Notified IR RSS',
+        type: 'supplementary',
+        detail: config.notifiedApiUrls.join(', '),
+      });
+    }
+    if (config.gnwRssKeywords) {
+      methodology.sources.push({
+        name: 'GlobeNewsWire RSS',
+        type: 'supplementary',
+        detail: `Keywords: ${config.gnwRssKeywords.join(', ')}`,
+      });
+    }
+    if (config.irUrl) {
+      methodology.sources.push({
+        name: 'IR Page Scrape',
+        type: 'supplementary',
+        detail: config.irUrl,
+      });
+    }
+    if (config.newsroomUrls) {
+      methodology.sources.push({
+        name: 'Newsroom Scrape',
+        type: 'supplementary',
+        detail: config.newsroomUrls.join(', '),
+      });
+    }
+    if (config.rssUrls) {
+      methodology.sources.push({
+        name: 'Generic RSS/Atom',
+        type: 'supplementary',
+        detail: config.rssUrls.join(', '),
+      });
+    }
+
+    // DB stats
+    try {
+      await ensureTable();
+      const sql = getSQL();
+      if (sql) {
+        const [stats] = await sql`
+          SELECT
+            COUNT(*) AS total,
+            MIN(datetime) AS oldest,
+            MAX(datetime) AS newest,
+            COUNT(DISTINCT source) AS source_count
+          FROM press_releases WHERE ticker = ${ticker}`;
+        methodology.dbStats = {
+          totalRows: Number(stats.total),
+          oldest: stats.oldest,
+          newest: stats.newest,
+          distinctSources: Number(stats.source_count),
+        };
+        const topSources = await sql`
+          SELECT source, COUNT(*) AS cnt
+          FROM press_releases WHERE ticker = ${ticker}
+          GROUP BY source ORDER BY cnt DESC LIMIT 10`;
+        methodology.dbStats.topSources = topSources.map(r => ({
+          source: r.source || '(empty)',
+          count: Number(r.cnt),
+        }));
+      }
+    } catch { /* stats are best-effort */ }
+
+    res.setHeader('Content-Type', 'application/json');
+    return res.status(200).send(JSON.stringify(methodology));
+  }
+
   const wrapInNews = config.type === 'amazon-leo';
 
   // Ensure DB table exists before any DB operations
   await ensureTable();
 
-  // Clean up junk headlines from DB (one-time purge of nav/category links)
-  try {
-    const sql = getSQL();
-    if (sql) {
-      await sql`DELETE FROM press_releases WHERE
-        headline ~* '^(stock news live|merger\\s*&\\s*acquisitions?|clinical trials?|market research|media room|investor relations|press room|newsroom|link to\\b)' OR
-        headline ~* '(opens in new window|read media release|\\(pdf\\b|\\d+ min read$)' OR
-        array_length(string_to_array(trim(headline), ' '), 1) < 4 OR
-        length(trim(headline)) > 300`;
-      // Purge NOK Group (Japanese rubber company) entries — wrong company
-      await sql`DELETE FROM press_releases WHERE
-        ticker = 'NOK' AND
-        headline ~* '(rubber|hydrogen energy|workplace|workshop|seal|gasket|nok group|carbon.neutral|global one nok)'`;
-      // Purge NVDA newsroom-scrape articles that don't mention nvidia/nvda (generic blog posts)
-      await sql`DELETE FROM press_releases WHERE
-        ticker = 'NVDA' AND
-        internal_source = 'newsroom-scrape' AND
-        headline !~* '(nvidia|\mnvda\M)'`;
-    }
-  } catch { /* cleanup is best-effort */ }
+  // Clean up junk headlines from DB — throttled to once per hour to avoid
+  // count oscillation (items deleted then re-fetched on every request cycle)
+  const now = Date.now();
+  if (now - _lastJunkPurge > 60 * 60 * 1000) {
+    try {
+      const sql = getSQL();
+      if (sql) {
+        await sql`DELETE FROM press_releases WHERE
+          headline ~* '^(stock news live|merger\\s*&\\s*acquisitions?|clinical trials?|market research|media room|investor relations|press room|newsroom|link to\\b)' OR
+          headline ~* '(opens in new window|read media release|\\(pdf\\b|\\d+ min read$)' OR
+          array_length(string_to_array(trim(headline), ' '), 1) < 4 OR
+          length(trim(headline)) > 300`;
+        // Purge NOK Group (Japanese rubber company) entries — wrong company
+        await sql`DELETE FROM press_releases WHERE
+          ticker = 'NOK' AND
+          headline ~* '(rubber|hydrogen energy|workplace|workshop|seal|gasket|nok group|carbon.neutral|global one nok)'`;
+        // Purge NVDA newsroom-scrape articles that don't mention nvidia/nvda (generic blog posts)
+        await sql`DELETE FROM press_releases WHERE
+          ticker = 'NVDA' AND
+          internal_source = 'newsroom-scrape' AND
+          headline !~* '(nvidia|\mnvda\M)'`;
+        _lastJunkPurge = now;
+      }
+    } catch { /* cleanup is best-effort */ }
+  }
 
   // Filter DB items: trust ticker-specific sources (IR, RSS), but
   // apply headline filter to newsroom-scrape and keyword-search sources (GNW)
@@ -1676,6 +1795,11 @@ export default async function handler(req, res) {
     }
 
     // Merge fresh upstream + historical DB items, deduplicated
+    // Clean upstream headlines to match DB format before merge/dedupe
+    for (const item of items) {
+      if (item.headline) item.headline = cleanHeadline(item.headline);
+    }
+
     let merged = items;
     if (dbItems.length > 0) {
       merged = dedupe([...items, ...dbItems]);

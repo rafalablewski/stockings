@@ -704,3 +704,114 @@
 .pi-grade-dot[data-grade="C"] { background: #EAB308; }
 .pi-grade-dot[data-grade="D"] { background: #F97316; }
 .pi-grade-dot[data-grade="F"] { background: #EF4444; }
+
+/* ── Clickable stock stats ── */
+.pi-stock-stat-clickable { cursor: pointer; transition: opacity 0.15s; }
+.pi-stock-stat-clickable:hover { opacity: 0.7; }
+
+/* ── Methodology Modal ── */
+.pi-modal-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.pi-modal {
+  background: #1A1A2E; border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px; width: 100%; max-width: 600px; max-height: 80vh;
+  display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.pi-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.pi-modal-title {
+  font-size: 16px; font-weight: 600; color: #F1F5F9;
+  margin: 0; letter-spacing: -0.01em;
+}
+.pi-modal-close {
+  background: none; border: none; color: #94A3B8; font-size: 22px;
+  cursor: pointer; padding: 0 4px; line-height: 1;
+}
+.pi-modal-close:hover { color: #F1F5F9; }
+.pi-modal-body {
+  overflow-y: auto; padding: 16px 20px;
+}
+.pi-modal-loading {
+  color: #94A3B8; text-align: center; padding: 32px 0; font-size: 13px;
+}
+
+/* Methodology sections */
+.pi-method-section {
+  margin-bottom: 20px; padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.pi-method-section:last-child { border-bottom: none; margin-bottom: 0; }
+.pi-method-heading {
+  font-size: 12px; font-weight: 600; color: #64748B;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin: 0 0 10px 0;
+}
+.pi-method-subheading {
+  font-size: 11px; font-weight: 600; color: #64748B;
+  margin: 12px 0 6px 0;
+}
+.pi-method-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 4px 0;
+}
+.pi-method-label { color: #94A3B8; font-size: 13px; }
+.pi-method-value { color: #F1F5F9; font-size: 13px; font-weight: 500; }
+
+/* Source cards */
+.pi-method-source {
+  background: rgba(255,255,255,0.03); border-radius: 8px;
+  padding: 10px 12px; margin-bottom: 8px;
+}
+.pi-method-source-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+}
+.pi-method-source-name {
+  font-size: 13px; font-weight: 600; color: #E2E8F0;
+}
+.pi-method-source-type {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.06em; padding: 1px 6px; border-radius: 4px;
+}
+.pi-method-source-type[data-type="primary"] {
+  background: rgba(34,211,238,0.15); color: #22D3EE;
+}
+.pi-method-source-type[data-type="supplementary"] {
+  background: rgba(167,139,250,0.15); color: #A78BFA;
+}
+.pi-method-source-detail {
+  font-size: 12px; color: #94A3B8; word-break: break-all;
+}
+.pi-method-code {
+  display: block; background: rgba(0,0,0,0.3); border-radius: 6px;
+  padding: 8px 10px; font-size: 11px; color: #A78BFA;
+  white-space: pre-wrap; word-break: break-all;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* DB stats table */
+.pi-method-table { display: flex; flex-direction: column; gap: 2px; }
+.pi-method-table-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 3px 8px; border-radius: 4px;
+  background: rgba(255,255,255,0.02);
+}
+.pi-method-table-source { font-size: 12px; color: #CBD5E1; }
+.pi-method-table-count { font-size: 12px; color: #94A3B8; font-weight: 500; }
+
+/* Grade dot large (for modal) */
+.pi-grade-dot-lg {
+  display: inline-block; width: 10px; height: 10px;
+  border-radius: 50%; margin-right: 6px; vertical-align: middle;
+}
+.pi-grade-dot-lg[data-grade="A"] { background: #22C55E; }
+.pi-grade-dot-lg[data-grade="B"] { background: #3B82F6; }
+.pi-grade-dot-lg[data-grade="C"] { background: #EAB308; }
+.pi-grade-dot-lg[data-grade="D"] { background: #F97316; }
+.pi-grade-dot-lg[data-grade="F"] { background: #EF4444; }
