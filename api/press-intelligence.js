@@ -131,7 +131,7 @@ async function loadFromDB(ticker) {
     console.log(`press-intelligence loadFromDB(${ticker}): ${rows.length} rows`);
     return rows.map(r => ({
       newsid: r.newsid || '',
-      headline: r.headline,
+      headline: cleanHeadline(r.headline),
       datetime: r.datetime,
       source: r.source || '',
       qmsummary: r.qmsummary || '',
@@ -240,17 +240,31 @@ function extractDateFromContext(html, idx) {
   const start = Math.max(0, idx - 500);
   const end = Math.min(html.length, idx + 1000);
   const ctx = html.slice(start, end);
+
+  // 1. <time datetime="..."> is the most reliable signal
+  const timeTag = ctx.match(/<time[^>]+datetime=["']([^"']+)["']/i);
+  if (timeTag) {
+    try {
+      const d = new Date(timeTag[1]);
+      if (!isNaN(d.getTime())) return d.toISOString();
+    } catch { /* skip */ }
+  }
+
   const patterns = [
-    /(\d{4}-\d{2}-\d{2})/,
-    /(\w+ \d{1,2},?\s*\d{4})/,
-    /(\d{1,2}\/\d{1,2}\/\d{4})/,
+    /(\d{4}-\d{2}-\d{2})/,                                         // 2026-03-12
+    /(\d{1,2}\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4})/i,  // 12 March 2026
+    /(\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4})/i,  // 12 Mar 2026
+    /((?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s*\d{4})/i, // March 12, 2026
+    /((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},?\s*\d{4})/i, // Mar 12, 2026
+    /(\d{1,2}\/\d{1,2}\/\d{4})/,                                   // 03/12/2026
+    /(\d{1,2}\.\d{1,2}\.\d{4})/,                                   // 12.03.2026
   ];
   for (const p of patterns) {
     const m = ctx.match(p);
     if (m) {
       try {
         const d = new Date(m[1]);
-        if (!isNaN(d.getTime())) return d.toISOString();
+        if (!isNaN(d.getTime()) && d.getFullYear() >= 2020 && d.getFullYear() <= 2030) return d.toISOString();
       } catch { /* skip */ }
     }
   }
@@ -472,10 +486,11 @@ async function fetchIRPage(irUrl) {
       if (isJunkHeadline(text)) continue;
       const url = href.startsWith('http') ? href : `${origin}${href.startsWith('/') ? '' : '/'}${href}`;
       const datetime = extractDateFromContext(html, m.index);
+      if (!datetime) continue; // skip items without a discoverable date
       items.push({
         newsid: `ir-${items.length}`,
         headline: text,
-        datetime: datetime || new Date().toISOString(),
+        datetime,
         source: 'Investor Relations',
         permalink: url,
         storyurl: url,
@@ -1589,6 +1604,18 @@ export default async function handler(req, res) {
         headline ~* '(opens in new window|read media release|\\(pdf\\b|\\d+ min read$)' OR
         array_length(string_to_array(trim(headline), ' '), 1) < 4 OR
         length(trim(headline)) > 300`;
+      // Purge NOK Group (Japanese rubber company) entries — wrong company
+      await sql`DELETE FROM press_releases WHERE
+        ticker = 'NOK' AND (
+          headline ~* '(rubber|hydrogen energy|workplace|workshop|seal|gasket|nok group|carbon.neutral|global one nok)' OR
+          (internal_source = 'newsroom-scrape' AND headline !~* 'nokia')
+        )`;
+      // Purge newsroom/IR-scraped entries for tickers that had wrong timestamps
+      // (datetime was set to scrape time, not article date). Fixed scrapers now
+      // skip dateless items, so these will re-populate correctly on next refresh.
+      await sql`DELETE FROM press_releases WHERE
+        internal_source IN ('newsroom-scrape', 'ir-scrape') AND
+        ticker IN ('NOK', 'GLXY', 'VOD', 'RKUNF', 'HSBC', 'ORAN', 'TMUS')`;
     }
   } catch { /* cleanup is best-effort */ }
 
