@@ -645,7 +645,7 @@ const TICKER_CONFIG = {
     topics: ['VZ'],
     sources: ['globenewswire', 'pr newswire', 'business wire'],
     filter: (hl) => /verizon/i.test(hl),
-    rssUrls: ['https://www.verizon.com/about/feeds/news/all/rss-xml'],
+    rssUrls: ['https://www.verizon.com/about/news/feed/press-releases'],
   },
   VSAT: {
     grade: 'A',
