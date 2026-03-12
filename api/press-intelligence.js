@@ -1776,13 +1776,12 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: `Unknown type: ${config.type}` });
     }
 
-    // Load existing DB items to know what's already stored
-    let dbHashes = new Set();
-    let dbItems = [];
+    // Snapshot existing DB hashes BEFORE persist — used to mark which items are new
+    const dbHashes = new Set();
     try {
-      dbItems = applyTickerFilter(await loadFromDB(ticker));
-      for (const d of dbItems) dbHashes.add(normalizeHl(d.headline));
-      console.log(`press-intelligence refresh (${ticker}) [grade=${config.grade}]: ${dbItems.length} existing DB items, ${items.length} upstream items`);
+      const existing = await loadFromDB(ticker);
+      for (const d of existing) dbHashes.add(normalizeHl(d.headline));
+      console.log(`press-intelligence refresh (${ticker}) [grade=${config.grade}]: ${existing.length} existing DB items, ${items.length} upstream items`);
     } catch (dbErr) {
       console.error(`press-intelligence DB read error (${ticker}):`, dbErr.message);
     }
@@ -1794,22 +1793,9 @@ export default async function handler(req, res) {
       console.error(`press-intelligence persist failed (${ticker}):`, persistErr.message);
     }
 
-    // Re-read from DB after persist — single source of truth for both modes.
-    // This ensures refresh returns the same data as the next page load.
-    let merged;
-    try {
-      merged = applyTickerFilter(await loadFromDB(ticker));
-    } catch (reloadErr) {
-      console.error(`press-intelligence DB reload after persist failed (${ticker}):`, reloadErr.message);
-      // Fallback: in-memory merge if DB re-read fails
-      for (const item of items) {
-        if (item.headline) item.headline = cleanHeadline(item.headline);
-      }
-      merged = items;
-      if (dbItems.length > 0) {
-        merged = dedupe([...items, ...dbItems]);
-      }
-    }
+    // Re-read from DB after persist — single source of truth, no in-memory merge.
+    // This ensures refresh returns exactly the same data as the next page load.
+    const merged = applyTickerFilter(await loadFromDB(ticker));
 
     // Mark each item: _inDb = true if it was already in the database BEFORE this fetch
     for (const item of merged) {
