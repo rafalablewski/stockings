@@ -564,6 +564,23 @@ async function fetchGenericRss(rssUrls) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+//  TICKER GRADES — snapshot from comprehensive review (2026-03-12)
+//  A = perfect, no changes needed
+//  B = was working, enhanced with additional sources (new sources may break)
+//  C = had missing articles, fixed via config/threshold changes
+//  D = had quality issues (junk headlines, wrong dates, metadata noise)
+//  F = was broken, showing old/wrong data, or returning wrong company
+// ═══════════════════════════════════════════════════════════════════════════
+
+const GRADE_META = {
+  A: { label: 'Perfect',       monitorPriority: 0, description: 'No changes needed during review' },
+  B: { label: 'Enhanced',      monitorPriority: 1, description: 'Working but enhanced with new sources' },
+  C: { label: 'Config-fixed',  monitorPriority: 2, description: 'Had missing articles, fixed via config changes' },
+  D: { label: 'Quality-fixed', monitorPriority: 3, description: 'Had quality issues (junk/noise), fixes applied' },
+  F: { label: 'Broken-fixed',  monitorPriority: 4, description: 'Was broken or showing wrong data, fixed' },
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
 //  TICKER CONFIGURATIONS
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -572,54 +589,63 @@ const OFFICIAL_SOURCES = ['pr newswire', 'business wire', 'globe newswire', 'glo
 const TICKER_CONFIG = {
   // ─── Simple QM tickers ───
   ASTS: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['ASTS'],
     sources: ['business wire'],
     filter: (hl) => /ast\s*spacemobile|asts/i.test(hl),
   },
   BMNR: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['BMNR'],
     sources: ['pr newswire', 'prnewswire', 'business wire', 'accesswire', 'globe newswire'],
     filter: (hl) => /bitmine|bmnr|bit\s*mine/i.test(hl),
   },
   IRDM: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['IRDM'],
     sources: ['pr newswire', 'canada newswire', 'business wire'],
     filter: (hl) => /iridium/i.test(hl),
   },
   GSAT: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['GSAT'],
     sources: ['business wire', 'pr newswire', 'canada newswire'],
     filter: (hl) => /globalstar/i.test(hl),
   },
   VZ: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['VZ'],
     sources: ['globenewswire', 'pr newswire', 'business wire'],
     filter: (hl) => /verizon/i.test(hl),
   },
   VSAT: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['VSAT'],
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
     filter: (hl) => /viasat/i.test(hl),
   },
   RKLB: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['RKLB'],
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
     filter: (hl) => /rocket\s*lab|rklb/i.test(hl),
   },
   SATS: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['SATS'],
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire', 'accesswire'],
     filter: (hl) => /echostar|sats|hughes/i.test(hl),
   },
   LUNR: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['LUNR'],
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
@@ -628,6 +654,7 @@ const TICKER_CONFIG = {
   },
 
   MSTR: {
+    grade: 'C',
     type: 'qm-simple',
     topics: ['MSTR', 'STRC'],
     sources: OFFICIAL_SOURCES,
@@ -635,6 +662,7 @@ const TICKER_CONFIG = {
     gnwRssKeywords: ['Strategy', 'MicroStrategy', 'STRC'],
   },
   MARA: {
+    grade: 'C',
     type: 'qm-simple',
     topics: ['MARA'],
     sources: OFFICIAL_SOURCES,
@@ -644,24 +672,28 @@ const TICKER_CONFIG = {
     notifiedApiUrls: ['https://ir.mara.com/rss/news-releases.xml'],
   },
   RIOT: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['RIOT'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /riot\s*platforms/i.test(hl) || /\briot\b/i.test(hl),
   },
   CLSK: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['CLSK'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /cleanspark/i.test(hl) || /\bclsk\b/i.test(hl),
   },
   HUT: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['HUT'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /hut\s*8|hut8|\bhut\b/i.test(hl),
   },
   IREN: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['IREN'],
     sources: OFFICIAL_SOURCES,
@@ -670,6 +702,7 @@ const TICKER_CONFIG = {
     notifiedApiUrls: ['https://irisenergy.gcs-web.com/rss/news-releases.xml'],
   },
   NBIS: {
+    grade: 'C',
     type: 'qm-simple',
     topics: ['NBIS'],
     sources: OFFICIAL_SOURCES,
@@ -678,6 +711,7 @@ const TICKER_CONFIG = {
     newsroomUrls: ['https://nebius.com/blog'],
   },
   COIN: {
+    grade: 'B',
     type: 'qm-simple',
     topics: ['COIN'],
     sources: OFFICIAL_SOURCES,
@@ -686,6 +720,7 @@ const TICKER_CONFIG = {
     rssUrls: ['https://www.coinbase.com/blog/rss.xml'],
   },
   FRMM: {
+    grade: 'A',
     type: 'crypto',
     topics: ['FRMM', 'ETHZ'],
     filter: (hl) => /forum\s*markets/i.test(hl) || /\bforum\b/i.test(hl) || /ethzilla/i.test(hl) || /\bfrmm\b/i.test(hl) || /\bethz\b/i.test(hl),
@@ -700,6 +735,7 @@ const TICKER_CONFIG = {
 
   // ─── Fintech & Payments ───
   MA: {
+    grade: 'C',
     type: 'qm-simple',
     topics: ['MA'],
     sources: OFFICIAL_SOURCES,
@@ -712,18 +748,21 @@ const TICKER_CONFIG = {
     ],
   },
   V: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['V'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /\bvisa\b/i.test(hl),
   },
   SOFI: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['SOFI'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /sofi/i.test(hl),
   },
   AXP: {
+    grade: 'B',
     type: 'qm-simple',
     topics: ['AXP'],
     sources: OFFICIAL_SOURCES,
@@ -732,6 +771,7 @@ const TICKER_CONFIG = {
     irUrl: 'https://ir.americanexpress.com/news/news-details/default.aspx',
   },
   AFRM: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['AFRM'],
     sources: OFFICIAL_SOURCES,
@@ -744,12 +784,14 @@ const TICKER_CONFIG = {
     ],
   },
   SEZL: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['SEZL'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /sezzle/i.test(hl) || /\bsezl\b/i.test(hl),
   },
   SQ: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['SQ', 'XYZ'],
     sources: OFFICIAL_SOURCES,
@@ -758,6 +800,7 @@ const TICKER_CONFIG = {
     irUrl: 'https://investors.block.xyz/investor-news/default.aspx',
   },
   PYPL: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['PYPL'],
     sources: OFFICIAL_SOURCES,
@@ -768,6 +811,7 @@ const TICKER_CONFIG = {
     rssUrls: ['https://newsroom.paypal-corp.com/rss/news-releases.xml'],
   },
   UPST: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['UPST'],
     sources: OFFICIAL_SOURCES,
@@ -777,6 +821,7 @@ const TICKER_CONFIG = {
     notifiedApiUrls: ['https://ir.upstart.com/rss/news-releases.xml'],
   },
   HOOD: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['HOOD'],
     sources: OFFICIAL_SOURCES,
@@ -788,6 +833,7 @@ const TICKER_CONFIG = {
 
   // ─── Digital Assets (new) ───
   GLXY: {
+    grade: 'D',
     type: 'qm-simple',
     topics: ['GLXY'],
     sources: OFFICIAL_SOURCES,
@@ -798,6 +844,7 @@ const TICKER_CONFIG = {
     newsroomUrls: ['https://www.galaxy.com/all-news'],
   },
   BITF: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['BITF'],
     sources: OFFICIAL_SOURCES,
@@ -810,6 +857,7 @@ const TICKER_CONFIG = {
 
   // ─── Financial Services ───
   BLK: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['BLK'],
     sources: OFFICIAL_SOURCES,
@@ -817,6 +865,7 @@ const TICKER_CONFIG = {
     irUrl: 'https://ir.blackrock.com/news-and-events/press-releases/default.aspx',
   },
   HSBC: {
+    grade: 'D',
     type: 'qm-simple',
     topics: ['HSBC'],
     sources: OFFICIAL_SOURCES,
@@ -827,6 +876,7 @@ const TICKER_CONFIG = {
     ],
   },
   C: {
+    grade: 'C',
     type: 'qm-simple',
     topics: ['C'],
     sources: OFFICIAL_SOURCES,
@@ -836,12 +886,14 @@ const TICKER_CONFIG = {
     newsroomUrls: ['https://www.citigroup.com/global/news'],
   },
   CME: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['CME'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /cme\s*group/i.test(hl) || /\bcme\b/i.test(hl),
   },
   ICE: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['ICE'],
     sources: OFFICIAL_SOURCES,
@@ -850,6 +902,7 @@ const TICKER_CONFIG = {
 
   // ─── Telecom (new) ───
   VOD: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['VOD'],
     sources: OFFICIAL_SOURCES,
@@ -862,6 +915,7 @@ const TICKER_CONFIG = {
     ],
   },
   ORAN: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['ORAN'],
     sources: OFFICIAL_SOURCES,
@@ -873,12 +927,14 @@ const TICKER_CONFIG = {
     ],
   },
   TU: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['TU'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /telus/i.test(hl) || /\btu\b/i.test(hl),
   },
   BCE: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['BCE'],
     sources: OFFICIAL_SOURCES,
@@ -889,6 +945,7 @@ const TICKER_CONFIG = {
 
   // ─── Infrastructure & Tech ───
   AMT: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['AMT'],
     sources: OFFICIAL_SOURCES,
@@ -898,6 +955,7 @@ const TICKER_CONFIG = {
     notifiedApiUrls: ['https://americantower.gcs-web.com/rss/news-releases.xml'],
   },
   RKUNF: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['RKUNF'],
     sources: OFFICIAL_SOURCES,
@@ -907,6 +965,7 @@ const TICKER_CONFIG = {
     newsroomUrls: ['https://corp.mobile.rakuten.co.jp/english/news/'],
   },
   GOOGL: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['GOOGL', 'GOOG'],
     sources: OFFICIAL_SOURCES,
@@ -921,6 +980,7 @@ const TICKER_CONFIG = {
 
   // ─── Aerospace & Defense ───
   PL: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['PL'],
     sources: OFFICIAL_SOURCES,
@@ -931,6 +991,7 @@ const TICKER_CONFIG = {
     notifiedApiUrls: ['https://investors.planet.com/rss/news-releases.xml'],
   },
   BA: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['BA'],
     sources: ['pr newswire', 'business wire'],
@@ -941,6 +1002,7 @@ const TICKER_CONFIG = {
     rssUrls: ['https://boeing.mediaroom.com/rss'],
   },
   LMT: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['LMT'],
     sources: OFFICIAL_SOURCES,
@@ -954,6 +1016,7 @@ const TICKER_CONFIG = {
 
   // ─── Semiconductors & Telecom Equipment ───
   QCOM: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['QCOM'],
     sources: OFFICIAL_SOURCES,
@@ -964,6 +1027,7 @@ const TICKER_CONFIG = {
     newsroomUrls: ['https://www.qualcomm.com/news/releases'],
   },
   NOK: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['NOK'],
     sources: OFFICIAL_SOURCES,
@@ -975,6 +1039,7 @@ const TICKER_CONFIG = {
     rssUrls: ['https://www.nokia.com/rss/press-releases.xml'],
   },
   ERIC: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['ERIC'],
     sources: OFFICIAL_SOURCES,
@@ -986,6 +1051,7 @@ const TICKER_CONFIG = {
     rssUrls: ['https://www.ericsson.com/en/rss?type=press-releases'],
   },
   TMUS: {
+    grade: 'D',
     type: 'qm-simple',
     topics: ['TMUS'],
     sources: OFFICIAL_SOURCES,
@@ -995,6 +1061,7 @@ const TICKER_CONFIG = {
     newsroomUrls: ['https://www.t-mobile.com/news/stories'],
   },
   NVDA: {
+    grade: 'B',
     type: 'qm-simple',
     topics: ['NVDA'],
     sources: OFFICIAL_SOURCES,
@@ -1006,6 +1073,7 @@ const TICKER_CONFIG = {
     notifiedApiUrls: ['https://investor.nvidia.com/rss/news-releases.xml'],
   },
   IBM: {
+    grade: 'B',
     type: 'qm-simple',
     topics: ['IBM'],
     sources: OFFICIAL_SOURCES,
@@ -1018,6 +1086,7 @@ const TICKER_CONFIG = {
 
   // ─── Bitcoin Mining (additional) ───
   CIFR: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['CIFR'],
     sources: OFFICIAL_SOURCES,
@@ -1028,6 +1097,7 @@ const TICKER_CONFIG = {
     notifiedApiUrls: ['https://investors.ciphermining.com/rss/news-releases.xml'],
   },
   HIVE: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['HIVE'],
     sources: OFFICIAL_SOURCES,
@@ -1037,6 +1107,7 @@ const TICKER_CONFIG = {
     irUrl: 'https://www.hivedigitaltechnologies.com/news',
   },
   CORZ: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['CORZ'],
     sources: OFFICIAL_SOURCES,
@@ -1045,6 +1116,7 @@ const TICKER_CONFIG = {
     irUrl: 'https://investors.corescientific.com/news-events/press-releases',
   },
   APLD: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['APLD'],
     sources: OFFICIAL_SOURCES,
@@ -1054,6 +1126,7 @@ const TICKER_CONFIG = {
     irUrl: 'https://ir.applieddigital.com/news-events/press-releases',
   },
   CAN: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['CAN'],
     sources: OFFICIAL_SOURCES,
@@ -1062,6 +1135,7 @@ const TICKER_CONFIG = {
     irUrl: 'https://investor.canaaninc.com/news-releases',
   },
   ARBK: {
+    grade: 'F',
     type: 'qm-simple',
     topics: ['ARBK'],
     sources: OFFICIAL_SOURCES,
@@ -1072,6 +1146,7 @@ const TICKER_CONFIG = {
     newsroomUrls: ['https://www.argoblockchain.com/news'],
   },
   BKKT: {
+    grade: 'A',
     type: 'qm-simple',
     topics: ['BKKT'],
     sources: OFFICIAL_SOURCES,
@@ -1082,8 +1157,8 @@ const TICKER_CONFIG = {
   },
 
   // ─── Complex multi-source tickers ───
-  T: { type: 'att' },
-  AMZLEO: { type: 'amazon-leo' },
+  T: { grade: 'B', type: 'att' },
+  AMZLEO: { grade: 'A', type: 'amazon-leo' },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1498,6 +1573,7 @@ export default async function handler(req, res) {
       error: `Unknown ticker: ${ticker}. Supported: ${Object.keys(TICKER_CONFIG).join(', ')}`,
     });
   }
+  res.setHeader('X-Ticker-Grade', config.grade || 'U');
 
   const wrapInNews = config.type === 'amazon-leo';
 
@@ -1562,7 +1638,7 @@ export default async function handler(req, res) {
     try {
       dbItems = await loadFromDB(ticker);
       for (const d of dbItems) dbHashes.add(normalizeHl(d.headline));
-      console.log(`press-intelligence refresh (${ticker}): ${dbItems.length} existing DB items, ${items.length} upstream items`);
+      console.log(`press-intelligence refresh (${ticker}) [grade=${config.grade}]: ${dbItems.length} existing DB items, ${items.length} upstream items`);
     } catch (dbErr) {
       console.error(`press-intelligence DB read error (${ticker}):`, dbErr.message);
     }
