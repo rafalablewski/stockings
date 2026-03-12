@@ -603,6 +603,7 @@ const TICKER_CONFIG = {
     topics: ['AFRM'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /affirm/i.test(hl) || /\bafrm\b/i.test(hl),
+    stockTitanSlugs: ['AFRM'],
     irUrl: 'https://investors.affirm.com/news-events/all-news',
     notifiedApiUrls: [
       'https://investors.affirm.com/rss/news-releases.xml',
@@ -620,6 +621,7 @@ const TICKER_CONFIG = {
     topics: ['SQ', 'XYZ'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /\bblock\b/i.test(hl) || /\bsquare\b/i.test(hl) || /cash\s*app/i.test(hl) || /\bsq\b/i.test(hl) || /\bxyz\b/i.test(hl),
+    stockTitanSlugs: ['XYZ', 'SQ'],
     irUrl: 'https://investors.block.xyz/investor-news/default.aspx',
   },
   PYPL: {
@@ -633,6 +635,7 @@ const TICKER_CONFIG = {
     topics: ['UPST'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /upstart/i.test(hl) || /\bupst\b/i.test(hl),
+    stockTitanSlugs: ['UPST'],
     irUrl: 'https://ir.upstart.com/news-and-events/news-releases',
     notifiedApiUrls: ['https://ir.upstart.com/rss/news-releases.xml'],
   },
@@ -641,7 +644,7 @@ const TICKER_CONFIG = {
     topics: ['HOOD'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /robinhood/i.test(hl) || /\bhood\b/i.test(hl),
-    gnwRssKeywords: ['Robinhood Markets'],
+    stockTitanSlugs: ['HOOD'],
     irUrl: 'https://investors.robinhood.com/press-releases',
     notifiedApiUrls: ['https://investors.robinhood.com/rss/news-releases.xml'],
   },
@@ -652,6 +655,7 @@ const TICKER_CONFIG = {
     topics: ['GLXY'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /galaxy\s*digital/i.test(hl) || /\bglxy\b/i.test(hl) || /galaxy\s*(?:asset|fund)/i.test(hl),
+    stockTitanSlugs: ['GLXY'],
     irUrl: 'https://investor.galaxy.com/',
   },
   BITF: {
@@ -660,6 +664,7 @@ const TICKER_CONFIG = {
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /bitfarms/i.test(hl) || /\bbitf\b/i.test(hl),
     gnwRssKeywords: ['Bitfarms'],
+    stockTitanSlugs: ['BITF'],
     irUrl: 'https://investor.bitfarms.com/news-events/press-releases',
     notifiedApiUrls: ['https://investor.bitfarms.com/rss/news-releases.xml'],
   },
@@ -722,6 +727,7 @@ const TICKER_CONFIG = {
     topics: ['BCE'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /\bbce\b/i.test(hl) || (/\bbell\b/i.test(hl) && /canada|media|wireless/i.test(hl)),
+    stockTitanSlugs: ['BCE'],
     irUrl: 'https://www.bce.ca/news-and-media/newsroom',
   },
 
@@ -731,6 +737,7 @@ const TICKER_CONFIG = {
     topics: ['AMT'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /american\s*tower/i.test(hl) || /\bamt\b/i.test(hl),
+    stockTitanSlugs: ['AMT'],
     irUrl: 'https://americantower.gcs-web.com/press-releases',
     notifiedApiUrls: ['https://americantower.gcs-web.com/rss/news-releases.xml'],
   },
@@ -754,6 +761,7 @@ const TICKER_CONFIG = {
   AMZLEO: { type: 'amazon-leo' },
   LYNK: {
     type: 'lynk',
+    stockTitanSlugs: ['SLAM'],
     irUrl: 'https://lynk.world/press-releases/',
   },
 };
@@ -1224,13 +1232,16 @@ export default async function handler(req, res) {
         break;
       case 'lynk': {
         items = await fetchLynk();
-        // Fallback to IR page scrape if WordPress returns empty
-        if (items.length < 3 && config.irUrl) {
-          try {
-            const irItems = await fetchIRPage(config.irUrl);
-            items.push(...irItems);
-            items = dedupe(items);
-          } catch { /* IR fallback failed */ }
+        // Fallback to StockTitan + IR page scrape if WordPress returns empty
+        if (items.length < 3 && (config.stockTitanSlugs || config.irUrl)) {
+          const fallbackPromises = [];
+          if (config.stockTitanSlugs) fallbackPromises.push(fetchStockTitan(config.stockTitanSlugs));
+          if (config.irUrl) fallbackPromises.push(fetchIRPage(config.irUrl));
+          const results = await Promise.allSettled(fallbackPromises);
+          for (const r of results) {
+            if (r.status === 'fulfilled') items.push(...r.value);
+          }
+          items = dedupe(items);
         }
         break;
       }
