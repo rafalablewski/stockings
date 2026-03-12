@@ -1207,9 +1207,7 @@ async function fetchQmSimple(config) {
     const filterFallback = (items) => items.filter((item) => {
       const hl = (item.headline || '').toLowerCase();
       if (hl.length < 15) return false;
-      const src = item._source || '';
-      if (src === 'stocktitan' || src === 'notified-rss' || src === 'ir-scrape' || src === 'gnw-rss' || src === 'gnw-atom' || src === 'newsroom-scrape' || src === 'generic-rss') return true;
-      return hl.length >= 20 && config.filter(hl);
+      return config.filter(hl);
     });
 
     let fallbackItems = [];
@@ -1259,9 +1257,7 @@ async function fetchCrypto(config) {
     const filterFallback = (items) => items.filter((item) => {
       const hl = (item.headline || '').toLowerCase();
       if (hl.length < 15) return false;
-      const src = item._source || '';
-      if (src === 'stocktitan' || src === 'notified-json' || src === 'notified-rss' || src === 'newsfile-company' || src === 'newsroom-scrape' || src === 'generic-rss') return true;
-      return hl.length >= 20 && config.filter(hl);
+      return config.filter(hl);
     });
 
     let fallbackItems = [];
@@ -1608,6 +1604,9 @@ export default async function handler(req, res) {
       await sql`DELETE FROM press_releases WHERE
         ticker = 'NOK' AND
         headline ~* '(rubber|hydrogen energy|workplace|workshop|seal|gasket|nok group|carbon.neutral|global one nok)'`;
+      // Purge cross-contaminated entries (e.g. NVDA articles stored under wrong tickers)
+      await sql`DELETE FROM press_releases WHERE
+        headline ~* '\\bnvidia\\b' AND ticker != 'NVDA' AND internal_source IN ('newsroom-scrape', 'ir-scrape', 'gnw-rss', 'gnw-atom', 'generic-rss')`;
     }
   } catch { /* cleanup is best-effort */ }
 
