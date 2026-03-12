@@ -488,7 +488,7 @@ async function fetchIRPage(irUrl) {
       const datetime = extractDateFromContext(html, m.index);
       if (!datetime) continue; // skip items without a discoverable date
       items.push({
-        newsid: `ir-${items.length}`,
+        newsid: `ir-scrape-${url.replace(/[^a-z0-9]/gi, '-').slice(-60)}`,
         headline: text,
         datetime,
         source: 'Investor Relations',
@@ -532,7 +532,7 @@ async function fetchNewsroomPage(url) {
       const datetime = extractDateFromContext(html, m.index);
       if (!datetime) continue; // skip items without a discoverable date
       items.push({
-        newsid: `newsroom-${items.length}`,
+        newsid: `newsroom-scrape-${fullUrl.replace(/[^a-z0-9]/gi, '-').slice(-60)}`,
         headline: text,
         datetime,
         source: 'Newsroom',
@@ -551,8 +551,7 @@ async function fetchNewsroomPage(url) {
 // ─── Generic RSS fetcher (for arbitrary RSS/Atom feed URLs) ───
 
 async function fetchGenericRss(rssUrls) {
-  const items = [];
-  for (const url of rssUrls) {
+  const promises = rssUrls.map(async (url) => {
     try {
       const res = await fetch(url, {
         headers: {
@@ -561,7 +560,7 @@ async function fetchGenericRss(rssUrls) {
         },
         signal: AbortSignal.timeout(8000),
       });
-      if (!res.ok) continue;
+      if (!res.ok) return [];
       const xml = await res.text();
       let parsed = [];
       if (xml.includes('<item>')) parsed = parseRssXml(xml);
@@ -570,12 +569,14 @@ async function fetchGenericRss(rssUrls) {
         item.source = item.source || 'RSS Feed';
         item._source = 'generic-rss';
       }
-      items.push(...parsed);
+      return parsed;
     } catch (e) {
       console.warn(`[press-intelligence] Generic RSS failed for "${url}":`, e.message);
+      return [];
     }
-  }
-  return items;
+  });
+  const itemArrays = await Promise.all(promises);
+  return itemArrays.flat();
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1083,7 +1084,6 @@ const TICKER_CONFIG = {
     filter: (hl) => /nvidia/i.test(hl) || /\bnvda\b/i.test(hl),
     stockTitanSlugs: ['NVDA'],
     gnwRssKeywords: ['NVIDIA'],
-    irUrl: 'https://nvidianews.nvidia.com/news',
     newsroomUrls: ['https://nvidianews.nvidia.com/news/all'],
     notifiedApiUrls: ['https://investor.nvidia.com/rss/news-releases.xml'],
   },
@@ -1196,15 +1196,11 @@ async function fetchQmSimple(config) {
     if (config.notifiedApiUrls) fallbackPromises.push(fetchNotifiedRss(config.notifiedApiUrls));
     if (config.gnwRssKeywords) fallbackPromises.push(fetchGnwRss(config.gnwRssKeywords));
     if (config.irUrl) fallbackPromises.push(fetchIRPage(config.irUrl));
-    if (config.newsroomUrls) {
-      for (const url of config.newsroomUrls) {
-        fallbackPromises.push(fetchNewsroomPage(url));
-      }
-    }
+    if (config.newsroomUrls) fallbackPromises.push(...config.newsroomUrls.map(fetchNewsroomPage));
     if (config.rssUrls) fallbackPromises.push(fetchGenericRss(config.rssUrls));
 
     const results = await Promise.allSettled(fallbackPromises);
-    const TRUSTED = new Set(['stocktitan', 'notified-rss', 'notified-json', 'ir-scrape', 'newsroom-scrape', 'generic-rss', 'newsfile-company']);
+    const TRUSTED = new Set(['stocktitan', 'notified-rss', 'notified-json', 'ir-scrape', 'generic-rss', 'newsfile-company']);
     const filterFallback = (items) => items.filter((item) => {
       const hl = (item.headline || '').toLowerCase();
       if (hl.length < 15) return false;
@@ -1247,16 +1243,12 @@ async function fetchCrypto(config) {
     if (config.notifiedApiUrls) fallbackPromises.push(fetchNotifiedRss(config.notifiedApiUrls));
     if (config.gnwRssKeywords) fallbackPromises.push(fetchGnwRss(config.gnwRssKeywords));
     if (config.irUrl) fallbackPromises.push(fetchIRPage(config.irUrl));
-    if (config.newsroomUrls) {
-      for (const url of config.newsroomUrls) {
-        fallbackPromises.push(fetchNewsroomPage(url));
-      }
-    }
+    if (config.newsroomUrls) fallbackPromises.push(...config.newsroomUrls.map(fetchNewsroomPage));
     if (config.rssUrls) fallbackPromises.push(fetchGenericRss(config.rssUrls));
 
     const results = await Promise.allSettled(fallbackPromises);
 
-    const TRUSTED = new Set(['stocktitan', 'notified-rss', 'notified-json', 'ir-scrape', 'newsroom-scrape', 'generic-rss', 'newsfile-company']);
+    const TRUSTED = new Set(['stocktitan', 'notified-rss', 'notified-json', 'ir-scrape', 'generic-rss', 'newsfile-company']);
     const filterFallback = (items) => items.filter((item) => {
       const hl = (item.headline || '').toLowerCase();
       if (hl.length < 15) return false;
@@ -1449,8 +1441,7 @@ async function fetchAttPRNDirect() {
 
 async function fetchAttAllNews() {
   try {
-    const url = 'https://services.att.com/search/v1/newsroom' +
-      '?app-id=attnews&q=*:*&fq=-rejectDoc:true&rows=1000&sort=published_date+desc&wt=json';
+    const url = `https://services.att.com/search/v1/newsroom?app-id=attnews&q=*:*&fq=-rejectDoc:true&rows=1000&sort=published_date+desc&wt=json`;
     const res = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -1476,8 +1467,7 @@ async function fetchAttAllNews() {
 
 async function fetchAttInvestorNews() {
   try {
-    const url = 'https://services.att.com/search/v1/newsroom' +
-      '?app-id=attnews&q=*:*&fq=-rejectDoc:true&fq=tags:Investors&rows=200&sort=published_date+desc&wt=json';
+    const url = `https://services.att.com/search/v1/newsroom?app-id=attnews&q=*:*&fq=-rejectDoc:true&fq=tags:Investors&rows=200&sort=published_date+desc&wt=json`;
     const res = await fetch(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -1608,12 +1598,17 @@ export default async function handler(req, res) {
       await sql`DELETE FROM press_releases WHERE
         ticker = 'NOK' AND
         headline ~* '(rubber|hydrogen energy|workplace|workshop|seal|gasket|nok group|carbon.neutral|global one nok)'`;
+      // Purge NVDA newsroom-scrape articles that don't mention nvidia/nvda (generic blog posts)
+      await sql`DELETE FROM press_releases WHERE
+        ticker = 'NVDA' AND
+        internal_source = 'newsroom-scrape' AND
+        headline !~* '(nvidia|\mnvda\M)'`;
     }
   } catch { /* cleanup is best-effort */ }
 
-  // Filter DB items: trust ticker-specific sources (newsroom, IR, RSS), but
-  // apply headline filter to keyword-search sources (GNW) that can return cross-ticker results
-  const TRUSTED_SOURCES = new Set(['newsroom-scrape', 'ir-scrape', 'notified-rss', 'stocktitan', 'generic-rss', 'notified-json', 'newsfile-company']);
+  // Filter DB items: trust ticker-specific sources (IR, RSS), but
+  // apply headline filter to newsroom-scrape and keyword-search sources (GNW)
+  const TRUSTED_SOURCES = new Set(['ir-scrape', 'notified-rss', 'stocktitan', 'generic-rss', 'notified-json', 'newsfile-company']);
   const applyTickerFilter = (items) => {
     if (!config.filter) return items; // T and AMZLEO have no filter
     return items.filter(item => {
