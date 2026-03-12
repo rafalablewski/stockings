@@ -1,8 +1,12 @@
 // api/press-intelligence.js
-// Unified press-release proxy for all 14 tickers
+// Unified press-release proxy for all tickers
 // Usage: /api/press-intelligence?ticker=ASTS
-// Supported: ASTS, BMNR, IRDM, GSAT, VZ, T, AMZLEO, LYNK,
-//            MSTR, MARA, RIOT, CLSK, FRMM, COIN
+// Supported: ASTS, BMNR, IRDM, GSAT, VZ, T, AMZLEO,
+//            MSTR, MARA, RIOT, CLSK, FRMM, COIN, HUT, IREN, NBIS, VSAT, RKLB, SATS, LUNR,
+//            MA, V, SOFI, AXP, AFRM, SEZL, SQ, PYPL, UPST, HOOD, GLXY, BITF,
+//            BLK, HSBC, C, CME, ICE, VOD, ORAN, TU, BCE, AMT, RKUNF, GOOGL,
+//            PL, BA, LMT, QCOM, NOK, ERIC, TMUS, NVDA, IBM,
+//            CIFR, HIVE, CORZ, APLD, CAN, ARBK, BKKT
 
 const { neon } = require('@neondatabase/serverless');
 
@@ -81,7 +85,7 @@ async function persistItems(ticker, items) {
 
   const validItems = items.filter(item => {
     const hlHash = normalizeHl(item.headline);
-    return hlHash && hlHash.length >= 4;
+    return hlHash && hlHash.length >= 4 && !isJunkHeadline(item.headline);
   });
   if (validItems.length === 0) return 0;
 
@@ -134,7 +138,7 @@ async function loadFromDB(ticker) {
       permalink: r.permalink || '',
       storyurl: r.storyurl || '',
       _source: r.internal_source || 'db',
-    }));
+    })).filter(item => !isJunkHeadline(item.headline));
   } catch (err) {
     console.error(`press-intelligence DB load error (${ticker}):`, err.message);
     return [];
@@ -146,6 +150,19 @@ const BROWSER_HEADERS = {
   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
   'Accept-Language': 'en-US,en;q=0.9',
 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  JUNK HEADLINE FILTER — blocks navigation/category links from all sources
+// ═══════════════════════════════════════════════════════════════════════════
+
+const JUNK_HEADLINE_RE = /^(stock news live|merger\s*&\s*acquisitions?|clinical trials?|market research|ipo\b|insider trad|analyst rat|stock buyback|dividend\b|sec filing|media room|investor relations|press room|newsroom|contact us|about us|home|back to|all news|all press|view all|see more|read more|load more)/i;
+
+function isJunkHeadline(text) {
+  if (!text) return true;
+  if (JUNK_HEADLINE_RE.test(text.trim())) return true;
+  if (text.trim().split(/\s+/).length < 4) return true; // real headlines have 4+ words
+  return false;
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  SHARED UTILITIES
@@ -360,7 +377,7 @@ async function fetchStockTitan(slugs) {
         const href = m[1];
         const text = decode(strip(m[2]));
         if (!text || text.length < 15) continue;
-        if (/view all|see more|read more|load more/i.test(text)) continue;
+        if (isJunkHeadline(text)) continue;
         const fullUrl = href.startsWith('http') ? href : `https://www.stocktitan.net${href}`;
         const datetime = extractDateFromContext(html, m.index);
         items.push({
@@ -428,6 +445,7 @@ async function fetchIRPage(irUrl) {
       const href = m[1];
       const text = decode(strip(m[2]));
       if (!text || text.length < 20) continue;
+      if (isJunkHeadline(text)) continue;
       const url = href.startsWith('http') ? href : `${origin}${href.startsWith('/') ? '' : '/'}${href}`;
       const datetime = extractDateFromContext(html, m.index);
       items.push({
@@ -508,6 +526,7 @@ const TICKER_CONFIG = {
     topics: ['LUNR'],
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
     filter: (hl) => /intuitive\s*machines|lunr/i.test(hl),
+    irUrl: 'https://investors.intuitivemachines.com/news-releases',
   },
 
   MSTR: {
@@ -545,6 +564,8 @@ const TICKER_CONFIG = {
     topics: ['IREN'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /\biren\b|iris\s*energy/i.test(hl),
+    irUrl: 'https://irisenergy.gcs-web.com/news-releases',
+    notifiedApiUrls: ['https://irisenergy.gcs-web.com/rss/news-releases.xml'],
   },
   NBIS: {
     type: 'qm-simple',
@@ -571,10 +592,333 @@ const TICKER_CONFIG = {
     ],
   },
 
+  // ─── Fintech & Payments ───
+  MA: {
+    type: 'qm-simple',
+    topics: ['MA'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /mastercard/i.test(hl) || (/\bma\b/i.test(hl) && /payment|transaction|card|network/i.test(hl)),
+  },
+  V: {
+    type: 'qm-simple',
+    topics: ['V'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /\bvisa\b/i.test(hl),
+  },
+  SOFI: {
+    type: 'qm-simple',
+    topics: ['SOFI'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /sofi/i.test(hl),
+  },
+  AXP: {
+    type: 'qm-simple',
+    topics: ['AXP'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /american\s*express/i.test(hl) || /\bamex\b/i.test(hl) || /\baxp\b/i.test(hl),
+  },
+  AFRM: {
+    type: 'qm-simple',
+    topics: ['AFRM'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /affirm/i.test(hl) || /\bafrm\b/i.test(hl),
+    stockTitanSlugs: ['AFRM'],
+    irUrl: 'https://investors.affirm.com/news-events/all-news',
+    notifiedApiUrls: [
+      'https://investors.affirm.com/rss/news-releases.xml',
+      'https://investors.affirm.com/rss/press-releases.xml',
+    ],
+  },
+  SEZL: {
+    type: 'qm-simple',
+    topics: ['SEZL'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /sezzle/i.test(hl) || /\bsezl\b/i.test(hl),
+  },
+  SQ: {
+    type: 'qm-simple',
+    topics: ['SQ', 'XYZ'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /block,?\s*inc/i.test(hl) || /\bsquare\b/i.test(hl) || /cash\s*app/i.test(hl) || /\bsq\b/i.test(hl) || /\bxyz\b/i.test(hl),
+    stockTitanSlugs: ['XYZ', 'SQ'],
+    irUrl: 'https://investors.block.xyz/investor-news/default.aspx',
+  },
+  PYPL: {
+    type: 'qm-simple',
+    topics: ['PYPL'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /paypal/i.test(hl) || /\bpypl\b/i.test(hl) || /venmo/i.test(hl),
+  },
+  UPST: {
+    type: 'qm-simple',
+    topics: ['UPST'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /upstart/i.test(hl) || /\bupst\b/i.test(hl),
+    stockTitanSlugs: ['UPST'],
+    irUrl: 'https://ir.upstart.com/news-and-events/news-releases',
+    notifiedApiUrls: ['https://ir.upstart.com/rss/news-releases.xml'],
+  },
+  HOOD: {
+    type: 'qm-simple',
+    topics: ['HOOD'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /robinhood/i.test(hl) || /\bhood\b/i.test(hl),
+    stockTitanSlugs: ['HOOD'],
+    irUrl: 'https://investors.robinhood.com/press-releases',
+    notifiedApiUrls: ['https://investors.robinhood.com/rss/news-releases.xml'],
+  },
+
+  // ─── Digital Assets (new) ───
+  GLXY: {
+    type: 'qm-simple',
+    topics: ['GLXY'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /galaxy\s*digital/i.test(hl) || /\bglxy\b/i.test(hl) || /galaxy\s*(?:asset|fund)/i.test(hl),
+    stockTitanSlugs: ['GLXY'],
+    irUrl: 'https://investor.galaxy.com/',
+  },
+  BITF: {
+    type: 'qm-simple',
+    topics: ['BITF'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /bitfarms/i.test(hl) || /\bbitf\b/i.test(hl),
+    gnwRssKeywords: ['Bitfarms'],
+    stockTitanSlugs: ['BITF'],
+    irUrl: 'https://investor.bitfarms.com/news-events/press-releases',
+    notifiedApiUrls: ['https://investor.bitfarms.com/rss/news-releases.xml'],
+  },
+
+  // ─── Financial Services ───
+  BLK: {
+    type: 'qm-simple',
+    topics: ['BLK'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /blackrock/i.test(hl) || /\bblk\b/i.test(hl),
+    irUrl: 'https://ir.blackrock.com/news-and-events/press-releases/default.aspx',
+  },
+  HSBC: {
+    type: 'qm-simple',
+    topics: ['HSBC'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /hsbc/i.test(hl),
+  },
+  C: {
+    type: 'qm-simple',
+    topics: ['C'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /citigroup/i.test(hl) || /\bciti\b/i.test(hl) || /citibank/i.test(hl),
+    irUrl: 'https://www.citigroup.com/global/news/press-release',
+  },
+  CME: {
+    type: 'qm-simple',
+    topics: ['CME'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /cme\s*group/i.test(hl) || /\bcme\b/i.test(hl),
+  },
+  ICE: {
+    type: 'qm-simple',
+    topics: ['ICE'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /intercontinental\s*exchange/i.test(hl) || /\bnyse\b/i.test(hl) || (/\bice\b/i.test(hl) && /exchange|futures|data|mortgage|clearing|nyse/i.test(hl)),
+  },
+
+  // ─── Telecom (new) ───
+  VOD: {
+    type: 'qm-simple',
+    topics: ['VOD'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /vodafone/i.test(hl) || /\bvod\b/i.test(hl),
+  },
+  ORAN: {
+    type: 'qm-simple',
+    topics: ['ORAN'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /\borange\b/i.test(hl) && /telecom|network|mobile|5g|fiber|group|s\.a/i.test(hl),
+  },
+  TU: {
+    type: 'qm-simple',
+    topics: ['TU'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /telus/i.test(hl) || /\btu\b/i.test(hl),
+  },
+  BCE: {
+    type: 'qm-simple',
+    topics: ['BCE'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /\bbce\b/i.test(hl) || (/\bbell\b/i.test(hl) && /canada|media|wireless/i.test(hl)),
+    stockTitanSlugs: ['BCE'],
+    irUrl: 'https://www.bce.ca/news-and-media/newsroom',
+  },
+
+  // ─── Infrastructure & Tech ───
+  AMT: {
+    type: 'qm-simple',
+    topics: ['AMT'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /american\s*tower/i.test(hl) || /\bamt\b/i.test(hl),
+    stockTitanSlugs: ['AMT'],
+    irUrl: 'https://americantower.gcs-web.com/press-releases',
+    notifiedApiUrls: ['https://americantower.gcs-web.com/rss/news-releases.xml'],
+  },
+  RKUNF: {
+    type: 'qm-simple',
+    topics: ['RKUNF'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /rakuten/i.test(hl) || /\brkunf\b/i.test(hl),
+    irUrl: 'https://global.rakuten.com/corp/news/press/',
+  },
+  GOOGL: {
+    type: 'qm-simple',
+    topics: ['GOOGL', 'GOOG'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /alphabet/i.test(hl) || /\bgoogle\b/i.test(hl) || /\bgoogl\b/i.test(hl),
+    irUrl: 'https://abc.xyz/investor/news/default.aspx',
+  },
+
+  // ─── Aerospace & Defense ───
+  PL: {
+    type: 'qm-simple',
+    topics: ['PL'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /planet\s*lab/i.test(hl) || (/\bplanet\b/i.test(hl) && /satellite|earth|imaging|data/i.test(hl)) || /\bpl\b/i.test(hl),
+    stockTitanSlugs: ['PL'],
+    irUrl: 'https://investors.planet.com/news/default.aspx',
+  },
+  BA: {
+    type: 'qm-simple',
+    topics: ['BA'],
+    sources: ['pr newswire', 'business wire'],
+    filter: (hl) => /boeing/i.test(hl),
+    stockTitanSlugs: ['BA'],
+    irUrl: 'https://boeing.mediaroom.com/news-releases-statements',
+  },
+  LMT: {
+    type: 'qm-simple',
+    topics: ['LMT'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /lockheed\s*martin/i.test(hl) || /\blmt\b/i.test(hl),
+    stockTitanSlugs: ['LMT'],
+    irUrl: 'https://news.lockheedmartin.com/news-releases',
+  },
+
+  // ─── Semiconductors & Telecom Equipment ───
+  QCOM: {
+    type: 'qm-simple',
+    topics: ['QCOM'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /qualcomm/i.test(hl) || /\bqcom\b/i.test(hl) || /snapdragon/i.test(hl),
+    stockTitanSlugs: ['QCOM'],
+    irUrl: 'https://investor.qualcomm.com/news-events/press-releases/default.aspx',
+  },
+  NOK: {
+    type: 'qm-simple',
+    topics: ['NOK'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /nokia/i.test(hl) || /\bnok\b/i.test(hl),
+    stockTitanSlugs: ['NOK'],
+    gnwRssKeywords: ['Nokia'],
+    irUrl: 'https://www.nokia.com/about-us/investors/news',
+  },
+  ERIC: {
+    type: 'qm-simple',
+    topics: ['ERIC'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /ericsson/i.test(hl) || /\beric\b/i.test(hl),
+    stockTitanSlugs: ['ERIC'],
+    gnwRssKeywords: ['Ericsson'],
+    irUrl: 'https://www.ericsson.com/en/press-releases',
+  },
+  TMUS: {
+    type: 'qm-simple',
+    topics: ['TMUS'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /t.mobile/i.test(hl) || /\btmus\b/i.test(hl),
+    stockTitanSlugs: ['TMUS'],
+    irUrl: 'https://investor.t-mobile.com/events-and-presentations/news/default.aspx',
+  },
+  NVDA: {
+    type: 'qm-simple',
+    topics: ['NVDA'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /nvidia/i.test(hl) || /\bnvda\b/i.test(hl),
+    stockTitanSlugs: ['NVDA'],
+    gnwRssKeywords: ['NVIDIA'],
+    irUrl: 'https://nvidianews.nvidia.com/news',
+  },
+  IBM: {
+    type: 'qm-simple',
+    topics: ['IBM'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /\bibm\b/i.test(hl),
+    stockTitanSlugs: ['IBM'],
+    irUrl: 'https://newsroom.ibm.com/announcements',
+  },
+
+  // ─── Bitcoin Mining (additional) ───
+  CIFR: {
+    type: 'qm-simple',
+    topics: ['CIFR'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /cipher\s*mining/i.test(hl) || /\bcifr\b/i.test(hl),
+    stockTitanSlugs: ['CIFR'],
+    gnwRssKeywords: ['Cipher Mining'],
+    irUrl: 'https://investors.ciphermining.com/news-events/press-releases',
+  },
+  HIVE: {
+    type: 'qm-simple',
+    topics: ['HIVE'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /hive\s*digital/i.test(hl) || /\bhive\b/i.test(hl),
+    stockTitanSlugs: ['HIVE'],
+    gnwRssKeywords: ['HIVE Digital'],
+    irUrl: 'https://www.hivedigitaltechnologies.com/news',
+  },
+  CORZ: {
+    type: 'qm-simple',
+    topics: ['CORZ'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /core\s*scientific/i.test(hl) || /\bcorz\b/i.test(hl),
+    stockTitanSlugs: ['CORZ'],
+    irUrl: 'https://investors.corescientific.com/news-events/press-releases',
+  },
+  APLD: {
+    type: 'qm-simple',
+    topics: ['APLD'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /applied\s*digital/i.test(hl) || /\bapld\b/i.test(hl),
+    stockTitanSlugs: ['APLD'],
+    gnwRssKeywords: ['Applied Digital'],
+    irUrl: 'https://ir.applieddigital.com/news-events/press-releases',
+  },
+  CAN: {
+    type: 'qm-simple',
+    topics: ['CAN'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /canaan/i.test(hl) || (/\bcan\b/i.test(hl) && /mining|bitcoin|miner|asic/i.test(hl)),
+    stockTitanSlugs: ['CAN'],
+    irUrl: 'https://investor.canaaninc.com/news-releases',
+  },
+  ARBK: {
+    type: 'qm-simple',
+    topics: ['ARBK'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /argo\s*blockchain/i.test(hl) || /\barbk\b/i.test(hl),
+    stockTitanSlugs: ['ARBK'],
+    irUrl: 'https://www.argoblockchain.com/investors/news',
+  },
+  BKKT: {
+    type: 'qm-simple',
+    topics: ['BKKT'],
+    sources: OFFICIAL_SOURCES,
+    filter: (hl) => /bakkt/i.test(hl) || /\bbkkt\b/i.test(hl),
+    stockTitanSlugs: ['BKKT'],
+    gnwRssKeywords: ['Bakkt'],
+    irUrl: 'https://investors.bakkt.com/news-and-events/news-releases',
+  },
+
   // ─── Complex multi-source tickers ───
   T: { type: 'att' },
   AMZLEO: { type: 'amazon-leo' },
-  LYNK: { type: 'lynk' },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -588,7 +932,35 @@ async function fetchQmSimple(config) {
     const hl = (item.headline || '').toLowerCase();
     return config.sources.some((s) => src.includes(s)) && config.filter(hl);
   });
-  return dedupe(filtered);
+  let finalItems = dedupe(filtered);
+
+  // Fallback sources when QM returns too few results
+  if ((config.gnwRssKeywords || config.irUrl || config.stockTitanSlugs || config.notifiedApiUrls) && finalItems.length < 3) {
+    const fallbackPromises = [];
+    if (config.stockTitanSlugs) fallbackPromises.push(fetchStockTitan(config.stockTitanSlugs));
+    if (config.notifiedApiUrls) fallbackPromises.push(fetchNotifiedRss(config.notifiedApiUrls));
+    if (config.gnwRssKeywords) fallbackPromises.push(fetchGnwRss(config.gnwRssKeywords));
+    if (config.irUrl) fallbackPromises.push(fetchIRPage(config.irUrl));
+
+    const results = await Promise.allSettled(fallbackPromises);
+    const filterFallback = (items) => items.filter((item) => {
+      const hl = (item.headline || '').toLowerCase();
+      if (hl.length < 15) return false;
+      const src = item._source || '';
+      if (src === 'stocktitan' || src === 'notified-rss' || src === 'ir-scrape' || src === 'gnw-rss' || src === 'gnw-atom') return true;
+      return hl.length >= 20 && config.filter(hl);
+    });
+
+    let fallbackItems = [];
+    for (const r of results) {
+      if (r.status === 'fulfilled' && r.value.length > 0) {
+        fallbackItems.push(...filterFallback(r.value));
+      }
+    }
+    finalItems = dedupe([...finalItems, ...fallbackItems]);
+  }
+
+  return finalItems;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -904,55 +1276,6 @@ async function fetchAmazonLeo() {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  LYNK GLOBAL (LYNK) — WordPress REST API
-// ═══════════════════════════════════════════════════════════════════════════
-
-const LYNK_HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-  'Accept': 'application/json',
-};
-
-async function fetchLynkPosts(page = 1) {
-  const url = `https://lynk.world/wp-json/wp/v2/posts?per_page=100&page=${page}&_fields=id,title,link,date,excerpt,categories,tags&orderby=date&order=desc`;
-  try {
-    const res = await fetch(url, { headers: LYNK_HEADERS });
-    const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1');
-    if (!res.ok) return { posts: [], totalPages: 0, error: `HTTP ${res.status}` };
-    const posts = await res.json();
-    return { posts, totalPages, error: null };
-  } catch (e) {
-    return { posts: [], totalPages: 0, error: e.message };
-  }
-}
-
-async function fetchLynk() {
-  const first = await fetchLynkPosts(1);
-  if (first.error) return [];
-  let all = [...first.posts];
-  if (first.totalPages > 1) {
-    const rest = await Promise.all(
-      Array.from({ length: first.totalPages - 1 }, (_, i) => fetchLynkPosts(i + 2))
-    );
-    for (const r of rest) {
-      if (!r.error) all = all.concat(r.posts);
-    }
-  }
-  const items = all.map(post => {
-    const title = decode(strip(post.title?.rendered || ''));
-    if (!title || title.length < 5) return null;
-    const summary = decode(strip(post.excerpt?.rendered || '')).slice(0, 300);
-    const link = post.link || '';
-    const datetime = post.date ? new Date(post.date).toISOString() : new Date().toISOString();
-    return {
-      newsid: `lynk-${post.id}`, datetime,
-      source: 'Lynk Global', headline: title, qmsummary: summary,
-      permalink: link, storyurl: link,
-      category: 'all', _source: 'lynk-wp-api',
-    };
-  }).filter(Boolean);
-  return dedupe(items);
-}
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  MAIN HANDLER
@@ -972,10 +1295,20 @@ export default async function handler(req, res) {
     });
   }
 
-  const wrapInNews = config.type === 'amazon-leo' || config.type === 'lynk';
+  const wrapInNews = config.type === 'amazon-leo';
 
   // Ensure DB table exists before any DB operations
   await ensureTable();
+
+  // Clean up junk headlines from DB (one-time purge of nav/category links)
+  try {
+    const sql = getSQL();
+    if (sql) {
+      await sql`DELETE FROM press_releases WHERE
+        headline ~* '^(stock news live|merger\\s*&\\s*acquisitions?|clinical trials?|market research|media room|investor relations|press room|newsroom)' OR
+        array_length(string_to_array(trim(headline), ' '), 1) < 4`;
+    }
+  } catch { /* cleanup is best-effort */ }
 
   // ── MODE: DB — serve from database only (page load) ──
   if (mode === 'db') {
@@ -1012,9 +1345,6 @@ export default async function handler(req, res) {
         break;
       case 'amazon-leo':
         items = await fetchAmazonLeo();
-        break;
-      case 'lynk':
-        items = await fetchLynk();
         break;
       default:
         return res.status(500).json({ error: `Unknown type: ${config.type}` });
