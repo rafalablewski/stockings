@@ -155,12 +155,16 @@ const BROWSER_HEADERS = {
 //  JUNK HEADLINE FILTER — blocks navigation/category links from all sources
 // ═══════════════════════════════════════════════════════════════════════════
 
-const JUNK_HEADLINE_RE = /^(stock news live|merger\s*&\s*acquisitions?|clinical trials?|market research|ipo\b|insider trad|analyst rat|stock buyback|dividend\b|sec filing|media room|investor relations|press room|newsroom|contact us|about us|home|back to|all news|all press|view all|see more|read more|load more)/i;
+const JUNK_HEADLINE_RE = /^(stock news live|merger\s*&\s*acquisitions?|clinical trials?|market research|ipo\b|insider trad|analyst rat|stock buyback|dividend\b|sec filing|media room|investor relations|press room|newsroom|contact us|about us|home|back to|all news|all press|view all|see more|read more|load more|subscribe|sign up|log ?in|cookie|privacy|terms of|footer|header|navigation|menu|skip to|jump to)/i;
+
+const JUNK_CONTENT_RE = /\b(share on (facebook|twitter|linkedin|x|whatsapp|messenger|email|reddit)|email a link|open in new window|link to .{1,30} page|follow us|cookie settings|accept cookies|manage preferences|subscribe for|sign up for|download the app|get the app)\b/i;
 
 function isJunkHeadline(text) {
   if (!text) return true;
-  if (JUNK_HEADLINE_RE.test(text.trim())) return true;
-  if (text.trim().split(/\s+/).length < 4) return true; // real headlines have 4+ words
+  const t = text.trim();
+  if (JUNK_HEADLINE_RE.test(t)) return true;
+  if (JUNK_CONTENT_RE.test(t)) return true;
+  if (t.split(/\s+/).length < 4) return true; // real headlines have 4+ words
   return false;
 }
 
@@ -477,10 +481,12 @@ async function fetchNewsroomPage(url) {
     const html = await res.text();
     const items = [];
     const origin = new URL(url).origin;
-    const linkRe = /<a[^>]+href=["']([^"']*(?:press-release|news-release|press_release|media-release|\/detail\/|\/news\/|\/article\/|\/story\/|\/stories\/|\/blog\/|\/insight|\/announcement|\/statement|\/release|\/post\/|\/update\/|\/media\/)[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
+    const linkRe = /<a[^>]+href=["']([^"']*(?:press-release|news-release|press_release|media-release|\/detail\/|\/news\/|\/article\/|\/story\/|\/stories\/|\/blog\/|\/insight|\/announcement|\/statement|\/release|\/post\/|\/update\/)[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
     let m;
     while ((m = linkRe.exec(html)) !== null && items.length < 40) {
       const href = m[1];
+      // Skip social media / sharing / tracking links
+      if (/\b(facebook|twitter|linkedin|share|mailto:|javascript:|#$)/i.test(href)) continue;
       const text = decode(strip(m[2]));
       if (!text || text.length < 15) continue;
       if (isJunkHeadline(text)) continue;
