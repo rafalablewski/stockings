@@ -1046,11 +1046,13 @@ export default function PressIntelligencePage() {
 
   const [page, setPage] = useState(1);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [gradesByTicker, setGradesByTicker] = useState<Record<string, string>>({});
 
   /* ── Fetch all feeds in parallel ── */
   const loadAll = useCallback(async (mode: "db" | "refresh" = "db") => {
     const results: Record<string, NewsItem[]> = {};
     const errs: Record<string, string> = {};
+    const grades: Record<string, string> = {};
 
     await Promise.allSettled(
       FEED_CONFIGS.map(async (cfg) => {
@@ -1058,6 +1060,7 @@ export default function PressIntelligencePage() {
           const url = `${cfg.endpoint}&mode=${mode}`;
           const res = await fetch(url);
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          grades[cfg.ticker] = res.headers.get("X-Ticker-Grade") || "U";
           const json = await res.json();
           const parse = cfg.parseResponse || ((j: any) => j?.results?.news?.[0]?.newsitem || []);
           const raw: any[] = parse(json);
@@ -1073,6 +1076,7 @@ export default function PressIntelligencePage() {
     );
 
     setFeedsByTicker(results);
+    setGradesByTicker(grades);
     setErrors(errs);
     setLastUpdated(new Date());
     setLoading(false);
@@ -1213,13 +1217,17 @@ export default function PressIntelligencePage() {
             {/* Per-stock counts */}
             <div className="pi-stock-summary-wrap">
               <div className="pi-stock-summary">
-                {FEED_CONFIGS.map((cfg) => (
-                  <div key={cfg.ticker} className="pi-stock-stat">
-                    <span className="pi-stock-dot" data-accent={cfg.accent} />
-                    <span className="pi-stock-stat-count">{stats.perStock[cfg.ticker] || 0}</span>
-                    <span className="pi-stock-stat-label">{cfg.ticker}</span>
-                  </div>
-                ))}
+                {FEED_CONFIGS.map((cfg) => {
+                  const grade = gradesByTicker[cfg.ticker];
+                  return (
+                    <div key={cfg.ticker} className="pi-stock-stat" data-grade={grade}>
+                      <span className="pi-stock-dot" data-accent={cfg.accent} />
+                      <span className="pi-stock-stat-count">{stats.perStock[cfg.ticker] || 0}</span>
+                      <span className="pi-stock-stat-label">{cfg.ticker}</span>
+                      {grade && <span className="pi-grade-dot" data-grade={grade} title={`Grade ${grade}`} />}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -1237,17 +1245,24 @@ export default function PressIntelligencePage() {
             >
               ALL
             </button>
-            {FEED_CONFIGS.map((cfg) => (
-              <button
-                key={cfg.ticker}
-                className="pi-stock-pill"
-                data-active={activeTicker === cfg.ticker}
-                data-accent={cfg.accent}
-                onClick={() => setActiveTicker(cfg.ticker)}
-              >
-                {cfg.ticker}
-              </button>
-            ))}
+            {FEED_CONFIGS.map((cfg) => {
+              const grade = gradesByTicker[cfg.ticker];
+              return (
+                <button
+                  key={cfg.ticker}
+                  className="pi-stock-pill"
+                  data-active={activeTicker === cfg.ticker}
+                  data-accent={cfg.accent}
+                  data-grade={grade}
+                  onClick={() => setActiveTicker(cfg.ticker)}
+                >
+                  {cfg.ticker}
+                  {grade && grade !== "A" && (
+                    <span className="pi-grade-badge" data-grade={grade}>{grade}</span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           <div className="pi-divider" />
