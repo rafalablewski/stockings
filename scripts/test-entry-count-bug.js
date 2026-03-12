@@ -85,13 +85,15 @@ function makeDB(tickers) {
   return db;
 }
 
-// Simulates loadFromDB with LIMIT 5000 (was 1000 — the bug)
+const DB_ROW_LIMIT = 5000; // must match api/press-intelligence.js
+
+// Simulates loadFromDB with LIMIT DB_ROW_LIMIT (was 1000 — the bug)
 function loadFromDB(db, ticker) {
   const data = db[ticker];
   if (!data) return [];
-  // Sort by datetime DESC, then LIMIT 5000 — matches the fix
+  // Sort by datetime DESC, then LIMIT DB_ROW_LIMIT — matches the fix
   const sorted = [...data.items].sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
-  return sorted.slice(0, 5000).map(item => ({
+  return sorted.slice(0, DB_ROW_LIMIT).map(item => ({
     ...item,
     _source: item._source || 'db',
   }));

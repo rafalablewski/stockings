@@ -12,6 +12,7 @@ const { neon } = require('@neondatabase/serverless');
 
 // No in-memory cache — DB is the source of truth
 let _lastJunkPurge = 0; // timestamp of last junk purge (throttle to once per hour)
+const DB_ROW_LIMIT = 5000; // max rows per ticker from DB — must exceed any ticker's total count
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  DATABASE PERSISTENCE — stores every press release permanently
@@ -129,7 +130,7 @@ async function loadFromDB(ticker) {
       FROM press_releases
       WHERE ticker = ${ticker}
       ORDER BY datetime DESC
-      LIMIT 5000
+      LIMIT ${DB_ROW_LIMIT}
     `;
     console.log(`press-intelligence loadFromDB(${ticker}): ${rows.length} rows`);
     return rows.map(r => ({

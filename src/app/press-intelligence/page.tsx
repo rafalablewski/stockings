@@ -1181,12 +1181,13 @@ export default function PressIntelligencePage() {
             .sort((a: any, b: any) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime())
             .map((item: any) => ({ ...item, _ticker: cfg.ticker, _config: cfg }));
           results[cfg.ticker] = filtered;
-          completed++;
-          if (isRefresh) log(`${cfg.ticker}: ✓ ${filtered.length} items (${completed}/${FEED_CONFIGS.length} done)`);
+          if (isRefresh) log(`${cfg.ticker}: ✓ ${filtered.length} items`);
         } catch (e: any) {
           errs[cfg.ticker] = e.message;
+          if (isRefresh) log(`${cfg.ticker}: ✗ error — ${e.message}`);
+        } finally {
           completed++;
-          if (isRefresh) log(`${cfg.ticker}: ✗ error — ${e.message} (${completed}/${FEED_CONFIGS.length} done)`);
+          if (isRefresh) log(`Progress: ${completed}/${FEED_CONFIGS.length} done`);
         }
       })
     );
