@@ -1606,16 +1606,8 @@ export default async function handler(req, res) {
         length(trim(headline)) > 300`;
       // Purge NOK Group (Japanese rubber company) entries — wrong company
       await sql`DELETE FROM press_releases WHERE
-        ticker = 'NOK' AND (
-          headline ~* '(rubber|hydrogen energy|workplace|workshop|seal|gasket|nok group|carbon.neutral|global one nok)' OR
-          (internal_source = 'newsroom-scrape' AND headline !~* 'nokia')
-        )`;
-      // Purge newsroom/IR-scraped entries for tickers that had wrong timestamps
-      // (datetime was set to scrape time, not article date). Fixed scrapers now
-      // skip dateless items, so these will re-populate correctly on next refresh.
-      await sql`DELETE FROM press_releases WHERE
-        internal_source IN ('newsroom-scrape', 'ir-scrape') AND
-        ticker IN ('NOK', 'GLXY', 'VOD', 'RKUNF', 'HSBC', 'ORAN', 'TMUS')`;
+        ticker = 'NOK' AND
+        headline ~* '(rubber|hydrogen energy|workplace|workshop|seal|gasket|nok group|carbon.neutral|global one nok)'`;
     }
   } catch { /* cleanup is best-effort */ }
 
