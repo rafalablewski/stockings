@@ -170,11 +170,10 @@ function test2() {
     for (let i = 0; i < (newItemsPerTicker[ticker] || 0); i++) {
       upstreamItems.push(makeItem(ticker, -(i + 1), 'Business Wire', 'quotemedia', 'upstream'));
     }
-    const refreshDbItems = applyTickerFilter(loadFromDB(db, ticker), db[ticker].filter);
     // Persist upstream items (like the real API does)
     persistItems(db, ticker, upstreamItems);
-    // Merge (like the real API does — does NOT re-read from DB)
-    const merged = dedupe([...upstreamItems, ...refreshDbItems]);
+    // Re-read from DB after persist (matches the fix — single source of truth)
+    const merged = applyTickerFilter(loadFromDB(db, ticker), db[ticker].filter);
     refreshTotal += merged.length;
   }
 

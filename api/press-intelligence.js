@@ -1794,15 +1794,21 @@ export default async function handler(req, res) {
       console.error(`press-intelligence persist failed (${ticker}):`, persistErr.message);
     }
 
-    // Merge fresh upstream + historical DB items, deduplicated
-    // Clean upstream headlines to match DB format before merge/dedupe
-    for (const item of items) {
-      if (item.headline) item.headline = cleanHeadline(item.headline);
-    }
-
-    let merged = items;
-    if (dbItems.length > 0) {
-      merged = dedupe([...items, ...dbItems]);
+    // Re-read from DB after persist — single source of truth for both modes.
+    // This ensures refresh returns the same data as the next page load.
+    let merged;
+    try {
+      merged = applyTickerFilter(await loadFromDB(ticker));
+    } catch (reloadErr) {
+      console.error(`press-intelligence DB reload after persist failed (${ticker}):`, reloadErr.message);
+      // Fallback: in-memory merge if DB re-read fails
+      for (const item of items) {
+        if (item.headline) item.headline = cleanHeadline(item.headline);
+      }
+      merged = items;
+      if (dbItems.length > 0) {
+        merged = dedupe([...items, ...dbItems]);
+      }
     }
 
     // Mark each item: _inDb = true if it was already in the database BEFORE this fetch
