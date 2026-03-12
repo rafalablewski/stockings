@@ -155,9 +155,9 @@ const BROWSER_HEADERS = {
 //  JUNK HEADLINE FILTER — blocks navigation/category links from all sources
 // ═══════════════════════════════════════════════════════════════════════════
 
-const JUNK_HEADLINE_RE = /^(stock news live|merger\s*&\s*acquisitions?|clinical trials?|market research|ipo\b|insider trad|analyst rat|stock buyback|dividend\b|sec filing|media room|investor relations|press room|newsroom|contact us|about us|home|back to|all news|all press|view all|see more|read more|load more|subscribe|sign up|log ?in|cookie|privacy|terms of|footer|header|navigation|menu|skip to|jump to)/i;
+const JUNK_HEADLINE_RE = /^(stock news live|merger\s*&\s*acquisitions?|clinical trials?|market research|ipo\b|insider trad|analyst rat|stock buyback|dividend\b|sec filing|media room|investor relations|press room|newsroom|contact us|about us|home|back to|all news|all press|view all|see more|read more|load more|subscribe|sign up|log ?in|cookie|privacy|terms of|footer|header|navigation|menu|skip to|jump to|link to\b)/i;
 
-const JUNK_CONTENT_RE = /\b(share on (facebook|twitter|linkedin|x|whatsapp|messenger|email|reddit)|email a link|open in new window|link to .{1,30} page|follow us|cookie settings|accept cookies|manage preferences|subscribe for|sign up for|download the app|get the app)\b/i;
+const JUNK_CONTENT_RE = /\b(share on (facebook|twitter|linkedin|x|whatsapp|messenger|email|reddit)|email a link|open in new window|opens in new window|link to .{1,30} page|follow us|cookie settings|accept cookies|manage preferences|subscribe for|sign up for|download the app|get the app|read media release|download pdf|\(pdf\b|\bpdf \d+kb\b|\d+ min read$)/i;
 
 function isJunkHeadline(text) {
   if (!text) return true;
@@ -165,7 +165,26 @@ function isJunkHeadline(text) {
   if (JUNK_HEADLINE_RE.test(t)) return true;
   if (JUNK_CONTENT_RE.test(t)) return true;
   if (t.split(/\s+/).length < 4) return true; // real headlines have 4+ words
+  if (t.length > 300) return true; // real headlines are not full article bodies
   return false;
+}
+
+/**
+ * Clean scraped headline text — strip common prefixes/suffixes
+ * that are navigation artifacts, not part of the actual headline.
+ */
+function cleanHeadline(text) {
+  if (!text) return '';
+  let t = text.trim();
+  // Strip "Link to " prefix (Vodafone-style navigation)
+  t = t.replace(/^link to\s+/i, '');
+  // Strip trailing metadata like "| 4 min read", "• March 06, 2026", category tags
+  t = t.replace(/\s*\|\s*\d+\s*min\s*read\s*$/i, '');
+  // Strip leading category/type labels like "Research •", "Podcasts •"
+  t = t.replace(/^(?:Research|Podcasts?|Blog|News|Press Release|Article|Insight|Report)\s*[•·|–—-]\s*/i, '');
+  // Strip trailing date patterns that got scraped into headline
+  t = t.replace(/\s*[•·|]\s*(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s*\d{4}\s*$/i, '');
+  return t.trim();
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -447,7 +466,8 @@ async function fetchIRPage(irUrl) {
     let m;
     while ((m = linkRe.exec(html)) !== null && items.length < 30) {
       const href = m[1];
-      const text = decode(strip(m[2]));
+      const rawText = decode(strip(m[2]));
+      const text = cleanHeadline(rawText);
       if (!text || text.length < 20) continue;
       if (isJunkHeadline(text)) continue;
       const url = href.startsWith('http') ? href : `${origin}${href.startsWith('/') ? '' : '/'}${href}`;
@@ -487,17 +507,19 @@ async function fetchNewsroomPage(url) {
       const href = m[1];
       // Skip social media / sharing / tracking links
       if (/\b(facebook|twitter|linkedin|share|mailto:|javascript:|#$)/i.test(href)) continue;
-      const text = decode(strip(m[2]));
+      const rawText = decode(strip(m[2]));
+      const text = cleanHeadline(rawText);
       if (!text || text.length < 15) continue;
       if (isJunkHeadline(text)) continue;
       if (/^(home|about|contact|careers|privacy|terms|login|sign)/i.test(text.trim())) continue;
       const fullUrl = href.startsWith('http') ? href : `${origin}${href.startsWith('/') ? '' : '/'}${href}`;
       if (fullUrl === url || href.startsWith('#')) continue;
       const datetime = extractDateFromContext(html, m.index);
+      if (!datetime) continue; // skip items without a discoverable date
       items.push({
         newsid: `newsroom-${items.length}`,
         headline: text,
-        datetime: datetime || new Date().toISOString(),
+        datetime,
         source: 'Newsroom',
         permalink: fullUrl,
         storyurl: fullUrl,
@@ -945,11 +967,11 @@ const TICKER_CONFIG = {
     type: 'qm-simple',
     topics: ['NOK'],
     sources: OFFICIAL_SOURCES,
-    filter: (hl) => /nokia/i.test(hl) || /\bnok\b/i.test(hl),
+    filter: (hl) => /nokia/i.test(hl) || (/\bnok\b/i.test(hl) && /network|5g|telecom|mobile/i.test(hl)),
     stockTitanSlugs: ['NOK'],
     gnwRssKeywords: ['Nokia'],
     irUrl: 'https://www.nokia.com/about-us/investors/news',
-    newsroomUrls: ['https://www.nokgrp.com/en/news/'],
+    newsroomUrls: ['https://www.nokia.com/about-us/newsroom/'],
     rssUrls: ['https://www.nokia.com/rss/press-releases.xml'],
   },
   ERIC: {
@@ -1487,8 +1509,10 @@ export default async function handler(req, res) {
     const sql = getSQL();
     if (sql) {
       await sql`DELETE FROM press_releases WHERE
-        headline ~* '^(stock news live|merger\\s*&\\s*acquisitions?|clinical trials?|market research|media room|investor relations|press room|newsroom)' OR
-        array_length(string_to_array(trim(headline), ' '), 1) < 4`;
+        headline ~* '^(stock news live|merger\\s*&\\s*acquisitions?|clinical trials?|market research|media room|investor relations|press room|newsroom|link to\\b)' OR
+        headline ~* '(opens in new window|read media release|\\(pdf\\b|\\d+ min read$)' OR
+        array_length(string_to_array(trim(headline), ' '), 1) < 4 OR
+        length(trim(headline)) > 300`;
     }
   } catch { /* cleanup is best-effort */ }
 
