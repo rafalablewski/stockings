@@ -1,0 +1,509 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ABISON PAGES — Bloomberg-style shared CSS for Docs, Hooks, Audit
+   Uses design tokens from stock-model-styles.css (:root variables)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.ab-app {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ── Header ── */
+.ab-header {
+  padding: 32px 32px 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ab-subtitle {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+
+.ab-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.ab-desc {
+  font-size: 13px;
+  color: var(--text3);
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.ab-desc-accent {
+  font-family: 'Space Mono', monospace;
+  color: var(--text2);
+}
+
+.ab-warning {
+  font-size: 11px;
+  color: var(--gold);
+  opacity: 0.8;
+  margin-top: 8px;
+}
+
+/* ── KPI Strip ── */
+.ab-kpi-strip {
+  display: flex;
+  gap: 28px;
+  padding: 16px 0 12px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.ab-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ab-kpi-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ab-kpi-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* ── Quick Nav (pill strip) ── */
+.ab-nav-strip {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  margin-top: 20px;
+  padding-bottom: 0;
+}
+
+.ab-nav-pill {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.ab-nav-pill:hover {
+  color: var(--text2);
+}
+
+.ab-nav-pill[data-active="true"],
+.ab-nav-pill[data-accent="true"] {
+  color: var(--cyan);
+  border-bottom-color: var(--cyan);
+}
+
+/* ── Feed Container ── */
+.ab-feed {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 32px 80px;
+}
+
+/* ── Section Header ── */
+.ab-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 28px 0 12px;
+  padding-top: 12px;
+  scroll-margin-top: 80px;
+}
+
+.ab-section-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--cyan);
+  white-space: nowrap;
+}
+
+.ab-section-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--cyan);
+  background: rgba(34,211,238,0.1);
+  border-radius: 10px;
+  padding: 2px 7px;
+}
+
+.ab-section-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Card ── */
+.ab-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 6px;
+  overflow: hidden;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.ab-card:hover {
+  background: var(--surface2);
+  border-color: rgba(240,246,252,0.15);
+}
+
+.ab-card-inner {
+  padding: 14px 20px;
+}
+
+.ab-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.ab-card-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ab-card-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.ab-card-version {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  opacity: 0.4;
+}
+
+.ab-card-desc {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+/* ── Badge ── */
+.ab-badge {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ab-badge[data-color="pre"] {
+  color: var(--sky);
+  background: rgba(121,192,255,0.1);
+  border: 1px solid rgba(121,192,255,0.15);
+}
+
+.ab-badge[data-color="post"] {
+  color: var(--mint);
+  background: rgba(126,231,135,0.1);
+  border: 1px solid rgba(126,231,135,0.15);
+}
+
+.ab-badge[data-color="pre+post"] {
+  color: var(--gold);
+  background: rgba(210,153,34,0.1);
+  border: 1px solid rgba(210,153,34,0.15);
+}
+
+.ab-badge[data-color="warning"] {
+  color: var(--gold);
+  background: rgba(210,153,34,0.1);
+  border: 1px solid rgba(210,153,34,0.15);
+}
+
+.ab-badge[data-color="info"] {
+  color: var(--sky);
+  background: rgba(121,192,255,0.1);
+  border: 1px solid rgba(121,192,255,0.15);
+}
+
+.ab-badge[data-color="accent"] {
+  color: var(--cyan);
+  background: rgba(34,211,238,0.06);
+  border: 1px solid rgba(34,211,238,0.12);
+}
+
+/* ── Pill / Tag ── */
+.ab-pill {
+  display: inline-block;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text3);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 8px;
+  margin: 2px 4px 2px 0;
+}
+
+/* ── Config / Meta Grid ── */
+.ab-config-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 10px;
+}
+
+.ab-config-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+
+.ab-config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 32px;
+}
+
+.ab-config-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 0;
+  font-size: 11px;
+}
+
+.ab-config-key {
+  font-family: 'Space Mono', monospace;
+  color: var(--text3);
+}
+
+.ab-config-val {
+  font-family: 'Space Mono', monospace;
+  color: var(--text2);
+  font-weight: 500;
+  text-align: right;
+}
+
+/* ── Triggers row ── */
+.ab-triggers {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.ab-triggers-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-right: 4px;
+}
+
+/* ── Action Buttons ── */
+.ab-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text3);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.ab-btn:hover {
+  border-color: var(--text3);
+  color: var(--text2);
+}
+
+.ab-btn[data-state="success"] {
+  color: var(--mint);
+  border-color: rgba(126,231,135,0.3);
+}
+
+/* ── Expandable Prompt Box ── */
+.ab-prompt-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 10px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.ab-prompt-pre {
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  color: var(--text2);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+/* ── Docs-specific: Table ── */
+.ab-table {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.ab-table-head {
+  display: grid;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.ab-table-head-cell {
+  padding: 8px 14px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+.ab-table-row {
+  display: grid;
+  border-bottom: 1px solid rgba(240,246,252,0.04);
+  transition: background 0.15s;
+}
+
+.ab-table-row:last-child {
+  border-bottom: none;
+}
+
+.ab-table-row:hover {
+  background: var(--surface);
+}
+
+.ab-table-cell {
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.ab-table-cell-mono {
+  font-family: 'Space Mono', monospace;
+  color: var(--cyan);
+  font-size: 12px;
+}
+
+.ab-table-cell-muted {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text3);
+}
+
+.ab-table-cell-desc {
+  font-size: 11px;
+  color: var(--text3);
+}
+
+/* ── Docs: Tree ── */
+.ab-tree-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-top: 12px;
+}
+
+/* ── Docs: Info text ── */
+.ab-info {
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.7;
+  margin: 10px 0;
+}
+
+.ab-info-accent {
+  font-family: 'Space Mono', monospace;
+  color: var(--text2);
+}
+
+/* ── Footer note ── */
+.ab-footnote {
+  font-size: 10px;
+  color: var(--text3);
+  opacity: 0.4;
+  margin-top: 24px;
+}
+
+/* ═══ Responsive ═══ */
+@media (max-width: 900px) {
+  .ab-header { padding: 24px 20px 0; }
+  .ab-feed { padding: 12px 20px 60px; }
+  .ab-kpi-strip { gap: 20px; }
+  .ab-config-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .ab-header { padding: 20px 16px 0; }
+  .ab-feed { padding: 8px 16px 60px; }
+  .ab-title { font-size: 20px; }
+}
+
+@media (max-width: 480px) {
+  .ab-header { padding: 16px 12px 0; }
+  .ab-feed { padding: 6px 12px 60px; }
+  .ab-title { font-size: 18px; }
+  .ab-kpi-strip { gap: 12px; }
+  .ab-kpi-value { font-size: 14px; }
+}

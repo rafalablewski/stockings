@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import fs from "fs";
 import path from "path";
 import HookCard from "./HookCard";
+import '../abison-pages.css';
 
 export const metadata: Metadata = {
   title: "Agent Hooks | ABISON",
@@ -110,64 +111,45 @@ export default function HooksPage() {
     script: readScript(plugin.id, scriptFile),
   }));
 
+  const preCount = plugins.filter((p) => p.phase.includes("Pre")).length;
+  const postCount = plugins.filter((p) => p.phase.includes("Post")).length;
+
   return (
-    <div className="min-h-screen py-20 px-6">
-      <div className="max-w-5xl mx-auto">
-        <div className="mb-12">
-          <h1 className="text-2xl font-semibold tracking-tight text-white mb-3">
-            Agent Hooks
-          </h1>
-          <p className="text-[13px] text-white/40 leading-relaxed max-w-2xl">
-            Installed Claude Code plugin hooks that run automatically during
-            editing sessions. Each hook fires on specific tool calls and
-            enforces quality, safety, or structural rules.
-          </p>
-          <p className="text-[12px] text-amber-400/80 mt-2">
-            All hooks are currently turned off in .claude/settings.json.
-          </p>
+    <div className="ab-app">
+      <div className="ab-header">
+        <div className="ab-subtitle">Platform / Hooks</div>
+        <div className="ab-title">Agent Hooks</div>
+        <div className="ab-desc">
+          Installed Claude Code plugin hooks that run automatically during
+          editing sessions. Each hook fires on specific tool calls and
+          enforces quality, safety, or structural rules.
         </div>
+        <div className="ab-warning">All hooks are currently turned off in .claude/settings.json.</div>
 
-        {/* Summary bar */}
-        <div className="flex items-center gap-6 mb-10 pb-6 border-b border-white/[0.06]">
-          <div>
-            <span className="text-[22px] font-light text-white">
-              {plugins.length}
-            </span>
-            <span className="text-[11px] text-white/30 ml-2 uppercase tracking-[0.15em]">
-              Plugins (all turned off)
-            </span>
+        <div className="ab-kpi-strip">
+          <div className="ab-kpi">
+            <div className="ab-kpi-value">{plugins.length}</div>
+            <div className="ab-kpi-label">Plugins</div>
           </div>
-          <div className="w-px h-6 bg-white/[0.08]" />
-          <div>
-            <span className="text-[22px] font-light text-white">
-              {plugins.filter((p) => p.phase.includes("Pre")).length}
-            </span>
-            <span className="text-[11px] text-white/30 ml-2 uppercase tracking-[0.15em]">
-              Pre-hooks
-            </span>
+          <div className="ab-kpi">
+            <div className="ab-kpi-value">{preCount}</div>
+            <div className="ab-kpi-label">Pre-hooks</div>
           </div>
-          <div className="w-px h-6 bg-white/[0.08]" />
-          <div>
-            <span className="text-[22px] font-light text-white">
-              {plugins.filter((p) => p.phase.includes("Post")).length}
-            </span>
-            <span className="text-[11px] text-white/30 ml-2 uppercase tracking-[0.15em]">
-              Post-hooks
-            </span>
+          <div className="ab-kpi">
+            <div className="ab-kpi-value">{postCount}</div>
+            <div className="ab-kpi-label">Post-hooks</div>
           </div>
         </div>
+      </div>
 
-        {/* Plugin cards */}
-        <div className="grid gap-4">
-          {pluginsWithScripts.map((plugin) => (
-            <HookCard key={plugin.id} plugin={plugin} />
-          ))}
+      <div className="ab-feed">
+        {pluginsWithScripts.map((plugin) => (
+          <HookCard key={plugin.id} plugin={plugin} />
+        ))}
+
+        <div className="ab-footnote">
+          Hook configuration lives in .claude/plugins — edit plugin.json to customise thresholds and rules.
         </div>
-
-        <p className="text-[11px] text-white/15 mt-6">
-          Hook configuration lives in .claude/plugins — edit plugin.json to
-          customise thresholds and rules.
-        </p>
       </div>
     </div>
   );
