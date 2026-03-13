@@ -357,3 +357,34 @@ export const tickers = Object.keys(stocks);
 export const researchStocks = stockList.filter(s => s.hasResearch);
 /** Lowercase ticker set — single source of truth for API route validation */
 export const VALID_TICKERS = new Set(Object.keys(stocks).map(t => t.toLowerCase()));
+
+/**
+ * Intelligence tickers — single source of truth for Press Intelligence
+ * and SEC Intelligence. Alphabetical order.
+ *
+ * When adding a new stock to intelligence coverage, add it here ONCE.
+ * Both Press Intelligence and SEC Intelligence pages import this list.
+ */
+export const INTELLIGENCE_TICKERS = [
+  'AFRM', 'AMT', 'AMZLEO', 'APLD', 'ARBK', 'ASTS', 'AXP',
+  'BA', 'BCE', 'BITF', 'BKKT', 'BLK', 'BMNR',
+  'C', 'CAN', 'CIFR', 'CLSK', 'CME', 'COIN', 'CORZ', 'CRCL',
+  'ERIC',
+  'FRMM',
+  'GLXY', 'GOOGL', 'GSAT',
+  'HIVE', 'HOOD', 'HSBC', 'HUT',
+  'IBM', 'ICE', 'IRDM', 'IREN',
+  'LMT', 'LUNR',
+  'MA', 'MARA', 'MSTR',
+  'NBIS', 'NOK', 'NVDA',
+  'ORAN',
+  'PL', 'PYPL',
+  'QCOM',
+  'RIOT', 'RKLB', 'RKUNF',
+  'SATS', 'SEZL', 'SOFI', 'SQ',
+  'T', 'TMUS', 'TU',
+  'UPST',
+  'V', 'VOD', 'VSAT', 'VZ',
+] as const;
+
+export type IntelligenceTicker = typeof INTELLIGENCE_TICKERS[number];
