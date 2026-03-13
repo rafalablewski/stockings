@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { seenFilings } from '@/lib/schema';
 import { eq, sql, inArray } from 'drizzle-orm';
+import { INTELLIGENCE_TICKERS } from '@/lib/stocks';
 
 /**
  * CIK numbers for tracked companies (zero-padded to 10 digits).
@@ -111,16 +112,8 @@ async function resolveCik(ticker: string): Promise<string | null> {
   return dynamicCikCache?.[upper] ?? null;
 }
 
-/** All tickers tracked in Press Intelligence */
-const PI_TICKERS = [
-  'ASTS', 'BMNR', 'IRDM', 'GSAT', 'VZ', 'VSAT', 'RKLB', 'SATS', 'LUNR', 'T',
-  'MSTR', 'MARA', 'RIOT', 'CLSK', 'HUT', 'IREN', 'NBIS', 'FRMM', 'COIN',
-  'MA', 'V', 'SOFI', 'AXP', 'AFRM', 'SEZL', 'SQ', 'PYPL', 'UPST',
-  'HOOD', 'BITF', 'BLK', 'HSBC', 'C', 'CME', 'ICE',
-  'VOD', 'TMUS', 'AMT',
-  'GOOGL', 'PL', 'BA', 'LMT', 'QCOM', 'NOK', 'ERIC', 'NVDA', 'IBM',
-  'CIFR', 'HIVE', 'CORZ', 'APLD', 'CAN', 'ARBK', 'BKKT',
-];
+/** All tickers tracked in Intelligence pages (imported from shared source of truth) */
+const PI_TICKERS: string[] = [...INTELLIGENCE_TICKERS];
 
 const SEC_HEADERS = {
   'User-Agent': 'Stockings Research App research@stockings.dev',

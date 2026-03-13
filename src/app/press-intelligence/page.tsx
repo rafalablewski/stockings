@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { stocks, stockList } from "@/lib/stocks";
+import { stocks, stockList, INTELLIGENCE_TICKERS } from "@/lib/stocks";
 import "./press-intelligence.css";
 
 /* ═══════════════════════════════════════════════════════════════════════════

@@ -357,3 +357,34 @@ export const tickers = Object.keys(stocks);
 export const researchStocks = stockList.filter(s => s.hasResearch);
 /** Lowercase ticker set — single source of truth for API route validation */
 export const VALID_TICKERS = new Set(Object.keys(stocks).map(t => t.toLowerCase()));
+
+/**
+ * Intelligence tickers — single source of truth for Press Intelligence
+ * and SEC Intelligence. Order matters: it defines the display order in
+ * filter pills, KPI summaries, and API iteration.
+ *
+ * When adding a new stock to intelligence coverage, add it here ONCE.
+ * Both Press Intelligence and SEC Intelligence pages import this list.
+ */
+export const INTELLIGENCE_TICKERS = [
+  // ─── Space Technology ───
+  'ASTS', 'BMNR', 'IRDM', 'GSAT', 'VZ', 'VSAT', 'RKLB', 'SATS', 'LUNR',
+  // ─── Telecom ───
+  'T', 'AMZLEO',
+  // ─── Digital Assets (BTC mining, crypto) ───
+  'MSTR', 'MARA', 'RIOT', 'CLSK', 'HUT', 'IREN', 'NBIS', 'FRMM', 'COIN',
+  // ─── Fintech & Payments ───
+  'MA', 'V', 'SOFI', 'AXP', 'AFRM', 'SEZL', 'SQ', 'PYPL', 'UPST',
+  // ─── Digital Assets (exchanges, misc) ───
+  'GLXY', 'HOOD', 'BITF',
+  // ─── Financial Services ───
+  'BLK', 'HSBC', 'C', 'CME', 'ICE',
+  // ─── Telecom (int'l) ───
+  'VOD', 'ORAN', 'TU', 'BCE', 'AMT', 'RKUNF',
+  // ─── Technology ───
+  'GOOGL', 'PL', 'BA', 'LMT', 'QCOM', 'NOK', 'ERIC', 'TMUS', 'NVDA', 'IBM',
+  // ─── Bitcoin Mining (additional) ───
+  'CIFR', 'HIVE', 'CORZ', 'APLD', 'CAN', 'ARBK', 'BKKT',
+] as const;
+
+export type IntelligenceTicker = typeof INTELLIGENCE_TICKERS[number];
