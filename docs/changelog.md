@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-03-13
+
+- feat: add SEC Intelligence page — centralized EDGAR filings view for all intelligence tickers with DB-first loading
+- feat: add /api/sec-intelligence endpoint with mode=db (DB-first) and mode=refresh (fetch SEC EDGAR + persist to seen_filings)
+- feat: add granular dynamic filing type filters (8-K, 10-Q, 10-K, Form 4, Schedule 13, DEF 14A, S-1/S-3, Form 3/5, Form 144, Form D, Other)
+- feat: add NEW badge with dismiss support to SEC Intelligence, sharing seen_filings table with per-stock Edgar tabs
+- feat: expand CIK_MAP from 2 entries to 55+ entries covering all tracked tickers (benefits both SEC Intelligence and Edgar tabs)
+- refactor: extract INTELLIGENCE_TICKERS into src/lib/stocks.ts as single source of truth for Press Intelligence and SEC Intelligence ticker ordering
+- feat: add Intelligence dropdown in nav with Press Intelligence and SEC Intelligence entries
+- docs: add SEC Intelligence page, API route, and shared seen_filings description to /docs
+
 ## 2026-03-12
 
 - refactor: unify 7 news/competitor/utility CSS class families across BMNR, ASTS, CRCL — sm-news-detail, sm-news-badge, sm-news-impact, sm-news-insight, sm-news-source, sm-step-badge, sm-mb-4/16-reset

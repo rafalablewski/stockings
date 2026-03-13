@@ -433,6 +433,7 @@ const routingTree = [
   { path: "/hooks",                                label: "Hooks",            file: "app/hooks/page.tsx",                    note: "Agent hooks documentation" },
   { path: "/audit/comprehensive-code-audit",       label: "Code Audit",       file: "app/audit/comprehensive-code-audit/page.tsx", note: "35-category audit results" },
   { path: "/press-intelligence",                    label: "Press Intelligence", file: "app/press-intelligence/page.tsx",      note: "DB-first feed: page load reads DB, Refresh fetches upstream + marks NEW + persists" },
+  { path: "/sec-intelligence",                     label: "SEC Intelligence",   file: "app/sec-intelligence/page.tsx",       note: "DB-first EDGAR filings for all intelligence tickers, granular form filters, NEW badges" },
   { path: "/db-setup",                             label: "DB Setup",         file: "app/db-setup/page.tsx",                 note: "Browser-based database initialization" },
 ];
 
@@ -444,6 +445,7 @@ const apiRoutes = [
     { method: "GET",  path: "/api/edgar/[ticker]",              auth: "—",   note: "Fetch SEC filings by CIK" },
     { method: "POST", path: "/api/edgar/analyze",               auth: "PIN", note: "AI analysis of filing (Claude)" },
     { method: "POST", path: "/api/edgar/refresh-local",         auth: "—",   note: "Refresh cached filings" },
+    { method: "GET",  path: "/api/sec-intelligence?mode=&ticker=&form=", auth: "—", note: "Bulk EDGAR filings: mode=db (DB-first) or mode=refresh (fetch SEC + persist)" },
   ]},
   { group: "Sources",   routes: [
     { method: "POST", path: "/api/sources/analyze",             auth: "PIN", note: "AI analysis of news article (Claude)" },
@@ -563,7 +565,7 @@ const dbTables: DBTable[] = [
   { name: "timeline_events",     purpose: "Company events timeline",                          key: "ticker + date" },
   { name: "catalysts",           purpose: "Upcoming/completed milestones",                    key: "ticker + event" },
   { name: "partner_news",        purpose: "Partner & competitor activity",                    key: "ticker + date + entity" },
-  { name: "seen_filings",        purpose: "User-viewed filings (NEW/SEEN badge state)",       key: "ticker + accession_number" },
+  { name: "seen_filings",        purpose: "User-viewed filings (NEW/SEEN badge state) — shared by SEC Intelligence + per-stock Edgar tabs", key: "ticker + accession_number" },
   { name: "seen_articles",       purpose: "User-viewed articles (dismissed state)",           key: "ticker + cache_key" },
   { name: "analysis_cache",      purpose: "AI analysis results (EDGAR + Sources)",            key: "ticker + type + key" },
   { name: "audit_checks",        purpose: "Code audit finding verdicts",                      key: "finding_id" },
