@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import './docs.css';
 
 export const metadata: Metadata = {
   title: "Documentation | ABISON",
@@ -1043,14 +1044,13 @@ const changelogEarlierFixes: string[][] = [
 
 function SectionHeader({ id, title, count }: { id: string; title: string; count?: number }) {
   return (
-    <div id={id} className="scroll-mt-20 pt-10 pb-4 border-b border-white/[0.06]">
-      <div className="flex items-center gap-3">
-        <h2 className="text-lg font-semibold tracking-tight text-white">{title}</h2>
+    <div id={id} className="docs-section-header">
+      <div className="docs-section-row">
+        <span className="docs-section-label">{title}</span>
         {count !== undefined && (
-          <span className="text-[10px] font-mono text-white/20 bg-white/[0.04] px-2 py-0.5 rounded">
-            {count}
-          </span>
+          <span className="docs-section-count">{count}</span>
         )}
+        <div className="docs-section-line" />
       </div>
     </div>
   );
@@ -1119,24 +1119,19 @@ function TreeRow({ depth, name, detail, mono }: { depth: number; name: string; d
 
 export default function DocsPage() {
   return (
-    <div className="min-h-screen py-20 px-6">
-      <div className="max-w-6xl mx-auto">
-
-        {/* ── Header ──────────────────────────────────────────────────────── */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold tracking-tight text-white mb-3">
-            Documentation
-          </h1>
-          <p className="text-[13px] text-white/40 leading-relaxed max-w-3xl">
-            Comprehensive documentation for the ABISON platform — app architecture, routing,
-            component hierarchy, data flow, design tokens, CSS utility classes, and coding
-            conventions. All styles are defined in <span className="font-mono text-white/50">stock-model-styles.css</span> and
-            consumed via class names, CSS custom properties, and <span className="font-mono text-white/50">data-accent</span> attributes.
-          </p>
+    <div className="docs-app">
+      <div className="docs-header">
+        <div className="docs-subtitle">Platform / Documentation</div>
+        <div className="docs-title">Documentation</div>
+        <div className="docs-desc">
+          Comprehensive documentation for the ABISON platform — app architecture, routing,
+          component hierarchy, data flow, design tokens, CSS utility classes, and coding
+          conventions. All styles are defined in <span className="docs-desc-accent">stock-model-styles.css</span> and
+          consumed via class names, CSS custom properties, and <span className="docs-desc-accent">data-accent</span> attributes.
         </div>
 
         {/* ── Quick nav ───────────────────────────────────────────────────── */}
-        <div className="flex flex-wrap items-center gap-2 mb-10 pb-6 border-b border-white/[0.06]">
+        <div className="docs-nav-strip">
           {[
             { id: "architecture",label: "Architecture", accent: true },
             { id: "routing",     label: "Routing" },
@@ -1167,27 +1162,28 @@ export default function DocsPage() {
             <a
               key={item.id}
               href={`#${item.id}`}
-              className={`text-[11px] font-mono px-2.5 py-1 rounded-md border transition-colors ${
-                'accent' in item && item.accent
-                  ? 'text-cyan-400/60 bg-cyan-400/[0.06] border-cyan-400/[0.12] hover:bg-cyan-400/[0.12] hover:text-cyan-400/80'
-                  : 'text-white/30 bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:text-white/50'
-              }`}
+              className="docs-nav-pill"
+              data-accent={'accent' in item && item.accent ? "true" : undefined}
             >
               {item.label}
             </a>
           ))}
         </div>
+      </div>
+
+      <div className="docs-feed">
 
         {/* ════════════════════════════════════════════════════════════════════
             APP ARCHITECTURE
             ════════════════════════════════════════════════════════════════════ */}
 
-        <div id="architecture" className="scroll-mt-20 pt-10 pb-4 border-b border-white/[0.06]">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold tracking-tight text-white">App Architecture</h2>
-            <span className="text-[10px] font-mono text-cyan-400/40 bg-cyan-400/[0.06] px-2 py-0.5 rounded border border-cyan-400/[0.08]">
+        <div id="architecture" className="docs-section-header">
+          <div className="docs-section-row">
+            <span className="docs-section-label">App Architecture</span>
+            <span className="docs-arch-badge">
               Next.js 16 · React 19 · TypeScript · Tailwind v4 · Drizzle ORM · Neon PostgreSQL
             </span>
+            <div className="docs-section-line" />
           </div>
         </div>
         <p className="text-[12px] text-white/30 mt-3 mb-6">
@@ -2207,12 +2203,10 @@ export default function DocsPage() {
         </p>
 
         {/* ── Footer ──────────────────────────────────────────────────────── */}
-        <div className="mt-16 pt-6 border-t border-white/[0.06]">
-          <p className="text-[11px] text-white/15">
-            This documentation is auto-generated from the design system.
-            CSS source: <span className="font-mono">src/components/stocks/stock-model-styles.css</span>.
-            Last updated: Mar 2026.
-          </p>
+        <div className="docs-footer-note">
+          This documentation is auto-generated from the design system.
+          CSS source: src/components/stocks/stock-model-styles.css.
+          Last updated: Mar 2026.
         </div>
       </div>
     </div>

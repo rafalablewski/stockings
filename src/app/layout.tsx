@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { stockList, researchStocks } from "@/lib/stocks";
+import { stockList } from "@/lib/stocks";
 import PinStatus from "@/components/shared/PinStatus";
 import AiToggle from "@/components/shared/AiToggle";
 import NotesPanel from "@/components/shared/NotesPanel";
@@ -73,10 +73,6 @@ const mobileNavItems = [
       ...hooks.map((h) => ({ label: h.label, href: `/hooks#${h.slug}`, meta: h.severity })),
       { label: 'View all hooks', href: '/hooks' },
     ],
-  },
-  {
-    label: 'Research',
-    children: researchStocks.map((s) => ({ label: `${s.ticker} — ${s.name}`, href: `/research/${s.ticker}` })),
   },
   {
     label: 'Engineers',
@@ -178,33 +174,7 @@ function Navigation() {
               </div>
             </div>
 
-            {/* Research dropdown */}
-            <div className="relative group/research">
-              <Link
-                href="/research"
-                className="text-[13px] text-white/60 group-hover/research:text-white transition-colors"
-              >
-                Research
-              </Link>
-              <div className="absolute top-full right-0 pt-3 hidden group-hover/research:block">
-                <div className="bg-black/95 backdrop-blur-xl border border-white/[0.08] rounded-xl py-2 min-w-[220px] shadow-2xl">
-                  {researchStocks.map((stock) => (
-                    <Link
-                      key={stock.ticker}
-                      href={`/research/${stock.ticker}`}
-                      className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
-                    >
-                      <span className="text-[12px] font-mono font-medium text-white/80 w-10">
-                        {stock.ticker}
-                      </span>
-                      <span className="text-[12px] text-white/40">
-                        {stock.name}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
+            {/* Research dropdown — visually hidden, routes still work */}
 
             {/* Engineers dropdown */}
             <div className="relative group/engineers">
