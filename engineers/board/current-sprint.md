@@ -17,6 +17,12 @@ _Boss: Write your current sprint objective here. All divisions will read this be
 ### For Cursor (Frontend & UI)
 - [ ] _Add frontend/UI tasks here_
 
+### For AI Engineer (ML & AI Systems)
+- [ ] _Add ML/AI tasks here_
+
+### For Project Manager (Planning & Task Breakdown)
+- [ ] _Add planning/coordination tasks here_
+
 ## Priority Order
 1. _Highest priority task_
 2. _Next priority_

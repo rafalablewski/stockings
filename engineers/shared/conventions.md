@@ -15,6 +15,15 @@ These conventions apply to all AI divisions equally. When in doubt, follow these
 - API routes: `route.ts` inside `app/api/` directories
 - Pages: `page.tsx` inside route directories
 
+## Organization Chart
+| Division | Lead | Responsibilities |
+|---|---|---|
+| Architecture & Backend | Claude | APIs, server logic, database, infrastructure |
+| Frontend & UI | Cursor | Components, styling, client interactivity |
+| Research & Data | Gemini | Research, analysis, documentation, testing |
+| ML & AI Systems | AI Engineer | ML models, AI features, data pipelines, MLOps |
+| Planning & Coordination | Project Manager | Spec breakdown, task lists, sprint planning |
+
 ## Git & Workflow
 - Each division works on its own tasks from `engineers/board/current-sprint.md`
 - Update your division's `status.md` after completing work
