@@ -53,7 +53,7 @@ export const engineers: EngineerTask[] = [
       'Monitor debt covenants and maturity schedules',
       'Update capital structure data files when changes detected',
     ],
-    workflowIds: ['capital-dilution'],
+    workflowIds: ['capital-structure'],
     defaultIntervalMinutes: 720, // every 12 hours
     triggerEvents: ['filing-ingested', 'form-4-detected'],
     requiresData: false,
@@ -94,7 +94,7 @@ export const engineers: EngineerTask[] = [
       'Trigger thesis review when material news detected',
       'Generate daily intelligence briefs',
     ],
-    workflowIds: ['intelligence-classifier'],
+    workflowIds: ['intel-classifier'],
     defaultIntervalMinutes: 30, // every 30 minutes
     triggerEvents: ['news-api-poll'],
     requiresData: true,
@@ -152,7 +152,7 @@ export const engineers: EngineerTask[] = [
       'Generate sentiment shift alerts',
       'Update analyst coverage data',
     ],
-    workflowIds: ['analyst-report'],
+    workflowIds: ['analyst-report', 'social-sentiment'],
     defaultIntervalMinutes: 180, // every 3 hours
     triggerEvents: ['analyst-report-detected', 'price-alert'],
     requiresData: true,
@@ -173,9 +173,126 @@ export const engineers: EngineerTask[] = [
       'Flag stale data that needs updating',
       'Generate data quality scorecards',
     ],
-    workflowIds: ['capital-parity-audit', 'cross-ref-integrity', 'sources-completeness', 'data-freshness'],
+    workflowIds: ['capital-parity', 'crossref-integrity', 'sources-completeness', 'data-freshness'],
     defaultIntervalMinutes: 1440, // daily
     triggerEvents: ['data-updated', 'filing-ingested'],
+    requiresData: false,
+    category: 'audit',
+  },
+
+  // ── ADDITIONAL RESEARCH ENGINEERS ─────────────────────────────────────
+  {
+    id: 'earnings-engineer',
+    name: 'Earnings Engineer',
+    role: 'Earnings & Financials Analyst',
+    description: 'Processes earnings call transcripts, validates earnings data quality, and benchmarks against peer comparables. Extracts guidance changes, management tone, Q&A intelligence, and maps findings to the research database.',
+    capabilities: [
+      'Parse earnings call transcripts for guidance and tone',
+      'Validate earnings data accuracy and GAAP consistency',
+      'Benchmark financial metrics against peer comparables',
+      'Flag quarter-over-quarter anomalies and trend breaks',
+      'Update earnings database with extracted findings',
+    ],
+    workflowIds: ['earnings-call', 'earnings-quality', 'peer-comparables'],
+    defaultIntervalMinutes: 720, // every 12 hours
+    triggerEvents: ['earnings-released', 'filing-ingested'],
+    requiresData: true,
+    dataSource: 'Earnings call transcripts, SEC filings',
+    category: 'research',
+  },
+
+  // ── ADDITIONAL INTELLIGENCE ENGINEERS ─────────────────────────────────
+  {
+    id: 'regulatory-engineer',
+    name: 'Regulatory & IP Engineer',
+    role: 'Regulatory & Patent Analyst',
+    description: 'Monitors regulatory actions, patent filings, and conference disclosures. Extracts rulings, IP claims, strategy updates, and competitive implications. Adjusts catalyst timelines based on government decisions.',
+    capabilities: [
+      'Analyze patent applications and IP filings',
+      'Track FCC, NTIA, and SEC regulatory actions',
+      'Extract strategy updates from conference transcripts',
+      'Identify competitive implications of new IP grants',
+      'Update catalyst timelines from regulatory decisions',
+    ],
+    workflowIds: ['patent-ip', 'conference-notes', 'regulatory-tracker'],
+    defaultIntervalMinutes: 360, // every 6 hours
+    triggerEvents: ['filing-ingested', 'press-release-added', 'regulatory-action'],
+    requiresData: true,
+    dataSource: 'Patent databases, FCC/NTIA filings, conference transcripts',
+    category: 'intelligence',
+  },
+  {
+    id: 'ask-agent-engineer',
+    name: 'General Intelligence Agent',
+    role: 'Cross-Domain Research Assistant',
+    description: 'General-purpose intelligence layer for ad hoc queries that fall outside structured agent workflows. Handles capital structure math, filing explanations, cross-tab lookups, and ambiguous content triage.',
+    capabilities: [
+      'Answer freeform research questions from the database',
+      'Triage ambiguous content to the correct workflow',
+      'Perform cross-tab lookups and data reconciliation',
+      'Explain complex filings and capital structure math',
+      'Fall back gracefully when structured agents don\'t fit',
+    ],
+    workflowIds: ['ask-agent'],
+    defaultIntervalMinutes: 0, // on-demand only
+    triggerEvents: ['user-query'],
+    requiresData: true,
+    dataSource: 'User input, research database',
+    category: 'intelligence',
+  },
+
+  // ── ADDITIONAL AUDIT ENGINEERS ────────────────────────────────────────
+  {
+    id: 'code-security-engineer',
+    name: 'Code Security Engineer',
+    role: 'Application Security Analyst',
+    description: 'Runs comprehensive code audits covering security vulnerabilities, dependency supply chain risks, API endpoint security, and secrets exposure. Outputs CVSS-scored findings with CWE/OWASP mapping and prioritized remediation.',
+    capabilities: [
+      'Run 35-category institutional-grade code audits',
+      'Scan dependencies for known CVEs and supply chain risks',
+      'Audit API endpoints for auth, validation, and CORS issues',
+      'Detect hardcoded secrets and credential exposure',
+      'Generate risk-ranked remediation plans',
+    ],
+    workflowIds: ['code-audit', 'dependency-vulnerability', 'api-endpoint-security', 'secrets-exposure'],
+    defaultIntervalMinutes: 1440, // daily
+    triggerEvents: ['code-deployed', 'dependency-updated'],
+    requiresData: false,
+    category: 'audit',
+  },
+  {
+    id: 'performance-engineer',
+    name: 'Performance Engineer',
+    role: 'Platform Performance Analyst',
+    description: 'Analyzes bundle size, component render efficiency, data-loading patterns, and caching strategy. Identifies client-side bottlenecks and outputs a weighted performance scorecard with optimization steps.',
+    capabilities: [
+      'Audit bundle size and tree-shaking effectiveness',
+      'Profile component render paths for inefficiencies',
+      'Evaluate data-fetching and caching strategies',
+      'Identify client-side performance bottlenecks',
+      'Generate weighted performance scorecards',
+    ],
+    workflowIds: ['performance-audit'],
+    defaultIntervalMinutes: 2880, // every 2 days
+    triggerEvents: ['code-deployed'],
+    requiresData: false,
+    category: 'audit',
+  },
+  {
+    id: 'disclosure-engineer',
+    name: 'Disclosure & Model Integrity Engineer',
+    role: 'Research Integrity Analyst',
+    description: 'Validates that SEC disclosures are fully captured in the database and that financial model inputs are consistent with source data. Checks calculation formulas, assumption coherence, and disclosure coverage.',
+    capabilities: [
+      'Map SEC filings to database coverage gaps',
+      'Validate risk factor and guidance capture',
+      'Cross-check model inputs against source data',
+      'Test assumption consistency across model modules',
+      'Flag model outputs that diverge from inputs',
+    ],
+    workflowIds: ['disclosure-completeness', 'model-consistency'],
+    defaultIntervalMinutes: 1440, // daily
+    triggerEvents: ['filing-ingested', 'data-updated'],
     requiresData: false,
     category: 'audit',
   },

@@ -1691,18 +1691,44 @@
   display: none;
 }
 
-/* Remove stock-model-app reset overrides inside eng context */
-.eng-app .stock-model-app,
-.eng-app .stock-model-app * {
-  margin: revert;
-  padding: revert;
-}
+/* Reset stock-model-app container inside eng context */
 .eng-app .stock-model-app {
+  all: unset;
+  display: block;
   font-family: 'Outfit', sans-serif;
-  background: transparent;
-  min-height: auto;
   color: var(--text);
-  overflow-x: visible;
+}
+/* Reset all children to inherit cleanly */
+.eng-app .stock-model-app *,
+.eng-app .stock-model-app *::before,
+.eng-app .stock-model-app *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Restore specific elements that need defaults */
+.eng-app .stock-model-app pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.eng-app .stock-model-app button {
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.eng-app .stock-model-app textarea {
+  font: inherit;
+}
+
+/* ── Section label base ── */
+.eng-app .sm-section-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 8px;
 }
 
 /* ── Section dividers → Bloomberg section headers ── */
@@ -1811,7 +1837,7 @@
 
 /* ── Expanded card body ── */
 .eng-app .sm-agent-body {
-  padding: 0 20px 16px;
+  padding: 16px 20px;
   border-top: 1px solid var(--border);
 }
 
@@ -2024,6 +2050,7 @@
 .eng-app .sm-pointer { cursor: pointer; }
 .eng-app .sm-items-start { align-items: flex-start; }
 .eng-app .sm-text-left { text-align: left; }
+.eng-app .sm-text-center { text-align: center; }
 .eng-app .sm-justify-between { justify-content: space-between; }
 .eng-app .sm-p-16-20 { padding: 16px 20px; }
 .eng-app .sm-bg-none { background: none; }
@@ -2034,6 +2061,169 @@
 .eng-app .sm-p-16 { padding: 16px; }
 .eng-app .sm-ls-wide { letter-spacing: 0.15em; }
 .eng-app .sm-accent { color: var(--cyan); }
+
+/* Chevron rotation */
+.eng-app .sm-agent-chevron {
+  transition: transform 0.15s;
+  margin-top: 4px;
+}
+.eng-app .sm-agent-chevron[data-expanded="true"] {
+  transform: rotate(90deg);
+}
+
+/* ── Prompt toggle row ── */
+.eng-app .sm-agent-prompt-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+/* ── Run / Stop row ── */
+.eng-app .sm-agent-run-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ── Textarea ── */
+.eng-app .sm-agent-textarea-wrap {
+  margin-bottom: 16px;
+  position: relative;
+}
+.eng-app .sm-agent-textarea-resize {
+  resize: vertical;
+}
+.eng-app .sm-agent-char-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: var(--text3);
+  position: absolute;
+  bottom: 6px;
+  right: 10px;
+  pointer-events: none;
+}
+
+/* ── Result label ── */
+.eng-app .sm-agent-result-label-no-mb {
+  margin-bottom: 0;
+}
+
+/* ── Scrollbox med ── */
+.eng-app .sm-scrollbox-med {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* ── Diff panel details ── */
+.eng-app .sm-agent-diff-header {
+  margin-bottom: 12px;
+}
+.eng-app .sm-agent-diff-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  color: var(--text);
+}
+.eng-app .sm-agent-diff-summary {
+  font-size: 11px;
+  margin-left: 8px;
+}
+.eng-app .sm-agent-diff-file[data-has-border="true"] {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  margin-top: 10px;
+}
+.eng-app .sm-agent-diff-file-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.eng-app .sm-agent-diff-file-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text);
+}
+.eng-app .sm-agent-diff-file-name[data-valid="false"] {
+  color: var(--coral);
+  opacity: 0.6;
+}
+.eng-app .sm-agent-diff-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(126,231,135,0.08);
+  color: var(--mint);
+  border: 1px solid rgba(126,231,135,0.15);
+}
+.eng-app .sm-agent-diff-badge[data-valid="false"] {
+  background: rgba(255,123,114,0.08);
+  color: var(--coral);
+  border-color: rgba(255,123,114,0.15);
+}
+.eng-app .sm-agent-diff-plain-line {
+  color: var(--text3);
+}
+.eng-app .sm-agent-diff-error-detail {
+  font-size: 11px;
+}
+.eng-app .sm-agent-diff-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.eng-app .sm-agent-diff-warning {
+  font-size: 10px;
+  color: var(--gold);
+}
+
+/* ── Status messages ── */
+.eng-app .sm-agent-status-msg {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+}
+.eng-app .sm-agent-status-msg[data-variant="error"] {
+  color: var(--coral);
+}
+.eng-app .sm-agent-status-msg[data-variant="muted"] {
+  color: var(--text3);
+}
+
+/* ── Applying spinner ── */
+.eng-app .sm-agent-applying-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: eng-pulse 2s infinite;
+}
+.eng-app .sm-agent-applying-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--gold);
+}
+
+/* ── Error banner ── */
+.eng-app .sm-agent-error-msg {
+  font-size: 11px;
+}
+.eng-app .sm-agent-error-ai-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Section label no-margin-bottom variant ── */
+.eng-app .sm-agent-section-label-no-mb {
+  margin-bottom: 0;
+}
 
 /* ── Selected ticker name display ── */
 .eng-ticker-name {
