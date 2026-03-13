@@ -395,7 +395,7 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/shared/SharedSecFilingsSection.tsx", type: "Component", description: "SEC Filings cards for Timeline tab — KPI strip, filter pills, description-first cards, cross-ref source dots" },
   { path: "src/components/shared/SharedEdgarTab.tsx",         type: "Component", description: "SEC EDGAR filings browser" },
   { path: "src/components/shared/SharedSourcesTab.tsx",       type: "Component", description: "Research sources / news feed tab" },
-  { path: "src/components/shared/SharedAIAgentsTab.tsx",      type: "Component", description: "AI analysis agents — moved to centralized Prompt Database (/engineers/prompts)" },
+  { path: "src/components/shared/SharedAIAgentsTab.tsx",      type: "Component", description: "AI workflow runner — removed from stock tabs, reused inside Prompt Database (/engineers/prompts)" },
   { path: "src/components/shared/SharedModelTab.tsx",         type: "Component", description: "Model tab shell: hero header + children (scenario presets, DCF, sensitivity — all stock-specific)" },
   { path: "src/components/shared/modelTypes.ts",              type: "Types",     description: "SharedModelTabProps, ModelCfaItem" },
   { path: "src/components/shared/SharedMonteCarloTab.tsx",    type: "Component", description: "Monte Carlo tab: hero, preset grid, horizon/sim controls, percentile table, risk metrics, histogram, CFA notes; stock-specific params via renderParameters render prop" },
@@ -414,8 +414,15 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/shared/PinStatus.tsx",              type: "Component", description: "Nav badge showing PIN/Closed status" },
   { path: "src/components/shared/AiToggle.tsx",               type: "Component", description: "AI analysis on/off toggle in nav" },
   { path: "src/components/shared/NotesPanel.tsx",             type: "Component", description: "Global notes scratch-pad — slide-over drawer with create/view/delete; collapsible article preview with AI-generated title & description; zero inline styles (category colors via data-cat attribute)" },
+  { path: "src/app/engineers/page.tsx",                        type: "Page",      description: "AI Engineers dashboard — autonomous agent control center" },
+  { path: "src/app/engineers/prompts/page.tsx",               type: "Page",      description: "Centralized Prompt Database — all workflows in one place" },
+  { path: "src/app/engineers/engineers.css",                   type: "CSS",       description: "Bloomberg-style engineers dashboard — eng-* classes using design tokens" },
+  { path: "src/components/EngineersDashboard.tsx",            type: "Component", description: "Engineers dashboard — KPI strip, ticker pills, schedule/run controls, history" },
+  { path: "src/components/PromptDatabase.tsx",                type: "Component", description: "Prompt Database — ticker selector, SharedAIAgentsTab wrapper, engineer map" },
+  { path: "src/lib/engineers.ts",                              type: "Data",      description: "8 autonomous AI engineer definitions (thesis, capital, filing, press, insider, catalyst, sentiment, data quality)" },
+  { path: "src/lib/engineer-engine.ts",                        type: "Engine",    description: "Autonomous execution engine — scheduler, Claude API calls, DB recording" },
   { path: "src/lib/stocks.ts",                                type: "Data",      description: "Stock registry — tickers, names, sectors" },
-  { path: "src/lib/schema.ts",                                type: "Data",      description: "Drizzle ORM schema — DB tables" },
+  { path: "src/lib/schema.ts",                                type: "Data",      description: "Drizzle ORM schema — DB tables (incl. agent_runs, engineer_schedules)" },
   { path: "src/lib/auth-fetch.ts",                            type: "Utility",   description: "PIN-authenticated fetch wrapper" },
   { path: "src/lib/ai-gate.ts",                               type: "Utility",   description: "Server-side AI feature flag" },
   { path: "src/hooks/useHashTab.ts",                           type: "Hook",      description: "URL hash-based tab state (#tab-name)" },
@@ -432,6 +439,8 @@ const routingTree = [
   { path: "/docs",                                 label: "Docs",             file: "app/docs/page.tsx",                     note: "This page — design system + architecture" },
   { path: "/hooks",                                label: "Hooks",            file: "app/hooks/page.tsx",                    note: "Agent hooks documentation" },
   { path: "/audit/comprehensive-code-audit",       label: "Code Audit",       file: "app/audit/comprehensive-code-audit/page.tsx", note: "35-category audit results" },
+  { path: "/engineers",                              label: "Engineers",         file: "app/engineers/page.tsx",                 note: "Autonomous AI engineers dashboard — schedule, run, monitor" },
+  { path: "/engineers/prompts",                     label: "Prompt Database",   file: "app/engineers/prompts/page.tsx",         note: "Centralized prompt database — all workflows, all tickers" },
   { path: "/press-intelligence",                    label: "Press Intelligence", file: "app/press-intelligence/page.tsx",      note: "DB-first feed: page load reads DB, Refresh fetches upstream + marks NEW + persists" },
   { path: "/db-setup",                             label: "DB Setup",         file: "app/db-setup/page.tsx",                 note: "Browser-based database initialization" },
 ];
@@ -469,6 +478,12 @@ const apiRoutes = [
     { method: "POST", path: "/api/workflow/apply",              auth: "—",   note: "Apply workflow output as patch" },
     { method: "POST", path: "/api/workflow/commit",             auth: "—",   note: "Commit applied workflow changes" },
   ]},
+  { group: "Engineers", routes: [
+    { method: "POST", path: "/api/engineers/run",              auth: "—",   note: "Trigger an autonomous engineer run (manual)" },
+    { method: "GET",  path: "/api/engineers/status",           auth: "—",   note: "Engineer status + schedule + last run per ticker" },
+    { method: "GET",  path: "/api/engineers/history",          auth: "—",   note: "Run history (filterable by ticker, engineerId)" },
+    { method: "POST", path: "/api/engineers/schedule",         auth: "—",   note: "Create/update engineer schedule (enable, interval)" },
+  ]},
 ];
 
 const componentHierarchy = [
@@ -502,8 +517,13 @@ const stockPageTree = [
   { depth: 3, name: "SharedWallStreetTab",                 note: "Analyst coverage, estimates, consensus" },
   { depth: 3, name: "SharedSourcesTab",                    note: "Press releases & news with AI analysis" },
   { depth: 3, name: "SharedEdgarTab",                      note: "SEC filings browser with DB tracking" },
-  { depth: 3, name: "SharedAIAgentsTab",                   note: "Moved to centralized Prompt Database (/engineers/prompts)" },
   { depth: 2, name: "DisclaimerBanner",                    note: "Collapsible — localStorage key: disclaimer-collapsed" },
+  // ── Engineers pages (standalone, not inside stock components) ──
+  { depth: 0, name: "EngineersPage",                       note: "/engineers — autonomous AI engineers dashboard" },
+  { depth: 1, name: "EngineersDashboard",                  note: "KPI strip, ticker pills, engineer cards, run history" },
+  { depth: 0, name: "PromptDatabasePage",                  note: "/engineers/prompts — centralized prompt database" },
+  { depth: 1, name: "PromptDatabase",                      note: "Ticker selector, tab switcher (All Prompts / Engineer Map)" },
+  { depth: 2, name: "SharedAIAgentsTab",                   note: "Reused inside Prompt Database — all workflows per ticker" },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -545,9 +565,9 @@ const tabBreakdown: TabEntry[] = [
   { tab: 'USDC',          bmnr: '—', asts: '—', crcl: 'C', wrapper: '—' },
 ];
 const tabSummary = [
-  { stock: 'BMNR', total: 19, shared: 3, wrapped: 8, custom: 8, pct: '58%' },
-  { stock: 'ASTS', total: 18, shared: 3, wrapped: 8, custom: 7, pct: '61%' },
-  { stock: 'CRCL', total: 13, shared: 5, wrapped: 6, custom: 2, pct: '85%' },
+  { stock: 'BMNR', total: 18, shared: 2, wrapped: 8, custom: 8, pct: '56%' },
+  { stock: 'ASTS', total: 17, shared: 2, wrapped: 8, custom: 7, pct: '59%' },
+  { stock: 'CRCL', total: 12, shared: 4, wrapped: 6, custom: 2, pct: '83%' },
 ];
 
 interface DBTable {
@@ -567,15 +587,19 @@ const dbTables: DBTable[] = [
   { name: "analysis_cache",      purpose: "AI analysis results (EDGAR + Sources)",            key: "ticker + type + key" },
   { name: "audit_checks",        purpose: "Code audit finding verdicts",                      key: "finding_id" },
   { name: "notes",               purpose: "User notes scratch-pad (article ideas, enhancements, other)", key: "id (auto)" },
+  { name: "agent_runs",         purpose: "Autonomous AI engineer task execution log",               key: "ticker + engineer_id + created_at" },
+  { name: "engineer_schedules", purpose: "Engineer schedule config (interval, enabled, next run)",   key: "ticker + engineer_id" },
 ];
 
 const dataArchitecture = [
   { layer: "Data Files",   path: "src/data/{asts,bmnr,crcl}/",       note: "Hardcoded .ts files — scaffold (5) + standard (8) + stock-specific per ticker" },
   { layer: "Shared Types", path: "src/data/shared/types.ts",          note: "Central TypeScript interfaces for all data shapes (Partner, ShareClass, Catalyst, Timeline, etc.)" },
   { layer: "Schemas",      path: "src/data/schemas/",                 note: "Zod validation schemas per stock + filing templates" },
-  { layer: "DB Schema",    path: "src/lib/schema.ts",                 note: "Drizzle ORM table definitions (10 tables in Neon PostgreSQL)" },
+  { layer: "DB Schema",    path: "src/lib/schema.ts",                 note: "Drizzle ORM table definitions (12 tables in Neon PostgreSQL)" },
   { layer: "Seed Path",    path: "/api/db/setup → seed-helpers.ts",   note: "Reads .ts data files → inserts into PostgreSQL tables" },
   { layer: "AI Workflows", path: "src/data/workflows.ts",             note: "Agent prompts (earnings calls, code audit, data quality)" },
+  { layer: "AI Engineers", path: "src/lib/engineers.ts",              note: "8 autonomous engineer definitions (thesis, filing, press, insider, etc.)" },
+  { layer: "Engine",       path: "src/lib/engineer-engine.ts",       note: "Autonomous execution — scheduler, Claude API, DB recording, schedule updates" },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────────
