@@ -82,6 +82,7 @@ const mobileNavItems = [
     label: 'Intelligence',
     children: [
       { label: 'Press Intelligence', href: '/press-intelligence' },
+      { label: 'SEC Intelligence', href: '/sec-intelligence' },
     ],
   },
   {
@@ -199,13 +200,32 @@ function Navigation() {
               </div>
             </div>
 
-            {/* Intelligence — direct link */}
-            <Link
-              href="/press-intelligence"
-              className="text-[13px] text-white/60 hover:text-white transition-colors"
-            >
-              Intelligence
-            </Link>
+            {/* Intelligence dropdown */}
+            <div className="relative group/intel">
+              <span className="text-[13px] text-white/60 group-hover/intel:text-white transition-colors cursor-default select-none">
+                Intelligence
+              </span>
+              <div className="absolute top-full right-0 pt-3 hidden group-hover/intel:block">
+                <div className="bg-black/95 backdrop-blur-xl border border-white/[0.08] rounded-xl py-2 min-w-[220px] shadow-2xl">
+                  <Link
+                    href="/press-intelligence"
+                    className="block px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-[12px] text-white/80">
+                      Press Intelligence
+                    </span>
+                  </Link>
+                  <Link
+                    href="/sec-intelligence"
+                    className="block px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-[12px] text-white/80">
+                      SEC Intelligence
+                    </span>
+                  </Link>
+                </div>
+              </div>
+            </div>
 
             {/* Audit dropdown */}
             <div className="relative group/audit">
