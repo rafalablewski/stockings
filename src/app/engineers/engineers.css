@@ -1844,3 +1844,142 @@
   color: var(--text3);
   font-family: 'Outfit', sans-serif;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROMPT PREVIEW MODAL — Bloomberg-style popup (matches PI modal pattern)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.eng-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.eng-modal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.eng-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.eng-modal-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.eng-modal-close {
+  background: none;
+  border: none;
+  color: var(--text3);
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.eng-modal-close:hover {
+  color: var(--text);
+}
+
+.eng-modal-body {
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+/* Modal metadata sections */
+.eng-modal-section {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.eng-modal-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.eng-modal-heading {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 0 0 10px 0;
+}
+
+.eng-modal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.eng-modal-row:hover {
+  background: var(--surface2);
+}
+
+.eng-modal-label {
+  font-family: 'Outfit', sans-serif;
+  color: var(--text2);
+  font-size: 13px;
+}
+
+.eng-modal-value {
+  font-family: 'Space Mono', monospace;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Prompt preview code block */
+.eng-modal-prompt {
+  display: block;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* Clickable ticker chip in resource cards */
+.eng-resource-agent-chip[data-clickable="true"] {
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.eng-resource-agent-chip[data-clickable="true"]:hover {
+  background: rgba(34,211,238,0.08);
+  border-color: rgba(34,211,238,0.2);
+  color: var(--cyan);
+}

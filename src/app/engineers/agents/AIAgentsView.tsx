@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import type { EngineerTask } from '@/lib/engineers';
 import type { Workflow } from '@/data/workflows';
 
@@ -29,9 +29,21 @@ const categoryLabels: Record<string, string> = {
   audit: 'Audit',
 };
 
+const PROMPT_PREVIEW_LIMIT = 1200;
+
+interface PromptPreview {
+  workflowName: string;
+  workflowDescription: string;
+  ticker: string;
+  label: string;
+  prompt: string;
+  requiresUserData: boolean;
+}
+
 export default function AIAgentsView({ engineers, workflows }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [promptPreview, setPromptPreview] = useState<PromptPreview | null>(null);
 
   const categories = ['research', 'monitoring', 'intelligence', 'audit'] as const;
   const categoryCounts = categories.map(c => ({
@@ -46,6 +58,19 @@ export default function AIAgentsView({ engineers, workflows }: Props) {
 
   const totalWorkflows = new Set(engineers.flatMap(e => e.workflowIds)).size;
   const requiresDataCount = engineers.filter(e => e.requiresData).length;
+
+  const openPromptPreview = useCallback((wf: Workflow, ticker: string, label: string) => {
+    const variant = wf.variants.find(v => v.ticker === ticker.toLowerCase());
+    if (!variant) return;
+    setPromptPreview({
+      workflowName: wf.name,
+      workflowDescription: wf.description,
+      ticker: ticker.toUpperCase(),
+      label,
+      prompt: variant.prompt,
+      requiresUserData: wf.requiresUserData,
+    });
+  }, []);
 
   return (
     <div className="eng-app">
@@ -209,7 +234,18 @@ export default function AIAgentsView({ engineers, workflows }: Props) {
                             <div className="eng-resource-desc">{wf.description}</div>
                             <div className="eng-resource-agents">
                               {wf.variants.map(v => (
-                                <span key={v.ticker} className="eng-resource-agent-chip">{v.label}</span>
+                                <span
+                                  key={v.ticker}
+                                  className="eng-resource-agent-chip"
+                                  data-clickable="true"
+                                  title={`Preview ${wf.name} prompt for ${v.label}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openPromptPreview(wf, v.ticker, v.label);
+                                  }}
+                                >
+                                  {v.label}
+                                </span>
                               ))}
                             </div>
                           </div>
@@ -259,6 +295,62 @@ export default function AIAgentsView({ engineers, workflows }: Props) {
           );
         })}
       </div>
+
+      {/* Prompt Preview Modal */}
+      {promptPreview && (
+        <div className="eng-modal-overlay" onClick={() => setPromptPreview(null)}>
+          <div className="eng-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="eng-modal-header">
+              <h2 className="eng-modal-title">
+                {promptPreview.ticker} &mdash; {promptPreview.workflowName}
+              </h2>
+              <button className="eng-modal-close" onClick={() => setPromptPreview(null)}>
+                &times;
+              </button>
+            </div>
+            <div className="eng-modal-body">
+              {/* Workflow info */}
+              <div className="eng-modal-section">
+                <div className="eng-modal-heading">Workflow Details</div>
+                <div className="eng-modal-row">
+                  <span className="eng-modal-label">Workflow</span>
+                  <span className="eng-modal-value">{promptPreview.workflowName}</span>
+                </div>
+                <div className="eng-modal-row">
+                  <span className="eng-modal-label">Ticker</span>
+                  <span className="eng-modal-value">{promptPreview.ticker}</span>
+                </div>
+                <div className="eng-modal-row">
+                  <span className="eng-modal-label">Type</span>
+                  <span className="eng-modal-value">{promptPreview.requiresUserData ? 'Paste data' : 'Autonomous'}</span>
+                </div>
+                <div className="eng-modal-row">
+                  <span className="eng-modal-label">Prompt length</span>
+                  <span className="eng-modal-value">{(promptPreview.prompt.length / 1000).toFixed(1)}k chars</span>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="eng-modal-section">
+                <div className="eng-modal-heading">Description</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
+                  {promptPreview.workflowDescription}
+                </div>
+              </div>
+
+              {/* Prompt preview */}
+              <div className="eng-modal-section">
+                <div className="eng-modal-heading">Prompt Preview</div>
+                <pre className="eng-modal-prompt">
+                  {promptPreview.prompt.length > PROMPT_PREVIEW_LIMIT
+                    ? promptPreview.prompt.slice(0, PROMPT_PREVIEW_LIMIT) + '\n\n[…truncated — ' + ((promptPreview.prompt.length - PROMPT_PREVIEW_LIMIT) / 1000).toFixed(1) + 'k chars remaining]'
+                    : promptPreview.prompt}
+                </pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
