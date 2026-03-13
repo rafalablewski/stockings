@@ -52,15 +52,23 @@ function getFormCategory(form: string): string {
 }
 
 /* ─── Form type filter categories ─── */
-const FORM_FILTERS = [
-  { key: "All", label: "All", match: () => true },
-  { key: "10-K", label: "10-K", match: (f: string) => /^10-K/i.test(f) || /^20-F/i.test(f) },
-  { key: "10-Q", label: "10-Q", match: (f: string) => /^10-Q/i.test(f) || /^6-K/i.test(f) },
-  { key: "8-K", label: "8-K", match: (f: string) => /^8-K/i.test(f) },
-  { key: "Insider", label: "Insider", match: (f: string) => /^(Form\s*)?[345](\/A)?$/i.test(f) || /^SC\s*13/i.test(f) },
-  { key: "Proxy", label: "Proxy", match: (f: string) => /^DEF/i.test(f) || /^PRE/i.test(f) },
-  { key: "S/F-Reg", label: "S/F-Reg", match: (f: string) => /^S-/i.test(f) || /^F-/i.test(f) || /^424/i.test(f) },
-] as const;
+/** Normalize form type for filter matching (strips spaces, slashes, hyphens, "Form" prefix) */
+const normalizeForm = (f: string) =>
+  f.replace(/[/\s-]/g, '').replace(/^FORM/i, '').replace(/^SCHEDULE/i, 'SC').toUpperCase();
+
+const FORM_FILTERS: { key: string; label: string; match: (f: string) => boolean }[] = [
+  { key: "10-K",        label: "10-K",        match: f => /^10K/i.test(normalizeForm(f)) },
+  { key: "10-Q",        label: "10-Q",        match: f => /^10Q/i.test(normalizeForm(f)) },
+  { key: "8-K",         label: "8-K",         match: f => /^8K/i.test(normalizeForm(f)) },
+  { key: "Form 4",      label: "Form 4",      match: f => { const n = normalizeForm(f); return n === '4' || n === '4A'; } },
+  { key: "Form 3",      label: "Form 3",      match: f => { const n = normalizeForm(f); return n === '3' || n === '3A'; } },
+  { key: "Form 5",      label: "Form 5",      match: f => { const n = normalizeForm(f); return n === '5' || n === '5A'; } },
+  { key: "SC 13",       label: "SC 13D/G",    match: f => normalizeForm(f).startsWith('SC13') },
+  { key: "Form 144",    label: "Form 144",    match: f => { const n = normalizeForm(f); return n === '144' || n === '144A'; } },
+  { key: "Proxy",       label: "Proxy",       match: f => { const n = normalizeForm(f); return n.includes('14A') || n.includes('14C'); } },
+  { key: "Prospectus",  label: "Prospectus",  match: f => { const n = normalizeForm(f); return /^424/.test(n) || /^S[138]/.test(n) || n === 'FWP'; } },
+  { key: "Registration", label: "S/F-Reg",    match: f => { const n = normalizeForm(f); return /^S/.test(n) || /^F/.test(n); } },
+];
 
 /* ─── Days filter options ─── */
 const DAYS_OPTIONS = [
@@ -173,6 +181,30 @@ export default function SecIntelligencePage() {
       .map(([ticker]) => ticker);
   }, [data]);
 
+  /* ── Build dynamic form filter options from actual data ── */
+  const activeFormFilters = useMemo(() => {
+    if (!data?.filings) return [];
+    // Only show filters that match at least one filing in current ticker scope
+    const scopedFilings = activeTicker !== "ALL"
+      ? data.filings.filter(f => f.ticker === activeTicker)
+      : data.filings;
+
+    const active: { key: string; label: string; count: number }[] = [];
+    for (const ff of FORM_FILTERS) {
+      const count = scopedFilings.filter(f => ff.match(f.form)).length;
+      if (count > 0) active.push({ key: ff.key, label: ff.label, count });
+    }
+
+    // "Other" — forms not matched by any category
+    const otherCount = scopedFilings.filter(f => {
+      for (const ff of FORM_FILTERS) { if (ff.match(f.form)) return false; }
+      return true;
+    }).length;
+    if (otherCount > 0) active.push({ key: "Other", label: "Other", count: otherCount });
+
+    return active;
+  }, [data, activeTicker]);
+
   /* ── Filtered filings ── */
   const filteredFilings = useMemo(() => {
     if (!data?.filings) return [];
@@ -185,9 +217,16 @@ export default function SecIntelligencePage() {
 
     /* Form type filter */
     if (activeForm !== "All") {
-      const filterDef = FORM_FILTERS.find(ff => ff.key === activeForm);
-      if (filterDef) {
-        filings = filings.filter(f => filterDef.match(f.form));
+      if (activeForm === "Other") {
+        filings = filings.filter(f => {
+          for (const ff of FORM_FILTERS) { if (ff.match(f.form)) return false; }
+          return true;
+        });
+      } else {
+        const filterDef = FORM_FILTERS.find(ff => ff.key === activeForm);
+        if (filterDef) {
+          filings = filings.filter(f => filterDef.match(f.form));
+        }
       }
     }
 
@@ -214,8 +253,13 @@ export default function SecIntelligencePage() {
     ).length;
   }, [data, dismissedLocal]);
 
-  /* Reset page on filter change */
+  /* Reset page on filter change; reset form filter if it no longer has matches */
   useEffect(() => { setPage(1); }, [activeTicker, activeForm, searchQuery, daysFilter]);
+  useEffect(() => {
+    if (activeForm !== "All" && !activeFormFilters.some(ff => ff.key === activeForm)) {
+      setActiveForm("All");
+    }
+  }, [activeForm, activeFormFilters]);
 
   /* ── Pagination ── */
   const PAGE_SIZE = 25;
@@ -369,17 +413,22 @@ export default function SecIntelligencePage() {
 
           <div className="si-filter-group">
             <span className="si-filter-group-label">Form</span>
-            {FORM_FILTERS.map((ff) => (
+            <button
+              className="si-form-tab"
+              data-active={activeForm === "All"}
+              onClick={() => setActiveForm("All")}
+            >
+              All
+            </button>
+            {activeFormFilters.map((ff) => (
               <button
                 key={ff.key}
                 className="si-form-tab"
                 data-active={activeForm === ff.key}
-                onClick={() => setActiveForm(ff.key)}
+                onClick={() => setActiveForm(activeForm === ff.key ? "All" : ff.key)}
               >
                 {ff.label}
-                {activeForm === ff.key && ff.key !== "All" && (
-                  <span className="si-filter-count">{filteredFilings.length}</span>
-                )}
+                <span className="si-filter-count">{ff.count}</span>
               </button>
             ))}
           </div>
