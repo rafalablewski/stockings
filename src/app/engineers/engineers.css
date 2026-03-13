@@ -314,11 +314,14 @@
   fill: none;
 }
 
-.eng-graph-line[data-type="triggers"] { stroke: rgba(34,211,238,0.2); stroke-dasharray: 6 4; }
-.eng-graph-line[data-type="reads"]    { stroke: rgba(121,192,255,0.15); }
-.eng-graph-line[data-type="writes"]   { stroke: rgba(126,231,135,0.2); }
-.eng-graph-line[data-type="uses-prompt"] { stroke: rgba(210,153,34,0.2); stroke-dasharray: 3 3; }
-.eng-graph-line[data-type="feeds"]    { stroke: rgba(167,139,250,0.2); stroke-dasharray: 8 4; }
+.eng-graph-line[data-type="triggers"]      { stroke: rgba(34,211,238,0.2); stroke-dasharray: 6 4; }
+.eng-graph-line[data-type="reads"]         { stroke: rgba(121,192,255,0.15); }
+.eng-graph-line[data-type="writes"]        { stroke: rgba(126,231,135,0.2); }
+.eng-graph-line[data-type="uses-prompt"]   { stroke: rgba(210,153,34,0.2); stroke-dasharray: 3 3; }
+.eng-graph-line[data-type="feeds"]         { stroke: rgba(167,139,250,0.2); stroke-dasharray: 8 4; }
+.eng-graph-line[data-type="executes"]      { stroke: rgba(210,153,34,0.25); }
+.eng-graph-line[data-type="provides-data"] { stroke: rgba(121,192,255,0.2); stroke-dasharray: 4 3; }
+.eng-graph-line[data-type="shared-trigger"]{ stroke: rgba(167,139,250,0.15); stroke-dasharray: 2 4; }
 
 /* Animated flow dots on lines */
 .eng-graph-flow-dot {
@@ -326,11 +329,14 @@
   fill: rgba(34,211,238,0.6);
 }
 
-.eng-graph-flow-dot[data-type="triggers"] { fill: rgba(34,211,238,0.7); }
-.eng-graph-flow-dot[data-type="reads"]    { fill: rgba(121,192,255,0.6); }
-.eng-graph-flow-dot[data-type="writes"]   { fill: rgba(126,231,135,0.7); }
-.eng-graph-flow-dot[data-type="uses-prompt"] { fill: rgba(210,153,34,0.6); }
-.eng-graph-flow-dot[data-type="feeds"]    { fill: rgba(167,139,250,0.7); }
+.eng-graph-flow-dot[data-type="triggers"]      { fill: rgba(34,211,238,0.7); }
+.eng-graph-flow-dot[data-type="reads"]         { fill: rgba(121,192,255,0.6); }
+.eng-graph-flow-dot[data-type="writes"]        { fill: rgba(126,231,135,0.7); }
+.eng-graph-flow-dot[data-type="uses-prompt"]   { fill: rgba(210,153,34,0.6); }
+.eng-graph-flow-dot[data-type="feeds"]         { fill: rgba(167,139,250,0.7); }
+.eng-graph-flow-dot[data-type="executes"]      { fill: rgba(210,153,34,0.7); }
+.eng-graph-flow-dot[data-type="provides-data"] { fill: rgba(121,192,255,0.7); }
+.eng-graph-flow-dot[data-type="shared-trigger"]{ fill: rgba(167,139,250,0.5); }
 
 /* ── Graph nodes ── */
 .eng-graph-nodes {
@@ -741,11 +747,14 @@
   margin-right: 8px;
   vertical-align: middle;
 }
-.eng-conn-dot[data-type="triggers"]    { background: var(--cyan); }
-.eng-conn-dot[data-type="reads"]       { background: var(--sky); }
-.eng-conn-dot[data-type="writes"]      { background: var(--mint); }
-.eng-conn-dot[data-type="uses-prompt"] { background: var(--gold); }
-.eng-conn-dot[data-type="feeds"]       { background: var(--violet); }
+.eng-conn-dot[data-type="triggers"]       { background: var(--cyan); }
+.eng-conn-dot[data-type="reads"]          { background: var(--sky); }
+.eng-conn-dot[data-type="writes"]         { background: var(--mint); }
+.eng-conn-dot[data-type="uses-prompt"]    { background: var(--gold); }
+.eng-conn-dot[data-type="feeds"]          { background: var(--violet); }
+.eng-conn-dot[data-type="executes"]       { background: var(--gold); }
+.eng-conn-dot[data-type="provides-data"]  { background: var(--sky); }
+.eng-conn-dot[data-type="shared-trigger"] { background: var(--violet); }
 
 .eng-conn-type {
   font-family: 'Space Mono', monospace;
@@ -795,16 +804,21 @@
   border-radius: 1px;
 }
 
-.eng-legend-line[data-type="triggers"]    { background: var(--cyan); opacity: 0.5; }
-.eng-legend-line[data-type="reads"]       { background: var(--sky); opacity: 0.5; }
-.eng-legend-line[data-type="writes"]      { background: var(--mint); opacity: 0.5; }
-.eng-legend-line[data-type="uses-prompt"] { background: var(--gold); opacity: 0.5; }
-.eng-legend-line[data-type="feeds"]       { background: var(--violet); opacity: 0.5; }
+.eng-legend-line[data-type="triggers"]       { background: var(--cyan); opacity: 0.5; }
+.eng-legend-line[data-type="reads"]          { background: var(--sky); opacity: 0.5; }
+.eng-legend-line[data-type="writes"]         { background: var(--mint); opacity: 0.5; }
+.eng-legend-line[data-type="uses-prompt"]    { background: var(--gold); opacity: 0.5; }
+.eng-legend-line[data-type="feeds"]          { background: var(--violet); opacity: 0.5; }
+.eng-legend-line[data-type="executes"]       { background: var(--gold); opacity: 0.5; }
+.eng-legend-line[data-type="provides-data"]  { background: var(--sky); opacity: 0.5; }
+.eng-legend-line[data-type="shared-trigger"] { background: var(--violet); opacity: 0.5; }
 
 /* Dashed variant for legend */
 .eng-legend-line[data-type="triggers"],
 .eng-legend-line[data-type="uses-prompt"],
-.eng-legend-line[data-type="feeds"] {
+.eng-legend-line[data-type="feeds"],
+.eng-legend-line[data-type="provides-data"],
+.eng-legend-line[data-type="shared-trigger"] {
   background: repeating-linear-gradient(
     90deg,
     currentColor 0px,
@@ -813,9 +827,11 @@
     transparent 7px
   );
 }
-.eng-legend-line[data-type="triggers"]    { color: var(--cyan); }
-.eng-legend-line[data-type="uses-prompt"] { color: var(--gold); }
-.eng-legend-line[data-type="feeds"]       { color: var(--violet); }
+.eng-legend-line[data-type="triggers"]       { color: var(--cyan); }
+.eng-legend-line[data-type="uses-prompt"]    { color: var(--gold); }
+.eng-legend-line[data-type="feeds"]          { color: var(--violet); }
+.eng-legend-line[data-type="provides-data"]  { color: var(--sky); }
+.eng-legend-line[data-type="shared-trigger"] { color: var(--violet); }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    RESOURCE CARDS

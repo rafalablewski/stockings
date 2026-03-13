@@ -1,15 +1,9 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { authFetch } from '@/lib/auth-fetch';
 import type { EngineerTask } from '@/lib/engineers';
-import {
-  agents,
-  resources,
-  connections,
-  dashboardStats,
-  type AgentNode,
-} from '@/data/ai-engineers';
+import type { Workflow } from '@/data/workflows';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -53,20 +47,38 @@ interface HistoryEntry {
 
 interface Props {
   engineers: EngineerTask[];
+  workflows: Workflow[];
   tickers: string[];
+}
+
+// ── Graph types ───────────────────────────────────────────────────────────────
+
+interface GraphNode {
+  id: string;
+  name: string;
+  type: 'engineer' | 'workflow' | 'event' | 'datasource';
+  color: string;
+  subtitle?: string;
+}
+
+interface GraphEdge {
+  from: string;
+  to: string;
+  type: 'executes' | 'triggers' | 'provides-data' | 'shared-trigger';
+  label?: string;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function formatDuration(ms: number | null): string {
-  if (!ms) return '—';
+  if (!ms) return '\u2014';
   if (ms < 1000) return `${ms}ms`;
   if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
   return `${(ms / 60_000).toFixed(1)}m`;
 }
 
 function formatTime(iso: string | null): string {
-  if (!iso) return '—';
+  if (!iso) return '\u2014';
   const d = new Date(iso);
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
@@ -82,44 +94,12 @@ function formatInterval(minutes: number): string {
   return `${(minutes / 1440).toFixed(0)}d`;
 }
 
-function agentIcon(category: string) {
-  switch (category) {
-    case 'hook':     return '\u26A1';
-    case 'workflow': return '\u2699';
-    case 'pipeline': return '\u25C8';
-    default:         return '\u25CF';
-  }
-}
-
-function resourceIcon(type: string) {
-  switch (type) {
-    case 'api':      return '\u2197';
-    case 'database': return '\u2B21';
-    case 'config':   return '\u229E';
-    case 'prompt':   return '\u2726';
-    case 'file':     return '\u25FB';
-    default:         return '\u25CB';
-  }
-}
-
-function connTypeLabel(type: string) {
-  switch (type) {
-    case 'triggers':    return 'triggers';
-    case 'reads':       return 'reads';
-    case 'writes':      return 'writes';
-    case 'uses-prompt': return 'uses prompt';
-    case 'feeds':       return 'feeds into';
-    default:            return type;
-  }
-}
-
-function nameFromId(id: string): string {
-  const agent = agents.find((a) => a.id === id);
-  if (agent) return agent.name;
-  const res = resources.find((r) => r.id === id);
-  if (res) return res.name;
-  return id;
-}
+const categoryColors: Record<string, string> = {
+  research: 'mint',
+  monitoring: 'sky',
+  intelligence: 'gold',
+  audit: 'violet',
+};
 
 const categoryLabels: Record<string, string> = {
   research: 'Research Engineers',
@@ -128,20 +108,109 @@ const categoryLabels: Record<string, string> = {
   audit: 'Audit Engineers',
 };
 
-// ── SVG Connection Lines ──────────────────────────────────────────────────────
-
-interface NodeRect {
-  id: string;
-  cx: number;
-  cy: number;
+function edgeTypeLabel(type: string) {
+  switch (type) {
+    case 'executes':       return 'executes';
+    case 'triggers':       return 'triggers';
+    case 'provides-data':  return 'provides data';
+    case 'shared-trigger': return 'shared trigger';
+    default:               return type;
+  }
 }
 
-function ConnectionLines({ nodeRects, selected }: { nodeRects: NodeRect[]; selected: string | null }) {
+// ── Build graph from engineers + workflows ────────────────────────────────────
+
+function buildGraph(engineers: EngineerTask[], workflows: Workflow[]) {
+  const nodes: GraphNode[] = [];
+  const edges: GraphEdge[] = [];
+  const workflowSet = new Set<string>();
+  const eventSet = new Set<string>();
+  const datasourceSet = new Set<string>();
+
+  // Add engineer nodes
+  for (const eng of engineers) {
+    nodes.push({
+      id: eng.id,
+      name: eng.name,
+      type: 'engineer',
+      color: categoryColors[eng.category] || 'cyan',
+      subtitle: eng.role,
+    });
+
+    // Add workflow nodes + edges
+    for (const wfId of eng.workflowIds) {
+      if (!workflowSet.has(wfId)) {
+        workflowSet.add(wfId);
+        const wf = workflows.find(w => w.id === wfId);
+        nodes.push({
+          id: `wf-${wfId}`,
+          name: wf?.name || wfId,
+          type: 'workflow',
+          color: 'gold',
+          subtitle: wf?.requiresUserData ? 'requires input' : 'autonomous',
+        });
+      }
+      edges.push({ from: eng.id, to: `wf-${wfId}`, type: 'executes' });
+    }
+
+    // Add trigger event nodes + edges
+    for (const event of eng.triggerEvents) {
+      if (!eventSet.has(event)) {
+        eventSet.add(event);
+        nodes.push({
+          id: `ev-${event}`,
+          name: event.replace(/-/g, ' '),
+          type: 'event',
+          color: 'cyan',
+        });
+      }
+      edges.push({ from: `ev-${event}`, to: eng.id, type: 'triggers' });
+    }
+
+    // Add data source nodes + edges
+    if (eng.requiresData && eng.dataSource) {
+      const dsId = `ds-${eng.dataSource.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`;
+      if (!datasourceSet.has(dsId)) {
+        datasourceSet.add(dsId);
+        nodes.push({
+          id: dsId,
+          name: eng.dataSource,
+          type: 'datasource',
+          color: 'sky',
+        });
+      }
+      edges.push({ from: dsId, to: eng.id, type: 'provides-data' });
+    }
+  }
+
+  // Find shared trigger connections (engineers that share events)
+  for (const event of eventSet) {
+    const triggered = engineers.filter(e => e.triggerEvents.includes(event));
+    if (triggered.length > 1) {
+      for (let i = 0; i < triggered.length - 1; i++) {
+        edges.push({
+          from: triggered[i].id,
+          to: triggered[i + 1].id,
+          type: 'shared-trigger',
+          label: event.replace(/-/g, ' '),
+        });
+      }
+    }
+  }
+
+  return { nodes, edges };
+}
+
+// ── SVG Connection Lines ──────────────────────────────────────────────────────
+
+interface NodeRect { id: string; cx: number; cy: number; }
+
+function ConnectionLines({ nodeRects, selected, edges }: { nodeRects: NodeRect[]; selected: string | null; edges: GraphEdge[] }) {
   if (nodeRects.length === 0) return null;
 
-  const relevantConns = selected
-    ? connections.filter((c) => c.from === selected || c.to === selected)
-    : connections;
+  const relevantEdges = selected
+    ? edges.filter((e) => e.from === selected || e.to === selected)
+    : edges;
 
   return (
     <svg className="eng-graph-svg">
@@ -154,9 +223,9 @@ function ConnectionLines({ nodeRects, selected }: { nodeRects: NodeRect[]; selec
           </feMerge>
         </filter>
       </defs>
-      {relevantConns.map((conn, i) => {
-        const fromNode = nodeRects.find((n) => n.id === conn.from);
-        const toNode = nodeRects.find((n) => n.id === conn.to);
+      {relevantEdges.map((edge, i) => {
+        const fromNode = nodeRects.find((n) => n.id === edge.from);
+        const toNode = nodeRects.find((n) => n.id === edge.to);
         if (!fromNode || !toNode) return null;
 
         const midX = (fromNode.cx + toNode.cx) / 2;
@@ -168,13 +237,13 @@ function ConnectionLines({ nodeRects, selected }: { nodeRects: NodeRect[]; selec
             <path
               d={`M ${fromNode.cx} ${fromNode.cy} Q ${midX} ${midY + offsetY} ${toNode.cx} ${toNode.cy}`}
               className="eng-graph-line"
-              data-type={conn.type}
+              data-type={edge.type}
               filter={selected ? 'url(#eng-glow)' : undefined}
               style={{ opacity: selected ? 0.8 : 0.4 }}
             />
-            <circle className="eng-graph-flow-dot" data-type={conn.type}>
+            <circle className="eng-graph-flow-dot" data-type={edge.type}>
               <animateMotion
-                dur={`${3 + i * 0.5}s`}
+                dur={`${3 + i * 0.3}s`}
                 repeatCount="indefinite"
                 path={`M ${fromNode.cx} ${fromNode.cy} Q ${midX} ${midY + offsetY} ${toNode.cx} ${toNode.cy}`}
               />
@@ -186,94 +255,126 @@ function ConnectionLines({ nodeRects, selected }: { nodeRects: NodeRect[]; selec
   );
 }
 
-// ── Agent Detail Panel ────────────────────────────────────────────────────────
+// ── Node Icon ─────────────────────────────────────────────────────────────────
 
-function AgentDetailPanel({ agent, onClose }: { agent: AgentNode; onClose: () => void }) {
-  const relatedConnections = connections.filter(
-    (c) => c.from === agent.id || c.to === agent.id
-  );
+function nodeIcon(type: string) {
+  switch (type) {
+    case 'engineer':   return '\u2B22'; // hexagon
+    case 'workflow':   return '\u2726'; // star
+    case 'event':      return '\u26A1'; // lightning
+    case 'datasource': return '\u2B21'; // pentagon
+    default:           return '\u25CF';
+  }
+}
+
+// ── Detail Panel ──────────────────────────────────────────────────────────────
+
+function EngineerDetailPanel({
+  engineer,
+  workflows,
+  allEngineers,
+  edges,
+  onClose,
+}: {
+  engineer: EngineerTask;
+  workflows: Workflow[];
+  allEngineers: EngineerTask[];
+  edges: GraphEdge[];
+  onClose: () => void;
+}) {
+  const linkedWorkflows = workflows.filter(w => engineer.workflowIds.includes(w.id));
+  const relatedEdges = edges.filter(e => e.from === engineer.id || e.to === engineer.id);
+  const color = categoryColors[engineer.category] || 'cyan';
 
   return (
-    <div className="eng-detail" data-color={agent.color}>
+    <div className="eng-detail" data-color={color}>
       <div className="eng-detail-header">
         <div className="eng-detail-title-group">
-          <div className="eng-detail-icon" data-color={agent.color}>
-            {agentIcon(agent.category)}
-          </div>
+          <div className="eng-detail-icon" data-color={color}>{'\u2B22'}</div>
           <div>
-            <h2 className="eng-detail-name">{agent.name}</h2>
-            <div className="eng-detail-role">{agent.role}</div>
+            <h2 className="eng-detail-name">{engineer.name}</h2>
+            <div className="eng-detail-role">{engineer.role}</div>
           </div>
         </div>
         <button className="eng-detail-close" onClick={onClose}>{'\u2715'}</button>
       </div>
 
-      <p className="eng-detail-desc">{agent.description}</p>
+      <p className="eng-detail-desc">{engineer.description}</p>
 
       <div className="eng-metrics-row">
-        {agent.metrics.runsPerDay !== undefined && (
-          <div className="eng-metric">
-            <span className="eng-metric-value">{agent.metrics.runsPerDay}</span>
-            <span className="eng-metric-label">Runs / day</span>
-          </div>
-        )}
-        {agent.metrics.avgLatencyMs !== undefined && (
-          <div className="eng-metric">
-            <span className="eng-metric-value">
-              {agent.metrics.avgLatencyMs >= 1000
-                ? `${(agent.metrics.avgLatencyMs / 1000).toFixed(1)}s`
-                : `${agent.metrics.avgLatencyMs}ms`}
-            </span>
-            <span className="eng-metric-label">Avg Latency</span>
-          </div>
-        )}
-        {agent.metrics.findings !== undefined && (
-          <div className="eng-metric">
-            <span className="eng-metric-value">{agent.metrics.findings}</span>
-            <span className="eng-metric-label">Findings</span>
-          </div>
-        )}
-        {agent.metrics.lastRun && (
-          <div className="eng-metric">
-            <span className="eng-metric-value" style={{ fontSize: 13 }}>{agent.metrics.lastRun}</span>
-            <span className="eng-metric-label">Last Run</span>
-          </div>
-        )}
+        <div className="eng-metric">
+          <span className="eng-metric-value">{formatInterval(engineer.defaultIntervalMinutes)}</span>
+          <span className="eng-metric-label">Interval</span>
+        </div>
+        <div className="eng-metric">
+          <span className="eng-metric-value">{engineer.workflowIds.length}</span>
+          <span className="eng-metric-label">Workflows</span>
+        </div>
+        <div className="eng-metric">
+          <span className="eng-metric-value">{engineer.triggerEvents.length}</span>
+          <span className="eng-metric-label">Triggers</span>
+        </div>
+        <div className="eng-metric">
+          <span className="eng-metric-value">{engineer.capabilities.length}</span>
+          <span className="eng-metric-label">Capabilities</span>
+        </div>
       </div>
 
       <div className="eng-detail-grid">
+        {/* Capabilities */}
         <div className="eng-detail-section">
-          <div className="eng-detail-section-title">Prompt Templates</div>
+          <div className="eng-detail-section-title">Capabilities</div>
+          {engineer.capabilities.map((cap, i) => (
+            <div key={i} className="eng-cap-item">
+              <span className="eng-cap-bullet">+</span>
+              {cap}
+            </div>
+          ))}
+        </div>
+
+        {/* Linked Workflows */}
+        <div className="eng-detail-section">
+          <div className="eng-detail-section-title">Prompt Database Workflows</div>
           <div className="eng-prompt-tags">
-            {agent.prompts.map((p) => (
-              <span key={p} className="eng-prompt-tag" data-color={agent.color}>{p}</span>
+            {linkedWorkflows.map(wf => (
+              <span key={wf.id} className="eng-prompt-tag" data-color={color}>{wf.name}</span>
+            ))}
+            {engineer.workflowIds.filter(id => !linkedWorkflows.some(w => w.id === id)).map(id => (
+              <span key={id} className="eng-prompt-tag">{id}</span>
             ))}
           </div>
         </div>
 
+        {/* Configuration */}
         <div className="eng-detail-section">
-          <div className="eng-detail-section-title">Trigger Matchers</div>
-          <div className="eng-matcher-list">
-            {agent.matchers.map((m) => (
-              <span key={m} className="eng-matcher-badge">{m}</span>
-            ))}
+          <div className="eng-detail-section-title">Configuration</div>
+          <div className="eng-config-row">
+            <span className="eng-config-key">Schedule</span>
+            <span className="eng-config-val">Every {formatInterval(engineer.defaultIntervalMinutes)}</span>
           </div>
-        </div>
-
-        <div className="eng-detail-section">
-          <div className="eng-detail-section-title">Files Touched</div>
-          <ul className="eng-file-list">
-            {agent.files.map((f) => (
-              <li key={f} className="eng-file-item">
-                <span className="eng-file-dot" style={{ background: `var(--${agent.color}, rgba(255,255,255,0.3))` }} />
-                {f}
-              </li>
-            ))}
-          </ul>
+          <div className="eng-config-row">
+            <span className="eng-config-key">Category</span>
+            <span className="eng-config-val">{engineer.category}</span>
+          </div>
+          <div className="eng-config-row">
+            <span className="eng-config-key">External data</span>
+            <span className="eng-config-val">{engineer.requiresData ? 'Yes' : 'No'}</span>
+          </div>
+          {engineer.dataSource && (
+            <div className="eng-config-row">
+              <span className="eng-config-key">Data source</span>
+              <span className="eng-config-val">{engineer.dataSource}</span>
+            </div>
+          )}
+          <div className="eng-config-row">
+            <span className="eng-config-key">Triggers</span>
+            <span className="eng-config-val">{engineer.triggerEvents.join(', ')}</span>
+          </div>
         </div>
       </div>
 
-      {relatedConnections.length > 0 && (
+      {/* Connection table */}
+      {relatedEdges.length > 0 && (
         <div style={{ marginTop: 20 }}>
           <div className="eng-detail-section-title">Connections</div>
           <table className="eng-matrix-table" style={{ fontSize: 11, marginTop: 8 }}>
@@ -286,8 +387,24 @@ function AgentDetailPanel({ agent, onClose }: { agent: AgentNode; onClose: () =>
               </tr>
             </thead>
             <tbody>
-              {relatedConnections.map((conn, i) => {
-                const isFrom = conn.from === agent.id;
+              {relatedEdges.map((edge, i) => {
+                const isFrom = edge.from === engineer.id;
+                const targetId = isFrom ? edge.to : edge.from;
+                // Resolve name
+                let targetName = targetId;
+                if (targetId.startsWith('wf-')) {
+                  const wf = workflows.find(w => w.id === targetId.slice(3));
+                  targetName = wf?.name || targetId.slice(3);
+                } else if (targetId.startsWith('ev-')) {
+                  targetName = targetId.slice(3).replace(/-/g, ' ');
+                } else if (targetId.startsWith('ds-')) {
+                  const eng = allEngineers.find(e => e.id === targetId);
+                  targetName = eng?.name || targetId;
+                } else {
+                  const eng = allEngineers.find(e => e.id === targetId);
+                  targetName = eng?.name || targetId;
+                }
+
                 return (
                   <tr key={i}>
                     <td style={{
@@ -297,11 +414,11 @@ function AgentDetailPanel({ agent, onClose }: { agent: AgentNode; onClose: () =>
                       {isFrom ? 'OUT \u2192' : '\u2190 IN'}
                     </td>
                     <td>
-                      <span className="eng-conn-dot" data-type={conn.type} />
-                      <span className="eng-conn-type">{connTypeLabel(conn.type)}</span>
+                      <span className="eng-conn-dot" data-type={edge.type} />
+                      <span className="eng-conn-type">{edgeTypeLabel(edge.type)}</span>
                     </td>
-                    <td className="eng-conn-to">{nameFromId(isFrom ? conn.to : conn.from)}</td>
-                    <td className="eng-conn-label">{conn.label ?? '\u2014'}</td>
+                    <td className="eng-conn-to">{targetName}</td>
+                    <td className="eng-conn-label">{edge.label ?? '\u2014'}</td>
                   </tr>
                 );
               })}
@@ -315,7 +432,7 @@ function AgentDetailPanel({ agent, onClose }: { agent: AgentNode; onClose: () =>
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-export default function EngineersDashboard({ engineers, tickers }: Props) {
+export default function EngineersDashboard({ engineers, workflows, tickers }: Props) {
   const [selectedTicker, setSelectedTicker] = useState(tickers[0] || 'ASTS');
   const [statuses, setStatuses] = useState<EngineerStatus[]>([]);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -328,8 +445,14 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
   const graphRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
-  const selectedAgent = selectedNode
-    ? agents.find((a) => a.id === selectedNode) ?? null
+  // Build the graph from engineers + workflows
+  const { nodes: graphNodes, edges: graphEdges } = useMemo(
+    () => buildGraph(engineers, workflows),
+    [engineers, workflows]
+  );
+
+  const selectedEngineer = selectedNode
+    ? engineers.find(e => e.id === selectedNode) ?? null
     : null;
 
   // Measure node positions for SVG lines
@@ -439,6 +562,7 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
   const scheduledCount = statuses.filter(s => s.schedule?.enabled).length;
   const completedCount = history.filter(r => r.status === 'completed').length;
   const failedCount = history.filter(r => r.status === 'failed').length;
+  const uniqueWorkflows = new Set(engineers.flatMap(e => e.workflowIds)).size;
 
   return (
     <div className="eng-app">
@@ -447,31 +571,31 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
         <div className="eng-subtitle">Autonomous Operations</div>
         <div className="eng-title">Engineers Dashboard</div>
         <div className="eng-desc">
-          Command center for AI engineers — network topology, autonomous operations,
-          and execution intelligence across all monitored tickers.
+          Command center for AI engineers — network topology showing how agents
+          connect to prompt database workflows, trigger events, and data sources.
         </div>
 
-        {/* KPI Strip — Palantir-style segmented bar */}
+        {/* KPI Bar */}
         <div className="eng-kpi-bar">
           <div className="eng-kpi-bar-cell">
-            <div className="eng-kpi-bar-value" data-color="cyan">{dashboardStats.totalAgents}</div>
-            <div className="eng-kpi-bar-label">Total Agents</div>
+            <div className="eng-kpi-bar-value" data-color="cyan">{engineers.length}</div>
+            <div className="eng-kpi-bar-label">Engineers</div>
           </div>
           <div className="eng-kpi-bar-cell">
-            <div className="eng-kpi-bar-value" data-color="mint">{dashboardStats.activeAgents}</div>
-            <div className="eng-kpi-bar-label">Active</div>
+            <div className="eng-kpi-bar-value" data-color="gold">{uniqueWorkflows}</div>
+            <div className="eng-kpi-bar-label">Workflows</div>
           </div>
           <div className="eng-kpi-bar-cell">
-            <div className="eng-kpi-bar-value" data-color="violet">{dashboardStats.totalConnections}</div>
+            <div className="eng-kpi-bar-value" data-color="violet">{graphEdges.length}</div>
             <div className="eng-kpi-bar-label">Connections</div>
           </div>
           <div className="eng-kpi-bar-cell">
-            <div className="eng-kpi-bar-value" data-color="gold">{dashboardStats.totalPrompts}</div>
-            <div className="eng-kpi-bar-label">Prompts</div>
+            <div className="eng-kpi-bar-value" data-color="mint">{scheduledCount}</div>
+            <div className="eng-kpi-bar-label">Scheduled</div>
           </div>
           <div className="eng-kpi-bar-cell">
-            <div className="eng-kpi-bar-value" data-color="sky">{scheduledCount}</div>
-            <div className="eng-kpi-bar-label">Scheduled</div>
+            <div className="eng-kpi-bar-value" data-color="sky">{completedCount}</div>
+            <div className="eng-kpi-bar-label">Completed</div>
           </div>
           <div className="eng-kpi-bar-cell">
             <div className="eng-kpi-bar-value" data-color="coral">{failedCount}</div>
@@ -483,21 +607,16 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
         <div className="eng-ticker-strip">
           <span className="eng-ticker-label">Ticker</span>
           {tickers.map(t => (
-            <button
-              key={t}
-              className="eng-ticker-pill"
-              data-active={selectedTicker === t}
-              onClick={() => setSelectedTicker(t)}
-            >
+            <button key={t} className="eng-ticker-pill" data-active={selectedTicker === t} onClick={() => setSelectedTicker(t)}>
               {t}
             </button>
           ))}
         </div>
 
-        {/* Tab strip — 3 tabs */}
+        {/* Tab strip */}
         <div className="eng-tab-strip">
           <button className="eng-tab" data-active={activeTab === 'network'} onClick={() => setActiveTab('network')}>
-            Network Graph<span className="eng-tab-count">{agents.length}</span>
+            Network Graph<span className="eng-tab-count">{graphNodes.length}</span>
           </button>
           <button className="eng-tab" data-active={activeTab === 'operations'} onClick={() => setActiveTab('operations')}>
             Operations<span className="eng-tab-count">{engineers.length}</span>
@@ -514,40 +633,38 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
         {/* ══ NETWORK GRAPH TAB ══ */}
         {activeTab === 'network' && (
           <div>
-            {/* Agent Network Section */}
             <div className="eng-section-header">
               <span className="eng-section-dot" data-color="cyan" />
-              <span className="eng-section-label">Agent Network</span>
+              <span className="eng-section-label">Engineer Network</span>
               <div className="eng-section-line" />
             </div>
 
             <div className="eng-graph-container" ref={graphRef}>
-              <ConnectionLines nodeRects={nodeRects} selected={selectedNode} />
+              <ConnectionLines nodeRects={nodeRects} selected={selectedNode} edges={graphEdges} />
               <div className="eng-graph-nodes">
-                {agents.map((agent) => (
+                {graphNodes.map((node) => (
                   <div
-                    key={agent.id}
-                    ref={(el) => { if (el) nodeRefs.current.set(agent.id, el); }}
+                    key={node.id}
+                    ref={(el) => { if (el) nodeRefs.current.set(node.id, el); }}
                     className="eng-node"
-                    data-color={agent.color}
-                    data-selected={selectedNode === agent.id ? 'true' : undefined}
-                    onClick={() => setSelectedNode(selectedNode === agent.id ? null : agent.id)}
+                    data-color={node.color}
+                    data-selected={selectedNode === node.id ? 'true' : undefined}
+                    onClick={() => setSelectedNode(selectedNode === node.id ? null : node.id)}
                   >
-                    <span className="eng-node-pulse" data-status={agent.status} />
+                    <span className="eng-node-pulse" data-status={node.type === 'engineer' ? 'active' : 'standby'} />
                     <div className="eng-node-header">
-                      <div className="eng-node-icon" data-color={agent.color}>
-                        {agentIcon(agent.category)}
+                      <div className="eng-node-icon" data-color={node.color}>
+                        {nodeIcon(node.type)}
                       </div>
                       <div>
-                        <div className="eng-node-name">{agent.name}</div>
-                        <div className="eng-node-role">{agent.role}</div>
+                        <div className="eng-node-name">{node.name}</div>
+                        {node.subtitle && <div className="eng-node-role">{node.subtitle}</div>}
                       </div>
                     </div>
-                    <div className="eng-node-desc">{agent.description}</div>
                     <div className="eng-node-meta">
-                      <span className="eng-node-badge" data-variant={agent.status}>{agent.status}</span>
-                      <span className="eng-node-badge" data-variant={agent.category}>{agent.category}</span>
-                      <span className="eng-node-badge" data-variant="phase">{agent.phase}</span>
+                      <span className="eng-node-badge" data-variant={node.type === 'engineer' ? 'active' : 'standby'}>
+                        {node.type}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -556,7 +673,12 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
 
             {/* Legend */}
             <div className="eng-legend">
-              {([['triggers', 'Triggers'], ['reads', 'Reads'], ['writes', 'Writes'], ['uses-prompt', 'Uses Prompt'], ['feeds', 'Feeds Into']] as const).map(([type, label]) => (
+              {([
+                ['executes', 'Executes Workflow'],
+                ['triggers', 'Triggers Engineer'],
+                ['provides-data', 'Provides Data'],
+                ['shared-trigger', 'Shared Trigger'],
+              ] as const).map(([type, label]) => (
                 <div key={type} className="eng-legend-item">
                   <span className="eng-legend-line" data-type={type} />
                   {label}
@@ -565,8 +687,14 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
             </div>
 
             {/* Detail Panel */}
-            {selectedAgent && (
-              <AgentDetailPanel agent={selectedAgent} onClose={() => setSelectedNode(null)} />
+            {selectedEngineer && (
+              <EngineerDetailPanel
+                engineer={selectedEngineer}
+                workflows={workflows}
+                allEngineers={engineers}
+                edges={graphEdges}
+                onClose={() => setSelectedNode(null)}
+              />
             )}
 
             {/* Connection Matrix */}
@@ -587,49 +715,23 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
                   </tr>
                 </thead>
                 <tbody>
-                  {connections.map((conn, i) => (
-                    <tr key={i}>
-                      <td className="eng-conn-from">{nameFromId(conn.from)}</td>
-                      <td>
-                        <span className="eng-conn-dot" data-type={conn.type} />
-                        <span className="eng-conn-type">{connTypeLabel(conn.type)}</span>
-                      </td>
-                      <td className="eng-conn-to">{nameFromId(conn.to)}</td>
-                      <td className="eng-conn-label">{conn.label ?? '\u2014'}</td>
-                    </tr>
-                  ))}
+                  {graphEdges.map((edge, i) => {
+                    const fromNode = graphNodes.find(n => n.id === edge.from);
+                    const toNode = graphNodes.find(n => n.id === edge.to);
+                    return (
+                      <tr key={i}>
+                        <td className="eng-conn-from">{fromNode?.name || edge.from}</td>
+                        <td>
+                          <span className="eng-conn-dot" data-type={edge.type} />
+                          <span className="eng-conn-type">{edgeTypeLabel(edge.type)}</span>
+                        </td>
+                        <td className="eng-conn-to">{toNode?.name || edge.to}</td>
+                        <td className="eng-conn-label">{edge.label ?? '\u2014'}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
-            </div>
-
-            {/* Resources Grid */}
-            <div className="eng-section-header">
-              <span className="eng-section-dot" data-color="gold" />
-              <span className="eng-section-label">Resources & Infrastructure</span>
-              <div className="eng-section-line" />
-            </div>
-
-            <div className="eng-resources-grid">
-              {resources.map((res) => (
-                <div key={res.id} className="eng-resource-card">
-                  <div className="eng-resource-header">
-                    <div className="eng-resource-icon" data-color={res.color}>
-                      {resourceIcon(res.type)}
-                    </div>
-                    <div>
-                      <div className="eng-resource-name">{res.name}</div>
-                      <div className="eng-resource-type">{res.type}</div>
-                    </div>
-                  </div>
-                  <div className="eng-resource-desc">{res.description}</div>
-                  {res.path && <div className="eng-resource-path">{res.path}</div>}
-                  <div className="eng-resource-agents">
-                    {res.connectedAgents.map((agentId) => (
-                      <span key={agentId} className="eng-resource-agent-chip">{nameFromId(agentId)}</span>
-                    ))}
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         )}
@@ -708,10 +810,7 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
                           >
                             {isRunning ? 'Running...' : 'Run Now'}
                           </button>
-                          <button
-                            className="eng-chevron"
-                            onClick={() => setExpandedId(isExpanded ? null : eng.id)}
-                          >
+                          <button className="eng-chevron" onClick={() => setExpandedId(isExpanded ? null : eng.id)}>
                             <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
                               style={{ transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
                               <path d="M9 5l7 7-7 7" />
