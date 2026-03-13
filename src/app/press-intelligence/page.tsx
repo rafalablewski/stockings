@@ -415,6 +415,23 @@ const FEED_CONFIGS: FeedConfig[] = [
       "Capital Markets": (h) => /notes|offering|convert|shares|capital|buyback|repurchase|debt|\$\d/i.test(h),
     },
   },
+  {
+    ticker: "CRCL",
+    grade: "B",
+    endpoint: "/api/press-intelligence?ticker=CRCL",
+    accent: "mint",
+    color: "#34D399",
+    colorDim: "rgba(52,211,153,0.15)",
+    ...QM_DEFAULTS,
+    categories: {
+      Earnings: CAT_EARNINGS,
+      Stablecoin: (h) => /usdc|stablecoin|stable\s*coin|dollar|peg|mint|redeem|reserve|circle/i.test(h),
+      Regulatory: (h) => /sec|regulat|compliance|license|legal|lawsuit|mica|framework|approval/i.test(h),
+      Partnerships: CAT_PARTNERSHIPS,
+      Corporate: CAT_CORPORATE,
+      "Capital Markets": CAT_CAPITAL_MARKETS,
+    },
+  },
   // ─── Fintech & Payments ───
   {
     ticker: "MA",
