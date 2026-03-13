@@ -12,6 +12,7 @@ const { neon } = require('@neondatabase/serverless');
 
 // No in-memory cache — DB is the source of truth
 let _lastJunkPurge = 0; // timestamp of last junk purge (throttle to once per hour)
+const DB_ROW_LIMIT = 5000; // max rows per ticker from DB — must exceed any ticker's total count
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  DATABASE PERSISTENCE — stores every press release permanently
@@ -129,7 +130,7 @@ async function loadFromDB(ticker) {
       FROM press_releases
       WHERE ticker = ${ticker}
       ORDER BY datetime DESC
-      LIMIT 1000
+      LIMIT ${DB_ROW_LIMIT}
     `;
     console.log(`press-intelligence loadFromDB(${ticker}): ${rows.length} rows`);
     return rows.map(r => ({
@@ -613,6 +614,7 @@ const TICKER_CONFIG = {
     topics: ['ASTS'],
     sources: ['business wire'],
     filter: (hl) => /ast\s*spacemobile|asts/i.test(hl),
+    notifiedApiUrls: ['https://investors.ast-science.com/rss/news-releases.xml'],
   },
   BMNR: {
     grade: 'A',
@@ -627,6 +629,7 @@ const TICKER_CONFIG = {
     topics: ['IRDM'],
     sources: ['pr newswire', 'canada newswire', 'business wire'],
     filter: (hl) => /iridium/i.test(hl),
+    notifiedApiUrls: ['https://investor.iridium.com/rss/news-releases.xml'],
   },
   GSAT: {
     grade: 'A',
@@ -634,6 +637,7 @@ const TICKER_CONFIG = {
     topics: ['GSAT'],
     sources: ['business wire', 'pr newswire', 'canada newswire'],
     filter: (hl) => /globalstar/i.test(hl),
+    notifiedApiUrls: ['https://investors.globalstar.com/rss/news-releases.xml'],
   },
   VZ: {
     grade: 'A',
@@ -641,6 +645,7 @@ const TICKER_CONFIG = {
     topics: ['VZ'],
     sources: ['globenewswire', 'pr newswire', 'business wire'],
     filter: (hl) => /verizon/i.test(hl),
+    rssUrls: ['https://www.verizon.com/about/news/feed/press-releases'],
   },
   VSAT: {
     grade: 'A',
@@ -648,6 +653,7 @@ const TICKER_CONFIG = {
     topics: ['VSAT'],
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
     filter: (hl) => /viasat/i.test(hl),
+    notifiedApiUrls: ['https://investors.viasat.com/rss/news-releases.xml'],
   },
   RKLB: {
     grade: 'A',
@@ -655,6 +661,7 @@ const TICKER_CONFIG = {
     topics: ['RKLB'],
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
     filter: (hl) => /rocket\s*lab|rklb/i.test(hl),
+    notifiedApiUrls: ['https://investors.rocketlabcorp.com/rss/news-releases.xml'],
   },
   SATS: {
     grade: 'A',
@@ -662,6 +669,7 @@ const TICKER_CONFIG = {
     topics: ['SATS'],
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire', 'accesswire'],
     filter: (hl) => /echostar|sats|hughes/i.test(hl),
+    notifiedApiUrls: ['https://ir.echostar.com/rss/news-releases.xml'],
   },
   LUNR: {
     grade: 'A',
@@ -670,6 +678,7 @@ const TICKER_CONFIG = {
     sources: ['business wire', 'pr newswire', 'globe newswire', 'globenewswire'],
     filter: (hl) => /intuitive\s*machines|lunr/i.test(hl),
     irUrl: 'https://investors.intuitivemachines.com/news-releases',
+    notifiedApiUrls: ['https://investors.intuitivemachines.com/rss/news-releases.xml'],
   },
 
   MSTR: {
@@ -696,6 +705,7 @@ const TICKER_CONFIG = {
     topics: ['RIOT'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /riot\s*platforms/i.test(hl) || /\briot\b/i.test(hl),
+    notifiedApiUrls: ['https://www.riotplatforms.com/rss/news-releases.xml'],
   },
   CLSK: {
     grade: 'A',
@@ -703,6 +713,7 @@ const TICKER_CONFIG = {
     topics: ['CLSK'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /cleanspark/i.test(hl) || /\bclsk\b/i.test(hl),
+    notifiedApiUrls: ['https://investors.cleanspark.com/rss/news-releases.xml'],
   },
   HUT: {
     grade: 'A',
@@ -710,6 +721,7 @@ const TICKER_CONFIG = {
     topics: ['HUT'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /hut\s*8|hut8|\bhut\b/i.test(hl),
+    notifiedApiUrls: ['https://hut8.com/rss/news-releases.xml'],
   },
   IREN: {
     grade: 'A',
@@ -765,6 +777,7 @@ const TICKER_CONFIG = {
       'https://www.mastercard.com/news/press/press-releases',
       'https://www.mastercard.com/us/en/news-and-trends/stories.html',
     ],
+    rssUrls: ['https://newsroom.mastercard.com/feed/'],
   },
   V: {
     grade: 'A',
@@ -772,6 +785,7 @@ const TICKER_CONFIG = {
     topics: ['V'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /\bvisa\b/i.test(hl),
+    notifiedApiUrls: ['https://visa.gcs-web.com/rss/news-releases.xml'],
   },
   SOFI: {
     grade: 'A',
@@ -779,6 +793,7 @@ const TICKER_CONFIG = {
     topics: ['SOFI'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /sofi/i.test(hl),
+    notifiedApiUrls: ['https://investors.sofi.com/rss/news-releases.xml'],
   },
   AXP: {
     grade: 'B',
@@ -788,6 +803,7 @@ const TICKER_CONFIG = {
     filter: (hl) => /american\s*express/i.test(hl) || /\bamex\b/i.test(hl) || /\baxp\b/i.test(hl),
     newsroomUrls: ['https://www.americanexpress.com/en-us/newsroom/'],
     irUrl: 'https://ir.americanexpress.com/news/news-details/default.aspx',
+    rssUrls: ['https://americanexpress.mediaroom.com/rss'],
   },
   AFRM: {
     grade: 'A',
@@ -808,6 +824,7 @@ const TICKER_CONFIG = {
     topics: ['SEZL'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /sezzle/i.test(hl) || /\bsezl\b/i.test(hl),
+    notifiedApiUrls: ['https://investors.sezzle.com/rss/news-releases.xml'],
   },
   SQ: {
     grade: 'A',
@@ -817,6 +834,7 @@ const TICKER_CONFIG = {
     filter: (hl) => /block,?\s*inc/i.test(hl) || /\bsquare\b/i.test(hl) || /cash\s*app/i.test(hl) || /\bsq\b/i.test(hl) || /\bxyz\b/i.test(hl),
     stockTitanSlugs: ['XYZ', 'SQ'],
     irUrl: 'https://investors.block.xyz/investor-news/default.aspx',
+    notifiedApiUrls: ['https://investors.block.xyz/rss/news-releases.xml'],
   },
   PYPL: {
     grade: 'F',
@@ -848,6 +866,7 @@ const TICKER_CONFIG = {
     stockTitanSlugs: ['HOOD'],
     irUrl: 'https://investors.robinhood.com/press-releases',
     notifiedApiUrls: ['https://investors.robinhood.com/rss/news-releases.xml'],
+    rssUrls: ['https://newsroom.aboutrobinhood.com/feed/'],
   },
 
   // ─── Digital Assets (new) ───
@@ -861,6 +880,7 @@ const TICKER_CONFIG = {
     gnwRssKeywords: ['Galaxy Digital'],
     irUrl: 'https://investor.galaxy.com/',
     newsroomUrls: ['https://www.galaxy.com/all-news'],
+    notifiedApiUrls: ['https://investor.galaxy.com/rss/news-releases.xml'],
   },
   BITF: {
     grade: 'A',
@@ -882,6 +902,7 @@ const TICKER_CONFIG = {
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /blackrock/i.test(hl) || /\bblk\b/i.test(hl),
     irUrl: 'https://ir.blackrock.com/news-and-events/press-releases/default.aspx',
+    notifiedApiUrls: ['https://ir.blackrock.com/rss/news-releases.xml'],
   },
   HSBC: {
     grade: 'D',
@@ -893,6 +914,7 @@ const TICKER_CONFIG = {
       'https://www.hsbc.com/news-and-views/news/media-releases',
       'https://www.hsbc.com/news-and-views/news',
     ],
+    rssUrls: ['https://www.hsbc.com/rss-feed/all-news'],
   },
   C: {
     grade: 'C',
@@ -903,6 +925,7 @@ const TICKER_CONFIG = {
     gnwRssKeywords: ['Citigroup', 'Citi'],
     irUrl: 'https://www.citigroup.com/global/news/press-release',
     newsroomUrls: ['https://www.citigroup.com/global/news'],
+    rssUrls: ['https://www.citigroup.com/citi/news/xml/news_rss.xml'],
   },
   CME: {
     grade: 'A',
@@ -910,6 +933,7 @@ const TICKER_CONFIG = {
     topics: ['CME'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /cme\s*group/i.test(hl) || /\bcme\b/i.test(hl),
+    notifiedApiUrls: ['https://cmegroupinc.gcs-web.com/rss/news-releases.xml'],
   },
   ICE: {
     grade: 'A',
@@ -917,6 +941,7 @@ const TICKER_CONFIG = {
     topics: ['ICE'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /intercontinental\s*exchange/i.test(hl) || /\bnyse\b/i.test(hl) || (/\bice\b/i.test(hl) && /exchange|futures|data|mortgage|clearing|nyse/i.test(hl)),
+    notifiedApiUrls: ['https://ir.theice.com/rss/news-releases.xml'],
   },
 
   // ─── Telecom (new) ───
@@ -932,6 +957,7 @@ const TICKER_CONFIG = {
       'https://www.vodafone.com/news/press-releases',
       'https://www.vodafone.com/news',
     ],
+    rssUrls: ['https://www.business.vodafone.com/site/rss/news_feed.xml'],
   },
   ORAN: {
     grade: 'F',
@@ -944,6 +970,7 @@ const TICKER_CONFIG = {
       'https://www.orange.com/en/newsroom/press-releases',
       'https://www.orange.com/en/newsroom/news',
     ],
+    rssUrls: ['https://www.orange.com/en/rss'],
   },
   TU: {
     grade: 'A',
@@ -951,6 +978,7 @@ const TICKER_CONFIG = {
     topics: ['TU'],
     sources: OFFICIAL_SOURCES,
     filter: (hl) => /telus/i.test(hl) || /\btu\b/i.test(hl),
+    notifiedApiUrls: ['https://investors.telus.com/rss/news-releases.xml'],
   },
   BCE: {
     grade: 'A',
@@ -960,6 +988,7 @@ const TICKER_CONFIG = {
     filter: (hl) => /\bbce\b/i.test(hl) || (/\bbell\b/i.test(hl) && /canada|media|wireless/i.test(hl)),
     stockTitanSlugs: ['BCE'],
     irUrl: 'https://www.bce.ca/news-and-media/newsroom',
+    notifiedApiUrls: ['https://www.bce.ca/rss/news-releases.xml'],
   },
 
   // ─── Infrastructure & Tech ───
@@ -995,6 +1024,7 @@ const TICKER_CONFIG = {
       'https://www.googlecloudpresscorner.com/latest-news',
       'https://blog.google/press/',
     ],
+    rssUrls: ['https://blog.google/rss/'],
   },
 
   // ─── Aerospace & Defense ───
@@ -1044,6 +1074,7 @@ const TICKER_CONFIG = {
     gnwRssKeywords: ['Qualcomm'],
     irUrl: 'https://investor.qualcomm.com/news-events/press-releases/default.aspx',
     newsroomUrls: ['https://www.qualcomm.com/news/releases'],
+    notifiedApiUrls: ['https://investor.qualcomm.com/rss/news-releases.xml'],
   },
   NOK: {
     grade: 'F',
@@ -1078,6 +1109,7 @@ const TICKER_CONFIG = {
     stockTitanSlugs: ['TMUS'],
     irUrl: 'https://investor.t-mobile.com/events-and-presentations/news/default.aspx',
     newsroomUrls: ['https://www.t-mobile.com/news/stories'],
+    notifiedApiUrls: ['https://investor.t-mobile.com/rss/news-releases.xml'],
   },
   NVDA: {
     grade: 'B',
@@ -1089,6 +1121,10 @@ const TICKER_CONFIG = {
     gnwRssKeywords: ['NVIDIA'],
     newsroomUrls: ['https://nvidianews.nvidia.com/news/all'],
     notifiedApiUrls: ['https://investor.nvidia.com/rss/news-releases.xml'],
+    rssUrls: [
+      'https://nvidianews.nvidia.com/releases.xml',
+      'https://feeds.feedburner.com/nvidiablog',
+    ],
   },
   IBM: {
     grade: 'B',
@@ -1123,6 +1159,7 @@ const TICKER_CONFIG = {
     stockTitanSlugs: ['HIVE'],
     gnwRssKeywords: ['HIVE Digital'],
     irUrl: 'https://www.hivedigitaltechnologies.com/news',
+    notifiedApiUrls: ['https://www.hivedigitaltechnologies.com/rss/news-releases.xml'],
   },
   CORZ: {
     grade: 'A',
@@ -1132,6 +1169,7 @@ const TICKER_CONFIG = {
     filter: (hl) => /core\s*scientific/i.test(hl) || /\bcorz\b/i.test(hl),
     stockTitanSlugs: ['CORZ'],
     irUrl: 'https://investors.corescientific.com/news-events/press-releases',
+    notifiedApiUrls: ['https://investors.corescientific.com/rss/news-releases.xml'],
   },
   APLD: {
     grade: 'A',
@@ -1142,6 +1180,7 @@ const TICKER_CONFIG = {
     stockTitanSlugs: ['APLD'],
     gnwRssKeywords: ['Applied Digital'],
     irUrl: 'https://ir.applieddigital.com/news-events/press-releases',
+    notifiedApiUrls: ['https://ir.applieddigital.com/rss/news-releases.xml'],
   },
   CAN: {
     grade: 'A',
@@ -1151,6 +1190,7 @@ const TICKER_CONFIG = {
     filter: (hl) => /canaan/i.test(hl) || (/\bcan\b/i.test(hl) && /mining|bitcoin|miner|asic/i.test(hl)),
     stockTitanSlugs: ['CAN'],
     irUrl: 'https://investor.canaaninc.com/news-releases',
+    notifiedApiUrls: ['https://investor.canaaninc.com/rss/news-releases.xml'],
   },
   ARBK: {
     grade: 'F',
@@ -1162,6 +1202,7 @@ const TICKER_CONFIG = {
     gnwRssKeywords: ['Argo Blockchain'],
     irUrl: 'https://www.argoblockchain.com/investors/news',
     newsroomUrls: ['https://www.argoblockchain.com/news'],
+    notifiedApiUrls: ['https://www.argoblockchain.com/rss/news-releases.xml'],
   },
   BKKT: {
     grade: 'A',
@@ -1172,6 +1213,7 @@ const TICKER_CONFIG = {
     stockTitanSlugs: ['BKKT'],
     gnwRssKeywords: ['Bakkt'],
     irUrl: 'https://investors.bakkt.com/news-and-events/news-releases',
+    notifiedApiUrls: ['https://investors.bakkt.com/rss/news-releases.xml'],
   },
 
   // ─── Complex multi-source tickers ───
@@ -1776,13 +1818,12 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: `Unknown type: ${config.type}` });
     }
 
-    // Load existing DB items to know what's already stored
-    let dbHashes = new Set();
-    let dbItems = [];
+    // Snapshot existing DB hashes BEFORE persist — used to mark which items are new
+    const dbHashes = new Set();
     try {
-      dbItems = applyTickerFilter(await loadFromDB(ticker));
-      for (const d of dbItems) dbHashes.add(normalizeHl(d.headline));
-      console.log(`press-intelligence refresh (${ticker}) [grade=${config.grade}]: ${dbItems.length} existing DB items, ${items.length} upstream items`);
+      const existing = await loadFromDB(ticker);
+      for (const d of existing) dbHashes.add(normalizeHl(d.headline));
+      console.log(`press-intelligence refresh (${ticker}) [grade=${config.grade}]: ${existing.length} existing DB items, ${items.length} upstream items`);
     } catch (dbErr) {
       console.error(`press-intelligence DB read error (${ticker}):`, dbErr.message);
     }
@@ -1794,16 +1835,9 @@ export default async function handler(req, res) {
       console.error(`press-intelligence persist failed (${ticker}):`, persistErr.message);
     }
 
-    // Merge fresh upstream + historical DB items, deduplicated
-    // Clean upstream headlines to match DB format before merge/dedupe
-    for (const item of items) {
-      if (item.headline) item.headline = cleanHeadline(item.headline);
-    }
-
-    let merged = items;
-    if (dbItems.length > 0) {
-      merged = dedupe([...items, ...dbItems]);
-    }
+    // Re-read from DB after persist — single source of truth, no in-memory merge.
+    // This ensures refresh returns exactly the same data as the next page load.
+    const merged = applyTickerFilter(await loadFromDB(ticker));
 
     // Mark each item: _inDb = true if it was already in the database BEFORE this fetch
     for (const item of merged) {

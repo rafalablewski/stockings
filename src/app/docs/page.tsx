@@ -235,6 +235,37 @@ const investmentClasses: CSSClass[] = [
   { name: ".sm-ml-auto",              description: "margin-left: auto utility — push element to end of flex row",                                               usage: "className=\"sm-ml-auto\"" },
 ];
 
+const pressIntelligenceClasses: CSSClass[] = [
+  // ── Modal Container ──
+  { name: ".pi-modal-overlay",        description: "Fixed full-screen overlay — rgba black 60%, blur(4px), centered flex",                usage: "Wraps .pi-modal" },
+  { name: ".pi-modal",                description: "Modal container — var(--surface) bg, var(--border), rounded-16, max-width 600px",     usage: "className=\"pi-modal\"" },
+  { name: ".pi-modal-header",         description: "Header row — flex space-between, 20×24px padding, bottom border",                     usage: "className=\"pi-modal-header\"" },
+  { name: ".pi-modal-title",          description: "Modal title — Outfit 16px/600, var(--text)",                                          usage: "className=\"pi-modal-title\"" },
+  { name: ".pi-modal-close",          description: "Close button — var(--text3), hover → var(--text), 22px, transition",                  usage: "className=\"pi-modal-close\"" },
+  { name: ".pi-modal-body",           description: "Scrollable body — overflow-y auto, 20×24px padding",                                  usage: "className=\"pi-modal-body\"" },
+  { name: ".pi-modal-loading",        description: "Loading state — var(--text3), centered, Outfit 13px",                                 usage: "className=\"pi-modal-loading\"" },
+  // ── Methodology Sections ──
+  { name: ".pi-method-section",       description: "Section block — 20px margin-bottom, 16px padding-bottom, var(--border) divider",       usage: "className=\"pi-method-section\"" },
+  { name: ".pi-method-heading",       description: "Section heading — Outfit 11px/600 uppercase, var(--text3), 1.5px letter-spacing",      usage: "className=\"pi-method-heading\"" },
+  { name: ".pi-method-subheading",    description: "Sub-heading — same as heading, 12px top margin",                                       usage: "className=\"pi-method-subheading\"" },
+  { name: ".pi-method-row",           description: "Key-value row — flex space-between, 6×8px padding, rounded-4, hover → var(--surface2)", usage: "className=\"pi-method-row\"" },
+  { name: ".pi-method-label",         description: "Row label — Outfit 13px, var(--text2)",                                                usage: "className=\"pi-method-label\"" },
+  { name: ".pi-method-value",         description: "Row value — Space Mono 13px/500, var(--text)",                                         usage: "className=\"pi-method-value\"" },
+  // ── Source Cards ──
+  { name: ".pi-method-source",        description: "Source card — var(--surface2) bg, var(--border), rounded-8, 10×12px padding",           usage: "className=\"pi-method-source\"" },
+  { name: ".pi-method-source-name",   description: "Source name — Outfit 13px/600, var(--text)",                                           usage: "className=\"pi-method-source-name\"" },
+  { name: ".pi-method-source-type",   description: "Type badge — Outfit 10px uppercase, 1.5px tracking. data-type: primary (cyan) | supplementary (violet)", usage: "data-type=\"primary\"" },
+  { name: ".pi-method-source-detail", description: "Detail text — Outfit 12px, var(--text2), word-break",                                 usage: "className=\"pi-method-source-detail\"" },
+  { name: ".pi-method-code",          description: "Code block — Space Mono 11px, var(--bg) bg, var(--border), var(--violet) text",        usage: "className=\"pi-method-code\"" },
+  // ── DB Stats Table ──
+  { name: ".pi-method-table",         description: "Table container — flex column, 2px gap",                                               usage: "className=\"pi-method-table\"" },
+  { name: ".pi-method-table-row",     description: "Table row — var(--surface2) bg, hover → var(--surface3), rounded-4",                   usage: "className=\"pi-method-table-row\"" },
+  { name: ".pi-method-table-source",  description: "Source name cell — Outfit 12px, var(--text2)",                                         usage: "className=\"pi-method-table-source\"" },
+  { name: ".pi-method-table-count",   description: "Count cell — Space Mono 12px/500, var(--text3)",                                       usage: "className=\"pi-method-table-count\"" },
+  // ── Grade Indicators ──
+  { name: ".pi-grade-dot-lg",         description: "Large grade dot — 10px circle, data-grade: A (green) | B (blue) | C (yellow) | D (orange) | F (red)", usage: "data-grade=\"B\"" },
+];
+
 const navigationClasses: CSSClass[] = [
   // ── Tab Type Indicators ──
   { name: ".nav-btn.tab-tracking",           description: "Tracking tab — 6% mint bg wash (data/actuals)",                        usage: "Applied automatically via tab type" },
@@ -1473,6 +1504,19 @@ export default function DocsPage() {
           Dynamic color via <span className="font-mono text-white/40">--inv-accent</span> CSS custom property.
         </p>
         <ClassTable classes={investmentClasses} />
+
+        {/* ── 5b. Press Intelligence Classes ─────────────────────────────── */}
+        <SectionHeader id="press-intelligence" title="Press Intelligence Classes (pi-*)" count={pressIntelligenceClasses.length} />
+        <p className="text-[12px] text-white/30 mt-3 mb-1">
+          Methodology modal and data source cards in{" "}
+          <span className="font-mono text-white/40">press-intelligence.css</span>.
+          Uses design tokens from <span className="font-mono text-white/40">:root</span> —
+          all colors reference <span className="font-mono text-white/40">var(--surface)</span>,{" "}
+          <span className="font-mono text-white/40">var(--text)</span>, etc.
+          Typography: <span className="font-mono text-white/40">Outfit</span> for UI labels,{" "}
+          <span className="font-mono text-white/40">Space Mono</span> for data values.
+        </p>
+        <ClassTable classes={pressIntelligenceClasses} />
 
         {/* ── 6. Data Attributes ──────────────────────────────────────────── */}
         <SectionHeader id="data-attrs" title="Data Attributes" count={dataAttributes.length} />
