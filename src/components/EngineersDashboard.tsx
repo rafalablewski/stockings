@@ -45,10 +45,15 @@ interface HistoryEntry {
   createdAt: string;
 }
 
+interface TickerInfo {
+  ticker: string;
+  name: string;
+}
+
 interface Props {
   engineers: EngineerTask[];
   workflows: Workflow[];
-  tickers: string[];
+  tickers: TickerInfo[];
 }
 
 // ── Graph types ───────────────────────────────────────────────────────────────
@@ -443,7 +448,7 @@ interface PromptPreview {
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export default function EngineersDashboard({ engineers, workflows, tickers }: Props) {
-  const [selectedTicker, setSelectedTicker] = useState(tickers[0] || 'ASTS');
+  const [selectedTicker, setSelectedTicker] = useState(tickers[0]?.ticker || 'ASTS');
   const [statuses, setStatuses] = useState<EngineerStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [runningIds, setRunningIds] = useState<Set<string>>(new Set());
@@ -453,10 +458,53 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const graphRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
+  // ── Ticker dropdown state ──
+  const [tickerDropdownOpen, setTickerDropdownOpen] = useState(false);
+  const [tickerSearch, setTickerSearch] = useState('');
+  const tickerDropdownRef = useRef<HTMLDivElement>(null);
+  const tickerSearchRef = useRef<HTMLInputElement>(null);
+
   // ── AI Agents tab state ──
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedAgentId, setExpandedAgentId] = useState<string | null>(null);
   const [promptPreview, setPromptPreview] = useState<PromptPreview | null>(null);
+
+  // ── Ticker dropdown helpers ──
+  const selectedTickerInfo = tickers.find(t => t.ticker === selectedTicker);
+
+  const filteredTickers = useMemo(() => {
+    if (!tickerSearch.trim()) return tickers;
+    const q = tickerSearch.toLowerCase();
+    return tickers.filter(t =>
+      t.ticker.toLowerCase().includes(q) || t.name.toLowerCase().includes(q)
+    );
+  }, [tickers, tickerSearch]);
+
+  const selectTicker = useCallback((ticker: string) => {
+    setSelectedTicker(ticker);
+    setTickerDropdownOpen(false);
+    setTickerSearch('');
+  }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!tickerDropdownOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (tickerDropdownRef.current && !tickerDropdownRef.current.contains(e.target as Node)) {
+        setTickerDropdownOpen(false);
+        setTickerSearch('');
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [tickerDropdownOpen]);
+
+  // Focus search when dropdown opens
+  useEffect(() => {
+    if (tickerDropdownOpen && tickerSearchRef.current) {
+      tickerSearchRef.current.focus();
+    }
+  }, [tickerDropdownOpen]);
 
   // Build the graph from engineers + workflows
   const { nodes: graphNodes, edges: graphEdges } = useMemo(
@@ -623,27 +671,76 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
           </div>
         </div>
 
-        {/* Ticker pills */}
-        <div className="eng-ticker-strip">
-          <span className="eng-ticker-label">Ticker</span>
-          {tickers.map(t => (
-            <button key={t} className="eng-ticker-pill" data-active={selectedTicker === t} onClick={() => setSelectedTicker(t)}>
-              {t}
+        {/* Unified nav row: ticker dropdown + tabs */}
+        <div className="eng-nav-row">
+          {/* Searchable ticker dropdown */}
+          <div className="eng-ticker-dropdown" ref={tickerDropdownRef}>
+            <button
+              className="eng-ticker-trigger"
+              onClick={() => setTickerDropdownOpen(!tickerDropdownOpen)}
+            >
+              <span className="eng-ticker-trigger-ticker">{selectedTicker}</span>
+              {selectedTickerInfo?.name && (
+                <span className="eng-ticker-trigger-name">{selectedTickerInfo.name}</span>
+              )}
+              <svg className="eng-ticker-trigger-chevron" data-open={tickerDropdownOpen || undefined} width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
             </button>
-          ))}
-        </div>
 
-        {/* Tab strip */}
-        <div className="eng-tab-strip">
-          <button className="eng-tab" data-active={activeTab === 'network'} onClick={() => setActiveTab('network')}>
-            Network Graph<span className="eng-tab-count">{graphNodes.length}</span>
-          </button>
-          <button className="eng-tab" data-active={activeTab === 'agents'} onClick={() => setActiveTab('agents')}>
-            AI Agents<span className="eng-tab-count">{engineers.length}</span>
-          </button>
-          <button className="eng-tab" data-active={activeTab === 'history'} onClick={() => setActiveTab('history')}>
-            History
-          </button>
+            {tickerDropdownOpen && (
+              <div className="eng-ticker-menu">
+                <div className="eng-ticker-search-wrap">
+                  <input
+                    ref={tickerSearchRef}
+                    className="eng-ticker-search"
+                    type="text"
+                    placeholder="Search ticker or name..."
+                    value={tickerSearch}
+                    onChange={(e) => setTickerSearch(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') {
+                        setTickerDropdownOpen(false);
+                        setTickerSearch('');
+                      }
+                      if (e.key === 'Enter' && filteredTickers.length > 0) {
+                        selectTicker(filteredTickers[0].ticker);
+                      }
+                    }}
+                  />
+                </div>
+                <div className="eng-ticker-list">
+                  {filteredTickers.length === 0 && (
+                    <div className="eng-ticker-empty">No matches</div>
+                  )}
+                  {filteredTickers.map(t => (
+                    <button
+                      key={t.ticker}
+                      className="eng-ticker-option"
+                      data-active={selectedTicker === t.ticker || undefined}
+                      onClick={() => selectTicker(t.ticker)}
+                    >
+                      <span className="eng-ticker-option-ticker">{t.ticker}</span>
+                      <span className="eng-ticker-option-name">{t.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Tab strip */}
+          <div className="eng-tab-strip" style={{ borderBottom: 'none', marginTop: 0 }}>
+            <button className="eng-tab" data-active={activeTab === 'network'} onClick={() => setActiveTab('network')}>
+              Network Graph<span className="eng-tab-count">{graphNodes.length}</span>
+            </button>
+            <button className="eng-tab" data-active={activeTab === 'agents'} onClick={() => setActiveTab('agents')}>
+              AI Agents<span className="eng-tab-count">{engineers.length}</span>
+            </button>
+            <button className="eng-tab" data-active={activeTab === 'history'} onClick={() => setActiveTab('history')}>
+              History
+            </button>
+          </div>
         </div>
       </div>
 

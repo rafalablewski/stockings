@@ -15,7 +15,7 @@ export default function EngineersPage() {
       <EngineersDashboard
         engineers={engineers}
         workflows={workflows}
-        tickers={researchStocks.map(s => s.ticker)}
+        tickers={researchStocks.map(s => ({ ticker: s.ticker, name: s.name }))}
       />
     </div>
   );
