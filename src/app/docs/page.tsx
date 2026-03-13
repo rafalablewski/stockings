@@ -395,7 +395,7 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/shared/SharedSecFilingsSection.tsx", type: "Component", description: "SEC Filings cards for Timeline tab — KPI strip, filter pills, description-first cards, cross-ref source dots" },
   { path: "src/components/shared/SharedEdgarTab.tsx",         type: "Component", description: "SEC EDGAR filings browser" },
   { path: "src/components/shared/SharedSourcesTab.tsx",       type: "Component", description: "Research sources / news feed tab" },
-  { path: "src/components/shared/SharedAIAgentsTab.tsx",      type: "Component", description: "AI analysis agents status tab" },
+  { path: "src/components/shared/SharedAIAgentsTab.tsx",      type: "Component", description: "AI analysis agents — moved to centralized Prompt Database (/engineers/prompts)" },
   { path: "src/components/shared/SharedModelTab.tsx",         type: "Component", description: "Model tab shell: hero header + children (scenario presets, DCF, sensitivity — all stock-specific)" },
   { path: "src/components/shared/modelTypes.ts",              type: "Types",     description: "SharedModelTabProps, ModelCfaItem" },
   { path: "src/components/shared/SharedMonteCarloTab.tsx",    type: "Component", description: "Monte Carlo tab: hero, preset grid, horizon/sim controls, percentile table, risk metrics, histogram, CFA notes; stock-specific params via renderParameters render prop" },
@@ -502,7 +502,7 @@ const stockPageTree = [
   { depth: 3, name: "SharedWallStreetTab",                 note: "Analyst coverage, estimates, consensus" },
   { depth: 3, name: "SharedSourcesTab",                    note: "Press releases & news with AI analysis" },
   { depth: 3, name: "SharedEdgarTab",                      note: "SEC filings browser with DB tracking" },
-  { depth: 3, name: "SharedAIAgentsTab",                   note: "Workflow execution & diff preview" },
+  { depth: 3, name: "SharedAIAgentsTab",                   note: "Moved to centralized Prompt Database (/engineers/prompts)" },
   { depth: 2, name: "DisclaimerBanner",                    note: "Collapsible — localStorage key: disclaimer-collapsed" },
 ];
 
@@ -524,7 +524,6 @@ const tabBreakdown: TabEntry[] = [
   { tab: 'Financials',    bmnr: 'W', asts: 'W', crcl: 'S', wrapper: 'SharedFinancialsTab' },
   { tab: 'Timeline',      bmnr: 'W', asts: 'W', crcl: 'W', wrapper: 'SharedTimelineTab' },
   { tab: 'Wall Street',   bmnr: 'W', asts: 'W', crcl: 'S', wrapper: 'SharedWallStreetTab' },
-  { tab: 'AI Agents',     bmnr: 'S', asts: 'S', crcl: 'S', wrapper: 'SharedAIAgentsTab' },
   { tab: 'Sources',       bmnr: 'S', asts: 'S', crcl: 'S', wrapper: 'SharedSourcesTab' },
   { tab: 'EDGAR',         bmnr: 'S', asts: 'S', crcl: 'S', wrapper: 'SharedEdgarTab' },
   // ── BMNR-only tabs ──
@@ -946,7 +945,7 @@ const archive: ArchiveEntry[] = [];
   },
   {
     title: "Adding a New Stock — TEMPLATE.tsx.template",
-    description: "Copy src/components/stocks/TEMPLATE.tsx.template to {TICKER}.tsx and find-and-replace 6 placeholders: {TICKER}, {ticker}, {COMPANY}, {ACCENT}, {SECTOR}, {INDUSTRY}, {EXCHANGE}. The template pre-wires all 12 tabs (Overview, Model, Monte Carlo, Comps, Capital, Financials, Timeline, Investment, Wall Street, AI Agents, Sources, EDGAR) using shared components. Create a data directory at src/data/{ticker}/ with: index.ts, company.ts, investment.ts, analyst-coverage.ts, sec-filings.ts, quarterly-metrics.ts, timeline.ts, capital.ts. No new CSS needed — all sm-* classes work automatically via data-accent.",
+    description: "Copy src/components/stocks/TEMPLATE.tsx.template to {TICKER}.tsx and find-and-replace 6 placeholders: {TICKER}, {ticker}, {COMPANY}, {ACCENT}, {SECTOR}, {INDUSTRY}, {EXCHANGE}. The template pre-wires all 11 tabs (Overview, Model, Monte Carlo, Comps, Capital, Financials, Timeline, Investment, Wall Street, Sources, EDGAR) using shared components. AI Agents have been centralized to the Prompt Database at /engineers/prompts. Create a data directory at src/data/{ticker}/ with: index.ts, company.ts, investment.ts, analyst-coverage.ts, sec-filings.ts, quarterly-metrics.ts, timeline.ts, capital.ts. No new CSS needed — all sm-* classes work automatically via data-accent.",
     code: `// 1. Copy template
 cp src/components/stocks/TEMPLATE.tsx.template src/components/stocks/PLTR.tsx
 

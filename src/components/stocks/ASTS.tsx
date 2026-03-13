@@ -118,7 +118,6 @@ import './stock-model-styles.css';
 import { SharedWallStreetTab, AnalystCoverage, useLiveStockPrice, UpdateIndicatorContext, UpdateIndicators, UpdateLegend, Stat, Card, Row, Input, Panel, Guide, CFANotes, FinancialModelErrorBoundary, DisclaimerBanner, SharedFinancialsTab, SharedTimelineTab, SharedCapitalTab, SharedCompsTab, SharedMonteCarloTab, SharedModelTab, StockHeader, buildHudMarkers } from '../shared';
 import type { UpdateSource, McSimResults } from '../shared';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
-import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import SharedEdgarTab from '../shared/SharedEdgarTab';
 import { SharedInvestmentTab } from '../shared/SharedInvestmentTab';
@@ -524,7 +523,6 @@ const ASTSAnalysis = () => {
     { id: 'investment', label: 'Investment', type: 'tracking' },
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
     // AI hub (grouped under "AI")
-    { id: 'ai-agents', label: 'AI Agents', type: 'tracking', group: 'AI' },
     { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
     { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
   ];
@@ -608,7 +606,6 @@ const ASTSAnalysis = () => {
           {activeTab === 'financials' && <TabPanel id="financials"><FinancialsTab /></TabPanel>}
           {activeTab === 'investment' && <TabPanel id="investment"><InvestmentTab /></TabPanel>}
           {activeTab === 'wall-street' && <TabPanel id="wall-street"><WallStreetTab /></TabPanel>}
-          {activeTab === 'ai-agents' && <TabPanel id="ai-agents"><SharedAIAgentsTab ticker="ASTS" /></TabPanel>}
           {activeTab === 'sources' && <TabPanel id="sources">
             <SharedSourcesTab ticker="ASTS" companyName="AST SpaceMobile" researchSources={astsResearchSources} competitorLabel="Competitors & Partners" competitors={astsCompetitors} />
           </TabPanel>}

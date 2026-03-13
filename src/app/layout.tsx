@@ -81,7 +81,8 @@ const mobileNavItems = [
   {
     label: 'Engineers',
     children: [
-      { label: 'AI Engineers Dashboard', href: '/engineers' },
+      { label: 'Dashboard', href: '/engineers' },
+      { label: 'Prompt Database', href: '/engineers/prompts' },
     ],
   },
   {
@@ -205,13 +206,35 @@ function Navigation() {
               </div>
             </div>
 
-            {/* Engineers — direct link */}
-            <Link
-              href="/engineers"
-              className="text-[13px] text-white/60 hover:text-white transition-colors"
-            >
-              Engineers
-            </Link>
+            {/* Engineers dropdown */}
+            <div className="relative group/engineers">
+              <Link
+                href="/engineers"
+                className="text-[13px] text-white/60 group-hover/engineers:text-white transition-colors"
+              >
+                Engineers
+              </Link>
+              <div className="absolute top-full right-0 pt-3 hidden group-hover/engineers:block">
+                <div className="bg-black/95 backdrop-blur-xl border border-white/[0.08] rounded-xl py-2 min-w-[220px] shadow-2xl">
+                  <Link
+                    href="/engineers"
+                    className="block px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-[12px] text-white/80">
+                      Dashboard
+                    </span>
+                  </Link>
+                  <Link
+                    href="/engineers/prompts"
+                    className="block px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-[12px] text-white/80">
+                      Prompt Database
+                    </span>
+                  </Link>
+                </div>
+              </div>
+            </div>
 
             {/* Intelligence — direct link */}
             <Link
