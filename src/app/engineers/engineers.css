@@ -115,6 +115,63 @@
 
 /* ── Ticker Selector (pill strip) ── */
 /* ── Unified Nav Row (ticker dropdown + tabs) ── */
+
+/* ── Ticker pill strip (Prompt Database page) ── */
+.eng-ticker-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 20px;
+  padding: 12px 0;
+  flex-wrap: wrap;
+}
+
+.eng-ticker-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text3);
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.eng-ticker-pill {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.eng-ticker-pill:hover {
+  border-color: rgba(240,246,252,0.15);
+  color: var(--text2);
+  background: rgba(255,255,255,0.03);
+}
+
+.eng-ticker-pill[data-active="true"] {
+  background: rgba(34,211,238,0.1);
+  border-color: rgba(34,211,238,0.3);
+  color: var(--cyan);
+  box-shadow: 0 0 8px rgba(34,211,238,0.08);
+}
+
+.eng-ticker-name {
+  margin-left: 6px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  color: var(--text3);
+}
+
 .eng-nav-row {
   display: flex;
   align-items: stretch;
@@ -2223,14 +2280,6 @@
 /* ── Section label no-margin-bottom variant ── */
 .eng-app .sm-agent-section-label-no-mb {
   margin-bottom: 0;
-}
-
-/* ── Selected ticker name display ── */
-.eng-ticker-name {
-  margin-left: 12px;
-  font-size: 11px;
-  color: var(--text3);
-  font-family: 'Outfit', sans-serif;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
