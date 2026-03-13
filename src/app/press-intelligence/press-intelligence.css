@@ -108,6 +108,41 @@
   pointer-events: none;
 }
 
+/* ── Days filter buttons ── */
+.pi-days-group {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pi-days-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  padding: 7px 12px;
+  background: transparent;
+  color: var(--text3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-right: 1px solid var(--border);
+}
+
+.pi-days-btn:last-child {
+  border-right: none;
+}
+
+.pi-days-btn[data-active="true"] {
+  background: rgba(0,210,190,0.12);
+  color: var(--cyan, #00D2BF);
+}
+
+.pi-days-btn:hover:not([data-active="true"]) {
+  color: var(--text2);
+  background: rgba(255,255,255,0.03);
+}
+
 .pi-refresh-btn {
   font-family: 'Outfit', sans-serif;
   font-size: 12px;

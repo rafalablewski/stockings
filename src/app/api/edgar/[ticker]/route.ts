@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { CIK_MAP } from '@/lib/cik-map';
 
 type RouteParams = Promise<{ ticker: string }>;
-
-// CIK numbers for tracked companies (zero-padded to 10 digits)
-const CIK_MAP: Record<string, string> = {
-  ASTS: '0001780312',
-  BMNR: '0001829311',
-};
 
 interface EdgarFiling {
   accessionNumber: string;

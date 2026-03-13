@@ -1268,83 +1268,94 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/edgar/${ticker}`, {
-        signal: AbortSignal.timeout(15000),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || `Failed to fetch (${res.status})`);
+      // Step 1: Trigger SEC Intelligence to fetch from EDGAR and persist to DB
+      const refreshRes = await fetch(
+        `/api/sec-intelligence?mode=refresh&ticker=${encodeURIComponent(ticker)}&limit=200`,
+        { signal: AbortSignal.timeout(30000) },
+      );
+      if (!refreshRes.ok) {
+        const errData = await refreshRes.json().catch(() => ({}));
+        throw new Error(errData.error || `SEC Intelligence refresh failed (${refreshRes.status})`);
       }
-      const data = await res.json();
-      const filings: EdgarFiling[] = data.filings || [];
 
-      // Identify genuinely new filings (not in DB yet) → mark as NEW
+      // Step 2: Reload full DB state (includes filings persisted by SEC Intelligence)
+      const dbRes = await fetch(`/api/seen-filings?ticker=${encodeURIComponent(ticker)}`);
+      if (!dbRes.ok) throw new Error(`Failed to reload from DB (${dbRes.status})`);
+      const dbData = await dbRes.json();
+      const dbFilings: DbFilingRecord[] = dbData.filings || [];
+
+      // Map DB records to EdgarFiling format for matchFilings
+      const filings: EdgarFiling[] = dbFilings.map(f => ({
+        accessionNumber: f.accessionNumber,
+        filingDate: f.filingDate || '',
+        form: f.form,
+        primaryDocDescription: f.description || '',
+        reportDate: f.reportDate || '',
+        fileUrl: f.fileUrl || '',
+      }));
+
+      // Identify genuinely new filings (not dismissed in DB) → mark as NEW
       const newKeys = new Set<string>();
-      for (const f of filings) {
-        if (!dbRecordsRef.current.has(f.accessionNumber)) newKeys.add(f.accessionNumber);
+      const records = new Map<string, DbFilingRecord>();
+      for (const f of dbFilings) {
+        records.set(f.accessionNumber, f);
+        if (!f.dismissed) newKeys.add(f.accessionNumber);
       }
+
+      // Sort newest-first
+      filings.sort((a, b) => (b.filingDate || '').localeCompare(a.filingDate || ''));
 
       setEdgarFilings(filings);
       setLoaded(true);
       setFetchedAt(Date.now());
+      setNewAccessions(newKeys);
 
-      // Mark new filings
-      if (newKeys.size > 0) {
-        setNewAccessions(prev => {
-          const next = new Set(prev);
-          for (const k of newKeys) next.add(k);
-          return next;
-        });
-      }
+      // Update DB records ref
+      dbRecordsRef.current = records;
+      setDbRecords(new Map(records));
 
-      // Match filings against local DB to determine status
+      // Step 3: Run matchFilings for status/crossRef enrichment (preserves Edgar tab data)
       const matched = matchFilings(filings, effectiveLocalFilings, effectiveCrossRefs);
 
-      // Save ALL fetched filings to DB with full metadata (upsert fixes legacy data)
-      const allToSave = matched.map(m => ({
-        accessionNumber: m.filing.accessionNumber,
-        form: m.filing.form,
-        filingDate: m.filing.filingDate,
-        description: m.filing.primaryDocDescription,
-        reportDate: m.filing.reportDate,
-        fileUrl: m.filing.fileUrl,
-        status: m.status,
-        crossRefs: m.crossRefs || null,
-      }));
+      // Save enrichment (status + crossRefs) back to DB
+      const toEnrich = matched
+        .filter(m => m.status === 'tracked' || m.status === 'data_only')
+        .map(m => ({
+          accessionNumber: m.filing.accessionNumber,
+          form: m.filing.form,
+          filingDate: m.filing.filingDate,
+          description: m.filing.primaryDocDescription,
+          reportDate: m.filing.reportDate,
+          fileUrl: m.filing.fileUrl,
+          status: m.status,
+          crossRefs: m.crossRefs || null,
+        }));
 
-      if (allToSave.length > 0) {
-        console.log(`[edgar-fetch] saving ${allToSave.length} filings to DB (${newKeys.size} NEW)...`);
+      if (toEnrich.length > 0) {
+        console.log(`[edgar-fetch] enriching ${toEnrich.length} filings with status/crossRefs...`);
         try {
           const saveRes = await fetch('/api/seen-filings', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ticker, filings: allToSave }),
+            body: JSON.stringify({ ticker, filings: toEnrich }),
           });
           const saveBody = await saveRes.json().catch(() => ({}));
           if (saveRes.ok) {
-            console.log('[edgar-fetch] save OK:', saveBody);
-            // Update local DB records
+            console.log('[edgar-fetch] enrichment save OK:', saveBody);
+            // Update local DB records with enrichment
             for (const m of matched) {
-              const rec: DbFilingRecord = {
-                accessionNumber: m.filing.accessionNumber,
-                form: m.filing.form,
-                filingDate: m.filing.filingDate,
-                description: m.filing.primaryDocDescription,
-                reportDate: m.filing.reportDate,
-                fileUrl: m.filing.fileUrl,
-                status: m.status,
-                crossRefs: m.crossRefs || null,
-                dismissed: newKeys.has(m.filing.accessionNumber) ? false : (dbRecordsRef.current.get(m.filing.accessionNumber)?.dismissed ?? true),
-                hidden: dbRecordsRef.current.get(m.filing.accessionNumber)?.hidden ?? false,
-              };
-              dbRecordsRef.current.set(m.filing.accessionNumber, rec);
+              const existing = dbRecordsRef.current.get(m.filing.accessionNumber);
+              if (existing) {
+                existing.status = m.status;
+                existing.crossRefs = m.crossRefs || existing.crossRefs;
+              }
             }
             setDbRecords(new Map(dbRecordsRef.current));
           } else {
-            console.error('[edgar-fetch] save FAILED:', saveRes.status, saveBody);
+            console.error('[edgar-fetch] enrichment save FAILED:', saveRes.status, saveBody);
           }
         } catch (err) {
-          console.error('[edgar-fetch] save error:', err);
+          console.error('[edgar-fetch] enrichment save error:', err);
         }
       }
     } catch (err) {
@@ -1719,7 +1730,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
               <div><span className="sm-text">Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_filings table</div>
               <div><span className="sm-text">Self-healing:</span> ensureTable() creates table + indexes on first request</div>
               <div><span className="sm-text">Graceful fallback:</span> returns empty array if table cannot be created</div>
-              <div><span className="sm-text">Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites form, filingDate, description, reportDate, fileUrl, status, crossRefs</div>
+              <div><span className="sm-text">Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites form, filingDate, description, reportDate, fileUrl; preserves dismissed, hidden, status, crossRefs</div>
             </div>
 
             <div className="sm-ed-hdivider" />
@@ -1729,18 +1740,22 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
             <div className="sm-flex-col sm-ed-method-flowcol">
               <div className="sm-ed-flowbox-accent">Fetch Filings</div>
               <div className="sm-ed-connector" />
-              <div className="sm-ed-flowbox sm-ed-flowbox-sm">GET /api/edgar/[ticker]</div>
+              <div className="sm-ed-flowbox sm-ed-flowbox-sm">GET /api/sec-intelligence?mode=refresh&amp;ticker=X</div>
               <div className="sm-ed-vline sm-ed-vline-8" />
-              <div className="sm-mono-sm sm-text3 sm-text-center sm-ed-method-note-sm">SEC EDGAR submissions API<br />(CIK-based, paginated, 15s timeout)</div>
+              <div className="sm-mono-sm sm-text3 sm-text-center sm-ed-method-note-sm">Routes through SEC Intelligence API &rarr; SEC EDGAR<br />(CIK via shared cik-map.ts, 30s timeout)</div>
               <div className="sm-ed-vline sm-ed-vline-8" />
-              <div className="sm-ed-flowbox sm-ed-flowbox-sm">Match against sec_filings + filing_cross_refs</div>
+              <div className="sm-ed-flowbox sm-ed-flowbox-sm">SEC Intelligence persists to seen_filings (preserves status, crossRefs, dismissed, hidden)</div>
               <div className="sm-ed-vline sm-ed-vline-8" />
-              <div className="sm-ed-flowbox sm-ed-flowbox-sm">POST /api/seen-filings &mdash; upsert all with status + crossRefs</div>
+              <div className="sm-ed-flowbox sm-ed-flowbox-sm">Reload from DB &rarr; GET /api/seen-filings?ticker=X</div>
               <div className="sm-ed-vline sm-ed-vline-8" />
-              <div className="sm-mono-sm sm-mint sm-fw-600 sm-ed-method-highlight">New filings get NEW badge (dismissed=false)</div>
+              <div className="sm-ed-flowbox sm-ed-flowbox-sm">matchFilings() enrichment &rarr; POST /api/seen-filings (status + crossRefs only)</div>
+              <div className="sm-ed-vline sm-ed-vline-8" />
+              <div className="sm-mono-sm sm-mint sm-fw-600 sm-ed-method-highlight">New filings get NEW badge (dismissed=false in DB)</div>
             </div>
             <div className="sm-ed-method-text sm-mt-12">
-              <div><span className="sm-text">Save path:</span> POST /api/seen-filings &rarr; upsert with status, crossRefs, form, filingDate, description, reportDate, fileUrl</div>
+              <div><span className="sm-text">Unified fetch:</span> SEC EDGAR is only hit via /api/sec-intelligence &mdash; same path as SEC Intelligence page, no duplicate API calls</div>
+              <div><span className="sm-text">CIK source:</span> shared src/lib/cik-map.ts with dynamic fallback from SEC company_tickers.json</div>
+              <div><span className="sm-text">Enrichment:</span> matchFilings() runs locally after DB reload &mdash; only saves status + crossRefs for tracked/data_only filings</div>
               <div><span className="sm-text">Re-check DB:</span> re-reads sec_filings + filing_cross_refs from Postgres to pick up new patches</div>
               <div><span className="sm-text">Analysis:</span> POST /api/edgar/analyze &rarr; Claude Haiku (15K chars) &rarr; persisted to analysis_cache table</div>
               <div><span className="sm-text">Cross-refs:</span> auto-generated by ensureCrossRefPatches() if AI omits them &mdash; derived from sibling data-file patches</div>

@@ -40,7 +40,6 @@ import {
   SharedFinancialsTab,
   SharedTimelineTab,
   SharedWallStreetTab,
-  SharedAIAgentsTab,
   SharedSecFilingsSection,
   SharedModelTab,
   SharedMonteCarloTab,
@@ -193,7 +192,6 @@ const {TICKER}Analysis = () => {
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
 
     // ── AI hub ──
-    { id: 'ai-agents', label: 'AI Agents', type: 'tracking', group: 'AI' },
     { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
     { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
   ];
@@ -296,9 +294,6 @@ const {TICKER}Analysis = () => {
 
           {/* ── Wall Street Tab (shared) ── */}
           {activeTab === 'wall-street' && <TabPanel id="wall-street"><WallStreetTab /></TabPanel>}
-
-          {/* ── AI Agents Tab (shared) ── */}
-          {activeTab === 'ai-agents' && <TabPanel id="ai-agents"><SharedAIAgentsTab ticker="{TICKER}" /></TabPanel>}
 
           {/* ── Sources Tab (shared) ── */}
           {activeTab === 'sources' && (

@@ -217,7 +217,6 @@ import type { McSimResults } from '../shared';
 import type { UpdateSource } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
-import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import SharedEdgarTab from '../shared/SharedEdgarTab';
 import { SharedInvestmentTab } from '../shared/SharedInvestmentTab';
@@ -528,7 +527,6 @@ const BMNRDilutionAnalysis = () => {
     { id: 'investment', label: 'Investment', type: 'tracking' },
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
     // AI hub (grouped under "AI")
-    { id: 'ai-agents', label: 'AI Agents', type: 'tracking', group: 'AI' },
     { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
     { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
   ];
@@ -675,7 +673,6 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'financials' && <TabPanel id="financials"><FinancialsTab /></TabPanel>}
         {activeTab === 'timeline' && <TabPanel id="timeline"><TimelineTab /></TabPanel>}
         {activeTab === 'wall-street' && <TabPanel id="wall-street"><WallStreetTab /></TabPanel>}
-        {activeTab === 'ai-agents' && <TabPanel id="ai-agents"><SharedAIAgentsTab ticker="BMNR" /></TabPanel>}
         {activeTab === 'sources' && <TabPanel id="sources">
           <SharedSourcesTab ticker="BMNR" companyName="BitMine Immersion Technologies" researchSources={bmnrResearchSources} competitorLabel="Crypto Treasury Peers" competitors={bmnrCompetitors} />
         </TabPanel>}
