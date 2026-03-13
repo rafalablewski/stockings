@@ -446,6 +446,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const [selectedTicker, setSelectedTicker] = useState(tickers[0] || 'ASTS');
   const [statuses, setStatuses] = useState<EngineerStatus[]>([]);
   const [loading, setLoading] = useState(true);
+  const [runningIds, setRunningIds] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<'network' | 'agents' | 'history'>('network');
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [nodeRects, setNodeRects] = useState<NodeRect[]>([]);
@@ -517,6 +518,44 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
     setLoading(true);
     fetchStatus();
   }, [fetchStatus]);
+
+  const handleRun = async (engineerId: string) => {
+    setRunningIds(prev => { const next = new Set(prev); next.add(engineerId); return next; });
+    try {
+      await authFetch('/api/engineers/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker: selectedTicker, engineerId }),
+      });
+      await fetchStatus();
+    } catch (err) {
+      console.error('Run error:', err);
+    } finally {
+      setRunningIds(prev => { const next = new Set(prev); next.delete(engineerId); return next; });
+    }
+  };
+
+  const handleToggleSchedule = async (engineerId: string, currentEnabled: boolean, intervalMinutes: number) => {
+    try {
+      await authFetch('/api/engineers/schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker: selectedTicker, engineerId, enabled: !currentEnabled, intervalMinutes }),
+      });
+      await fetchStatus();
+    } catch (err) { console.error('Schedule toggle error:', err); }
+  };
+
+  const handleEnableSchedule = async (engineer: EngineerTask) => {
+    try {
+      await authFetch('/api/engineers/schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker: selectedTicker, engineerId: engineer.id, enabled: true, intervalMinutes: engineer.defaultIntervalMinutes }),
+      });
+      await fetchStatus();
+    } catch (err) { console.error('Enable schedule error:', err); }
+  };
 
   // ── AI Agents tab helpers ──
 
@@ -746,17 +785,25 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
               const linkedWorkflows = workflows.filter(w => eng.workflowIds.includes(w.id));
               const color = categoryColors[eng.category] || 'cyan';
               const status = statuses.find(s => s.engineer.id === eng.id);
-              const dotStatus = status?.schedule?.enabled ? 'active' : 'idle';
+              const isRunning = runningIds.has(eng.id);
+              const dotStatus = isRunning || status?.lastRun?.status === 'running'
+                ? 'running'
+                : status?.schedule?.enabled ? 'active' : 'idle';
 
               return (
                 <div key={eng.id} className="eng-card" data-expanded={isExpanded}>
-                  <div
-                    className="eng-card-inner"
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => setExpandedAgentId(isExpanded ? null : eng.id)}
-                  >
-                    <div className="eng-status-dot" data-status={dotStatus} />
-                    <div className="eng-card-body">
+                  <div className="eng-card-inner">
+                    <div
+                      className="eng-status-dot"
+                      data-status={dotStatus}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setExpandedAgentId(isExpanded ? null : eng.id)}
+                    />
+                    <div
+                      className="eng-card-body"
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setExpandedAgentId(isExpanded ? null : eng.id)}
+                    >
                       <div className="eng-card-name-row">
                         <span className="eng-card-name">{eng.name}</span>
                         <span className="eng-card-role">{eng.role}</span>
@@ -766,19 +813,58 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                         <span className="eng-card-meta-item">
                           <span className="eng-map-badge" data-color={eng.category}>{eng.category}</span>
                         </span>
-                        <span className="eng-card-meta-item">Every {formatInterval(eng.defaultIntervalMinutes)}</span>
+                        <span className="eng-card-meta-item">
+                          {status?.schedule
+                            ? status.schedule.enabled
+                              ? `Every ${formatInterval(status.schedule.intervalMinutes)}`
+                              : 'Paused'
+                            : `Every ${formatInterval(eng.defaultIntervalMinutes)}`}
+                        </span>
                         <span className="eng-card-meta-item">{eng.workflowIds.length} workflow{eng.workflowIds.length !== 1 ? 's' : ''}</span>
-                        {eng.requiresData && (
-                          <span className="eng-card-meta-item">{eng.dataSource}</span>
+                        {status?.lastRun && (
+                          <span className="eng-card-meta-item">
+                            Last: {status.lastRun.status} {formatTime(status.lastRun.completedAt)}
+                          </span>
                         )}
                       </div>
                     </div>
-                    <button className="eng-chevron">
-                      <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
-                        style={{ transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
-                        <path d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
+
+                    <div className="eng-card-actions">
+                      {status?.schedule ? (
+                        <button
+                          className="eng-btn"
+                          data-variant={status.schedule.enabled ? 'active' : 'paused'}
+                          onClick={(e) => { e.stopPropagation(); handleToggleSchedule(eng.id, status.schedule!.enabled, status.schedule!.intervalMinutes); }}
+                        >
+                          {status.schedule.enabled ? 'Scheduled' : 'Paused'}
+                        </button>
+                      ) : (
+                        <button
+                          className="eng-btn"
+                          onClick={(e) => { e.stopPropagation(); handleEnableSchedule(eng); }}
+                        >
+                          Schedule
+                        </button>
+                      )}
+                      <button
+                        className="eng-btn"
+                        data-variant="run"
+                        data-state={isRunning ? 'running' : undefined}
+                        onClick={(e) => { e.stopPropagation(); handleRun(eng.id); }}
+                        disabled={isRunning}
+                      >
+                        {isRunning ? 'Running\u2026' : 'Run Now'}
+                      </button>
+                      <button
+                        className="eng-chevron"
+                        onClick={(e) => { e.stopPropagation(); setExpandedAgentId(isExpanded ? null : eng.id); }}
+                      >
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
+                          style={{ transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
+                          <path d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
 
                   {isExpanded && (
@@ -921,6 +1007,21 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                               })}
                             </tbody>
                           </table>
+                        </div>
+                      )}
+
+                      {/* Last run output / error */}
+                      {status?.lastRun?.outputSummary && (
+                        <div className="eng-output" style={{ marginTop: 16 }}>
+                          <div className="eng-expand-label">Last Run Output</div>
+                          <pre className="eng-output-pre">{status.lastRun.outputSummary}</pre>
+                        </div>
+                      )}
+
+                      {status?.lastRun?.error && (
+                        <div className="eng-error-box" style={{ marginTop: 12 }}>
+                          <div className="eng-error-label">Error</div>
+                          <div className="eng-error-text">{status.lastRun.error}</div>
                         </div>
                       )}
                     </div>
