@@ -756,6 +756,14 @@
 .eng-conn-dot[data-type="provides-data"]  { background: var(--sky); }
 .eng-conn-dot[data-type="shared-trigger"] { background: var(--violet); }
 
+.eng-conn-direction {
+  font-weight: 600;
+  font-size: 10px;
+  font-family: 'Space Mono', monospace;
+}
+.eng-conn-direction[data-direction="out"] { color: rgba(126,231,135,0.6); }
+.eng-conn-direction[data-direction="in"]  { color: rgba(121,192,255,0.6); }
+
 .eng-conn-type {
   font-family: 'Space Mono', monospace;
   font-size: 10px;

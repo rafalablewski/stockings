@@ -233,7 +233,7 @@ function ConnectionLines({ nodeRects, selected, edges }: { nodeRects: NodeRect[]
         const offsetY = Math.abs(fromNode.cx - toNode.cx) > 100 ? -30 : 0;
 
         return (
-          <g key={i}>
+          <g key={`${edge.from}-${edge.to}-${edge.type}-${i}`}>
             <path
               d={`M ${fromNode.cx} ${fromNode.cy} Q ${midX} ${midY + offsetY} ${toNode.cx} ${toNode.cy}`}
               className="eng-graph-line"
@@ -407,10 +407,7 @@ function EngineerDetailPanel({
 
                 return (
                   <tr key={i}>
-                    <td style={{
-                      color: isFrom ? 'rgba(126,231,135,0.6)' : 'rgba(121,192,255,0.6)',
-                      fontWeight: 600, fontSize: 10, fontFamily: "'Space Mono', monospace",
-                    }}>
+                    <td className="eng-conn-direction" data-direction={isFrom ? 'out' : 'in'}>
                       {isFrom ? 'OUT \u2192' : '\u2190 IN'}
                     </td>
                     <td>
@@ -474,8 +471,13 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   useEffect(() => {
     if (activeTab === 'network') {
       const t = setTimeout(measureNodes, 100);
-      window.addEventListener('resize', measureNodes);
-      return () => { clearTimeout(t); window.removeEventListener('resize', measureNodes); };
+      let resizeTimer: ReturnType<typeof setTimeout>;
+      const debouncedMeasure = () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(measureNodes, 150);
+      };
+      window.addEventListener('resize', debouncedMeasure);
+      return () => { clearTimeout(t); clearTimeout(resizeTimer); window.removeEventListener('resize', debouncedMeasure); };
     }
   }, [activeTab, measureNodes]);
 
