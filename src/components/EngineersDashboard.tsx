@@ -285,21 +285,18 @@ function EngineerDetailPanel({
                   </div>
                   <div className="eng-resource-desc">{wf.description}</div>
                   <div className="eng-resource-agents">
-                    {wf.variants.map(v => {
-                      const isActive = v.ticker === selectedTicker.toLowerCase();
-                      return (
-                        <span
-                          key={v.ticker}
-                          className="eng-resource-agent-chip"
-                          data-clickable="true"
-                          data-active={isActive || undefined}
-                          title={`Preview ${wf.name} prompt for ${v.label}`}
-                          onClick={() => onPromptPreview(wf, v.ticker, v.label)}
-                        >
-                          {v.label}
-                        </span>
-                      );
-                    })}
+                    {tickerVariants.map(v => (
+                      <span
+                        key={v.ticker}
+                        className="eng-resource-agent-chip"
+                        data-clickable="true"
+                        data-active
+                        title={`Preview ${wf.name} prompt for ${v.label}`}
+                        onClick={() => onPromptPreview(wf, v.ticker, v.label)}
+                      >
+                        View Prompt
+                      </span>
+                    ))}
                   </div>
                 </div>
               );
