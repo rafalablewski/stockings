@@ -459,9 +459,10 @@
 /* ── Swimlane cards grid ── */
 .eng-swimlane-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   padding: 16px 20px;
+  align-items: stretch;
 }
 
 /* ── Individual swim card ── */
@@ -472,6 +473,8 @@
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .eng-swim-card:hover {
@@ -588,7 +591,7 @@
   font-family: 'Space Mono', monospace;
   font-size: 10px;
   color: var(--text3);
-  margin-top: 8px;
+  margin-top: auto;
   padding-top: 8px;
   border-top: 1px solid rgba(255,255,255,0.04);
 }
@@ -1608,6 +1611,9 @@
     padding: 16px;
   }
   .eng-detail-grid {
+    grid-template-columns: 1fr;
+  }
+  .eng-swimlane-cards {
     grid-template-columns: 1fr;
   }
 }
