@@ -307,36 +307,36 @@
   z-index: 0;
 }
 
-/* Connection lines */
+/* Connection lines — boosted visibility */
 .eng-graph-line {
-  stroke: rgba(255,255,255,0.06);
-  stroke-width: 1;
+  stroke: rgba(255,255,255,0.12);
+  stroke-width: 1.5;
   fill: none;
 }
 
-.eng-graph-line[data-type="triggers"]      { stroke: rgba(34,211,238,0.2); stroke-dasharray: 6 4; }
-.eng-graph-line[data-type="reads"]         { stroke: rgba(121,192,255,0.15); }
-.eng-graph-line[data-type="writes"]        { stroke: rgba(126,231,135,0.2); }
-.eng-graph-line[data-type="uses-prompt"]   { stroke: rgba(210,153,34,0.2); stroke-dasharray: 3 3; }
-.eng-graph-line[data-type="feeds"]         { stroke: rgba(167,139,250,0.2); stroke-dasharray: 8 4; }
-.eng-graph-line[data-type="executes"]      { stroke: rgba(210,153,34,0.25); }
-.eng-graph-line[data-type="provides-data"] { stroke: rgba(121,192,255,0.2); stroke-dasharray: 4 3; }
-.eng-graph-line[data-type="shared-trigger"]{ stroke: rgba(167,139,250,0.15); stroke-dasharray: 2 4; }
+.eng-graph-line[data-type="triggers"]      { stroke: rgba(34,211,238,0.45); stroke-dasharray: 6 4; }
+.eng-graph-line[data-type="reads"]         { stroke: rgba(121,192,255,0.35); }
+.eng-graph-line[data-type="writes"]        { stroke: rgba(126,231,135,0.4); }
+.eng-graph-line[data-type="uses-prompt"]   { stroke: rgba(210,153,34,0.4); stroke-dasharray: 3 3; }
+.eng-graph-line[data-type="feeds"]         { stroke: rgba(167,139,250,0.4); stroke-dasharray: 8 4; }
+.eng-graph-line[data-type="executes"]      { stroke: rgba(210,153,34,0.5); }
+.eng-graph-line[data-type="provides-data"] { stroke: rgba(121,192,255,0.4); stroke-dasharray: 4 3; }
+.eng-graph-line[data-type="shared-trigger"]{ stroke: rgba(167,139,250,0.35); stroke-dasharray: 2 4; }
 
-/* Animated flow dots on lines */
+/* Animated flow dots on lines — larger and brighter */
 .eng-graph-flow-dot {
-  r: 2;
-  fill: rgba(34,211,238,0.6);
+  r: 3;
+  fill: rgba(34,211,238,0.8);
 }
 
-.eng-graph-flow-dot[data-type="triggers"]      { fill: rgba(34,211,238,0.7); }
-.eng-graph-flow-dot[data-type="reads"]         { fill: rgba(121,192,255,0.6); }
-.eng-graph-flow-dot[data-type="writes"]        { fill: rgba(126,231,135,0.7); }
-.eng-graph-flow-dot[data-type="uses-prompt"]   { fill: rgba(210,153,34,0.6); }
-.eng-graph-flow-dot[data-type="feeds"]         { fill: rgba(167,139,250,0.7); }
-.eng-graph-flow-dot[data-type="executes"]      { fill: rgba(210,153,34,0.7); }
-.eng-graph-flow-dot[data-type="provides-data"] { fill: rgba(121,192,255,0.7); }
-.eng-graph-flow-dot[data-type="shared-trigger"]{ fill: rgba(167,139,250,0.5); }
+.eng-graph-flow-dot[data-type="triggers"]      { fill: rgba(34,211,238,0.9); }
+.eng-graph-flow-dot[data-type="reads"]         { fill: rgba(121,192,255,0.8); }
+.eng-graph-flow-dot[data-type="writes"]        { fill: rgba(126,231,135,0.9); }
+.eng-graph-flow-dot[data-type="uses-prompt"]   { fill: rgba(210,153,34,0.8); }
+.eng-graph-flow-dot[data-type="feeds"]         { fill: rgba(167,139,250,0.9); }
+.eng-graph-flow-dot[data-type="executes"]      { fill: rgba(210,153,34,0.9); }
+.eng-graph-flow-dot[data-type="provides-data"] { fill: rgba(121,192,255,0.9); }
+.eng-graph-flow-dot[data-type="shared-trigger"]{ fill: rgba(167,139,250,0.7); }
 
 /* ── Graph nodes ── */
 .eng-graph-nodes {
@@ -351,8 +351,8 @@
 .eng-node {
   position: relative;
   padding: 16px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1982,4 +1982,14 @@
   background: rgba(34,211,238,0.08);
   border-color: rgba(34,211,238,0.2);
   color: var(--cyan);
+}
+.eng-resource-agent-chip[data-active="true"] {
+  background: rgba(126,231,135,0.1);
+  border-color: rgba(126,231,135,0.25);
+  color: var(--mint);
+}
+.eng-resource-agent-chip[data-active="true"]:hover {
+  background: rgba(126,231,135,0.15);
+  border-color: rgba(126,231,135,0.35);
+  color: var(--mint);
 }

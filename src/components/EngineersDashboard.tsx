@@ -102,10 +102,10 @@ const categoryColors: Record<string, string> = {
 };
 
 const categoryLabels: Record<string, string> = {
-  research: 'Research Engineers',
-  monitoring: 'Monitoring Engineers',
-  intelligence: 'Intelligence Engineers',
-  audit: 'Audit Engineers',
+  research: 'Research',
+  monitoring: 'Monitoring',
+  intelligence: 'Intelligence',
+  audit: 'Audit',
 };
 
 function edgeTypeLabel(type: string) {
@@ -239,7 +239,7 @@ function ConnectionLines({ nodeRects, selected, edges }: { nodeRects: NodeRect[]
               className="eng-graph-line"
               data-type={edge.type}
               filter={selected ? 'url(#eng-glow)' : undefined}
-              style={{ opacity: selected ? 0.8 : 0.4 }}
+              style={{ opacity: selected ? 0.9 : 0.6 }}
             />
             <circle className="eng-graph-flow-dot" data-type={edge.type}>
               <animateMotion
@@ -427,20 +427,35 @@ function EngineerDetailPanel({
   );
 }
 
+// ── Prompt Preview types ──────────────────────────────────────────────────────
+
+const PROMPT_PREVIEW_LIMIT = 1200;
+
+interface PromptPreview {
+  workflowName: string;
+  workflowDescription: string;
+  ticker: string;
+  label: string;
+  prompt: string;
+  requiresUserData: boolean;
+}
+
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export default function EngineersDashboard({ engineers, workflows, tickers }: Props) {
   const [selectedTicker, setSelectedTicker] = useState(tickers[0] || 'ASTS');
   const [statuses, setStatuses] = useState<EngineerStatus[]>([]);
-  const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [runningIds, setRunningIds] = useState<Set<string>>(new Set());
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'network' | 'operations' | 'history'>('network');
+  const [activeTab, setActiveTab] = useState<'network' | 'agents' | 'history'>('network');
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [nodeRects, setNodeRects] = useState<NodeRect[]>([]);
   const graphRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
+  // ── AI Agents tab state ──
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [expandedAgentId, setExpandedAgentId] = useState<string | null>(null);
+  const [promptPreview, setPromptPreview] = useState<PromptPreview | null>(null);
 
   // Build the graph from engineers + workflows
   const { nodes: graphNodes, edges: graphEdges } = useMemo(
@@ -498,73 +513,41 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
     } catch { /* silent */ } finally { setLoading(false); }
   }, [selectedTicker]);
 
-  const fetchHistory = useCallback(async () => {
-    try {
-      const res = await authFetch(`/api/engineers/history?ticker=${selectedTicker}&limit=25`);
-      if (res.ok) {
-        const data = await res.json();
-        setHistory(data.runs || []);
-      }
-    } catch { /* silent */ }
-  }, [selectedTicker]);
-
   useEffect(() => {
     setLoading(true);
     fetchStatus();
-    fetchHistory();
-  }, [fetchStatus, fetchHistory]);
+  }, [fetchStatus]);
 
-  const handleRun = async (engineerId: string) => {
-    setRunningIds(prev => { const next = new Set(prev); next.add(engineerId); return next; });
-    try {
-      await authFetch('/api/engineers/run', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker: selectedTicker, engineerId }),
-      });
-      await fetchStatus();
-      await fetchHistory();
-    } catch (err) {
-      console.error('Run error:', err);
-    } finally {
-      setRunningIds(prev => { const next = new Set(prev); next.delete(engineerId); return next; });
-    }
-  };
+  // ── AI Agents tab helpers ──
 
-  const handleToggleSchedule = async (engineerId: string, currentEnabled: boolean, intervalMinutes: number) => {
-    try {
-      await authFetch('/api/engineers/schedule', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker: selectedTicker, engineerId, enabled: !currentEnabled, intervalMinutes }),
-      });
-      await fetchStatus();
-    } catch (err) { console.error('Schedule toggle error:', err); }
-  };
+  const categories = ['research', 'monitoring', 'intelligence', 'audit'] as const;
+  const categoryCounts = categories.map(c => ({
+    key: c,
+    label: categoryLabels[c],
+    count: engineers.filter(e => e.category === c).length,
+  }));
 
-  const handleEnableSchedule = async (engineer: EngineerTask) => {
-    try {
-      await authFetch('/api/engineers/schedule', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker: selectedTicker, engineerId: engineer.id, enabled: true, intervalMinutes: engineer.defaultIntervalMinutes }),
-      });
-      await fetchStatus();
-    } catch (err) { console.error('Enable schedule error:', err); }
-  };
+  const filteredAgents = selectedCategory
+    ? engineers.filter(e => e.category === selectedCategory)
+    : engineers;
 
-  // Group engineers by category
-  const grouped = engineers.reduce<Record<string, EngineerTask[]>>((acc, eng) => {
-    if (!acc[eng.category]) acc[eng.category] = [];
-    acc[eng.category].push(eng);
-    return acc;
-  }, {});
+  const openPromptPreview = useCallback((wf: Workflow, ticker: string, label: string) => {
+    const variant = wf.variants.find(v => v.ticker === ticker.toLowerCase());
+    if (!variant) return;
+    setPromptPreview({
+      workflowName: wf.name,
+      workflowDescription: wf.description,
+      ticker: ticker.toUpperCase(),
+      label,
+      prompt: variant.prompt,
+      requiresUserData: wf.requiresUserData,
+    });
+  }, []);
 
   // Stats
   const scheduledCount = statuses.filter(s => s.schedule?.enabled).length;
-  const completedCount = history.filter(r => r.status === 'completed').length;
-  const failedCount = history.filter(r => r.status === 'failed').length;
   const uniqueWorkflows = new Set(engineers.flatMap(e => e.workflowIds)).size;
+  const requiresDataCount = engineers.filter(e => e.requiresData).length;
 
   return (
     <div className="eng-app">
@@ -581,7 +564,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
         <div className="eng-kpi-bar">
           <div className="eng-kpi-bar-cell">
             <div className="eng-kpi-bar-value" data-color="cyan">{engineers.length}</div>
-            <div className="eng-kpi-bar-label">Engineers</div>
+            <div className="eng-kpi-bar-label">Agents</div>
           </div>
           <div className="eng-kpi-bar-cell">
             <div className="eng-kpi-bar-value" data-color="gold">{uniqueWorkflows}</div>
@@ -596,12 +579,8 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
             <div className="eng-kpi-bar-label">Scheduled</div>
           </div>
           <div className="eng-kpi-bar-cell">
-            <div className="eng-kpi-bar-value" data-color="sky">{completedCount}</div>
-            <div className="eng-kpi-bar-label">Completed</div>
-          </div>
-          <div className="eng-kpi-bar-cell">
-            <div className="eng-kpi-bar-value" data-color="coral">{failedCount}</div>
-            <div className="eng-kpi-bar-label">Failed</div>
+            <div className="eng-kpi-bar-value" data-color="coral">{requiresDataCount}</div>
+            <div className="eng-kpi-bar-label">External Data</div>
           </div>
         </div>
 
@@ -620,11 +599,11 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
           <button className="eng-tab" data-active={activeTab === 'network'} onClick={() => setActiveTab('network')}>
             Network Graph<span className="eng-tab-count">{graphNodes.length}</span>
           </button>
-          <button className="eng-tab" data-active={activeTab === 'operations'} onClick={() => setActiveTab('operations')}>
-            Operations<span className="eng-tab-count">{engineers.length}</span>
+          <button className="eng-tab" data-active={activeTab === 'agents'} onClick={() => setActiveTab('agents')}>
+            AI Agents<span className="eng-tab-count">{engineers.length}</span>
           </button>
           <button className="eng-tab" data-active={activeTab === 'history'} onClick={() => setActiveTab('history')}>
-            Run History<span className="eng-tab-count">{history.length}</span>
+            History
           </button>
         </div>
       </div>
@@ -738,184 +717,292 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
           </div>
         )}
 
-        {/* ══ OPERATIONS TAB ══ */}
-        {activeTab === 'operations' && (
+        {/* ══ AI AGENTS TAB ══ */}
+        {activeTab === 'agents' && (
           <div>
-            {Object.entries(grouped).map(([category, engs]) => (
-              <div key={category}>
-                <div className="eng-category-header">
-                  <span className="eng-category-label" data-color={category}>
-                    {categoryLabels[category] || category}
-                  </span>
-                  <div className="eng-category-line" />
-                </div>
+            {/* Category filter */}
+            <div className="eng-tab-strip" style={{ marginBottom: 16 }}>
+              <button
+                className="eng-tab"
+                data-active={selectedCategory === null}
+                onClick={() => setSelectedCategory(null)}
+              >
+                All<span className="eng-tab-count">{engineers.length}</span>
+              </button>
+              {categoryCounts.map(cat => (
+                <button
+                  key={cat.key}
+                  className="eng-tab"
+                  data-active={selectedCategory === cat.key}
+                  onClick={() => setSelectedCategory(selectedCategory === cat.key ? null : cat.key)}
+                >
+                  {cat.label}<span className="eng-tab-count">{cat.count}</span>
+                </button>
+              ))}
+            </div>
 
-                {engs.map(eng => {
-                  const status = statuses.find(s => s.engineer.id === eng.id);
-                  const isRunning = runningIds.has(eng.id);
-                  const isExpanded = expandedId === eng.id;
-                  const dotStatus = isRunning || status?.lastRun?.status === 'running'
-                    ? 'running'
-                    : status?.schedule?.enabled ? 'active' : 'idle';
+            {filteredAgents.map(eng => {
+              const isExpanded = expandedAgentId === eng.id;
+              const linkedWorkflows = workflows.filter(w => eng.workflowIds.includes(w.id));
+              const color = categoryColors[eng.category] || 'cyan';
+              const status = statuses.find(s => s.engineer.id === eng.id);
+              const dotStatus = status?.schedule?.enabled ? 'active' : 'idle';
 
-                  return (
-                    <div key={eng.id} className="eng-card" data-expanded={isExpanded}>
-                      <div className="eng-card-inner">
-                        <div className="eng-status-dot" data-status={dotStatus} />
-                        <div className="eng-card-body">
-                          <div className="eng-card-name-row">
-                            <span className="eng-card-name">{eng.name}</span>
-                            <span className="eng-card-role">{eng.role}</span>
-                          </div>
-                          <div className="eng-card-desc">{eng.description}</div>
-                          <div className="eng-card-meta">
-                            <span className="eng-card-meta-item">
-                              {status?.schedule
-                                ? status.schedule.enabled
-                                  ? `Every ${formatInterval(status.schedule.intervalMinutes)}`
-                                  : 'Paused'
-                                : 'Not scheduled'}
-                            </span>
-                            {status?.schedule?.nextRunAt && status.schedule.enabled && (
-                              <span className="eng-card-meta-item">
-                                Next {formatTime(status.schedule.nextRunAt)}
-                              </span>
-                            )}
-                            {status?.lastRun && (
-                              <span className="eng-card-meta-item">
-                                Last: {status.lastRun.status} {formatTime(status.lastRun.completedAt)} ({formatDuration(status.lastRun.durationMs)})
-                              </span>
-                            )}
-                          </div>
+              return (
+                <div key={eng.id} className="eng-card" data-expanded={isExpanded}>
+                  <div
+                    className="eng-card-inner"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setExpandedAgentId(isExpanded ? null : eng.id)}
+                  >
+                    <div className="eng-status-dot" data-status={dotStatus} />
+                    <div className="eng-card-body">
+                      <div className="eng-card-name-row">
+                        <span className="eng-card-name">{eng.name}</span>
+                        <span className="eng-card-role">{eng.role}</span>
+                      </div>
+                      <div className="eng-card-desc">{eng.description}</div>
+                      <div className="eng-card-meta">
+                        <span className="eng-card-meta-item">
+                          <span className="eng-map-badge" data-color={eng.category}>{eng.category}</span>
+                        </span>
+                        <span className="eng-card-meta-item">Every {formatInterval(eng.defaultIntervalMinutes)}</span>
+                        <span className="eng-card-meta-item">{eng.workflowIds.length} workflow{eng.workflowIds.length !== 1 ? 's' : ''}</span>
+                        {eng.requiresData && (
+                          <span className="eng-card-meta-item">{eng.dataSource}</span>
+                        )}
+                      </div>
+                    </div>
+                    <button className="eng-chevron">
+                      <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
+                        style={{ transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
+                        <path d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {isExpanded && (
+                    <div className="eng-expand">
+                      <div className="eng-expand-grid">
+                        {/* Capabilities */}
+                        <div>
+                          <div className="eng-expand-label">Capabilities</div>
+                          {eng.capabilities.map((cap, i) => (
+                            <div key={i} className="eng-cap-item">
+                              <span className="eng-cap-bullet">+</span>
+                              {cap}
+                            </div>
+                          ))}
                         </div>
 
-                        <div className="eng-card-actions">
-                          {status?.schedule ? (
-                            <button
-                              className="eng-btn"
-                              data-variant={status.schedule.enabled ? 'active' : 'paused'}
-                              onClick={() => handleToggleSchedule(eng.id, status.schedule!.enabled, status.schedule!.intervalMinutes)}
-                            >
-                              {status.schedule.enabled ? 'Active' : 'Paused'}
-                            </button>
-                          ) : (
-                            <button className="eng-btn" onClick={() => handleEnableSchedule(eng)}>
-                              Schedule
-                            </button>
+                        {/* Configuration */}
+                        <div>
+                          <div className="eng-expand-label">Configuration</div>
+                          <div className="eng-config-row">
+                            <span className="eng-config-key">Schedule</span>
+                            <span className="eng-config-val">Every {formatInterval(eng.defaultIntervalMinutes)}</span>
+                          </div>
+                          <div className="eng-config-row">
+                            <span className="eng-config-key">Category</span>
+                            <span className="eng-config-val">{eng.category}</span>
+                          </div>
+                          <div className="eng-config-row">
+                            <span className="eng-config-key">Requires external data</span>
+                            <span className="eng-config-val">{eng.requiresData ? 'Yes' : 'No'}</span>
+                          </div>
+                          {eng.dataSource && (
+                            <div className="eng-config-row">
+                              <span className="eng-config-key">Data source</span>
+                              <span className="eng-config-val">{eng.dataSource}</span>
+                            </div>
                           )}
-                          <button
-                            className="eng-btn"
-                            data-variant="run"
-                            data-state={isRunning ? 'running' : undefined}
-                            onClick={() => handleRun(eng.id)}
-                            disabled={isRunning}
-                          >
-                            {isRunning ? 'Running...' : 'Run Now'}
-                          </button>
-                          <button className="eng-chevron" onClick={() => setExpandedId(isExpanded ? null : eng.id)}>
-                            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
-                              style={{ transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
-                              <path d="M9 5l7 7-7 7" />
-                            </svg>
-                          </button>
+                          <div className="eng-config-row">
+                            <span className="eng-config-key">Trigger events</span>
+                            <span className="eng-config-val">{eng.triggerEvents.join(', ')}</span>
+                          </div>
                         </div>
                       </div>
 
-                      {isExpanded && (
-                        <div className="eng-expand">
-                          <div className="eng-expand-grid">
-                            <div>
-                              <div className="eng-expand-label">Capabilities</div>
-                              {eng.capabilities.map((cap, i) => (
-                                <div key={i} className="eng-cap-item">
-                                  <span className="eng-cap-bullet">+</span>
-                                  {cap}
+                      {/* Linked Workflows — ticker-aware: show only selected ticker's variants */}
+                      <div style={{ marginTop: 16 }}>
+                        <div className="eng-expand-label">
+                          Linked Workflows for {selectedTicker}
+                        </div>
+                        {linkedWorkflows.length > 0 ? (
+                          <div className="eng-resources-grid">
+                            {linkedWorkflows.map(wf => {
+                              // Filter to only the selected ticker's variant
+                              const tickerVariants = wf.variants.filter(
+                                v => v.ticker === selectedTicker.toLowerCase()
+                              );
+                              const allVariants = wf.variants;
+
+                              return (
+                                <div key={wf.id} className="eng-resource-card">
+                                  <div className="eng-resource-header">
+                                    <div className="eng-resource-icon" data-color={color}>
+                                      {'\u2726'}
+                                    </div>
+                                    <div>
+                                      <div className="eng-resource-name">{wf.name}</div>
+                                      <div className="eng-resource-type">
+                                        {wf.requiresUserData ? 'requires input' : 'autonomous'}
+                                        {tickerVariants.length > 0 && (
+                                          <span style={{ marginLeft: 8, color: 'var(--mint)' }}>
+                                            {selectedTicker} variant active
+                                          </span>
+                                        )}
+                                        {tickerVariants.length === 0 && (
+                                          <span style={{ marginLeft: 8, color: 'var(--text3)' }}>
+                                            no {selectedTicker} variant
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="eng-resource-desc">{wf.description}</div>
+                                  <div className="eng-resource-agents">
+                                    {allVariants.map(v => {
+                                      const isSelected = v.ticker === selectedTicker.toLowerCase();
+                                      return (
+                                        <span
+                                          key={v.ticker}
+                                          className="eng-resource-agent-chip"
+                                          data-clickable="true"
+                                          data-active={isSelected || undefined}
+                                          title={`Preview ${wf.name} prompt for ${v.label}`}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            openPromptPreview(wf, v.ticker, v.label);
+                                          }}
+                                        >
+                                          {v.label}
+                                        </span>
+                                      );
+                                    })}
+                                  </div>
                                 </div>
-                              ))}
-                            </div>
-                            <div>
-                              <div className="eng-expand-label">Configuration</div>
-                              <div className="eng-config-row">
-                                <span className="eng-config-key">Default interval</span>
-                                <span className="eng-config-val">{formatInterval(eng.defaultIntervalMinutes)}</span>
-                              </div>
-                              <div className="eng-config-row">
-                                <span className="eng-config-key">Linked workflows</span>
-                                <span className="eng-config-val">{eng.workflowIds.length}</span>
-                              </div>
-                              <div className="eng-config-row">
-                                <span className="eng-config-key">Requires external data</span>
-                                <span className="eng-config-val">{eng.requiresData ? 'Yes' : 'No'}</span>
-                              </div>
-                              {eng.dataSource && (
-                                <div className="eng-config-row">
-                                  <span className="eng-config-key">Data source</span>
-                                  <span className="eng-config-val">{eng.dataSource}</span>
-                                </div>
-                              )}
-                              <div className="eng-config-row">
-                                <span className="eng-config-key">Trigger events</span>
-                                <span className="eng-config-val">{eng.triggerEvents.join(', ')}</span>
-                              </div>
-                            </div>
+                              );
+                            })}
                           </div>
+                        ) : (
+                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
+                            {eng.workflowIds.map(id => (
+                              <span key={id} className="eng-map-workflow-tag">{id}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
 
-                          {status?.lastRun?.outputSummary && (
-                            <div className="eng-output">
-                              <div className="eng-expand-label">Last Run Output</div>
-                              <pre className="eng-output-pre">{status.lastRun.outputSummary}</pre>
-                            </div>
-                          )}
-
-                          {status?.lastRun?.error && (
-                            <div className="eng-error-box">
-                              <div className="eng-error-label">Error</div>
-                              <div className="eng-error-text">{status.lastRun.error}</div>
-                            </div>
-                          )}
+                      {/* Trigger Event Cross-references */}
+                      {eng.triggerEvents.length > 0 && (
+                        <div style={{ marginTop: 16 }}>
+                          <div className="eng-expand-label">Trigger Cross-References</div>
+                          <table className="eng-matrix-table" style={{ fontSize: 11 }}>
+                            <thead>
+                              <tr>
+                                <th>Event</th>
+                                <th>Also Triggers</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {eng.triggerEvents.map(event => {
+                                const othersTriggered = engineers
+                                  .filter(e => e.id !== eng.id && e.triggerEvents.includes(event))
+                                  .map(e => e.name);
+                                return (
+                                  <tr key={event}>
+                                    <td className="eng-conn-from">{event}</td>
+                                    <td className="eng-conn-to">
+                                      {othersTriggered.length > 0 ? othersTriggered.join(', ') : '\u2014'}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
                         </div>
                       )}
                     </div>
-                  );
-                })}
-              </div>
-            ))}
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
 
         {/* ══ HISTORY TAB ══ */}
         {activeTab === 'history' && (
           <div>
-            {history.length === 0 ? (
-              <div className="eng-empty">
-                <div>No engineer runs recorded yet for {selectedTicker}.</div>
-                <div className="eng-empty-sub">Run an engineer manually or enable a schedule to get started.</div>
+            <div className="eng-empty">
+              <div>No operations history recorded yet for {selectedTicker}.</div>
+              <div className="eng-empty-sub">
+                History will appear here as agents execute tasks — showing comprehensive
+                descriptions of each operation, its inputs, outputs, and duration.
               </div>
-            ) : (
-              <div style={{ marginTop: 12 }}>
-                {history.map(run => (
-                  <div key={run.id} className="eng-history-row">
-                    <div className="eng-history-dot" data-status={run.status} />
-                    <span className="eng-history-name">
-                      {engineers.find(e => e.id === run.engineerId)?.name || run.engineerId}
-                    </span>
-                    <span className="eng-history-status" data-status={run.status}>{run.status}</span>
-                    <span className="eng-history-trigger">{run.triggerType}</span>
-                    <span className="eng-history-duration">{formatDuration(run.durationMs)}</span>
-                    <span className="eng-history-time">{formatTime(run.createdAt)}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+            </div>
           </div>
         )}
 
-        {loading && (
+        {loading && activeTab === 'agents' && (
           <div className="eng-loading">
             <div className="eng-spinner" />
           </div>
         )}
       </div>
+
+      {/* Prompt Preview Modal */}
+      {promptPreview && (
+        <div className="eng-modal-overlay" onClick={() => setPromptPreview(null)}>
+          <div className="eng-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="eng-modal-header">
+              <h2 className="eng-modal-title">
+                {promptPreview.ticker} &mdash; {promptPreview.workflowName}
+              </h2>
+              <button className="eng-modal-close" onClick={() => setPromptPreview(null)}>
+                &times;
+              </button>
+            </div>
+            <div className="eng-modal-body">
+              <div className="eng-modal-section">
+                <div className="eng-modal-heading">Workflow Details</div>
+                <div className="eng-modal-row">
+                  <span className="eng-modal-label">Workflow</span>
+                  <span className="eng-modal-value">{promptPreview.workflowName}</span>
+                </div>
+                <div className="eng-modal-row">
+                  <span className="eng-modal-label">Ticker</span>
+                  <span className="eng-modal-value">{promptPreview.ticker}</span>
+                </div>
+                <div className="eng-modal-row">
+                  <span className="eng-modal-label">Type</span>
+                  <span className="eng-modal-value">{promptPreview.requiresUserData ? 'Paste data' : 'Autonomous'}</span>
+                </div>
+                <div className="eng-modal-row">
+                  <span className="eng-modal-label">Prompt length</span>
+                  <span className="eng-modal-value">{(promptPreview.prompt.length / 1000).toFixed(1)}k chars</span>
+                </div>
+              </div>
+
+              <div className="eng-modal-section">
+                <div className="eng-modal-heading">Description</div>
+                <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
+                  {promptPreview.workflowDescription}
+                </div>
+              </div>
+
+              <div className="eng-modal-section">
+                <div className="eng-modal-heading">Prompt Preview</div>
+                <pre className="eng-modal-prompt">
+                  {promptPreview.prompt.length > PROMPT_PREVIEW_LIMIT
+                    ? promptPreview.prompt.slice(0, PROMPT_PREVIEW_LIMIT) + '\n\n[\u2026truncated \u2014 ' + ((promptPreview.prompt.length - PROMPT_PREVIEW_LIMIT) / 1000).toFixed(1) + 'k chars remaining]'
+                    : promptPreview.prompt}
+                </pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
