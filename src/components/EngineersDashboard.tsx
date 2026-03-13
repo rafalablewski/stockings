@@ -120,7 +120,7 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
   }, [fetchStatus, fetchHistory]);
 
   const handleRun = async (engineerId: string) => {
-    setRunningIds(prev => new Set([...prev, engineerId]));
+    setRunningIds(prev => { const next = new Set(prev); next.add(engineerId); return next; });
     try {
       await authFetch('/api/engineers/run', {
         method: 'POST',

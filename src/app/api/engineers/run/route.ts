@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkAiGate } from '@/lib/ai-gate';
 import { runEngineer } from '@/lib/engineer-engine';
+import { z } from 'zod';
+
+const RunBody = z.object({
+  ticker: z.string().min(1),
+  engineerId: z.string().min(1),
+  triggerReason: z.string().optional(),
+});
 
 export async function POST(request: NextRequest) {
   const gateError = checkAiGate(request);
@@ -8,18 +15,14 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { ticker, engineerId, triggerReason } = body as {
-      ticker: string;
-      engineerId: string;
-      triggerReason?: string;
-    };
-
-    if (!ticker || !engineerId) {
+    const parsed = RunBody.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Missing required fields: ticker, engineerId' },
+        { error: 'Missing required fields: ticker, engineerId', details: parsed.error.flatten() },
         { status: 400 }
       );
     }
+    const { ticker, engineerId, triggerReason } = parsed.data;
 
     const result = await runEngineer({
       ticker,

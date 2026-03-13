@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { checkAiGate } from '@/lib/ai-gate';
 import { getDb } from '@/lib/db';
 import { engineerSchedules } from '@/lib/schema';
-import { eq, and } from 'drizzle-orm';
 import { getEngineer } from '@/lib/engineers';
 
 /**
@@ -33,42 +32,29 @@ export async function POST(request: NextRequest) {
 
     const db = getDb();
 
-    // Upsert — check if schedule exists
-    const existing = await db.select()
-      .from(engineerSchedules)
-      .where(
-        and(
-          eq(engineerSchedules.ticker, ticker),
-          eq(engineerSchedules.engineerId, engineerId),
-        )
-      )
-      .limit(1);
+    const interval = intervalMinutes || engineer.defaultIntervalMinutes;
+    const isEnabled = enabled ?? true;
 
-    if (existing.length > 0) {
-      // Update existing
-      await db.update(engineerSchedules)
-        .set({
-          enabled: enabled ?? existing[0].enabled,
-          intervalMinutes: intervalMinutes ?? existing[0].intervalMinutes,
-          nextRunAt: enabled ? new Date(Date.now() + (intervalMinutes || existing[0].intervalMinutes) * 60_000) : null,
-          updatedAt: new Date(),
-        })
-        .where(eq(engineerSchedules.id, existing[0].id));
-
-      return NextResponse.json({ action: 'updated', engineerId, ticker, enabled, intervalMinutes });
-    } else {
-      // Create new schedule
-      const interval = intervalMinutes || engineer.defaultIntervalMinutes;
-      await db.insert(engineerSchedules).values({
+    // Atomic upsert — avoids race condition on concurrent requests
+    await db.insert(engineerSchedules)
+      .values({
         ticker,
         engineerId,
-        enabled: enabled ?? true,
+        enabled: isEnabled,
         intervalMinutes: interval,
-        nextRunAt: enabled !== false ? new Date(Date.now() + interval * 60_000) : null,
+        nextRunAt: isEnabled ? new Date(Date.now() + interval * 60_000) : null,
+      })
+      .onConflictDoUpdate({
+        target: [engineerSchedules.ticker, engineerSchedules.engineerId],
+        set: {
+          enabled: isEnabled,
+          intervalMinutes: interval,
+          nextRunAt: isEnabled ? new Date(Date.now() + interval * 60_000) : null,
+          updatedAt: new Date(),
+        },
       });
 
-      return NextResponse.json({ action: 'created', engineerId, ticker, enabled: enabled ?? true, intervalMinutes: interval });
-    }
+    return NextResponse.json({ engineerId, ticker, enabled: isEnabled, intervalMinutes: interval });
   } catch (error) {
     console.error('Engineer schedule error:', error);
     return NextResponse.json(

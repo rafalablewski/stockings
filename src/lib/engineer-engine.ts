@@ -15,6 +15,9 @@ import { eq, and, lte, sql } from 'drizzle-orm';
 import { getEngineer, type EngineerTask } from './engineers';
 import { workflows } from '@/data/workflows';
 
+// Claude model used for engineer runs
+const CLAUDE_MODEL = 'claude-sonnet-4-5-20250929';
+
 // Status type for run records
 export type RunStatus = 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
 export type TriggerType = 'scheduled' | 'event' | 'manual';
@@ -95,7 +98,7 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5-20250929',
+        model: CLAUDE_MODEL,
         max_tokens: 16384,
         messages: [{ role: 'user', content: fullMessage }],
       }),
@@ -176,17 +179,17 @@ export async function checkAndRunDueEngineers(): Promise<RunResult[]> {
       )
     );
 
-  const results: RunResult[] = [];
-
-  for (const schedule of dueSchedules) {
-    const result = await runEngineer({
-      ticker: schedule.ticker,
-      engineerId: schedule.engineerId,
-      triggerType: 'scheduled',
-      triggerReason: `Scheduled run (every ${schedule.intervalMinutes}min)`,
-    });
-    results.push(result);
-  }
+  // Run all due engineers in parallel for better throughput
+  const results = await Promise.all(
+    dueSchedules.map(schedule =>
+      runEngineer({
+        ticker: schedule.ticker,
+        engineerId: schedule.engineerId,
+        triggerType: 'scheduled',
+        triggerReason: `Scheduled run (every ${schedule.intervalMinutes}min)`,
+      })
+    )
+  );
 
   return results;
 }
