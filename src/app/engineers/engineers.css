@@ -1481,3 +1481,366 @@
   .eng-kpi-strip { gap: 12px; }
   .eng-kpi-value { font-size: 14px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROMPT DATABASE — Bloomberg overrides for SharedAIAgentsTab (sm-* classes)
+   When sm-* elements render inside .eng-app, restyle them to match the
+   Bloomberg theme without modifying the shared component itself.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Hide the redundant hero header — eng-app already has its own Bloomberg header */
+.eng-app .sm-tab-hero {
+  display: none;
+}
+
+/* Remove stock-model-app reset overrides inside eng context */
+.eng-app .stock-model-app,
+.eng-app .stock-model-app * {
+  margin: revert;
+  padding: revert;
+}
+.eng-app .stock-model-app {
+  font-family: 'Outfit', sans-serif;
+  background: transparent;
+  min-height: auto;
+  color: var(--text);
+  overflow-x: visible;
+}
+
+/* ── Section dividers → Bloomberg section headers ── */
+.eng-app .sm-divider {
+  padding: 28px 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.eng-app .sm-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.08), transparent);
+}
+.eng-app .sm-divider .sm-section-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 0;
+}
+
+/* ── Category labels → Bloomberg color-coded labels ── */
+.eng-app .sm-agent-category-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 16px 0 8px;
+}
+.eng-app .sm-agent-category-label[data-color-variant="mint"]   { color: var(--mint); }
+.eng-app .sm-agent-category-label[data-color-variant="blue"]   { color: var(--sky); }
+.eng-app .sm-agent-category-label[data-color-variant="violet"] { color: var(--violet); }
+.eng-app .sm-agent-category-label[data-color-variant="gold"]   { color: var(--gold); }
+
+/* ── Agent cards → Bloomberg card style ── */
+.eng-app .sm-agent-card-border {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  transition: border-color 0.15s, background 0.15s;
+}
+.eng-app .sm-agent-card-border:hover {
+  background: var(--surface2);
+  border-color: rgba(240,246,252,0.15);
+}
+
+/* Card header button */
+.eng-app .sm-agent-card-border > button {
+  padding: 14px 20px;
+}
+
+/* Agent name → Bloomberg monospace styling */
+.eng-app .sm-agent-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* Agent description */
+.eng-app .sm-agent-desc {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+/* Status badges */
+.eng-app .sm-ed-action-btn-sm {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+}
+.eng-app .sm-ed-action-btn-sm[data-variant="mint"] {
+  color: var(--mint);
+  background: rgba(126,231,135,0.08);
+  border-color: rgba(126,231,135,0.15);
+}
+.eng-app .sm-ed-action-btn-sm[data-variant="muted"] {
+  color: var(--text3);
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.06);
+}
+.eng-app .sm-ed-action-btn-sm[data-variant="violet"] {
+  color: var(--violet);
+  background: rgba(167,139,250,0.08);
+  border-color: rgba(167,139,250,0.15);
+}
+.eng-app .sm-ed-action-btn-sm[data-variant="gold"] {
+  color: var(--gold);
+  background: rgba(210,153,34,0.08);
+  border-color: rgba(210,153,34,0.15);
+}
+
+/* ── Expanded card body ── */
+.eng-app .sm-agent-body {
+  padding: 0 20px 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* Action buttons → Bloomberg styled */
+.eng-app .sm-ed-action-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text3);
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.eng-app .sm-ed-action-btn:hover {
+  border-color: var(--text3);
+  color: var(--text2);
+}
+.eng-app .sm-ed-action-btn[data-variant="mint"] {
+  color: var(--mint);
+  border-color: rgba(126,231,135,0.25);
+}
+.eng-app .sm-ed-action-btn[data-variant="mint"]:hover {
+  background: rgba(126,231,135,0.05);
+}
+.eng-app .sm-ed-action-btn[data-variant="coral"] {
+  color: var(--coral);
+  border-color: rgba(255,123,114,0.25);
+}
+.eng-app .sm-ed-action-btn[data-variant="violet"] {
+  color: var(--violet);
+  border-color: rgba(167,139,250,0.25);
+}
+.eng-app .sm-ed-action-btn[data-variant="gold"] {
+  color: var(--gold);
+  border-color: rgba(210,153,34,0.25);
+}
+.eng-app .sm-ed-action-btn[data-state="disabled"] {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.eng-app .sm-ed-action-btn[data-state="done"] {
+  color: var(--mint);
+  border-color: rgba(126,231,135,0.2);
+}
+.eng-app .sm-ed-action-btn[data-state="error"] {
+  color: var(--coral);
+  border-color: rgba(255,123,114,0.2);
+}
+
+/* Prompt box */
+.eng-app .sm-agent-prompt-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.eng-app .sm-agent-prompt-pre {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+/* Textarea */
+.eng-app .sm-agent-textarea {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text2);
+  padding: 12px;
+  width: 100%;
+  min-height: 80px;
+}
+.eng-app .sm-agent-textarea:focus {
+  outline: none;
+  border-color: rgba(34,211,238,0.3);
+}
+
+/* Pulse dot */
+.eng-app .sm-agent-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sky);
+  animation: eng-pulse 2s infinite;
+}
+
+/* Status text */
+.eng-app .sm-agent-status-text {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--sky);
+}
+
+/* Analysis result */
+.eng-app .sm-ed-analysis {
+  margin-top: 16px;
+  padding: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+}
+.eng-app .sm-ed-analysis-pre {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+/* Scrollboxes */
+.eng-app .sm-scrollbox-tall {
+  max-height: 400px;
+  overflow-y: auto;
+}
+.eng-app .sm-scrollbox-short {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Section groups */
+.eng-app .sm-agent-section-group {
+  margin-bottom: 8px;
+}
+
+/* Agent toolbar */
+.eng-app .sm-agent-toolbar {
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* Diff panel */
+.eng-app .sm-ed-diff-panel {
+  margin-top: 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.eng-app .sm-ed-diff-pre {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  display: flex;
+  flex-direction: column;
+}
+.eng-app .sm-ed-diff-add { color: var(--mint); }
+.eng-app .sm-ed-diff-del { color: var(--coral); }
+.eng-app .sm-ed-diff-hunk { color: var(--sky); opacity: 0.5; }
+
+/* Error states */
+.eng-app .sm-coral { color: var(--coral); }
+.eng-app .sm-agent-error-wrap { margin-top: 12px; }
+.eng-app .sm-ed-ai-banner {
+  font-size: 11px;
+  color: var(--gold);
+  background: rgba(210,153,34,0.06);
+  border: 1px solid rgba(210,153,34,0.15);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Empty state */
+.eng-app .sm-agent-empty {
+  padding: 60px 0;
+  font-size: 13px;
+  color: var(--text3);
+  text-align: center;
+}
+
+/* ── Flex/layout utilities within eng-app ── */
+.eng-app .sm-flex-col { display: flex; flex-direction: column; }
+.eng-app .sm-flex { display: flex; align-items: center; }
+.eng-app .sm-flex-between { display: flex; align-items: center; justify-content: space-between; }
+.eng-app .sm-flex-wrap { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.eng-app .sm-gap-6 { gap: 6px; }
+.eng-app .sm-gap-8 { gap: 8px; }
+.eng-app .sm-gap-16 { gap: 16px; }
+.eng-app .sm-mb-8 { margin-bottom: 8px; }
+.eng-app .sm-mb-12 { margin-bottom: 12px; }
+.eng-app .sm-mb-16 { margin-bottom: 16px; }
+.eng-app .sm-mt-12 { margin-top: 12px; }
+.eng-app .sm-mt-16 { margin-top: 16px; }
+.eng-app .sm-ml-auto { margin-left: auto; }
+.eng-app .sm-border-t { border-top: 1px solid var(--border); }
+.eng-app .sm-text3 { color: var(--text3); }
+.eng-app .sm-fw-500 { font-weight: 500; }
+.eng-app .sm-fw-600 { font-weight: 600; }
+.eng-app .sm-uppercase { text-transform: uppercase; }
+.eng-app .sm-rounded-8 { border-radius: 8px; }
+.eng-app .sm-rounded-12 { border-radius: 12px; }
+.eng-app .sm-overflow-hidden { overflow: hidden; }
+.eng-app .sm-w-full { width: 100%; }
+.eng-app .sm-pointer { cursor: pointer; }
+.eng-app .sm-items-start { align-items: flex-start; }
+.eng-app .sm-text-left { text-align: left; }
+.eng-app .sm-justify-between { justify-content: space-between; }
+.eng-app .sm-p-16-20 { padding: 16px 20px; }
+.eng-app .sm-bg-none { background: none; }
+.eng-app .sm-border-none { border: none; }
+.eng-app .sm-shrink-0 { flex-shrink: 0; }
+.eng-app .sm-p-5-14 { padding: 5px 14px; }
+.eng-app .sm-bg-surface2 { background: var(--surface2); }
+.eng-app .sm-p-16 { padding: 16px; }
+.eng-app .sm-ls-wide { letter-spacing: 0.15em; }
+.eng-app .sm-accent { color: var(--cyan); }
+
+/* ── Selected ticker name display ── */
+.eng-ticker-name {
+  margin-left: 12px;
+  font-size: 11px;
+  color: var(--text3);
+  font-family: 'Outfit', sans-serif;
+}

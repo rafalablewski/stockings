@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { SharedAIAgentsTab } from './shared/SharedAIAgentsTab';
+import { workflows } from '@/data/workflows';
 import type { EngineerTask } from '@/lib/engineers';
 
 interface TickerInfo {
@@ -34,6 +35,18 @@ export default function PromptDatabase({ tickers, engineers }: Props) {
     return acc;
   }, {});
 
+  // KPI stats
+  const kpiStats = useMemo(() => {
+    const totalWorkflows = workflows.length;
+    const autonomousCount = workflows.filter(w => !w.requiresUserData && w.category !== 'audit').length;
+    const dataInputCount = workflows.filter(w => w.requiresUserData && w.category !== 'audit').length;
+    const auditCount = workflows.filter(w => w.category === 'audit').length;
+    const tickerWorkflows = workflows.filter(w =>
+      w.variants.some(v => v.ticker === selectedTicker.toLowerCase())
+    ).length;
+    return { totalWorkflows, autonomousCount, dataInputCount, auditCount, tickerWorkflows };
+  }, [selectedTicker]);
+
   return (
     <div className="eng-app">
       {/* Header */}
@@ -43,6 +56,34 @@ export default function PromptDatabase({ tickers, engineers }: Props) {
         <div className="eng-desc">
           All AI analysis prompts in one place. Select a ticker to run any workflow
           directly, or browse prompts used by each autonomous engineer.
+        </div>
+
+        {/* KPI Bar */}
+        <div className="eng-kpi-bar">
+          <div className="eng-kpi-bar-cell">
+            <div className="eng-kpi-bar-value" data-color="cyan">{kpiStats.totalWorkflows}</div>
+            <div className="eng-kpi-bar-label">Total Prompts</div>
+          </div>
+          <div className="eng-kpi-bar-cell">
+            <div className="eng-kpi-bar-value" data-color="mint">{kpiStats.autonomousCount}</div>
+            <div className="eng-kpi-bar-label">Autonomous</div>
+          </div>
+          <div className="eng-kpi-bar-cell">
+            <div className="eng-kpi-bar-value" data-color="sky">{kpiStats.dataInputCount}</div>
+            <div className="eng-kpi-bar-label">Data Input</div>
+          </div>
+          <div className="eng-kpi-bar-cell">
+            <div className="eng-kpi-bar-value" data-color="violet">{kpiStats.auditCount}</div>
+            <div className="eng-kpi-bar-label">Audits</div>
+          </div>
+          <div className="eng-kpi-bar-cell">
+            <div className="eng-kpi-bar-value" data-color="gold">{kpiStats.tickerWorkflows}</div>
+            <div className="eng-kpi-bar-label">{selectedTicker} Prompts</div>
+          </div>
+          <div className="eng-kpi-bar-cell">
+            <div className="eng-kpi-bar-value" data-color="coral">{tickers.length}</div>
+            <div className="eng-kpi-bar-label">Tickers</div>
+          </div>
         </div>
 
         {/* Ticker pills */}
@@ -58,7 +99,7 @@ export default function PromptDatabase({ tickers, engineers }: Props) {
               {t.ticker}
             </button>
           ))}
-          <span style={{ marginLeft: 12, fontSize: 11, color: 'var(--text3)', fontFamily: "'Outfit', sans-serif" }}>
+          <span className="eng-ticker-name">
             {selectedName}
           </span>
         </div>
@@ -66,10 +107,10 @@ export default function PromptDatabase({ tickers, engineers }: Props) {
         {/* Tab strip */}
         <div className="eng-tab-strip">
           <button className="eng-tab" data-active={activeView === 'prompts'} onClick={() => setActiveView('prompts')}>
-            All Prompts
+            All Prompts<span className="eng-tab-count">{kpiStats.tickerWorkflows}</span>
           </button>
           <button className="eng-tab" data-active={activeView === 'engineer-map'} onClick={() => setActiveView('engineer-map')}>
-            Engineer Map
+            Engineer Map<span className="eng-tab-count">{engineers.length}</span>
           </button>
         </div>
       </div>
