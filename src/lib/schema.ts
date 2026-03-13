@@ -257,3 +257,22 @@ export const engineerSchedules = pgTable('engineer_schedules', {
 }, (table) => [
   uniqueIndex('engineer_schedules_ticker_engineer_idx').on(table.ticker, table.engineerId),
 ]);
+
+// ============================================================================
+// ROOM MESSAGES — chat messages in the multi-AI division "Room" where all
+// divisions (Claude, Cursor, Gemini, AI Engineer, PM) and the Boss
+// communicate in a shared conversation thread.
+// ============================================================================
+
+export const roomMessages = pgTable('room_messages', {
+  id: serial('id').primaryKey(),
+  sender: text('sender').notNull(),           // 'boss' | 'claude' | 'cursor' | 'gemini' | 'ai-engineer' | 'project-manager'
+  content: text('content').notNull(),
+  channel: text('channel').default('general').notNull(), // 'general' | 'backend' | 'frontend' | 'research' | 'ml' | 'planning'
+  replyTo: integer('reply_to'),               // id of message being replied to (nullable)
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  index('room_messages_channel_idx').on(table.channel),
+  index('room_messages_created_idx').on(table.createdAt),
+  index('room_messages_sender_idx').on(table.sender),
+]);
