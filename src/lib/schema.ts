@@ -207,3 +207,53 @@ export const notes = pgTable('notes', {
   hidden: boolean('hidden').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+// ============================================================================
+// AGENT RUNS — tracks autonomous AI engineer task executions, schedules,
+// and results so the platform can operate agents continuously without
+// manual prompt-paste-run cycles.
+// ============================================================================
+
+export const agentRuns = pgTable('agent_runs', {
+  id: serial('id').primaryKey(),
+  ticker: text('ticker').notNull(),
+  engineerId: text('engineer_id').notNull(),     // e.g. 'thesis-monitor', 'filing-watcher'
+  workflowId: text('workflow_id'),               // links to workflows.ts id if applicable
+  status: text('status').notNull(),              // 'queued' | 'running' | 'completed' | 'failed' | 'cancelled'
+  triggerType: text('trigger_type').notNull(),    // 'scheduled' | 'event' | 'manual'
+  triggerReason: text('trigger_reason'),          // human-readable reason for this run
+  inputSummary: text('input_summary'),           // what data was fed in (truncated)
+  outputSummary: text('output_summary'),         // key findings / actions taken
+  outputFull: text('output_full'),               // complete AI response
+  patchesApplied: integer('patches_applied').default(0).notNull(),
+  errorsEncountered: text('errors_encountered'), // error details if failed
+  durationMs: integer('duration_ms'),            // how long the run took
+  scheduledAt: timestamp('scheduled_at'),        // when this run was scheduled for
+  startedAt: timestamp('started_at'),            // when execution began
+  completedAt: timestamp('completed_at'),        // when execution finished
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  index('agent_runs_ticker_engineer_idx').on(table.ticker, table.engineerId),
+  index('agent_runs_status_idx').on(table.status),
+  index('agent_runs_created_idx').on(table.createdAt),
+]);
+
+// ============================================================================
+// ENGINEER SCHEDULES — persistent configuration for autonomous AI engineers.
+// Each row represents one engineer's schedule for a specific ticker.
+// ============================================================================
+
+export const engineerSchedules = pgTable('engineer_schedules', {
+  id: serial('id').primaryKey(),
+  ticker: text('ticker').notNull(),
+  engineerId: text('engineer_id').notNull(),
+  enabled: boolean('enabled').default(true).notNull(),
+  intervalMinutes: integer('interval_minutes').notNull(), // how often to run (e.g. 60 = hourly)
+  lastRunAt: timestamp('last_run_at'),
+  nextRunAt: timestamp('next_run_at'),
+  config: text('config'),                                 // JSON — engineer-specific settings
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex('engineer_schedules_ticker_engineer_idx').on(table.ticker, table.engineerId),
+]);
