@@ -31,20 +31,6 @@ interface EngineerStatus {
   lastRun: LastRunState | null;
 }
 
-interface HistoryEntry {
-  id: number;
-  ticker: string;
-  engineerId: string;
-  status: string;
-  triggerType: string;
-  triggerReason: string | null;
-  outputSummary: string | null;
-  durationMs: number | null;
-  startedAt: string | null;
-  completedAt: string | null;
-  createdAt: string;
-}
-
 interface TickerInfo {
   ticker: string;
   name: string;
@@ -54,23 +40,6 @@ interface Props {
   engineers: EngineerTask[];
   workflows: Workflow[];
   tickers: TickerInfo[];
-}
-
-// ── Graph types ───────────────────────────────────────────────────────────────
-
-interface GraphNode {
-  id: string;
-  name: string;
-  type: 'engineer' | 'workflow' | 'event' | 'datasource';
-  color: string;
-  subtitle?: string;
-}
-
-interface GraphEdge {
-  from: string;
-  to: string;
-  type: 'executes' | 'triggers' | 'provides-data' | 'shared-trigger';
-  label?: string;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -113,163 +82,35 @@ const categoryLabels: Record<string, string> = {
   audit: 'Audit',
 };
 
-function edgeTypeLabel(type: string) {
-  switch (type) {
-    case 'executes':       return 'executes';
-    case 'triggers':       return 'triggers';
-    case 'provides-data':  return 'provides data';
-    case 'shared-trigger': return 'shared trigger';
-    default:               return type;
-  }
+const categoryDescriptions: Record<string, string> = {
+  research: 'Pressure-test theses, track capital structure, validate data quality',
+  monitoring: 'Watch SEC filings, insider trades, and regulatory changes in real-time',
+  intelligence: 'Track catalysts, aggregate sentiment, monitor press and news signals',
+  audit: 'Validate database integrity, flag stale data, cross-reference consistency',
+};
+
+// ── Shared trigger computation ────────────────────────────────────────────────
+
+interface SharedTrigger {
+  event: string;
+  engineers: { id: string; name: string; category: string }[];
 }
 
-// ── Build graph from engineers + workflows ────────────────────────────────────
-
-function buildGraph(engineers: EngineerTask[], workflows: Workflow[]) {
-  const nodes: GraphNode[] = [];
-  const edges: GraphEdge[] = [];
-  const workflowSet = new Set<string>();
-  const eventSet = new Set<string>();
-  const datasourceSet = new Set<string>();
-
-  // Add engineer nodes
+function computeSharedTriggers(engineers: EngineerTask[]): SharedTrigger[] {
+  const eventMap = new Map<string, { id: string; name: string; category: string }[]>();
   for (const eng of engineers) {
-    nodes.push({
-      id: eng.id,
-      name: eng.name,
-      type: 'engineer',
-      color: categoryColors[eng.category] || 'cyan',
-      subtitle: eng.role,
-    });
-
-    // Add workflow nodes + edges
-    for (const wfId of eng.workflowIds) {
-      if (!workflowSet.has(wfId)) {
-        workflowSet.add(wfId);
-        const wf = workflows.find(w => w.id === wfId);
-        nodes.push({
-          id: `wf-${wfId}`,
-          name: wf?.name || wfId,
-          type: 'workflow',
-          color: 'gold',
-          subtitle: wf?.requiresUserData ? 'requires input' : 'autonomous',
-        });
-      }
-      edges.push({ from: eng.id, to: `wf-${wfId}`, type: 'executes' });
-    }
-
-    // Add trigger event nodes + edges
     for (const event of eng.triggerEvents) {
-      if (!eventSet.has(event)) {
-        eventSet.add(event);
-        nodes.push({
-          id: `ev-${event}`,
-          name: event.replace(/-/g, ' '),
-          type: 'event',
-          color: 'cyan',
-        });
-      }
-      edges.push({ from: `ev-${event}`, to: eng.id, type: 'triggers' });
-    }
-
-    // Add data source nodes + edges
-    if (eng.requiresData && eng.dataSource) {
-      const dsId = `ds-${eng.dataSource.replace(/[^a-z0-9]/gi, '-').toLowerCase()}`;
-      if (!datasourceSet.has(dsId)) {
-        datasourceSet.add(dsId);
-        nodes.push({
-          id: dsId,
-          name: eng.dataSource,
-          type: 'datasource',
-          color: 'sky',
-        });
-      }
-      edges.push({ from: dsId, to: eng.id, type: 'provides-data' });
+      if (!eventMap.has(event)) eventMap.set(event, []);
+      eventMap.get(event)!.push({ id: eng.id, name: eng.name, category: eng.category });
     }
   }
-
-  // Find shared trigger connections (engineers that share events)
-  for (const event of eventSet) {
-    const triggered = engineers.filter(e => e.triggerEvents.includes(event));
-    if (triggered.length > 1) {
-      for (let i = 0; i < triggered.length - 1; i++) {
-        edges.push({
-          from: triggered[i].id,
-          to: triggered[i + 1].id,
-          type: 'shared-trigger',
-          label: event.replace(/-/g, ' '),
-        });
-      }
-    }
-  }
-
-  return { nodes, edges };
-}
-
-// ── SVG Connection Lines ──────────────────────────────────────────────────────
-
-interface NodeRect { id: string; cx: number; cy: number; }
-
-function ConnectionLines({ nodeRects, selected, edges }: { nodeRects: NodeRect[]; selected: string | null; edges: GraphEdge[] }) {
-  if (nodeRects.length === 0) return null;
-
-  const relevantEdges = selected
-    ? edges.filter((e) => e.from === selected || e.to === selected)
-    : edges;
-
-  return (
-    <svg className="eng-graph-svg">
-      <defs>
-        <filter id="eng-glow">
-          <feGaussianBlur stdDeviation="2" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      {relevantEdges.map((edge, i) => {
-        const fromNode = nodeRects.find((n) => n.id === edge.from);
-        const toNode = nodeRects.find((n) => n.id === edge.to);
-        if (!fromNode || !toNode) return null;
-
-        const midX = (fromNode.cx + toNode.cx) / 2;
-        const midY = (fromNode.cy + toNode.cy) / 2;
-        const offsetY = Math.abs(fromNode.cx - toNode.cx) > 100 ? -30 : 0;
-
-        return (
-          <g key={`${edge.from}-${edge.to}-${edge.type}-${i}`}>
-            <path
-              d={`M ${fromNode.cx} ${fromNode.cy} Q ${midX} ${midY + offsetY} ${toNode.cx} ${toNode.cy}`}
-              className="eng-graph-line"
-              data-type={edge.type}
-              filter={selected ? 'url(#eng-glow)' : undefined}
-              style={{ opacity: selected ? 0.9 : 0.6 }}
-            />
-            <circle className="eng-graph-flow-dot" data-type={edge.type}>
-              <animateMotion
-                dur={`${3 + i * 0.3}s`}
-                repeatCount="indefinite"
-                path={`M ${fromNode.cx} ${fromNode.cy} Q ${midX} ${midY + offsetY} ${toNode.cx} ${toNode.cy}`}
-              />
-            </circle>
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
-// ── Node Icon ─────────────────────────────────────────────────────────────────
-
-function nodeIcon(type: string) {
-  switch (type) {
-    case 'engineer':   return '\u2B22'; // hexagon
-    case 'workflow':   return '\u2726'; // star
-    case 'event':      return '\u26A1'; // lightning
-    case 'datasource': return '\u2B21'; // pentagon
-    default:           return '\u25CF';
-  }
+  // Only return events that trigger engineers across multiple categories
+  return Array.from(eventMap.entries())
+    .filter(([, engs]) => {
+      const cats = new Set(engs.map(e => e.category));
+      return cats.size > 1;
+    })
+    .map(([event, engs]) => ({ event, engineers: engs }));
 }
 
 // ── Detail Panel ──────────────────────────────────────────────────────────────
@@ -278,18 +119,24 @@ function EngineerDetailPanel({
   engineer,
   workflows,
   allEngineers,
-  edges,
   onClose,
 }: {
   engineer: EngineerTask;
   workflows: Workflow[];
   allEngineers: EngineerTask[];
-  edges: GraphEdge[];
   onClose: () => void;
 }) {
   const linkedWorkflows = workflows.filter(w => engineer.workflowIds.includes(w.id));
-  const relatedEdges = edges.filter(e => e.from === engineer.id || e.to === engineer.id);
   const color = categoryColors[engineer.category] || 'cyan';
+
+  // Find other engineers sharing triggers with this one
+  const sharedWith = new Map<string, string[]>();
+  for (const event of engineer.triggerEvents) {
+    const others = allEngineers
+      .filter(e => e.id !== engineer.id && e.triggerEvents.includes(event))
+      .map(e => e.name);
+    if (others.length > 0) sharedWith.set(event, others);
+  }
 
   return (
     <div className="eng-detail" data-color={color}>
@@ -326,7 +173,6 @@ function EngineerDetailPanel({
       </div>
 
       <div className="eng-detail-grid">
-        {/* Capabilities */}
         <div className="eng-detail-section">
           <div className="eng-detail-section-title">Capabilities</div>
           {engineer.capabilities.map((cap, i) => (
@@ -337,7 +183,6 @@ function EngineerDetailPanel({
           ))}
         </div>
 
-        {/* Linked Workflows */}
         <div className="eng-detail-section">
           <div className="eng-detail-section-title">Prompt Database Workflows</div>
           <div className="eng-prompt-tags">
@@ -350,7 +195,6 @@ function EngineerDetailPanel({
           </div>
         </div>
 
-        {/* Configuration */}
         <div className="eng-detail-section">
           <div className="eng-detail-section-title">Configuration</div>
           <div className="eng-config-row">
@@ -378,52 +222,23 @@ function EngineerDetailPanel({
         </div>
       </div>
 
-      {/* Connection table */}
-      {relatedEdges.length > 0 && (
+      {sharedWith.size > 0 && (
         <div style={{ marginTop: 20 }}>
-          <div className="eng-detail-section-title">Connections</div>
+          <div className="eng-detail-section-title">Shared Triggers</div>
           <table className="eng-matrix-table" style={{ fontSize: 11, marginTop: 8 }}>
             <thead>
               <tr>
-                <th>Direction</th>
-                <th>Type</th>
-                <th>Target</th>
-                <th>Label</th>
+                <th>Event</th>
+                <th>Also Triggers</th>
               </tr>
             </thead>
             <tbody>
-              {relatedEdges.map((edge, i) => {
-                const isFrom = edge.from === engineer.id;
-                const targetId = isFrom ? edge.to : edge.from;
-                // Resolve name
-                let targetName = targetId;
-                if (targetId.startsWith('wf-')) {
-                  const wf = workflows.find(w => w.id === targetId.slice(3));
-                  targetName = wf?.name || targetId.slice(3);
-                } else if (targetId.startsWith('ev-')) {
-                  targetName = targetId.slice(3).replace(/-/g, ' ');
-                } else if (targetId.startsWith('ds-')) {
-                  const eng = allEngineers.find(e => e.id === targetId);
-                  targetName = eng?.name || targetId;
-                } else {
-                  const eng = allEngineers.find(e => e.id === targetId);
-                  targetName = eng?.name || targetId;
-                }
-
-                return (
-                  <tr key={i}>
-                    <td className="eng-conn-direction" data-direction={isFrom ? 'out' : 'in'}>
-                      {isFrom ? 'OUT \u2192' : '\u2190 IN'}
-                    </td>
-                    <td>
-                      <span className="eng-conn-dot" data-type={edge.type} />
-                      <span className="eng-conn-type">{edgeTypeLabel(edge.type)}</span>
-                    </td>
-                    <td className="eng-conn-to">{targetName}</td>
-                    <td className="eng-conn-label">{edge.label ?? '\u2014'}</td>
-                  </tr>
-                );
-              })}
+              {Array.from(sharedWith.entries()).map(([event, others]) => (
+                <tr key={event}>
+                  <td className="eng-conn-from">{event.replace(/-/g, ' ')}</td>
+                  <td className="eng-conn-to">{others.join(', ')}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -454,9 +269,6 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const [runningIds, setRunningIds] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<'network' | 'agents' | 'history'>('network');
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
-  const [nodeRects, setNodeRects] = useState<NodeRect[]>([]);
-  const graphRef = useRef<HTMLDivElement>(null);
-  const nodeRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   // ── Ticker dropdown state ──
   const [tickerDropdownOpen, setTickerDropdownOpen] = useState(false);
@@ -486,7 +298,6 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
     setTickerSearch('');
   }, []);
 
-  // Close dropdown on outside click
   useEffect(() => {
     if (!tickerDropdownOpen) return;
     const handleClick = (e: MouseEvent) => {
@@ -499,59 +310,29 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
     return () => document.removeEventListener('mousedown', handleClick);
   }, [tickerDropdownOpen]);
 
-  // Focus search when dropdown opens
   useEffect(() => {
     if (tickerDropdownOpen && tickerSearchRef.current) {
       tickerSearchRef.current.focus();
     }
   }, [tickerDropdownOpen]);
 
-  // Build the graph from engineers + workflows
-  const { nodes: graphNodes, edges: graphEdges } = useMemo(
-    () => buildGraph(engineers, workflows),
-    [engineers, workflows]
-  );
-
+  // ── Network graph data ──
   const selectedEngineer = selectedNode
     ? engineers.find(e => e.id === selectedNode) ?? null
     : null;
 
-  // Measure node positions for SVG lines
-  const measureNodes = useCallback(() => {
-    if (!graphRef.current) return;
-    const containerRect = graphRef.current.getBoundingClientRect();
-    const rects: NodeRect[] = [];
-    nodeRefs.current.forEach((el, id) => {
-      const r = el.getBoundingClientRect();
-      rects.push({
-        id,
-        cx: r.left - containerRect.left + r.width / 2,
-        cy: r.top - containerRect.top + r.height / 2,
-      });
-    });
-    setNodeRects(rects);
-  }, []);
+  const sharedTriggers = useMemo(() => computeSharedTriggers(engineers), [engineers]);
 
-  useEffect(() => {
-    if (activeTab === 'network') {
-      const t = setTimeout(measureNodes, 100);
-      let resizeTimer: ReturnType<typeof setTimeout>;
-      const debouncedMeasure = () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(measureNodes, 150);
-      };
-      window.addEventListener('resize', debouncedMeasure);
-      return () => { clearTimeout(t); clearTimeout(resizeTimer); window.removeEventListener('resize', debouncedMeasure); };
+  const grouped = useMemo(() => {
+    const g: Record<string, EngineerTask[]> = {};
+    for (const eng of engineers) {
+      if (!g[eng.category]) g[eng.category] = [];
+      g[eng.category].push(eng);
     }
-  }, [activeTab, measureNodes]);
+    return g;
+  }, [engineers]);
 
-  useEffect(() => {
-    if (activeTab === 'network') {
-      const t = setTimeout(measureNodes, 50);
-      return () => clearTimeout(t);
-    }
-  }, [selectedNode, activeTab, measureNodes]);
-
+  // ── Data fetching ──
   const fetchStatus = useCallback(async () => {
     try {
       const res = await authFetch(`/api/engineers/status?ticker=${selectedTicker}`);
@@ -658,12 +439,12 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
             <div className="eng-kpi-bar-label">Workflows</div>
           </div>
           <div className="eng-kpi-bar-cell">
-            <div className="eng-kpi-bar-value" data-color="violet">{graphEdges.length}</div>
-            <div className="eng-kpi-bar-label">Connections</div>
-          </div>
-          <div className="eng-kpi-bar-cell">
             <div className="eng-kpi-bar-value" data-color="mint">{scheduledCount}</div>
             <div className="eng-kpi-bar-label">Scheduled</div>
+          </div>
+          <div className="eng-kpi-bar-cell">
+            <div className="eng-kpi-bar-value" data-color="violet">{sharedTriggers.length}</div>
+            <div className="eng-kpi-bar-label">Cross-Links</div>
           </div>
           <div className="eng-kpi-bar-cell">
             <div className="eng-kpi-bar-value" data-color="coral">{requiresDataCount}</div>
@@ -673,7 +454,6 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
 
         {/* Unified nav row: ticker dropdown + tabs */}
         <div className="eng-nav-row">
-          {/* Searchable ticker dropdown */}
           <div className="eng-ticker-dropdown" ref={tickerDropdownRef}>
             <button
               className="eng-ticker-trigger"
@@ -729,10 +509,9 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
             )}
           </div>
 
-          {/* Tab strip */}
           <div className="eng-tab-strip" style={{ borderBottom: 'none', marginTop: 0 }}>
             <button className="eng-tab" data-active={activeTab === 'network'} onClick={() => setActiveTab('network')}>
-              Network Graph<span className="eng-tab-count">{graphNodes.length}</span>
+              Network Graph<span className="eng-tab-count">{engineers.length}</span>
             </button>
             <button className="eng-tab" data-active={activeTab === 'agents'} onClick={() => setActiveTab('agents')}>
               AI Agents<span className="eng-tab-count">{engineers.length}</span>
@@ -747,61 +526,137 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
       {/* Feed */}
       <div className="eng-feed">
 
-        {/* ══ NETWORK GRAPH TAB ══ */}
+        {/* ══ NETWORK GRAPH TAB — Category Swimlanes ══ */}
         {activeTab === 'network' && (
           <div>
-            <div className="eng-section-header">
-              <span className="eng-section-dot" data-color="cyan" />
-              <span className="eng-section-label">Engineer Network</span>
-              <div className="eng-section-line" />
-            </div>
+            {/* Swimlanes */}
+            {categories.map(cat => {
+              const engs = grouped[cat] || [];
+              if (engs.length === 0) return null;
+              const color = categoryColors[cat];
 
-            <div className="eng-graph-container" ref={graphRef}>
-              <ConnectionLines nodeRects={nodeRects} selected={selectedNode} edges={graphEdges} />
-              <div className="eng-graph-nodes">
-                {graphNodes.map((node) => (
-                  <div
-                    key={node.id}
-                    ref={(el) => { if (el) nodeRefs.current.set(node.id, el); }}
-                    className="eng-node"
-                    data-color={node.color}
-                    data-selected={selectedNode === node.id ? 'true' : undefined}
-                    onClick={() => setSelectedNode(selectedNode === node.id ? null : node.id)}
-                  >
-                    <span className="eng-node-pulse" data-status={node.type === 'engineer' ? 'active' : 'standby'} />
-                    <div className="eng-node-header">
-                      <div className="eng-node-icon" data-color={node.color}>
-                        {nodeIcon(node.type)}
-                      </div>
-                      <div>
-                        <div className="eng-node-name">{node.name}</div>
-                        {node.subtitle && <div className="eng-node-role">{node.subtitle}</div>}
-                      </div>
+              return (
+                <div key={cat} className="eng-swimlane" data-color={color}>
+                  <div className="eng-swimlane-header">
+                    <div className="eng-swimlane-label-row">
+                      <span className="eng-swimlane-dot" data-color={color} />
+                      <span className="eng-swimlane-label">{categoryLabels[cat]}</span>
+                      <span className="eng-swimlane-count">{engs.length}</span>
                     </div>
-                    <div className="eng-node-meta">
-                      <span className="eng-node-badge" data-variant={node.type === 'engineer' ? 'active' : 'standby'}>
-                        {node.type}
-                      </span>
-                    </div>
+                    <div className="eng-swimlane-desc">{categoryDescriptions[cat]}</div>
                   </div>
-                ))}
-              </div>
-            </div>
 
-            {/* Legend */}
-            <div className="eng-legend">
-              {([
-                ['executes', 'Executes Workflow'],
-                ['triggers', 'Triggers Engineer'],
-                ['provides-data', 'Provides Data'],
-                ['shared-trigger', 'Shared Trigger'],
-              ] as const).map(([type, label]) => (
-                <div key={type} className="eng-legend-item">
-                  <span className="eng-legend-line" data-type={type} />
-                  {label}
+                  <div className="eng-swimlane-cards">
+                    {engs.map(eng => {
+                      const linkedWfs = workflows.filter(w => eng.workflowIds.includes(w.id));
+                      const isSelected = selectedNode === eng.id;
+
+                      return (
+                        <div
+                          key={eng.id}
+                          className="eng-swim-card"
+                          data-color={color}
+                          data-selected={isSelected || undefined}
+                          onClick={() => setSelectedNode(isSelected ? null : eng.id)}
+                        >
+                          {/* Engineer name + role */}
+                          <div className="eng-swim-card-header">
+                            <div className="eng-swim-card-icon" data-color={color}>{'\u2B22'}</div>
+                            <div>
+                              <div className="eng-swim-card-name">{eng.name}</div>
+                              <div className="eng-swim-card-role">{eng.role}</div>
+                            </div>
+                          </div>
+
+                          {/* Workflow badges */}
+                          <div className="eng-swim-card-badges">
+                            <span className="eng-swim-badge-label">Workflows</span>
+                            {linkedWfs.map(wf => (
+                              <span key={wf.id} className="eng-swim-badge" data-type="workflow">
+                                {'\u2726'} {wf.name}
+                              </span>
+                            ))}
+                            {eng.workflowIds
+                              .filter(id => !linkedWfs.some(w => w.id === id))
+                              .map(id => (
+                                <span key={id} className="eng-swim-badge" data-type="workflow">{id}</span>
+                              ))}
+                          </div>
+
+                          {/* Trigger badges */}
+                          <div className="eng-swim-card-badges">
+                            <span className="eng-swim-badge-label">Triggers</span>
+                            {eng.triggerEvents.map(ev => {
+                              // Check if this trigger is shared cross-category
+                              const isShared = sharedTriggers.some(st => st.event === ev);
+                              return (
+                                <span
+                                  key={ev}
+                                  className="eng-swim-badge"
+                                  data-type={isShared ? 'shared-trigger' : 'trigger'}
+                                >
+                                  {'\u26A1'} {ev.replace(/-/g, ' ')}
+                                </span>
+                              );
+                            })}
+                          </div>
+
+                          {/* Data source badge */}
+                          {eng.requiresData && eng.dataSource && (
+                            <div className="eng-swim-card-badges">
+                              <span className="eng-swim-badge-label">Data</span>
+                              <span className="eng-swim-badge" data-type="datasource">
+                                {eng.dataSource}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Schedule */}
+                          <div className="eng-swim-card-schedule">
+                            Every {formatInterval(eng.defaultIntervalMinutes)}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
+
+            {/* Cross-Category Triggers */}
+            {sharedTriggers.length > 0 && (
+              <div className="eng-cross-triggers">
+                <div className="eng-section-header">
+                  <span className="eng-section-dot" data-color="violet" />
+                  <span className="eng-section-label">Cross-Category Triggers</span>
+                  <div className="eng-section-line" />
+                </div>
+                <div className="eng-cross-trigger-desc">
+                  Events that fire engineers across multiple categories — these are the key system-wide connections.
+                </div>
+
+                <div className="eng-cross-trigger-grid">
+                  {sharedTriggers.map(st => (
+                    <div key={st.event} className="eng-cross-trigger-card">
+                      <div className="eng-cross-trigger-event">
+                        {'\u26A1'} {st.event.replace(/-/g, ' ')}
+                      </div>
+                      <div className="eng-cross-trigger-agents">
+                        {st.engineers.map(eng => (
+                          <span
+                            key={eng.id}
+                            className="eng-cross-trigger-chip"
+                            data-color={categoryColors[eng.category]}
+                          >
+                            {eng.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Detail Panel */}
             {selectedEngineer && (
@@ -809,47 +664,9 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                 engineer={selectedEngineer}
                 workflows={workflows}
                 allEngineers={engineers}
-                edges={graphEdges}
                 onClose={() => setSelectedNode(null)}
               />
             )}
-
-            {/* Connection Matrix */}
-            <div className="eng-section-header">
-              <span className="eng-section-dot" data-color="violet" />
-              <span className="eng-section-label">Connection Matrix</span>
-              <div className="eng-section-line" />
-            </div>
-
-            <div className="eng-matrix">
-              <table className="eng-matrix-table">
-                <thead>
-                  <tr>
-                    <th>From</th>
-                    <th>Type</th>
-                    <th>To</th>
-                    <th>Label</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {graphEdges.map((edge, i) => {
-                    const fromNode = graphNodes.find(n => n.id === edge.from);
-                    const toNode = graphNodes.find(n => n.id === edge.to);
-                    return (
-                      <tr key={i}>
-                        <td className="eng-conn-from">{fromNode?.name || edge.from}</td>
-                        <td>
-                          <span className="eng-conn-dot" data-type={edge.type} />
-                          <span className="eng-conn-type">{edgeTypeLabel(edge.type)}</span>
-                        </td>
-                        <td className="eng-conn-to">{toNode?.name || edge.to}</td>
-                        <td className="eng-conn-label">{edge.label ?? '\u2014'}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
           </div>
         )}
 
@@ -967,7 +784,6 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                   {isExpanded && (
                     <div className="eng-expand">
                       <div className="eng-expand-grid">
-                        {/* Capabilities */}
                         <div>
                           <div className="eng-expand-label">Capabilities</div>
                           {eng.capabilities.map((cap, i) => (
@@ -978,7 +794,6 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                           ))}
                         </div>
 
-                        {/* Configuration */}
                         <div>
                           <div className="eng-expand-label">Configuration</div>
                           <div className="eng-config-row">
@@ -1006,7 +821,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                         </div>
                       </div>
 
-                      {/* Linked Workflows — ticker-aware: show only selected ticker's variants */}
+                      {/* Linked Workflows — ticker-aware */}
                       <div style={{ marginTop: 16 }}>
                         <div className="eng-expand-label">
                           Linked Workflows for {selectedTicker}
@@ -1014,7 +829,6 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                         {linkedWorkflows.length > 0 ? (
                           <div className="eng-resources-grid">
                             {linkedWorkflows.map(wf => {
-                              // Filter to only the selected ticker's variant
                               const tickerVariants = wf.variants.filter(
                                 v => v.ticker === selectedTicker.toLowerCase()
                               );
