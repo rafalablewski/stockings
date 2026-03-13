@@ -119,12 +119,26 @@ function EngineerDetailPanel({
   engineer,
   workflows,
   allEngineers,
+  selectedTicker,
+  status,
+  isRunning,
   onClose,
+  onRun,
+  onSchedule,
+  onEnableSchedule,
+  onPromptPreview,
 }: {
   engineer: EngineerTask;
   workflows: Workflow[];
   allEngineers: EngineerTask[];
+  selectedTicker: string;
+  status: EngineerStatus | undefined;
+  isRunning: boolean;
   onClose: () => void;
+  onRun: (engineerId: string) => void;
+  onSchedule: (engineerId: string, enabled: boolean, interval: number) => void;
+  onEnableSchedule: (engineer: EngineerTask) => void;
+  onPromptPreview: (wf: Workflow, ticker: string, label: string) => void;
 }) {
   const linkedWorkflows = workflows.filter(w => engineer.workflowIds.includes(w.id));
   const color = categoryColors[engineer.category] || 'cyan';
@@ -138,6 +152,10 @@ function EngineerDetailPanel({
     if (others.length > 0) sharedWith.set(event, others);
   }
 
+  const dotStatus = isRunning || status?.lastRun?.status === 'running'
+    ? 'running'
+    : status?.schedule?.enabled ? 'active' : 'idle';
+
   return (
     <div className="eng-detail" data-color={color}>
       <div className="eng-detail-header">
@@ -148,7 +166,31 @@ function EngineerDetailPanel({
             <div className="eng-detail-role">{engineer.role}</div>
           </div>
         </div>
-        <button className="eng-detail-close" onClick={onClose}>{'\u2715'}</button>
+        <div className="eng-detail-actions">
+          {status?.schedule ? (
+            <button
+              className="eng-btn"
+              data-variant={status.schedule.enabled ? 'active' : 'paused'}
+              onClick={() => onSchedule(engineer.id, status.schedule!.enabled, status.schedule!.intervalMinutes)}
+            >
+              {status.schedule.enabled ? 'Scheduled' : 'Paused'}
+            </button>
+          ) : (
+            <button className="eng-btn" onClick={() => onEnableSchedule(engineer)}>
+              Schedule
+            </button>
+          )}
+          <button
+            className="eng-btn"
+            data-variant="run"
+            data-state={isRunning ? 'running' : undefined}
+            onClick={() => onRun(engineer.id)}
+            disabled={isRunning}
+          >
+            {isRunning ? 'Running\u2026' : 'Run Now'}
+          </button>
+          <button className="eng-detail-close" onClick={onClose}>{'\u2715'}</button>
+        </div>
       </div>
 
       <p className="eng-detail-desc">{engineer.description}</p>
@@ -167,8 +209,8 @@ function EngineerDetailPanel({
           <span className="eng-metric-label">Triggers</span>
         </div>
         <div className="eng-metric">
-          <span className="eng-metric-value">{engineer.capabilities.length}</span>
-          <span className="eng-metric-label">Capabilities</span>
+          <span className="eng-status-dot" data-status={dotStatus} style={{ width: 8, height: 8 }} />
+          <span className="eng-metric-label">{dotStatus === 'running' ? 'Running' : dotStatus === 'active' ? 'Active' : 'Idle'}</span>
         </div>
       </div>
 
@@ -181,18 +223,6 @@ function EngineerDetailPanel({
               {cap}
             </div>
           ))}
-        </div>
-
-        <div className="eng-detail-section">
-          <div className="eng-detail-section-title">Prompt Database Workflows</div>
-          <div className="eng-prompt-tags">
-            {linkedWorkflows.map(wf => (
-              <span key={wf.id} className="eng-prompt-tag" data-color={color}>{wf.name}</span>
-            ))}
-            {engineer.workflowIds.filter(id => !linkedWorkflows.some(w => w.id === id)).map(id => (
-              <span key={id} className="eng-prompt-tag">{id}</span>
-            ))}
-          </div>
         </div>
 
         <div className="eng-detail-section">
@@ -222,6 +252,68 @@ function EngineerDetailPanel({
         </div>
       </div>
 
+      {/* Linked Workflows — ticker-aware with prompt preview */}
+      <div style={{ marginTop: 20 }}>
+        <div className="eng-detail-section-title">Workflows for {selectedTicker}</div>
+        {linkedWorkflows.length > 0 ? (
+          <div className="eng-resources-grid" style={{ marginTop: 8 }}>
+            {linkedWorkflows.map(wf => {
+              const tickerVariants = wf.variants.filter(
+                v => v.ticker === selectedTicker.toLowerCase()
+              );
+
+              return (
+                <div key={wf.id} className="eng-resource-card">
+                  <div className="eng-resource-header">
+                    <div className="eng-resource-icon" data-color={color}>{'\u2726'}</div>
+                    <div>
+                      <div className="eng-resource-name">{wf.name}</div>
+                      <div className="eng-resource-type">
+                        {wf.requiresUserData ? 'requires input' : 'autonomous'}
+                        {tickerVariants.length > 0 && (
+                          <span style={{ marginLeft: 8, color: 'var(--mint)' }}>
+                            {selectedTicker} variant active
+                          </span>
+                        )}
+                        {tickerVariants.length === 0 && (
+                          <span style={{ marginLeft: 8, color: 'var(--text3)' }}>
+                            no {selectedTicker} variant
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="eng-resource-desc">{wf.description}</div>
+                  <div className="eng-resource-agents">
+                    {wf.variants.map(v => {
+                      const isActive = v.ticker === selectedTicker.toLowerCase();
+                      return (
+                        <span
+                          key={v.ticker}
+                          className="eng-resource-agent-chip"
+                          data-clickable="true"
+                          data-active={isActive || undefined}
+                          title={`Preview ${wf.name} prompt for ${v.label}`}
+                          onClick={() => onPromptPreview(wf, v.ticker, v.label)}
+                        >
+                          {v.label}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 8 }}>
+            {engineer.workflowIds.map(id => (
+              <span key={id} className="eng-map-workflow-tag">{id}</span>
+            ))}
+          </div>
+        )}
+      </div>
+
       {sharedWith.size > 0 && (
         <div style={{ marginTop: 20 }}>
           <div className="eng-detail-section-title">Shared Triggers</div>
@@ -241,6 +333,21 @@ function EngineerDetailPanel({
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Last run output */}
+      {status?.lastRun?.outputSummary && (
+        <div style={{ marginTop: 20 }}>
+          <div className="eng-detail-section-title">Last Run Output</div>
+          <pre className="eng-output-pre" style={{ marginTop: 8 }}>{status.lastRun.outputSummary}</pre>
+        </div>
+      )}
+
+      {status?.lastRun?.error && (
+        <div className="eng-error-box" style={{ marginTop: 12 }}>
+          <div className="eng-error-label">Error</div>
+          <div className="eng-error-text">{status.lastRun.error}</div>
         </div>
       )}
     </div>
@@ -267,7 +374,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const [statuses, setStatuses] = useState<EngineerStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [runningIds, setRunningIds] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState<'network' | 'agents' | 'history'>('network');
+  const [activeTab, setActiveTab] = useState<'network' | 'history'>('network');
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
   // ── Ticker dropdown state ──
@@ -276,9 +383,6 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const tickerDropdownRef = useRef<HTMLDivElement>(null);
   const tickerSearchRef = useRef<HTMLInputElement>(null);
 
-  // ── AI Agents tab state ──
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [expandedAgentId, setExpandedAgentId] = useState<string | null>(null);
   const [promptPreview, setPromptPreview] = useState<PromptPreview | null>(null);
 
   // ── Ticker dropdown helpers ──
@@ -386,18 +490,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
     } catch (err) { console.error('Enable schedule error:', err); }
   };
 
-  // ── AI Agents tab helpers ──
-
   const categories = ['research', 'monitoring', 'intelligence', 'audit'] as const;
-  const categoryCounts = categories.map(c => ({
-    key: c,
-    label: categoryLabels[c],
-    count: engineers.filter(e => e.category === c).length,
-  }));
-
-  const filteredAgents = selectedCategory
-    ? engineers.filter(e => e.category === selectedCategory)
-    : engineers;
 
   const openPromptPreview = useCallback((wf: Workflow, ticker: string, label: string) => {
     const variant = wf.variants.find(v => v.ticker === ticker.toLowerCase());
@@ -512,9 +605,6 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
           <div className="eng-tab-strip" style={{ borderBottom: 'none', marginTop: 0 }}>
             <button className="eng-tab" data-active={activeTab === 'network'} onClick={() => setActiveTab('network')}>
               Network Graph<span className="eng-tab-count">{engineers.length}</span>
-            </button>
-            <button className="eng-tab" data-active={activeTab === 'agents'} onClick={() => setActiveTab('agents')}>
-              AI Agents<span className="eng-tab-count">{engineers.length}</span>
             </button>
             <button className="eng-tab" data-active={activeTab === 'history'} onClick={() => setActiveTab('history')}>
               History
@@ -666,284 +756,18 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                     engineer={selectedEngineer}
                     workflows={workflows}
                     allEngineers={engineers}
+                    selectedTicker={selectedTicker}
+                    status={statuses.find(s => s.engineer.id === selectedEngineer.id)}
+                    isRunning={runningIds.has(selectedEngineer.id)}
                     onClose={() => setSelectedNode(null)}
+                    onRun={handleRun}
+                    onSchedule={handleToggleSchedule}
+                    onEnableSchedule={handleEnableSchedule}
+                    onPromptPreview={openPromptPreview}
                   />
                 </div>
               </div>
             )}
-          </div>
-        )}
-
-        {/* ══ AI AGENTS TAB ══ */}
-        {activeTab === 'agents' && (
-          <div>
-            {/* Category filter */}
-            <div className="eng-tab-strip" style={{ marginBottom: 16 }}>
-              <button
-                className="eng-tab"
-                data-active={selectedCategory === null}
-                onClick={() => setSelectedCategory(null)}
-              >
-                All<span className="eng-tab-count">{engineers.length}</span>
-              </button>
-              {categoryCounts.map(cat => (
-                <button
-                  key={cat.key}
-                  className="eng-tab"
-                  data-active={selectedCategory === cat.key}
-                  onClick={() => setSelectedCategory(selectedCategory === cat.key ? null : cat.key)}
-                >
-                  {cat.label}<span className="eng-tab-count">{cat.count}</span>
-                </button>
-              ))}
-            </div>
-
-            {filteredAgents.map(eng => {
-              const isExpanded = expandedAgentId === eng.id;
-              const linkedWorkflows = workflows.filter(w => eng.workflowIds.includes(w.id));
-              const color = categoryColors[eng.category] || 'cyan';
-              const status = statuses.find(s => s.engineer.id === eng.id);
-              const isRunning = runningIds.has(eng.id);
-              const dotStatus = isRunning || status?.lastRun?.status === 'running'
-                ? 'running'
-                : status?.schedule?.enabled ? 'active' : 'idle';
-
-              return (
-                <div key={eng.id} className="eng-card" data-expanded={isExpanded}>
-                  <div className="eng-card-inner">
-                    <div
-                      className="eng-status-dot"
-                      data-status={dotStatus}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setExpandedAgentId(isExpanded ? null : eng.id)}
-                    />
-                    <div
-                      className="eng-card-body"
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => setExpandedAgentId(isExpanded ? null : eng.id)}
-                    >
-                      <div className="eng-card-name-row">
-                        <span className="eng-card-name">{eng.name}</span>
-                        <span className="eng-card-role">{eng.role}</span>
-                      </div>
-                      <div className="eng-card-desc">{eng.description}</div>
-                      <div className="eng-card-meta">
-                        <span className="eng-card-meta-item">
-                          <span className="eng-map-badge" data-color={eng.category}>{eng.category}</span>
-                        </span>
-                        <span className="eng-card-meta-item">
-                          {status?.schedule
-                            ? status.schedule.enabled
-                              ? `Every ${formatInterval(status.schedule.intervalMinutes)}`
-                              : 'Paused'
-                            : `Every ${formatInterval(eng.defaultIntervalMinutes)}`}
-                        </span>
-                        <span className="eng-card-meta-item">{eng.workflowIds.length} workflow{eng.workflowIds.length !== 1 ? 's' : ''}</span>
-                        {status?.lastRun && (
-                          <span className="eng-card-meta-item">
-                            Last: {status.lastRun.status} {formatTime(status.lastRun.completedAt)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="eng-card-actions">
-                      {status?.schedule ? (
-                        <button
-                          className="eng-btn"
-                          data-variant={status.schedule.enabled ? 'active' : 'paused'}
-                          onClick={(e) => { e.stopPropagation(); handleToggleSchedule(eng.id, status.schedule!.enabled, status.schedule!.intervalMinutes); }}
-                        >
-                          {status.schedule.enabled ? 'Scheduled' : 'Paused'}
-                        </button>
-                      ) : (
-                        <button
-                          className="eng-btn"
-                          onClick={(e) => { e.stopPropagation(); handleEnableSchedule(eng); }}
-                        >
-                          Schedule
-                        </button>
-                      )}
-                      <button
-                        className="eng-btn"
-                        data-variant="run"
-                        data-state={isRunning ? 'running' : undefined}
-                        onClick={(e) => { e.stopPropagation(); handleRun(eng.id); }}
-                        disabled={isRunning}
-                      >
-                        {isRunning ? 'Running\u2026' : 'Run Now'}
-                      </button>
-                      <button
-                        className="eng-chevron"
-                        onClick={(e) => { e.stopPropagation(); setExpandedAgentId(isExpanded ? null : eng.id); }}
-                      >
-                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
-                          style={{ transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
-                          <path d="M9 5l7 7-7 7" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-
-                  {isExpanded && (
-                    <div className="eng-expand">
-                      <div className="eng-expand-grid">
-                        <div>
-                          <div className="eng-expand-label">Capabilities</div>
-                          {eng.capabilities.map((cap, i) => (
-                            <div key={i} className="eng-cap-item">
-                              <span className="eng-cap-bullet">+</span>
-                              {cap}
-                            </div>
-                          ))}
-                        </div>
-
-                        <div>
-                          <div className="eng-expand-label">Configuration</div>
-                          <div className="eng-config-row">
-                            <span className="eng-config-key">Schedule</span>
-                            <span className="eng-config-val">Every {formatInterval(eng.defaultIntervalMinutes)}</span>
-                          </div>
-                          <div className="eng-config-row">
-                            <span className="eng-config-key">Category</span>
-                            <span className="eng-config-val">{eng.category}</span>
-                          </div>
-                          <div className="eng-config-row">
-                            <span className="eng-config-key">Requires external data</span>
-                            <span className="eng-config-val">{eng.requiresData ? 'Yes' : 'No'}</span>
-                          </div>
-                          {eng.dataSource && (
-                            <div className="eng-config-row">
-                              <span className="eng-config-key">Data source</span>
-                              <span className="eng-config-val">{eng.dataSource}</span>
-                            </div>
-                          )}
-                          <div className="eng-config-row">
-                            <span className="eng-config-key">Trigger events</span>
-                            <span className="eng-config-val">{eng.triggerEvents.join(', ')}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Linked Workflows — ticker-aware */}
-                      <div style={{ marginTop: 16 }}>
-                        <div className="eng-expand-label">
-                          Linked Workflows for {selectedTicker}
-                        </div>
-                        {linkedWorkflows.length > 0 ? (
-                          <div className="eng-resources-grid">
-                            {linkedWorkflows.map(wf => {
-                              const tickerVariants = wf.variants.filter(
-                                v => v.ticker === selectedTicker.toLowerCase()
-                              );
-                              const allVariants = wf.variants;
-
-                              return (
-                                <div key={wf.id} className="eng-resource-card">
-                                  <div className="eng-resource-header">
-                                    <div className="eng-resource-icon" data-color={color}>
-                                      {'\u2726'}
-                                    </div>
-                                    <div>
-                                      <div className="eng-resource-name">{wf.name}</div>
-                                      <div className="eng-resource-type">
-                                        {wf.requiresUserData ? 'requires input' : 'autonomous'}
-                                        {tickerVariants.length > 0 && (
-                                          <span style={{ marginLeft: 8, color: 'var(--mint)' }}>
-                                            {selectedTicker} variant active
-                                          </span>
-                                        )}
-                                        {tickerVariants.length === 0 && (
-                                          <span style={{ marginLeft: 8, color: 'var(--text3)' }}>
-                                            no {selectedTicker} variant
-                                          </span>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="eng-resource-desc">{wf.description}</div>
-                                  <div className="eng-resource-agents">
-                                    {allVariants.map(v => {
-                                      const isSelected = v.ticker === selectedTicker.toLowerCase();
-                                      return (
-                                        <span
-                                          key={v.ticker}
-                                          className="eng-resource-agent-chip"
-                                          data-clickable="true"
-                                          data-active={isSelected || undefined}
-                                          title={`Preview ${wf.name} prompt for ${v.label}`}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            openPromptPreview(wf, v.ticker, v.label);
-                                          }}
-                                        >
-                                          {v.label}
-                                        </span>
-                                      );
-                                    })}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        ) : (
-                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
-                            {eng.workflowIds.map(id => (
-                              <span key={id} className="eng-map-workflow-tag">{id}</span>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Trigger Event Cross-references */}
-                      {eng.triggerEvents.length > 0 && (
-                        <div style={{ marginTop: 16 }}>
-                          <div className="eng-expand-label">Trigger Cross-References</div>
-                          <table className="eng-matrix-table" style={{ fontSize: 11 }}>
-                            <thead>
-                              <tr>
-                                <th>Event</th>
-                                <th>Also Triggers</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {eng.triggerEvents.map(event => {
-                                const othersTriggered = engineers
-                                  .filter(e => e.id !== eng.id && e.triggerEvents.includes(event))
-                                  .map(e => e.name);
-                                return (
-                                  <tr key={event}>
-                                    <td className="eng-conn-from">{event}</td>
-                                    <td className="eng-conn-to">
-                                      {othersTriggered.length > 0 ? othersTriggered.join(', ') : '\u2014'}
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
-
-                      {/* Last run output / error */}
-                      {status?.lastRun?.outputSummary && (
-                        <div className="eng-output" style={{ marginTop: 16 }}>
-                          <div className="eng-expand-label">Last Run Output</div>
-                          <pre className="eng-output-pre">{status.lastRun.outputSummary}</pre>
-                        </div>
-                      )}
-
-                      {status?.lastRun?.error && (
-                        <div className="eng-error-box" style={{ marginTop: 12 }}>
-                          <div className="eng-error-label">Error</div>
-                          <div className="eng-error-text">{status.lastRun.error}</div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
           </div>
         )}
 
@@ -960,7 +784,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
           </div>
         )}
 
-        {loading && activeTab === 'agents' && (
+        {loading && (
           <div className="eng-loading">
             <div className="eng-spinner" />
           </div>
