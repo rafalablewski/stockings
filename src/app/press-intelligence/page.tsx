@@ -1147,6 +1147,7 @@ export default function PressIntelligencePage() {
   const [activeTicker, setActiveTicker] = useState("ALL");
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [daysFilter, setDaysFilter] = useState(30);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const [page, setPage] = useState(1);
@@ -1223,10 +1224,15 @@ export default function PressIntelligencePage() {
       if (activeTicker !== "ALL" && ticker !== activeTicker) continue;
       items = items.concat(list);
     }
+    /* Date filter */
+    if (daysFilter > 0) {
+      const cutoff = Date.now() - daysFilter * 86400000;
+      items = items.filter((i) => new Date(i.datetime).getTime() >= cutoff);
+    }
     /* Sort chronologically (newest first) */
     items.sort((a, b) => new Date(b.datetime).getTime() - new Date(a.datetime).getTime());
     return items;
-  }, [feedsByTicker, activeTicker]);
+  }, [feedsByTicker, activeTicker, daysFilter]);
 
   const visibleItems = useMemo(() => {
     let items = allItems;
@@ -1255,7 +1261,7 @@ export default function PressIntelligencePage() {
   }, [allItems, activeCategory, searchQuery]);
 
   /* Reset to page 1 when filters change */
-  useEffect(() => { setPage(1); }, [activeTicker, activeCategory, searchQuery]);
+  useEffect(() => { setPage(1); }, [activeTicker, activeCategory, searchQuery, daysFilter]);
 
   /* ── Pagination ── */
   const PAGE_SIZE = 20;
@@ -1305,6 +1311,20 @@ export default function PressIntelligencePage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
+
+            <div className="pi-days-group">
+              {[{ days: 7, label: "7d" }, { days: 30, label: "30d" }, { days: 90, label: "90d" }, { days: 0, label: "All" }].map((opt) => (
+                <button
+                  key={opt.days}
+                  className="pi-days-btn"
+                  data-active={daysFilter === opt.days}
+                  onClick={() => setDaysFilter(opt.days)}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
             <button className="pi-refresh-btn" onClick={handleRefresh} disabled={refreshing}>
               <span className="pi-refresh-icon" data-spinning={refreshing ? "true" : undefined}>
                 &#x27F3;
@@ -1431,10 +1451,10 @@ export default function PressIntelligencePage() {
             ))}
           </div>
 
-          {(activeTicker !== "ALL" || activeCategory !== "All" || searchQuery) && (
+          {(activeTicker !== "ALL" || activeCategory !== "All" || searchQuery || daysFilter !== 30) && (
             <button
               className="pi-filter-clear"
-              onClick={() => { setActiveTicker("ALL"); setActiveCategory("All"); setSearchQuery(""); }}
+              onClick={() => { setActiveTicker("ALL"); setActiveCategory("All"); setSearchQuery(""); setDaysFilter(30); }}
             >
               Clear
             </button>
