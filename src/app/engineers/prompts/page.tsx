@@ -1,5 +1,4 @@
 import { researchStocks } from '@/lib/stocks';
-import { engineers } from '@/lib/engineers';
 import PromptDatabase from '@/components/PromptDatabase';
 import '../engineers.css';
 
@@ -13,7 +12,6 @@ export default function PromptDatabasePage() {
     <div className="pt-14">
       <PromptDatabase
         tickers={researchStocks.map(s => ({ ticker: s.ticker, name: s.name }))}
-        engineers={engineers}
       />
     </div>
   );
