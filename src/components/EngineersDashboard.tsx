@@ -658,14 +658,18 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
               </div>
             )}
 
-            {/* Detail Panel */}
+            {/* Detail Modal */}
             {selectedEngineer && (
-              <EngineerDetailPanel
-                engineer={selectedEngineer}
-                workflows={workflows}
-                allEngineers={engineers}
-                onClose={() => setSelectedNode(null)}
-              />
+              <div className="eng-modal-overlay" onClick={() => setSelectedNode(null)}>
+                <div className="eng-modal" onClick={(e) => e.stopPropagation()}>
+                  <EngineerDetailPanel
+                    engineer={selectedEngineer}
+                    workflows={workflows}
+                    allEngineers={engineers}
+                    onClose={() => setSelectedNode(null)}
+                  />
+                </div>
+              </div>
             )}
           </div>
         )}
