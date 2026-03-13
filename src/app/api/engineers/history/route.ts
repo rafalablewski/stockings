@@ -16,46 +16,27 @@ export async function GET(request: NextRequest) {
     if (ticker) conditions.push(eq(agentRuns.ticker, ticker));
     if (engineerId) conditions.push(eq(agentRuns.engineerId, engineerId));
 
+    const columns = {
+      id: agentRuns.id,
+      ticker: agentRuns.ticker,
+      engineerId: agentRuns.engineerId,
+      workflowId: agentRuns.workflowId,
+      status: agentRuns.status,
+      triggerType: agentRuns.triggerType,
+      triggerReason: agentRuns.triggerReason,
+      outputSummary: agentRuns.outputSummary,
+      patchesApplied: agentRuns.patchesApplied,
+      errorsEncountered: agentRuns.errorsEncountered,
+      durationMs: agentRuns.durationMs,
+      startedAt: agentRuns.startedAt,
+      completedAt: agentRuns.completedAt,
+      createdAt: agentRuns.createdAt,
+    };
+
+    const query = db.select(columns).from(agentRuns).orderBy(desc(agentRuns.createdAt)).limit(limit);
     const runs = conditions.length > 0
-      ? await db.select({
-          id: agentRuns.id,
-          ticker: agentRuns.ticker,
-          engineerId: agentRuns.engineerId,
-          workflowId: agentRuns.workflowId,
-          status: agentRuns.status,
-          triggerType: agentRuns.triggerType,
-          triggerReason: agentRuns.triggerReason,
-          outputSummary: agentRuns.outputSummary,
-          patchesApplied: agentRuns.patchesApplied,
-          errorsEncountered: agentRuns.errorsEncountered,
-          durationMs: agentRuns.durationMs,
-          startedAt: agentRuns.startedAt,
-          completedAt: agentRuns.completedAt,
-          createdAt: agentRuns.createdAt,
-        })
-        .from(agentRuns)
-        .where(and(...conditions))
-        .orderBy(desc(agentRuns.createdAt))
-        .limit(limit)
-      : await db.select({
-          id: agentRuns.id,
-          ticker: agentRuns.ticker,
-          engineerId: agentRuns.engineerId,
-          workflowId: agentRuns.workflowId,
-          status: agentRuns.status,
-          triggerType: agentRuns.triggerType,
-          triggerReason: agentRuns.triggerReason,
-          outputSummary: agentRuns.outputSummary,
-          patchesApplied: agentRuns.patchesApplied,
-          errorsEncountered: agentRuns.errorsEncountered,
-          durationMs: agentRuns.durationMs,
-          startedAt: agentRuns.startedAt,
-          completedAt: agentRuns.completedAt,
-          createdAt: agentRuns.createdAt,
-        })
-        .from(agentRuns)
-        .orderBy(desc(agentRuns.createdAt))
-        .limit(limit);
+      ? await query.where(and(...conditions))
+      : await query;
 
     return NextResponse.json({ runs, count: runs.length });
   } catch (error) {

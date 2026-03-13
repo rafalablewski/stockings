@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
-import { agentRuns, engineerSchedules } from '@/lib/schema';
-import { eq, desc, and } from 'drizzle-orm';
+import { engineerSchedules } from '@/lib/schema';
+import { eq, sql } from 'drizzle-orm';
 import { engineers } from '@/lib/engineers';
 
 export async function GET(request: NextRequest) {
@@ -15,22 +15,28 @@ export async function GET(request: NextRequest) {
       ? await db.select().from(engineerSchedules).where(eq(engineerSchedules.ticker, ticker))
       : await db.select().from(engineerSchedules);
 
-    // Get latest run for each engineer
-    const latestRuns = ticker
-      ? await db.select()
-          .from(agentRuns)
-          .where(eq(agentRuns.ticker, ticker))
-          .orderBy(desc(agentRuns.createdAt))
-          .limit(50)
-      : await db.select()
-          .from(agentRuns)
-          .orderBy(desc(agentRuns.createdAt))
-          .limit(50);
+    // Get latest run per engineer using DISTINCT ON (PostgreSQL)
+    // This is more efficient and correct than LIMIT 50 which can miss engineers
+    interface LatestRun {
+      id: number;
+      engineer_id: string;
+      status: string;
+      trigger_type: string;
+      output_summary: string | null;
+      duration_ms: number | null;
+      started_at: string | null;
+      completed_at: string | null;
+      errors_encountered: string | null;
+    }
+
+    const latestRunRows: LatestRun[] = ticker
+      ? (await db.execute(sql`SELECT DISTINCT ON (engineer_id) id, engineer_id, status, trigger_type, output_summary, duration_ms, started_at, completed_at, errors_encountered FROM agent_runs WHERE ticker = ${ticker} ORDER BY engineer_id, created_at DESC`)).rows as unknown as LatestRun[]
+      : (await db.execute(sql`SELECT DISTINCT ON (engineer_id) id, engineer_id, status, trigger_type, output_summary, duration_ms, started_at, completed_at, errors_encountered FROM agent_runs ORDER BY engineer_id, created_at DESC`)).rows as unknown as LatestRun[];
 
     // Build status map: engineer definitions + schedule state + latest run
     const statusMap = engineers.map(eng => {
       const schedule = schedules.find(s => s.engineerId === eng.id);
-      const lastRun = latestRuns.find(r => r.engineerId === eng.id);
+      const lastRun = latestRunRows.find(r => r.engineer_id === eng.id);
 
       return {
         engineer: eng,
@@ -43,20 +49,20 @@ export async function GET(request: NextRequest) {
         lastRun: lastRun ? {
           id: lastRun.id,
           status: lastRun.status,
-          triggerType: lastRun.triggerType,
-          outputSummary: lastRun.outputSummary,
-          durationMs: lastRun.durationMs,
-          startedAt: lastRun.startedAt,
-          completedAt: lastRun.completedAt,
-          error: lastRun.errorsEncountered,
+          triggerType: lastRun.trigger_type,
+          outputSummary: lastRun.output_summary,
+          durationMs: lastRun.duration_ms,
+          startedAt: lastRun.started_at,
+          completedAt: lastRun.completed_at,
+          error: lastRun.errors_encountered,
         } : null,
       };
     });
 
     // Count stats
-    const running = latestRuns.filter(r => r.status === 'running').length;
-    const completed = latestRuns.filter(r => r.status === 'completed').length;
-    const failed = latestRuns.filter(r => r.status === 'failed').length;
+    const running = latestRunRows.filter(r => r.status === 'running').length;
+    const completed = latestRunRows.filter(r => r.status === 'completed').length;
+    const failed = latestRunRows.filter(r => r.status === 'failed').length;
     const scheduled = schedules.filter(s => s.enabled).length;
 
     return NextResponse.json({

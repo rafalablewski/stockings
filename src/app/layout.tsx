@@ -177,14 +177,14 @@ function Navigation() {
             {/* Research dropdown — visually hidden, routes still work */}
 
             {/* Engineers dropdown */}
-            <div className="relative group/engineers">
+            <div className="relative group/eng">
               <Link
                 href="/engineers"
-                className="text-[13px] text-white/60 group-hover/engineers:text-white transition-colors"
+                className="text-[13px] text-white/60 group-hover/eng:text-white transition-colors"
               >
                 Engineers
               </Link>
-              <div className="absolute top-full right-0 pt-3 hidden group-hover/engineers:block">
+              <div className="absolute top-full right-0 pt-3 hidden group-hover/eng:block">
                 <div className="bg-black/95 backdrop-blur-xl border border-white/[0.08] rounded-xl py-2 min-w-[220px] shadow-2xl">
                   <Link
                     href="/engineers"

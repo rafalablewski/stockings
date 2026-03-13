@@ -1,4 +1,5 @@
 import { engineers } from '@/lib/engineers';
+import { workflows } from '@/data/workflows';
 import { researchStocks } from '@/lib/stocks';
 import EngineersDashboard from '@/components/EngineersDashboard';
 import './engineers.css';
@@ -13,7 +14,8 @@ export default function EngineersPage() {
     <div className="pt-14">
       <EngineersDashboard
         engineers={engineers}
-        tickers={researchStocks.map(s => s.ticker)}
+        workflows={workflows}
+        tickers={researchStocks.map(s => ({ ticker: s.ticker, name: s.name }))}
       />
     </div>
   );
