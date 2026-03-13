@@ -59,7 +59,6 @@ const hooks = [
 const docs = [
   { slug: "documentation", label: "Documentation", href: "/docs" },
   { slug: "firecrawl", label: "Firecrawl", href: "/docs/firecrawl" },
-  { slug: "changelog", label: "Changelog", href: "/docs/changelog" },
 ];
 
 const mobileNavItems = [
