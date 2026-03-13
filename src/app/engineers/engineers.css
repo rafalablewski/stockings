@@ -2075,6 +2075,20 @@
   padding: 20px 24px;
 }
 
+/* Detail panel inside modal: strip duplicate chrome */
+.eng-modal > .eng-detail {
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  background: none;
+  overflow-y: auto;
+  max-height: calc(80vh - 16px);
+  padding: 24px;
+}
+.eng-modal > .eng-detail::before {
+  display: none;
+}
+
 /* Modal metadata sections */
 .eng-modal-section {
   margin-bottom: 20px;
