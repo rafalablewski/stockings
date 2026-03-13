@@ -116,7 +116,6 @@ import type { McSimResults } from '../shared';
 import type { UpdateSource } from '../shared';
 import StockChart from '../shared/StockChart';
 import SharedSourcesTab from '../shared/SharedSourcesTab';
-import { SharedAIAgentsTab } from '../shared/SharedAIAgentsTab';
 import SharedEdgarTab from '../shared/SharedEdgarTab';
 import { CRCL_SEC_FILINGS, CRCL_SEC_META, CRCL_SEC_TYPE_COLORS, CRCL_SEC_FILTER_TYPES, CRCL_FILING_CROSS_REFS } from '@/data/crcl/sec-filings';
 import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
@@ -2377,7 +2376,6 @@ function CRCLModel() {
     { id: 'investment', label: 'Investment', type: 'tracking' },
     { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
     // AI hub (grouped under "AI")
-    { id: 'ai-agents', label: 'AI Agents', type: 'tracking', group: 'AI' },
     { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
     { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
   ];
@@ -4501,7 +4499,6 @@ function CRCLModel() {
             <WallStreetTab />
           </TabPanel>}
 
-          {activeTab === 'ai-agents' && <TabPanel id="ai-agents"><SharedAIAgentsTab ticker="CRCL" /></TabPanel>}
           {activeTab === 'sources' && <TabPanel id="sources">
             <SharedSourcesTab ticker="CRCL" companyName="Circle Internet Group" researchSources={crclResearchSources} competitorLabel="Stablecoin Peers" competitors={crclCompetitors} />
           </TabPanel>}

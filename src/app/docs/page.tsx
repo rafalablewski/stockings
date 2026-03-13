@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import './docs.css';
 
 export const metadata: Metadata = {
   title: "Documentation | ABISON",
@@ -395,7 +396,7 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/shared/SharedSecFilingsSection.tsx", type: "Component", description: "SEC Filings cards for Timeline tab — KPI strip, filter pills, description-first cards, cross-ref source dots" },
   { path: "src/components/shared/SharedEdgarTab.tsx",         type: "Component", description: "SEC EDGAR filings browser" },
   { path: "src/components/shared/SharedSourcesTab.tsx",       type: "Component", description: "Research sources / news feed tab" },
-  { path: "src/components/shared/SharedAIAgentsTab.tsx",      type: "Component", description: "AI analysis agents status tab" },
+  { path: "src/components/shared/SharedAIAgentsTab.tsx",      type: "Component", description: "AI workflow runner — removed from stock tabs, reused inside Prompt Database (/engineers/prompts)" },
   { path: "src/components/shared/SharedModelTab.tsx",         type: "Component", description: "Model tab shell: hero header + children (scenario presets, DCF, sensitivity — all stock-specific)" },
   { path: "src/components/shared/modelTypes.ts",              type: "Types",     description: "SharedModelTabProps, ModelCfaItem" },
   { path: "src/components/shared/SharedMonteCarloTab.tsx",    type: "Component", description: "Monte Carlo tab: hero, preset grid, horizon/sim controls, percentile table, risk metrics, histogram, CFA notes; stock-specific params via renderParameters render prop" },
@@ -414,8 +415,15 @@ const projectStructure: FileEntry[] = [
   { path: "src/components/shared/PinStatus.tsx",              type: "Component", description: "Nav badge showing PIN/Closed status" },
   { path: "src/components/shared/AiToggle.tsx",               type: "Component", description: "AI analysis on/off toggle in nav" },
   { path: "src/components/shared/NotesPanel.tsx",             type: "Component", description: "Global notes scratch-pad — slide-over drawer with create/view/delete; collapsible article preview with AI-generated title & description; zero inline styles (category colors via data-cat attribute)" },
+  { path: "src/app/engineers/page.tsx",                        type: "Page",      description: "AI Engineers dashboard — autonomous agent control center" },
+  { path: "src/app/engineers/prompts/page.tsx",               type: "Page",      description: "Centralized Prompt Database — all workflows in one place" },
+  { path: "src/app/engineers/engineers.css",                   type: "CSS",       description: "Bloomberg-style engineers dashboard — eng-* classes using design tokens" },
+  { path: "src/components/EngineersDashboard.tsx",            type: "Component", description: "Engineers dashboard — KPI strip, ticker pills, schedule/run controls, history" },
+  { path: "src/components/PromptDatabase.tsx",                type: "Component", description: "Prompt Database — ticker selector, SharedAIAgentsTab wrapper, engineer map" },
+  { path: "src/lib/engineers.ts",                              type: "Data",      description: "8 autonomous AI engineer definitions (thesis, capital, filing, press, insider, catalyst, sentiment, data quality)" },
+  { path: "src/lib/engineer-engine.ts",                        type: "Engine",    description: "Autonomous execution engine — scheduler, Claude API calls, DB recording" },
   { path: "src/lib/stocks.ts",                                type: "Data",      description: "Stock registry — tickers, names, sectors" },
-  { path: "src/lib/schema.ts",                                type: "Data",      description: "Drizzle ORM schema — DB tables" },
+  { path: "src/lib/schema.ts",                                type: "Data",      description: "Drizzle ORM schema — DB tables (incl. agent_runs, engineer_schedules)" },
   { path: "src/lib/auth-fetch.ts",                            type: "Utility",   description: "PIN-authenticated fetch wrapper" },
   { path: "src/lib/ai-gate.ts",                               type: "Utility",   description: "Server-side AI feature flag" },
   { path: "src/hooks/useHashTab.ts",                           type: "Hook",      description: "URL hash-based tab state (#tab-name)" },
@@ -432,6 +440,8 @@ const routingTree = [
   { path: "/docs",                                 label: "Docs",             file: "app/docs/page.tsx",                     note: "This page — design system + architecture" },
   { path: "/hooks",                                label: "Hooks",            file: "app/hooks/page.tsx",                    note: "Agent hooks documentation" },
   { path: "/audit/comprehensive-code-audit",       label: "Code Audit",       file: "app/audit/comprehensive-code-audit/page.tsx", note: "35-category audit results" },
+  { path: "/engineers",                              label: "Engineers",         file: "app/engineers/page.tsx",                 note: "Autonomous AI engineers dashboard — schedule, run, monitor" },
+  { path: "/engineers/prompts",                     label: "Prompt Database",   file: "app/engineers/prompts/page.tsx",         note: "Centralized prompt database — all workflows, all tickers" },
   { path: "/press-intelligence",                    label: "Press Intelligence", file: "app/press-intelligence/page.tsx",      note: "DB-first feed: page load reads DB, Refresh fetches upstream + marks NEW + persists" },
   { path: "/db-setup",                             label: "DB Setup",         file: "app/db-setup/page.tsx",                 note: "Browser-based database initialization" },
 ];
@@ -469,6 +479,12 @@ const apiRoutes = [
     { method: "POST", path: "/api/workflow/apply",              auth: "—",   note: "Apply workflow output as patch" },
     { method: "POST", path: "/api/workflow/commit",             auth: "—",   note: "Commit applied workflow changes" },
   ]},
+  { group: "Engineers", routes: [
+    { method: "POST", path: "/api/engineers/run",              auth: "—",   note: "Trigger an autonomous engineer run (manual)" },
+    { method: "GET",  path: "/api/engineers/status",           auth: "—",   note: "Engineer status + schedule + last run per ticker" },
+    { method: "GET",  path: "/api/engineers/history",          auth: "—",   note: "Run history (filterable by ticker, engineerId)" },
+    { method: "POST", path: "/api/engineers/schedule",         auth: "—",   note: "Create/update engineer schedule (enable, interval)" },
+  ]},
 ];
 
 const componentHierarchy = [
@@ -502,8 +518,13 @@ const stockPageTree = [
   { depth: 3, name: "SharedWallStreetTab",                 note: "Analyst coverage, estimates, consensus" },
   { depth: 3, name: "SharedSourcesTab",                    note: "Press releases & news with AI analysis" },
   { depth: 3, name: "SharedEdgarTab",                      note: "SEC filings browser with DB tracking" },
-  { depth: 3, name: "SharedAIAgentsTab",                   note: "Workflow execution & diff preview" },
   { depth: 2, name: "DisclaimerBanner",                    note: "Collapsible — localStorage key: disclaimer-collapsed" },
+  // ── Engineers pages (standalone, not inside stock components) ──
+  { depth: 0, name: "EngineersPage",                       note: "/engineers — autonomous AI engineers dashboard" },
+  { depth: 1, name: "EngineersDashboard",                  note: "KPI strip, ticker pills, engineer cards, run history" },
+  { depth: 0, name: "PromptDatabasePage",                  note: "/engineers/prompts — centralized prompt database" },
+  { depth: 1, name: "PromptDatabase",                      note: "Ticker selector, tab switcher (All Prompts / Engineer Map)" },
+  { depth: 2, name: "SharedAIAgentsTab",                   note: "Reused inside Prompt Database — all workflows per ticker" },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -524,7 +545,6 @@ const tabBreakdown: TabEntry[] = [
   { tab: 'Financials',    bmnr: 'W', asts: 'W', crcl: 'S', wrapper: 'SharedFinancialsTab' },
   { tab: 'Timeline',      bmnr: 'W', asts: 'W', crcl: 'W', wrapper: 'SharedTimelineTab' },
   { tab: 'Wall Street',   bmnr: 'W', asts: 'W', crcl: 'S', wrapper: 'SharedWallStreetTab' },
-  { tab: 'AI Agents',     bmnr: 'S', asts: 'S', crcl: 'S', wrapper: 'SharedAIAgentsTab' },
   { tab: 'Sources',       bmnr: 'S', asts: 'S', crcl: 'S', wrapper: 'SharedSourcesTab' },
   { tab: 'EDGAR',         bmnr: 'S', asts: 'S', crcl: 'S', wrapper: 'SharedEdgarTab' },
   // ── BMNR-only tabs ──
@@ -546,9 +566,9 @@ const tabBreakdown: TabEntry[] = [
   { tab: 'USDC',          bmnr: '—', asts: '—', crcl: 'C', wrapper: '—' },
 ];
 const tabSummary = [
-  { stock: 'BMNR', total: 19, shared: 3, wrapped: 8, custom: 8, pct: '58%' },
-  { stock: 'ASTS', total: 18, shared: 3, wrapped: 8, custom: 7, pct: '61%' },
-  { stock: 'CRCL', total: 13, shared: 5, wrapped: 6, custom: 2, pct: '85%' },
+  { stock: 'BMNR', total: 18, shared: 2, wrapped: 8, custom: 8, pct: '56%' },
+  { stock: 'ASTS', total: 17, shared: 2, wrapped: 8, custom: 7, pct: '59%' },
+  { stock: 'CRCL', total: 12, shared: 4, wrapped: 6, custom: 2, pct: '83%' },
 ];
 
 interface DBTable {
@@ -568,15 +588,19 @@ const dbTables: DBTable[] = [
   { name: "analysis_cache",      purpose: "AI analysis results (EDGAR + Sources)",            key: "ticker + type + key" },
   { name: "audit_checks",        purpose: "Code audit finding verdicts",                      key: "finding_id" },
   { name: "notes",               purpose: "User notes scratch-pad (article ideas, enhancements, other)", key: "id (auto)" },
+  { name: "agent_runs",         purpose: "Autonomous AI engineer task execution log",               key: "ticker + engineer_id + created_at" },
+  { name: "engineer_schedules", purpose: "Engineer schedule config (interval, enabled, next run)",   key: "ticker + engineer_id" },
 ];
 
 const dataArchitecture = [
   { layer: "Data Files",   path: "src/data/{asts,bmnr,crcl}/",       note: "Hardcoded .ts files — scaffold (5) + standard (8) + stock-specific per ticker" },
   { layer: "Shared Types", path: "src/data/shared/types.ts",          note: "Central TypeScript interfaces for all data shapes (Partner, ShareClass, Catalyst, Timeline, etc.)" },
   { layer: "Schemas",      path: "src/data/schemas/",                 note: "Zod validation schemas per stock + filing templates" },
-  { layer: "DB Schema",    path: "src/lib/schema.ts",                 note: "Drizzle ORM table definitions (10 tables in Neon PostgreSQL)" },
+  { layer: "DB Schema",    path: "src/lib/schema.ts",                 note: "Drizzle ORM table definitions (12 tables in Neon PostgreSQL)" },
   { layer: "Seed Path",    path: "/api/db/setup → seed-helpers.ts",   note: "Reads .ts data files → inserts into PostgreSQL tables" },
   { layer: "AI Workflows", path: "src/data/workflows.ts",             note: "Agent prompts (earnings calls, code audit, data quality)" },
+  { layer: "AI Engineers", path: "src/lib/engineers.ts",              note: "8 autonomous engineer definitions (thesis, filing, press, insider, etc.)" },
+  { layer: "Engine",       path: "src/lib/engineer-engine.ts",       note: "Autonomous execution — scheduler, Claude API, DB recording, schedule updates" },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -946,7 +970,7 @@ const archive: ArchiveEntry[] = [];
   },
   {
     title: "Adding a New Stock — TEMPLATE.tsx.template",
-    description: "Copy src/components/stocks/TEMPLATE.tsx.template to {TICKER}.tsx and find-and-replace 6 placeholders: {TICKER}, {ticker}, {COMPANY}, {ACCENT}, {SECTOR}, {INDUSTRY}, {EXCHANGE}. The template pre-wires all 12 tabs (Overview, Model, Monte Carlo, Comps, Capital, Financials, Timeline, Investment, Wall Street, AI Agents, Sources, EDGAR) using shared components. Create a data directory at src/data/{ticker}/ with: index.ts, company.ts, investment.ts, analyst-coverage.ts, sec-filings.ts, quarterly-metrics.ts, timeline.ts, capital.ts. No new CSS needed — all sm-* classes work automatically via data-accent.",
+    description: "Copy src/components/stocks/TEMPLATE.tsx.template to {TICKER}.tsx and find-and-replace 6 placeholders: {TICKER}, {ticker}, {COMPANY}, {ACCENT}, {SECTOR}, {INDUSTRY}, {EXCHANGE}. The template pre-wires all 11 tabs (Overview, Model, Monte Carlo, Comps, Capital, Financials, Timeline, Investment, Wall Street, Sources, EDGAR) using shared components. AI Agents have been centralized to the Prompt Database at /engineers/prompts. Create a data directory at src/data/{ticker}/ with: index.ts, company.ts, investment.ts, analyst-coverage.ts, sec-filings.ts, quarterly-metrics.ts, timeline.ts, capital.ts. No new CSS needed — all sm-* classes work automatically via data-accent.",
     code: `// 1. Copy template
 cp src/components/stocks/TEMPLATE.tsx.template src/components/stocks/PLTR.tsx
 
@@ -1014,20 +1038,342 @@ const changelogEarlierFixes: string[][] = [
   ["7", "Global Spacing", "Verify", "Spacing constants in src/lib/spacing.ts — 8/16/24/32/48/64px scale"],
 ];
 
+// ── Commit History (merged from docs/changelog.md) ──────────────────────────
+const commitHistory: { date: string; entries: string[] }[] = [
+  {
+    date: "2026-03-12",
+    entries: [
+      "refactor: unify 7 news/competitor/utility CSS class families across BMNR, ASTS, CRCL — sm-news-detail, sm-news-badge, sm-news-impact, sm-news-insight, sm-news-source, sm-step-badge, sm-mb-4/16-reset",
+      "refactor: migrate CRCL and BMNR competitor profiles to shared wrapper classes (sm-comp-surface2-panel, sm-comp-profile-card, sm-grid-autofit-150)",
+      "refactor: eliminate all sm-bmnr-* cross-stock CSS leakage in ASTS.tsx (7 references → 0)",
+      "feat: enrich CRCL competitor profiles to match BMNR/ASTS pattern — add ticker, productType, capabilities, keyMetrics",
+      "refactor: rename CRCLModelTab to ModelTab for consistency with BMNR/ASTS naming convention",
+      "fix: align CRCL Model tab to ASTS visual pattern — replace sm-crcl-* classes with shared sm-dcf-*, sm-scenario-card, sm-model-grid, sm-grid-sep-2col",
+      "fix: align CRCL Monte Carlo renderParameters to ASTS pattern — replace sm-card/sm-card-section/sm-card-body + inline --cols with ParameterCard components",
+      "fix: align CRCL ParameterCard + OverviewParameterCard to ASTS pattern — sm-panel, rgba() colors, direct inline border/bg/color instead of --btn-color CSS var",
+      "docs: add Tab-by-Tab Map section to /docs — complete S/W/C audit of all 26 tabs across 3 stocks with summary scorecard",
+      "docs: add 11 shared news/competitor CSS classes to Component Patterns section",
+      "docs: add SharedModelTab, SharedMonteCarloTab, SharedCompsTab, SharedCapitalTab + type files + TEMPLATE.tsx.template to /docs file listing",
+      "docs: update /docs component tree — Model, Monte Carlo, Comps, Capital now use shared components (no longer inline)",
+      "docs: add \"Shared projection tabs\" pattern section with usage examples for all 4 tabs",
+      "docs: add \"Adding a New Stock — TEMPLATE.tsx.template\" guide with placeholder list and data directory structure",
+      "fix: add 53 missing BMNR CSS class definitions lost during inline style extraction",
+      "fix: restore Comps tab rendering — crypto-badge, profile-metrics-grid, cmp-5col/6col, competitor-badge, thesis-comparison, source-line, rounded-top, col-span-3",
+      "fix: restore Monte Carlo tab rendering — mc-preset (with --preset-color), param-gap",
+      "fix: restore DCF tab rendering — info-box (sky/mint variants), div-grid, toggle-btn",
+      "fix: restore Sensitivity tab rendering — matrix-grid/cell, tornado chart (5 classes)",
+      "fix: restore Capital tab rendering — insider-sales/grants/shareholders grids, runway-grid, row-border, total-row, th-cell, grid-1-120-100, tranche-footer",
+      "fix: restore Model tab rendering — scenario-5col, pwev-footer, kpi-val size variants (hero/md/sm), kpi-margin, tab-title, tab-accent-bar, mode-color, active-text",
+      "fix: restore BMNR utilities — checkbox, bullet, color-red, justify-center, min-width variants, w-48, ls-1, year-bg, p-12-8, grid-gap-24",
+      "docs: add 53 new BMNR extracted-inline classes to /docs BMNR Classes section",
+      "fix: add 65 missing CRCL CSS class definitions lost during inline style extraction",
+      "fix: restore CRCL DCF tab rendering — section-title, accent-bar, card-header, case-label, chart-area, bar-chart, rev-bar-col/val/label, bar color variants (6), dcf-summary-row, dcf-total-row, method-grid/header/body/item, step-badge, formula, assumptions-box",
+      "fix: restore CRCL Comps tab rendering — hero-kpi-row/cell, current-grid, 2col-grid, metrics-header/row/th, mint-header/row, scenario-card/big-num, year-btn, insights-grid, dot, prob-num, split-grid, kv-row, econ-panel/title/body",
+      "fix: restore CRCL utilities — spacing (mb-4/6, mt-4/6/8, pt-8/12, pl-16), line-height (lh-15/16/17), ls-tight, max-w-600, select, opex-grid, risk-grid, bar-label/footer",
+      "fix: add sm-val-color-sky shared class (FCF positive/negative coloring)",
+      "docs: add 65 new CRCL extracted-inline classes to /docs CRCL Classes section",
+    ],
+  },
+  {
+    date: "2026-03-11",
+    entries: [
+      "refactor: press-intelligence is now DB-first — page load reads from database only, Refresh button fetches upstream + marks NEW items + persists to DB",
+      "fix: add ensureTable() with CREATE TABLE IF NOT EXISTS to press-intelligence API (same pattern as seen-articles)",
+      "fix: remove all caching (backend in-memory cache + frontend cacheRef/TTL) — database is the single source of truth",
+      "fix: batch DB inserts (20 parallel) instead of sequential loop to avoid Vercel timeout",
+      "feat: replace subtle DB status dot with pulsing \"NEW\" text badge for items not yet in database",
+      "docs: update /docs page with new press-intelligence API mode param and DB-first page description",
+      "refactor: replace N+1 insert loop with sql.transaction() batch upsert (code review)",
+      "fix: add LIMIT 1000 to loadFromDB to prevent unbounded result sets (code review)",
+      "refactor: change datetime column from TEXT to TIMESTAMPTZ in ensureTable, db/setup DDL, and drizzle schema (code review)",
+      "fix: Sources tab PRs now auto-hydrate from press_releases DB on init — no longer disappear on page reload",
+      "fix: remove one-time PR migration (fragile localStorage dependency, deleted PRs on first load after deploy)",
+      "fix: add save validation warnings when POST /api/seen-articles silently filters all items (filtered=0)",
+    ],
+  },
+  {
+    date: "2026-03-10",
+    entries: [
+      "feat: add BMNR Purchases tab — ETH purchase history with mNAV, price, cost basis (32 entries, Jul 2025–Feb 2026)",
+      "feat: add purchase-history.ts data file with PurchaseRecord type and AI agent schema",
+      "docs: add purchase-history.ts to /docs data file structure and PR ingestion checklist",
+      "refactor: remove all inline styles from StockChart.tsx — correlation labels, metric values, volume profile bars, and guide swatches now use CSS classes",
+      "docs: add StockChart Classes (sm-chart-*) section to /docs design page with 30 class entries",
+    ],
+  },
+  {
+    date: "2026-03-09",
+    entries: [
+      "feat: add unified /api/press-intelligence endpoint supporting 20 tickers",
+      "feat: add /press-intelligence page with multi-ticker feed, category filters, and search",
+      "refactor: consolidate per-ticker API files into single handler-factory pattern (TICKER_CONFIG)",
+      "docs: update /docs with press-intelligence route, API endpoint, and asts-story route",
+    ],
+  },
+  {
+    date: "2026-03-01",
+    entries: [
+      "feat: add View prompt / Copy prompt buttons to each hook card on /hooks",
+      "fix: extract copy-prompt setTimeout into useEffect with cleanup (memory leak fix per review)",
+      "refactor: move AUDIT.md from audit/ to docs/",
+      "refactor: consolidate 4 audit files into single audit/AUDIT.md",
+      "refactor: move audit files from docs/ to dedicated audit/ directory",
+      "feat: add 27-point vibe-code bomb audit to CCA-1.0",
+      "feat: integrate concept 11c Edge Markers header into all stock pages",
+      "fix: move 52W LOW to bottom of HUD spine in 11c",
+      "feat: add 11a/11b/11c variants to gallery below concept 11",
+      "feat: add three right-column variants for Dashboard Fusion",
+      "fix: center Dashboard Fusion layout on canvas",
+      "fix: replace bottom glass cards with 02 Apple Hero Center style metrics",
+      "feat: add concept 11 — Dashboard Fusion (04 rework)",
+      "feat: add gallery page for browsing all 10 header concepts",
+      "feat: add 10 SVG header concept sketches for stock page redesign",
+    ],
+  },
+  {
+    date: "2026-02-28",
+    entries: [
+      "docs: update notes panel class descriptions",
+      "fix: show full AI description on note cards",
+      "fix: show AI button on notes that already have a preview",
+      "docs: complete Notes Panel classes — 22→40 documented entries",
+      "fix: limit AI-generated description to 50 words max",
+      "feat: add hide/unhide support for notes",
+      "fix: single AI button per note, AI-off status bar in notes drawer",
+      "fix: split migration into separate neon() calls to preserve old notes",
+      "docs: add Notes Panel collapsible preview classes and API to /docs",
+      "feat: collapsible article preview with AI-generated title & description",
+      "Make URLs in note content clickable links",
+      "docs: add data-cat convention and update NotesPanel description",
+      "refactor: remove all inline styles from NotesPanel — use data-cat + CSS",
+      "docs: add createPortal convention for fixed overlays in backdrop-filter parents",
+      "fix: portal MobileNav drawer to body to escape nav stacking context",
+      "refactor: extract MobileNav inline styles to CSS classes",
+      "fix: improve hamburger menu icon visibility on mobile",
+      "Move all NotesPanel inline styles to CSS classes in globals.css",
+      "Portal Notes drawer to document.body to escape MobileNav stacking context",
+      "Fix Notes drawer z-index to layer above MobileNav drawer",
+      "Address code review: shared DDL + error handling for Notes",
+      "Update /docs: reflect mobile nav badge relocation",
+      "Fix mobile nav: move badge buttons into hamburger drawer",
+      "Update /docs with Notes feature documentation",
+      "Add global Notes feature with slide-over drawer",
+      "Fix DisclaimerBanner SSR flicker by defaulting to collapsed",
+      "Update /docs: remove stale 44px references, reflect padding-based touch targets",
+      "Fix mobile buttons: wider padding instead of tall min-height",
+      "Clean up duplicate CSS rules and sync /docs with actual button API",
+      "Unify remaining button inline styles in AI Agents + Edgar tabs",
+      "Fix Sources tab button inline styles — convert to data attributes",
+      "Fix button sizing inconsistencies across Wall Street, Edgar, and AI Agents tabs",
+      "Update /docs with hero freshness, disclaimer, nav badge, and price-updated docs",
+      "Fix nav badge heights, add collapsible disclaimer, redesign hero header spacing",
+    ],
+  },
+  {
+    date: "2026-02-27",
+    entries: [
+      "Address code review: dynamic changelog count, VerdictColor type, AI Summary TODOs",
+      "Merge docs/UI_UX_FIXES_SUMMARY.md into in-app /docs page, delete markdown file",
+      "Move changelog to in-app /docs page, revert markdown docs file",
+      "Unify all tabs to golden-standard Jony Ive × Tesla aesthetic",
+      "Fix CRCL Monte Carlo parameter grids rendering 3 cols instead of 6",
+      "Add all missing Investment Tab content to /docs page",
+      "Remove redundant docs/DESIGN_SYSTEM.md — in-app docs page is the single source",
+      "Update in-app docs page with Investment Tab render-prop architecture",
+      "Unify Investment Tab: migrate ASTS/BMNR/CRCL to SharedInvestmentTab",
+      "Visual redesign: SEC filings, events, press releases, Wall Street, Monte Carlo",
+    ],
+  },
+  {
+    date: "2026-02-26",
+    entries: [
+      "Address code review: extract Set for Other filter, use stable keys",
+      "Update docs page to reflect SEC Filings Timeline redesign",
+      "Redesign SEC Filings in Timeline tab with description-first card layout",
+      "Align BMNR Investment Tab visual structure with ASTS (stock-agnostic)",
+      "Redesign BMNR Event Timeline to match Ecosystem Intelligence layout",
+      "Redesign Event Timeline to match BMNR Ecosystem Intelligence layout",
+      "Redesign ASTS Partner Ecosystem Timeline to match BMNR Ecosystem Intelligence",
+      "Fix Ethereum tab h3-in-divider blocks and align Timeline filter styling",
+      "data: add 11 articles — ZIPAIR Starlink, Kraken perps, ETH strawmap, Ondo/Binance, Tether/Whop, FCA sandbox, Oobit stablecoin adoption",
+      "Update docs with new design system classes and golden-standard patterns",
+      "Rewrite Archive, Position Sizing, SEC Filings, Quarterly Metrics, Milestones visuals",
+      "Align BMNR + CRCL Investment/Timeline tabs to Capital golden standard",
+      "Align Investment + Timeline tabs to Capital golden standard",
+      "Add App Architecture section to docs; fix Design System references",
+      "fix: widen SECFilingTypeInfo.color to string for build",
+      "fix: type SharedTimelineTab sources as UpdateSource for build",
+      "Unify Financials/Timeline/Investment tabs; add stock-model-styles.css and data-accent",
+      "fix: resolve 5 major performance bottlenecks",
+      "Turn off all Claude hooks; mark as turned off on Hooks page",
+      "Sort utility classes by property for better maintainability",
+      "Replace remaining inline styles with CSS utility classes per review",
+      "Replace inline fontSize with sm-fs-13 utility class on CRCL caveats list",
+      "Replace remaining inline styles with CSS utility classes per review feedback",
+      "Unify button styles, filter pills, and show-more patterns across tabs",
+      "Refactor ASTS/BMNR/CRCL: replace inline styles with CSS classes",
+      "Continue stock component inline style refactoring + cleanup duplicates",
+      "Apply stock-specific CSS classes to ASTS, BMNR, CRCL components",
+      "Add stock-specific CSS class libraries and refactor components",
+      "Refactor shared component inline styles to CSS classes",
+    ],
+  },
+  {
+    date: "2026-02-25",
+    entries: [
+      "Refactor SharedInvestmentTab + SharedWallStreetTab: replace inline styles with CSS classes",
+      "Add new sm-* CSS classes for inline style replacement",
+      "Add sm-cmp-* class system for Comps tab: unified tables, peer cards, badges",
+      "Add sm-cap-* class system for Capital tab mobile responsiveness",
+      "Add Financials tab classes to design system documentation",
+      "Fix Financials tab mobile responsiveness and modernize old theme elements",
+      "Polish Investment & Timeline tabs: spacing, mobile responsiveness, button unification",
+      "Polish Sources, Edgar & Wall Street tabs: mobile responsiveness + button unification",
+      "Refactor inline styles to CSS utility classes across stock and shared components",
+      "Fix JSONL line-count bug in doc-change-detector hook",
+      "Fix Investment tab grid layouts and tooltip overflow for mobile",
+      "Comprehensive mobile/responsive fixes and hamburger navigation",
+      "Add doc-change-detector plugin and fix critical mobile responsive gaps",
+      "Update docs and CSS comments for EDGAR/Sources inline style refactoring",
+      "Refactor SharedEdgarTab and SharedSourcesTab: replace ~90 inline styles with CSS classes",
+      "Refactor SharedSourcesTab methodology section inline styles to CSS classes",
+      "Add design system documentation page, CSS comments, and pre-commit hook",
+      "Refactor SharedEdgarTab and SharedSourcesTab inline styles",
+      "Remove remaining onMouseEnter/onMouseLeave hover handlers from stock files",
+      "Continue inline style refactoring across all model files",
+      "Refactor StockChart.tsx: replace ~138 inline styles with CSS classes",
+      "Refactor BMNR.tsx and CRCL.tsx: replace ~1400 inline styles with CSS classes",
+      "Refactor ASTS.tsx: replace ~880 inline styles with CSS classes (Phase 1)",
+      "Refactor SharedAIAgentsTab.tsx: replace ~104 inline styles with CSS classes",
+      "Refactor SharedInvestmentTab.tsx: replace inline styles with CSS classes",
+      "Refactor SharedWallStreetTab.tsx: replace ~128 inline styles with CSS classes",
+      "Refactor StockModelUI inline styles to CSS utility classes",
+    ],
+  },
+  {
+    date: "2026-02-24",
+    entries: [
+      "Remove all hashtag section labels from UI components",
+      "Fix all 5 hooks to read tool input from stdin JSON",
+      "Fix methodology-sync-checker: read tool input from stdin JSON",
+      "Update methodology section to document Q1-Q4 normalization and auto-reseed",
+      "Fix sources tab UNTRACKED status after workflow applies data",
+      "fix: add missing methodology-sync-checker and agent-impact-detector plugins",
+      "fix: update methodology to reflect DB button color and form aliasing changes",
+      "fix: add PRNEWS→8-K form aliasing so press releases match tracked filings",
+      "fix: use current filing status for DB button color and tooltip",
+      "Address code review feedback on agent-impact-detector and hooks page",
+      "Add methodology-sync-checker plugin",
+      "fix: update methodology text to reflect closest-date matching",
+      "fix: prevent local matcher from false-positive on recurring periodic PRs",
+      "fix: replace rigid ±1 day window with closest-date matching for EDGAR filing tracking",
+      "db: ingest Feb 20-23 BMNR items — 4.423M ETH holdings, BNP Paribas MMF tokenization",
+      "db: ingest Feb 19-23 ASTS items — $30M SDA Europa contract, $75M greenshoe exercise, RD settlements, Q4 call date",
+      "Add Hooks dropdown to top nav and /hooks detail page",
+      "Add agent-impact-detector plugin",
+      "Address code review feedback on plugin hooks",
+      "Address PR review feedback from gemini-code-assist",
+      "Move Line/OHLC toggle inline with time range controls",
+      "Install code-simplifier plugin",
+      "Install claude-md-management plugin",
+      "Install code-review plugin from claude-plugins-official",
+      "Strip bottom accent lines, keep only background color wash for tab type indicators",
+      "Replace nav tab left borders with subtle bottom accent lines and background wash",
+      "Move CRCL tabs array inside component to match ASTS/BMNR pattern",
+      "Extract shared UI primitives, types, error boundary, and disclaimers",
+      "Refactor stock tab navigation: extract shared component, add accessibility & UX fixes",
+      "Fix hidden articles visible on initial DB load",
+      "Refactor: extract mergeArticles helper to deduplicate merge logic",
+      "Fix checkAnalyzed callback also dropping merged DB-only articles",
+      "Fix hidden articles disappearing after Fetch PRs/News",
+      "Remove PR/News count badges from Sources tab feed header",
+      "Polish PIN and AI nav badges with consistent sizing and animations",
+      "Remove redundant PIN auth from AI Agents tab",
+      "Add full-screen 6-digit PIN unlock gate (Ive × Tesla design)",
+      "Widen date column from 72px to 100px to prevent wrapping",
+      "Align Sources tab article row columns with fixed widths",
+      "Align EDGAR filing row columns with fixed widths",
+      "Move NEW/SEEN badge in EDGAR to match Sources tab position",
+      "Add hide/unhide feature to EDGAR tab, matching Sources tab behavior",
+      "Fix SEEN badge not persisting across page reloads in Sources tab",
+      "Update Sources tab methodology to document dollar-amount guard",
+    ],
+  },
+  {
+    date: "2026-02-23",
+    entries: [
+      "Gate numbersDisagree behind hasDollarAmount to fix false UNTRACKED",
+      "Fix localMatch false positives for dollar-amount articles",
+      "Add load-more gate for hidden articles and fix false positive tracked detection",
+      "Fix hidden articles being cut off by SECTION_MAX limit",
+      "Forward Anthropic API error details to client instead of generic 502",
+      "Apply Gemini review fixes to PinGate and update ai-gate comment",
+      "Move AI toggle to nav bar next to PIN badge",
+      "Improve AI-disabled feedback with styled banners and actionable message",
+      "Add AI toggle to footer for quick enable/disable of AI features",
+      "Make PIN feature secure by default — deny access when AUTH_PIN is not set",
+      "Fix audit check results not persisting to database",
+      "Add PIN status indicator to nav bar next to ABISON logo",
+      "Fix audit checks vanishing on refresh: disable Next.js static caching on GET",
+      "Fix audit checks not saving: eliminate early-return paths that skip DB write; harden PIN auth",
+      "Fix audit checks not persisting to DB after DB-002",
+      "Add PIN-based auth gate for AI-powered endpoints",
+      "Persist audit check results to database",
+    ],
+  },
+  {
+    date: "2026-02-22",
+    entries: [
+      "Add Check All button to audit dashboard header",
+      "Add Status column with per-finding re-check to audit dashboard",
+      "Address Gemini review: use AUDIT_BADGE mapping for audit badges and add optional chaining",
+      "Fix: set requiresUserData to false for 4 research data quality audits",
+      "Split Database Analysis section in AI Agents tab into sub-groups",
+      "Name audit \"Stockings Comprehensive Code Audit v1.0\" and create unified audit registry",
+      "Add full 35-category parity to audit findings registry (31 → 128 findings)",
+      "Restructure nav with dropdown menus and move audit to dedicated page",
+      "Move audit reports from repo root to /docs directory",
+      "Add institutional-grade security audit dashboard to homepage",
+      "Rename \"fresh\" to \"seen\" in DB tooltips for Edgar and Sources",
+      "Simplify DB tooltip cross-refs to show only source names",
+      "Show actual cross-refs in Edgar DB tooltip instead of just count",
+      "Add cross-reference sources breakdown to EDGAR methodology",
+    ],
+  },
+  {
+    date: "2026-02-21",
+    entries: [
+      "Fix 8 audit issues: timer leak, ticker sync, SECTION_MAX, mutation, timeouts",
+      "DB tooltip: add header text, always re-fetch live data, update methodology",
+      "DB button: hover fetches live record from database, shows rich tooltip",
+      "Fix seen-articles: use real tagged templates for neon DDL, graceful fallback on missing table",
+      "Fix ensureTable: use raw neon() driver for DDL instead of db.execute",
+      "Add fallback queries for old schema + better error logging",
+    ],
+  },
+  {
+    date: "2026-02-20",
+    entries: [
+      "Merge pull request #148 from rafalablewski/claude/fix-new-article-label-eB37s",
+    ],
+  },
+];
+
+const totalCommitEntries = commitHistory.reduce((n, g) => n + g.entries.length, 0);
+
 /* ─────────────────────────────────────────────────────────────────────────────
    COMPONENTS — Small, focused presentation components.
    ───────────────────────────────────────────────────────────────────────────── */
 
 function SectionHeader({ id, title, count }: { id: string; title: string; count?: number }) {
   return (
-    <div id={id} className="scroll-mt-20 pt-10 pb-4 border-b border-white/[0.06]">
-      <div className="flex items-center gap-3">
-        <h2 className="text-lg font-semibold tracking-tight text-white">{title}</h2>
+    <div id={id} className="docs-section-header">
+      <div className="docs-section-row">
+        <span className="docs-section-label">{title}</span>
         {count !== undefined && (
-          <span className="text-[10px] font-mono text-white/20 bg-white/[0.04] px-2 py-0.5 rounded">
-            {count}
-          </span>
+          <span className="docs-section-count">{count}</span>
         )}
+        <div className="docs-section-line" />
       </div>
     </div>
   );
@@ -1096,24 +1442,19 @@ function TreeRow({ depth, name, detail, mono }: { depth: number; name: string; d
 
 export default function DocsPage() {
   return (
-    <div className="min-h-screen py-20 px-6">
-      <div className="max-w-6xl mx-auto">
-
-        {/* ── Header ──────────────────────────────────────────────────────── */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-semibold tracking-tight text-white mb-3">
-            Documentation
-          </h1>
-          <p className="text-[13px] text-white/40 leading-relaxed max-w-3xl">
-            Comprehensive documentation for the ABISON platform — app architecture, routing,
-            component hierarchy, data flow, design tokens, CSS utility classes, and coding
-            conventions. All styles are defined in <span className="font-mono text-white/50">stock-model-styles.css</span> and
-            consumed via class names, CSS custom properties, and <span className="font-mono text-white/50">data-accent</span> attributes.
-          </p>
+    <div className="docs-app">
+      <div className="docs-header">
+        <div className="docs-subtitle">Platform / Documentation</div>
+        <div className="docs-title">Documentation</div>
+        <div className="docs-desc">
+          Comprehensive documentation for the ABISON platform — app architecture, routing,
+          component hierarchy, data flow, design tokens, CSS utility classes, and coding
+          conventions. All styles are defined in <span className="docs-desc-accent">stock-model-styles.css</span> and
+          consumed via class names, CSS custom properties, and <span className="docs-desc-accent">data-accent</span> attributes.
         </div>
 
         {/* ── Quick nav ───────────────────────────────────────────────────── */}
-        <div className="flex flex-wrap items-center gap-2 mb-10 pb-6 border-b border-white/[0.06]">
+        <div className="docs-nav-strip">
           {[
             { id: "architecture",label: "Architecture", accent: true },
             { id: "routing",     label: "Routing" },
@@ -1144,27 +1485,28 @@ export default function DocsPage() {
             <a
               key={item.id}
               href={`#${item.id}`}
-              className={`text-[11px] font-mono px-2.5 py-1 rounded-md border transition-colors ${
-                'accent' in item && item.accent
-                  ? 'text-cyan-400/60 bg-cyan-400/[0.06] border-cyan-400/[0.12] hover:bg-cyan-400/[0.12] hover:text-cyan-400/80'
-                  : 'text-white/30 bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06] hover:text-white/50'
-              }`}
+              className="docs-nav-pill"
+              data-accent={'accent' in item && item.accent ? "true" : undefined}
             >
               {item.label}
             </a>
           ))}
         </div>
+      </div>
+
+      <div className="docs-feed">
 
         {/* ════════════════════════════════════════════════════════════════════
             APP ARCHITECTURE
             ════════════════════════════════════════════════════════════════════ */}
 
-        <div id="architecture" className="scroll-mt-20 pt-10 pb-4 border-b border-white/[0.06]">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold tracking-tight text-white">App Architecture</h2>
-            <span className="text-[10px] font-mono text-cyan-400/40 bg-cyan-400/[0.06] px-2 py-0.5 rounded border border-cyan-400/[0.08]">
+        <div id="architecture" className="docs-section-header">
+          <div className="docs-section-row">
+            <span className="docs-section-label">App Architecture</span>
+            <span className="docs-arch-badge">
               Next.js 16 · React 19 · TypeScript · Tailwind v4 · Drizzle ORM · Neon PostgreSQL
             </span>
+            <div className="docs-section-line" />
           </div>
         </div>
         <p className="text-[12px] text-white/30 mt-3 mb-6">
@@ -2134,9 +2476,9 @@ export default function DocsPage() {
         />
 
         {/* ── Changelog ─────────────────────────────────────────────────── */}
-        <SectionHeader id="changelog" title="Changelog" count={changelogPurchaseHistory.length + changelogHeaderFixes.length + changelogDesignUnification.length + changelogEarlierFixes.length} />
+        <SectionHeader id="changelog" title="Changelog" count={changelogPurchaseHistory.length + changelogHeaderFixes.length + changelogDesignUnification.length + changelogEarlierFixes.length + totalCommitEntries} />
         <p className="text-[12px] text-white/30 mt-3 mb-1">
-          UI/UX fixes and design unification history. Newest first.
+          Complete change history — curated task groups and full commit log. Newest first.
         </p>
 
         {/* Purchase History & Tab Fixes — Mar 10 2026 */}
@@ -2183,13 +2525,48 @@ export default function DocsPage() {
           consistency check (ASTS / BMNR / CRCL render identically), <span className="font-mono text-white/40">npm run build</span> — zero errors.
         </p>
 
+        {/* ── Commit History ──────────────────────────────────────────────── */}
+        <div className="mt-10 mb-2">
+          <h3 className="text-[13px] font-semibold text-white/60">
+            Commit History <span className="text-white/20 font-normal ml-2">{totalCommitEntries} commits</span>
+          </h3>
+          <p className="text-[11px] text-white/25 mt-1">Full commit log organized by date — merged from changelog.</p>
+        </div>
+        {commitHistory.map((group) => (
+          <div key={group.date} className="mt-4">
+            <div className="text-[11px] font-mono font-semibold text-white/40 mb-2">
+              {group.date} <span className="text-white/15 font-normal ml-1">({group.entries.length})</span>
+            </div>
+            <div className="rounded-xl border border-white/[0.06] overflow-hidden">
+              {group.entries.map((entry, i) => {
+                const prefix = entry.match(/^(feat|fix|refactor|docs|data|db|style|chore|perf|test):/)?.[1] || '';
+                const text = prefix ? entry.slice(prefix.length + 2) : entry;
+                return (
+                  <div key={i} className="flex items-start gap-3 px-4 py-2 border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.02] transition-colors">
+                    {prefix ? (
+                      <span className={`text-[9px] font-mono font-semibold uppercase tracking-wide flex-shrink-0 w-14 pt-0.5 ${
+                        prefix === 'feat' ? 'text-emerald-400/60' :
+                        prefix === 'fix' ? 'text-amber-400/60' :
+                        prefix === 'refactor' ? 'text-sky-400/60' :
+                        prefix === 'docs' ? 'text-violet-400/60' :
+                        'text-white/25'
+                      }`}>{prefix}</span>
+                    ) : (
+                      <span className="w-14 flex-shrink-0" />
+                    )}
+                    <span className="text-[11px] text-white/35 leading-relaxed">{text}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+
         {/* ── Footer ──────────────────────────────────────────────────────── */}
-        <div className="mt-16 pt-6 border-t border-white/[0.06]">
-          <p className="text-[11px] text-white/15">
-            This documentation is auto-generated from the design system.
-            CSS source: <span className="font-mono">src/components/stocks/stock-model-styles.css</span>.
-            Last updated: Mar 2026.
-          </p>
+        <div className="docs-footer-note">
+          This documentation is auto-generated from the design system.
+          CSS source: src/components/stocks/stock-model-styles.css.
+          Last updated: Mar 2026.
         </div>
       </div>
     </div>
