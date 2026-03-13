@@ -122,6 +122,56 @@
   flex-shrink: 0;
 }
 
+.room-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.room-summon-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  background: rgba(52, 211, 153, 0.08);
+  color: rgba(52, 211, 153, 0.9);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.room-summon-btn:hover:not(:disabled) {
+  background: rgba(52, 211, 153, 0.15);
+  border-color: rgba(52, 211, 153, 0.5);
+}
+
+.room-summon-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.room-summon-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+}
+
+.room-summon-btn:disabled .room-summon-dot {
+  animation: summon-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes summon-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
 .room-header-channel {
   font-size: 16px;
   font-weight: 600;

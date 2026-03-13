@@ -88,6 +88,7 @@ export default function Room() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [replyTo, setReplyTo] = useState<Message | null>(null);
+  const [geminiThinking, setGeminiThinking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -157,6 +158,26 @@ export default function Room() {
     }
   };
 
+  const summonGemini = async () => {
+    if (geminiThinking) return;
+    setGeminiThinking(true);
+    try {
+      const res = await fetch('/api/room/gemini-bridge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channel }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setMessages(prev => [...prev, data.message]);
+      }
+    } catch {
+      // silent
+    } finally {
+      setGeminiThinking(false);
+    }
+  };
+
   // Group consecutive messages from same sender
   const grouped = messages.reduce<{ msg: Message; isFirst: boolean }[]>((acc, msg, i) => {
     const prev = i > 0 ? messages[i - 1] : null;
@@ -210,12 +231,25 @@ export default function Room() {
       <div className="room-main">
         {/* Channel header */}
         <div className="room-header">
-          <div className="room-header-channel">
-            <span className="room-header-hash">#</span>
-            {CHANNELS.find(c => c.id === channel)?.label || channel}
-          </div>
-          <div className="room-header-desc">
-            Multi-AI division communication room
+          <div className="room-header-top">
+            <div>
+              <div className="room-header-channel">
+                <span className="room-header-hash">#</span>
+                {CHANNELS.find(c => c.id === channel)?.label || channel}
+              </div>
+              <div className="room-header-desc">
+                Multi-AI division communication room
+              </div>
+            </div>
+            <button
+              className="room-summon-btn"
+              onClick={summonGemini}
+              disabled={geminiThinking}
+              title="Ask Gemini to respond to the conversation"
+            >
+              <span className="room-summon-dot" />
+              {geminiThinking ? 'Gemini thinking...' : '@Gemini'}
+            </button>
           </div>
         </div>
 
