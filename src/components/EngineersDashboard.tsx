@@ -209,7 +209,7 @@ function EngineerDetailPanel({
           <span className="eng-metric-label">Triggers</span>
         </div>
         <div className="eng-metric">
-          <span className="eng-status-dot" data-status={dotStatus} style={{ width: 8, height: 8 }} />
+          <span className="eng-status-dot" data-status={dotStatus} />
           <span className="eng-metric-label">{dotStatus === 'running' ? 'Running' : dotStatus === 'active' ? 'Active' : 'Idle'}</span>
         </div>
       </div>
@@ -253,10 +253,10 @@ function EngineerDetailPanel({
       </div>
 
       {/* Linked Workflows — ticker-aware with prompt preview */}
-      <div style={{ marginTop: 20 }}>
+      <div className="eng-detail-block">
         <div className="eng-detail-section-title">Workflows for {selectedTicker}</div>
         {linkedWorkflows.length > 0 ? (
-          <div className="eng-resources-grid" style={{ marginTop: 8 }}>
+          <div className="eng-resources-grid eng-detail-block-sm">
             {linkedWorkflows.map(wf => {
               const tickerVariants = wf.variants.filter(
                 v => v.ticker === selectedTicker.toLowerCase()
@@ -301,7 +301,7 @@ function EngineerDetailPanel({
             })}
           </div>
         ) : (
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 8 }}>
+          <div className="eng-workflow-id-list">
             {engineer.workflowIds.map(id => (
               <span key={id} className="eng-map-workflow-tag">{id}</span>
             ))}
@@ -310,9 +310,9 @@ function EngineerDetailPanel({
       </div>
 
       {sharedWith.size > 0 && (
-        <div style={{ marginTop: 20 }}>
+        <div className="eng-detail-block">
           <div className="eng-detail-section-title">Shared Triggers</div>
-          <table className="eng-matrix-table" style={{ fontSize: 11, marginTop: 8 }}>
+          <table className="eng-matrix-table eng-detail-block-sm">
             <thead>
               <tr>
                 <th>Event</th>
@@ -333,14 +333,14 @@ function EngineerDetailPanel({
 
       {/* Last run output */}
       {status?.lastRun?.outputSummary && (
-        <div style={{ marginTop: 20 }}>
+        <div className="eng-detail-block">
           <div className="eng-detail-section-title">Last Run Output</div>
-          <pre className="eng-output-pre" style={{ marginTop: 8 }}>{status.lastRun.outputSummary}</pre>
+          <pre className="eng-output-pre eng-detail-block-sm">{status.lastRun.outputSummary}</pre>
         </div>
       )}
 
       {status?.lastRun?.error && (
-        <div className="eng-error-box" style={{ marginTop: 12 }}>
+        <div className="eng-error-box eng-detail-block-error">
           <div className="eng-error-label">Error</div>
           <div className="eng-error-text">{status.lastRun.error}</div>
         </div>
@@ -597,7 +597,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
             )}
           </div>
 
-          <div className="eng-tab-strip" style={{ borderBottom: 'none', marginTop: 0 }}>
+          <div className="eng-tab-strip eng-tab-strip-flush">
             <button className="eng-tab" data-active={activeTab === 'network'} onClick={() => setActiveTab('network')}>
               Network Graph<span className="eng-tab-count">{engineers.length}</span>
             </button>
@@ -821,7 +821,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
 
               <div className="eng-modal-section">
                 <div className="eng-modal-heading">Description</div>
-                <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
+                <div className="eng-modal-desc">
                   {promptPreview.workflowDescription}
                 </div>
               </div>

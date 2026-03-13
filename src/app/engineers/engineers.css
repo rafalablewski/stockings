@@ -1243,8 +1243,8 @@
 
 /* ── Status Dot ── */
 .eng-status-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
   margin-top: 6px;
@@ -2431,5 +2431,38 @@
   word-break: break-word;
   max-height: 320px;
   overflow-y: auto;
+}
+
+/* ── Detail panel spacing helpers ── */
+.eng-detail-block {
+  margin-top: 20px;
+}
+
+.eng-detail-block-sm {
+  margin-top: 8px;
+}
+
+.eng-detail-block-error {
+  margin-top: 12px;
+}
+
+/* Workflow ID fallback list */
+.eng-workflow-id-list {
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  margin-top: 8px;
+}
+
+/* Tab strip override — no border variant */
+.eng-tab-strip-flush {
+  border-bottom: none;
+  margin-top: 0;
+}
+
+/* Modal description text */
+.eng-modal-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.6;
 }
 
