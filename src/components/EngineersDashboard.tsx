@@ -270,34 +270,32 @@ function EngineerDetailPanel({
                       <div className="eng-resource-name">{wf.name}</div>
                       <div className="eng-resource-type">
                         {wf.requiresUserData ? 'requires input' : 'autonomous'}
-                        {tickerVariants.length > 0 && (
-                          <span style={{ marginLeft: 8, color: 'var(--mint)' }}>
-                            {selectedTicker} variant active
-                          </span>
-                        )}
-                        {tickerVariants.length === 0 && (
-                          <span style={{ marginLeft: 8, color: 'var(--text3)' }}>
-                            no {selectedTicker} variant
-                          </span>
-                        )}
                       </div>
                     </div>
                   </div>
                   <div className="eng-resource-desc">{wf.description}</div>
-                  <div className="eng-resource-agents">
-                    {tickerVariants.map(v => (
-                      <span
-                        key={v.ticker}
-                        className="eng-resource-agent-chip"
-                        data-clickable="true"
-                        data-active
-                        title={`Preview ${wf.name} prompt for ${v.label}`}
-                        onClick={() => onPromptPreview(wf, v.ticker, v.label)}
+                  {tickerVariants.length > 0 ? (
+                    <div className="eng-resource-footer">
+                      <button
+                        className="eng-btn eng-btn-prompt"
+                        data-color={color}
+                        onClick={() => onPromptPreview(wf, tickerVariants[0].ticker, tickerVariants[0].label)}
                       >
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                          <path d="M14 2v6h6" />
+                          <path d="M16 13H8" />
+                          <path d="M16 17H8" />
+                          <path d="M10 9H8" />
+                        </svg>
                         View Prompt
-                      </span>
-                    ))}
-                  </div>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="eng-resource-footer">
+                      <span className="eng-resource-no-variant">No prompt for {selectedTicker}</span>
+                    </div>
+                  )}
                 </div>
               );
             })}
