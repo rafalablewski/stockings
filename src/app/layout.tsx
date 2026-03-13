@@ -79,6 +79,12 @@ const mobileNavItems = [
     children: researchStocks.map((s) => ({ label: `${s.ticker} — ${s.name}`, href: `/research/${s.ticker}` })),
   },
   {
+    label: 'AI Engineers',
+    children: [
+      { label: 'Agent Dashboard', href: '/ai-engineers' },
+    ],
+  },
+  {
     label: 'Intelligence',
     children: [
       { label: 'Press Intelligence', href: '/press-intelligence' },
@@ -198,6 +204,14 @@ function Navigation() {
                 </div>
               </div>
             </div>
+
+            {/* AI Engineers — direct link */}
+            <Link
+              href="/ai-engineers"
+              className="text-[13px] text-white/60 hover:text-white transition-colors"
+            >
+              AI Engineers
+            </Link>
 
             {/* Intelligence — direct link */}
             <Link
