@@ -75,19 +75,11 @@ function formatInterval(minutes: number): string {
   return `${(minutes / 1440).toFixed(0)}d`;
 }
 
-const categoryColors: Record<string, string> = {
-  research: 'text-emerald-400',
-  monitoring: 'text-blue-400',
-  intelligence: 'text-amber-400',
-  audit: 'text-violet-400',
-};
-
-const statusColors: Record<string, string> = {
-  completed: 'text-emerald-400',
-  running: 'text-blue-400',
-  failed: 'text-red-400',
-  queued: 'text-amber-400',
-  cancelled: 'text-white/30',
+const categoryLabels: Record<string, string> = {
+  research: 'Research Engineers',
+  monitoring: 'Monitoring Engineers',
+  intelligence: 'Intelligence Engineers',
+  audit: 'Audit Engineers',
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -101,7 +93,6 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'engineers' | 'history'>('engineers');
 
-  // Fetch status
   const fetchStatus = useCallback(async () => {
     try {
       const res = await authFetch(`/api/engineers/status?ticker=${selectedTicker}`);
@@ -109,14 +100,9 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
         const data = await res.json();
         setStatuses(data.engineers || []);
       }
-    } catch {
-      // silently fail on status fetch
-    } finally {
-      setLoading(false);
-    }
+    } catch { /* silent */ } finally { setLoading(false); }
   }, [selectedTicker]);
 
-  // Fetch history
   const fetchHistory = useCallback(async () => {
     try {
       const res = await authFetch(`/api/engineers/history?ticker=${selectedTicker}&limit=25`);
@@ -124,9 +110,7 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
         const data = await res.json();
         setHistory(data.runs || []);
       }
-    } catch {
-      // silently fail
-    }
+    } catch { /* silent */ }
   }, [selectedTicker]);
 
   useEffect(() => {
@@ -135,73 +119,43 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
     fetchHistory();
   }, [fetchStatus, fetchHistory]);
 
-  // Trigger a manual run
   const handleRun = async (engineerId: string) => {
     setRunningIds(prev => new Set([...prev, engineerId]));
     try {
-      const res = await authFetch('/api/engineers/run', {
+      await authFetch('/api/engineers/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ticker: selectedTicker,
-          engineerId,
-          triggerReason: 'Manual trigger from Engineers dashboard',
-        }),
+        body: JSON.stringify({ ticker: selectedTicker, engineerId }),
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: 'Run failed' }));
-        console.error('Run failed:', err.error);
-      }
-      // Refresh status after run
       await fetchStatus();
       await fetchHistory();
     } catch (err) {
       console.error('Run error:', err);
     } finally {
-      setRunningIds(prev => {
-        const next = new Set(prev);
-        next.delete(engineerId);
-        return next;
-      });
+      setRunningIds(prev => { const next = new Set(prev); next.delete(engineerId); return next; });
     }
   };
 
-  // Toggle schedule
   const handleToggleSchedule = async (engineerId: string, currentEnabled: boolean, intervalMinutes: number) => {
     try {
       await authFetch('/api/engineers/schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ticker: selectedTicker,
-          engineerId,
-          enabled: !currentEnabled,
-          intervalMinutes,
-        }),
+        body: JSON.stringify({ ticker: selectedTicker, engineerId, enabled: !currentEnabled, intervalMinutes }),
       });
       await fetchStatus();
-    } catch (err) {
-      console.error('Schedule toggle error:', err);
-    }
+    } catch (err) { console.error('Schedule toggle error:', err); }
   };
 
-  // Enable schedule for the first time
   const handleEnableSchedule = async (engineer: EngineerTask) => {
     try {
       await authFetch('/api/engineers/schedule', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ticker: selectedTicker,
-          engineerId: engineer.id,
-          enabled: true,
-          intervalMinutes: engineer.defaultIntervalMinutes,
-        }),
+        body: JSON.stringify({ ticker: selectedTicker, engineerId: engineer.id, enabled: true, intervalMinutes: engineer.defaultIntervalMinutes }),
       });
       await fetchStatus();
-    } catch (err) {
-      console.error('Enable schedule error:', err);
-    }
+    } catch (err) { console.error('Enable schedule error:', err); }
   };
 
   // Group engineers by category
@@ -211,239 +165,208 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
     return acc;
   }, {});
 
-  const categoryLabels: Record<string, string> = {
-    research: 'Research Engineers',
-    monitoring: 'Monitoring Engineers',
-    intelligence: 'Intelligence Engineers',
-    audit: 'Audit Engineers',
-  };
+  // Stats
+  const scheduledCount = statuses.filter(s => s.schedule?.enabled).length;
+  const completedCount = history.filter(r => r.status === 'completed').length;
+  const failedCount = history.filter(r => r.status === 'failed').length;
 
   return (
-    <div>
-      {/* Ticker selector */}
-      <div className="flex items-center gap-4 mb-10">
-        <span className="text-[10px] uppercase tracking-[0.3em] text-white/25">Ticker</span>
-        <div className="flex gap-2">
+    <div className="eng-app">
+      {/* Header */}
+      <div className="eng-header">
+        <div className="eng-subtitle">Autonomous Operations</div>
+        <div className="eng-title">AI Engineers</div>
+        <div className="eng-desc">
+          Full-time AI engineers that work autonomously — monitoring filings,
+          analyzing data, and updating research databases without manual prompts.
+        </div>
+
+        {/* KPI Strip */}
+        <div className="eng-kpi-strip">
+          <div className="eng-kpi">
+            <div className="eng-kpi-value">{engineers.length}</div>
+            <div className="eng-kpi-label">Engineers</div>
+          </div>
+          <div className="eng-kpi">
+            <div className="eng-kpi-value">{scheduledCount}</div>
+            <div className="eng-kpi-label">Active</div>
+          </div>
+          <div className="eng-kpi">
+            <div className="eng-kpi-value">{completedCount}</div>
+            <div className="eng-kpi-label">Completed</div>
+          </div>
+          <div className="eng-kpi">
+            <div className="eng-kpi-value">{failedCount}</div>
+            <div className="eng-kpi-label">Failed</div>
+          </div>
+        </div>
+
+        {/* Ticker pills */}
+        <div className="eng-ticker-strip">
+          <span className="eng-ticker-label">Ticker</span>
           {tickers.map(t => (
             <button
               key={t}
+              className="eng-ticker-pill"
+              data-active={selectedTicker === t}
               onClick={() => setSelectedTicker(t)}
-              className={`px-4 py-1.5 text-[12px] font-mono font-medium rounded-lg transition-all ${
-                selectedTicker === t
-                  ? 'bg-white/10 text-white border border-white/20'
-                  : 'text-white/40 hover:text-white/60 border border-transparent hover:border-white/10'
-              }`}
             >
               {t}
             </button>
           ))}
         </div>
+
+        {/* Tab strip */}
+        <div className="eng-tab-strip">
+          <button className="eng-tab" data-active={activeTab === 'engineers'} onClick={() => setActiveTab('engineers')}>
+            Engineers<span className="eng-tab-count">{engineers.length}</span>
+          </button>
+          <button className="eng-tab" data-active={activeTab === 'history'} onClick={() => setActiveTab('history')}>
+            Run History<span className="eng-tab-count">{history.length}</span>
+          </button>
+        </div>
       </div>
 
-      {/* Tab switcher */}
-      <div className="flex gap-6 mb-8 border-b border-white/[0.06] pb-3">
-        <button
-          onClick={() => setActiveTab('engineers')}
-          className={`text-[12px] uppercase tracking-[0.2em] pb-1 transition-colors ${
-            activeTab === 'engineers'
-              ? 'text-white border-b border-white/40'
-              : 'text-white/30 hover:text-white/50'
-          }`}
-        >
-          Engineers ({engineers.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('history')}
-          className={`text-[12px] uppercase tracking-[0.2em] pb-1 transition-colors ${
-            activeTab === 'history'
-              ? 'text-white border-b border-white/40'
-              : 'text-white/30 hover:text-white/50'
-          }`}
-        >
-          Run History ({history.length})
-        </button>
-      </div>
+      {/* Feed */}
+      <div className="eng-feed">
+        {/* Engineers tab */}
+        {activeTab === 'engineers' && (
+          <div>
+            {Object.entries(grouped).map(([category, engs]) => (
+              <div key={category}>
+                <div className="eng-category-header">
+                  <span className="eng-category-label" data-color={category}>
+                    {categoryLabels[category] || category}
+                  </span>
+                  <div className="eng-category-line" />
+                </div>
 
-      {/* Engineers tab */}
-      {activeTab === 'engineers' && (
-        <div className="space-y-12">
-          {Object.entries(grouped).map(([category, engs]) => (
-            <div key={category}>
-              <div className="flex items-center gap-3 mb-5">
-                <span className={`text-[10px] uppercase tracking-[0.3em] font-semibold ${categoryColors[category] || 'text-white/40'}`}>
-                  {categoryLabels[category] || category}
-                </span>
-                <div className="flex-1 h-px bg-white/[0.06]" />
-              </div>
-
-              <div className="space-y-3">
                 {engs.map(eng => {
                   const status = statuses.find(s => s.engineer.id === eng.id);
                   const isRunning = runningIds.has(eng.id);
                   const isExpanded = expandedId === eng.id;
+                  const dotStatus = isRunning || status?.lastRun?.status === 'running'
+                    ? 'running'
+                    : status?.schedule?.enabled ? 'active' : 'idle';
 
                   return (
-                    <div
-                      key={eng.id}
-                      className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden"
-                    >
-                      {/* Header row */}
-                      <div className="flex items-start gap-4 p-5">
-                        {/* Status indicator */}
-                        <div className="mt-1.5 flex-shrink-0">
-                          {isRunning || status?.lastRun?.status === 'running' ? (
-                            <div className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse" />
-                          ) : status?.schedule?.enabled ? (
-                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/60" />
-                          ) : (
-                            <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
-                          )}
-                        </div>
+                    <div key={eng.id} className="eng-card" data-expanded={isExpanded}>
+                      <div className="eng-card-inner">
+                        <div className="eng-status-dot" data-status={dotStatus} />
 
-                        {/* Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-1">
-                            <span className="text-[14px] font-medium text-white/90">{eng.name}</span>
-                            <span className="text-[10px] font-mono text-white/25 uppercase">{eng.role}</span>
+                        <div className="eng-card-body">
+                          <div className="eng-card-name-row">
+                            <span className="eng-card-name">{eng.name}</span>
+                            <span className="eng-card-role">{eng.role}</span>
                           </div>
-                          <p className="text-[12px] text-white/35 leading-relaxed">{eng.description}</p>
-
-                          {/* Schedule + last run info */}
-                          <div className="flex items-center gap-5 mt-3">
-                            {status?.schedule ? (
-                              <span className="text-[10px] text-white/25">
-                                {status.schedule.enabled
+                          <div className="eng-card-desc">{eng.description}</div>
+                          <div className="eng-card-meta">
+                            <span className="eng-card-meta-item">
+                              {status?.schedule
+                                ? status.schedule.enabled
                                   ? `Every ${formatInterval(status.schedule.intervalMinutes)}`
                                   : 'Paused'
-                                }
-                                {status.schedule.nextRunAt && status.schedule.enabled
-                                  ? ` — next ${formatTime(status.schedule.nextRunAt)}`
-                                  : ''
-                                }
+                                : 'Not scheduled'}
+                            </span>
+                            {status?.schedule?.nextRunAt && status.schedule.enabled && (
+                              <span className="eng-card-meta-item">
+                                Next {formatTime(status.schedule.nextRunAt)}
                               </span>
-                            ) : (
-                              <span className="text-[10px] text-white/15">Not scheduled</span>
                             )}
                             {status?.lastRun && (
-                              <span className={`text-[10px] ${statusColors[status.lastRun.status] || 'text-white/25'}`}>
+                              <span className="eng-card-meta-item">
                                 Last: {status.lastRun.status} {formatTime(status.lastRun.completedAt)} ({formatDuration(status.lastRun.durationMs)})
                               </span>
                             )}
                           </div>
                         </div>
 
-                        {/* Actions */}
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          {/* Schedule toggle */}
+                        <div className="eng-card-actions">
                           {status?.schedule ? (
                             <button
+                              className="eng-btn"
+                              data-variant={status.schedule.enabled ? 'active' : 'paused'}
                               onClick={() => handleToggleSchedule(eng.id, status.schedule!.enabled, status.schedule!.intervalMinutes)}
-                              className={`px-3 py-1.5 text-[10px] uppercase tracking-[0.1em] font-medium rounded-lg border transition-all ${
-                                status.schedule.enabled
-                                  ? 'border-emerald-400/30 text-emerald-400/70 hover:bg-emerald-400/10'
-                                  : 'border-white/10 text-white/25 hover:text-white/40 hover:border-white/20'
-                              }`}
                             >
                               {status.schedule.enabled ? 'Active' : 'Paused'}
                             </button>
                           ) : (
-                            <button
-                              onClick={() => handleEnableSchedule(eng)}
-                              className="px-3 py-1.5 text-[10px] uppercase tracking-[0.1em] font-medium rounded-lg border border-white/10 text-white/25 hover:text-white/40 hover:border-white/20 transition-all"
-                            >
+                            <button className="eng-btn" onClick={() => handleEnableSchedule(eng)}>
                               Schedule
                             </button>
                           )}
-
-                          {/* Run now */}
                           <button
+                            className="eng-btn"
+                            data-variant="run"
+                            data-state={isRunning ? 'running' : undefined}
                             onClick={() => handleRun(eng.id)}
                             disabled={isRunning}
-                            className={`px-3 py-1.5 text-[10px] uppercase tracking-[0.1em] font-semibold rounded-lg border transition-all ${
-                              isRunning
-                                ? 'border-blue-400/30 text-blue-400/70 cursor-wait'
-                                : 'border-white/20 text-white/60 hover:text-white hover:border-white/40 hover:bg-white/[0.04]'
-                            }`}
                           >
                             {isRunning ? 'Running...' : 'Run Now'}
                           </button>
-
-                          {/* Expand */}
                           <button
+                            className="eng-chevron"
                             onClick={() => setExpandedId(isExpanded ? null : eng.id)}
-                            className="p-1.5 text-white/20 hover:text-white/40 transition-colors"
                           >
-                            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
-                              style={{ transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}
-                            >
+                            <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
+                              style={{ transform: isExpanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }}>
                               <path d="M9 5l7 7-7 7" />
                             </svg>
                           </button>
                         </div>
                       </div>
 
-                      {/* Expanded details */}
+                      {/* Expanded */}
                       {isExpanded && (
-                        <div className="border-t border-white/[0.04] px-5 py-4 bg-white/[0.01]">
-                          <div className="grid grid-cols-2 gap-6">
-                            {/* Capabilities */}
+                        <div className="eng-expand">
+                          <div className="eng-expand-grid">
                             <div>
-                              <span className="text-[10px] uppercase tracking-[0.2em] text-white/25 block mb-3">Capabilities</span>
-                              <ul className="space-y-1.5">
-                                {eng.capabilities.map((cap, i) => (
-                                  <li key={i} className="text-[11px] text-white/40 flex items-start gap-2">
-                                    <span className="text-white/15 mt-0.5">+</span>
-                                    {cap}
-                                  </li>
-                                ))}
-                              </ul>
+                              <div className="eng-expand-label">Capabilities</div>
+                              {eng.capabilities.map((cap, i) => (
+                                <div key={i} className="eng-cap-item">
+                                  <span className="eng-cap-bullet">+</span>
+                                  {cap}
+                                </div>
+                              ))}
                             </div>
-
-                            {/* Config */}
                             <div>
-                              <span className="text-[10px] uppercase tracking-[0.2em] text-white/25 block mb-3">Configuration</span>
-                              <div className="space-y-2 text-[11px]">
-                                <div className="flex justify-between">
-                                  <span className="text-white/25">Default interval</span>
-                                  <span className="text-white/50 font-mono">{formatInterval(eng.defaultIntervalMinutes)}</span>
+                              <div className="eng-expand-label">Configuration</div>
+                              <div className="eng-config-row">
+                                <span className="eng-config-key">Default interval</span>
+                                <span className="eng-config-val">{formatInterval(eng.defaultIntervalMinutes)}</span>
+                              </div>
+                              <div className="eng-config-row">
+                                <span className="eng-config-key">Linked workflows</span>
+                                <span className="eng-config-val">{eng.workflowIds.length}</span>
+                              </div>
+                              <div className="eng-config-row">
+                                <span className="eng-config-key">Requires external data</span>
+                                <span className="eng-config-val">{eng.requiresData ? 'Yes' : 'No'}</span>
+                              </div>
+                              {eng.dataSource && (
+                                <div className="eng-config-row">
+                                  <span className="eng-config-key">Data source</span>
+                                  <span className="eng-config-val">{eng.dataSource}</span>
                                 </div>
-                                <div className="flex justify-between">
-                                  <span className="text-white/25">Linked workflows</span>
-                                  <span className="text-white/50 font-mono">{eng.workflowIds.length}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-white/25">Requires external data</span>
-                                  <span className="text-white/50 font-mono">{eng.requiresData ? 'Yes' : 'No'}</span>
-                                </div>
-                                {eng.dataSource && (
-                                  <div className="flex justify-between">
-                                    <span className="text-white/25">Data source</span>
-                                    <span className="text-white/50 font-mono text-right">{eng.dataSource}</span>
-                                  </div>
-                                )}
-                                <div className="flex justify-between">
-                                  <span className="text-white/25">Trigger events</span>
-                                  <span className="text-white/50 font-mono text-right">{eng.triggerEvents.join(', ')}</span>
-                                </div>
+                              )}
+                              <div className="eng-config-row">
+                                <span className="eng-config-key">Trigger events</span>
+                                <span className="eng-config-val">{eng.triggerEvents.join(', ')}</span>
                               </div>
                             </div>
                           </div>
 
-                          {/* Last run output */}
                           {status?.lastRun?.outputSummary && (
-                            <div className="mt-5 pt-4 border-t border-white/[0.04]">
-                              <span className="text-[10px] uppercase tracking-[0.2em] text-white/25 block mb-2">Last Run Output</span>
-                              <pre className="text-[11px] text-white/40 whitespace-pre-wrap leading-relaxed font-mono bg-white/[0.02] rounded-lg p-3 max-h-48 overflow-y-auto">
-                                {status.lastRun.outputSummary}
-                              </pre>
+                            <div className="eng-output">
+                              <div className="eng-expand-label">Last Run Output</div>
+                              <pre className="eng-output-pre">{status.lastRun.outputSummary}</pre>
                             </div>
                           )}
 
-                          {/* Last run error */}
                           {status?.lastRun?.error && (
-                            <div className="mt-3 p-3 rounded-lg bg-red-500/5 border border-red-400/10">
-                              <span className="text-[10px] text-red-400/70 uppercase tracking-wider block mb-1">Error</span>
-                              <span className="text-[11px] text-red-400/50">{status.lastRun.error}</span>
+                            <div className="eng-error-box">
+                              <div className="eng-error-label">Error</div>
+                              <div className="eng-error-text">{status.lastRun.error}</div>
                             </div>
                           )}
                         </div>
@@ -452,70 +375,43 @@ export default function EngineersDashboard({ engineers, tickers }: Props) {
                   );
                 })}
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
 
-      {/* History tab */}
-      {activeTab === 'history' && (
-        <div>
-          {history.length === 0 ? (
-            <div className="text-center py-16">
-              <p className="text-[13px] text-white/25">No engineer runs recorded yet for {selectedTicker}.</p>
-              <p className="text-[11px] text-white/15 mt-2">Run an engineer manually or enable a schedule to get started.</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {history.map(run => (
-                <div
-                  key={run.id}
-                  className="flex items-center gap-4 px-4 py-3 rounded-lg border border-white/[0.04] bg-white/[0.01] hover:bg-white/[0.03] transition-colors"
-                >
-                  {/* Status dot */}
-                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                    run.status === 'completed' ? 'bg-emerald-400/60'
-                    : run.status === 'failed' ? 'bg-red-400/60'
-                    : run.status === 'running' ? 'bg-blue-400 animate-pulse'
-                    : 'bg-white/10'
-                  }`} />
+        {/* History tab */}
+        {activeTab === 'history' && (
+          <div>
+            {history.length === 0 ? (
+              <div className="eng-empty">
+                <div>No engineer runs recorded yet for {selectedTicker}.</div>
+                <div className="eng-empty-sub">Run an engineer manually or enable a schedule to get started.</div>
+              </div>
+            ) : (
+              <div style={{ marginTop: 12 }}>
+                {history.map(run => (
+                  <div key={run.id} className="eng-history-row">
+                    <div className="eng-history-dot" data-status={run.status} />
+                    <span className="eng-history-name">
+                      {engineers.find(e => e.id === run.engineerId)?.name || run.engineerId}
+                    </span>
+                    <span className="eng-history-status" data-status={run.status}>{run.status}</span>
+                    <span className="eng-history-trigger">{run.triggerType}</span>
+                    <span className="eng-history-duration">{formatDuration(run.durationMs)}</span>
+                    <span className="eng-history-time">{formatTime(run.createdAt)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
-                  {/* Engineer name */}
-                  <span className="text-[12px] font-medium text-white/70 w-44 truncate">
-                    {engineers.find(e => e.id === run.engineerId)?.name || run.engineerId}
-                  </span>
-
-                  {/* Status */}
-                  <span className={`text-[10px] uppercase tracking-wider font-mono w-20 ${statusColors[run.status] || 'text-white/25'}`}>
-                    {run.status}
-                  </span>
-
-                  {/* Trigger type */}
-                  <span className="text-[10px] text-white/20 font-mono w-20">
-                    {run.triggerType}
-                  </span>
-
-                  {/* Duration */}
-                  <span className="text-[10px] text-white/20 font-mono w-16 text-right">
-                    {formatDuration(run.durationMs)}
-                  </span>
-
-                  {/* Time */}
-                  <span className="text-[10px] text-white/15 ml-auto">
-                    {formatTime(run.createdAt)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {loading && (
-        <div className="flex items-center justify-center py-12">
-          <div className="w-4 h-4 border-2 border-white/10 border-t-white/40 rounded-full animate-spin" />
-        </div>
-      )}
+        {loading && (
+          <div className="eng-loading">
+            <div className="eng-spinner" />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
