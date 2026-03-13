@@ -7,6 +7,16 @@ import "./sec-intelligence.css";
 /* ═══════════════════════════════════════════════════════════════════════════
    SEC INTELLIGENCE — Unified SEC EDGAR filings feed
    Displays all SEC filings for stocks tracked in Press Intelligence.
+
+   ── DB-First Architecture ──
+   1. On mount: load filings ONLY from database (mode=db). If nothing
+      saved yet → empty state with prompt to refresh.
+   2. "Refresh" button → fetches fresh filings from SEC EDGAR API,
+      persists ALL to seen_filings DB (same table as Edgar tab).
+      New filings (not already in DB) get dismissed=false → NEW badge.
+   3. NEW badge stays until user clicks it → dismisses via API.
+   4. Edgar tab for individual stocks sees the SAME seen_filings rows —
+      status, crossRefs, dismissed, hidden state fully preserved.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 interface SecFiling {
@@ -17,6 +27,7 @@ interface SecFiling {
   primaryDocDescription: string;
   reportDate: string;
   fileUrl: string;
+  dismissed?: boolean;
 }
 
 interface ApiResponse {
@@ -25,6 +36,7 @@ interface ApiResponse {
   tickerStats: Record<string, { count: number; companyName: string }>;
   errors?: Record<string, string>;
   fetchedAt: string;
+  mode: string;
 }
 
 /* ─── Form type classification for color coding ─── */
@@ -79,6 +91,9 @@ export default function SecIntelligencePage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  /* Track dismissed accessions locally (optimistic UI) */
+  const [dismissedLocal, setDismissedLocal] = useState<Set<string>>(new Set());
+
   /* Filters */
   const [activeTicker, setActiveTicker] = useState("ALL");
   const [activeForm, setActiveForm] = useState("All");
@@ -88,15 +103,24 @@ export default function SecIntelligencePage() {
 
   const [page, setPage] = useState(1);
 
-  /* ── Fetch filings ── */
-  const loadFilings = useCallback(async () => {
+  /* ── Load filings (DB-first on mount, refresh fetches from SEC) ── */
+  const loadFilings = useCallback(async (mode: "db" | "refresh" = "db") => {
     try {
-      const params = new URLSearchParams({ limit: '50' });
+      const params = new URLSearchParams({ mode, limit: '50' });
       if (daysFilter > 0) params.set('days', String(daysFilter));
       const res = await fetch(`/api/sec-intelligence?${params}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json: ApiResponse = await res.json();
       setData(json);
+
+      // Build local dismissed set from API response
+      const dismissed = new Set<string>();
+      for (const f of json.filings) {
+        if (f.dismissed) {
+          dismissed.add(`${f.ticker}:${f.accessionNumber}`);
+        }
+      }
+      setDismissedLocal(dismissed);
     } catch (err) {
       console.error('[SEC Intelligence] Fetch error:', err);
     }
@@ -104,15 +128,41 @@ export default function SecIntelligencePage() {
     setRefreshing(false);
   }, [daysFilter]);
 
+  /* DB-first: load from database on mount */
   useEffect(() => {
     setLoading(true);
-    loadFilings();
+    loadFilings("db");
   }, [loadFilings]);
 
+  /* Refresh: fetch from SEC, persist to DB */
   const handleRefresh = () => {
     setRefreshing(true);
-    loadFilings();
+    loadFilings("refresh");
   };
+
+  /* Dismiss NEW badge (same API as Edgar tab) */
+  const handleDismiss = useCallback(async (filing: SecFiling) => {
+    const key = `${filing.ticker}:${filing.accessionNumber}`;
+    // Optimistic update
+    setDismissedLocal(prev => new Set(prev).add(key));
+
+    try {
+      await fetch('/api/seen-filings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticker: filing.ticker,
+          filings: [{
+            accessionNumber: filing.accessionNumber,
+            form: filing.form,
+          }],
+          dismiss: true,
+        }),
+      });
+    } catch (err) {
+      console.error('[SEC Intelligence] Dismiss error:', err);
+    }
+  }, []);
 
   /* ── Tickers with data (for filter pills) ── */
   const activeTickers = useMemo(() => {
@@ -156,6 +206,14 @@ export default function SecIntelligencePage() {
     return filings;
   }, [data, activeTicker, activeForm, searchQuery]);
 
+  /* Count undismissed (NEW) filings */
+  const newCount = useMemo(() => {
+    if (!data?.filings) return 0;
+    return data.filings.filter(f =>
+      !f.dismissed && !dismissedLocal.has(`${f.ticker}:${f.accessionNumber}`)
+    ).length;
+  }, [data, dismissedLocal]);
+
   /* Reset page on filter change */
   useEffect(() => { setPage(1); }, [activeTicker, activeForm, searchQuery, daysFilter]);
 
@@ -166,16 +224,14 @@ export default function SecIntelligencePage() {
 
   /* ── Stats ── */
   const stats = useMemo(() => {
-    if (!data?.filings) return { total: 0, tickers: 0, today: 0, thisWeek: 0, forms: {} as Record<string, number> };
+    if (!data?.filings) return { total: 0, tickers: 0, today: 0, thisWeek: 0, newFilings: 0 };
     const filings = data.filings;
     const todayStr = new Date().toISOString().slice(0, 10);
 
-    const forms: Record<string, number> = {};
     let today = 0;
     let thisWeek = 0;
 
     for (const f of filings) {
-      forms[f.form] = (forms[f.form] || 0) + 1;
       if (f.filingDate === todayStr) today++;
       if (isRecent(f.filingDate, 7)) thisWeek++;
     }
@@ -185,11 +241,12 @@ export default function SecIntelligencePage() {
       tickers: Object.keys(data.tickerStats).filter(t => (data.tickerStats[t]?.count ?? 0) > 0).length,
       today,
       thisWeek,
-      forms,
+      newFilings: newCount,
     };
-  }, [data]);
+  }, [data, newCount]);
 
   const hasErrors = data?.errors && Object.keys(data.errors).length > 0;
+  const isEmpty = !loading && data?.filings?.length === 0 && !hasErrors;
 
   return (
     <div className="si-app">
@@ -200,7 +257,7 @@ export default function SecIntelligencePage() {
             <div className="si-pulse" />
             <div>
               <div className="si-title">SEC Intelligence</div>
-              <div className="si-subtitle">EDGAR filings feed</div>
+              <div className="si-subtitle">EDGAR filings feed &middot; DB-first</div>
             </div>
           </div>
 
@@ -233,7 +290,7 @@ export default function SecIntelligencePage() {
               <span className="si-refresh-icon" data-spinning={refreshing ? "true" : undefined}>
                 &#x27F3;
               </span>
-              Refresh
+              Fetch Filings
             </button>
           </div>
         </div>
@@ -257,6 +314,12 @@ export default function SecIntelligencePage() {
               <span className="si-kpi-value">{stats.thisWeek}</span>
               <span className="si-kpi-label">This Week</span>
             </div>
+            {stats.newFilings > 0 && (
+              <div className="si-kpi">
+                <span className="si-kpi-value" style={{ color: 'var(--violet, #A78BFA)' }}>{stats.newFilings}</span>
+                <span className="si-kpi-label">Unseen</span>
+              </div>
+            )}
 
             {/* Per-stock counts */}
             <div className="si-stock-summary-wrap">
@@ -335,7 +398,7 @@ export default function SecIntelligencePage() {
       {/* ── Feed ── */}
       <div className="si-feed">
         {/* Result bar */}
-        {!loading && (
+        {!loading && filteredFilings.length > 0 && (
           <div className="si-result-bar">
             <span className="si-result-count">
               <strong>{(page - 1) * PAGE_SIZE + 1}&ndash;{Math.min(page * PAGE_SIZE, filteredFilings.length)}</strong> of {filteredFilings.length} filings
@@ -351,6 +414,13 @@ export default function SecIntelligencePage() {
           <div key={i} className="si-skeleton" />
         ))}
 
+        {/* Empty state — no data in DB yet */}
+        {isEmpty && (
+          <div className="si-empty">
+            No filings in database yet. Click <strong>Fetch Filings</strong> to load from SEC EDGAR.
+          </div>
+        )}
+
         {/* Errors */}
         {!loading && hasErrors && (
           <div className="si-errors-wrap">
@@ -362,8 +432,8 @@ export default function SecIntelligencePage() {
           </div>
         )}
 
-        {/* Empty state */}
-        {!loading && !hasErrors && filteredFilings.length === 0 && (
+        {/* No results for current filters */}
+        {!loading && !isEmpty && !hasErrors && filteredFilings.length === 0 && (
           <div className="si-empty">
             {searchQuery ? `No filings matching "${searchQuery}"` : "No filings match current filters"}
           </div>
@@ -371,11 +441,11 @@ export default function SecIntelligencePage() {
 
         {/* Filing cards */}
         {!loading && pagedFilings.map((filing) => {
-          const id = `${filing.ticker}-${filing.accessionNumber}`;
+          const id = `${filing.ticker}:${filing.accessionNumber}`;
           const expanded = expandedId === id;
           const companyName = data?.tickerStats[filing.ticker]?.companyName || filing.ticker;
           const formCategory = getFormCategory(filing.form);
-          const recent = isRecent(filing.filingDate, 2);
+          const isNew = !filing.dismissed && !dismissedLocal.has(id);
 
           return (
             <div
@@ -396,7 +466,18 @@ export default function SecIntelligencePage() {
                   <div className="si-card-meta">
                     <span className="si-card-company">{companyName}</span>
                     <span className="si-card-date">{formatDate(filing.filingDate)}</span>
-                    {recent && <span className="si-new-badge">NEW</span>}
+                    {isNew && (
+                      <span
+                        className="si-new-badge"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDismiss(filing);
+                        }}
+                        title="Click to mark as seen"
+                      >
+                        NEW
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -478,6 +559,7 @@ export default function SecIntelligencePage() {
         {data?.fetchedAt && !loading && (
           <div className="si-timestamp">
             Last updated {new Date(data.fetchedAt).toLocaleTimeString()} &middot; {filteredFilings.length} of {data.totalCount} filings
+            {data.mode === "db" && " (from database)"}
           </div>
         )}
       </div>
