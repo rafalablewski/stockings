@@ -110,6 +110,7 @@ export default function SecIntelligencePage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const [page, setPage] = useState(1);
+  const [methodologyOpen, setMethodologyOpen] = useState(false);
 
   /* ── Load filings (DB-first on mount, refresh fetches from SEC) ── */
   const loadFilings = useCallback(async (mode: "db" | "refresh" = "db") => {
@@ -611,6 +612,88 @@ export default function SecIntelligencePage() {
             {data.mode === "db" && " (from database)"}
           </div>
         )}
+
+        {/* ── Methodology ── */}
+        <div className="si-methodology">
+          <div
+            className="si-methodology-header"
+            onClick={() => setMethodologyOpen(prev => !prev)}
+            role="button"
+            tabIndex={0}
+            aria-expanded={methodologyOpen}
+            onKeyDown={(e) => e.key === "Enter" && setMethodologyOpen(prev => !prev)}
+          >
+            <span className="si-methodology-label">Methodology</span>
+            <span className="si-methodology-toggle">{methodologyOpen ? "\u2212" : "+"}</span>
+          </div>
+          {methodologyOpen && (
+            <div className="si-methodology-body">
+              {/* DB-First Architecture */}
+              <div className="si-method-section-title">DB-First Architecture</div>
+              <div className="si-method-flow">
+                <div className="si-method-node">Page loads</div>
+                <div className="si-method-arrow" />
+                <div className="si-method-node si-method-node-accent">GET /api/sec-intelligence?mode=db</div>
+                <div className="si-method-arrow" />
+                <div className="si-method-node">Load all filings from seen_filings table (Neon PostgreSQL)</div>
+                <div className="si-method-arrow" />
+                <div className="si-method-highlight">Render from DB &mdash; no SEC API calls on mount</div>
+              </div>
+              <div className="si-method-details">
+                <div><span className="si-method-key">Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_filings table (shared with per-stock Edgar tabs)</div>
+                <div><span className="si-method-key">Tickers:</span> INTELLIGENCE_TICKERS from src/lib/stocks.ts &mdash; single source of truth, alphabetical order</div>
+                <div><span className="si-method-key">Self-healing:</span> ensureTable() creates seen_filings + indexes on first request</div>
+              </div>
+
+              <div className="si-method-divider" />
+
+              {/* Fetch Pipeline */}
+              <div className="si-method-section-title">Fetch Pipeline (Refresh)</div>
+              <div className="si-method-flow">
+                <div className="si-method-node si-method-node-accent">Fetch Filings button</div>
+                <div className="si-method-arrow" />
+                <div className="si-method-node">GET /api/sec-intelligence?mode=refresh</div>
+                <div className="si-method-arrow" />
+                <div className="si-method-node">Resolve CIK per ticker (shared cik-map.ts + dynamic fallback)</div>
+                <div className="si-method-arrow" />
+                <div className="si-method-node">Fetch SEC EDGAR submissions API (data.sec.gov/submissions/CIK&#123;cik&#125;.json)</div>
+                <div className="si-method-arrow" />
+                <div className="si-method-node">Upsert to seen_filings &mdash; preserves dismissed, hidden, status, crossRefs</div>
+                <div className="si-method-arrow" />
+                <div className="si-method-highlight">New filings get NEW badge (dismissed=false)</div>
+              </div>
+              <div className="si-method-details">
+                <div><span className="si-method-key">CIK source:</span> shared src/lib/cik-map.ts (55+ entries) with dynamic fallback from SEC company_tickers.json</div>
+                <div><span className="si-method-key">Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites form, filingDate, description, reportDate, fileUrl; NEVER overwrites dismissed, hidden, status, crossRefs</div>
+                <div><span className="si-method-key">NEW badge:</span> dismissed=false for filings not previously in DB; dismissed via POST /api/seen-filings when user clicks badge</div>
+                <div><span className="si-method-key">Concurrency:</span> all tickers fetched in parallel via Promise.allSettled</div>
+              </div>
+
+              <div className="si-method-divider" />
+
+              {/* Shared Data */}
+              <div className="si-method-section-title">Shared Data with Edgar Tab</div>
+              <div className="si-method-details">
+                <div><span className="si-method-key">Same table:</span> seen_filings keyed by (ticker, accession_number) &mdash; lowercase tickers</div>
+                <div><span className="si-method-key">Edgar tab fetch:</span> routes through /api/sec-intelligence?mode=refresh&amp;ticker=X (same API, single EDGAR fetch path)</div>
+                <div><span className="si-method-key">Edgar enrichment:</span> Edgar tab runs matchFilings() locally, saves status + crossRefs back to DB without overwriting other fields</div>
+                <div><span className="si-method-key">No data loss:</span> upsert preserves all Edgar tab state (status, crossRefs, dismissed, hidden) during SEC Intelligence refreshes</div>
+              </div>
+
+              <div className="si-method-divider" />
+
+              {/* Filters */}
+              <div className="si-method-section-title">Client-Side Filters</div>
+              <div className="si-method-details">
+                <div><span className="si-method-key">Ticker pills:</span> dynamic &mdash; only shows tickers that have filings in current result set</div>
+                <div><span className="si-method-key">Form filters:</span> 11 granular categories (8-K, 10-Q, 10-K, Form 4, Schedule 13, DEF 14A, S-1/S-3, Form 3/5, Form 144, Form D, Other) with normalizeForm() matching</div>
+                <div><span className="si-method-key">Date filter:</span> 7d / 30d / 90d / All &mdash; server-side via days param on API</div>
+                <div><span className="si-method-key">Search:</span> client-side text match against description, form, and ticker</div>
+                <div><span className="si-method-key">Pagination:</span> 20 filings per page, resets on any filter change</div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
