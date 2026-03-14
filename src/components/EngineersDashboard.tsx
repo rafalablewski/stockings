@@ -430,6 +430,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const [historyRuns, setHistoryRuns] = useState<HistoryRun[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [expandedRunId, setExpandedRunId] = useState<number | null>(null);
+  const [showHidden, setShowHidden] = useState(false);
 
   // ── Ticker dropdown helpers ──
   const selectedTickerInfo = tickers.find(t => t.ticker === selectedTicker);
@@ -502,14 +503,15 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const fetchHistory = useCallback(async () => {
     setHistoryLoading(true);
     try {
-      const res = await authFetch(`/api/engineers/history?ticker=${selectedTicker}&limit=50`);
+      const hiddenParam = showHidden ? '&showHidden=true' : '';
+      const res = await authFetch(`/api/engineers/history?ticker=${selectedTicker}&limit=50${hiddenParam}`);
       if (res.ok) {
         const data = await res.json();
         setHistoryRuns(data.runs || []);
       }
     } catch { /* silent */ }
     setHistoryLoading(false);
-  }, [selectedTicker]);
+  }, [selectedTicker, showHidden]);
 
   useEffect(() => {
     if (activeTab === 'history') fetchHistory();
@@ -522,10 +524,14 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ hidden }),
       });
-      setHistoryRuns(prev => prev.filter(r => r.id !== id));
+      // Update in place so hidden rows stay visible when showHidden is on
+      setHistoryRuns(prev => showHidden
+        ? prev.map(r => r.id === id ? { ...r, hidden } : r)
+        : prev.filter(r => r.id !== id)
+      );
       if (expandedRunId === id) setExpandedRunId(null);
     } catch { /* silent */ }
-  }, [expandedRunId]);
+  }, [expandedRunId, showHidden]);
 
   const handleDeleteRun = useCallback(async (id: number) => {
     try {
@@ -898,7 +904,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
               <div className="eng-empty">
                 <div>Loading history...</div>
               </div>
-            ) : historyRuns.length === 0 ? (
+            ) : historyRuns.length === 0 && !showHidden ? (
               <div className="eng-empty">
                 <div>No operations history recorded yet for {selectedTicker}.</div>
                 <div className="eng-empty-sub">
@@ -907,69 +913,148 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
               </div>
             ) : (
               <div className="eng-history-list">
-                <div className="eng-history-header">
-                  <span className="eng-history-count">{historyRuns.length} runs</span>
-                  <button className="eng-btn eng-btn-sm" onClick={fetchHistory} disabled={historyLoading}>
-                    {historyLoading ? 'Refreshing...' : 'Refresh'}
-                  </button>
+                {/* ── Toolbar ── */}
+                <div className="eng-history-toolbar">
+                  <div className="eng-history-toolbar-left">
+                    <span className="eng-history-count">
+                      {historyRuns.filter(r => !r.hidden).length} run{historyRuns.filter(r => !r.hidden).length !== 1 ? 's' : ''}
+                      {showHidden && historyRuns.some(r => r.hidden) && (
+                        <span className="eng-history-hidden-count">
+                          {' + '}{historyRuns.filter(r => r.hidden).length} hidden
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                  <div className="eng-history-toolbar-right">
+                    <label className="eng-history-toggle">
+                      <input
+                        type="checkbox"
+                        checked={showHidden}
+                        onChange={() => setShowHidden(h => !h)}
+                      />
+                      <span>Show hidden</span>
+                    </label>
+                    <button className="eng-btn" onClick={fetchHistory} disabled={historyLoading}>
+                      {historyLoading ? 'Refreshing...' : 'Refresh'}
+                    </button>
+                  </div>
                 </div>
+
+                {/* ── Run list ── */}
                 {historyRuns.map(run => {
                   const isExpanded = expandedRunId === run.id;
-                  const statusColor = run.status === 'completed' ? 'var(--color-mint, #34d399)'
-                    : run.status === 'failed' ? 'var(--color-red, #ef4444)'
-                    : run.status === 'running' ? 'var(--color-cyan, #22d3ee)'
-                    : 'var(--color-muted, #888)';
+                  const statusLabel = run.status === 'completed' ? 'OK'
+                    : run.status === 'failed' ? 'FAIL'
+                    : run.status === 'running' ? 'RUN'
+                    : run.status === 'queued' ? 'QUEUE'
+                    : run.status.toUpperCase();
+
+                  // First line of output as a preview
+                  const preview = run.outputSummary
+                    ? run.outputSummary.split('\n').find(l => l.trim())?.trim().slice(0, 120) || ''
+                    : run.errorsEncountered
+                      ? run.errorsEncountered.split('\n')[0]?.trim().slice(0, 120) || ''
+                      : '';
+
                   return (
-                    <div key={run.id} className="eng-history-row" data-status={run.status}>
+                    <div
+                      key={run.id}
+                      className={`eng-history-row ${run.hidden ? 'eng-history-row-hidden' : ''}`}
+                      data-status={run.status}
+                    >
+                      {/* ── Collapsed header ── */}
                       <div
-                        className="eng-history-row-header"
+                        className={`eng-history-row-header ${isExpanded ? 'eng-history-row-header-active' : ''}`}
                         onClick={() => setExpandedRunId(isExpanded ? null : run.id)}
-                        style={{ cursor: 'pointer' }}
                       >
-                        <span className="eng-history-status" style={{ color: statusColor }}>
-                          {run.status === 'completed' ? '\u2713' : run.status === 'failed' ? '\u2717' : run.status === 'running' ? '\u25CF' : '\u25CB'}
+                        <span className="eng-history-chevron">{isExpanded ? '\u25BC' : '\u25B6'}</span>
+                        <span className={`eng-history-pill eng-history-pill-${run.status}`}>
+                          {statusLabel}
                         </span>
                         <span className="eng-history-engineer">{run.engineerId}</span>
                         {run.workflowId && (
                           <span className="eng-history-workflow">{run.workflowId}</span>
                         )}
-                        <span className="eng-history-trigger">{run.triggerType}</span>
+                        <span className={`eng-history-trigger eng-history-trigger-${run.triggerType}`}>
+                          {run.triggerType}
+                        </span>
+                        {run.hidden && <span className="eng-history-badge-hidden">HIDDEN</span>}
+                        <span className="eng-history-spacer" />
                         <span className="eng-history-duration">{formatDuration(run.durationMs)}</span>
                         <span className="eng-history-time">{formatTime(run.completedAt || run.startedAt || run.createdAt)}</span>
-                        <span className="eng-history-expand">{isExpanded ? '\u25B2' : '\u25BC'}</span>
                       </div>
+
+                      {/* ── Preview line (only when collapsed) ── */}
+                      {!isExpanded && preview && (
+                        <div
+                          className="eng-history-preview"
+                          onClick={() => setExpandedRunId(run.id)}
+                        >
+                          {preview}{preview.length >= 120 ? '...' : ''}
+                        </div>
+                      )}
+
+                      {/* ── Expanded details ── */}
                       {isExpanded && (
                         <div className="eng-history-details">
-                          {run.triggerReason && (
-                            <div className="eng-history-detail-row">
-                              <span className="eng-history-detail-label">Reason:</span>
-                              <span>{run.triggerReason}</span>
+                          {/* Meta grid */}
+                          <div className="eng-history-meta">
+                            <div className="eng-history-meta-item">
+                              <span className="eng-history-meta-label">Trigger</span>
+                              <span className="eng-history-meta-value">{run.triggerReason || run.triggerType}</span>
                             </div>
-                          )}
+                            <div className="eng-history-meta-item">
+                              <span className="eng-history-meta-label">Started</span>
+                              <span className="eng-history-meta-value">{run.startedAt ? new Date(run.startedAt).toLocaleString() : '\u2014'}</span>
+                            </div>
+                            <div className="eng-history-meta-item">
+                              <span className="eng-history-meta-label">Duration</span>
+                              <span className="eng-history-meta-value">{formatDuration(run.durationMs)}</span>
+                            </div>
+                            {run.patchesApplied > 0 && (
+                              <div className="eng-history-meta-item">
+                                <span className="eng-history-meta-label">Patches</span>
+                                <span className="eng-history-meta-value">{run.patchesApplied}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Output */}
                           {run.outputSummary && (
-                            <div className="eng-history-detail-row">
-                              <span className="eng-history-detail-label">Output:</span>
+                            <div className="eng-history-section">
+                              <div className="eng-history-section-label">Output</div>
                               <pre className="eng-history-output">{run.outputSummary}</pre>
                             </div>
                           )}
+
+                          {/* Error */}
                           {run.errorsEncountered && (
-                            <div className="eng-history-detail-row">
-                              <span className="eng-history-detail-label">Error:</span>
+                            <div className="eng-history-section">
+                              <div className="eng-history-section-label eng-history-section-label-error">Error</div>
                               <pre className="eng-history-output eng-history-error">{run.errorsEncountered}</pre>
                             </div>
                           )}
+
+                          {/* Actions */}
                           <div className="eng-history-actions">
+                            {run.hidden ? (
+                              <button
+                                className="eng-btn eng-btn-ghost"
+                                onClick={(e) => { e.stopPropagation(); handleHideRun(run.id, false); }}
+                              >
+                                Unhide
+                              </button>
+                            ) : (
+                              <button
+                                className="eng-btn eng-btn-ghost"
+                                onClick={(e) => { e.stopPropagation(); handleHideRun(run.id, true); }}
+                              >
+                                Hide
+                              </button>
+                            )}
                             <button
-                              className="eng-btn eng-btn-sm eng-btn-ghost"
-                              onClick={(e) => { e.stopPropagation(); handleHideRun(run.id, true); }}
-                              title="Hide from history"
-                            >
-                              Hide
-                            </button>
-                            <button
-                              className="eng-btn eng-btn-sm eng-btn-danger"
+                              className="eng-btn eng-btn-danger"
                               onClick={(e) => { e.stopPropagation(); handleDeleteRun(run.id); }}
-                              title="Permanently delete"
                             >
                               Delete
                             </button>
@@ -979,6 +1064,13 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                     </div>
                   );
                 })}
+
+                {/* Empty state when only hidden exist but toggle is off */}
+                {historyRuns.length === 0 && showHidden && (
+                  <div className="eng-empty">
+                    <div>No hidden runs found for {selectedTicker}.</div>
+                  </div>
+                )}
               </div>
             )}
           </div>
