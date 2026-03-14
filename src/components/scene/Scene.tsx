@@ -3,10 +3,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import SceneView from './SceneView';
 import TopDownView from './TopDownView';
-import FlatView from './FlatView';
 import Room from '../Room';
 
-type ViewMode = '3d' | 'top' | 'flat';
+type ViewMode = '3d' | 'top';
 import { orgNodes } from '@/data/org-hierarchy';
 import { authFetch } from '@/lib/auth-fetch';
 import {
@@ -352,13 +351,13 @@ export default function Scene() {
       >
         {/* View mode toggle — top center */}
         <div className="scene-view-toggle">
-          {(['3d', 'top', 'flat'] as const).map(mode => (
+          {(['3d', 'top'] as const).map(mode => (
             <button
               key={mode}
               className={`scene-view-tab ${viewMode === mode ? 'scene-view-tab-active' : ''}`}
               onClick={() => setViewMode(mode)}
             >
-              {mode === '3d' ? '3D' : mode === 'top' ? 'Top' : 'Flat'}
+              {mode === '3d' ? '3D' : 'Top'}
             </button>
           ))}
         </div>
@@ -412,7 +411,6 @@ export default function Scene() {
 
         {viewMode === '3d' && <SceneView avatars={avatars} workingState={workingState} rotation={rotation} pitch={pitch} zoom={zoom} />}
         {viewMode === 'top' && <TopDownView avatars={avatars} workingState={workingState} />}
-        {viewMode === 'flat' && <FlatView avatars={avatars} workingState={workingState} />}
       </div>
       {!fullscreen && (
         <div className="scene-lower">
