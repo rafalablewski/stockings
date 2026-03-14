@@ -47,7 +47,6 @@ function getNodeRadius(type: OrgNode['type']): number {
   switch (type) {
     case 'boss': return 36;
     case 'division': return 28;
-    case 'pm': return 24;
     case 'engineer': return 20;
   }
 }
@@ -304,10 +303,12 @@ function GraphTooltip({ tooltip, engineers }: { tooltip: TooltipState; engineers
           </div>
         </>
       )}
-      {node.type === 'pm' && node.managedEngineers && (
+      {node.type === 'division' && (
         <div className="eng-graph-tooltip-row">
-          <span className="eng-graph-tooltip-key">Manages</span>
-          <span className="eng-graph-tooltip-val">{node.managedEngineers.length} engineers</span>
+          <span className="eng-graph-tooltip-key">Reports</span>
+          <span className="eng-graph-tooltip-val">
+            {orgNodes.filter(n => n.parentId === node.id && n.type === 'engineer').length} engineers
+          </span>
         </div>
       )}
     </div>
@@ -542,10 +543,6 @@ export default function NetworkGraph({ engineers, runningIds, onSelectEngineer }
         <div className="eng-graph-legend-row">
           <svg width={16} height={16}><circle cx={8} cy={8} r={5} fill="none" stroke="#22d3ee" strokeWidth={1.5} /></svg>
           <span>Division</span>
-        </div>
-        <div className="eng-graph-legend-row">
-          <svg width={16} height={16}><circle cx={8} cy={8} r={4} fill="none" stroke="#fb923c" strokeWidth={1.5} /></svg>
-          <span>Project Manager</span>
         </div>
         <div className="eng-graph-legend-row">
           <svg width={16} height={16}>

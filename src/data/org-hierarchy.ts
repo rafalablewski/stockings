@@ -6,7 +6,7 @@ import type { EngineerTask } from '@/lib/engineers';
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
-export type OrgNodeType = 'boss' | 'division' | 'pm' | 'engineer';
+export type OrgNodeType = 'boss' | 'division' | 'engineer';
 
 export interface OrgNode {
   id: string;
@@ -17,7 +17,6 @@ export interface OrgNode {
   color: string;            // hex color
   parentId: string | null;
   engineerId?: string;      // links to EngineerTask.id for engineer nodes
-  managedEngineers?: string[]; // engineer IDs managed by this PM
 }
 
 export interface OrgEdge {
@@ -37,11 +36,6 @@ export const ORG_COLORS = {
   gemini:     '#34d399',
   aiEngineer: '#f472b6',
   pm:         '#fb923c',
-  // Engineer categories
-  research:     '#34d399', // mint
-  monitoring:   '#38bdf8', // sky
-  intelligence: '#fbbf24', // gold
-  audit:        '#a78bfa', // violet
 } as const;
 
 // ── Nodes ──────────────────────────────────────────────────────────────────
@@ -105,54 +99,16 @@ export const orgNodes: OrgNode[] = [
     parentId: 'boss',
   },
 
-  // Project Managers (under PM division)
-  {
-    id: 'pm-research',
-    type: 'pm',
-    label: 'Research & Thesis PM',
-    badge: 'PM1',
-    role: 'Research Pipeline',
-    color: ORG_COLORS.research,
-    parentId: 'div-pm',
-    managedEngineers: ['thesis-engineer', 'capital-engineer', 'earnings-engineer'],
-  },
-  {
-    id: 'pm-monitoring',
-    type: 'pm',
-    label: 'Monitoring & Intel PM',
-    badge: 'PM2',
-    role: 'Data Ingestion & Signals',
-    color: ORG_COLORS.intelligence,
-    parentId: 'div-pm',
-    managedEngineers: [
-      'filing-engineer', 'press-engineer', 'insider-engineer',
-      'catalyst-engineer', 'sentiment-engineer', 'regulatory-engineer',
-      'ask-agent-engineer',
-    ],
-  },
-  {
-    id: 'pm-audit',
-    type: 'pm',
-    label: 'Platform Audit PM',
-    badge: 'PM3',
-    role: 'Quality & Security',
-    color: ORG_COLORS.audit,
-    parentId: 'div-pm',
-    managedEngineers: [
-      'data-quality-engineer', 'code-security-engineer',
-      'performance-engineer', 'disclosure-engineer',
-    ],
-  },
-
-  // Engineers — Research (under PM1)
+  // ── Engineers under Claude (7) ──────────────────────────────────────────
+  // Deep reasoning, complex analysis, code audits, agentic workflows
   {
     id: 'eng-thesis',
     type: 'engineer',
     label: 'Thesis Engineer',
     badge: 'THE',
     role: 'Senior Research Analyst',
-    color: ORG_COLORS.research,
-    parentId: 'pm-research',
+    color: ORG_COLORS.claude,
+    parentId: 'div-claude',
     engineerId: 'thesis-engineer',
   },
   {
@@ -161,8 +117,8 @@ export const orgNodes: OrgNode[] = [
     label: 'Capital Structure',
     badge: 'CAP',
     role: 'Capital Markets Analyst',
-    color: ORG_COLORS.research,
-    parentId: 'pm-research',
+    color: ORG_COLORS.claude,
+    parentId: 'div-claude',
     engineerId: 'capital-engineer',
   },
   {
@@ -171,41 +127,9 @@ export const orgNodes: OrgNode[] = [
     label: 'Earnings Engineer',
     badge: 'ERN',
     role: 'Earnings & Financials',
-    color: ORG_COLORS.research,
-    parentId: 'pm-research',
+    color: ORG_COLORS.claude,
+    parentId: 'div-claude',
     engineerId: 'earnings-engineer',
-  },
-
-  // Engineers — Monitoring & Intelligence (under PM2)
-  {
-    id: 'eng-filing',
-    type: 'engineer',
-    label: 'SEC Filing',
-    badge: 'SEC',
-    role: 'Regulatory Filing Analyst',
-    color: ORG_COLORS.monitoring,
-    parentId: 'pm-monitoring',
-    engineerId: 'filing-engineer',
-  },
-  {
-    id: 'eng-press',
-    type: 'engineer',
-    label: 'Press Intel',
-    badge: 'PRS',
-    role: 'Media & PR Analyst',
-    color: ORG_COLORS.intelligence,
-    parentId: 'pm-monitoring',
-    engineerId: 'press-engineer',
-  },
-  {
-    id: 'eng-insider',
-    type: 'engineer',
-    label: 'Insider Activity',
-    badge: 'INS',
-    role: 'Governance & Insider',
-    color: ORG_COLORS.monitoring,
-    parentId: 'pm-monitoring',
-    engineerId: 'insider-engineer',
   },
   {
     id: 'eng-catalyst',
@@ -213,9 +137,85 @@ export const orgNodes: OrgNode[] = [
     label: 'Catalyst Tracker',
     badge: 'CAT',
     role: 'Event-Driven Analyst',
-    color: ORG_COLORS.intelligence,
-    parentId: 'pm-monitoring',
+    color: ORG_COLORS.claude,
+    parentId: 'div-claude',
     engineerId: 'catalyst-engineer',
+  },
+  {
+    id: 'eng-code-security',
+    type: 'engineer',
+    label: 'Code Security',
+    badge: 'CSE',
+    role: 'AppSec Analyst',
+    color: ORG_COLORS.claude,
+    parentId: 'div-claude',
+    engineerId: 'code-security-engineer',
+  },
+  {
+    id: 'eng-data-quality',
+    type: 'engineer',
+    label: 'Data Quality',
+    badge: 'DQ',
+    role: 'Research Data QA',
+    color: ORG_COLORS.claude,
+    parentId: 'div-claude',
+    engineerId: 'data-quality-engineer',
+  },
+  {
+    id: 'eng-ask-agent',
+    type: 'engineer',
+    label: 'General Intel',
+    badge: 'GEN',
+    role: 'Cross-Domain Assistant',
+    color: ORG_COLORS.claude,
+    parentId: 'div-claude',
+    engineerId: 'ask-agent-engineer',
+  },
+
+  // ── Engineers under Cursor (1) ──────────────────────────────────────────
+  // IDE-level codebase analysis, render profiling, bundle optimization
+  {
+    id: 'eng-performance',
+    type: 'engineer',
+    label: 'Performance',
+    badge: 'PRF',
+    role: 'Platform Performance',
+    color: ORG_COLORS.cursor,
+    parentId: 'div-cursor',
+    engineerId: 'performance-engineer',
+  },
+
+  // ── Engineers under Gemini (6) ──────────────────────────────────────────
+  // Google ecosystem access, massive context, external data analysis
+  {
+    id: 'eng-filing',
+    type: 'engineer',
+    label: 'SEC Filing',
+    badge: 'SEC',
+    role: 'Regulatory Filing Analyst',
+    color: ORG_COLORS.gemini,
+    parentId: 'div-gemini',
+    engineerId: 'filing-engineer',
+  },
+  {
+    id: 'eng-insider',
+    type: 'engineer',
+    label: 'Insider Activity',
+    badge: 'INS',
+    role: 'Governance & Insider',
+    color: ORG_COLORS.gemini,
+    parentId: 'div-gemini',
+    engineerId: 'insider-engineer',
+  },
+  {
+    id: 'eng-press',
+    type: 'engineer',
+    label: 'Press Intel',
+    badge: 'PRS',
+    role: 'Media & PR Analyst',
+    color: ORG_COLORS.gemini,
+    parentId: 'div-gemini',
+    engineerId: 'press-engineer',
   },
   {
     id: 'eng-sentiment',
@@ -223,8 +223,8 @@ export const orgNodes: OrgNode[] = [
     label: 'Market Sentiment',
     badge: 'SEN',
     role: 'Quant Sentiment',
-    color: ORG_COLORS.intelligence,
-    parentId: 'pm-monitoring',
+    color: ORG_COLORS.gemini,
+    parentId: 'div-gemini',
     engineerId: 'sentiment-engineer',
   },
   {
@@ -233,51 +233,9 @@ export const orgNodes: OrgNode[] = [
     label: 'Regulatory & IP',
     badge: 'REG',
     role: 'Regulatory & Patent',
-    color: ORG_COLORS.intelligence,
-    parentId: 'pm-monitoring',
+    color: ORG_COLORS.gemini,
+    parentId: 'div-gemini',
     engineerId: 'regulatory-engineer',
-  },
-  {
-    id: 'eng-ask-agent',
-    type: 'engineer',
-    label: 'General Intel',
-    badge: 'GEN',
-    role: 'Cross-Domain Assistant',
-    color: ORG_COLORS.intelligence,
-    parentId: 'pm-monitoring',
-    engineerId: 'ask-agent-engineer',
-  },
-
-  // Engineers — Audit (under PM3)
-  {
-    id: 'eng-data-quality',
-    type: 'engineer',
-    label: 'Data Quality',
-    badge: 'DQ',
-    role: 'Research Data QA',
-    color: ORG_COLORS.audit,
-    parentId: 'pm-audit',
-    engineerId: 'data-quality-engineer',
-  },
-  {
-    id: 'eng-code-security',
-    type: 'engineer',
-    label: 'Code Security',
-    badge: 'SEC',
-    role: 'AppSec Analyst',
-    color: ORG_COLORS.audit,
-    parentId: 'pm-audit',
-    engineerId: 'code-security-engineer',
-  },
-  {
-    id: 'eng-performance',
-    type: 'engineer',
-    label: 'Performance',
-    badge: 'PRF',
-    role: 'Platform Performance',
-    color: ORG_COLORS.audit,
-    parentId: 'pm-audit',
-    engineerId: 'performance-engineer',
   },
   {
     id: 'eng-disclosure',
@@ -285,8 +243,8 @@ export const orgNodes: OrgNode[] = [
     label: 'Disclosure & Model',
     badge: 'DIS',
     role: 'Research Integrity',
-    color: ORG_COLORS.audit,
-    parentId: 'pm-audit',
+    color: ORG_COLORS.gemini,
+    parentId: 'div-gemini',
     engineerId: 'disclosure-engineer',
   },
 ];
@@ -323,7 +281,7 @@ export function computeTriggerEdges(engineers: EngineerTask[]): OrgEdge[] {
     }
   }
 
-  // Create edges between all engineers sharing a trigger (cross-PM only)
+  // Create edges between engineers sharing a trigger (cross-division only)
   const seen = new Set<string>();
   for (const [event, nodeIds] of eventMap) {
     for (let i = 0; i < nodeIds.length; i++) {
@@ -331,7 +289,7 @@ export function computeTriggerEdges(engineers: EngineerTask[]): OrgEdge[] {
         const a = nodeIds[i], b = nodeIds[j];
         const nodeA = orgNodes.find(n => n.id === a);
         const nodeB = orgNodes.find(n => n.id === b);
-        // Only show cross-PM trigger connections
+        // Only show cross-division trigger connections
         if (nodeA?.parentId === nodeB?.parentId) continue;
         const key = [a, b].sort().join('::');
         if (seen.has(key)) continue;
@@ -350,11 +308,12 @@ export function computeTriggerEdges(engineers: EngineerTask[]): OrgEdge[] {
   return edges;
 }
 
-// ── Data flow edges (PM2 → PM1 → PM3) ─────────────────────────────────────
+// ── Data flow edges (Gemini → Claude → Cursor) ───────────────────────────
+// Gemini ingests external data → Claude reasons over it → Cursor profiles output
 
 export const dataFlowEdges: OrgEdge[] = [
-  { from: 'pm-monitoring', to: 'pm-research', type: 'dataflow', label: 'events', color: 'rgba(56, 189, 248, 0.5)' },
-  { from: 'pm-research', to: 'pm-audit', type: 'dataflow', label: 'data updated', color: 'rgba(167, 139, 250, 0.5)' },
+  { from: 'div-gemini', to: 'div-claude', type: 'dataflow', label: 'filings & signals', color: 'rgba(52, 211, 153, 0.5)' },
+  { from: 'div-claude', to: 'div-cursor', type: 'dataflow', label: 'data updated', color: 'rgba(34, 211, 238, 0.5)' },
 ];
 
 // ── Layout computation ─────────────────────────────────────────────────────
@@ -366,7 +325,7 @@ export interface NodePosition {
 }
 
 const CANVAS_W = 1400;
-const ROW_Y = { boss: 60, division: 220, pm: 380, engineer: 560 };
+const ROW_Y = { boss: 60, division: 220, engineer: 420 };
 
 export function computeLayout(): NodePosition[] {
   const positions: NodePosition[] = [];
@@ -382,25 +341,18 @@ export function computeLayout(): NodePosition[] {
     positions.push({ id: n.id, x: divSpacing * (i + 1), y: ROW_Y.division });
   });
 
-  // Row 2: PM nodes — spread under PM division
-  const pmDiv = positions.find(p => p.id === 'div-pm')!;
-  const pmNodes = orgNodes.filter(n => n.type === 'pm');
-  const pmSpread = 320;
-  pmNodes.forEach((n, i) => {
-    const offset = (i - (pmNodes.length - 1) / 2) * pmSpread;
-    positions.push({ id: n.id, x: pmDiv.x + offset, y: ROW_Y.pm });
-  });
+  // Row 2: Engineers — grouped under their division
+  for (const div of divNodes) {
+    const divPos = positions.find(p => p.id === div.id)!;
+    const children = orgNodes.filter(n => n.parentId === div.id && n.type === 'engineer');
+    if (children.length === 0) continue;
 
-  // Row 3: Engineers — grouped under their PM
-  for (const pm of pmNodes) {
-    const pmPos = positions.find(p => p.id === pm.id)!;
-    const children = orgNodes.filter(n => n.parentId === pm.id);
-    const engSpacing = Math.min(120, 600 / Math.max(children.length, 1));
+    const engSpacing = Math.min(110, 500 / Math.max(children.length, 1));
     const totalWidth = (children.length - 1) * engSpacing;
     children.forEach((n, i) => {
       positions.push({
         id: n.id,
-        x: pmPos.x - totalWidth / 2 + i * engSpacing,
+        x: divPos.x - totalWidth / 2 + i * engSpacing,
         y: ROW_Y.engineer + (i % 2 === 0 ? 0 : 30), // stagger for readability
       });
     });
