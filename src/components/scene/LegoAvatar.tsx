@@ -14,29 +14,30 @@ export interface LegoAvatarProps {
   isWorking: boolean;
   chattingWith: number | null;
   rotation: number;
+  isWalking?: boolean;
 }
 
 export default function LegoAvatar({
-  wx, wy, color, badge, label, activity, isWorking, rotation: rot,
+  wx, wy, color, badge, label, activity, isWorking, rotation: rot, isWalking,
 }: LegoAvatarProps) {
   const actDef = ACTIVITIES[activity];
   const seated = actDef.seated;
   const hidden = activity === 'bathroom';
   const screenPos = toIso(wx, wy, 0, rot);
-  const scale = 0.65;
+  const scale = 0.95;
   const headColor = `${color}cc`;
 
   return (
     <g
-      className="scene-avatar"
+      className={`scene-avatar ${isWalking ? 'scene-avatar-walking' : ''}`}
       style={{
         transform: `translate(${screenPos.x}px, ${screenPos.y}px)`,
         opacity: hidden ? 0.3 : 1,
       }}
     >
       {/* Floor shadow */}
-      <ellipse cx={0} cy={2} rx={10 * scale} ry={5 * scale}
-        fill="rgba(0,0,0,0.3)" className="scene-avatar-shadow" />
+      <ellipse cx={0} cy={2} rx={12 * scale} ry={6 * scale}
+        fill="rgba(0,0,0,0.35)" className="scene-avatar-shadow" />
 
       <g transform={`scale(${scale})`}>
         {/* Head */}
@@ -71,8 +72,12 @@ export default function LegoAvatar({
         </g>
 
         {/* Legs */}
-        <rect x={-9} y={-15} width={8} height={seated ? 10 : 15} rx={2} fill={`${color}88`} />
-        <rect x={1} y={-15} width={8} height={seated ? 10 : 15} rx={2} fill={`${color}88`} />
+        <rect x={-9} y={-15} width={8} height={seated ? 10 : 15} rx={2}
+          fill={`${color}88`}
+          className={isWalking ? 'scene-leg-left' : ''} />
+        <rect x={1} y={-15} width={8} height={seated ? 10 : 15} rx={2}
+          fill={`${color}88`}
+          className={isWalking ? 'scene-leg-right' : ''} />
 
         {/* Props */}
         {actDef.prop === 'coffee-cup' && (
@@ -116,12 +121,12 @@ export default function LegoAvatar({
       </g>
 
       {/* Name label */}
-      <text x={0} y={hidden ? 5 : 12} textAnchor="middle" fill="rgba(255,255,255,0.6)"
-        fontSize={8} fontFamily="'Outfit', sans-serif" fontWeight={500}>{label}</text>
+      <text x={0} y={hidden ? 5 : 14} textAnchor="middle" fill="rgba(255,255,255,0.6)"
+        fontSize={9} fontFamily="'Outfit', sans-serif" fontWeight={500}>{label}</text>
 
       {/* Working pulse */}
       {isWorking && (
-        <circle cx={0} cy={-48 * scale} r={3} fill={color} className="scene-status-pulse" />
+        <circle cx={0} cy={-48 * scale} r={4} fill={color} className="scene-status-pulse" />
       )}
     </g>
   );

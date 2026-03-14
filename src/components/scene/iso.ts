@@ -1,13 +1,13 @@
 // ═══════════════════════════════════════════════════════════════════════════
-// ISOMETRIC PROJECTION — Sims-style 2:1 isometric with rotation support
+// ISOMETRIC PROJECTION — Sims-style 2:1 isometric with rotation + zoom
 // ═══════════════════════════════════════════════════════════════════════════
 
-/** Half-width of one isometric tile (px) — larger = more zoomed in */
-export const TILE_HW = 32;
+/** Half-width of one isometric tile (px) — larger = more detail */
+export const TILE_HW = 48;
 /** Half-height of one isometric tile (px) */
-export const TILE_HH = 16;
+export const TILE_HH = 24;
 /** Vertical scale: 1 world Z unit = this many screen pixels */
-export const Z_SCALE = 16;
+export const Z_SCALE = 24;
 
 /** Room dimensions in world-grid tiles */
 export const ROOM_W = 28;
@@ -50,8 +50,7 @@ export function isoPoints(pts: Array<{ x: number; y: number }>): string {
 }
 
 /**
- * Draw 3 visible faces of an isometric block as SVG polygon point strings.
- * The visible faces depend on the rotation angle.
+ * Draw all faces of an isometric block as SVG polygon point strings.
  */
 export function blockFaces(
   x: number, y: number, z: number,
@@ -95,9 +94,10 @@ export function blockFaces(
 }
 
 /**
- * Compute the SVG viewBox that fits the entire room at the given rotation.
+ * Compute the SVG viewBox that fits the room at the given rotation.
+ * zoom > 1 crops the view for a closer look.
  */
-export function computeViewBox(rotDeg: number): { x: number; y: number; w: number; h: number } {
+export function computeViewBox(rotDeg: number, zoom: number = 1): { x: number; y: number; w: number; h: number } {
   const corners: Array<[number, number]> = [
     [0, 0], [ROOM_W, 0], [ROOM_W, ROOM_D], [0, ROOM_D],
   ];
@@ -112,27 +112,33 @@ export function computeViewBox(rotDeg: number): { x: number; y: number; w: numbe
     maxY = Math.max(maxY, p0.y, p1.y);
   }
 
-  const pad = 60;
+  const pad = 40;
+  const fullW = maxX - minX + 2 * pad;
+  const fullH = maxY - minY + 2 * pad;
+  const cx = (minX + maxX) / 2;
+  const cy = (minY + maxY) / 2;
+
+  const w = fullW / zoom;
+  const h = fullH / zoom;
+
   return {
-    x: minX - pad,
-    y: minY - pad,
-    w: maxX - minX + 2 * pad,
-    h: maxY - minY + 2 * pad,
+    x: cx - w / 2,
+    y: cy - h / 2,
+    w,
+    h,
   };
 }
 
 /**
  * Determine which walls are visible at a given rotation.
- * Returns { back, front, left, right } as booleans.
  */
 export function visibleWalls(rotDeg: number) {
-  // Normalize to 0-360
   const r = ((rotDeg % 360) + 360) % 360;
   return {
-    back:  r < 90 || r >= 270,   // y=ROOM_D wall
-    right: r < 180,               // x=ROOM_W wall
-    front: r >= 90 && r < 270,    // y=0 wall
-    left:  r >= 180,              // x=0 wall
+    back:  r < 90 || r >= 270,
+    right: r < 180,
+    front: r >= 90 && r < 270,
+    left:  r >= 180,
   };
 }
 
@@ -150,5 +156,5 @@ export function isoDepth(wx: number, wy: number, rotDeg: number = 0): number {
   const sin = Math.sin(rad);
   const rx = dx * cos - dy * sin;
   const ry = dx * sin + dy * cos;
-  return rx + ry; // depth in isometric = sum of rotated coords
+  return rx + ry;
 }

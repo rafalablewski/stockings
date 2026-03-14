@@ -116,14 +116,40 @@
   display: block;
 }
 
-/* ── Avatar transitions (realistic walking pace) ── */
+/* ── Avatar transitions ── */
 .scene-avatar {
   cursor: default;
-  transition: transform 2.5s ease-in-out, opacity 0.5s ease;
+  transition: transform 0.35s linear, opacity 0.4s ease;
+}
+
+/* Walking avatars: faster, linear steps */
+.scene-avatar-walking {
+  transition: transform 0.3s linear, opacity 0.4s ease;
 }
 
 .scene-avatar-shadow {
-  transition: all 2.5s ease-in-out;
+  transition: all 0.35s linear;
+}
+
+/* Walking leg animation — alternating leg swing */
+.scene-leg-left {
+  animation: scene-leg-swing-l 0.35s ease-in-out infinite alternate;
+  transform-origin: center -15px;
+}
+
+.scene-leg-right {
+  animation: scene-leg-swing-r 0.35s ease-in-out infinite alternate;
+  transform-origin: center -15px;
+}
+
+@keyframes scene-leg-swing-l {
+  0% { transform: rotate(-8deg); }
+  100% { transform: rotate(8deg); }
+}
+
+@keyframes scene-leg-swing-r {
+  0% { transform: rotate(8deg); }
+  100% { transform: rotate(-8deg); }
 }
 
 .scene-avatar:hover rect,

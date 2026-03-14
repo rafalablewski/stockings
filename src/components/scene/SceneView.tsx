@@ -63,7 +63,7 @@ export interface SceneViewProps {
 }
 
 export default function SceneView({ avatars, workingState, rotation: rot }: SceneViewProps) {
-  const vb = useMemo(() => computeViewBox(rot), [rot]);
+  const vb = useMemo(() => computeViewBox(rot, 1.8), [rot]);
   const walls = useMemo(() => visibleWalls(rot), [rot]);
 
   // Sort avatars back-to-front for proper overlap
@@ -543,6 +543,7 @@ export default function SceneView({ avatars, workingState, rotation: rot }: Scen
             isWorking={avatar.isWorking}
             chattingWith={avatar.chattingWith}
             rotation={rot}
+            isWalking={avatar.walkPath.length > 0}
           />
         ))}
       </svg>

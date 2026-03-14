@@ -14,6 +14,10 @@ import {
   pickRandomActivity,
   randomDuration,
 } from './activities';
+import { findPath } from './pathfinding';
+
+/** How often (ms) the walk/activity tick runs */
+const TICK_MS = 350;
 
 const DIVISIONS = [
   { id: 'claude',          divId: 'div-claude',      color: '#22d3ee', badge: 'ARCH', label: 'Claude' },
@@ -33,6 +37,10 @@ export interface AvatarState {
   wy: number;
   isWorking: boolean;
   chattingWith: number | null;
+  // Walking state
+  walkPath: WorldPos[];
+  pendingActivity: ActivityType | null;
+  pendingChattingWith: number | null;
 }
 
 function activityPos(activity: ActivityType, pmIndex: number, chattingWith: number | null): WorldPos {
@@ -67,13 +75,45 @@ function activityPos(activity: ActivityType, pmIndex: number, chattingWith: numb
   }
 }
 
+/** Start an avatar walking to a destination, or move immediately if adjacent */
+function startWalk(
+  pm: AvatarState,
+  destPos: WorldPos,
+  targetActivity: ActivityType,
+  targetChattingWith: number | null,
+): AvatarState {
+  const path = findPath({ x: pm.wx, y: pm.wy }, destPos);
+  if (path.length <= 1) {
+    // Close enough — apply immediately
+    return {
+      ...pm,
+      activity: targetActivity,
+      wx: destPos.x,
+      wy: destPos.y,
+      chattingWith: targetChattingWith,
+      walkPath: [],
+      pendingActivity: null,
+      pendingChattingWith: null,
+    };
+  }
+  // Start walking — keep 'idle' pose until arrival
+  return {
+    ...pm,
+    activity: 'idle',
+    chattingWith: null,
+    walkPath: path,
+    pendingActivity: targetActivity,
+    pendingChattingWith: targetChattingWith,
+  };
+}
+
 export default function Scene() {
   const [engineerWorking, setEngineerWorking] = useState<Record<string, boolean>>({});
   const [bridgeThinking, setBridgeThinking] = useState<Record<string, boolean>>({});
   const [fullscreen, setFullscreen] = useState(false);
   const [rotation, setRotation] = useState(0);
 
-  // Drag-to-rotate state
+  // Drag-to-rotate
   const dragRef = useRef<{ startX: number; startRot: number } | null>(null);
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
@@ -109,6 +149,9 @@ export default function Scene() {
       wy: CHAIR_POS[i].y,
       isWorking: false,
       chattingWith: null,
+      walkPath: [],
+      pendingActivity: null,
+      pendingChattingWith: null,
     }))
   );
 
@@ -154,89 +197,128 @@ export default function Scene() {
     return state;
   }, [engineerWorking, bridgeThinking]);
 
-  // Activity cycling
+  // Refs for tick
   const nextChangeRef = useRef<number[]>(
     DIVISIONS.map((_, i) => Date.now() + 4000 + i * 2000)
   );
   const workingStateRef = useRef(workingState);
   workingStateRef.current = workingState;
 
+  // ── Main tick: walking + activity cycling ──
   useEffect(() => {
     const tick = () => {
       const now = Date.now();
       const ws = workingStateRef.current;
+
       setAvatars(prev => {
         let changed = false;
         const next = [...prev];
+
         for (let i = 0; i < DIVISIONS.length; i++) {
-          if (now < nextChangeRef.current[i]) continue;
           const pm = next[i];
+
+          // Working engineers stay at desk
           if (ws[pm.id]) continue;
+
+          // ─── Walking: advance to next waypoint ───
+          if (pm.walkPath.length > 0) {
+            changed = true;
+            const pmCopy = { ...pm };
+            const waypoint = pmCopy.walkPath[0];
+            pmCopy.wx = waypoint.x;
+            pmCopy.wy = waypoint.y;
+            pmCopy.walkPath = pmCopy.walkPath.slice(1);
+
+            // Arrived at destination
+            if (pmCopy.walkPath.length === 0 && pmCopy.pendingActivity) {
+              pmCopy.activity = pmCopy.pendingActivity;
+              pmCopy.chattingWith = pmCopy.pendingChattingWith;
+              pmCopy.pendingActivity = null;
+              pmCopy.pendingChattingWith = null;
+              nextChangeRef.current[i] = now + randomDuration(ACTIVITIES[pmCopy.activity].durationRange);
+            }
+            next[i] = pmCopy;
+            continue;
+          }
+
+          // ─── Not walking: check if time for new activity ───
+          if (now < nextChangeRef.current[i]) continue;
+
           changed = true;
           const pmCopy = { ...pm };
+
+          // Clean up chatting partner
           if (pmCopy.chattingWith !== null) {
             const partner = { ...next[pmCopy.chattingWith] };
             if (partner.chattingWith === i) {
               const idlePos = activityPos('idle', pmCopy.chattingWith, null);
-              partner.activity = 'idle';
-              partner.wx = idlePos.x;
-              partner.wy = idlePos.y;
-              partner.chattingWith = null;
-              next[pmCopy.chattingWith] = partner;
+              next[pmCopy.chattingWith] = startWalk(partner, idlePos, 'idle', null);
+              nextChangeRef.current[pmCopy.chattingWith] = now + randomDuration(ACTIVITIES.idle.durationRange);
             }
           }
+
           const newActivity = pickRandomActivity(pmCopy.activity);
+
           if (newActivity === 'chatting') {
             const available = next
               .map((_, idx) => idx)
-              .filter(idx => idx !== i && !ws[next[idx].id] && next[idx].activity !== 'chatting' && next[idx].activity !== 'bathroom');
+              .filter(idx =>
+                idx !== i &&
+                !ws[next[idx].id] &&
+                next[idx].activity !== 'chatting' &&
+                next[idx].activity !== 'bathroom' &&
+                next[idx].walkPath.length === 0 // don't interrupt walking avatars
+              );
             if (available.length > 0) {
               const partnerIdx = available[Math.floor(Math.random() * available.length)];
               const myPos = activityPos('chatting', i, partnerIdx);
-              pmCopy.activity = 'chatting';
-              pmCopy.chattingWith = partnerIdx;
-              pmCopy.wx = myPos.x;
-              pmCopy.wy = myPos.y;
               const theirPos = activityPos('chatting', partnerIdx, i);
+
+              next[i] = startWalk(pmCopy, myPos, 'chatting', partnerIdx);
+
               const partner = { ...next[partnerIdx] };
-              partner.activity = 'chatting';
-              partner.chattingWith = i;
-              partner.wx = theirPos.x;
-              partner.wy = theirPos.y;
-              next[partnerIdx] = partner;
-              nextChangeRef.current[partnerIdx] = now + randomDuration(ACTIVITIES.chatting.durationRange);
+              next[partnerIdx] = startWalk(partner, theirPos, 'chatting', i);
+              nextChangeRef.current[partnerIdx] = now + randomDuration(ACTIVITIES.chatting.durationRange) + 5000;
             } else {
               const idlePos = activityPos('idle', i, null);
-              pmCopy.activity = 'idle';
-              pmCopy.wx = idlePos.x;
-              pmCopy.wy = idlePos.y;
-              pmCopy.chattingWith = null;
+              next[i] = startWalk(pmCopy, idlePos, 'idle', null);
+              nextChangeRef.current[i] = now + randomDuration(ACTIVITIES.idle.durationRange);
             }
           } else {
-            const pos = activityPos(newActivity, i, null);
-            pmCopy.activity = newActivity;
-            pmCopy.wx = pos.x;
-            pmCopy.wy = pos.y;
-            pmCopy.chattingWith = null;
+            const destPos = activityPos(newActivity, i, null);
+            next[i] = startWalk(pmCopy, destPos, newActivity, null);
+            nextChangeRef.current[i] = now + randomDuration(ACTIVITIES[newActivity].durationRange) + 5000;
           }
-          next[i] = pmCopy;
-          nextChangeRef.current[i] = now + randomDuration(ACTIVITIES[newActivity].durationRange);
+
+          // Don't set nextChangeRef here for walking — it's set on arrival
         }
+
         return changed ? next : prev;
       });
     };
-    const interval = setInterval(tick, 1000);
+
+    const interval = setInterval(tick, TICK_MS);
     return () => clearInterval(interval);
   }, []);
 
-  // Override to working
+  // Override to working (instant — no walking for urgent state)
   useEffect(() => {
     setAvatars(prev =>
       prev.map((pm, i) => {
         const isWorking = workingState[pm.id] ?? false;
         if (isWorking && pm.activity !== 'working') {
           const pos = CHAIR_POS[i];
-          return { ...pm, activity: 'working', wx: pos.x, wy: pos.y, isWorking: true, chattingWith: null };
+          return {
+            ...pm,
+            activity: 'working',
+            wx: pos.x,
+            wy: pos.y,
+            isWorking: true,
+            chattingWith: null,
+            walkPath: [],
+            pendingActivity: null,
+            pendingChattingWith: null,
+          };
         }
         if (!isWorking && pm.isWorking) return { ...pm, isWorking: false };
         return pm;
@@ -254,27 +336,14 @@ export default function Scene() {
         onPointerLeave={handlePointerUp}
         style={{ cursor: dragRef.current ? 'grabbing' : 'grab' }}
       >
-        {/* Controls overlay */}
         <div className="scene-controls">
-          <button
-            className="scene-ctrl-btn"
-            onClick={() => rotateBy(-90)}
-            title="Rotate left"
-          >
+          <button className="scene-ctrl-btn" onClick={() => rotateBy(-90)} title="Rotate left">
             {'\u21B6'}
           </button>
-          <button
-            className="scene-ctrl-btn"
-            onClick={() => rotateBy(90)}
-            title="Rotate right"
-          >
+          <button className="scene-ctrl-btn" onClick={() => rotateBy(90)} title="Rotate right">
             {'\u21B7'}
           </button>
-          <button
-            className="scene-ctrl-btn"
-            onClick={() => setRotation(0)}
-            title="Reset view"
-          >
+          <button className="scene-ctrl-btn" onClick={() => setRotation(0)} title="Reset view">
             {'\u2302'}
           </button>
           <button
