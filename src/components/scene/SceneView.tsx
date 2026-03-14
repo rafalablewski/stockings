@@ -180,75 +180,6 @@ export default function SceneView({ avatars, workingState, rotation: rot, pitch:
 
         {/* ═══ BACK WALL DECORATIONS (y=ROOM_D) ═══ */}
         <g className="scene-wall" style={{ opacity: wo.back }}>
-          {/* ── NYSE Banner ── */}
-          {(() => {
-            const bx = 4, bz = 3, bw = 5, bh = 2.2;
-            const bl = p(bx, ROOM_D, bz), br = p(bx + bw, ROOM_D, bz);
-            const tr = p(bx + bw, ROOM_D, bz + bh), tl = p(bx, ROOM_D, bz + bh);
-            return (
-              <g>
-                <polygon points={isoPoints([bl, br, tr, tl])} fill="rgba(0,50,120,0.5)" stroke="rgba(100,180,255,0.25)" strokeWidth={1} />
-                {/* NYSE Blue gradient overlay */}
-                <polygon points={isoPoints([bl, br, tr, tl])} fill="rgba(0,70,170,0.15)" />
-                <WallText wx={bx + bw / 2} wy={ROOM_D} wz={bz + bh - 0.5} rot={rot}
-                  fontSize={11} fill="rgba(255,255,255,0.9)" fontWeight={800}
-                  letterSpacing={3} fontFamily="'Space Mono', monospace">NYSE</WallText>
-                <WallText wx={bx + bw / 2} wy={ROOM_D} wz={bz + 0.4} rot={rot}
-                  fontSize={4.5} fill="rgba(100,180,255,0.7)" letterSpacing={1}>
-                  NEW YORK STOCK EXCHANGE
-                </WallText>
-                {/* Decorative line under NYSE */}
-                {(() => {
-                  const ll = p(bx + 0.5, ROOM_D, bz + 0.9);
-                  const lr = p(bx + bw - 0.5, ROOM_D, bz + 0.9);
-                  return <line x1={ll.x} y1={ll.y} x2={lr.x} y2={lr.y}
-                    stroke="rgba(100,180,255,0.3)" strokeWidth={1} />;
-                })()}
-              </g>
-            );
-          })()}
-
-          {/* ── NASDAQ Banner ── */}
-          {(() => {
-            const bx = 19, bz = 3, bw = 5, bh = 2.2;
-            const bl = p(bx, ROOM_D, bz), br = p(bx + bw, ROOM_D, bz);
-            const tr = p(bx + bw, ROOM_D, bz + bh), tl = p(bx, ROOM_D, bz + bh);
-            return (
-              <g>
-                <polygon points={isoPoints([bl, br, tr, tl])} fill="rgba(0,80,50,0.5)" stroke="rgba(52,211,153,0.25)" strokeWidth={1} />
-                <polygon points={isoPoints([bl, br, tr, tl])} fill="rgba(0,120,80,0.12)" />
-                <WallText wx={bx + bw / 2} wy={ROOM_D} wz={bz + bh - 0.5} rot={rot}
-                  fontSize={10} fill="rgba(255,255,255,0.9)" fontWeight={800}
-                  letterSpacing={2} fontFamily="'Space Mono', monospace">NASDAQ</WallText>
-                <WallText wx={bx + bw / 2} wy={ROOM_D} wz={bz + 0.4} rot={rot}
-                  fontSize={4.5} fill="rgba(52,211,153,0.7)" letterSpacing={1}>
-                  STOCK MARKET
-                </WallText>
-                {(() => {
-                  const ll = p(bx + 0.5, ROOM_D, bz + 0.9);
-                  const lr = p(bx + bw - 0.5, ROOM_D, bz + 0.9);
-                  return <line x1={ll.x} y1={ll.y} x2={lr.x} y2={lr.y}
-                    stroke="rgba(52,211,153,0.3)" strokeWidth={1} />;
-                })()}
-              </g>
-            );
-          })()}
-
-          {/* Ticker tape strip across wall */}
-          {(() => {
-            const bl = p(3, ROOM_D, 5.5), br = p(ROOM_W - 3, ROOM_D, 5.5);
-            const tr = p(ROOM_W - 3, ROOM_D, 5.8), tl = p(3, ROOM_D, 5.8);
-            return (
-              <g>
-                <polygon points={isoPoints([bl, br, tr, tl])} fill="rgba(255,200,0,0.06)" stroke="rgba(255,200,0,0.12)" strokeWidth={0.5} />
-                <WallText wx={ROOM_W / 2} wy={ROOM_D} wz={5.6} rot={rot}
-                  fontSize={3.5} fill="rgba(255,200,0,0.4)" letterSpacing={2} fontFamily="'Space Mono', monospace">
-                  ASTS +2.4% {'  '} NVDA +1.2% {'  '} TSLA -0.8% {'  '} MSFT +0.5% {'  '} AAPL +0.3%
-                </WallText>
-              </g>
-            );
-          })()}
-
           {/* Window 1 */}
           {(() => {
             const bl = p(10, ROOM_D, 1.5), br = p(12.5, ROOM_D, 1.5);
@@ -387,6 +318,73 @@ export default function SceneView({ avatars, workingState, rotation: rot, pitch:
 
         {/* ═══ FRONT WALL DECORATIONS (y=0) ═══ */}
         <g className="scene-wall" style={{ opacity: wo.front }}>
+          {/* ── NYSE Banner ── */}
+          {(() => {
+            const bx = 4, bz = 3, bw = 5, bh = 2.2;
+            const bl = p(bx, 0, bz), br = p(bx + bw, 0, bz);
+            const tr = p(bx + bw, 0, bz + bh), tl = p(bx, 0, bz + bh);
+            return (
+              <g>
+                <polygon points={isoPoints([bl, br, tr, tl])} fill="rgba(0,50,120,0.5)" stroke="rgba(100,180,255,0.25)" strokeWidth={1} />
+                <polygon points={isoPoints([bl, br, tr, tl])} fill="rgba(0,70,170,0.15)" />
+                <WallText wx={bx + bw / 2} wy={0} wz={bz + bh - 0.5} rot={rot}
+                  fontSize={11} fill="rgba(255,255,255,0.9)" fontWeight={800}
+                  letterSpacing={3} fontFamily="'Space Mono', monospace">NYSE</WallText>
+                <WallText wx={bx + bw / 2} wy={0} wz={bz + 0.4} rot={rot}
+                  fontSize={4.5} fill="rgba(100,180,255,0.7)" letterSpacing={1}>
+                  NEW YORK STOCK EXCHANGE
+                </WallText>
+                {(() => {
+                  const ll = p(bx + 0.5, 0, bz + 0.9);
+                  const lr = p(bx + bw - 0.5, 0, bz + 0.9);
+                  return <line x1={ll.x} y1={ll.y} x2={lr.x} y2={lr.y}
+                    stroke="rgba(100,180,255,0.3)" strokeWidth={1} />;
+                })()}
+              </g>
+            );
+          })()}
+
+          {/* ── NASDAQ Banner ── */}
+          {(() => {
+            const bx = 19, bz = 3, bw = 5, bh = 2.2;
+            const bl = p(bx, 0, bz), br = p(bx + bw, 0, bz);
+            const tr = p(bx + bw, 0, bz + bh), tl = p(bx, 0, bz + bh);
+            return (
+              <g>
+                <polygon points={isoPoints([bl, br, tr, tl])} fill="rgba(0,80,50,0.5)" stroke="rgba(52,211,153,0.25)" strokeWidth={1} />
+                <polygon points={isoPoints([bl, br, tr, tl])} fill="rgba(0,120,80,0.12)" />
+                <WallText wx={bx + bw / 2} wy={0} wz={bz + bh - 0.5} rot={rot}
+                  fontSize={10} fill="rgba(255,255,255,0.9)" fontWeight={800}
+                  letterSpacing={2} fontFamily="'Space Mono', monospace">NASDAQ</WallText>
+                <WallText wx={bx + bw / 2} wy={0} wz={bz + 0.4} rot={rot}
+                  fontSize={4.5} fill="rgba(52,211,153,0.7)" letterSpacing={1}>
+                  STOCK MARKET
+                </WallText>
+                {(() => {
+                  const ll = p(bx + 0.5, 0, bz + 0.9);
+                  const lr = p(bx + bw - 0.5, 0, bz + 0.9);
+                  return <line x1={ll.x} y1={ll.y} x2={lr.x} y2={lr.y}
+                    stroke="rgba(52,211,153,0.3)" strokeWidth={1} />;
+                })()}
+              </g>
+            );
+          })()}
+
+          {/* Ticker tape strip across front wall */}
+          {(() => {
+            const bl = p(3, 0, 5.5), br = p(ROOM_W - 3, 0, 5.5);
+            const tr = p(ROOM_W - 3, 0, 5.8), tl = p(3, 0, 5.8);
+            return (
+              <g>
+                <polygon points={isoPoints([bl, br, tr, tl])} fill="rgba(255,200,0,0.06)" stroke="rgba(255,200,0,0.12)" strokeWidth={0.5} />
+                <WallText wx={ROOM_W / 2} wy={0} wz={5.6} rot={rot}
+                  fontSize={3.5} fill="rgba(255,200,0,0.4)" letterSpacing={2} fontFamily="'Space Mono', monospace">
+                  ASTS +2.4% {'  '} NVDA +1.2% {'  '} TSLA -0.8% {'  '} MSFT +0.5% {'  '} AAPL +0.3%
+                </WallText>
+              </g>
+            );
+          })()}
+
           {/* Glass entrance doors */}
           {(() => {
             const bl = p(12, 0, 0), br = p(16, 0, 0);
@@ -394,7 +392,6 @@ export default function SceneView({ avatars, workingState, rotation: rot, pitch:
             return (
               <g>
                 <polygon points={isoPoints([bl, br, tr, tl])} fill="rgba(100,150,255,0.04)" stroke="rgba(255,255,255,0.1)" strokeWidth={0.8} />
-                {/* Door divider */}
                 {(() => { const ml = p(14, 0, 0), mr = p(14, 0, 4.5); return <line x1={ml.x} y1={ml.y} x2={mr.x} y2={mr.y} stroke="rgba(255,255,255,0.06)" strokeWidth={0.5} />; })()}
                 <WallText wx={14} wy={0} wz={2.5} rot={rot} fontSize={4} fill="rgba(255,255,255,0.15)" letterSpacing={2}>
                   ENTRANCE
