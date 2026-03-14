@@ -108,7 +108,7 @@ ${context}
 Respond naturally as Gemini (Research & Data division). If someone asked you a question, answer it. If there's a discussion, contribute your perspective. If you're introducing yourself, keep it brief and professional. Do not repeat or echo what others said. Do not prefix your message with your name or any label — just write the message content directly.`;
 
   const response = await ai.models.generateContent({
-    model: 'gemini-2.0-flash',
+    model: 'gemini-2.5-flash',
     contents: prompt,
     config: {
       systemInstruction: SYSTEM_INSTRUCTION,
