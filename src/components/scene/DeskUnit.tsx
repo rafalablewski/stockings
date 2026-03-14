@@ -8,112 +8,118 @@ export interface IsoDeskUnitProps {
   wy: number;
   color: string;
   isActive: boolean;
+  rotation: number;
 }
 
 /**
- * Isometric desk station: desk surface, monitor, keyboard, chair.
- * Monitor glows when isActive is true.
+ * Professional trading desk with dual monitors, keyboard, and ergonomic chair.
  */
-export default function IsoDeskUnit({ wx, wy, color, isActive }: IsoDeskUnitProps) {
+export default function IsoDeskUnit({ wx, wy, color, isActive, rotation: rot }: IsoDeskUnitProps) {
   const monitorFilter = isActive ? `url(#glow-${color.replace('#', '')})` : undefined;
+  const p = (x: number, y: number, z: number) => toIso(x, y, z, rot);
 
-  // Desk surface: 2.5 wide, 1 deep, at height 1.5
-  const deskFaces = blockFaces(wx - 1.25, wy, 1.5, 2.5, 1, 0.15);
+  // Desk surface: 2.8 wide, 1.4 deep, at height 1.5
+  const deskFaces = blockFaces(wx - 1.4, wy - 0.2, 1.5, 2.8, 1.4, 0.12, rot);
   // Desk legs
-  const legFL = blockFaces(wx - 1.1, wy + 0.1, 0, 0.15, 0.15, 1.5);
-  const legFR = blockFaces(wx + 0.95, wy + 0.1, 0, 0.15, 0.15, 1.5);
-  const legBL = blockFaces(wx - 1.1, wy + 0.75, 0, 0.15, 0.15, 1.5);
-  const legBR = blockFaces(wx + 0.95, wy + 0.75, 0, 0.15, 0.15, 1.5);
+  const legs = [
+    blockFaces(wx - 1.25, wy, 0, 0.12, 0.12, 1.5, rot),
+    blockFaces(wx + 1.13, wy, 0, 0.12, 0.12, 1.5, rot),
+    blockFaces(wx - 1.25, wy + 1, 0, 0.12, 0.12, 1.5, rot),
+    blockFaces(wx + 1.13, wy + 1, 0, 0.12, 0.12, 1.5, rot),
+  ];
 
-  // Monitor on desk
-  const monBl = toIso(wx - 0.6, wy + 0.3, 1.65);
-  const monBr = toIso(wx + 0.6, wy + 0.3, 1.65);
-  const monTr = toIso(wx + 0.6, wy + 0.3, 2.8);
-  const monTl = toIso(wx - 0.6, wy + 0.3, 2.8);
+  // Dual monitors — side by side on desk, facing south (toward camera at rot=0)
+  const monL = { cx: wx - 0.55, cy: wy + 0.5 };
+  const monR = { cx: wx + 0.55, cy: wy + 0.5 };
 
-  // Monitor screen (slightly inset)
-  const scrBl = toIso(wx - 0.5, wy + 0.3, 1.75);
-  const scrBr = toIso(wx + 0.5, wy + 0.3, 1.75);
-  const scrTr = toIso(wx + 0.5, wy + 0.3, 2.7);
-  const scrTl = toIso(wx - 0.5, wy + 0.3, 2.7);
-
-  // Monitor stand
-  const standFaces = blockFaces(wx - 0.1, wy + 0.3, 1.65, 0.2, 0.15, 0);
-
-  // Keyboard on desk
-  const kbFaces = blockFaces(wx - 0.5, wy + 0.1, 1.65, 1, 0.3, 0.05);
-
-  // Chair (in front of desk, lower)
-  const chairSeatFaces = blockFaces(wx - 0.6, wy - 1.2, 0.6, 1.2, 1.2, 0.2);
-  const chairBackFaces = blockFaces(wx - 0.5, wy - 0.1, 0.6, 0.15, 1, 1.2);
+  // Chair — in front of desk (south side)
+  const chairSeat = blockFaces(wx - 0.55, wy - 1.6, 0.7, 1.1, 1.1, 0.15, rot);
+  const chairBack = blockFaces(wx - 0.45, wy - 0.6, 0.7, 0.9, 0.12, 1.0, rot);
+  // Chair base
+  const chairBase = blockFaces(wx - 0.15, wy - 1.1, 0, 0.3, 0.3, 0.7, rot);
 
   return (
     <g>
+      {/* Chair base + seat (behind desk visually) */}
+      <polygon points={chairBase.top} fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.03)" strokeWidth={0.3} />
+      <polygon points={chairBase.south} fill="rgba(255,255,255,0.025)" stroke="rgba(255,255,255,0.03)" strokeWidth={0.3} />
+      <polygon points={chairSeat.east} fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.04)" strokeWidth={0.3} />
+      <polygon points={chairSeat.south} fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.04)" strokeWidth={0.3} />
+      <polygon points={chairSeat.top} fill="rgba(255,255,255,0.045)" stroke="rgba(255,255,255,0.06)" strokeWidth={0.4} />
+      {/* Chair back */}
+      <polygon points={chairBack.east} fill="rgba(255,255,255,0.025)" stroke="rgba(255,255,255,0.035)" strokeWidth={0.3} />
+      <polygon points={chairBack.south} fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.035)" strokeWidth={0.3} />
+      <polygon points={chairBack.top} fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.05)" strokeWidth={0.3} />
+
       {/* Desk legs */}
-      {[legBL, legBR, legFL, legFR].map((leg, i) => (
-        <g key={`leg-${i}`}>
-          <polygon points={leg.east} fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.04)" strokeWidth={0.3} />
-          <polygon points={leg.south} fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.04)" strokeWidth={0.3} />
+      {legs.map((leg, i) => (
+        <g key={`leg${i}`}>
+          <polygon points={leg.east} fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.03)" strokeWidth={0.3} />
+          <polygon points={leg.south} fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.03)" strokeWidth={0.3} />
         </g>
       ))}
 
       {/* Desk surface */}
-      <polygon points={deskFaces.east} fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.08)" strokeWidth={0.5} />
-      <polygon points={deskFaces.south} fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.08)" strokeWidth={0.5} />
+      <polygon points={deskFaces.east} fill="rgba(255,255,255,0.055)" stroke="rgba(255,255,255,0.08)" strokeWidth={0.5} />
+      <polygon points={deskFaces.south} fill="rgba(255,255,255,0.065)" stroke="rgba(255,255,255,0.08)" strokeWidth={0.5} />
+      <polygon points={deskFaces.north} fill="rgba(255,255,255,0.055)" stroke="rgba(255,255,255,0.08)" strokeWidth={0.5} />
+      <polygon points={deskFaces.west} fill="rgba(255,255,255,0.065)" stroke="rgba(255,255,255,0.08)" strokeWidth={0.5} />
       <polygon points={deskFaces.top} fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.1)" strokeWidth={0.5} />
 
-      {/* Monitor stand */}
-      <polygon points={standFaces.top} fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.06)" strokeWidth={0.3} />
+      {/* Monitor stands */}
+      {[monL, monR].map((mon, mi) => {
+        const standFaces = blockFaces(mon.cx - 0.08, mon.cy, 1.62, 0.16, 0.12, 0, rot);
+        return <polygon key={`stand${mi}`} points={standFaces.top} fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.04)" strokeWidth={0.3} />;
+      })}
 
-      {/* Monitor frame */}
-      <polygon
-        points={isoPoints([monBl, monBr, monTr, monTl])}
-        fill="rgba(255,255,255,0.05)"
-        stroke="rgba(255,255,255,0.12)"
-        strokeWidth={0.8}
-      />
+      {/* Dual monitors */}
+      {[monL, monR].map((mon, mi) => {
+        const bl = p(mon.cx - 0.5, mon.cy, 1.65);
+        const br = p(mon.cx + 0.5, mon.cy, 1.65);
+        const tr = p(mon.cx + 0.5, mon.cy, 2.7);
+        const tl = p(mon.cx - 0.5, mon.cy, 2.7);
 
-      {/* Monitor screen */}
-      <polygon
-        points={isoPoints([scrBl, scrBr, scrTr, scrTl])}
-        fill={isActive ? `${color}20` : 'rgba(255,255,255,0.02)'}
-        filter={monitorFilter}
-        className={isActive ? 'scene-monitor-active' : ''}
-      />
+        const sbl = p(mon.cx - 0.4, mon.cy, 1.75);
+        const sbr = p(mon.cx + 0.4, mon.cy, 1.75);
+        const str = p(mon.cx + 0.4, mon.cy, 2.6);
+        const stl = p(mon.cx - 0.4, mon.cy, 2.6);
 
-      {/* Screen content lines when active */}
-      {isActive && (
-        <>
-          {[0, 0.25, 0.5, 0.75].map((offset, li) => {
-            const ll = toIso(wx - 0.4, wy + 0.3, 2.5 - offset);
-            const lr = toIso(wx - 0.4 + [0.6, 0.4, 0.7, 0.3][li], wy + 0.3, 2.5 - offset);
-            return (
-              <line key={li}
-                x1={ll.x} y1={ll.y} x2={lr.x} y2={lr.y}
-                stroke={`${color}${['40', '30', '35', '25'][li]}`}
-                strokeWidth={1.5}
-              />
-            );
-          })}
-        </>
-      )}
+        return (
+          <g key={`mon${mi}`}>
+            {/* Frame */}
+            <polygon points={isoPoints([bl, br, tr, tl])}
+              fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.12)" strokeWidth={0.7} />
+            {/* Screen */}
+            <polygon points={isoPoints([sbl, sbr, str, stl])}
+              fill={isActive ? `${color}20` : 'rgba(255,255,255,0.02)'}
+              filter={monitorFilter}
+              className={isActive ? 'scene-monitor-active' : ''} />
+            {/* Content lines */}
+            {isActive && [0, 0.2, 0.4, 0.6].map((off, li) => {
+              const ll = p(mon.cx - 0.3, mon.cy, 2.45 - off);
+              const lr = p(mon.cx - 0.3 + [0.4, 0.3, 0.5, 0.2][li], mon.cy, 2.45 - off);
+              return <line key={li} x1={ll.x} y1={ll.y} x2={lr.x} y2={lr.y}
+                stroke={`${color}${['40', '30', '35', '25'][li]}`} strokeWidth={1.2} />;
+            })}
+          </g>
+        );
+      })}
 
       {/* Keyboard */}
-      <polygon points={kbFaces.top}
-        fill={isActive ? `${color}15` : 'rgba(255,255,255,0.04)'}
-        stroke="rgba(255,255,255,0.06)" strokeWidth={0.4}
-        className={isActive ? 'scene-keyboard-active' : ''}
-      />
+      {(() => {
+        const kbFaces = blockFaces(wx - 0.5, wy + 0.1, 1.62, 1, 0.3, 0.04, rot);
+        return <polygon points={kbFaces.top}
+          fill={isActive ? `${color}15` : 'rgba(255,255,255,0.04)'}
+          stroke="rgba(255,255,255,0.06)" strokeWidth={0.4}
+          className={isActive ? 'scene-keyboard-active' : ''} />;
+      })()}
 
-      {/* Chair */}
-      <polygon points={chairSeatFaces.east} fill="rgba(255,255,255,0.025)" stroke="rgba(255,255,255,0.04)" strokeWidth={0.3} />
-      <polygon points={chairSeatFaces.south} fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.04)" strokeWidth={0.3} />
-      <polygon points={chairSeatFaces.top} fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.06)" strokeWidth={0.4} />
-
-      {/* Chair back */}
-      <polygon points={chairBackFaces.east} fill="rgba(255,255,255,0.02)" stroke="rgba(255,255,255,0.04)" strokeWidth={0.3} />
-      <polygon points={chairBackFaces.south} fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.04)" strokeWidth={0.3} />
-      <polygon points={chairBackFaces.top} fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.05)" strokeWidth={0.3} />
+      {/* Mouse */}
+      {(() => {
+        const mp = p(wx + 0.8, wy + 0.2, 1.62);
+        return <ellipse cx={mp.x} cy={mp.y} rx={3} ry={2}
+          fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.06)" strokeWidth={0.3} />;
+      })()}
     </g>
   );
 }

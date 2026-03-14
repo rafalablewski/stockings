@@ -14,59 +14,54 @@ export type ActivityType =
 
 export interface Activity {
   type: ActivityType;
-  /** Whether avatar is seated */
   seated: boolean;
-  /** Left arm rotation (degrees) */
   leftArm: number;
-  /** Right arm rotation (degrees) */
   rightArm: number;
-  /** Optional prop to render near avatar */
   prop?: 'coffee-cup' | 'book' | 'controller' | 'phone';
-  /** Duration range in ms [min, max] before switching */
   durationRange: [number, number];
-  /** Whether this activity shows a speech bubble */
   bubble?: boolean;
 }
 
-// ── World-grid positions for zones ──
+// ── World-grid positions for zones (room is 28×14) ──
 export interface WorldPos {
   x: number;
   y: number;
 }
 
 export const ZONES = {
-  bathroom:  { x: 2,    y: 9 },
-  coffee:    { x: 4.5,  y: 8.5 },
-  couch:     { x: 20.5, y: 2.5 },
-  bookshelf: { x: 22,   y: 8.5 },
+  bathroom:   { x: 2,   y: 12.5 },
+  coffee:     { x: 5,   y: 12 },
+  couch:      { x: 23,  y: 3 },
+  bookshelf:  { x: 25,  y: 12 },
+  waterCooler: { x: 8,  y: 12 },
 } as const;
 
-// Desk world positions (where the desk is)
+// Desk world positions (where the desk surface is) — 28×14 room
 export const DESK_POS: WorldPos[] = [
-  { x: 7,  y: 7 },   // Claude
-  { x: 10, y: 7 },   // Gemini
-  { x: 13, y: 7 },   // AI Eng
-  { x: 16, y: 7 },   // Cursor
-  { x: 19, y: 7 },   // PM
+  { x: 8,  y: 9 },   // Claude
+  { x: 12, y: 9 },   // Gemini
+  { x: 16, y: 9 },   // AI Eng
+  { x: 20, y: 9 },   // Cursor
+  { x: 24, y: 9 },   // PM
 ];
 
 // Chair positions (where avatar sits, in front of desk)
 export const CHAIR_POS: WorldPos[] = [
-  { x: 7,  y: 5.5 },
-  { x: 10, y: 5.5 },
-  { x: 13, y: 5.5 },
-  { x: 16, y: 5.5 },
-  { x: 19, y: 5.5 },
+  { x: 8,  y: 7 },
+  { x: 12, y: 7 },
+  { x: 16, y: 7 },
+  { x: 20, y: 7 },
+  { x: 24, y: 7 },
 ];
 
-// ── Activity definitions (with more realistic durations) ──
+// ── Activity definitions ──
 export const ACTIVITIES: Record<ActivityType, Activity> = {
   working: {
     type: 'working',
     seated: true,
     leftArm: -50,
     rightArm: 50,
-    durationRange: [0, 0], // controlled by engineer status, not timer
+    durationRange: [0, 0],
   },
   idle: {
     type: 'idle',
@@ -124,9 +119,8 @@ export const ACTIVITIES: Record<ActivityType, Activity> = {
   },
 };
 
-// Idle activities that a PM can randomly pick (excludes 'working' which is data-driven)
 export const IDLE_ACTIVITIES: ActivityType[] = [
-  'idle', 'idle',         // weighted: more likely to be idle
+  'idle', 'idle',
   'coffee',
   'reading',
   'gaming',

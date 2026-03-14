@@ -15,7 +15,6 @@ import {
   randomDuration,
 } from './activities';
 
-// ── Division metadata ──
 const DIVISIONS = [
   { id: 'claude',          divId: 'div-claude',      color: '#22d3ee', badge: 'ARCH', label: 'Claude' },
   { id: 'gemini',          divId: 'div-gemini',      color: '#34d399', badge: 'R&D',  label: 'Gemini' },
@@ -33,13 +32,9 @@ export interface AvatarState {
   wx: number;
   wy: number;
   isWorking: boolean;
-  /** Index of PM they're chatting with, or null */
   chattingWith: number | null;
 }
 
-/**
- * Compute world position for a given activity and PM index.
- */
 function activityPos(activity: ActivityType, pmIndex: number, chattingWith: number | null): WorldPos {
   switch (activity) {
     case 'working':
@@ -60,11 +55,9 @@ function activityPos(activity: ActivityType, pmIndex: number, chattingWith: numb
       if (chattingWith !== null) {
         const my = CHAIR_POS[pmIndex];
         const their = CHAIR_POS[chattingWith];
-        const midX = (my.x + their.x) / 2;
-        const midY = (my.y + their.y) / 2 - 1;
         return {
-          x: midX + (pmIndex < chattingWith ? -0.8 : 0.8),
-          y: midY,
+          x: (my.x + their.x) / 2 + (pmIndex < chattingWith ? -0.8 : 0.8),
+          y: (my.y + their.y) / 2 - 1,
         };
       }
       return CHAIR_POS[pmIndex];
@@ -74,15 +67,37 @@ function activityPos(activity: ActivityType, pmIndex: number, chattingWith: numb
   }
 }
 
-/**
- * Scene: interactive isometric 3D office (top) + Room chat (bottom).
- */
 export default function Scene() {
   const [engineerWorking, setEngineerWorking] = useState<Record<string, boolean>>({});
   const [bridgeThinking, setBridgeThinking] = useState<Record<string, boolean>>({});
   const [fullscreen, setFullscreen] = useState(false);
+  const [rotation, setRotation] = useState(0);
 
-  // Activity state for each PM
+  // Drag-to-rotate state
+  const dragRef = useRef<{ startX: number; startRot: number } | null>(null);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    if ((e.target as HTMLElement).closest('.scene-controls')) return;
+    dragRef.current = { startX: e.clientX, startRot: rotation };
+    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+  }, [rotation]);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!dragRef.current) return;
+    const dx = e.clientX - dragRef.current.startX;
+    const newRot = dragRef.current.startRot + dx * 0.4;
+    setRotation(((newRot % 360) + 360) % 360);
+  }, []);
+
+  const handlePointerUp = useCallback(() => {
+    dragRef.current = null;
+  }, []);
+
+  const rotateBy = useCallback((deg: number) => {
+    setRotation(prev => ((prev + deg) % 360 + 360) % 360);
+  }, []);
+
+  // Activity state
   const [avatars, setAvatars] = useState<AvatarState[]>(() =>
     DIVISIONS.map((div, i) => ({
       id: div.id,
@@ -97,7 +112,7 @@ export default function Scene() {
     }))
   );
 
-  // ── Poll engineer status ──
+  // Poll engineer status
   useEffect(() => {
     let cancelled = false;
     const poll = async () => {
@@ -109,21 +124,15 @@ export default function Scene() {
           engineer: { id: string };
           lastRun: { status: string } | null;
         }> = data.engineers || [];
-
-        const runningEngineerIds = new Set(
-          engineerStatuses
-            .filter(s => s.lastRun?.status === 'running')
-            .map(s => s.engineer.id)
+        const runningIds = new Set(
+          engineerStatuses.filter(s => s.lastRun?.status === 'running').map(s => s.engineer.id)
         );
-
         const divWorking: Record<string, boolean> = {};
         for (const div of DIVISIONS) {
           const divEngineers = orgNodes.filter(
             n => n.parentId === div.divId && n.type === 'engineer' && n.engineerId
           );
-          divWorking[div.id] = divEngineers.some(
-            e => e.engineerId && runningEngineerIds.has(e.engineerId)
-          );
+          divWorking[div.id] = divEngineers.some(e => e.engineerId && runningIds.has(e.engineerId));
         }
         if (!cancelled) setEngineerWorking(divWorking);
       } catch { /* silent */ }
@@ -133,12 +142,10 @@ export default function Scene() {
     return () => { cancelled = true; clearInterval(interval); };
   }, []);
 
-  // ── Bridge thinking callback ──
   const handleThinkingChange = useCallback((who: string, thinking: boolean) => {
     setBridgeThinking(prev => ({ ...prev, [who]: thinking }));
   }, []);
 
-  // ── Compute working state (memoized to avoid re-render loops) ──
   const workingState = React.useMemo(() => {
     const state: Record<string, boolean> = {};
     for (const div of DIVISIONS) {
@@ -147,7 +154,7 @@ export default function Scene() {
     return state;
   }, [engineerWorking, bridgeThinking]);
 
-  // ── Activity cycling — single interval ticks through all PMs ──
+  // Activity cycling
   const nextChangeRef = useRef<number[]>(
     DIVISIONS.map((_, i) => Date.now() + 4000 + i * 2000)
   );
@@ -158,23 +165,18 @@ export default function Scene() {
     const tick = () => {
       const now = Date.now();
       const ws = workingStateRef.current;
-
       setAvatars(prev => {
         let changed = false;
         const next = [...prev];
-
-        for (let pmIndex = 0; pmIndex < DIVISIONS.length; pmIndex++) {
-          if (now < nextChangeRef.current[pmIndex]) continue;
-          const pm = next[pmIndex];
-          if (ws[pm.id]) continue; // don't change working PMs
-
+        for (let i = 0; i < DIVISIONS.length; i++) {
+          if (now < nextChangeRef.current[i]) continue;
+          const pm = next[i];
+          if (ws[pm.id]) continue;
           changed = true;
           const pmCopy = { ...pm };
-
-          // Clear any existing chat partner
           if (pmCopy.chattingWith !== null) {
             const partner = { ...next[pmCopy.chattingWith] };
-            if (partner.chattingWith === pmIndex) {
+            if (partner.chattingWith === i) {
               const idlePos = activityPos('idle', pmCopy.chattingWith, null);
               partner.activity = 'idle';
               partner.wx = idlePos.x;
@@ -183,58 +185,51 @@ export default function Scene() {
               next[pmCopy.chattingWith] = partner;
             }
           }
-
           const newActivity = pickRandomActivity(pmCopy.activity);
-
           if (newActivity === 'chatting') {
             const available = next
-              .map((_, i) => i)
-              .filter(i => i !== pmIndex && !ws[next[i].id] && next[i].activity !== 'chatting' && next[i].activity !== 'bathroom');
-
+              .map((_, idx) => idx)
+              .filter(idx => idx !== i && !ws[next[idx].id] && next[idx].activity !== 'chatting' && next[idx].activity !== 'bathroom');
             if (available.length > 0) {
               const partnerIdx = available[Math.floor(Math.random() * available.length)];
-              const myPos = activityPos('chatting', pmIndex, partnerIdx);
+              const myPos = activityPos('chatting', i, partnerIdx);
               pmCopy.activity = 'chatting';
               pmCopy.chattingWith = partnerIdx;
               pmCopy.wx = myPos.x;
               pmCopy.wy = myPos.y;
-
-              const theirPos = activityPos('chatting', partnerIdx, pmIndex);
+              const theirPos = activityPos('chatting', partnerIdx, i);
               const partner = { ...next[partnerIdx] };
               partner.activity = 'chatting';
-              partner.chattingWith = pmIndex;
+              partner.chattingWith = i;
               partner.wx = theirPos.x;
               partner.wy = theirPos.y;
               next[partnerIdx] = partner;
               nextChangeRef.current[partnerIdx] = now + randomDuration(ACTIVITIES.chatting.durationRange);
             } else {
-              const idlePos = activityPos('idle', pmIndex, null);
+              const idlePos = activityPos('idle', i, null);
               pmCopy.activity = 'idle';
               pmCopy.wx = idlePos.x;
               pmCopy.wy = idlePos.y;
               pmCopy.chattingWith = null;
             }
           } else {
-            const pos = activityPos(newActivity, pmIndex, null);
+            const pos = activityPos(newActivity, i, null);
             pmCopy.activity = newActivity;
             pmCopy.wx = pos.x;
             pmCopy.wy = pos.y;
             pmCopy.chattingWith = null;
           }
-
-          next[pmIndex] = pmCopy;
-          nextChangeRef.current[pmIndex] = now + randomDuration(ACTIVITIES[newActivity].durationRange);
+          next[i] = pmCopy;
+          nextChangeRef.current[i] = now + randomDuration(ACTIVITIES[newActivity].durationRange);
         }
-
         return changed ? next : prev;
       });
     };
-
     const interval = setInterval(tick, 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // Override activity to 'working' when engineer status demands it
+  // Override to working
   useEffect(() => {
     setAvatars(prev =>
       prev.map((pm, i) => {
@@ -243,9 +238,7 @@ export default function Scene() {
           const pos = CHAIR_POS[i];
           return { ...pm, activity: 'working', wx: pos.x, wy: pos.y, isWorking: true, chattingWith: null };
         }
-        if (!isWorking && pm.isWorking) {
-          return { ...pm, isWorking: false };
-        }
+        if (!isWorking && pm.isWorking) return { ...pm, isWorking: false };
         return pm;
       })
     );
@@ -253,15 +246,47 @@ export default function Scene() {
 
   return (
     <div className={`scene-container ${fullscreen ? 'scene-fullscreen' : ''}`}>
-      <div className="scene-upper">
-        <button
-          className="scene-fullscreen-btn"
-          onClick={() => setFullscreen(f => !f)}
-          title={fullscreen ? 'Exit fullscreen' : 'Expand scene'}
-        >
-          {fullscreen ? '\u2715' : '\u26F6'}
-        </button>
-        <SceneView avatars={avatars} workingState={workingState} />
+      <div
+        className="scene-upper"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
+        style={{ cursor: dragRef.current ? 'grabbing' : 'grab' }}
+      >
+        {/* Controls overlay */}
+        <div className="scene-controls">
+          <button
+            className="scene-ctrl-btn"
+            onClick={() => rotateBy(-90)}
+            title="Rotate left"
+          >
+            {'\u21B6'}
+          </button>
+          <button
+            className="scene-ctrl-btn"
+            onClick={() => rotateBy(90)}
+            title="Rotate right"
+          >
+            {'\u21B7'}
+          </button>
+          <button
+            className="scene-ctrl-btn"
+            onClick={() => setRotation(0)}
+            title="Reset view"
+          >
+            {'\u2302'}
+          </button>
+          <button
+            className="scene-fullscreen-btn"
+            onClick={() => setFullscreen(f => !f)}
+            title={fullscreen ? 'Exit fullscreen' : 'Expand scene'}
+          >
+            {fullscreen ? '\u2715' : '\u26F6'}
+          </button>
+        </div>
+
+        <SceneView avatars={avatars} workingState={workingState} rotation={rotation} />
       </div>
       {!fullscreen && (
         <div className="scene-lower">
