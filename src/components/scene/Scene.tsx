@@ -7,8 +7,9 @@ import { orgNodes } from '@/data/org-hierarchy';
 import { authFetch } from '@/lib/auth-fetch';
 import {
   type ActivityType,
+  type WorldPos,
   ACTIVITIES,
-  DESK_X,
+  CHAIR_POS,
   ZONES,
   pickRandomActivity,
   randomDuration,
@@ -29,46 +30,52 @@ export interface AvatarState {
   badge: string;
   label: string;
   activity: ActivityType;
-  x: number;
+  wx: number;
+  wy: number;
   isWorking: boolean;
   /** Index of PM they're chatting with, or null */
   chattingWith: number | null;
 }
 
 /**
- * Compute the X position for a given activity and PM index.
+ * Compute world position for a given activity and PM index.
  */
-function activityX(activity: ActivityType, pmIndex: number, chattingWith: number | null): number {
+function activityPos(activity: ActivityType, pmIndex: number, chattingWith: number | null): WorldPos {
   switch (activity) {
     case 'working':
+      return CHAIR_POS[pmIndex];
     case 'idle':
-      return DESK_X[pmIndex];
+      return { x: CHAIR_POS[pmIndex].x, y: CHAIR_POS[pmIndex].y - 0.5 };
     case 'coffee':
-      return ZONES.coffee + pmIndex * 8; // slight offset so they don't overlap
+      return { x: ZONES.coffee.x + pmIndex * 0.4, y: ZONES.coffee.y };
     case 'reading':
+      return { x: ZONES.bookshelf.x, y: ZONES.bookshelf.y - 0.5 + pmIndex * 0.3 };
     case 'gaming':
-      return ZONES.couch + (pmIndex % 2 === 0 ? -15 : 15);
+      return { x: ZONES.couch.x + (pmIndex % 2 === 0 ? -0.8 : 0.8), y: ZONES.couch.y };
     case 'phone':
-      return DESK_X[pmIndex] + 35; // near their desk but offset
+      return { x: CHAIR_POS[pmIndex].x + 1.5, y: CHAIR_POS[pmIndex].y - 1 };
     case 'bathroom':
       return ZONES.bathroom;
     case 'chatting': {
-      // Meet halfway between the two PMs' desks
       if (chattingWith !== null) {
-        const myDesk = DESK_X[pmIndex];
-        const theirDesk = DESK_X[chattingWith];
-        const midpoint = (myDesk + theirDesk) / 2;
-        return midpoint + (pmIndex < chattingWith ? -18 : 18);
+        const my = CHAIR_POS[pmIndex];
+        const their = CHAIR_POS[chattingWith];
+        const midX = (my.x + their.x) / 2;
+        const midY = (my.y + their.y) / 2 - 1;
+        return {
+          x: midX + (pmIndex < chattingWith ? -0.8 : 0.8),
+          y: midY,
+        };
       }
-      return DESK_X[pmIndex];
+      return CHAIR_POS[pmIndex];
     }
     default:
-      return DESK_X[pmIndex];
+      return CHAIR_POS[pmIndex];
   }
 }
 
 /**
- * Scene: interactive LEGO avatar view (top) + Room chat (bottom).
+ * Scene: interactive isometric 3D office (top) + Room chat (bottom).
  */
 export default function Scene() {
   const [engineerWorking, setEngineerWorking] = useState<Record<string, boolean>>({});
@@ -83,7 +90,8 @@ export default function Scene() {
       badge: div.badge,
       label: div.label,
       activity: 'idle' as ActivityType,
-      x: DESK_X[i],
+      wx: CHAIR_POS[i].x,
+      wy: CHAIR_POS[i].y,
       isWorking: false,
       chattingWith: null,
     }))
@@ -141,7 +149,7 @@ export default function Scene() {
 
   // ── Activity cycling — single interval ticks through all PMs ──
   const nextChangeRef = useRef<number[]>(
-    DIVISIONS.map((_, i) => Date.now() + 3000 + i * 1500)
+    DIVISIONS.map((_, i) => Date.now() + 4000 + i * 2000)
   );
   const workingStateRef = useRef(workingState);
   workingStateRef.current = workingState;
@@ -167,8 +175,10 @@ export default function Scene() {
           if (pmCopy.chattingWith !== null) {
             const partner = { ...next[pmCopy.chattingWith] };
             if (partner.chattingWith === pmIndex) {
+              const idlePos = activityPos('idle', pmCopy.chattingWith, null);
               partner.activity = 'idle';
-              partner.x = DESK_X[pmCopy.chattingWith];
+              partner.wx = idlePos.x;
+              partner.wy = idlePos.y;
               partner.chattingWith = null;
               next[pmCopy.chattingWith] = partner;
             }
@@ -183,24 +193,32 @@ export default function Scene() {
 
             if (available.length > 0) {
               const partnerIdx = available[Math.floor(Math.random() * available.length)];
+              const myPos = activityPos('chatting', pmIndex, partnerIdx);
               pmCopy.activity = 'chatting';
               pmCopy.chattingWith = partnerIdx;
-              pmCopy.x = activityX('chatting', pmIndex, partnerIdx);
+              pmCopy.wx = myPos.x;
+              pmCopy.wy = myPos.y;
 
+              const theirPos = activityPos('chatting', partnerIdx, pmIndex);
               const partner = { ...next[partnerIdx] };
               partner.activity = 'chatting';
               partner.chattingWith = pmIndex;
-              partner.x = activityX('chatting', partnerIdx, pmIndex);
+              partner.wx = theirPos.x;
+              partner.wy = theirPos.y;
               next[partnerIdx] = partner;
               nextChangeRef.current[partnerIdx] = now + randomDuration(ACTIVITIES.chatting.durationRange);
             } else {
+              const idlePos = activityPos('idle', pmIndex, null);
               pmCopy.activity = 'idle';
-              pmCopy.x = activityX('idle', pmIndex, null);
+              pmCopy.wx = idlePos.x;
+              pmCopy.wy = idlePos.y;
               pmCopy.chattingWith = null;
             }
           } else {
+            const pos = activityPos(newActivity, pmIndex, null);
             pmCopy.activity = newActivity;
-            pmCopy.x = activityX(newActivity, pmIndex, null);
+            pmCopy.wx = pos.x;
+            pmCopy.wy = pos.y;
             pmCopy.chattingWith = null;
           }
 
@@ -222,7 +240,8 @@ export default function Scene() {
       prev.map((pm, i) => {
         const isWorking = workingState[pm.id] ?? false;
         if (isWorking && pm.activity !== 'working') {
-          return { ...pm, activity: 'working', x: DESK_X[i], isWorking: true, chattingWith: null };
+          const pos = CHAIR_POS[i];
+          return { ...pm, activity: 'working', wx: pos.x, wy: pos.y, isWorking: true, chattingWith: null };
         }
         if (!isWorking && pm.isWorking) {
           return { ...pm, isWorking: false };

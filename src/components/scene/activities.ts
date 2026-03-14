@@ -14,8 +14,6 @@ export type ActivityType =
 
 export interface Activity {
   type: ActivityType;
-  /** Target X in the room (avatar transitions here) */
-  zoneX: number;
   /** Whether avatar is seated */
   seated: boolean;
   /** Left arm rotation (degrees) */
@@ -30,24 +28,39 @@ export interface Activity {
   bubble?: boolean;
 }
 
-// ── Zone X positions in the 1200-wide SVG ──
+// ── World-grid positions for zones ──
+export interface WorldPos {
+  x: number;
+  y: number;
+}
+
 export const ZONES = {
-  bathroom: 55,
-  coffee: 155,
-  desk1: 320,
-  desk2: 460,
-  desk3: 600,
-  desk4: 740,
-  desk5: 880,
-  couch: 1010,
-  bookshelf: 1130,
+  bathroom:  { x: 2,    y: 9 },
+  coffee:    { x: 4.5,  y: 8.5 },
+  couch:     { x: 20.5, y: 2.5 },
+  bookshelf: { x: 22,   y: 8.5 },
 } as const;
 
-// Desk X per PM index
-export const DESK_X = [ZONES.desk1, ZONES.desk2, ZONES.desk3, ZONES.desk4, ZONES.desk5];
+// Desk world positions (where the desk is)
+export const DESK_POS: WorldPos[] = [
+  { x: 7,  y: 7 },   // Claude
+  { x: 10, y: 7 },   // Gemini
+  { x: 13, y: 7 },   // AI Eng
+  { x: 16, y: 7 },   // Cursor
+  { x: 19, y: 7 },   // PM
+];
 
-// ── Activity definitions ──
-export const ACTIVITIES: Record<ActivityType, Omit<Activity, 'zoneX'>> = {
+// Chair positions (where avatar sits, in front of desk)
+export const CHAIR_POS: WorldPos[] = [
+  { x: 7,  y: 5.5 },
+  { x: 10, y: 5.5 },
+  { x: 13, y: 5.5 },
+  { x: 16, y: 5.5 },
+  { x: 19, y: 5.5 },
+];
+
+// ── Activity definitions (with more realistic durations) ──
+export const ACTIVITIES: Record<ActivityType, Activity> = {
   working: {
     type: 'working',
     seated: true,
@@ -60,7 +73,7 @@ export const ACTIVITIES: Record<ActivityType, Omit<Activity, 'zoneX'>> = {
     seated: false,
     leftArm: 0,
     rightArm: 0,
-    durationRange: [6000, 12000],
+    durationRange: [8000, 18000],
   },
   coffee: {
     type: 'coffee',
@@ -68,7 +81,7 @@ export const ACTIVITIES: Record<ActivityType, Omit<Activity, 'zoneX'>> = {
     leftArm: -40,
     rightArm: 0,
     prop: 'coffee-cup',
-    durationRange: [8000, 15000],
+    durationRange: [12000, 22000],
   },
   reading: {
     type: 'reading',
@@ -76,7 +89,7 @@ export const ACTIVITIES: Record<ActivityType, Omit<Activity, 'zoneX'>> = {
     leftArm: -35,
     rightArm: 35,
     prop: 'book',
-    durationRange: [10000, 20000],
+    durationRange: [15000, 30000],
   },
   gaming: {
     type: 'gaming',
@@ -84,7 +97,7 @@ export const ACTIVITIES: Record<ActivityType, Omit<Activity, 'zoneX'>> = {
     leftArm: -30,
     rightArm: 30,
     prop: 'controller',
-    durationRange: [12000, 25000],
+    durationRange: [18000, 35000],
   },
   phone: {
     type: 'phone',
@@ -92,14 +105,14 @@ export const ACTIVITIES: Record<ActivityType, Omit<Activity, 'zoneX'>> = {
     leftArm: 0,
     rightArm: -70,
     prop: 'phone',
-    durationRange: [6000, 14000],
+    durationRange: [10000, 20000],
   },
   bathroom: {
     type: 'bathroom',
     seated: false,
     leftArm: 0,
     rightArm: 0,
-    durationRange: [5000, 10000],
+    durationRange: [12000, 25000],
   },
   chatting: {
     type: 'chatting',
@@ -107,7 +120,7 @@ export const ACTIVITIES: Record<ActivityType, Omit<Activity, 'zoneX'>> = {
     leftArm: -20,
     rightArm: 20,
     bubble: true,
-    durationRange: [8000, 16000],
+    durationRange: [12000, 24000],
   },
 };
 

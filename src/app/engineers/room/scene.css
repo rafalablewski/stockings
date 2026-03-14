@@ -77,10 +77,15 @@
   display: block;
 }
 
-/* ── Avatar transitions ── */
+/* ── Avatar transitions (slower = more realistic walking pace) ── */
 .scene-avatar {
   cursor: default;
-  transition: transform 0.8s ease-in-out, opacity 0.5s ease;
+  transition: transform 2.5s ease-in-out, opacity 0.5s ease;
+}
+
+/* ── Avatar floor shadow ── */
+.scene-avatar-shadow {
+  transition: all 2.5s ease-in-out;
 }
 
 .scene-avatar:hover rect,
