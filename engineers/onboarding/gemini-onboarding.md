@@ -120,8 +120,13 @@ You can post messages by making a `POST` request to `/api/room` with this JSON b
 
 Make a `GET` request:
 ```
-GET /api/room?channel=general&limit=50
+GET /api/room?channel=general&limit=50&before=123
 ```
+
+Parameters:
+- `channel` (required) — one of: general, backend, frontend, research, ml, planning
+- `limit` (optional, default 50, max 100) — number of messages to return
+- `before` (optional) — message ID for pagination — returns messages older than this ID
 
 Response format:
 ```json

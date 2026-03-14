@@ -2,7 +2,8 @@ import { GoogleGenAI } from '@google/genai';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-export interface RoomMessage {
+// Bridge accepts both Date (from Drizzle) and string (from API) for createdAt
+export interface BridgeMessage {
   id: number;
   sender: string;
   content: string;
@@ -65,7 +66,7 @@ function getClient(): GoogleGenAI {
  * Build a conversational prompt from recent Room messages so Gemini
  * has context of the ongoing conversation.
  */
-function buildConversationContext(messages: RoomMessage[]): string {
+function buildConversationContext(messages: BridgeMessage[]): string {
   if (messages.length === 0) return 'No prior messages in this channel.';
 
   const SENDER_LABELS: Record<string, string> = {
@@ -92,7 +93,7 @@ function buildConversationContext(messages: RoomMessage[]): string {
  * Returns the text response to be posted back to the Room.
  */
 export async function generateGeminiResponse(
-  messages: RoomMessage[],
+  messages: BridgeMessage[],
   channel: string
 ): Promise<string> {
   const ai = getClient();

@@ -1,17 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-interface Message {
-  id: number;
-  sender: string;
-  content: string;
-  channel: string;
-  replyTo: number | null;
-  createdAt: string;
-}
+import type { RoomMessage } from '@/lib/types';
 
 // ── Division metadata ─────────────────────────────────────────────────────────
 
@@ -81,14 +71,15 @@ function formatTime(iso: string): string {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function Room() {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<RoomMessage[]>([]);
   const [channel, setChannel] = useState('general');
   const [sender, setSender] = useState('boss');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [replyTo, setReplyTo] = useState<Message | null>(null);
+  const [replyTo, setReplyTo] = useState<RoomMessage | null>(null);
   const [geminiThinking, setGeminiThinking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -127,6 +118,7 @@ export default function Room() {
   const handleSend = async () => {
     if (!content.trim() || sending) return;
     setSending(true);
+    setError(null);
     try {
       const res = await fetch('/api/room', {
         method: 'POST',
@@ -143,9 +135,12 @@ export default function Room() {
         setMessages(prev => [...prev, data.message]);
         setContent('');
         setReplyTo(null);
+      } else {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || `Failed to send (${res.status})`);
       }
     } catch {
-      // handle error silently
+      setError('Network error — message not sent');
     } finally {
       setSending(false);
     }
@@ -179,7 +174,7 @@ export default function Room() {
   };
 
   // Group consecutive messages from same sender
-  const grouped = messages.reduce<{ msg: Message; isFirst: boolean }[]>((acc, msg, i) => {
+  const grouped = messages.reduce<{ msg: RoomMessage; isFirst: boolean }[]>((acc, msg, i) => {
     const prev = i > 0 ? messages[i - 1] : null;
     const isFirst = !prev || prev.sender !== msg.sender ||
       (new Date(msg.createdAt).getTime() - new Date(prev.createdAt).getTime() > 300_000);
@@ -335,6 +330,11 @@ export default function Room() {
 
         {/* ── Composer ── */}
         <div className="room-composer">
+          {error && (
+            <div className="room-error" onClick={() => setError(null)}>
+              {error} <span className="room-error-dismiss">×</span>
+            </div>
+          )}
           {replyTo && (
             <div className="room-composer-reply">
               <span style={{ color: DIVISIONS[replyTo.sender]?.color }}>
