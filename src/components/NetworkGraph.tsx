@@ -271,6 +271,23 @@ function GraphTooltip({ tooltip, engineers }: { tooltip: TooltipState; engineers
         {node.label}
       </div>
       <div className="eng-graph-tooltip-role">{node.role}</div>
+
+      {/* Description for Boss and Division leads */}
+      {node.description && (node.type === 'boss' || node.type === 'division') && (
+        <div className="eng-graph-tooltip-desc">{node.description}</div>
+      )}
+
+      {/* Division engineer count */}
+      {node.type === 'division' && (
+        <div className="eng-graph-tooltip-row">
+          <span className="eng-graph-tooltip-key">Engineers</span>
+          <span className="eng-graph-tooltip-val">
+            {orgNodes.filter(n => n.parentId === node.id && n.type === 'engineer').length}
+          </span>
+        </div>
+      )}
+
+      {/* Engineer details */}
       {eng && (
         <>
           <div className="eng-graph-tooltip-row">
@@ -302,14 +319,6 @@ function GraphTooltip({ tooltip, engineers }: { tooltip: TooltipState; engineers
             </span>
           </div>
         </>
-      )}
-      {node.type === 'division' && (
-        <div className="eng-graph-tooltip-row">
-          <span className="eng-graph-tooltip-key">Reports</span>
-          <span className="eng-graph-tooltip-val">
-            {orgNodes.filter(n => n.parentId === node.id && n.type === 'engineer').length} engineers
-          </span>
-        </div>
       )}
     </div>
   );

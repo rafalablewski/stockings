@@ -14,6 +14,7 @@ export interface OrgNode {
   label: string;
   badge: string;            // short label rendered inside the node
   role: string;
+  description?: string;     // detailed description of responsibilities
   color: string;            // hex color
   parentId: string | null;
   engineerId?: string;      // links to EngineerTask.id for engineer nodes
@@ -48,17 +49,19 @@ export const orgNodes: OrgNode[] = [
     label: 'Boss',
     badge: 'BOSS',
     role: 'Chief Executive',
+    description: 'Sets strategic direction, approves architectural decisions, resolves cross-division disputes, and gives final go/no-go on all production changes. All divisions report directly to the Boss.',
     color: ORG_COLORS.boss,
     parentId: null,
   },
 
-  // Division leads
+  // Division leads — each acts as a project manager overseeing their AI engineers
   {
     id: 'div-claude',
     type: 'division',
     label: 'Claude',
     badge: 'ARCH',
     role: 'Architecture & Backend',
+    description: 'Manages 7 engineers focused on deep reasoning and complex analysis. Schedules and monitors thesis pressure-testing, capital structure analysis, earnings processing, catalyst evaluation, code security audits, data quality validation, and cross-domain intelligence queries. Reviews engineer outputs and reports findings to the Boss in the Room. Owns backend architecture, API routes, database schema, and infrastructure decisions.',
     color: ORG_COLORS.claude,
     parentId: 'boss',
   },
@@ -68,6 +71,7 @@ export const orgNodes: OrgNode[] = [
     label: 'Cursor',
     badge: 'UI',
     role: 'Frontend & UI',
+    description: 'Manages 1 engineer focused on platform performance — bundle size auditing, component render profiling, tree-shaking analysis, and caching strategy evaluation. Schedules performance scans and reports bottlenecks to the Boss. Owns all frontend components, styling, client interactivity, and responsive design across the platform.',
     color: ORG_COLORS.cursor,
     parentId: 'boss',
   },
@@ -77,6 +81,7 @@ export const orgNodes: OrgNode[] = [
     label: 'Gemini',
     badge: 'R&D',
     role: 'Research & Data',
+    description: 'Manages 6 engineers focused on external data ingestion and analysis. Schedules and monitors SEC filing retrieval from EDGAR, insider activity tracking, press and news monitoring, market sentiment aggregation, regulatory and patent analysis, and disclosure completeness checks. Leverages massive context windows and Google ecosystem access to process long regulatory documents and real-time news feeds. Reports data signals and research findings to the Boss in the Room.',
     color: ORG_COLORS.gemini,
     parentId: 'boss',
   },
@@ -86,6 +91,7 @@ export const orgNodes: OrgNode[] = [
     label: 'AI Engineer',
     badge: 'ML',
     role: 'ML & AI Systems',
+    description: 'Builds and maintains the ML models, AI features, and data pipelines that power the autonomous engineers. Develops the execution engine, prompt templates, and workflow orchestration layer. Does not manage engineers — focuses on the infrastructure that makes them run. Reports technical capabilities and pipeline health to the Boss in the Room.',
     color: ORG_COLORS.aiEngineer,
     parentId: 'boss',
   },
@@ -95,6 +101,7 @@ export const orgNodes: OrgNode[] = [
     label: 'Project Mgmt',
     badge: 'PM',
     role: 'Planning & Coordination',
+    description: 'Coordinates across all divisions without managing engineers directly. Breaks Boss specifications into actionable task lists, assigns work to the right division, tracks sprint progress, and ensures deadlines are met. Facilitates cross-division communication and flags blockers. Reports project status and timeline updates to the Boss in the Room.',
     color: ORG_COLORS.pm,
     parentId: 'boss',
   },
