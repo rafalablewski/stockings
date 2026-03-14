@@ -5,6 +5,7 @@ import { authFetch } from '@/lib/auth-fetch';
 import type { EngineerTask } from '@/lib/engineers';
 import type { Workflow } from '@/data/workflows';
 import NetworkGraph from '@/components/NetworkGraph';
+import { orgNodes } from '@/data/org-hierarchy';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -165,6 +166,13 @@ function EngineerDetailPanel({
           <div>
             <h2 className="eng-detail-name">{engineer.name}</h2>
             <div className="eng-detail-role">{engineer.role}</div>
+            {(() => {
+              const engNode = orgNodes.find(n => n.engineerId === engineer.id);
+              const pm = engNode?.parentId ? orgNodes.find(n => n.id === engNode.parentId) : null;
+              return pm ? (
+                <div className="eng-detail-pm" style={{ color: pm.color }}>Reports to {pm.label}</div>
+              ) : null;
+            })()}
           </div>
         </div>
         <div className="eng-detail-actions">

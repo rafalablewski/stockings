@@ -203,6 +203,15 @@ export default function AIAgentsView({ engineers, workflows }: Props) {
                     {/* Configuration */}
                     <div>
                       <div className="eng-expand-label">Configuration</div>
+                      {(() => {
+                        const pm = getEngineerPM(eng.id);
+                        return pm ? (
+                          <div className="eng-config-row">
+                            <span className="eng-config-key">Reports to</span>
+                            <span className="eng-config-val" style={{ color: pm.color, fontWeight: 600 }}>{pm.label}</span>
+                          </div>
+                        ) : null;
+                      })()}
                       <div className="eng-config-row">
                         <span className="eng-config-key">Schedule</span>
                         <span className="eng-config-val">Every {formatInterval(eng.defaultIntervalMinutes)}</span>
