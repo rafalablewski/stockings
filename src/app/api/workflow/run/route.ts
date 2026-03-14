@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
               const db = getDb();
               await db.insert(agentRuns).values({
                 ticker,
-                engineerId: null,
+                engineerId: 'manual-workflow',
                 workflowId: workflowId || null,
                 status: 'completed',
                 triggerType: 'manual',

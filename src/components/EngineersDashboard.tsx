@@ -33,6 +33,23 @@ interface EngineerStatus {
   lastRun: LastRunState | null;
 }
 
+interface HistoryRun {
+  id: number;
+  ticker: string;
+  engineerId: string;
+  workflowId: string | null;
+  status: string;
+  triggerType: string;
+  triggerReason: string | null;
+  outputSummary: string | null;
+  patchesApplied: number;
+  errorsEncountered: string | null;
+  durationMs: number | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+}
+
 interface TickerInfo {
   ticker: string;
   name: string;
@@ -408,6 +425,11 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
 
   const [promptPreview, setPromptPreview] = useState<PromptPreview | null>(null);
 
+  // ── History tab state ──
+  const [historyRuns, setHistoryRuns] = useState<HistoryRun[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [expandedRunId, setExpandedRunId] = useState<number | null>(null);
+
   // ── Ticker dropdown helpers ──
   const selectedTickerInfo = tickers.find(t => t.ticker === selectedTicker);
 
@@ -474,6 +496,23 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
     setLoading(true);
     fetchStatus();
   }, [fetchStatus]);
+
+  // ── Fetch history when history tab is active ──
+  const fetchHistory = useCallback(async () => {
+    setHistoryLoading(true);
+    try {
+      const res = await authFetch(`/api/engineers/history?ticker=${selectedTicker}&limit=50`);
+      if (res.ok) {
+        const data = await res.json();
+        setHistoryRuns(data.runs || []);
+      }
+    } catch { /* silent */ }
+    setHistoryLoading(false);
+  }, [selectedTicker]);
+
+  useEffect(() => {
+    if (activeTab === 'history') fetchHistory();
+  }, [activeTab, fetchHistory]);
 
   const handleRun = async (engineerId: string) => {
     setRunningIds(prev => { const next = new Set(prev); next.add(engineerId); return next; });
@@ -834,13 +873,77 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
         {/* ══ HISTORY TAB ══ */}
         {activeTab === 'history' && (
           <div>
-            <div className="eng-empty">
-              <div>No operations history recorded yet for {selectedTicker}.</div>
-              <div className="eng-empty-sub">
-                History will appear here as agents execute tasks — showing comprehensive
-                descriptions of each operation, its inputs, outputs, and duration.
+            {historyLoading && historyRuns.length === 0 ? (
+              <div className="eng-empty">
+                <div>Loading history...</div>
               </div>
-            </div>
+            ) : historyRuns.length === 0 ? (
+              <div className="eng-empty">
+                <div>No operations history recorded yet for {selectedTicker}.</div>
+                <div className="eng-empty-sub">
+                  History will appear here as agents execute tasks.
+                </div>
+              </div>
+            ) : (
+              <div className="eng-history-list">
+                <div className="eng-history-header">
+                  <span className="eng-history-count">{historyRuns.length} runs</span>
+                  <button className="eng-btn eng-btn-sm" onClick={fetchHistory} disabled={historyLoading}>
+                    {historyLoading ? 'Refreshing...' : 'Refresh'}
+                  </button>
+                </div>
+                {historyRuns.map(run => {
+                  const isExpanded = expandedRunId === run.id;
+                  const statusColor = run.status === 'completed' ? 'var(--color-mint, #34d399)'
+                    : run.status === 'failed' ? 'var(--color-red, #ef4444)'
+                    : run.status === 'running' ? 'var(--color-cyan, #22d3ee)'
+                    : 'var(--color-muted, #888)';
+                  return (
+                    <div key={run.id} className="eng-history-row" data-status={run.status}>
+                      <div
+                        className="eng-history-row-header"
+                        onClick={() => setExpandedRunId(isExpanded ? null : run.id)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <span className="eng-history-status" style={{ color: statusColor }}>
+                          {run.status === 'completed' ? '\u2713' : run.status === 'failed' ? '\u2717' : run.status === 'running' ? '\u25CF' : '\u25CB'}
+                        </span>
+                        <span className="eng-history-engineer">{run.engineerId}</span>
+                        {run.workflowId && (
+                          <span className="eng-history-workflow">{run.workflowId}</span>
+                        )}
+                        <span className="eng-history-trigger">{run.triggerType}</span>
+                        <span className="eng-history-duration">{formatDuration(run.durationMs)}</span>
+                        <span className="eng-history-time">{formatTime(run.completedAt || run.startedAt || run.createdAt)}</span>
+                        <span className="eng-history-expand">{isExpanded ? '\u25B2' : '\u25BC'}</span>
+                      </div>
+                      {isExpanded && (
+                        <div className="eng-history-details">
+                          {run.triggerReason && (
+                            <div className="eng-history-detail-row">
+                              <span className="eng-history-detail-label">Reason:</span>
+                              <span>{run.triggerReason}</span>
+                            </div>
+                          )}
+                          {run.outputSummary && (
+                            <div className="eng-history-detail-row">
+                              <span className="eng-history-detail-label">Output:</span>
+                              <pre className="eng-history-output">{run.outputSummary}</pre>
+                            </div>
+                          )}
+                          {run.errorsEncountered && (
+                            <div className="eng-history-detail-row">
+                              <span className="eng-history-detail-label">Error:</span>
+                              <pre className="eng-history-output eng-history-error">{run.errorsEncountered}</pre>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 
