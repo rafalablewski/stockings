@@ -287,6 +287,17 @@ function GraphTooltip({ tooltip, engineers }: { tooltip: TooltipState; engineers
         </div>
       )}
 
+      {/* Engineer PM / Reports to */}
+      {node.type === 'engineer' && node.parentId && (() => {
+        const pm = orgNodes.find(n => n.id === node.parentId);
+        return pm ? (
+          <div className="eng-graph-tooltip-row">
+            <span className="eng-graph-tooltip-key">Reports to</span>
+            <span className="eng-graph-tooltip-val" style={{ color: pm.color }}>{pm.label}</span>
+          </div>
+        ) : null;
+      })()}
+
       {/* Engineer details */}
       {eng && (
         <>
