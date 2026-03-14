@@ -12,6 +12,7 @@ import {
   ACTIVITIES,
   CHAIR_POS,
   ZONES,
+  DEFAULT_IDLE_ACTIVITIES,
   pickRandomActivity,
   randomDuration,
 } from './activities';
@@ -206,12 +207,41 @@ export default function Scene() {
     return state;
   }, [engineerWorking, bridgeThinking]);
 
+  // ── Enabled activities from DB ──
+  const [enabledActivities, setEnabledActivities] = useState<ActivityType[]>(DEFAULT_IDLE_ACTIVITIES);
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchActivities = async () => {
+      try {
+        const res = await authFetch('/api/office-activities');
+        if (!res.ok || cancelled) return;
+        const data = await res.json();
+        const activities: Array<{ type: string; enabled: boolean }> = data.activities || [];
+        const enabled = activities
+          .filter(a => a.enabled && a.type !== 'working') // working is handled separately
+          .map(a => a.type as ActivityType);
+        // Ensure 'idle' appears twice for higher weight
+        const list: ActivityType[] = [];
+        for (const t of enabled) {
+          list.push(t);
+          if (t === 'idle') list.push(t); // double weight for idle
+        }
+        if (!cancelled && list.length > 0) setEnabledActivities(list);
+      } catch { /* use defaults */ }
+    };
+    fetchActivities();
+    return () => { cancelled = true; };
+  }, []);
+
   // Refs for tick
   const nextChangeRef = useRef<number[]>(
     DIVISIONS.map((_, i) => Date.now() + 4000 + i * 2000)
   );
   const workingStateRef = useRef(workingState);
   workingStateRef.current = workingState;
+  const enabledActivitiesRef = useRef(enabledActivities);
+  enabledActivitiesRef.current = enabledActivities;
 
   // ── Main tick: walking + activity cycling ──
   useEffect(() => {
@@ -266,7 +296,7 @@ export default function Scene() {
             }
           }
 
-          const newActivity = pickRandomActivity(pmCopy.activity);
+          const newActivity = pickRandomActivity(pmCopy.activity, enabledActivitiesRef.current);
 
           if (newActivity === 'chatting') {
             const available = next

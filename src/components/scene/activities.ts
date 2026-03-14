@@ -119,21 +119,26 @@ export const ACTIVITIES: Record<ActivityType, Activity> = {
   },
 };
 
-export const IDLE_ACTIVITIES: ActivityType[] = [
+/** Default fallback when DB hasn't loaded yet — only core activities */
+export const DEFAULT_IDLE_ACTIVITIES: ActivityType[] = [
   'idle', 'idle',
-  'coffee',
-  'reading',
-  'gaming',
-  'phone',
-  'bathroom',
   'chatting',
+  'phone',
 ];
 
 export function randomDuration([min, max]: [number, number]): number {
   return min + Math.random() * (max - min);
 }
 
-export function pickRandomActivity(currentType: ActivityType): ActivityType {
-  const choices = IDLE_ACTIVITIES.filter(a => a !== currentType);
+/**
+ * Pick a random activity from the given enabled list.
+ * The list should contain non-working activities the avatar can transition to.
+ */
+export function pickRandomActivity(
+  currentType: ActivityType,
+  enabledActivities: ActivityType[] = DEFAULT_IDLE_ACTIVITIES,
+): ActivityType {
+  const choices = enabledActivities.filter(a => a !== currentType);
+  if (choices.length === 0) return 'idle';
   return choices[Math.floor(Math.random() * choices.length)];
 }

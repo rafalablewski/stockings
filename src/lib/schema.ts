@@ -259,6 +259,22 @@ export const engineerSchedules = pgTable('engineer_schedules', {
 ]);
 
 // ============================================================================
+// OFFICE ACTIVITIES — which avatar activities are currently available in the
+// 3D office scene. Activities are unlocked as furniture/appliances are added.
+// ============================================================================
+
+export const officeActivities = pgTable('office_activities', {
+  id: serial('id').primaryKey(),
+  type: text('type').notNull(),              // activity key: 'working', 'chatting', 'phone', 'coffee', etc.
+  label: text('label').notNull(),            // display name: 'Working', 'Chatting', 'Phone Call'
+  enabled: boolean('enabled').default(true).notNull(),
+  requiresFurniture: text('requires_furniture'), // null = always available, else furniture key like 'coffee-machine'
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex('office_activities_type_idx').on(table.type),
+]);
+
+// ============================================================================
 // ROOM MESSAGES — chat messages in the multi-AI division "Room" where all
 // divisions (Claude, Cursor, Gemini, AI Engineer, PM) and the Boss
 // communicate in a shared conversation thread.
