@@ -258,25 +258,23 @@
   transition: all 0.35s linear;
 }
 
-/* Walking leg animation — alternating leg swing */
+/* Walking leg animation — vertical bob, no rotation (avoids SVG transform-origin glitches) */
 .scene-leg-left {
-  animation: scene-leg-swing-l 0.35s ease-in-out infinite alternate;
-  transform-origin: center -15px;
+  animation: scene-leg-step-l 0.5s ease-in-out infinite;
 }
 
 .scene-leg-right {
-  animation: scene-leg-swing-r 0.35s ease-in-out infinite alternate;
-  transform-origin: center -15px;
+  animation: scene-leg-step-r 0.5s ease-in-out infinite;
 }
 
-@keyframes scene-leg-swing-l {
-  0% { transform: rotate(-8deg); }
-  100% { transform: rotate(8deg); }
+@keyframes scene-leg-step-l {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 
-@keyframes scene-leg-swing-r {
-  0% { transform: rotate(8deg); }
-  100% { transform: rotate(-8deg); }
+@keyframes scene-leg-step-r {
+  0%, 100% { transform: translateY(-3px); }
+  50% { transform: translateY(0); }
 }
 
 .scene-avatar:hover rect,

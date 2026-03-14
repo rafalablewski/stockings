@@ -9,23 +9,24 @@ export interface IsoDeskUnitProps {
   color: string;
   isActive: boolean;
   rotation: number;
+  pitch?: number;
 }
 
 /**
  * Professional trading desk with dual monitors, keyboard, and ergonomic chair.
  */
-export default function IsoDeskUnit({ wx, wy, color, isActive, rotation: rot }: IsoDeskUnitProps) {
+export default function IsoDeskUnit({ wx, wy, color, isActive, rotation: rot, pitch: pitchDeg = 0 }: IsoDeskUnitProps) {
   const monitorFilter = isActive ? `url(#glow-${color.replace('#', '')})` : undefined;
-  const p = (x: number, y: number, z: number) => toIso(x, y, z, rot);
+  const p = (x: number, y: number, z: number) => toIso(x, y, z, rot, pitchDeg);
 
   // Desk surface: 2.8 wide, 1.4 deep, at height 1.5
-  const deskFaces = blockFaces(wx - 1.4, wy - 0.2, 1.5, 2.8, 1.4, 0.12, rot);
+  const deskFaces = blockFaces(wx - 1.4, wy - 0.2, 1.5, 2.8, 1.4, 0.12, rot, pitchDeg);
   // Desk legs
   const legs = [
-    blockFaces(wx - 1.25, wy, 0, 0.12, 0.12, 1.5, rot),
-    blockFaces(wx + 1.13, wy, 0, 0.12, 0.12, 1.5, rot),
-    blockFaces(wx - 1.25, wy + 1, 0, 0.12, 0.12, 1.5, rot),
-    blockFaces(wx + 1.13, wy + 1, 0, 0.12, 0.12, 1.5, rot),
+    blockFaces(wx - 1.25, wy, 0, 0.12, 0.12, 1.5, rot, pitchDeg),
+    blockFaces(wx + 1.13, wy, 0, 0.12, 0.12, 1.5, rot, pitchDeg),
+    blockFaces(wx - 1.25, wy + 1, 0, 0.12, 0.12, 1.5, rot, pitchDeg),
+    blockFaces(wx + 1.13, wy + 1, 0, 0.12, 0.12, 1.5, rot, pitchDeg),
   ];
 
   // Dual monitors — side by side on desk, facing south (toward camera at rot=0)
@@ -33,10 +34,10 @@ export default function IsoDeskUnit({ wx, wy, color, isActive, rotation: rot }: 
   const monR = { cx: wx + 0.55, cy: wy + 0.5 };
 
   // Chair — in front of desk (south side)
-  const chairSeat = blockFaces(wx - 0.55, wy - 1.6, 0.7, 1.1, 1.1, 0.15, rot);
-  const chairBack = blockFaces(wx - 0.45, wy - 0.6, 0.7, 0.9, 0.12, 1.0, rot);
+  const chairSeat = blockFaces(wx - 0.55, wy - 1.6, 0.7, 1.1, 1.1, 0.15, rot, pitchDeg);
+  const chairBack = blockFaces(wx - 0.45, wy - 0.6, 0.7, 0.9, 0.12, 1.0, rot, pitchDeg);
   // Chair base
-  const chairBase = blockFaces(wx - 0.15, wy - 1.1, 0, 0.3, 0.3, 0.7, rot);
+  const chairBase = blockFaces(wx - 0.15, wy - 1.1, 0, 0.3, 0.3, 0.7, rot, pitchDeg);
 
   return (
     <g>
@@ -68,7 +69,7 @@ export default function IsoDeskUnit({ wx, wy, color, isActive, rotation: rot }: 
 
       {/* Monitor stands */}
       {[monL, monR].map((mon, mi) => {
-        const standFaces = blockFaces(mon.cx - 0.08, mon.cy, 1.62, 0.16, 0.12, 0, rot);
+        const standFaces = blockFaces(mon.cx - 0.08, mon.cy, 1.62, 0.16, 0.12, 0, rot, pitchDeg);
         return <polygon key={`stand${mi}`} points={standFaces.top} fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.04)" strokeWidth={0.3} />;
       })}
 
@@ -107,7 +108,7 @@ export default function IsoDeskUnit({ wx, wy, color, isActive, rotation: rot }: 
 
       {/* Keyboard */}
       {(() => {
-        const kbFaces = blockFaces(wx - 0.5, wy + 0.1, 1.62, 1, 0.3, 0.04, rot);
+        const kbFaces = blockFaces(wx - 0.5, wy + 0.1, 1.62, 1, 0.3, 0.04, rot, pitchDeg);
         return <polygon points={kbFaces.top}
           fill={isActive ? `${color}15` : 'rgba(255,255,255,0.04)'}
           stroke="rgba(255,255,255,0.06)" strokeWidth={0.4}

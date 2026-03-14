@@ -13,7 +13,7 @@ import type { AvatarState } from './Scene';
 
 // ── Helper: isometric block component ──
 function IsoBlock({
-  x, y, z, w, d, h, rot,
+  x, y, z, w, d, h, rot, pitch = 0,
   topFill, southFill, eastFill,
   topStroke, southStroke, eastStroke,
   strokeWidth = 0.5,
@@ -22,12 +22,13 @@ function IsoBlock({
   x: number; y: number; z: number;
   w: number; d: number; h: number;
   rot: number;
+  pitch?: number;
   topFill: string; southFill: string; eastFill: string;
   topStroke?: string; southStroke?: string; eastStroke?: string;
   strokeWidth?: number;
   className?: string;
 }) {
-  const faces = blockFaces(x, y, z, w, d, h, rot);
+  const faces = blockFaces(x, y, z, w, d, h, rot, pitch);
   const s = 'rgba(255,255,255,0.04)';
   return (
     <g className={className}>
@@ -60,11 +61,12 @@ export interface SceneViewProps {
   avatars: AvatarState[];
   workingState: Record<string, boolean>;
   rotation: number;
+  pitch?: number;
   zoom?: number;
 }
 
-export default function SceneView({ avatars, workingState, rotation: rot, zoom = 1.8 }: SceneViewProps) {
-  const vb = useMemo(() => computeViewBox(rot, zoom), [rot, zoom]);
+export default function SceneView({ avatars, workingState, rotation: rot, pitch: pitchDeg = 0, zoom = 1.8 }: SceneViewProps) {
+  const vb = useMemo(() => computeViewBox(rot, zoom, pitchDeg), [rot, zoom, pitchDeg]);
   const wo = useMemo(() => wallOpacity(rot), [rot]);
 
   // Sort avatars back-to-front for proper overlap
@@ -80,7 +82,7 @@ export default function SceneView({ avatars, workingState, rotation: rot, zoom =
     [rot]
   );
 
-  const p = (wx: number, wy: number, wz: number = 0) => toIso(wx, wy, wz, rot);
+  const p = (wx: number, wy: number, wz: number = 0) => toIso(wx, wy, wz, rot, pitchDeg);
 
   return (
     <div className="scene-view">
@@ -405,7 +407,7 @@ export default function SceneView({ avatars, workingState, rotation: rot, zoom =
         {/* ═══ FURNITURE ═══ */}
 
         {/* Coffee station — dark walnut counter */}
-        <IsoBlock x={4} y={12.5} z={0} w={2.5} d={1} h={2.5} rot={rot}
+        <IsoBlock x={4} y={12.5} z={0} w={2.5} d={1} h={2.5} rot={rot} pitch={pitchDeg}
           topFill="rgba(90,60,30,0.35)" southFill="rgba(75,50,25,0.3)" eastFill="rgba(60,40,20,0.25)" />
         {/* Coffee machine buttons */}
         {(() => { const c1 = p(4.8, 12.5, 2.2), c2 = p(5.3, 12.5, 2.2); return (<>
@@ -423,9 +425,9 @@ export default function SceneView({ avatars, workingState, rotation: rot, zoom =
         </>); })()}
 
         {/* Water cooler — translucent blue bottle on gray base */}
-        <IsoBlock x={7.5} y={12.5} z={0} w={0.8} d={0.8} h={1.6} rot={rot}
+        <IsoBlock x={7.5} y={12.5} z={0} w={0.8} d={0.8} h={1.6} rot={rot} pitch={pitchDeg}
           topFill="rgba(80,80,90,0.2)" southFill="rgba(70,70,80,0.18)" eastFill="rgba(60,60,70,0.15)" />
-        <IsoBlock x={7.6} y={12.6} z={1.6} w={0.6} d={0.6} h={1.2} rot={rot}
+        <IsoBlock x={7.6} y={12.6} z={1.6} w={0.6} d={0.6} h={1.2} rot={rot} pitch={pitchDeg}
           topFill="rgba(100,160,220,0.2)" southFill="rgba(80,140,200,0.15)" eastFill="rgba(60,120,180,0.12)" />
         {(() => { const wp = p(7.9, 12.5, 2.5); return <circle cx={wp.x} cy={wp.y} r={3} fill="rgba(100,180,255,0.08)" stroke="rgba(100,180,255,0.15)" strokeWidth={0.5} />; })()}
 
@@ -443,7 +445,7 @@ export default function SceneView({ avatars, workingState, rotation: rot, zoom =
         ))}
 
         {/* Server rack — dark steel */}
-        <IsoBlock x={1} y={2} z={0} w={1.5} d={2} h={4} rot={rot}
+        <IsoBlock x={1} y={2} z={0} w={1.5} d={2} h={4} rot={rot} pitch={pitchDeg}
           topFill="rgba(40,40,50,0.3)" southFill="rgba(35,35,45,0.25)" eastFill="rgba(30,30,40,0.2)" />
         {/* Server LEDs */}
         {[0.5, 1.2, 1.9, 2.6, 3.3].map((z, i) => {
@@ -456,7 +458,7 @@ export default function SceneView({ avatars, workingState, rotation: rot, zoom =
           fontFamily="'Space Mono', monospace">SERVERS</WallText>
 
         {/* Bookshelf — dark mahogany */}
-        <IsoBlock x={25} y={12} z={0} w={2.5} d={1.2} h={4.5} rot={rot}
+        <IsoBlock x={25} y={12} z={0} w={2.5} d={1.2} h={4.5} rot={rot} pitch={pitchDeg}
           topFill="rgba(80,50,30,0.2)" southFill="rgba(65,40,25,0.18)" eastFill="rgba(55,35,20,0.15)" />
         {/* Books on shelves */}
         {[1.5, 2.6, 3.7].map((shelfZ, si) => (
@@ -476,10 +478,10 @@ export default function SceneView({ avatars, workingState, rotation: rot, zoom =
         ))}
 
         {/* Couch — dark charcoal leather */}
-        <IsoBlock x={21} y={2} z={0} w={4.5} d={2} h={0.9} rot={rot}
+        <IsoBlock x={21} y={2} z={0} w={4.5} d={2} h={0.9} rot={rot} pitch={pitchDeg}
           topFill="rgba(50,50,55,0.25)" southFill="rgba(40,40,45,0.2)" eastFill="rgba(35,35,40,0.18)" />
         {/* Couch back */}
-        <IsoBlock x={21} y={3.5} z={0} w={4.5} d={0.5} h={1.6} rot={rot}
+        <IsoBlock x={21} y={3.5} z={0} w={4.5} d={0.5} h={1.6} rot={rot} pitch={pitchDeg}
           topFill="rgba(45,45,50,0.22)" southFill="rgba(38,38,43,0.18)" eastFill="rgba(32,32,37,0.15)" />
         {/* Cushion dividers */}
         {[0, 1.5, 3].map((off, ci) => {
@@ -489,7 +491,7 @@ export default function SceneView({ avatars, workingState, rotation: rot, zoom =
         })}
 
         {/* TV stand — matte black */}
-        <IsoBlock x={22.5} y={5} z={0} w={0.5} d={0.5} h={1.8} rot={rot}
+        <IsoBlock x={22.5} y={5} z={0} w={0.5} d={0.5} h={1.8} rot={rot} pitch={pitchDeg}
           topFill="rgba(30,30,35,0.3)" southFill="rgba(25,25,30,0.25)" eastFill="rgba(20,20,25,0.2)" />
         {/* TV screen */}
         {(() => {
@@ -507,7 +509,7 @@ export default function SceneView({ avatars, workingState, rotation: rot, zoom =
         })()}
 
         {/* PS5 — white/black console */}
-        <IsoBlock x={25} y={5} z={0} w={0.4} d={0.4} h={1} rot={rot}
+        <IsoBlock x={25} y={5} z={0} w={0.4} d={0.4} h={1} rot={rot} pitch={pitchDeg}
           topFill="rgba(200,200,210,0.12)" southFill="rgba(180,180,190,0.1)" eastFill="rgba(160,160,170,0.08)" />
         {(() => { const lp = p(25.2, 5, 0.7); return <rect x={lp.x - 1} y={lp.y - 2} width={3} height={2.5} rx={1} fill="rgba(100,149,237,0.3)" className="scene-ps5-light" />; })()}
 
@@ -537,7 +539,7 @@ export default function SceneView({ avatars, workingState, rotation: rot, zoom =
         })}
 
         {/* Conference table — polished dark walnut */}
-        <IsoBlock x={3} y={3} z={0} w={5} d={3} h={1.5} rot={rot}
+        <IsoBlock x={3} y={3} z={0} w={5} d={3} h={1.5} rot={rot} pitch={pitchDeg}
           topFill="rgba(100,70,40,0.3)" southFill="rgba(85,55,30,0.25)" eastFill="rgba(70,45,25,0.2)"
           topStroke="rgba(120,85,50,0.15)" southStroke="rgba(100,70,40,0.12)" eastStroke="rgba(90,60,35,0.1)" />
         {/* Table legs */}
@@ -566,6 +568,7 @@ export default function SceneView({ avatars, workingState, rotation: rot, zoom =
             color={avatars[i].color}
             isActive={workingState[avatars[i].id] ?? false}
             rotation={rot}
+            pitch={pitchDeg}
           />
         ))}
 
@@ -582,6 +585,7 @@ export default function SceneView({ avatars, workingState, rotation: rot, zoom =
             isWorking={avatar.isWorking}
             chattingWith={avatar.chattingWith}
             rotation={rot}
+            pitch={pitchDeg}
             isWalking={avatar.walkPath.length > 0}
           />
         ))}

@@ -116,23 +116,27 @@ export default function Scene() {
   const [bridgeThinking, setBridgeThinking] = useState<Record<string, boolean>>({});
   const [fullscreen, setFullscreen] = useState(false);
   const [rotation, setRotation] = useState(0);
+  const [pitch, setPitch] = useState(0);
   const [zoom, setZoom] = useState(1.8);
   const [viewMode, setViewMode] = useState<ViewMode>('3d');
 
-  // Drag-to-rotate
-  const dragRef = useRef<{ startX: number; startRot: number } | null>(null);
+  // Drag-to-rotate (horizontal = yaw, vertical = pitch)
+  const dragRef = useRef<{ startX: number; startY: number; startRot: number; startPitch: number } | null>(null);
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     if ((e.target as HTMLElement).closest('.scene-controls')) return;
-    dragRef.current = { startX: e.clientX, startRot: rotation };
+    dragRef.current = { startX: e.clientX, startY: e.clientY, startRot: rotation, startPitch: pitch };
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
-  }, [rotation]);
+  }, [rotation, pitch]);
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
     if (!dragRef.current) return;
     const dx = e.clientX - dragRef.current.startX;
+    const dy = e.clientY - dragRef.current.startY;
     const newRot = dragRef.current.startRot + dx * 0.4;
+    const newPitch = Math.max(-20, Math.min(30, dragRef.current.startPitch - dy * 0.15));
     setRotation(((newRot % 360) + 360) % 360);
+    setPitch(newPitch);
   }, []);
 
   const handlePointerUp = useCallback(() => {
@@ -141,6 +145,10 @@ export default function Scene() {
 
   const rotateBy = useCallback((deg: number) => {
     setRotation(prev => ((prev + deg) % 360 + 360) % 360);
+  }, []);
+
+  const tiltBy = useCallback((deg: number) => {
+    setPitch(prev => Math.max(-20, Math.min(30, prev + deg)));
   }, []);
 
   // Activity state
@@ -364,7 +372,13 @@ export default function Scene() {
             <button className="scene-ctrl-btn" onClick={() => rotateBy(90)} title="Rotate right">
               {'\u21B7'}
             </button>
-            <button className="scene-ctrl-btn" onClick={() => setRotation(0)} title="Reset view">
+            <button className="scene-ctrl-btn" onClick={() => tiltBy(10)} title="Tilt up (bird's eye)">
+              {'\u25B2'}
+            </button>
+            <button className="scene-ctrl-btn" onClick={() => tiltBy(-10)} title="Tilt down (side view)">
+              {'\u25BC'}
+            </button>
+            <button className="scene-ctrl-btn" onClick={() => { setRotation(0); setPitch(0); }} title="Reset view">
               {'\u2302'}
             </button>
           </div>
@@ -396,7 +410,7 @@ export default function Scene() {
           </div>
         )}
 
-        {viewMode === '3d' && <SceneView avatars={avatars} workingState={workingState} rotation={rotation} zoom={zoom} />}
+        {viewMode === '3d' && <SceneView avatars={avatars} workingState={workingState} rotation={rotation} pitch={pitch} zoom={zoom} />}
         {viewMode === 'top' && <TopDownView avatars={avatars} workingState={workingState} />}
         {viewMode === 'flat' && <FlatView avatars={avatars} workingState={workingState} />}
       </div>

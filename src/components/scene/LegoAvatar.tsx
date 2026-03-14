@@ -14,16 +14,17 @@ export interface LegoAvatarProps {
   isWorking: boolean;
   chattingWith: number | null;
   rotation: number;
+  pitch?: number;
   isWalking?: boolean;
 }
 
 export default function LegoAvatar({
-  wx, wy, color, badge, label, activity, isWorking, rotation: rot, isWalking,
+  wx, wy, color, badge, label, activity, isWorking, rotation: rot, pitch: pitchDeg = 0, isWalking,
 }: LegoAvatarProps) {
   const actDef = ACTIVITIES[activity];
   const seated = actDef.seated;
   const hidden = activity === 'bathroom';
-  const screenPos = toIso(wx, wy, 0, rot);
+  const screenPos = toIso(wx, wy, 0, rot, pitchDeg);
   const scale = 0.95;
   const headColor = `${color}cc`;
 
@@ -72,12 +73,14 @@ export default function LegoAvatar({
         </g>
 
         {/* Legs */}
-        <rect x={-9} y={-15} width={8} height={seated ? 10 : 15} rx={2}
-          fill={`${color}88`}
-          className={isWalking ? 'scene-leg-left' : ''} />
-        <rect x={1} y={-15} width={8} height={seated ? 10 : 15} rx={2}
-          fill={`${color}88`}
-          className={isWalking ? 'scene-leg-right' : ''} />
+        <g className={isWalking ? 'scene-leg-left' : ''}>
+          <rect x={-9} y={-15} width={8} height={seated ? 10 : 15} rx={2}
+            fill={`${color}88`} />
+        </g>
+        <g className={isWalking ? 'scene-leg-right' : ''}>
+          <rect x={1} y={-15} width={8} height={seated ? 10 : 15} rx={2}
+            fill={`${color}88`} />
+        </g>
 
         {/* Props */}
         {actDef.prop === 'coffee-cup' && (

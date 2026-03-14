@@ -17,10 +17,12 @@ export const WALL_H = 6;
 const DEG2RAD = Math.PI / 180;
 
 /**
- * Convert world (x, y, z) → screen (sx, sy) with rotation.
- * Rotation is in degrees, rotates the world around the room center.
+ * Convert world (x, y, z) → screen (sx, sy) with rotation and optional pitch (tilt).
+ * rotDeg: horizontal rotation (yaw) in degrees around the room center.
+ * pitchDeg: vertical tilt — 0 = standard iso, positive = look more from above, negative = more from side.
+ *   Range roughly -20 to +30. Default 0 gives standard 2:1 isometric.
  */
-export function toIso(wx: number, wy: number, wz: number = 0, rotDeg: number = 0): { x: number; y: number } {
+export function toIso(wx: number, wy: number, wz: number = 0, rotDeg: number = 0, pitchDeg: number = 0): { x: number; y: number } {
   const cx = ROOM_W / 2;
   const cy = ROOM_D / 2;
   const dx = wx - cx;
@@ -38,9 +40,16 @@ export function toIso(wx: number, wy: number, wz: number = 0, rotDeg: number = 0
     ry = dx * sin + dy * cos;
   }
 
+  // Pitch adjusts the Y-foreshortening ratio.
+  // At pitch=0 we get standard 2:1 iso (TILE_HH/TILE_HW = 0.5).
+  // Positive pitch compresses depth (more top-down), negative stretches it (more side view).
+  const pitchFactor = 1 + pitchDeg / 60; // 1.0 at 0°, ~1.5 at +30°, ~0.67 at -20°
+  const hh = TILE_HH * pitchFactor;
+  const zScale = Z_SCALE * (pitchDeg >= 0 ? 1 : Math.max(0.6, 1 + pitchDeg / 80));
+
   return {
     x: (rx - ry) * TILE_HW,
-    y: (rx + ry) * TILE_HH - wz * Z_SCALE,
+    y: (rx + ry) * hh - wz * zScale,
   };
 }
 
@@ -56,8 +65,9 @@ export function blockFaces(
   x: number, y: number, z: number,
   w: number, d: number, h: number,
   rotDeg: number = 0,
+  pitchDeg: number = 0,
 ) {
-  const p = (wx: number, wy: number, wz: number) => toIso(wx, wy, wz, rotDeg);
+  const p = (wx: number, wy: number, wz: number) => toIso(wx, wy, wz, rotDeg, pitchDeg);
 
   return {
     top: isoPoints([
@@ -97,15 +107,15 @@ export function blockFaces(
  * Compute the SVG viewBox that fits the room at the given rotation.
  * zoom > 1 crops the view for a closer look.
  */
-export function computeViewBox(rotDeg: number, zoom: number = 1): { x: number; y: number; w: number; h: number } {
+export function computeViewBox(rotDeg: number, zoom: number = 1, pitchDeg: number = 0): { x: number; y: number; w: number; h: number } {
   const corners: Array<[number, number]> = [
     [0, 0], [ROOM_W, 0], [ROOM_W, ROOM_D], [0, ROOM_D],
   ];
   let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
 
   for (const [wx, wy] of corners) {
-    const p0 = toIso(wx, wy, 0, rotDeg);
-    const p1 = toIso(wx, wy, WALL_H, rotDeg);
+    const p0 = toIso(wx, wy, 0, rotDeg, pitchDeg);
+    const p1 = toIso(wx, wy, WALL_H, rotDeg, pitchDeg);
     minX = Math.min(minX, p0.x, p1.x);
     maxX = Math.max(maxX, p0.x, p1.x);
     minY = Math.min(minY, p0.y, p1.y);
