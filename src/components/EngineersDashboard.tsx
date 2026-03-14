@@ -371,6 +371,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const [loading, setLoading] = useState(true);
   const [runningIds, setRunningIds] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<'network' | 'history'>('network');
+  const [graphView, setGraphView] = useState<'default' | 'interactive'>('default');
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
   // ── Ticker dropdown state ──
@@ -612,14 +613,160 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
       {/* Feed */}
       <div className="eng-feed">
 
-        {/* ══ NETWORK GRAPH TAB — Interactive Org Hierarchy ══ */}
+        {/* ══ NETWORK GRAPH TAB ══ */}
         {activeTab === 'network' && (
           <div>
-            <NetworkGraph
-              engineers={engineers}
-              runningIds={runningIds}
-              onSelectEngineer={(engineerId) => setSelectedNode(engineerId)}
-            />
+            {/* View toggle */}
+            <div className="eng-view-toggle-bar">
+              <button
+                className={`eng-view-toggle ${graphView === 'default' ? 'active' : ''}`}
+                onClick={() => setGraphView('default')}
+              >
+                Swimlane
+              </button>
+              <button
+                className={`eng-view-toggle ${graphView === 'interactive' ? 'active' : ''}`}
+                onClick={() => setGraphView('interactive')}
+              >
+                Interactive
+              </button>
+            </div>
+
+            {/* ── Default: Category Swimlanes ── */}
+            {graphView === 'default' && (
+              <>
+                {categories.map(cat => {
+                  const engs = grouped[cat] || [];
+                  if (engs.length === 0) return null;
+                  const color = categoryColors[cat];
+
+                  return (
+                    <div key={cat} className="eng-swimlane" data-color={color}>
+                      <div className="eng-swimlane-header">
+                        <div className="eng-swimlane-label-row">
+                          <span className="eng-swimlane-dot" data-color={color} />
+                          <span className="eng-swimlane-label">{categoryLabels[cat]}</span>
+                          <span className="eng-swimlane-count">{engs.length}</span>
+                        </div>
+                        <div className="eng-swimlane-desc">{categoryDescriptions[cat]}</div>
+                      </div>
+
+                      <div className="eng-swimlane-cards">
+                        {engs.map(eng => {
+                          const linkedWfs = workflows.filter(w => eng.workflowIds.includes(w.id));
+                          const isSelected = selectedNode === eng.id;
+
+                          return (
+                            <div
+                              key={eng.id}
+                              className="eng-swim-card"
+                              data-color={color}
+                              data-selected={isSelected || undefined}
+                              onClick={() => setSelectedNode(isSelected ? null : eng.id)}
+                            >
+                              <div className="eng-swim-card-header">
+                                <div className="eng-swim-card-icon" data-color={color}>{'\u2B22'}</div>
+                                <div>
+                                  <div className="eng-swim-card-name">{eng.name}</div>
+                                  <div className="eng-swim-card-role">{eng.role}</div>
+                                </div>
+                              </div>
+
+                              <div className="eng-swim-card-badges">
+                                <span className="eng-swim-badge-label">Workflows</span>
+                                {linkedWfs.map(wf => (
+                                  <span key={wf.id} className="eng-swim-badge" data-type="workflow">
+                                    {'\u2726'} {wf.name}
+                                  </span>
+                                ))}
+                                {eng.workflowIds
+                                  .filter(id => !linkedWfs.some(w => w.id === id))
+                                  .map(id => (
+                                    <span key={id} className="eng-swim-badge" data-type="workflow">{id}</span>
+                                  ))}
+                              </div>
+
+                              <div className="eng-swim-card-badges">
+                                <span className="eng-swim-badge-label">Triggers</span>
+                                {eng.triggerEvents.map(ev => {
+                                  const isShared = sharedTriggers.some(st => st.event === ev);
+                                  return (
+                                    <span
+                                      key={ev}
+                                      className="eng-swim-badge"
+                                      data-type={isShared ? 'shared-trigger' : 'trigger'}
+                                    >
+                                      {'\u26A1'} {ev.replace(/-/g, ' ')}
+                                    </span>
+                                  );
+                                })}
+                              </div>
+
+                              {eng.requiresData && eng.dataSource && (
+                                <div className="eng-swim-card-badges">
+                                  <span className="eng-swim-badge-label">Data</span>
+                                  <span className="eng-swim-badge" data-type="datasource">
+                                    {eng.dataSource}
+                                  </span>
+                                </div>
+                              )}
+
+                              <div className="eng-swim-card-schedule">
+                                Every {formatInterval(eng.defaultIntervalMinutes)}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {/* Cross-Category Triggers */}
+                {sharedTriggers.length > 0 && (
+                  <div className="eng-cross-triggers">
+                    <div className="eng-section-header">
+                      <span className="eng-section-dot" data-color="violet" />
+                      <span className="eng-section-label">Cross-Category Triggers</span>
+                      <div className="eng-section-line" />
+                    </div>
+                    <div className="eng-cross-trigger-desc">
+                      Events that fire engineers across multiple categories — these are the key system-wide connections.
+                    </div>
+
+                    <div className="eng-cross-trigger-grid">
+                      {sharedTriggers.map(st => (
+                        <div key={st.event} className="eng-cross-trigger-card">
+                          <div className="eng-cross-trigger-event">
+                            {'\u26A1'} {st.event.replace(/-/g, ' ')}
+                          </div>
+                          <div className="eng-cross-trigger-agents">
+                            {st.engineers.map(eng => (
+                              <span
+                                key={eng.id}
+                                className="eng-cross-trigger-chip"
+                                data-color={categoryColors[eng.category]}
+                              >
+                                {eng.name}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* ── Interactive: SVG Org Hierarchy ── */}
+            {graphView === 'interactive' && (
+              <NetworkGraph
+                engineers={engineers}
+                runningIds={runningIds}
+                onSelectEngineer={(engineerId) => setSelectedNode(engineerId)}
+              />
+            )}
 
             {/* Detail Modal */}
             {selectedEngineer && (

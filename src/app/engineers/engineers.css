@@ -2466,6 +2466,44 @@
   line-height: 1.6;
 }
 
+/* ── View toggle (Swimlane / Interactive) ── */
+
+.eng-view-toggle-bar {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 3px;
+  width: fit-content;
+}
+
+.eng-view-toggle {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 6px 16px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.35);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.eng-view-toggle:hover {
+  color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.04);
+}
+
+.eng-view-toggle.active {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.9);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    NETWORK GRAPH — Interactive SVG org hierarchy (Palantir/Arkham style)
    ═══════════════════════════════════════════════════════════════════════════ */
