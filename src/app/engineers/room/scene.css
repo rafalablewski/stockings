@@ -1,11 +1,11 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   SCENE — Interactive LEGO avatar view + Room chat
+   SCENE — Interactive LEGO avatar office simulation + Room chat
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .scene-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 56px); /* viewport minus navbar */
+  height: calc(100vh - 56px);
   overflow: hidden;
 }
 
@@ -18,6 +18,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  position: relative;
 }
 
 .scene-lower {
@@ -28,14 +29,42 @@
   flex-direction: column;
 }
 
-/* Make Room fill the lower half */
 .scene-lower .room-container {
   height: 100%;
   max-height: 100%;
 }
 
-/* ── Scene SVG ── */
+/* ── Fullscreen mode ── */
+.scene-fullscreen .scene-upper {
+  flex: 1 1 100%;
+}
 
+.scene-fullscreen-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.scene-fullscreen-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.8);
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* ── Scene SVG ── */
 .scene-view {
   width: 100%;
   height: 100%;
@@ -48,8 +77,18 @@
   display: block;
 }
 
-/* ── Monitor Glow Animation ── */
+/* ── Avatar transitions ── */
+.scene-avatar {
+  cursor: default;
+  transition: transform 0.8s ease-in-out, opacity 0.5s ease;
+}
 
+.scene-avatar:hover rect,
+.scene-avatar:hover circle {
+  filter: brightness(1.15);
+}
+
+/* ── Monitor glow ── */
 .scene-monitor-active {
   animation: scene-monitor-glow 2.5s ease-in-out infinite;
 }
@@ -59,8 +98,7 @@
   50% { opacity: 0.6; }
 }
 
-/* ── Keyboard Typing Animation ── */
-
+/* ── Keyboard typing ── */
 .scene-keyboard-active {
   animation: scene-keyboard-pulse 0.8s ease-in-out infinite alternate;
 }
@@ -70,29 +108,126 @@
   100% { opacity: 1; }
 }
 
-/* ── Status Pulse (dot above working avatar) ── */
-
+/* ── Working status pulse ── */
 .scene-status-pulse {
   animation: scene-dot-pulse 1.5s ease-in-out infinite;
 }
 
 @keyframes scene-dot-pulse {
-  0%, 100% { opacity: 1; r: 3; }
-  50% { opacity: 0.4; r: 5; }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
-/* ── Avatar hover ── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROP ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
 
-.scene-avatar {
-  cursor: default;
+/* Coffee steam rising */
+.scene-steam {
+  animation: scene-steam-rise 2s ease-in-out infinite;
 }
 
-.scene-avatar:hover rect,
-.scene-avatar:hover circle {
-  filter: brightness(1.15);
+.scene-steam-delay {
+  animation-delay: 0.6s;
 }
 
-/* ── Responsive ── */
+@keyframes scene-steam-rise {
+  0%   { opacity: 0; transform: translateY(0); }
+  30%  { opacity: 0.15; }
+  70%  { opacity: 0.08; }
+  100% { opacity: 0; transform: translateY(-6px); }
+}
+
+/* Coffee cup bob */
+.scene-prop-bob {
+  animation: scene-prop-bob 3s ease-in-out infinite;
+}
+
+@keyframes scene-prop-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+/* Game controller tilt */
+.scene-controller-tilt {
+  animation: scene-controller-tilt 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes scene-controller-tilt {
+  0% { transform: rotate(-3deg); }
+  100% { transform: rotate(3deg); }
+}
+
+/* Phone signal waves */
+.scene-signal {
+  animation: scene-signal-pulse 1.5s ease-in-out infinite;
+}
+
+.scene-signal-delay {
+  animation-delay: 0.4s;
+}
+
+@keyframes scene-signal-pulse {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHAT BUBBLE ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.scene-bubble-pop {
+  animation: scene-bubble-pop 0.3s ease-out;
+}
+
+@keyframes scene-bubble-pop {
+  0% { opacity: 0; transform: scale(0.5) translateY(4px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Typing dots animation */
+.scene-chat-dot {
+  animation: scene-chat-dot-bounce 1.4s ease-in-out infinite;
+}
+
+.scene-dot-1 { animation-delay: 0s; }
+.scene-dot-2 { animation-delay: 0.2s; }
+.scene-dot-3 { animation-delay: 0.4s; }
+
+@keyframes scene-chat-dot-bounce {
+  0%, 60%, 100% { opacity: 0.2; transform: translateY(0); }
+  30% { opacity: 0.8; transform: translateY(-3px); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROOM FURNITURE ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* TV screen subtle flicker */
+.scene-tv-screen {
+  animation: scene-tv-flicker 4s ease-in-out infinite;
+}
+
+@keyframes scene-tv-flicker {
+  0%, 100% { opacity: 1; }
+  48% { opacity: 1; }
+  50% { opacity: 0.7; }
+  52% { opacity: 1; }
+}
+
+/* PS5 light strip breathing */
+.scene-ps5-light {
+  animation: scene-ps5-breathe 3s ease-in-out infinite;
+}
+
+@keyframes scene-ps5-breathe {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════════════ */
 
 @media (max-width: 768px) {
   .scene-upper {
