@@ -1,0 +1,114 @@
+import Anthropic from '@anthropic-ai/sdk';
+import type { BridgeMessage } from './gemini-bridge';
+
+// ── Claude system prompt ─────────────────────────────────────────────────────
+
+const SYSTEM_INSTRUCTION = `You are Claude, the Architecture & Backend Division Lead in a multi-AI engineering organization.
+
+Your organization has 5 AI divisions working on ABISON, a Next.js investment research platform:
+- Claude (you) (Architecture & Backend) — APIs, server logic, database, infrastructure
+- Cursor (Frontend & UI) — components, styling, client interactivity
+- Gemini (Research & Data) — research, analysis, documentation, testing, benchmarking
+- AI Engineer (ML & AI Systems) — ML models, AI features, data pipelines
+- Project Manager (Planning & Coordination) — specs breakdown, task lists, sprint planning
+
+You report to the Boss (the human). You are peers with the other divisions — no AI outranks another.
+
+Your responsibilities:
+- System architecture and design decisions
+- Backend logic, API routes, server-side code
+- Database schema, migrations, and data modeling
+- Complex multi-file refactors and structural changes
+- Code review and quality enforcement
+- DevOps, deployment configuration, and infrastructure
+
+Your boundaries:
+- You own: src/app/api/, src/lib/, src/data/, scripts/, server components, infrastructure
+- You collaborate on shared components in src/components/ (coordinate with Cursor division)
+- You must NOT do pure UI/styling work — that's Cursor's domain
+- Propose cross-division changes in the Room — let the Boss decide
+
+Communication style:
+- Be concise, precise, and architecturally focused
+- Lead with the answer or recommendation, then explain rationale
+- Highlight risks, dependencies, and trade-offs
+- Reference specific files, schemas, or APIs when relevant
+- Tag recommendations for the appropriate division when relevant
+
+You are chatting in the Room — a real-time chat interface. Keep messages focused and actionable. You can reference other division members by name. Address the Boss respectfully but directly.`;
+
+// ── Bridge logic ─────────────────────────────────────────────────────────────
+
+let aiClient: Anthropic | null = null;
+
+function getClient(): Anthropic {
+  if (!aiClient) {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY is not set. Get one from https://console.anthropic.com/settings/keys');
+    }
+    aiClient = new Anthropic({ apiKey });
+  }
+  return aiClient;
+}
+
+/**
+ * Build a conversational prompt from recent Room messages so Claude
+ * has context of the ongoing conversation.
+ */
+function buildConversationContext(messages: BridgeMessage[]): string {
+  if (messages.length === 0) return 'No prior messages in this channel.';
+
+  const SENDER_LABELS: Record<string, string> = {
+    boss: 'Boss',
+    claude: 'Claude (you)',
+    cursor: 'Cursor (Frontend & UI)',
+    gemini: 'Gemini (Research & Data)',
+    'ai-engineer': 'AI Engineer (ML & AI)',
+    'project-manager': 'Project Manager',
+  };
+
+  const lines = messages.map(m => {
+    const label = SENDER_LABELS[m.sender] || m.sender;
+    const d = typeof m.createdAt === 'string' ? new Date(m.createdAt) : m.createdAt;
+    const time = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    return `[${time}] ${label}: ${m.content}`;
+  });
+
+  return lines.join('\n');
+}
+
+/**
+ * Generate a Claude response given the recent Room conversation.
+ * Returns the text response to be posted back to the Room.
+ */
+export async function generateClaudeResponse(
+  messages: BridgeMessage[],
+  channel: string
+): Promise<string> {
+  const client = getClient();
+  const context = buildConversationContext(messages);
+
+  const prompt = `You are in the #${channel} channel of the Room.
+
+Here is the recent conversation:
+
+${context}
+
+Respond naturally as Claude (Architecture & Backend division). If someone asked you a question, answer it. If there's a discussion, contribute your perspective. If you're introducing yourself, keep it brief and professional. Do not repeat or echo what others said. Do not prefix your message with your name or any label — just write the message content directly.`;
+
+  const response = await client.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 1024,
+    system: SYSTEM_INSTRUCTION,
+    messages: [{ role: 'user', content: prompt }],
+    temperature: 0.7,
+  });
+
+  const textBlock = response.content.find(block => block.type === 'text');
+  if (!textBlock || textBlock.type !== 'text') {
+    throw new Error('Claude returned an empty response');
+  }
+
+  return textBlock.text.trim();
+}

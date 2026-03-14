@@ -80,6 +80,8 @@ export default function Room() {
   const [replyTo, setReplyTo] = useState<RoomMessage | null>(null);
   const [geminiThinking, setGeminiThinking] = useState(false);
   const [geminiAutoRespond, setGeminiAutoRespond] = useState(false);
+  const [claudeThinking, setClaudeThinking] = useState(false);
+  const [claudeAutoRespond, setClaudeAutoRespond] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -137,8 +139,10 @@ export default function Room() {
         setContent('');
         setReplyTo(null);
         if (geminiAutoRespond && sender !== 'gemini') {
-          // Fire-and-forget: trigger Gemini auto-response after sending
           setTimeout(() => summonGemini(), 300);
+        }
+        if (claudeAutoRespond && sender !== 'claude') {
+          setTimeout(() => summonClaude(), 300);
         }
       } else {
         const data = await res.json().catch(() => null);
@@ -179,6 +183,30 @@ export default function Room() {
       setError('Network error — could not reach Gemini');
     } finally {
       setGeminiThinking(false);
+    }
+  };
+
+  const summonClaude = async () => {
+    if (claudeThinking) return;
+    setClaudeThinking(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/room/claude-bridge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channel }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setMessages(prev => [...prev, data.message]);
+      } else {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || `Claude failed to respond (${res.status})`);
+      }
+    } catch {
+      setError('Network error — could not reach Claude');
+    } finally {
+      setClaudeThinking(false);
     }
   };
 
@@ -245,23 +273,43 @@ export default function Room() {
                 Multi-AI division communication room
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <button
-                className="room-summon-btn"
-                onClick={summonGemini}
-                disabled={geminiThinking}
-                title="Ask Gemini to respond to the conversation"
-              >
-                <span className="room-summon-dot" />
-                {geminiThinking ? 'Gemini thinking...' : '@Gemini'}
-              </button>
-              <button
-                className={`room-auto-respond-btn ${geminiAutoRespond ? 'active' : ''}`}
-                onClick={() => setGeminiAutoRespond(prev => !prev)}
-                title={geminiAutoRespond ? 'Disable Gemini auto-response' : 'Enable Gemini auto-response'}
-              >
-                {geminiAutoRespond ? 'Auto: ON' : 'Auto: OFF'}
-              </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <button
+                  className="room-summon-btn room-summon-claude"
+                  onClick={summonClaude}
+                  disabled={claudeThinking}
+                  title="Ask Claude to respond to the conversation"
+                >
+                  <span className="room-summon-dot" />
+                  {claudeThinking ? 'Claude thinking...' : '@Claude'}
+                </button>
+                <button
+                  className={`room-auto-respond-btn room-auto-respond-claude ${claudeAutoRespond ? 'active' : ''}`}
+                  onClick={() => setClaudeAutoRespond(prev => !prev)}
+                  title={claudeAutoRespond ? 'Disable Claude auto-response' : 'Enable Claude auto-response'}
+                >
+                  {claudeAutoRespond ? 'Auto: ON' : 'Auto: OFF'}
+                </button>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <button
+                  className="room-summon-btn"
+                  onClick={summonGemini}
+                  disabled={geminiThinking}
+                  title="Ask Gemini to respond to the conversation"
+                >
+                  <span className="room-summon-dot" />
+                  {geminiThinking ? 'Gemini thinking...' : '@Gemini'}
+                </button>
+                <button
+                  className={`room-auto-respond-btn ${geminiAutoRespond ? 'active' : ''}`}
+                  onClick={() => setGeminiAutoRespond(prev => !prev)}
+                  title={geminiAutoRespond ? 'Disable Gemini auto-response' : 'Enable Gemini auto-response'}
+                >
+                  {geminiAutoRespond ? 'Auto: ON' : 'Auto: OFF'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

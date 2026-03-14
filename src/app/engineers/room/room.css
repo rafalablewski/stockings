@@ -224,6 +224,34 @@
   border-color: rgba(52, 211, 153, 0.55);
 }
 
+/* ── Claude summon & auto-respond (cyan theme) ── */
+
+.room-summon-claude {
+  border-color: rgba(34, 211, 238, 0.3);
+  background: rgba(34, 211, 238, 0.08);
+  color: rgba(34, 211, 238, 0.9);
+}
+
+.room-summon-claude:hover:not(:disabled) {
+  background: rgba(34, 211, 238, 0.15);
+  border-color: rgba(34, 211, 238, 0.5);
+}
+
+.room-summon-claude .room-summon-dot {
+  background: #22d3ee;
+}
+
+.room-auto-respond-claude.active {
+  border-color: rgba(34, 211, 238, 0.4);
+  background: rgba(34, 211, 238, 0.1);
+  color: rgba(34, 211, 238, 0.9);
+}
+
+.room-auto-respond-claude.active:hover {
+  background: rgba(34, 211, 238, 0.18);
+  border-color: rgba(34, 211, 238, 0.55);
+}
+
 /* ── Messages ── */
 
 .room-messages {
