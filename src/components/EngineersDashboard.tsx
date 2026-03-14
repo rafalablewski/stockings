@@ -378,7 +378,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const [statuses, setStatuses] = useState<EngineerStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [runningIds, setRunningIds] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState<'network' | 'history'>('network');
+  const [activeTab, setActiveTab] = useState<'network' | 'history' | 'pms'>('network');
   const [graphView, setGraphView] = useState<'default' | 'interactive'>('default');
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
@@ -497,6 +497,17 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
 
   const categories = ['research', 'monitoring', 'intelligence', 'audit'] as const;
 
+  // Division leads data for the PM section
+  const divisionLeads = useMemo(() => {
+    const divNodes = orgNodes.filter(n => n.type === 'division');
+    return divNodes.map(div => {
+      const managedEngineers = orgNodes.filter(
+        n => n.parentId === div.id && n.type === 'engineer'
+      );
+      return { ...div, engineerCount: managedEngineers.length, managedEngineers };
+    });
+  }, []);
+
   const openPromptPreview = useCallback((wf: Workflow, ticker: string, label: string) => {
     const variant = wf.variants.find(v => v.ticker === ticker.toLowerCase());
     if (!variant) return;
@@ -613,6 +624,9 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
             </button>
             <button className="eng-tab" data-active={activeTab === 'history'} onClick={() => setActiveTab('history')}>
               History
+            </button>
+            <button className="eng-tab" data-active={activeTab === 'pms'} onClick={() => setActiveTab('pms')}>
+              PMs<span className="eng-tab-count">{divisionLeads.length}</span>
             </button>
           </div>
         </div>
@@ -808,6 +822,142 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                 History will appear here as agents execute tasks — showing comprehensive
                 descriptions of each operation, its inputs, outputs, and duration.
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ══ PMS TAB ══ */}
+        {activeTab === 'pms' && (
+          <div className="eng-pms-tab">
+            {/* KPI Bar */}
+            <div className="eng-pms-kpi-bar">
+              <div className="eng-kpi-bar-cell">
+                <div className="eng-kpi-bar-value" data-color="gold">{divisionLeads.length}</div>
+                <div className="eng-kpi-bar-label">Divisions</div>
+              </div>
+              <div className="eng-kpi-bar-cell">
+                <div className="eng-kpi-bar-value" data-color="cyan">
+                  {divisionLeads.reduce((sum, d) => sum + d.engineerCount, 0)}
+                </div>
+                <div className="eng-kpi-bar-label">Total Engineers</div>
+              </div>
+              <div className="eng-kpi-bar-cell">
+                <div className="eng-kpi-bar-value" data-color="mint">
+                  {divisionLeads.filter(d => d.engineerCount > 0).length}
+                </div>
+                <div className="eng-kpi-bar-label">Active Teams</div>
+              </div>
+              <div className="eng-kpi-bar-cell">
+                <div className="eng-kpi-bar-value" data-color="violet">
+                  {Math.round(divisionLeads.reduce((sum, d) => sum + d.engineerCount, 0) / divisionLeads.filter(d => d.engineerCount > 0).length) || 0}
+                </div>
+                <div className="eng-kpi-bar-label">Avg Team Size</div>
+              </div>
+              <div className="eng-kpi-bar-cell">
+                <div className="eng-kpi-bar-value" data-color="coral">
+                  {uniqueWorkflows}
+                </div>
+                <div className="eng-kpi-bar-label">Total Workflows</div>
+              </div>
+            </div>
+
+            {/* Division Cards */}
+            <div className="eng-pms-grid">
+              {divisionLeads.map(div => {
+                // Find engineers under this division
+                const divEngineers = engineers.filter(eng => {
+                  const engNode = orgNodes.find(n => n.engineerId === eng.id);
+                  return engNode?.parentId === div.id;
+                });
+                const divWorkflowCount = new Set(divEngineers.flatMap(e => e.workflowIds)).size;
+                const divScheduledCount = statuses.filter(s =>
+                  divEngineers.some(e => e.id === s.engineer.id) && s.schedule?.enabled
+                ).length;
+                const divRunningCount = divEngineers.filter(e => runningIds.has(e.id)).length;
+                const divCategories = [...new Set(divEngineers.map(e => e.category))];
+
+                return (
+                  <div
+                    key={div.id}
+                    className="eng-pm-card"
+                    style={{ '--div-color': div.color } as React.CSSProperties}
+                  >
+                    {/* Card Header */}
+                    <div className="eng-pm-card-header">
+                      <div className="eng-division-card-badge" style={{ background: `${div.color}18`, color: div.color }}>
+                        {div.badge}
+                      </div>
+                      <div className="eng-pm-card-title">
+                        <div className="eng-division-card-name">{div.label}</div>
+                        <div className="eng-division-card-role">{div.role}</div>
+                      </div>
+                      {divRunningCount > 0 && (
+                        <span className="eng-pm-running-badge">
+                          {divRunningCount} running
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Description */}
+                    {div.description && (
+                      <div className="eng-pm-card-desc">{div.description}</div>
+                    )}
+
+                    {/* Mini KPIs */}
+                    <div className="eng-pm-card-metrics">
+                      <div className="eng-pm-metric">
+                        <span className="eng-pm-metric-value" style={{ color: div.color }}>{div.engineerCount}</span>
+                        <span className="eng-pm-metric-label">Engineers</span>
+                      </div>
+                      <div className="eng-pm-metric">
+                        <span className="eng-pm-metric-value">{divWorkflowCount}</span>
+                        <span className="eng-pm-metric-label">Workflows</span>
+                      </div>
+                      <div className="eng-pm-metric">
+                        <span className="eng-pm-metric-value">{divScheduledCount}</span>
+                        <span className="eng-pm-metric-label">Scheduled</span>
+                      </div>
+                      <div className="eng-pm-metric">
+                        <span className="eng-pm-metric-value">{divCategories.length}</span>
+                        <span className="eng-pm-metric-label">Categories</span>
+                      </div>
+                    </div>
+
+                    {/* Engineer List */}
+                    {divEngineers.length > 0 ? (
+                      <div className="eng-pm-engineer-list">
+                        <div className="eng-pm-engineer-list-title">Managed Engineers</div>
+                        {divEngineers.map(eng => {
+                          const engStatus = statuses.find(s => s.engineer.id === eng.id);
+                          const isRunning = runningIds.has(eng.id);
+                          const dotStatus = isRunning || engStatus?.lastRun?.status === 'running'
+                            ? 'running'
+                            : engStatus?.schedule?.enabled ? 'active' : 'idle';
+
+                          return (
+                            <div
+                              key={eng.id}
+                              className="eng-pm-engineer-row"
+                              onClick={() => setSelectedNode(eng.id)}
+                            >
+                              <span className="eng-status-dot" data-status={dotStatus} />
+                              <span className="eng-pm-engineer-name">{eng.name}</span>
+                              <span className="eng-pm-engineer-role">{eng.role}</span>
+                              <span className="eng-pm-engineer-interval">
+                                {formatInterval(eng.defaultIntervalMinutes)}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="eng-pm-no-engineers">
+                        No engineers managed — this division focuses on infrastructure and coordination.
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

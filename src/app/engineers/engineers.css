@@ -446,6 +446,226 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   PMs TAB — Division lead cards with KPIs and engineer lists
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.eng-pms-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.eng-pms-kpi-bar {
+  display: flex;
+  gap: 0;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.01);
+}
+
+.eng-pms-kpi-bar .eng-kpi-bar-cell {
+  flex: 1;
+  padding: 16px 12px;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.04);
+}
+
+.eng-pms-kpi-bar .eng-kpi-bar-cell:last-child {
+  border-right: none;
+}
+
+.eng-pms-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── PM Card ── */
+.eng-pm-card {
+  padding: 20px 24px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  border-left: 3px solid var(--div-color);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: all 0.2s ease;
+}
+
+.eng-pm-card:hover {
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.1);
+}
+
+.eng-pm-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.eng-pm-card-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.eng-pm-running-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--mint);
+  background: rgba(126,231,135,0.1);
+  border: 1px solid rgba(126,231,135,0.2);
+  border-radius: 10px;
+  padding: 3px 10px;
+  animation: eng-pulse 2s ease-in-out infinite;
+}
+
+@keyframes eng-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.eng-division-card-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.eng-division-card-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.eng-division-card-role {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.eng-pm-card-desc {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.6;
+}
+
+/* ── PM Card Metrics Row ── */
+.eng-pm-card-metrics {
+  display: flex;
+  gap: 0;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.01);
+}
+
+.eng-pm-metric {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 8px;
+  border-right: 1px solid rgba(255,255,255,0.04);
+}
+
+.eng-pm-metric:last-child {
+  border-right: none;
+}
+
+.eng-pm-metric-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.eng-pm-metric-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text3);
+}
+
+/* ── PM Engineer List ── */
+.eng-pm-engineer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.eng-pm-engineer-list-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+
+.eng-pm-engineer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.eng-pm-engineer-row:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.eng-pm-engineer-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  min-width: 140px;
+}
+
+.eng-pm-engineer-role {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  color: var(--text3);
+  flex: 1;
+  min-width: 0;
+}
+
+.eng-pm-engineer-interval {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  opacity: 0.7;
+}
+
+.eng-pm-no-engineers {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  color: var(--text3);
+  font-style: italic;
+  padding: 8px 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    NETWORK GRAPH — Category Swimlane Layout
    ═══════════════════════════════════════════════════════════════════════════ */
 
