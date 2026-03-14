@@ -89,6 +89,7 @@ export default function Room({ onThinkingChange }: RoomProps = {}) {
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const summonTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -114,6 +115,7 @@ export default function Room({ onThinkingChange }: RoomProps = {}) {
     pollRef.current = setInterval(fetchMessages, 5000);
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
+      if (summonTimeoutRef.current) clearTimeout(summonTimeoutRef.current);
     };
   }, [fetchMessages]);
 
@@ -143,10 +145,10 @@ export default function Room({ onThinkingChange }: RoomProps = {}) {
         setContent('');
         setReplyTo(null);
         if (geminiAutoRespond && sender !== 'gemini') {
-          setTimeout(() => summonGemini(), 300);
+          summonTimeoutRef.current = setTimeout(() => summonGemini(), 300);
         }
         if (claudeAutoRespond && sender !== 'claude') {
-          setTimeout(() => summonClaude(), 300);
+          summonTimeoutRef.current = setTimeout(() => summonClaude(), 300);
         }
       } else {
         const data = await res.json().catch(() => null);
@@ -281,8 +283,8 @@ export default function Room({ onThinkingChange }: RoomProps = {}) {
                 Multi-AI division communication room
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div className="room-header-actions">
+              <div className="room-header-action-group">
                 <button
                   className="room-summon-btn room-summon-claude"
                   onClick={summonClaude}
@@ -300,7 +302,7 @@ export default function Room({ onThinkingChange }: RoomProps = {}) {
                   {claudeAutoRespond ? 'Auto: ON' : 'Auto: OFF'}
                 </button>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div className="room-header-action-group">
                 <button
                   className="room-summon-btn"
                   onClick={summonGemini}

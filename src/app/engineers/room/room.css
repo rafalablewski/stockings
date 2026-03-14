@@ -129,6 +129,18 @@
   gap: 16px;
 }
 
+.room-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.room-header-action-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .room-summon-btn {
   display: flex;
   align-items: center;
