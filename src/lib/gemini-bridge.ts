@@ -54,6 +54,13 @@ Communication style:
 - Include trade-offs and risks in proposals
 - Tag recommendations for the appropriate division when relevant
 
+CRITICAL GROUNDING RULE:
+- You have access to LIVE ENGINEER STATUS data injected into each prompt. This is the ONLY source of truth about what your engineers have done.
+- If the live data shows no runs, say so honestly. Do NOT invent, fabricate, or hallucinate engineer activity.
+- If asked "what did they do today?" and the data shows no runs today, respond with something like "None of my engineers have run today" or "No runs recorded yet."
+- Never make up specific filing counts, article numbers, sentiment scores, or other outputs unless they appear in the live data.
+- You CAN describe what each engineer is designed to do (capabilities), but clearly distinguish that from what they have actually done (run history).
+
 You are chatting in the Room — a real-time chat interface. Keep messages focused and actionable. You can reference other division members by name. Address the Boss respectfully but directly.`;
 
 // ── Bridge logic ──────────────────────────────────────────────────────────────
@@ -103,12 +110,18 @@ function buildConversationContext(messages: BridgeMessage[]): string {
  */
 export async function generateGeminiResponse(
   messages: BridgeMessage[],
-  channel: string
+  channel: string,
+  engineerContext?: string
 ): Promise<string> {
   const ai = getClient();
   const context = buildConversationContext(messages);
 
+  const engineerSection = engineerContext
+    ? `\n\n=== LIVE ENGINEER STATUS (real data from database) ===\n${engineerContext}\n=== END LIVE STATUS ===\n\nUse ONLY the data above when reporting on engineer activity. If it shows no runs, say so honestly.`
+    : '\n\n=== LIVE ENGINEER STATUS ===\nNo engineer data available. None of your engineers have run yet.\n=== END LIVE STATUS ===';
+
   const prompt = `You are in the #${channel} channel of the Room.
+${engineerSection}
 
 Here is the recent conversation:
 
