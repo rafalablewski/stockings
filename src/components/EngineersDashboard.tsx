@@ -45,6 +45,7 @@ interface HistoryRun {
   patchesApplied: number;
   errorsEncountered: string | null;
   durationMs: number | null;
+  hidden: boolean;
   startedAt: string | null;
   completedAt: string | null;
   createdAt: string;
@@ -514,6 +515,26 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
     if (activeTab === 'history') fetchHistory();
   }, [activeTab, fetchHistory]);
 
+  const handleHideRun = useCallback(async (id: number, hidden: boolean) => {
+    try {
+      await authFetch(`/api/engineers/history?id=${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hidden }),
+      });
+      setHistoryRuns(prev => prev.filter(r => r.id !== id));
+      if (expandedRunId === id) setExpandedRunId(null);
+    } catch { /* silent */ }
+  }, [expandedRunId]);
+
+  const handleDeleteRun = useCallback(async (id: number) => {
+    try {
+      await authFetch(`/api/engineers/history?id=${id}`, { method: 'DELETE' });
+      setHistoryRuns(prev => prev.filter(r => r.id !== id));
+      if (expandedRunId === id) setExpandedRunId(null);
+    } catch { /* silent */ }
+  }, [expandedRunId]);
+
   const handleRun = async (engineerId: string) => {
     setRunningIds(prev => { const next = new Set(prev); next.add(engineerId); return next; });
     try {
@@ -937,6 +958,22 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                               <pre className="eng-history-output eng-history-error">{run.errorsEncountered}</pre>
                             </div>
                           )}
+                          <div className="eng-history-actions">
+                            <button
+                              className="eng-btn eng-btn-sm eng-btn-ghost"
+                              onClick={(e) => { e.stopPropagation(); handleHideRun(run.id, true); }}
+                              title="Hide from history"
+                            >
+                              Hide
+                            </button>
+                            <button
+                              className="eng-btn eng-btn-sm eng-btn-danger"
+                              onClick={(e) => { e.stopPropagation(); handleDeleteRun(run.id); }}
+                              title="Permanently delete"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>

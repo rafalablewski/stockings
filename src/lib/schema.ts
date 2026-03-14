@@ -228,6 +228,7 @@ export const agentRuns = pgTable('agent_runs', {
   patchesApplied: integer('patches_applied').default(0).notNull(),
   errorsEncountered: text('errors_encountered'), // error details if failed
   durationMs: integer('duration_ms'),            // how long the run took
+  hidden: boolean('hidden').default(false).notNull(), // soft-hide from history UI
   scheduledAt: timestamp('scheduled_at'),        // when this run was scheduled for
   startedAt: timestamp('started_at'),            // when execution began
   completedAt: timestamp('completed_at'),        // when execution finished
