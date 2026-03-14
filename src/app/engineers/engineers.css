@@ -2466,3 +2466,226 @@
   line-height: 1.6;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   NETWORK GRAPH — Interactive SVG org hierarchy (Palantir/Arkham style)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.eng-graph-container {
+  position: relative;
+  width: 100%;
+  height: 620px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  background: rgba(0,0,0,0.3);
+  /* Subtle grid bg */
+  background-image:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.eng-graph-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ── Nodes ── */
+
+.eng-graph-node {
+  transition: opacity 0.3s ease, transform 0.15s ease;
+}
+
+.eng-graph-node:hover {
+  filter: brightness(1.2);
+}
+
+.eng-graph-node--dimmed {
+  opacity: 0.12;
+}
+
+.eng-graph-node--selected {
+  opacity: 1;
+}
+
+.eng-graph-node--running circle,
+.eng-graph-node--running path {
+  animation: eng-node-pulse 2s ease-in-out infinite;
+}
+
+@keyframes eng-node-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.5); }
+}
+
+/* ── Edges ── */
+
+.eng-graph-edge--dataflow {
+  stroke-dasharray: 8 4;
+  animation: eng-data-flow 1.5s linear infinite;
+}
+
+@keyframes eng-data-flow {
+  from { stroke-dashoffset: 24; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* ── Toggle bar ── */
+
+.eng-graph-toggle-bar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+
+.eng-graph-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.6);
+  color: rgba(255,255,255,0.4);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+  backdrop-filter: blur(8px);
+}
+
+.eng-graph-toggle:hover {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.6);
+  border-color: rgba(255,255,255,0.15);
+}
+
+.eng-graph-toggle.active {
+  border-color: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.85);
+}
+
+.eng-graph-toggle-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+.eng-graph-toggle.active .eng-graph-toggle-dot {
+  opacity: 1;
+  box-shadow: 0 0 6px currentColor;
+}
+
+/* ── Tooltip ── */
+
+.eng-graph-tooltip {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+  background: rgba(10,10,10,0.92);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 10px 14px;
+  backdrop-filter: blur(12px);
+  min-width: 180px;
+  max-width: 280px;
+}
+
+.eng-graph-tooltip-name {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.eng-graph-tooltip-role {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 8px;
+}
+
+.eng-graph-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 10px;
+  padding: 2px 0;
+}
+
+.eng-graph-tooltip-key {
+  color: rgba(255,255,255,0.35);
+  font-family: 'Space Mono', monospace;
+  flex-shrink: 0;
+}
+
+.eng-graph-tooltip-val {
+  color: rgba(255,255,255,0.7);
+  text-align: right;
+}
+
+/* ── Legend ── */
+
+.eng-graph-legend {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 10;
+  background: rgba(10,10,10,0.85);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 10px 14px;
+  backdrop-filter: blur(8px);
+}
+
+.eng-graph-legend-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.25);
+  margin-bottom: 6px;
+}
+
+.eng-graph-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.45);
+  padding: 2px 0;
+}
+
+.eng-graph-legend-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: 5px 0;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 768px) {
+  .eng-graph-container {
+    height: 450px;
+  }
+
+  .eng-graph-legend {
+    display: none;
+  }
+
+  .eng-graph-toggle-bar {
+    top: 8px;
+    right: 8px;
+  }
+
+  .eng-graph-toggle {
+    font-size: 9px;
+    padding: 4px 8px;
+  }
+}
+
