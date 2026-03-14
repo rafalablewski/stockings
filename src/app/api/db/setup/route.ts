@@ -203,6 +203,65 @@ CREATE INDEX IF NOT EXISTS press_releases_ticker_datetime_idx
   ON press_releases (ticker, datetime);
 
 ${NOTES_CREATE_TABLE_SQL};
+
+CREATE TABLE IF NOT EXISTS agent_runs (
+  id SERIAL PRIMARY KEY,
+  ticker TEXT NOT NULL,
+  engineer_id TEXT NOT NULL,
+  workflow_id TEXT,
+  status TEXT NOT NULL,
+  trigger_type TEXT NOT NULL,
+  trigger_reason TEXT,
+  input_summary TEXT,
+  output_summary TEXT,
+  output_full TEXT,
+  patches_applied INTEGER NOT NULL DEFAULT 0,
+  errors_encountered TEXT,
+  duration_ms INTEGER,
+  scheduled_at TIMESTAMP,
+  started_at TIMESTAMP,
+  completed_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS agent_runs_ticker_engineer_idx
+  ON agent_runs (ticker, engineer_id);
+CREATE INDEX IF NOT EXISTS agent_runs_status_idx
+  ON agent_runs (status);
+CREATE INDEX IF NOT EXISTS agent_runs_created_idx
+  ON agent_runs (created_at);
+
+CREATE TABLE IF NOT EXISTS engineer_schedules (
+  id SERIAL PRIMARY KEY,
+  ticker TEXT NOT NULL,
+  engineer_id TEXT NOT NULL,
+  enabled BOOLEAN NOT NULL DEFAULT TRUE,
+  interval_minutes INTEGER NOT NULL,
+  last_run_at TIMESTAMP,
+  next_run_at TIMESTAMP,
+  config TEXT,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS engineer_schedules_ticker_engineer_idx
+  ON engineer_schedules (ticker, engineer_id);
+
+CREATE TABLE IF NOT EXISTS room_messages (
+  id SERIAL PRIMARY KEY,
+  sender TEXT NOT NULL,
+  content TEXT NOT NULL,
+  channel TEXT NOT NULL DEFAULT 'general',
+  reply_to INTEGER,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS room_messages_channel_idx
+  ON room_messages (channel);
+CREATE INDEX IF NOT EXISTS room_messages_created_idx
+  ON room_messages (created_at);
+CREATE INDEX IF NOT EXISTS room_messages_sender_idx
+  ON room_messages (sender);
 `;
 
 // ── Main handler ─────────────────────────────────────────────────────────────

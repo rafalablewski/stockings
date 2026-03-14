@@ -3,22 +3,24 @@ import { getDb } from '@/lib/db';
 import { roomMessages } from '@/lib/schema';
 import { desc, eq } from 'drizzle-orm';
 import { generateGeminiResponse } from '@/lib/gemini-bridge';
+import { VALID_CHANNELS } from '@/lib/types';
 
 /**
  * POST /api/room/gemini-bridge
  *
  * Triggers Gemini to read the latest messages in a channel and post a response.
  * Body: { "channel": "general" }
- *
- * Flow:
- * 1. Fetch last 30 messages from the channel
- * 2. Send them to Gemini API as conversation context
- * 3. Post Gemini's response back to the room as sender "gemini"
- * 4. Return the new message
  */
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const channel = body.channel || 'general';
+
+  if (!VALID_CHANNELS.includes(channel)) {
+    return NextResponse.json(
+      { error: `Invalid channel. Must be one of: ${VALID_CHANNELS.join(', ')}` },
+      { status: 400 }
+    );
+  }
 
   // 1. Fetch recent messages for context
   const db = getDb();

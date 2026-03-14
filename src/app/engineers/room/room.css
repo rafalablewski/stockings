@@ -365,6 +365,29 @@
   flex-shrink: 0;
 }
 
+.room-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 6px;
+  color: rgba(239, 68, 68, 0.9);
+  cursor: pointer;
+}
+
+.room-error-dismiss {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.room-error:hover .room-error-dismiss {
+  opacity: 1;
+}
+
 .room-composer-reply {
   display: flex;
   align-items: center;

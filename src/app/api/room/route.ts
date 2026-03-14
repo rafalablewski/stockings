@@ -2,21 +2,32 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { roomMessages } from '@/lib/schema';
 import { desc, eq, and, lt } from 'drizzle-orm';
-
-const VALID_SENDERS = ['boss', 'claude', 'cursor', 'gemini', 'ai-engineer', 'project-manager'] as const;
-const VALID_CHANNELS = ['general', 'backend', 'frontend', 'research', 'ml', 'planning'] as const;
+import { VALID_SENDERS, VALID_CHANNELS } from '@/lib/types';
 
 // GET /api/room?channel=general&before=123&limit=50
 export async function GET(req: NextRequest) {
   const db = getDb();
   const url = new URL(req.url);
   const channel = url.searchParams.get('channel') || 'general';
-  const before = url.searchParams.get('before');
-  const limit = Math.min(parseInt(url.searchParams.get('limit') || '50', 10), 100);
+  const beforeRaw = url.searchParams.get('before');
+  const limitRaw = parseInt(url.searchParams.get('limit') || '50', 10);
+
+  if (!VALID_CHANNELS.includes(channel as typeof VALID_CHANNELS[number])) {
+    return NextResponse.json(
+      { error: `Invalid channel. Must be one of: ${VALID_CHANNELS.join(', ')}` },
+      { status: 400 }
+    );
+  }
+
+  const limit = Number.isNaN(limitRaw) ? 50 : Math.min(Math.max(limitRaw, 1), 100);
 
   const conditions = [eq(roomMessages.channel, channel)];
-  if (before) {
-    conditions.push(lt(roomMessages.id, parseInt(before, 10)));
+  if (beforeRaw) {
+    const beforeId = parseInt(beforeRaw, 10);
+    if (Number.isNaN(beforeId)) {
+      return NextResponse.json({ error: 'Invalid before parameter — must be a number' }, { status: 400 });
+    }
+    conditions.push(lt(roomMessages.id, beforeId));
   }
 
   const messages = await db
@@ -47,11 +58,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Content is required' }, { status: 400 });
   }
 
-  if (!VALID_CHANNELS.includes(channel)) {
+  if (!VALID_CHANNELS.includes(channel as typeof VALID_CHANNELS[number])) {
     return NextResponse.json(
       { error: `Invalid channel. Must be one of: ${VALID_CHANNELS.join(', ')}` },
       { status: 400 }
     );
+  }
+
+  if (replyTo !== undefined && replyTo !== null && (typeof replyTo !== 'number' || !Number.isInteger(replyTo))) {
+    return NextResponse.json({ error: 'replyTo must be an integer or null' }, { status: 400 });
   }
 
   const [message] = await db
