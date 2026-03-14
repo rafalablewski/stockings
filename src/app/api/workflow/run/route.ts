@@ -54,7 +54,9 @@ export async function POST(request: NextRequest) {
         companyCtx = `\nCompany: ${c.name} (${c.exchange}: ${c.ticker})\nSector: ${c.sector}\nDescription: ${c.description}\n`;
       }
     }
-    let fullMessage = `[Today's date: ${today}]${companyCtx}\n\n${prompt}`;
+    // Replace {{CURRENT_DATE}} placeholders in prompt with today's date
+    const resolvedPrompt = prompt.replace(/\{\{CURRENT_DATE\}\}/g, today);
+    let fullMessage = `[Today's date: ${today}]${companyCtx}\n\n${resolvedPrompt}`;
     if (data) {
       fullMessage += dataSeparator + data;
     }

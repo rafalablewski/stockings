@@ -96,7 +96,9 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
         .where(eq(agentRuns.id, runId));
 
       // 3. Build the message with date + prompt + optional user data
-      const datedPrompt = `[Today's date: ${today}]\n\n${resolved.prompt}`;
+      // Replace {{CURRENT_DATE}} placeholders in prompt with today's date
+      const resolvedPrompt = resolved.prompt.replace(/\{\{CURRENT_DATE\}\}/g, today);
+      const datedPrompt = `[Today's date: ${today}]\n\n${resolvedPrompt}`;
       const fullMessage = opts.userData
         ? `${datedPrompt}\n\n════════════════════════════════════════════════════════════\nAUTO-FETCHED DATA\n════════════════════════════════════════════════════════════\n\n${opts.userData}`
         : datedPrompt;

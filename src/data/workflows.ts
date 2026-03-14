@@ -1685,7 +1685,7 @@ DATABASE SECTIONS:
 3. ASTS Core (whole file) — launch cadence, FCC/NTIA/regulatory, spectrum, capital structure, leadership, earnings/guidance, analyst coverage, litigation, material contracts.
 4. Sources / Reference Log (Sources tab) — chronological log of primary sources.
 
-Current date: February 16, 2026. Reverse-chronological order.
+Current date: {{CURRENT_DATE}}. Reverse-chronological order.
 
 ════════════════════════════════════════
 PHASE 1: CLASSIFICATION
@@ -1850,7 +1850,7 @@ DATABASE SECTIONS:
 3. BMNR Core (whole file) — ETH/BTC treasury, mining wind-down, leasing/advisory revenue, capital structure, leadership, earnings/guidance, analyst coverage, litigation.
 4. Sources / Reference Log (Sources tab) — chronological log of primary sources.
 
-Current date: February 16, 2026. Reverse-chronological order.
+Current date: {{CURRENT_DATE}}. Reverse-chronological order.
 
 ════════════════════════════════════════
 PHASE 1: CLASSIFICATION
@@ -2657,7 +2657,7 @@ SECTION 3: STALENESS DETECTION
 ════════════════════════════════════════
 
 Check metadata for each data file:
-- CAPITAL_METADATA.lastUpdated — is it older than 30 days from current date (Feb 16, 2026)?
+- CAPITAL_METADATA.lastUpdated — is it older than 30 days from current date ({{CURRENT_DATE}})?
 - FINANCIALS_METADATA.lastUpdated — same check
 - CATALYSTS_METADATA.lastUpdated — same check
 - nextExpectedUpdate — is it in the past?
@@ -2771,7 +2771,7 @@ SECTION 3: STALENESS DETECTION
 ════════════════════════════════════════
 
 Check metadata for each data file:
-- CAPITAL_METADATA.lastUpdated — is it older than 30 days from current date (Feb 16, 2026)?
+- CAPITAL_METADATA.lastUpdated — is it older than 30 days from current date ({{CURRENT_DATE}})?
 - nextExpectedUpdate — is it in the past?
 
 For each stale section:
@@ -3141,7 +3141,7 @@ Rules: Report facts only. Do not fabricate URLs or source entries.`,
 
         prompt: `You are a data freshness auditor for the ABISON investment database covering AST SpaceMobile (NASDAQ: ASTS). Your job is to detect stale, outdated, or missing data across all tabs and flag what needs refreshing.
 
-Current date: February 16, 2026.
+Current date: {{CURRENT_DATE}}.
 
 ════════════════════════════════════════
 PHASE 1: METADATA STALENESS SCAN
@@ -3240,7 +3240,7 @@ Rules: Report facts only. Use actual dates from the database. Do not estimate or
 
         prompt: `You are a data freshness auditor for the ABISON investment database covering Bitmine Immersion Technologies, Inc. (NYSE American: BMNR). Your job is to detect stale, outdated, or missing data across all tabs and flag what needs refreshing.
 
-Current date: February 16, 2026.
+Current date: {{CURRENT_DATE}}.
 
 ════════════════════════════════════════
 PHASE 1: METADATA STALENESS SCAN
@@ -3994,7 +3994,7 @@ Rules: NEVER output actual secret values. Use [REDACTED]. Report file, line, and
         ticker: 'asts',
         prompt: `You are a financial data quality analyst auditing earnings data for AST SpaceMobile (NASDAQ: ASTS) in the ABISON investment database.
 
-Current date: February 22, 2026.
+Current date: {{CURRENT_DATE}}.
 
 ════════════════════════════════════════
 PHASE 1: EARNINGS DATA COMPLETENESS
@@ -4071,7 +4071,7 @@ Rules: Compare actual database values. Do not estimate or infer figures not pres
         ticker: 'bmnr',
         prompt: `You are a financial data quality analyst auditing earnings data for BitMine Immersion Technologies (NYSE American: BMNR) in the ABISON investment database.
 
-Current date: February 22, 2026.
+Current date: {{CURRENT_DATE}}.
 
 BMNR context: Sep 30 fiscal year end. Growth-stage company — revenue may be small or zero in early periods. ETH treasury valuation and mining revenue are key metrics.
 
@@ -4160,7 +4160,7 @@ Rules: Compare actual database values. Do not estimate or infer figures not pres
         ticker: 'asts',
         prompt: `You are an equity research analyst auditing the peer comparables for AST SpaceMobile (NASDAQ: ASTS) in the ABISON investment database.
 
-Current date: February 22, 2026.
+Current date: {{CURRENT_DATE}}.
 
 ════════════════════════════════════════
 PHASE 1: COMP SET COMPOSITION
@@ -4239,7 +4239,7 @@ Rules: Use actual database values. Flag gaps; do not fill with estimates.`,
         ticker: 'bmnr',
         prompt: `You are an equity research analyst auditing the peer comparables for BitMine Immersion Technologies (NYSE American: BMNR) in the ABISON investment database.
 
-Current date: February 22, 2026.
+Current date: {{CURRENT_DATE}}.
 
 ════════════════════════════════════════
 PHASE 1: COMP SET COMPOSITION
@@ -4325,7 +4325,7 @@ Rules: Use actual database values. Flag gaps; do not fill with estimates.`,
         ticker: 'asts',
         prompt: `You are a disclosure analyst auditing SEC filing coverage for AST SpaceMobile (NASDAQ: ASTS) in the ABISON investment database.
 
-Current date: February 22, 2026.
+Current date: {{CURRENT_DATE}}.
 
 ════════════════════════════════════════
 PHASE 1: SEC FILING INVENTORY
@@ -4404,7 +4404,7 @@ Rules: Use actual database contents. Flag what's missing; don't fabricate filing
         ticker: 'bmnr',
         prompt: `You are a disclosure analyst auditing SEC filing coverage for BitMine Immersion Technologies (NYSE American: BMNR) in the ABISON investment database.
 
-Current date: February 22, 2026.
+Current date: {{CURRENT_DATE}}.
 
 BMNR context: Sep 30 fiscal year end. Pay attention to 8-Ks around ETH purchases, ATM offerings, and mining facility updates.
 
@@ -4496,7 +4496,7 @@ Rules: Use actual database contents. Flag what's missing; don't fabricate filing
         ticker: 'asts',
         prompt: `You are a financial model auditor reviewing internal consistency of AST SpaceMobile (NASDAQ: ASTS) data in the ABISON investment database.
 
-Current date: February 22, 2026.
+Current date: {{CURRENT_DATE}}.
 
 ════════════════════════════════════════
 PHASE 1: INPUT VALIDATION
@@ -4576,7 +4576,7 @@ Rules: Compare actual values. Do not fill gaps with estimates. Flag every cross-
         ticker: 'bmnr',
         prompt: `You are a financial model auditor reviewing internal consistency of BitMine Immersion Technologies (NYSE American: BMNR) data in the ABISON investment database.
 
-Current date: February 22, 2026.
+Current date: {{CURRENT_DATE}}.
 
 BMNR context: Unique complexity from ETH treasury valuation, mining economics, and frequent capital activity. Focus on ETH quantity × price consistency and dilution math.
 
