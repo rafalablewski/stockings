@@ -29,7 +29,7 @@ function IsoBlock({
   className?: string;
 }) {
   const faces = blockFaces(x, y, z, w, d, h, rot, pitch);
-  const s = 'rgba(255,255,255,0.04)';
+  const s = 'rgba(0,0,0,0.3)';
   return (
     <g className={className}>
       <polygon points={faces.east} fill={eastFill} stroke={eastStroke ?? s} strokeWidth={strokeWidth} />
@@ -125,19 +125,44 @@ export default function SceneView({ avatars, workingState, rotation: rot, pitch:
             stroke="rgba(255,255,255,0.018)" strokeWidth={0.5} />;
         })}
 
-        {/* Carpet area under desks */}
+        {/* ── Floor zone: Work area (dark blue carpet under desks) ── */}
         <polygon
           points={isoPoints([p(6, 5.5), p(26, 5.5), p(26, 10.5), p(6, 10.5)])}
-          fill="rgba(20,20,40,0.3)"
-          stroke="rgba(255,255,255,0.02)"
-          strokeWidth={0.5}
+          fill="#12142a"
+          stroke="#1a1c38"
+          strokeWidth={0.8}
         />
-        {/* Lounge rug */}
+
+        {/* ── Floor zone: Conference room (teal/blue-green rug) ── */}
         <polygon
-          points={isoPoints([p(20, 1), p(26, 1), p(26, 5), p(20, 5)])}
-          fill="rgba(99,102,241,0.04)"
-          stroke="rgba(99,102,241,0.05)"
-          strokeWidth={0.5}
+          points={isoPoints([p(2.5, 2.2), p(8.5, 2.2), p(8.5, 6.8), p(2.5, 6.8)])}
+          fill="#14282e"
+          stroke="#1c3840"
+          strokeWidth={0.8}
+        />
+
+        {/* ── Floor zone: Coffee corner (warm brown tiles) ── */}
+        <polygon
+          points={isoPoints([p(3.5, 11.5), p(9, 11.5), p(9, 13.5), p(3.5, 13.5)])}
+          fill="#1e1810"
+          stroke="#2a2218"
+          strokeWidth={0.8}
+        />
+
+        {/* ── Floor zone: Lounge (burgundy/warm rug) ── */}
+        <polygon
+          points={isoPoints([p(20, 1), p(26.5, 1), p(26.5, 5.5), p(20, 5.5)])}
+          fill="#201418"
+          stroke="#2e1c22"
+          strokeWidth={0.8}
+        />
+
+        {/* ── Floor zone: Library (warm wood-toned floor) ── */}
+        <polygon
+          points={isoPoints([p(24, 11), p(28, 11), p(28, 13.5), p(24, 13.5)])}
+          fill="#1a1610"
+          stroke="#262018"
+          strokeWidth={0.8}
         />
 
         {/* ═══ WALLS (opacity fades smoothly during rotation) ═══ */}
@@ -403,156 +428,175 @@ export default function SceneView({ avatars, workingState, rotation: rot, pitch:
 
         {/* ═══ FURNITURE ═══ */}
 
-        {/* Coffee station — dark walnut counter */}
+        {/* ═══ COFFEE ZONE ═══ */}
+        {/* Coffee counter — warm wood */}
         <IsoBlock x={4} y={12.5} z={0} w={2.5} d={1} h={2.5} rot={rot} pitch={pitchDeg}
-          topFill="rgba(110,75,35,0.7)" southFill="rgba(90,60,28,0.6)" eastFill="rgba(75,50,22,0.55)" />
-        {/* Coffee machine buttons */}
-        {(() => { const c1 = p(4.8, 12.5, 2.2), c2 = p(5.3, 12.5, 2.2); return (<>
-          <circle cx={c1.x} cy={c1.y} r={2} fill="rgba(52,211,153,0.7)" />
-          <circle cx={c2.x} cy={c2.y} r={2} fill="rgba(251,146,60,0.6)" />
+          topFill="#7a5a32" southFill="#6b4e2c" eastFill="#5c4226" />
+        {/* Coffee machine (silver box on counter) */}
+        <IsoBlock x={4.3} y={12.6} z={2.5} w={0.8} d={0.6} h={1} rot={rot} pitch={pitchDeg}
+          topFill="#8a8a95" southFill="#72727d" eastFill="#5e5e68" />
+        {/* Machine buttons */}
+        {(() => { const c1 = p(4.7, 12.5, 3.2), c2 = p(5.0, 12.5, 3.2); return (<>
+          <circle cx={c1.x} cy={c1.y} r={2} fill="#34d399" />
+          <circle cx={c2.x} cy={c2.y} r={2} fill="#fb923c" />
         </>); })()}
-        <WallText wx={5.25} wy={12.5} wz={2.8} rot={rot} fontSize={5} fill="rgba(255,255,255,0.35)"
+        {/* Mugs on counter */}
+        {(() => { const m1 = p(5.5, 12.6, 2.5); return <circle cx={m1.x} cy={m1.y} r={3} fill="#c4956a" stroke="#a87d55" strokeWidth={0.5} />; })()}
+        {(() => { const m2 = p(6.0, 12.7, 2.5); return <circle cx={m2.x} cy={m2.y} r={3} fill="#e8e8e8" stroke="#ccc" strokeWidth={0.5} />; })()}
+        <WallText wx={5.25} wy={12.5} wz={3.8} rot={rot} fontSize={5} fill="#c4a882"
           fontFamily="'Space Mono', monospace" letterSpacing={1}>COFFEE</WallText>
         {/* Steam */}
-        {(() => { const sp = p(5, 12.5, 2.6); return (<>
+        {(() => { const sp = p(4.7, 12.5, 3.5); return (<>
           <path d={`M${sp.x},${sp.y} Q${sp.x - 2},${sp.y - 8} ${sp.x},${sp.y - 14}`}
-            fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={1} className="scene-steam" />
+            fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={1} className="scene-steam" />
           <path d={`M${sp.x + 4},${sp.y} Q${sp.x + 2},${sp.y - 9} ${sp.x + 4},${sp.y - 15}`}
-            fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth={1} className="scene-steam scene-steam-delay" />
+            fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth={1} className="scene-steam scene-steam-delay" />
         </>); })()}
 
-        {/* Water cooler — translucent blue bottle on gray base */}
+        {/* Water cooler */}
         <IsoBlock x={7.5} y={12.5} z={0} w={0.8} d={0.8} h={1.6} rot={rot} pitch={pitchDeg}
-          topFill="rgba(120,120,135,0.5)" southFill="rgba(100,100,115,0.45)" eastFill="rgba(85,85,100,0.4)" />
+          topFill="#7a7a88" southFill="#6a6a78" eastFill="#5c5c6a" />
         <IsoBlock x={7.6} y={12.6} z={1.6} w={0.6} d={0.6} h={1.2} rot={rot} pitch={pitchDeg}
-          topFill="rgba(100,170,230,0.45)" southFill="rgba(80,150,210,0.4)" eastFill="rgba(60,130,190,0.35)" />
-        {(() => { const wp = p(7.9, 12.5, 2.5); return <circle cx={wp.x} cy={wp.y} r={3} fill="rgba(100,180,255,0.2)" stroke="rgba(100,180,255,0.35)" strokeWidth={0.5} />; })()}
+          topFill="#5baee6" southFill="#4a9ad4" eastFill="#3b88c2" />
+        {(() => { const wp = p(7.9, 12.5, 2.5); return <circle cx={wp.x} cy={wp.y} r={3} fill="#7cc4f0" stroke="#5baee6" strokeWidth={0.8} />; })()}
 
-        {/* Filing cabinets — steel gray with drawer lines */}
+        {/* ═══ FILING CABINETS ═══ */}
         {[0, 1.4, 2.8].map((offset, i) => (
           <g key={`fc${i}`}>
             <IsoBlock x={1 + offset} y={11} z={0} w={1.2} d={1} h={2.5} rot={rot} pitch={pitchDeg}
-              topFill="rgba(130,130,145,0.45)" southFill="rgba(110,110,125,0.4)" eastFill="rgba(95,95,110,0.35)" />
+              topFill="#7e7e8c" southFill="#6c6c7a" eastFill="#5e5e6c" />
+            {/* Drawer lines */}
+            {[0.8, 1.6].map((dz, di) => {
+              const ll = p(1 + offset, 11, dz), lr = p(1 + offset + 1.2, 11, dz);
+              return <line key={di} x1={ll.x} y1={ll.y} x2={lr.x} y2={lr.y} stroke="#52525c" strokeWidth={0.8} />;
+            })}
             {/* Drawer handles */}
             {[0.5, 1.2, 1.9].map((dz, di) => {
               const hp = p(1 + offset + 0.6, 11, dz);
-              return <circle key={di} cx={hp.x} cy={hp.y} r={1.5} fill="rgba(200,200,215,0.4)" />;
+              return <circle key={di} cx={hp.x} cy={hp.y} r={1.8} fill="#a0a0ac" stroke="#8a8a96" strokeWidth={0.5} />;
             })}
           </g>
         ))}
 
-        {/* Server rack — dark steel */}
+        {/* ═══ SERVER RACK ═══ */}
         <IsoBlock x={1} y={2} z={0} w={1.5} d={2} h={4} rot={rot} pitch={pitchDeg}
-          topFill="rgba(55,55,70,0.65)" southFill="rgba(45,45,60,0.55)" eastFill="rgba(38,38,52,0.5)" />
+          topFill="#3c3c4a" southFill="#30303e" eastFill="#282836" />
+        {/* Rack face detail */}
+        {[0.3, 1.0, 1.7, 2.4, 3.1].map((z, i) => {
+          const fl = p(1, 2, z), fr = p(2.5, 2, z);
+          return <line key={`rf${i}`} x1={fl.x} y1={fl.y} x2={fr.x} y2={fr.y} stroke="#24242f" strokeWidth={0.6} />;
+        })}
         {/* Server LEDs */}
         {[0.5, 1.2, 1.9, 2.6, 3.3].map((z, i) => {
           const led = p(2.5, 2, z + 0.3);
-          return <circle key={`led${i}`} cx={led.x} cy={led.y} r={1.5}
-            fill={i % 2 === 0 ? 'rgba(52,211,153,0.7)' : 'rgba(100,180,255,0.6)'}
+          return <circle key={`led${i}`} cx={led.x} cy={led.y} r={2}
+            fill={i % 2 === 0 ? '#34d399' : '#60a5fa'}
             className="scene-ps5-light" />;
         })}
-        <WallText wx={1.75} wy={2} wz={3.8} rot={rot} fontSize={3.5} fill="rgba(255,255,255,0.25)"
+        <WallText wx={1.75} wy={2} wz={3.8} rot={rot} fontSize={3.5} fill="#8888a0"
           fontFamily="'Space Mono', monospace">SERVERS</WallText>
 
-        {/* Bookshelf — dark mahogany */}
+        {/* ═══ BOOKSHELF / LIBRARY ═══ */}
         <IsoBlock x={25} y={12} z={0} w={2.5} d={1.2} h={4.5} rot={rot} pitch={pitchDeg}
-          topFill="rgba(100,65,35,0.55)" southFill="rgba(80,50,28,0.5)" eastFill="rgba(65,42,22,0.45)" />
-        {/* Books on shelves */}
+          topFill="#6b4422" southFill="#5a3a1c" eastFill="#4d3118" />
+        {/* Shelf boards */}
         {[1.5, 2.6, 3.7].map((shelfZ, si) => (
           <g key={`shelf${si}`}>
             {(() => {
               const sl = p(25, 12, shelfZ), sr = p(27.5, 12, shelfZ);
-              return <line x1={sl.x} y1={sl.y} x2={sr.x} y2={sr.y} stroke="rgba(255,255,255,0.12)" strokeWidth={0.8} />;
+              return <line x1={sl.x} y1={sl.y} x2={sr.x} y2={sr.y} stroke="#7a5530" strokeWidth={1.2} />;
             })()}
+            {/* Books — vivid colors */}
             {[0, 0.35, 0.7, 1.05, 1.4, 1.75].map((off, bi) => {
               const bp = p(25.2 + off, 12, shelfZ + 0.1);
-              const colors = ['rgba(99,102,241,0.4)', 'rgba(52,211,153,0.35)', 'rgba(251,146,60,0.35)',
-                'rgba(167,139,250,0.35)', 'rgba(34,211,238,0.35)', 'rgba(244,114,182,0.3)'];
+              const colors = ['#6366f1', '#34d399', '#fb923c', '#a78bfa', '#22d3ee', '#f472b6'];
               return <rect key={`b${si}${bi}`} x={bp.x - 2} y={bp.y - (10 - bi % 3)}
-                width={3.5} height={10 - bi % 3} rx={0.5} fill={colors[bi]} />;
+                width={3.5} height={10 - bi % 3} rx={0.5} fill={colors[bi]} opacity={0.85} />;
             })}
           </g>
         ))}
+        <WallText wx={26.25} wy={12} wz={0.5} rot={rot} fontSize={3.5} fill="#c4956a"
+          fontFamily="'Space Mono', monospace">LIBRARY</WallText>
 
-        {/* Couch — dark charcoal leather */}
+        {/* ═══ LOUNGE: COUCH ═══ */}
+        {/* Couch seat — dark blue-gray fabric */}
         <IsoBlock x={21} y={2} z={0} w={4.5} d={2} h={0.9} rot={rot} pitch={pitchDeg}
-          topFill="rgba(70,70,80,0.55)" southFill="rgba(55,55,65,0.5)" eastFill="rgba(45,45,55,0.45)" />
+          topFill="#4a5568" southFill="#3d4756" eastFill="#333d4a" />
         {/* Couch back */}
         <IsoBlock x={21} y={3.5} z={0} w={4.5} d={0.5} h={1.6} rot={rot} pitch={pitchDeg}
-          topFill="rgba(60,60,70,0.5)" southFill="rgba(50,50,60,0.45)" eastFill="rgba(42,42,52,0.4)" />
+          topFill="#3d4756" southFill="#333d4a" eastFill="#2b3440" />
         {/* Cushion dividers */}
         {[0, 1.5, 3].map((off, ci) => {
           const cl = p(21.2 + off, 2, 0.9), cr = p(21.2 + off, 3.8, 0.9);
           return <line key={`cd${ci}`} x1={cl.x} y1={cl.y} x2={cr.x} y2={cr.y}
-            stroke="rgba(255,255,255,0.08)" strokeWidth={0.5} />;
+            stroke="#2b3440" strokeWidth={0.8} />;
         })}
+        {/* Throw pillows */}
+        <IsoBlock x={21.3} y={2.2} z={0.9} w={0.7} d={0.7} h={0.4} rot={rot} pitch={pitchDeg}
+          topFill="#e87461" southFill="#d4634f" eastFill="#c05545" />
+        <IsoBlock x={24.5} y={2.2} z={0.9} w={0.7} d={0.7} h={0.4} rot={rot} pitch={pitchDeg}
+          topFill="#f0c040" southFill="#ddb035" eastFill="#c8a02c" />
 
-        {/* TV stand — matte black */}
+        {/* TV stand — dark wood */}
         <IsoBlock x={22.5} y={5} z={0} w={0.5} d={0.5} h={1.8} rot={rot} pitch={pitchDeg}
-          topFill="rgba(45,45,52,0.65)" southFill="rgba(35,35,42,0.6)" eastFill="rgba(28,28,35,0.55)" />
+          topFill="#3a3a42" southFill="#2e2e36" eastFill="#24242c" />
         {/* TV screen */}
         {(() => {
           const bl = p(21.5, 5.2, 1.8), br = p(24, 5.2, 1.8);
           const tr = p(24, 5.2, 3.6), tl = p(21.5, 5.2, 3.6);
           return (
             <g>
-              <polygon points={isoPoints([bl, br, tr, tl])} fill="rgba(40,40,50,0.5)" stroke="rgba(255,255,255,0.18)" strokeWidth={0.8} />
+              <polygon points={isoPoints([bl, br, tr, tl])} fill="#2a2a32" stroke="#1e1e26" strokeWidth={1} />
               <polygon points={isoPoints([
                 p(21.7, 5.2, 1.9), p(23.8, 5.2, 1.9),
                 p(23.8, 5.2, 3.5), p(21.7, 5.2, 3.5),
-              ])} fill="rgba(20,20,60,0.5)" className="scene-tv-screen" />
+              ])} fill="#101028" className="scene-tv-screen" />
             </g>
           );
         })()}
 
-        {/* PS5 — white/black console */}
+        {/* PS5 */}
         <IsoBlock x={25} y={5} z={0} w={0.4} d={0.4} h={1} rot={rot} pitch={pitchDeg}
-          topFill="rgba(210,210,220,0.35)" southFill="rgba(190,190,200,0.3)" eastFill="rgba(170,170,180,0.25)" />
-        {(() => { const lp = p(25.2, 5, 0.7); return <rect x={lp.x - 1} y={lp.y - 2} width={3} height={2.5} rx={1} fill="rgba(100,149,237,0.5)" className="scene-ps5-light" />; })()}
+          topFill="#e8e8f0" southFill="#d0d0d8" eastFill="#b8b8c0" />
+        {(() => { const lp = p(25.2, 5, 0.7); return <rect x={lp.x - 1} y={lp.y - 2} width={3} height={2.5} rx={1} fill="#4a90e2" className="scene-ps5-light" />; })()}
 
-        {/* Plants — terracotta pots with green foliage */}
+        {/* ═══ PLANTS — terracotta pots ═══ */}
         {[{ x: 3, y: 8 }, { x: 27, y: 11 }, { x: 1, y: 5 }, { x: 20, y: 1 }].map((pl, i) => {
           const potH = [1.2, 0.9, 1.0, 0.8][i];
           const foliageR = [8, 6, 7, 5][i];
           return (
             <g key={`plant${i}`}>
-              {/* Terracotta pot */}
               <IsoBlock x={pl.x - 0.3} y={pl.y - 0.3} z={0} w={0.6} d={0.6} h={potH} rot={rot} pitch={pitchDeg}
-                topFill="rgba(190,110,55,0.6)" southFill="rgba(170,95,45,0.55)" eastFill="rgba(150,80,38,0.5)"
-                topStroke="rgba(210,130,65,0.3)" />
-              {/* Soil */}
-              {(() => { const sp = p(pl.x, pl.y, potH); return <circle cx={sp.x} cy={sp.y} r={4} fill="rgba(90,55,30,0.45)" />; })()}
-              {/* Foliage cluster */}
+                topFill="#b86b35" southFill="#a25c2c" eastFill="#8c4f25" />
+              {(() => { const sp = p(pl.x, pl.y, potH); return <circle cx={sp.x} cy={sp.y} r={4} fill="#5a3820" />; })()}
               {(() => {
                 const fp = p(pl.x, pl.y, potH + 0.3);
                 return (<>
-                  <circle cx={fp.x} cy={fp.y - foliageR * 0.7} r={foliageR} fill="rgba(40,170,90,0.35)" />
-                  <circle cx={fp.x - foliageR * 0.5} cy={fp.y - foliageR * 0.4} r={foliageR * 0.7} fill="rgba(52,185,100,0.3)" />
-                  <circle cx={fp.x + foliageR * 0.5} cy={fp.y - foliageR * 0.5} r={foliageR * 0.65} fill="rgba(34,155,80,0.25)" />
+                  <circle cx={fp.x} cy={fp.y - foliageR * 0.7} r={foliageR} fill="#2d8f52" />
+                  <circle cx={fp.x - foliageR * 0.5} cy={fp.y - foliageR * 0.4} r={foliageR * 0.7} fill="#38a862" />
+                  <circle cx={fp.x + foliageR * 0.5} cy={fp.y - foliageR * 0.5} r={foliageR * 0.65} fill="#247a44" />
                 </>);
               })()}
             </g>
           );
         })}
 
-        {/* Conference table — polished dark walnut */}
+        {/* ═══ CONFERENCE TABLE ═══ */}
         <IsoBlock x={3} y={3} z={0} w={5} d={3} h={1.5} rot={rot} pitch={pitchDeg}
-          topFill="rgba(120,82,45,0.65)" southFill="rgba(100,65,35,0.55)" eastFill="rgba(85,55,28,0.5)"
-          topStroke="rgba(140,100,55,0.3)" southStroke="rgba(120,80,45,0.25)" eastStroke="rgba(100,70,38,0.2)" />
+          topFill="#8b6b3a" southFill="#7a5c30" eastFill="#6a4e28"
+          topStroke="#9c7a45" southStroke="#8b6b3a" eastStroke="#7a5c30" />
         {/* Table legs */}
         {[[3.3, 3.3], [7.7, 3.3], [3.3, 5.7], [7.7, 5.7]].map(([lx, ly], li) => (
           <IsoBlock key={`tl${li}`} x={lx} y={ly} z={0} w={0.3} d={0.3} h={0.15} rot={rot} pitch={pitchDeg}
-            topFill="rgba(80,80,88,0.5)" southFill="rgba(65,65,72,0.45)" eastFill="rgba(55,55,62,0.4)" />
+            topFill="#5a5a64" southFill="#4e4e58" eastFill="#44444e" />
         ))}
-        {/* Conference chairs — dark mesh fabric */}
+        {/* Conference chairs — red fabric (like Sims ref) */}
         {[[3.5, 2.5], [5.5, 2.5], [7.5, 2.5], [3.5, 6.5], [5.5, 6.5], [7.5, 6.5]].map(([cx, cy], i) => (
           <g key={`cc${i}`}>
-            {/* Seat */}
             <IsoBlock x={cx} y={cy} z={0} w={0.8} d={0.8} h={0.7} rot={rot} pitch={pitchDeg}
-              topFill="rgba(80,80,88,0.5)" southFill="rgba(65,65,72,0.45)" eastFill="rgba(55,55,62,0.4)" />
-            {/* Backrest */}
+              topFill="#a04040" southFill="#8a3535" eastFill="#742c2c" />
             <IsoBlock x={cx + 0.1} y={cy < 4 ? cy - 0.15 : cy + 0.95} z={0.5} w={0.6} d={0.15} h={0.8} rot={rot} pitch={pitchDeg}
-              topFill="rgba(72,72,80,0.45)" southFill="rgba(58,58,66,0.4)" eastFill="rgba(50,50,58,0.35)" />
+              topFill="#943838" southFill="#7e2f2f" eastFill="#6a2828" />
           </g>
         ))}
 
