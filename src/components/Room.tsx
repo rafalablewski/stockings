@@ -70,7 +70,11 @@ function formatTime(iso: string): string {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function Room() {
+interface RoomProps {
+  onThinkingChange?: (who: string, thinking: boolean) => void;
+}
+
+export default function Room({ onThinkingChange }: RoomProps = {}) {
   const [messages, setMessages] = useState<RoomMessage[]>([]);
   const [channel, setChannel] = useState('general');
   const [sender, setSender] = useState('boss');
@@ -165,6 +169,7 @@ export default function Room() {
   const summonGemini = async () => {
     if (geminiThinking) return;
     setGeminiThinking(true);
+    onThinkingChange?.('gemini', true);
     setError(null);
     try {
       const res = await fetch('/api/room/gemini-bridge', {
@@ -183,12 +188,14 @@ export default function Room() {
       setError('Network error — could not reach Gemini');
     } finally {
       setGeminiThinking(false);
+      onThinkingChange?.('gemini', false);
     }
   };
 
   const summonClaude = async () => {
     if (claudeThinking) return;
     setClaudeThinking(true);
+    onThinkingChange?.('claude', true);
     setError(null);
     try {
       const res = await fetch('/api/room/claude-bridge', {
@@ -207,6 +214,7 @@ export default function Room() {
       setError('Network error — could not reach Claude');
     } finally {
       setClaudeThinking(false);
+      onThinkingChange?.('claude', false);
     }
   };
 
