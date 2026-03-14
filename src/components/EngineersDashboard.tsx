@@ -343,7 +343,25 @@ function EngineerDetailPanel({
       {/* Last run output */}
       {status?.lastRun?.outputSummary && (
         <div className="eng-detail-block">
-          <div className="eng-detail-section-title">Last Run Output</div>
+          <div className="eng-detail-section-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            Last Run Output
+            <button
+              className="eng-btn eng-btn-pdf"
+              onClick={() => {
+                const url = `/api/engineers/report?runId=${status.lastRun!.id}`;
+                window.open(url, '_blank');
+              }}
+              title="Download full report as PDF"
+            >
+              <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                <path d="M14 2v6h6" />
+                <path d="M12 18v-6" />
+                <path d="M9 15l3 3 3-3" />
+              </svg>
+              PDF Report
+            </button>
+          </div>
           <pre className="eng-output-pre eng-detail-block-sm">{status.lastRun.outputSummary}</pre>
         </div>
       )}
