@@ -79,6 +79,7 @@ export default function Room() {
   const [sending, setSending] = useState(false);
   const [replyTo, setReplyTo] = useState<RoomMessage | null>(null);
   const [geminiThinking, setGeminiThinking] = useState(false);
+  const [geminiAutoRespond, setGeminiAutoRespond] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -135,6 +136,10 @@ export default function Room() {
         setMessages(prev => [...prev, data.message]);
         setContent('');
         setReplyTo(null);
+        if (geminiAutoRespond && sender !== 'gemini') {
+          // Fire-and-forget: trigger Gemini auto-response after sending
+          setTimeout(() => summonGemini(), 300);
+        }
       } else {
         const data = await res.json().catch(() => null);
         setError(data?.error || `Failed to send (${res.status})`);
@@ -156,6 +161,7 @@ export default function Room() {
   const summonGemini = async () => {
     if (geminiThinking) return;
     setGeminiThinking(true);
+    setError(null);
     try {
       const res = await fetch('/api/room/gemini-bridge', {
         method: 'POST',
@@ -165,9 +171,12 @@ export default function Room() {
       if (res.ok) {
         const data = await res.json();
         setMessages(prev => [...prev, data.message]);
+      } else {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || `Gemini failed to respond (${res.status})`);
       }
     } catch {
-      // silent
+      setError('Network error — could not reach Gemini');
     } finally {
       setGeminiThinking(false);
     }
@@ -236,15 +245,24 @@ export default function Room() {
                 Multi-AI division communication room
               </div>
             </div>
-            <button
-              className="room-summon-btn"
-              onClick={summonGemini}
-              disabled={geminiThinking}
-              title="Ask Gemini to respond to the conversation"
-            >
-              <span className="room-summon-dot" />
-              {geminiThinking ? 'Gemini thinking...' : '@Gemini'}
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                className="room-summon-btn"
+                onClick={summonGemini}
+                disabled={geminiThinking}
+                title="Ask Gemini to respond to the conversation"
+              >
+                <span className="room-summon-dot" />
+                {geminiThinking ? 'Gemini thinking...' : '@Gemini'}
+              </button>
+              <button
+                className={`room-auto-respond-btn ${geminiAutoRespond ? 'active' : ''}`}
+                onClick={() => setGeminiAutoRespond(prev => !prev)}
+                title={geminiAutoRespond ? 'Disable Gemini auto-response' : 'Enable Gemini auto-response'}
+              >
+                {geminiAutoRespond ? 'Auto: ON' : 'Auto: OFF'}
+              </button>
+            </div>
           </div>
         </div>
 
