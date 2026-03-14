@@ -60,10 +60,11 @@ export interface SceneViewProps {
   avatars: AvatarState[];
   workingState: Record<string, boolean>;
   rotation: number;
+  zoom?: number;
 }
 
-export default function SceneView({ avatars, workingState, rotation: rot }: SceneViewProps) {
-  const vb = useMemo(() => computeViewBox(rot, 1.8), [rot]);
+export default function SceneView({ avatars, workingState, rotation: rot, zoom = 1.8 }: SceneViewProps) {
+  const vb = useMemo(() => computeViewBox(rot, zoom), [rot, zoom]);
   const walls = useMemo(() => visibleWalls(rot), [rot]);
 
   // Sort avatars back-to-front for proper overlap

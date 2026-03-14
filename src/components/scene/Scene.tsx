@@ -112,6 +112,7 @@ export default function Scene() {
   const [bridgeThinking, setBridgeThinking] = useState<Record<string, boolean>>({});
   const [fullscreen, setFullscreen] = useState(false);
   const [rotation, setRotation] = useState(0);
+  const [zoom, setZoom] = useState(1.8);
 
   // Drag-to-rotate
   const dragRef = useRef<{ startX: number; startRot: number } | null>(null);
@@ -355,7 +356,23 @@ export default function Scene() {
           </button>
         </div>
 
-        <SceneView avatars={avatars} workingState={workingState} rotation={rotation} />
+        {/* Zoom slider — right side */}
+        <div className="scene-zoom-rail">
+          <button className="scene-ctrl-btn scene-zoom-btn" onClick={() => setZoom(z => Math.min(3.5, z + 0.3))} title="Zoom in">+</button>
+          <input
+            type="range"
+            className="scene-zoom-slider"
+            min={0.8}
+            max={3.5}
+            step={0.1}
+            value={zoom}
+            onChange={e => setZoom(Number(e.target.value))}
+            title={`Zoom: ${zoom.toFixed(1)}x`}
+          />
+          <button className="scene-ctrl-btn scene-zoom-btn" onClick={() => setZoom(z => Math.max(0.8, z - 0.3))} title="Zoom out">&minus;</button>
+        </div>
+
+        <SceneView avatars={avatars} workingState={workingState} rotation={rotation} zoom={zoom} />
       </div>
       {!fullscreen && (
         <div className="scene-lower">

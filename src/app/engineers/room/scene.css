@@ -103,6 +103,76 @@
   border-color: rgba(255,255,255,0.2);
 }
 
+/* ── Zoom slider (right side, vertical) ── */
+.scene-zoom-rail {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 4px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.scene-zoom-btn {
+  width: 26px !important;
+  height: 26px !important;
+  font-size: 15px !important;
+  line-height: 1;
+  padding: 0;
+}
+
+.scene-zoom-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 6px;
+  height: 120px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.scene-zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  border: 1px solid rgba(255,255,255,0.15);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.scene-zoom-slider::-webkit-slider-thumb:hover {
+  background: rgba(255,255,255,0.55);
+}
+
+.scene-zoom-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  border: 1px solid rgba(255,255,255,0.15);
+  cursor: pointer;
+}
+
+.scene-zoom-slider::-moz-range-track {
+  width: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+}
+
 /* ── Scene SVG ── */
 .scene-view {
   width: 100%;
@@ -315,6 +385,14 @@
     width: 28px;
     height: 28px;
     font-size: 13px;
+  }
+
+  .scene-zoom-rail {
+    right: 8px;
+  }
+
+  .scene-zoom-slider {
+    height: 80px;
   }
 }
 
