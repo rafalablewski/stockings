@@ -2,7 +2,11 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import SceneView from './SceneView';
+import TopDownView from './TopDownView';
+import FlatView from './FlatView';
 import Room from '../Room';
+
+type ViewMode = '3d' | 'top' | 'flat';
 import { orgNodes } from '@/data/org-hierarchy';
 import { authFetch } from '@/lib/auth-fetch';
 import {
@@ -113,6 +117,7 @@ export default function Scene() {
   const [fullscreen, setFullscreen] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [zoom, setZoom] = useState(1.8);
+  const [viewMode, setViewMode] = useState<ViewMode>('3d');
 
   // Drag-to-rotate
   const dragRef = useRef<{ startX: number; startRot: number } | null>(null);
@@ -331,48 +336,69 @@ export default function Scene() {
     <div className={`scene-container ${fullscreen ? 'scene-fullscreen' : ''}`}>
       <div
         className="scene-upper"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-        style={{ cursor: dragRef.current ? 'grabbing' : 'grab' }}
+        onPointerDown={viewMode === '3d' ? handlePointerDown : undefined}
+        onPointerMove={viewMode === '3d' ? handlePointerMove : undefined}
+        onPointerUp={viewMode === '3d' ? handlePointerUp : undefined}
+        onPointerLeave={viewMode === '3d' ? handlePointerUp : undefined}
+        style={{ cursor: viewMode === '3d' ? (dragRef.current ? 'grabbing' : 'grab') : 'default' }}
       >
-        <div className="scene-controls">
-          <button className="scene-ctrl-btn" onClick={() => rotateBy(-90)} title="Rotate left">
-            {'\u21B6'}
-          </button>
-          <button className="scene-ctrl-btn" onClick={() => rotateBy(90)} title="Rotate right">
-            {'\u21B7'}
-          </button>
-          <button className="scene-ctrl-btn" onClick={() => setRotation(0)} title="Reset view">
-            {'\u2302'}
-          </button>
-          <button
-            className="scene-fullscreen-btn"
-            onClick={() => setFullscreen(f => !f)}
-            title={fullscreen ? 'Exit fullscreen' : 'Expand scene'}
-          >
-            {fullscreen ? '\u2715' : '\u26F6'}
-          </button>
+        {/* View mode toggle — top center */}
+        <div className="scene-view-toggle">
+          {(['3d', 'top', 'flat'] as const).map(mode => (
+            <button
+              key={mode}
+              className={`scene-view-tab ${viewMode === mode ? 'scene-view-tab-active' : ''}`}
+              onClick={() => setViewMode(mode)}
+            >
+              {mode === '3d' ? '3D' : mode === 'top' ? 'Top' : 'Flat'}
+            </button>
+          ))}
         </div>
 
-        {/* Zoom slider — right side */}
-        <div className="scene-zoom-rail">
-          <button className="scene-ctrl-btn scene-zoom-btn" onClick={() => setZoom(z => Math.min(3.5, z + 0.3))} title="Zoom in">+</button>
-          <input
-            type="range"
-            className="scene-zoom-slider"
-            min={0.8}
-            max={3.5}
-            step={0.1}
-            value={zoom}
-            onChange={e => setZoom(Number(e.target.value))}
-            title={`Zoom: ${zoom.toFixed(1)}x`}
-          />
-          <button className="scene-ctrl-btn scene-zoom-btn" onClick={() => setZoom(z => Math.max(0.8, z - 0.3))} title="Zoom out">&minus;</button>
-        </div>
+        {/* Controls — only in 3D mode */}
+        {viewMode === '3d' && (
+          <div className="scene-controls">
+            <button className="scene-ctrl-btn" onClick={() => rotateBy(-90)} title="Rotate left">
+              {'\u21B6'}
+            </button>
+            <button className="scene-ctrl-btn" onClick={() => rotateBy(90)} title="Rotate right">
+              {'\u21B7'}
+            </button>
+            <button className="scene-ctrl-btn" onClick={() => setRotation(0)} title="Reset view">
+              {'\u2302'}
+            </button>
+          </div>
+        )}
 
-        <SceneView avatars={avatars} workingState={workingState} rotation={rotation} zoom={zoom} />
+        <button
+          className="scene-fullscreen-btn"
+          onClick={() => setFullscreen(f => !f)}
+          title={fullscreen ? 'Exit fullscreen' : 'Expand scene'}
+        >
+          {fullscreen ? '\u2715' : '\u26F6'}
+        </button>
+
+        {/* Zoom slider — right side, 3D only */}
+        {viewMode === '3d' && (
+          <div className="scene-zoom-rail">
+            <button className="scene-ctrl-btn scene-zoom-btn" onClick={() => setZoom(z => Math.min(3.5, z + 0.3))} title="Zoom in">+</button>
+            <input
+              type="range"
+              className="scene-zoom-slider"
+              min={0.8}
+              max={3.5}
+              step={0.1}
+              value={zoom}
+              onChange={e => setZoom(Number(e.target.value))}
+              title={`Zoom: ${zoom.toFixed(1)}x`}
+            />
+            <button className="scene-ctrl-btn scene-zoom-btn" onClick={() => setZoom(z => Math.max(0.8, z - 0.3))} title="Zoom out">&minus;</button>
+          </div>
+        )}
+
+        {viewMode === '3d' && <SceneView avatars={avatars} workingState={workingState} rotation={rotation} zoom={zoom} />}
+        {viewMode === 'top' && <TopDownView avatars={avatars} workingState={workingState} />}
+        {viewMode === 'flat' && <FlatView avatars={avatars} workingState={workingState} />}
       </div>
       {!fullscreen && (
         <div className="scene-lower">

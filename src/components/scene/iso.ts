@@ -143,6 +143,30 @@ export function visibleWalls(rotDeg: number) {
 }
 
 /**
+ * Smooth wall opacity for each rotation angle.
+ * Walls fade in/out over a 15° transition zone instead of popping.
+ */
+export function wallOpacity(rotDeg: number): { back: number; front: number; left: number; right: number } {
+  const r = ((rotDeg % 360) + 360) % 360;
+  const F = 15; // fade half-width in degrees
+
+  const fade = (peak: number) => {
+    let diff = Math.abs(r - peak);
+    if (diff > 180) diff = 360 - diff;
+    if (diff <= 90 - F) return 1;
+    if (diff >= 90 + F) return 0;
+    return 1 - (diff - (90 - F)) / (2 * F);
+  };
+
+  return {
+    back:  fade(0),
+    right: fade(90),
+    front: fade(180),
+    left:  fade(270),
+  };
+}
+
+/**
  * Compute depth (draw order) for an element at world position.
  * Higher depth = closer to camera = drawn later.
  */
