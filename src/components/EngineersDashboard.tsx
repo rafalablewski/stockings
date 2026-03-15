@@ -162,6 +162,8 @@ function EngineerDetailPanel({
   onSchedule,
   onEnableSchedule,
   onPromptPreview,
+  onViewFullReport,
+  fullReportLoading,
 }: {
   engineer: EngineerTask;
   workflows: Workflow[];
@@ -174,6 +176,8 @@ function EngineerDetailPanel({
   onSchedule: (engineerId: string, enabled: boolean, interval: number) => void;
   onEnableSchedule: (engineer: EngineerTask) => void;
   onPromptPreview: (wf: Workflow, ticker: string, label: string) => void;
+  onViewFullReport: (runId: number) => void;
+  fullReportLoading: boolean;
 }) {
   const linkedWorkflows = workflows.filter(w => engineer.workflowIds.includes(w.id));
   const color = categoryColors[engineer.category] || 'cyan';
@@ -378,22 +382,31 @@ function EngineerDetailPanel({
         <div className="eng-detail-block">
           <div className="eng-detail-section-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             Last Run Output
-            <button
-              className="eng-btn eng-btn-pdf"
-              onClick={() => {
-                const url = `/api/engineers/report?runId=${status.lastRun!.id}`;
-                window.open(url, '_blank');
-              }}
-              title="Download full report as PDF"
-            >
-              <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-                <path d="M14 2v6h6" />
-                <path d="M12 18v-6" />
-                <path d="M9 15l3 3 3-3" />
-              </svg>
-              PDF Report
-            </button>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <button
+                className="eng-btn eng-btn-pdf"
+                onClick={() => onViewFullReport(status.lastRun!.id)}
+                title="View full report"
+              >
+                {fullReportLoading ? '...' : 'View Full'}
+              </button>
+              <button
+                className="eng-btn eng-btn-pdf"
+                onClick={() => {
+                  const url = `/api/engineers/report?runId=${status.lastRun!.id}`;
+                  window.open(url, '_blank');
+                }}
+                title="Download full report as PDF"
+              >
+                <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                  <path d="M14 2v6h6" />
+                  <path d="M12 18v-6" />
+                  <path d="M9 15l3 3 3-3" />
+                </svg>
+                PDF
+              </button>
+            </div>
           </div>
           <pre className="eng-output-pre eng-detail-block-sm">{status.lastRun.outputSummary}</pre>
         </div>
@@ -446,6 +459,8 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const [historyLoading, setHistoryLoading] = useState(false);
   const [expandedRunId, setExpandedRunId] = useState<number | null>(null);
   const [showHidden, setShowHidden] = useState(false);
+  const [fullReport, setFullReport] = useState<{ runId: number; output: string; error: string | null } | null>(null);
+  const [fullReportLoading, setFullReportLoading] = useState(false);
 
   // ── Ticker dropdown helpers ──
   const selectedTickerInfo = tickers.find(t => t.ticker === selectedTicker);
@@ -555,6 +570,18 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
       if (expandedRunId === id) setExpandedRunId(null);
     } catch { /* silent */ }
   }, [expandedRunId]);
+
+  const openFullReport = useCallback(async (runId: number) => {
+    setFullReportLoading(true);
+    try {
+      const res = await authFetch(`/api/engineers/history/full?id=${runId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setFullReport({ runId: data.id, output: data.output, error: data.error });
+      }
+    } catch { /* silent */ }
+    setFullReportLoading(false);
+  }, []);
 
   const handleRun = async (engineerId: string) => {
     setRunningIds(prev => { const next = new Set(prev); next.add(engineerId); return next; });
@@ -905,6 +932,8 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                     onSchedule={handleToggleSchedule}
                     onEnableSchedule={handleEnableSchedule}
                     onPromptPreview={openPromptPreview}
+                    onViewFullReport={openFullReport}
+                    fullReportLoading={fullReportLoading}
                   />
                 </div>
               </div>
@@ -1046,6 +1075,28 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
 
                           {/* Actions */}
                           <div className="eng-history-actions">
+                            <button
+                              className="eng-btn eng-btn-ghost"
+                              onClick={(e) => { e.stopPropagation(); openFullReport(run.id); }}
+                            >
+                              {fullReportLoading ? '...' : 'View Full'}
+                            </button>
+                            <button
+                              className="eng-btn eng-btn-ghost"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(`/api/engineers/report?runId=${run.id}`, '_blank');
+                              }}
+                            >
+                              <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                                <path d="M14 2v6h6" />
+                                <path d="M12 18v-6" />
+                                <path d="M9 15l3 3 3-3" />
+                              </svg>
+                              PDF
+                            </button>
+                            <span className="eng-history-spacer" />
                             {run.hidden ? (
                               <button
                                 className="eng-btn eng-btn-ghost"
@@ -1227,6 +1278,54 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
           </div>
         )}
       </div>
+
+      {/* Full Report Modal */}
+      {fullReport && (
+        <div className="eng-modal-overlay" onClick={() => setFullReport(null)}>
+          <div className="eng-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="eng-modal-header">
+              <h2 className="eng-modal-title">Full Report</h2>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  className="eng-btn eng-btn-pdf"
+                  onClick={() => window.open(`/api/engineers/report?runId=${fullReport.runId}`, '_blank')}
+                  title="Download as PDF"
+                >
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                    <path d="M14 2v6h6" />
+                    <path d="M12 18v-6" />
+                    <path d="M9 15l3 3 3-3" />
+                  </svg>
+                  PDF
+                </button>
+                <button className="eng-modal-close" onClick={() => setFullReport(null)}>
+                  &times;
+                </button>
+              </div>
+            </div>
+            <div className="eng-modal-body">
+              {fullReport.output && (
+                <div className="eng-modal-section">
+                  <div className="eng-modal-heading">Output</div>
+                  <pre className="eng-modal-prompt">{fullReport.output}</pre>
+                </div>
+              )}
+              {fullReport.error && (
+                <div className="eng-modal-section">
+                  <div className="eng-modal-heading" style={{ color: 'var(--color-red, #ef4444)' }}>Error</div>
+                  <pre className="eng-modal-prompt" style={{ color: 'var(--color-red, #ef4444)' }}>{fullReport.error}</pre>
+                </div>
+              )}
+              {!fullReport.output && !fullReport.error && (
+                <div className="eng-modal-section">
+                  <div className="eng-modal-desc">No output recorded for this run.</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Prompt Preview Modal */}
       {promptPreview && (
