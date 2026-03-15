@@ -316,12 +316,8 @@ Analyze the auto-injected database context below:`,
     name: 'SEC Filing Delta Analysis',
     description: 'Paste two consecutive SEC filings (or key sections — risk factors, MD&A, footnotes) side by side. The prompt performs a structured diff: new risks added, risks removed, language softened or escalated, financial metric changes, and a hedge-fund-relevant interpretation of what each change signals. Maps directly to the Financials tab quarterly data.',
     requiresUserData: true,
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
-
-        prompt: `You are a senior equity research analyst at a long/short technology hedge fund performing forensic filing analysis on AST SpaceMobile (NASDAQ: ASTS). You are comparing two consecutive SEC filings to detect material changes that consensus may be missing.
+    variants: [],
+    promptTemplate: `You are a senior equity research analyst at a long/short technology hedge fund performing forensic filing analysis on {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). You specialize in {{SPECIALIST_DOMAIN}}. You are comparing two consecutive SEC filings to detect material changes that consensus may be missing.
 
 INPUT EXPECTED:
 Paste two filings (or relevant sections) — label them FILING A (older) and FILING B (newer). Common comparisons:
@@ -343,8 +339,12 @@ ANALYSIS FRAMEWORK — process each section systematically:
    Materiality:   [High / Medium / Low]
    ────────────────────────────────────────
    Priority order: NEW risks first, then ESCALATED, then SOFTENED, then REMOVED.
+   Pay special attention to risks related to: {{SPECIALIST_DOMAIN}}.
 
 2. MD&A (MANAGEMENT DISCUSSION & ANALYSIS) DELTA
+   Focus on commentary changes related to the company's domain-specific business areas:
+{{DOMAIN_SECTIONS}}
+   Also track:
    - Revenue commentary changes (guidance language, customer references)
    - Expense commentary changes (cost categories, headcount, SBC)
    - Liquidity & capital resources changes (runway language, going concern, sufficiency statements)
@@ -355,7 +355,8 @@ ANALYSIS FRAMEWORK — process each section systematically:
 3. FINANCIAL STATEMENT CHANGES
    Key metrics comparison table:
    [Metric | Filing A | Filing B | Δ | Δ% | Notable?]
-   Must include: cash, total debt, revenue, opex (GAAP + adjusted), net loss, shares outstanding (basic, implied, fully diluted), capex, gross PPE, accumulated D&A, contracted revenue, satellites deployed, spectrum owned, definitiveAgreements, MoUs.
+   Must include standard metrics (cash, total debt, revenue, opex, net income/loss, shares outstanding basic + fully diluted) plus these stock-specific metrics:
+{{STOCK_SPECIFIC_METRICS}}
    Flag any metric with >15% change or directional reversal.
 
 4. FOOTNOTE & DISCLOSURE CHANGES
@@ -364,22 +365,21 @@ ANALYSIS FRAMEWORK — process each section systematically:
    - Related party transaction changes
    - Subsequent events (8-K cross-references)
    - Segment reporting changes
-   - Convertible note terms or conversion rate adjustments
+   - Instrument-specific changes (convertible notes, warrants, equity programs)
 
 5. CAPITAL STRUCTURE EVOLUTION
+   Share structure context: {{SHARE_STRUCTURE}}
    - New debt instruments or modifications
    - Equity issuance (ATM utilization, registered directs, PIPEs)
    - Convertible note conversions or repurchases
    - Warrant exercises / expirations
    - Share count reconciliation (Filing A → Filing B)
+   - For treasury/asset plays: pair share issuance with asset acquisition metrics
    Output: Capital tab update block
 
-6. SATELLITE & OPERATIONAL DISCLOSURES
-   - Constellation status changes
-   - Ground infrastructure updates
-   - FCC/regulatory filing references
-   - Insurance / asset impairment disclosures
-   - Customer contract disclosures (new partners, prepayments)
+6. DOMAIN-SPECIFIC OPERATIONAL DISCLOSURES
+   Extract updates for each business area:
+{{DOMAIN_SECTIONS}}
 
 SUMMARY OUTPUT:
 1. Red Flags (if any) — items that suggest deterioration, undisclosed risk, or management concern
@@ -387,7 +387,8 @@ SUMMARY OUTPUT:
 3. Financials Tab Updates — specific quarterly data fields to add or modify, with exact values
 4. Capital Tab Updates — share count, offering, or dilution data changes
 5. Consensus Blind Spots — changes that sell-side likely hasn't incorporated
-6. Suggested commit message
+6. NAV/Valuation Bridge (if applicable): Filing A → Filing B decomposition of key value drivers
+7. Suggested commit message
 
 CROSS-REFERENCE GENERATION:
 For EVERY material change identified, generate cross-reference entries for the EDGAR tab:
@@ -400,7 +401,7 @@ DATABASE CROSS-CHECK (mandatory final section):
 Cross-reference your analysis against the database:
 1. ALREADY INCORPORATED: Data points already reflected (cite fields/values). If fully incorporated: "These filing changes appear fully reflected as of [date] — no updates needed."
 2. NEW TO DATABASE: Data points NOT yet in database — actionable updates with target tab and field.
-3. CONFLICTS: Filing data contradicts current database values (e.g., share counts, debt, cash differ).
+3. CONFLICTS: Filing data contradicts current database values.
 4. OVERALL RELEVANCE: [Critical — immediate update needed / Important — update at next review / Low — no material changes / Already Incorporated — no action needed]
 
 Rules — non-negotiable:
@@ -408,111 +409,9 @@ Rules — non-negotiable:
 - Every change must be classified as material or immaterial with rationale.
 - If a risk factor is removed, assess whether the risk was resolved or just relocated to a different section.
 - Professional, forensic tone — this is detective work, not commentary.
-- Prioritize: capital structure, dilution, launch timeline, spectrum/regulatory, going concern language.
+- Prioritize: capital structure, dilution, domain-specific operational metrics, accounting policy changes, going concern language.
 
 Paste Filing A and Filing B below:`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-
-        prompt: `You are a senior equity research analyst at a long/short technology hedge fund performing forensic filing analysis on Bitmine Immersion Technologies (NYSE American: BMNR). You are comparing two consecutive SEC filings to detect material changes that consensus may be missing.
-
-INPUT EXPECTED:
-Paste two filings (or relevant sections) — label them FILING A (older) and FILING B (newer). Common comparisons:
-- 10-Q vs. prior 10-Q (quarter-over-quarter)
-- 10-K vs. prior 10-K (year-over-year)
-- 10-Q/A (amended) vs. original 10-Q
-- 8-K vs. related 10-Q (event vs. periodic)
-
-ANALYSIS FRAMEWORK — process each section systematically:
-
-1. RISK FACTORS DELTA
-   ────────────────────────────────────────
-   Status:        [NEW / REMOVED / ESCALATED / SOFTENED / UNCHANGED]
-   Risk Factor:   [title or first-line summary]
-   Filing A Text: [key excerpt, 1-2 sentences]
-   Filing B Text: [key excerpt, 1-2 sentences]
-   Change:        [what specifically changed — new language, removed qualifier, added quantification, etc.]
-   Signal:        [hedge-fund interpretation — why did management/counsel add/change/remove this?]
-   Materiality:   [High / Medium / Low]
-   ────────────────────────────────────────
-   Priority order: NEW risks first, then ESCALATED, then SOFTENED, then REMOVED.
-   Special attention: crypto-specific risks (ETH classification as security, staking regulation, exchange counterparty, custody, impairment accounting).
-
-2. MD&A (MANAGEMENT DISCUSSION & ANALYSIS) DELTA
-   - Treasury strategy commentary changes (ETH accumulation language, staking approach)
-   - Revenue source shifts (mining → advisory → staking income)
-   - Liquidity commentary (ATM dependency, cash runway)
-   - Crypto fair value methodology changes
-   - Known trends / uncertainties — new vs. removed (ETH price sensitivity, regulatory)
-   - Forward-looking statement changes
-   Output: Bullet list of material changes with [Filing A → Filing B] format
-
-3. FINANCIAL STATEMENT CHANGES
-   Key metrics comparison table:
-   [Metric | Filing A | Filing B | Δ | Δ% | Notable?]
-   Must include: cash, crypto holdings (ETH count + fair value, BTC count + fair value), total assets, total liabilities, stockholders' equity, revenue (by source), opex (G&A, treasury ops, mining), net income/loss, shares outstanding, market cap implied.
-   Flag any metric with >15% change or directional reversal.
-   Special: compute NAV/share for both periods.
-
-4. FOOTNOTE & DISCLOSURE CHANGES
-   - Crypto asset accounting policy changes (FASB ASU 2023-08 adoption)
-   - Fair value measurement methodology
-   - Impairment testing approach
-   - Related party transactions (advisory clients, insiders)
-   - Subsequent events
-   - Going concern language (present? changed? removed?)
-
-5. CAPITAL STRUCTURE EVOLUTION
-   - ATM program utilization (shares sold, proceeds, remaining capacity)
-   - New shelf registrations (S-3, S-8)
-   - Warrant exercises or expirations
-   - Share count reconciliation (Filing A → Filing B)
-   - Dilution pace: shares issued / ETH acquired ratio
-   Output: Capital tab update block
-
-6. TREASURY & STAKING DISCLOSURES
-   - ETH holdings count changes
-   - Staking deployment percentage
-   - Validator count / MAVAN progress
-   - Custody arrangements
-   - Insurance coverage on crypto assets
-   - Mining equipment disposition / impairment
-
-SUMMARY OUTPUT:
-1. Red Flags (if any) — items that suggest deterioration, undisclosed risk, or management concern
-2. Green Flags (if any) — items that suggest improvement, de-risking, or positive trajectory
-3. Financials Tab Updates — specific quarterly data fields to add or modify, with exact values
-4. Capital Tab Updates — share count, offering, or dilution data changes
-5. Consensus Blind Spots — changes that sell-side likely hasn't incorporated
-6. NAV Bridge: Filing A NAV/share → Filing B NAV/share (decompose into: ETH price Δ, shares issued Δ, staking income, opex burn)
-7. Suggested commit message
-
-CROSS-REFERENCE GENERATION:
-For EVERY material change identified, generate cross-reference entries for the EDGAR tab:
-  Filing Key:    [FORM|YYYY-MM-DD]  (e.g., "10-Q|2026-02-09")
-  Cross-Refs:
-    - { source: '[capital|financials|catalysts|company]', data: '[1-line: specific data captured]' }
-Rules: source = database file where data lives. One entry per distinct data point.
-
-DATABASE CROSS-CHECK (mandatory final section):
-Cross-reference your analysis against the database:
-1. ALREADY INCORPORATED: Data points already reflected (cite fields/values). If fully incorporated: "These filing changes appear fully reflected as of [date] — no updates needed."
-2. NEW TO DATABASE: Data points NOT yet in database — actionable updates with target tab and field.
-3. CONFLICTS: Filing data contradicts current database values (e.g., ETH holdings, share counts, ATM utilization differ).
-4. OVERALL RELEVANCE: [Critical — immediate update needed / Important — update at next review / Low — no material changes / Already Incorporated — no action needed]
-
-Rules — non-negotiable:
-- Quote exact filing language. Do not paraphrase risk factors.
-- Every change must be classified as material or immaterial with rationale.
-- If a risk factor is removed, assess whether the risk was resolved or just relocated.
-- Professional, forensic tone — this is detective work, not commentary.
-- Prioritize: treasury composition, dilution pace, NAV accretion/dilution, accounting policy changes, going concern, regulatory risk language.
-
-Paste Filing A and Filing B below:`,
-      },
-    ],
   },
 
   // =========================================================================
@@ -852,20 +751,17 @@ Analyze the auto-injected database context below:`,
     name: 'Management & Insider Activity Decoder',
     description: 'Paste Form 4 filings, insider transaction data, executive changes, 10b5-1 plan disclosures, or compensation committee reports. The prompt classifies each transaction, identifies accumulation or disposition patterns, assesses insider sentiment, and flags misalignments between insider behavior and the public narrative.',
     requiresUserData: true,
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
+    variants: [],
+    promptTemplate: `You are a senior equity research analyst at a long/short technology hedge fund specializing in insider activity analysis for {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). You specialize in {{SPECIALIST_DOMAIN}}. You track Form 4 filings, beneficial ownership reports, and compensation disclosures to assess insider conviction.
 
-        prompt: `You are a senior equity research analyst at a long/short technology hedge fund specializing in insider activity analysis for AST SpaceMobile (NASDAQ: ASTS). You track Form 4 filings, beneficial ownership reports, and compensation disclosures to assess insider conviction.
+COMPANY CONTEXT:
+Share structure: {{SHARE_STRUCTURE}}
 
-CONTEXT:
-ASTS has a 3-class share structure. Key insiders to track:
-- Abel Avellan (Founder, Chairman & CEO) — holds ~78.2M Class C shares (10x voting). Any Class C → Class A conversion is a major signal.
-- Scott Wisniewski (CFO) — watch for direct market transactions
-- Other executives and directors — Form 4 filers
-- Strategic holders (AT&T, Vodafone, Google, Verizon) — 13D/A and 13G filings
-- Institutional holders (Vanguard, etc.) — 13G/A filings
+Key insiders to track:
+{{KEY_INSIDERS}}
+
+Competitive landscape (for context on strategic holders):
+{{COMPETITORS}}
 
 INPUT EXPECTED:
 Paste Form 4 filings, 13D/A amendments, 13G/A filings, proxy compensation disclosures, or executive change announcements.
@@ -877,7 +773,7 @@ ANALYSIS FRAMEWORK:
    ────────────────────────────────────────
    Date:               [transaction date]
    Insider:            [name, title]
-   Filing:             [Form 4 / 13D/A / 13G/A / DEF 14A]
+   Filing:             [Form 4 / 13D/A / 13G/A / DEF 14A / S-8]
    Transaction:        [Open Market Purchase / Sale / Option Exercise / RSU Vest / Gift / Conversion / 10b5-1]
    Shares:             [quantity, +/- direction]
    Price:              [$X.XX per share]
@@ -888,14 +784,15 @@ ANALYSIS FRAMEWORK:
 
 2. TRANSACTION TYPE ANALYSIS
    Classify each transaction into signal categories:
-   - STRONG BUY SIGNAL: Open market purchase with personal funds (especially by CEO/CFO)
+   - STRONG BUY SIGNAL: Open market purchase with personal funds (especially by C-suite / Chairman)
+   - STRONG BUY SIGNAL: PIPE participation by named institutional investors
    - MODERATE BUY SIGNAL: Insider holds after RSU vest (no immediate sale)
    - NEUTRAL: 10b5-1 plan sale (pre-programmed, not discretionary)
    - NEUTRAL: Option exercise + hold (converting paper to equity)
    - MODERATE SELL SIGNAL: Option exercise + immediate sale (cashless exercise)
    - STRONG SELL SIGNAL: Open market sale outside 10b5-1 plan (discretionary selling)
    - WATCH: 10b5-1 plan adoption/modification/termination (new SEC rules require disclosure)
-   - SPECIAL: Class C → Class A conversion by Avellan (reduces voting power — why?)
+   - SPECIAL: Share class conversions, board changes, or other governance-significant transactions
 
 3. PATTERN ANALYSIS (across multiple transactions)
    - Accumulation pattern: is the insider systematically buying?
@@ -904,26 +801,24 @@ ANALYSIS FRAMEWORK:
    - Pre-catalyst timing: any transactions within 60 days before known catalysts?
    - Post-lockup behavior: for recent PIPE/convert holders, are they selling post-restriction?
    - Unusual volume: is the transaction size abnormal relative to the insider's typical activity?
+   - Company alignment: are insiders buying while company issues equity (ATM/offering)? This is an exceptionally strong signal.
 
-4. STRATEGIC HOLDER ANALYSIS (13D/A and 13G filings)
-   For AT&T, Vodafone, Google, Verizon, Rakuten, American Tower:
+4. STRATEGIC & INSTITUTIONAL HOLDER ANALYSIS (13D/A and 13G filings)
    - Are strategic partners increasing or decreasing holdings?
    - Any conversion of preferred/converts to common?
    - Filing type change (13D → 13G or vice versa) — signals shift from active to passive or vice versa
    - Cross-reference with commercial relationship status
+   - New >5% holders emerging or existing holders crossing thresholds
+   - Fill any null share counts in the database — this is high-value data
 
-5. INSTITUTIONAL FLOW (13G/A filings)
-   - Vanguard, BlackRock, Fidelity, etc. — quarterly position changes
-   - New >5% holders emerging
-   - Existing holders crossing above/below 5% threshold
-
-6. COMPENSATION & GOVERNANCE
-   If proxy data is provided:
+5. COMPENSATION & GOVERNANCE
+   If proxy or S-8 data is provided:
    - Executive compensation changes (base salary, bonus, equity grants)
    - Performance metric changes in incentive plans
    - Clawback provisions
    - Director share ownership requirements
    - Board member changes (additions, departures, committee shifts)
+   - Equity incentive plan details (shares reserved, grant types, vesting)
 
 SUMMARY OUTPUT:
 1. Insider Sentiment Score: [Strong Buy / Buy / Neutral / Sell / Strong Sell]
@@ -933,8 +828,9 @@ SUMMARY OUTPUT:
    - Contradicting signals (insider behavior challenges thesis): [list]
    - Unusual activity (warrants further investigation): [list]
 3. Database Updates
-   - Capital tab: shareholder ownership % changes
-   - Investment tab: any perspective updates based on insider sentiment
+   - Capital tab: MAJOR_SHAREHOLDERS array updates (fill null share counts with filing data)
+   - Capital tab: ownership % calculations
+   - Investment tab: insider sentiment context for perspectives
    - Sources tab: new Form 4 / 13D/A filings to log
 4. Narrative Check: Does insider behavior match the public narrative?
    [Yes — insiders are putting money where their mouth is / No — disconnect between public optimism and insider selling / Insufficient data]
@@ -958,126 +854,10 @@ Rules — non-negotiable:
 - Distinguish between discretionary and non-discretionary transactions. 10b5-1 sales are not bearish signals on their own.
 - Never infer intent beyond what the filing discloses. "Exercise + sell" may be tax planning, not bearish conviction.
 - Track cumulative insider ownership trends, not just individual transactions.
+- Fill database gaps: if a filing gives us a shareholder's actual share count, that's a high-priority Capital tab update.
 - Professional, forensic tone — Form 4 analysis is evidence-based, not speculative.
 
 Paste Form 4 filings, 13D/A, or insider data below:`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-
-        prompt: `You are a senior equity research analyst at a long/short technology hedge fund specializing in insider activity analysis for Bitmine Immersion Technologies (NYSE American: BMNR). You track Form 4 filings, beneficial ownership reports, and compensation disclosures to assess insider conviction — especially important for a company executing an aggressive ATM-funded treasury strategy.
-
-CONTEXT:
-BMNR recently reconstituted its board and pivoted from BTC mining to ETH treasury/staking. Key insiders to track:
-- Tom Lee (Chairman of the Board) — high-profile investor, watch for personal purchases
-- Bill Miller III — value investor, early backer
-- Other directors and officers — Form 4 filers
-- Institutional holders (ARK Invest, Founders Fund, Pantera Capital, DCG, Galaxy Digital, Kraken, MOZAYYX) — most share counts still TBD from filings
-- Note: many shareholder positions have null share counts — any new filing data is high-value
-
-INPUT EXPECTED:
-Paste Form 4 filings, 13D/A amendments, 13G/A filings, proxy compensation disclosures, or executive change announcements.
-
-ANALYSIS FRAMEWORK:
-
-1. TRANSACTION CLASSIFICATION
-   For each transaction:
-   ────────────────────────────────────────
-   Date:               [transaction date]
-   Insider:            [name, title]
-   Filing:             [Form 4 / 13D/A / 13G/A / DEF 14A / S-8]
-   Transaction:        [Open Market Purchase / Sale / Option Exercise / RSU Vest / Gift / 10b5-1]
-   Shares:             [quantity, +/- direction]
-   Price:              [$X.XX per share]
-   Value:              [$total]
-   Holdings After:     [total shares, % ownership]
-   10b5-1 Plan:        [Yes/No]
-   ────────────────────────────────────────
-
-2. TRANSACTION TYPE ANALYSIS
-   Classify each transaction into signal categories:
-   - STRONG BUY SIGNAL: Open market purchase (especially by Chairman, named investors)
-   - STRONG BUY SIGNAL: PIPE participation by named institutional investors
-   - MODERATE BUY SIGNAL: Insider holds after RSU vest
-   - NEUTRAL: 10b5-1 plan sale (pre-programmed)
-   - MODERATE SELL SIGNAL: Option exercise + immediate sale
-   - STRONG SELL SIGNAL: Open market sale outside 10b5-1
-   - WATCH: 10b5-1 plan adoption/termination
-   - SPECIAL: Board member resignation or new appointment (signals governance direction)
-
-3. PATTERN ANALYSIS
-   - Accumulation pattern: are insiders buying alongside ATM dilution? (very bullish — they're buying what the company is selling)
-   - Disposition pattern: are insiders selling while company issues ATM? (bearish — double selling pressure)
-   - Post-pivot behavior: did insiders buy after the BTC→ETH pivot announcement? (conviction in new strategy)
-   - Clustering: multiple insiders transacting same direction within 30 days?
-   - PIPE lockup expirations: are early backers holding or selling post-lockup?
-
-4. INSTITUTIONAL HOLDER DATA FILL
-   CRITICAL for BMNR: many major shareholders have null share counts in the database.
-   For any new filing data:
-   ────────────────────────────────────────
-   Holder:             [name]
-   Prior Data:         [null / previous count]
-   New Data:           [share count from filing]
-   % Ownership:        [calculated]
-   Filing Source:       [13F / 13G / 13D / DEF 14A]
-   Filing Date:        [date]
-   ────────────────────────────────────────
-   This directly fills gaps in the Capital tab MAJOR_SHAREHOLDERS array.
-
-5. COMPENSATION & GOVERNANCE
-   If proxy or S-8 data provided:
-   - 2025 Omnibus Incentive Plan details (shares reserved, grant types, vesting)
-   - Executive compensation structure (cash vs. equity mix)
-   - Board composition changes
-   - Related party transactions (advisory clients who are also insiders?)
-
-6. INSIDER vs. COMPANY ALIGNMENT
-   Special analysis for treasury plays:
-   - Are insiders buying stock while company buys ETH? (double conviction)
-   - Are insiders buying stock while stock trades at premium to NAV? (they believe premium is sustainable)
-   - Are insiders selling while company dilutes to buy ETH? (misalignment red flag)
-   - Is Tom Lee buying personally? (Chairman conviction = powerful signal)
-
-SUMMARY OUTPUT:
-1. Insider Sentiment Score: [Strong Buy / Buy / Neutral / Sell / Strong Sell]
-2. Key Signals
-   - Confirming: [list]
-   - Contradicting: [list]
-   - Unusual: [list]
-3. Database Updates
-   - Capital tab: MAJOR_SHAREHOLDERS array — fill null share counts with filing data
-   - Capital tab: ownership % calculations now possible
-   - Investment tab: insider sentiment context for perspectives
-   - Sources tab: new filings to log
-4. Shareholder Data Completeness: [X of Y holders now have confirmed share counts]
-5. Narrative Check: Does insider behavior match the public narrative?
-6. Suggested commit message
-
-CROSS-REFERENCE GENERATION:
-For EVERY Form 4 / 13D filing processed, generate cross-reference entries for the EDGAR tab:
-  Filing Key:    [FORM|YYYY-MM-DD]  (e.g., "Form 4|2026-01-15")
-  Cross-Refs:
-    - { source: 'capital', data: '[insider name]: [shares] shares [acquired/disposed] @ $[price]' }
-Rules: One cross-ref per distinct transaction. Use 'capital' as source for all insider activity.
-
-DATABASE CROSS-CHECK (mandatory final section):
-Cross-reference against the database:
-1. ALREADY INCORPORATED: Insider transactions already in Capital tab MAJOR_SHAREHOLDERS (cite names and share counts — many are currently null). If fully incorporated: "This filing data appears fully reflected as of [date] — no updates needed."
-2. NEW TO DATABASE: Shareholder counts that fill null values — high priority for BMNR. List with target field.
-3. CONFLICTS: Filing data contradicts stored values (share count, ownership % changed).
-4. OVERALL RELEVANCE: [Critical — immediate update / Important — next review / Low — no material changes / Already Incorporated]
-
-Rules — non-negotiable:
-- Distinguish between discretionary and non-discretionary transactions.
-- For BMNR specifically: insider buying alongside ATM dilution is an exceptionally strong signal — flag it prominently.
-- Fill database gaps: if a filing gives us a shareholder's actual share count, that's a high-priority Capital tab update.
-- Professional, forensic tone.
-
-Paste Form 4 filings, 13D/A, or insider data below:`,
-      },
-    ],
   },
 
   // =========================================================================
@@ -1725,63 +1505,13 @@ Now analyze the following pasted content:`,
     name: '13F / Institutional Holdings Tracker',
     description: 'Paste 13F/13D/13G filings. Extracts institutional position changes, accumulation/distribution patterns, activist signals, and Capital tab shareholder updates.',
     requiresUserData: true,
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
+    variants: [],
+    promptTemplate: `You are a senior equity research analyst tracking institutional ownership for {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). You specialize in {{SPECIALIST_DOMAIN}}. Process 13F/13D/13G filings.
 
-        prompt: `You are a senior equity research analyst tracking institutional ownership for AST SpaceMobile (NASDAQ: ASTS). Process 13F/13D/13G filings. Use code_execution for % calculations.
+Key insiders and holders to cross-reference:
+{{KEY_INSIDERS}}
 
-FOR EACH FILING:
-────────────────────────────────────────
-Filing Type:                [13F-HR / 13D / 13D/A / 13G / 13G/A]
-Filer:                      [institution]
-Filing Date (YYYY-MM-DD):   [date filed]
-Report Date:                [quarter end for 13F]
-────────────────────────────────────────
-
-POSITION DATA (TABLE):
-| Institution | Shares | Value ($M) | % Outstanding | Change Shares | Change % |
-|-------------|--------|------------|---------------|---------------|----------|
-| [Name] | XXM | $XX | XX% | +XXM | +XX% |
-
-SIGNAL ANALYSIS:
-- New / Increased / Decreased / Exited / Unchanged positions: [list with rationale]
-- 13D/G specifics: [purpose, plans, % ownership vs. prior]
-
-INSTITUTIONAL FLOW SUMMARY:
-1. Net sentiment: [Accumulating / Stable / Distributing]
-2. Smart money: [hedge funds/activists]
-3. Top 5 holders: [list with changes]
-4. Total institutional %: [current vs. prior]
-
-CROSS-REFERENCE GENERATION:
-For EVERY 13F/13D/13G filing processed, generate cross-reference entries for the EDGAR tab:
-  Filing Key:    [FORM|YYYY-MM-DD]  (e.g., "SC 13D/A|2026-01-15")
-  Cross-Refs:
-    - { source: 'capital', data: '[institution]: [shares]M shares ([pct]%) — [new/increased/decreased/exited]' }
-Rules: One cross-ref per institution with material position change. Use 'capital' as source.
-
-DATABASE CROSS-CHECK (mandatory):
-1. ALREADY INCORPORATED: Data already in database (cite MAJOR_SHAREHOLDERS entries).
-2. NEW TO DATABASE: Actionable updates with target tab and field.
-3. CONFLICTS: Contradictions with current database values (share counts, % ownership).
-4. OVERALL RELEVANCE: [Critical / Important / Low / Already Incorporated]
-
-DATABASE UPDATES:
-- Capital Structure: Update MAJOR_SHAREHOLDERS
-- Sources tab: Flag if missing
-- Commit message: git commit -m "..."
-
-Rules: Conservative; flag threshold crossings; no speculation.
-
-Now analyze the following pasted content:`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-
-        prompt: `You are a senior equity research analyst tracking institutional ownership for Bitmine Immersion Technologies (NYSE American: BMNR). Process 13F/13D/13G filings. Use code_execution for % calculations.
+Share structure context: {{SHARE_STRUCTURE}}
 
 FOR EACH FILING:
 ────────────────────────────────────────
@@ -1815,7 +1545,7 @@ Rules: One cross-ref per institution with material position change. Use 'capital
 
 DATABASE CROSS-CHECK (mandatory):
 1. ALREADY INCORPORATED: Data already in database (cite MAJOR_SHAREHOLDERS entries).
-2. NEW TO DATABASE: Actionable updates with target tab and field.
+2. NEW TO DATABASE: Actionable updates with target tab and field. Fill any null share counts — this is high-value data.
 3. CONFLICTS: Contradictions with current database values (share counts, % ownership).
 4. OVERALL RELEVANCE: [Critical / Important / Low / Already Incorporated]
 
@@ -1827,8 +1557,6 @@ DATABASE UPDATES:
 Rules: Conservative; flag threshold crossings; no speculation.
 
 Now analyze the following pasted content:`,
-      },
-    ],
   },
   // =========================================================================
   // 11. PATENT / IP FILING ANALYZER
