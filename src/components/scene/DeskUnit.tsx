@@ -45,14 +45,14 @@ export default function IsoDeskUnit({ wx, wy, color, isActive, rotation: rot, pi
   const chairPole = blockFaces(baseCenterX - 0.1, baseCenterY - 0.1, 0.08, 0.2, 0.2, 0.62, rot, pitchDeg);
   // Seat cushion (wider, padded look)
   const chairSeat = blockFaces(wx - 0.55, wy - 1.6, 0.7, 1.1, 1.1, 0.18, rot, pitchDeg);
-  // Backrest (tall, slightly curved effect via position)
-  const chairBack = blockFaces(wx - 0.45, wy - 0.55, 0.75, 0.9, 0.14, 0.95, rot, pitchDeg);
+  // Backrest (tall, behind the seat — away from desk)
+  const chairBack = blockFaces(wx - 0.45, wy - 1.74, 0.75, 0.9, 0.14, 0.95, rot, pitchDeg);
   // Armrests (two thin bars on each side)
   const armrestL = blockFaces(wx - 0.5,  wy - 1.4, 0.88, 0.1, 0.9, 0.08, rot, pitchDeg);
   const armrestR = blockFaces(wx + 0.4,  wy - 1.4, 0.88, 0.1, 0.9, 0.08, rot, pitchDeg);
-  // Armrest supports (vertical posts)
-  const armSupportL = blockFaces(wx - 0.5,  wy - 0.7, 0.7, 0.1, 0.12, 0.18, rot, pitchDeg);
-  const armSupportR = blockFaces(wx + 0.4,  wy - 0.7, 0.7, 0.1, 0.12, 0.18, rot, pitchDeg);
+  // Armrest supports (vertical posts, near back of seat)
+  const armSupportL = blockFaces(wx - 0.5,  wy - 1.5, 0.7, 0.1, 0.12, 0.18, rot, pitchDeg);
+  const armSupportR = blockFaces(wx + 0.4,  wy - 1.5, 0.7, 0.1, 0.12, 0.18, rot, pitchDeg);
 
   return (
     <g>

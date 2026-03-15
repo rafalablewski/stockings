@@ -69,25 +69,25 @@ export default function Desk3D({ position, color, isActive }: Desk3DProps) {
         </RoundedBox>
         {/* Backrest */}
         <RoundedBox args={[backW, backH, backD]} radius={0.04}
-          position={[0, seatZ + seatH / 2 + backH / 2, seatD / 2 - backD / 2]} castShadow>
+          position={[0, seatZ + seatH / 2 + backH / 2, -(seatD / 2 - backD / 2)]} castShadow>
           <meshStandardMaterial color="#3a3a42" roughness={0.85} />
         </RoundedBox>
         {/* Left armrest + support */}
-        <mesh position={[-seatW / 2 + armW / 2, seatZ - 0.02, 0.1]} castShadow>
+        <mesh position={[-seatW / 2 + armW / 2, seatZ - 0.02, -0.1]} castShadow>
           <boxGeometry args={[armW, 0.14, 0.08]} />
           <meshStandardMaterial color="#505058" metalness={0.4} roughness={0.5} />
         </mesh>
         <RoundedBox args={[armW, armH, armLen]} radius={0.02}
-          position={[-seatW / 2 + armW / 2, seatZ + 0.18, -0.05]} castShadow>
+          position={[-seatW / 2 + armW / 2, seatZ + 0.18, 0.05]} castShadow>
           <meshStandardMaterial color="#48484f" roughness={0.85} />
         </RoundedBox>
         {/* Right armrest + support */}
-        <mesh position={[seatW / 2 - armW / 2, seatZ - 0.02, 0.1]} castShadow>
+        <mesh position={[seatW / 2 - armW / 2, seatZ - 0.02, -0.1]} castShadow>
           <boxGeometry args={[armW, 0.14, 0.08]} />
           <meshStandardMaterial color="#505058" metalness={0.4} roughness={0.5} />
         </mesh>
         <RoundedBox args={[armW, armH, armLen]} radius={0.02}
-          position={[seatW / 2 - armW / 2, seatZ + 0.18, -0.05]} castShadow>
+          position={[seatW / 2 - armW / 2, seatZ + 0.18, 0.05]} castShadow>
           <meshStandardMaterial color="#48484f" roughness={0.85} />
         </RoundedBox>
       </group>
