@@ -149,20 +149,20 @@ const SceneCanvas = forwardRef<SceneCanvasHandle, SceneCanvasProps>(
         {/* Lounge / leisure area in front of coffee station */}
         <Lounge3D position={[20, 0, 37]} />
 
-        {/* Plants scattered around the office */}
-        {/* Tall floor plants in corners */}
-        <Plant3D position={[3, 0, 3]} variant="tall" scale={1.1} leafColor="#2d8a4e" />
-        <Plant3D position={[77, 0, 3]} variant="tall" scale={1.0} leafColor="#3a9a5e" potColor="#5c3d2e" />
-        <Plant3D position={[3, 0, 47]} variant="tall" scale={0.9} leafColor="#28804a" potColor="#7a5a42" />
-        <Plant3D position={[77, 0, 47]} variant="tall" scale={1.05} leafColor="#35905a" />
-        {/* Bush plants flanking the desk row */}
-        <Plant3D position={[14, 0, 26]} variant="bush" scale={1.2} leafColor="#3aaa60" />
-        <Plant3D position={[66, 0, 26]} variant="bush" scale={1.1} leafColor="#2e9050" potColor="#8a6548" />
+        {/* Plants — 4 distinct species scattered around the office */}
+        {/* Corners: one of each species */}
+        <Plant3D position={[3, 0, 3]} variant="fiddleleaf" scale={1.1} leafColor="#2d8a4e" />
+        <Plant3D position={[77, 0, 3]} variant="snake" scale={1.3} leafColor="#3a9a5e" potColor="#5c3d2e" />
+        <Plant3D position={[3, 0, 47]} variant="monstera" scale={1.0} leafColor="#28804a" potColor="#7a5a42" />
+        <Plant3D position={[77, 0, 47]} variant="fern" scale={1.4} leafColor="#35905a" />
+        {/* Flanking the desk row */}
+        <Plant3D position={[14, 0, 26]} variant="monstera" scale={1.1} leafColor="#3aaa60" />
+        <Plant3D position={[66, 0, 26]} variant="snake" scale={1.2} leafColor="#2e9050" potColor="#8a6548" />
         {/* Near the couch / lounge area */}
-        <Plant3D position={[60, 0, 6]} variant="bush" scale={1.0} leafColor="#40b070" potColor="#6b4c3b" />
+        <Plant3D position={[60, 0, 6]} variant="fern" scale={1.3} leafColor="#40b070" potColor="#6b4c3b" />
         {/* Flanking the lounge */}
-        <Plant3D position={[12, 0, 33]} variant="tall" scale={0.85} leafColor="#35a055" />
-        <Plant3D position={[28, 0, 33]} variant="tall" scale={0.8} leafColor="#2e9050" potColor="#5c3d2e" />
+        <Plant3D position={[12, 0, 33]} variant="fiddleleaf" scale={0.85} leafColor="#35a055" />
+        <Plant3D position={[28, 0, 33]} variant="fern" scale={1.1} leafColor="#2e9050" potColor="#5c3d2e" />
 
         {/* Avatars */}
         {avatars.map((avatar) => (
