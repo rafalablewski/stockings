@@ -88,11 +88,18 @@ export default function Room({ onThinkingChange }: RoomProps = {}) {
   const [claudeAutoRespond, setClaudeAutoRespond] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const summonTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    // Only auto-scroll if user is near the bottom (within 120px)
+    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 120;
+    if (nearBottom) {
+      el.scrollTop = el.scrollHeight;
+    }
   }, []);
 
   const fetchMessages = useCallback(async () => {
@@ -325,7 +332,7 @@ export default function Room({ onThinkingChange }: RoomProps = {}) {
         </div>
 
         {/* Messages */}
-        <div className="room-messages">
+        <div className="room-messages" ref={messagesContainerRef}>
           {loading ? (
             <div className="room-empty">Loading messages...</div>
           ) : messages.length === 0 ? (

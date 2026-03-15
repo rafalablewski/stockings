@@ -31,18 +31,59 @@ export default function IsoDeskUnit({ wx, wy, color, isActive, rotation: rot, pi
   const monL = { cx: wx - 0.55, cy: wy + 0.5 };
   const monR = { cx: wx + 0.55, cy: wy + 0.5 };
 
-  const chairSeat = blockFaces(wx - 0.55, wy - 1.6, 0.7, 1.1, 1.1, 0.15, rot, pitchDeg);
-  const chairBack = blockFaces(wx - 0.45, wy - 0.6, 0.7, 0.9, 0.12, 1.0, rot, pitchDeg);
-  const chairBase = blockFaces(wx - 0.15, wy - 1.1, 0, 0.3, 0.3, 0.7, rot, pitchDeg);
+  // ── Chair geometry ──
+  // Five-star base (5 short legs radiating from center)
+  const baseCenterX = wx;
+  const baseCenterY = wy - 1.05;
+  const starLegs = [
+    blockFaces(baseCenterX - 0.5,  baseCenterY - 0.15, 0, 0.5, 0.12, 0.08, rot, pitchDeg),
+    blockFaces(baseCenterX + 0.02, baseCenterY - 0.15, 0, 0.5, 0.12, 0.08, rot, pitchDeg),
+    blockFaces(baseCenterX - 0.15, baseCenterY - 0.5,  0, 0.12, 0.5, 0.08, rot, pitchDeg),
+    blockFaces(baseCenterX - 0.15, baseCenterY + 0.02, 0, 0.12, 0.5, 0.08, rot, pitchDeg),
+  ];
+  // Central cylinder / gas lift
+  const chairPole = blockFaces(baseCenterX - 0.1, baseCenterY - 0.1, 0.08, 0.2, 0.2, 0.62, rot, pitchDeg);
+  // Seat cushion (wider, padded look)
+  const chairSeat = blockFaces(wx - 0.55, wy - 1.6, 0.7, 1.1, 1.1, 0.18, rot, pitchDeg);
+  // Backrest (tall, slightly curved effect via position)
+  const chairBack = blockFaces(wx - 0.45, wy - 0.55, 0.75, 0.9, 0.14, 0.95, rot, pitchDeg);
+  // Armrests (two thin bars on each side)
+  const armrestL = blockFaces(wx - 0.5,  wy - 1.4, 0.88, 0.1, 0.9, 0.08, rot, pitchDeg);
+  const armrestR = blockFaces(wx + 0.4,  wy - 1.4, 0.88, 0.1, 0.9, 0.08, rot, pitchDeg);
+  // Armrest supports (vertical posts)
+  const armSupportL = blockFaces(wx - 0.5,  wy - 0.7, 0.7, 0.1, 0.12, 0.18, rot, pitchDeg);
+  const armSupportR = blockFaces(wx + 0.4,  wy - 0.7, 0.7, 0.1, 0.12, 0.18, rot, pitchDeg);
 
   return (
     <g>
-      {/* ── Chair (dark gray fabric) ── */}
-      <polygon points={chairBase.top} fill="#3a3a42" stroke="#2e2e36" strokeWidth={0.5} />
-      <polygon points={chairBase.south} fill="#32323a" stroke="#2a2a32" strokeWidth={0.5} />
+      {/* ── Chair ── */}
+      {/* Star base legs (dark metal) */}
+      {starLegs.map((leg, i) => (
+        <g key={`starleg${i}`}>
+          <polygon points={leg.top} fill="#555560" stroke="#48484f" strokeWidth={0.5} />
+          <polygon points={leg.south} fill="#4a4a54" stroke="#3e3e48" strokeWidth={0.5} />
+          <polygon points={leg.east} fill="#505058" stroke="#44444e" strokeWidth={0.5} />
+        </g>
+      ))}
+      {/* Central pole / gas lift (chrome) */}
+      <polygon points={chairPole.east} fill="#606068" stroke="#52525a" strokeWidth={0.5} />
+      <polygon points={chairPole.south} fill="#686870" stroke="#5a5a62" strokeWidth={0.5} />
+      <polygon points={chairPole.top} fill="#707078" stroke="#62626a" strokeWidth={0.5} />
+      {/* Seat cushion (dark fabric) */}
       <polygon points={chairSeat.east} fill="#404048" stroke="#36363e" strokeWidth={0.5} />
       <polygon points={chairSeat.south} fill="#45454d" stroke="#3a3a42" strokeWidth={0.5} />
       <polygon points={chairSeat.top} fill="#4d4d55" stroke="#42424a" strokeWidth={0.5} />
+      {/* Armrest supports */}
+      <polygon points={armSupportL.east} fill="#505058" stroke="#44444e" strokeWidth={0.5} />
+      <polygon points={armSupportL.south} fill="#555560" stroke="#48484f" strokeWidth={0.5} />
+      <polygon points={armSupportR.east} fill="#505058" stroke="#44444e" strokeWidth={0.5} />
+      <polygon points={armSupportR.south} fill="#555560" stroke="#48484f" strokeWidth={0.5} />
+      {/* Armrests (padded) */}
+      <polygon points={armrestL.top} fill="#48484f" stroke="#3e3e46" strokeWidth={0.5} />
+      <polygon points={armrestL.south} fill="#404048" stroke="#36363e" strokeWidth={0.5} />
+      <polygon points={armrestR.top} fill="#48484f" stroke="#3e3e46" strokeWidth={0.5} />
+      <polygon points={armrestR.south} fill="#404048" stroke="#36363e" strokeWidth={0.5} />
+      {/* Backrest (fabric) */}
       <polygon points={chairBack.east} fill="#3a3a42" stroke="#30303a" strokeWidth={0.5} />
       <polygon points={chairBack.south} fill="#404048" stroke="#36363e" strokeWidth={0.5} />
       <polygon points={chairBack.top} fill="#48484f" stroke="#3e3e46" strokeWidth={0.5} />
