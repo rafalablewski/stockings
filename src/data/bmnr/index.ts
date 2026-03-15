@@ -21,6 +21,7 @@ export {
   STAKING_PARAMS,
   DIVIDEND_DATA,
   DATA_FRESHNESS,
+  OTHER_HOLDINGS,
 } from './company';
 
 // Capital Structure
