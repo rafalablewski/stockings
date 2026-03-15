@@ -2810,24 +2810,26 @@ Rules: NEVER output actual secret values. Use [REDACTED]. Report file, line, and
     description: 'Validates earnings and financial data for accuracy, GAAP vs non-GAAP consistency, quarter-over-quarter trend integrity, and proper sourcing against SEC filings. Flags discrepancies, missing periods, and suspect data quality.',
     requiresUserData: false,
     category: 'audit',
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
-        prompt: `You are a financial data quality analyst auditing earnings data for AST SpaceMobile (NASDAQ: ASTS) in the ABISON investment database.
+    variants: [],
+    promptTemplate: `You are a financial data quality analyst auditing earnings data for {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}) in the ABISON investment database.
 
-Current date: February 22, 2026.
+Company context: {{DESCRIPTION}}. Fiscal year ends {{FISCAL_YEAR_END}}.
+Share structure: {{SHARE_STRUCTURE}}
+
+Key metrics to verify:
+{{STOCK_SPECIFIC_METRICS}}
 
 ════════════════════════════════════════
 PHASE 1: EARNINGS DATA COMPLETENESS
 ════════════════════════════════════════
 
 Check the financials module for completeness:
-- All expected quarterly periods present?
+- All expected quarterly periods present? (FY ends {{FISCAL_YEAR_END}})
 - Income statement and balance sheet data for each period?
 - Cash flow data where expected?
 - EPS figures (basic and diluted) for each quarter?
 - Share counts consistent with capital module?
+- Domain-specific data tracked per period? (See domain sections below)
 
 | Period | Income Stmt | Balance Sheet | Cash Flow | EPS | Status |
 |--------|------------|---------------|-----------|-----|--------|
@@ -2835,13 +2837,20 @@ Check the financials module for completeness:
 Flag: "MISSING-[NNN]: [period] — [what's missing]"
 
 ════════════════════════════════════════
-PHASE 2: GAAP VS NON-GAAP CONSISTENCY
+PHASE 2: ACCOUNTING QUALITY & CONSISTENCY
 ════════════════════════════════════════
 
 For periods with both GAAP and non-GAAP figures:
 - Reconciliation clear? What adjustments bridge GAAP → non-GAAP?
 - Stock-based compensation adjustments consistent across quarters?
 - One-time items properly excluded from non-GAAP?
+
+For companies with domain-specific assets (digital assets, satellites, etc.):
+- Asset valuations consistent across periods and modules?
+- Revenue streams properly categorized by business segment?
+
+Use the company's domain context to identify additional accounting areas:
+{{DOMAIN_SECTIONS}}
 
 | Period | GAAP Net Income | Non-GAAP | Adjustments | Consistent? |
 |--------|----------------|----------|-------------|-------------|
@@ -2855,6 +2864,7 @@ Flag suspicious jumps or breaks:
 - Cash position: ending cash + cash flow ≈ next quarter opening?
 - Share count jumps not correlated with known offerings
 - Debt level changes not matching known financing events
+- Domain-specific metrics trending logically given business updates?
 
 Flag: "TREND-[NNN]: [metric] changed [X]% QoQ in [period]"
 
@@ -2875,7 +2885,7 @@ PHASE 5: EARNINGS QUALITY REPORT
 ════════════════════════════════════════
 
 DATA COMPLETENESS: X of Y periods fully populated
-GAAP/NON-GAAP ISSUES: X inconsistencies
+ACCOUNTING ISSUES: X inconsistencies
 TREND ANOMALIES: X flagged
 SOURCE MISMATCHES: X discrepancies
 
@@ -2887,85 +2897,6 @@ PRIORITY FIXES:
 3. [MEDIUM] [description]
 
 Rules: Compare actual database values. Do not estimate or infer figures not present.`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-        prompt: `You are a financial data quality analyst auditing earnings data for BitMine Immersion Technologies (NYSE American: BMNR) in the ABISON investment database.
-
-Current date: February 22, 2026.
-
-BMNR context: Sep 30 fiscal year end. Growth-stage company — revenue may be small or zero in early periods. ETH treasury valuation and mining revenue are key metrics.
-
-════════════════════════════════════════
-PHASE 1: EARNINGS DATA COMPLETENESS
-════════════════════════════════════════
-
-Check company and financial data for completeness:
-- All expected quarterly periods present? (FY ends Sep 30)
-- Mining revenue broken out from other revenue?
-- ETH holdings and digital asset values tracked per period?
-- Share counts current given frequent capital activity?
-
-| Period | Income Stmt | Balance Sheet | ETH Holdings | EPS | Status |
-|--------|------------|---------------|-------------|-----|--------|
-
-Flag: "MISSING-[NNN]: [period] — [what's missing]"
-
-════════════════════════════════════════
-PHASE 2: DIGITAL ASSET ACCOUNTING
-════════════════════════════════════════
-
-BMNR holds ETH as treasury. Verify:
-- ETH valued consistently? (cost basis vs fair value)
-- ETH quantities match between company data and SEC filings?
-- Mining revenue distinguished from ETH appreciation?
-- Staking rewards accounted for separately?
-
-| Period | ETH Qty (DB) | ETH Qty (Filing) | Valuation Method | Consistent? |
-|--------|-------------|-----------------|-----------------|-------------|
-
-════════════════════════════════════════
-PHASE 3: QUARTER-OVER-QUARTER INTEGRITY
-════════════════════════════════════════
-
-Flag suspicious breaks:
-- Revenue: unexpected drops vs mining capacity growth
-- Cash + ETH position: trajectory matches known capital raises?
-- Share count jumps correlate with known offerings?
-- Operating expenses: hosting/energy costs trending logically?
-
-Flag: "TREND-[NNN]: [metric] changed [X]% QoQ in [period]"
-
-════════════════════════════════════════
-PHASE 4: SOURCE VERIFICATION
-════════════════════════════════════════
-
-Cross-check against SEC filings:
-- Revenue and loss figures match 10-Q/10-K?
-- Share counts consistent with latest S-3/8-K filings?
-- ETH holdings match management commentary?
-
-Flag: "MISMATCH-[NNN]: [metric] — DB: [value] vs Filing: [value]"
-
-════════════════════════════════════════
-PHASE 5: EARNINGS QUALITY REPORT
-════════════════════════════════════════
-
-DATA COMPLETENESS: X of Y periods populated
-DIGITAL ASSET ISSUES: X inconsistencies
-TREND ANOMALIES: X flagged
-SOURCE MISMATCHES: X discrepancies
-
-QUALITY SCORE: [A-F]
-
-PRIORITY FIXES:
-1. [CRITICAL] [description]
-2. [HIGH] [description]
-
-Rules: Compare actual database values. Do not estimate or infer figures not present.`,
-      },
-    ],
   },
   // =========================================================================
   // 25. PEER COMPARABLES AUDIT
@@ -2976,25 +2907,28 @@ Rules: Compare actual database values. Do not estimate or infer figures not pres
     description: 'Evaluates the comp set for relevance, completeness, and data consistency. Checks that valuation multiples use comparable methodologies, flags stale competitor data, and validates that the peer universe reflects current market positioning.',
     requiresUserData: false,
     category: 'audit',
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
-        prompt: `You are an equity research analyst auditing the peer comparables for AST SpaceMobile (NASDAQ: ASTS) in the ABISON investment database.
+    variants: [],
+    promptTemplate: `You are an equity research analyst auditing the peer comparables for {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}) in the ABISON investment database.
 
-Current date: February 22, 2026.
+Company context: {{DESCRIPTION}}. Specializes in {{SPECIALIST_DOMAIN}}.
+
+Current tracked competitors:
+{{COMPETITORS}}
+
+Key metrics tracked:
+{{STOCK_SPECIFIC_METRICS}}
 
 ════════════════════════════════════════
 PHASE 1: COMP SET COMPOSITION
 ════════════════════════════════════════
 
 Examine comps/competitors data:
-- Is the peer universe comprehensive?
+- Is the peer universe comprehensive for a company in {{SECTOR}}?
 - Peers grouped logically? (direct, adjacent, aspirational)
-- ASTS is space-based cellular broadband — peers should include:
-  - Direct: other satellite-to-cell companies
-  - Adjacent: LEO satellite operators, mobile network operators
-  - Aspirational: large-cap space/telecom for valuation context
+- Given the company's focus on {{SPECIALIST_DOMAIN}}, peers should include:
+  - Direct: companies in the same business model
+  - Adjacent: companies in related segments of {{SECTOR}}
+  - Aspirational: large-cap comps for valuation context
 - Any included peers no longer relevant? (acquired, pivoted, delisted)
 
 | Peer | Category | Still Relevant? | Comparability (1-5) | Notes |
@@ -3011,6 +2945,7 @@ For each peer, verify:
 - Valuation multiples calculated consistently?
 - Financial periods aligned? (same fiscal year basis or LTM)
 - Market cap / EV from the same date?
+- Domain-specific valuations comparable across peers?
 
 | Peer | Metrics Available | Period | Valuation Date | Gaps |
 |------|------------------|--------|----------------|------|
@@ -3025,6 +2960,7 @@ For each peer:
 - When last updated?
 - New earnings reported since last update?
 - Material events (M&A, offerings, pivots) not reflected?
+- For fast-moving sectors, apply appropriate staleness thresholds
 
 | Peer | Last Updated | Days Stale | Events Missed? | Priority |
 |------|-------------|-----------|----------------|----------|
@@ -3033,10 +2969,14 @@ For each peer:
 PHASE 4: VALUATION FRAMEWORK
 ════════════════════════════════════════
 
-- Multiples appropriate for pre-revenue / early-revenue companies?
-- ASTS positioned correctly within peer range?
+- Multiples appropriate for company's growth stage and business model?
+- {{TICKER}} positioned correctly within peer range?
 - Outliers identified and explained?
 - Differences in growth stage and capital structure accounted for?
+- Domain-specific valuation approaches applied consistently?
+
+Use the company's domain context for valuation relevance:
+{{DOMAIN_SECTIONS}}
 
 ════════════════════════════════════════
 PHASE 5: COMPARABLES REPORT
@@ -3055,82 +2995,6 @@ PRIORITY ACTIONS:
 3. [MEDIUM] Standardize [metric]
 
 Rules: Use actual database values. Flag gaps; do not fill with estimates.`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-        prompt: `You are an equity research analyst auditing the peer comparables for BitMine Immersion Technologies (NYSE American: BMNR) in the ABISON investment database.
-
-Current date: February 22, 2026.
-
-════════════════════════════════════════
-PHASE 1: COMP SET COMPOSITION
-════════════════════════════════════════
-
-Examine comps/competitors data:
-- Is the peer universe comprehensive?
-- BMNR is ETH-focused mining and treasury — peers should include:
-  - Direct: ETH miners/stakers, ETH treasury companies
-  - Adjacent: BTC miners (Strategy Inc. / Marathon model), crypto infrastructure
-  - Aspirational: large-cap crypto for valuation context
-- Any included peers no longer relevant?
-
-| Peer | Category | Still Relevant? | Comparability (1-5) | Notes |
-|------|----------|----------------|---------------------|-------|
-
-MISSING PEERS: companies that should be included.
-
-════════════════════════════════════════
-PHASE 2: METRIC CONSISTENCY
-════════════════════════════════════════
-
-For each peer, verify:
-- Same metrics tracked? (mining revenue, hash rate, treasury holdings, NAV)
-- Treasury valuations comparable? (ETH vs BTC methodologies)
-- Financial periods aligned?
-- Crypto holdings from the same date?
-- NAV calculations using same methodology?
-
-| Peer | Metrics Available | Period | Valuation Date | Gaps |
-|------|------------------|--------|----------------|------|
-
-Flag: "METRIC-[NNN]: [peer] — [inconsistency]"
-
-════════════════════════════════════════
-PHASE 3: DATA STALENESS
-════════════════════════════════════════
-
-Crypto treasury data moves fast — flag peers with holdings > 7 days old:
-| Peer | Last Updated | Days Stale | Events Missed? | Priority |
-|------|-------------|-----------|----------------|----------|
-
-════════════════════════════════════════
-PHASE 4: VALUATION FRAMEWORK
-════════════════════════════════════════
-
-- NAV premium/discount calculated consistently across treasury peers?
-- Mining multiples (EV/hash rate, EV/ETH held) applied uniformly?
-- BTC-focused comps adjusted for ETH vs BTC dynamics?
-
-════════════════════════════════════════
-PHASE 5: COMPARABLES REPORT
-════════════════════════════════════════
-
-COMP SET: X peers (Y direct, Z adjacent)
-MISSING: X recommended additions
-STALE DATA: X peers (treasury data > 7 days old)
-METRIC GAPS: X inconsistencies
-
-QUALITY SCORE: [A-F]
-
-PRIORITY ACTIONS:
-1. [HIGH] Update [peer] holdings — [X] days stale
-2. [HIGH] Add [peer] — [reason]
-3. [MEDIUM] Standardize [metric]
-
-Rules: Use actual database values. Flag gaps; do not fill with estimates.`,
-      },
-    ],
   },
   // =========================================================================
   // 26. DISCLOSURE COMPLETENESS AUDIT
@@ -3141,13 +3005,17 @@ Rules: Use actual database values. Flag gaps; do not fill with estimates.`,
     description: 'Maps SEC filings and press releases to the database, identifies material disclosures not yet captured, checks risk factor coverage, and validates that management commentary and guidance are reflected in the research data.',
     requiresUserData: false,
     category: 'audit',
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
-        prompt: `You are a disclosure analyst auditing SEC filing coverage for AST SpaceMobile (NASDAQ: ASTS) in the ABISON investment database.
+    variants: [],
+    promptTemplate: `You are a disclosure analyst auditing SEC filing coverage for {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}) in the ABISON investment database.
 
-Current date: February 22, 2026.
+Company context: {{DESCRIPTION}}. Fiscal year ends {{FISCAL_YEAR_END}}.
+Sector: {{SECTOR}} — specializes in {{SPECIALIST_DOMAIN}}.
+
+Key insiders:
+{{KEY_INSIDERS}}
+
+Competitive landscape:
+{{COMPETITORS}}
 
 ════════════════════════════════════════
 PHASE 1: SEC FILING INVENTORY
@@ -3157,7 +3025,7 @@ Catalog all SEC filings referenced in the database:
 | Filing Type | Period/Date | In sec-filings? | Data Extracted? | Key Items Captured? |
 |------------|-------------|----------------|----------------|-------------------|
 
-Check for: 10-K (annual), 10-Q (quarterly), 8-K (material events), S-3/S-1 (registrations), DEF 14A (proxy)
+Check for: 10-K (annual), 10-Q (quarterly), 8-K (material events), S-3/S-1 (registrations), DEF 14A (proxy), SC 13D/13G (major shareholders)
 
 MISSING FILINGS: expected filings not in the database.
 
@@ -3169,7 +3037,10 @@ For each filing, check what material info was extracted:
 
 10-K / 10-Q: Revenue/financials → financials module? Risk factors → cataloged? MD&A → company/catalysts? Subsequent events → catalysts?
 
-8-K: Material agreements → partners? Leadership changes → company? Financial results → financials?
+8-K: Material agreements → partners? Leadership changes → company? Financial results → financials? Domain-specific events → appropriate modules?
+
+Use the company's domain areas to identify what material info to look for:
+{{DOMAIN_SECTIONS}}
 
 | Filing | Item | Material Info | Captured In | Status |
 |--------|------|-------------|-------------|--------|
@@ -3180,28 +3051,31 @@ Flag: "UNCAPTURED-[NNN]: [filing] — [material info not in database]"
 PHASE 3: RISK FACTOR COVERAGE
 ════════════════════════════════════════
 
-Key risk categories for ASTS:
-- Technology risk (satellite deployment, spectrum)
-- Regulatory risk (FCC, international licenses)
+Derive risk categories from the company's sector ({{SECTOR}}), business model ({{SPECIALIST_DOMAIN}}), and share structure:
+{{SHARE_STRUCTURE}}
+
+Common risk areas to check:
+- Market/sector risk specific to {{SECTOR}}
+- Regulatory risk
 - Financial risk (cash runway, dilution, revenue timing)
-- Competitive risk (Starlink, terrestrial 5G)
-- Partnership risk (MNO dependency)
-- Execution risk (launch schedule, constellation buildout)
+- Competitive risk (see competitors above)
+- Execution risk
+- Domain-specific operational risks
 
 | Risk Category | In Latest Filing? | In Database? | Up to Date? |
 |--------------|------------------|-------------|-------------|
 
 ════════════════════════════════════════
-PHASE 4: PRESS RELEASE TRACKING
+PHASE 4: NEWS & PRESS RELEASE TRACKING
 ════════════════════════════════════════
 
 - All material press releases in database?
 - Forward guidance captured and current?
-- Partnership announcements → partners module?
-- Launch updates → catalysts module?
+- Key announcements → appropriate modules?
+- Domain-specific updates reflected?
 
-| PR Date | Topic | In Database? | Data Updated? |
-|---------|-------|-------------|--------------|
+| Date | Topic | In Database? | Data Updated? |
+|------|-------|-------------|--------------|
 
 ════════════════════════════════════════
 PHASE 5: COMPLETENESS REPORT
@@ -3220,88 +3094,6 @@ PRIORITY GAPS:
 3. [MEDIUM] [description]
 
 Rules: Use actual database contents. Flag what's missing; don't fabricate filing contents.`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-        prompt: `You are a disclosure analyst auditing SEC filing coverage for BitMine Immersion Technologies (NYSE American: BMNR) in the ABISON investment database.
-
-Current date: February 22, 2026.
-
-BMNR context: Sep 30 fiscal year end. Pay attention to 8-Ks around ETH purchases, ATM offerings, and mining facility updates.
-
-════════════════════════════════════════
-PHASE 1: SEC FILING INVENTORY
-════════════════════════════════════════
-
-Catalog all SEC filings referenced in the database:
-| Filing Type | Period/Date | In sec-filings? | Data Extracted? | Key Items Captured? |
-|------------|-------------|----------------|----------------|-------------------|
-
-Check for: 10-K (annual, ~Dec for Sep FY), 10-Q (quarterly), 8-K (ETH purchases, ATM, facilities), S-3 (shelf registrations), SC 13D/13G (major shareholders)
-
-MISSING FILINGS: expected filings not in the database.
-
-════════════════════════════════════════
-PHASE 2: MATERIAL DISCLOSURE MAPPING
-════════════════════════════════════════
-
-For each filing, check extracted info:
-
-10-K / 10-Q: Mining revenue/financials → company module? ETH holdings → company? MD&A on mining/staking → reflected? Going concern language → flagged?
-
-8-K: ETH treasury purchases/sales → company updated? ATM updates → capital module? Mining facility news → company?
-
-| Filing | Item | Material Info | Captured In | Status |
-|--------|------|-------------|-------------|--------|
-
-Flag: "UNCAPTURED-[NNN]: [filing] — [material info not in database]"
-
-════════════════════════════════════════
-PHASE 3: RISK FACTOR COVERAGE
-════════════════════════════════════════
-
-Key risk categories for BMNR:
-- Crypto market risk (ETH price, protocol changes)
-- Mining economics risk (energy costs, difficulty, hardware)
-- Staking risk (slashing, protocol rule changes)
-- Regulatory risk (crypto regulation, securities classification)
-- Liquidity risk (small-cap, thin float, cash runway)
-- Dilution risk (frequent capital raises, ATM usage)
-- Custody risk (ETH storage and security)
-
-| Risk Category | In Latest Filing? | In Database? | Up to Date? |
-|--------------|------------------|-------------|-------------|
-
-════════════════════════════════════════
-PHASE 4: NEWS TRACKING
-════════════════════════════════════════
-
-- ETH purchase announcements captured?
-- Mining capacity updates reflected?
-- Partnership/facility announcements in database?
-
-| Date | Topic | In Database? | Data Updated? |
-|------|-------|-------------|--------------|
-
-════════════════════════════════════════
-PHASE 5: COMPLETENESS REPORT
-════════════════════════════════════════
-
-FILING COVERAGE: X of Y expected filings
-MATERIAL DISCLOSURES CAPTURED: X%
-UNCAPTURED ITEMS: X
-RISK FACTORS: X of Y categories current
-
-COMPLETENESS SCORE: [A-F]
-
-PRIORITY GAPS:
-1. [CRITICAL] [description]
-2. [HIGH] [description]
-
-Rules: Use actual database contents. Flag what's missing; don't fabricate filing contents.`,
-      },
-    ],
   },
   // =========================================================================
   // 27. MODEL CONSISTENCY AUDIT
@@ -3312,13 +3104,14 @@ Rules: Use actual database contents. Flag what's missing; don't fabricate filing
     description: 'Cross-checks financial model inputs against source data, validates calculation formulas, tests assumption consistency across modules, and checks that model outputs (valuations, projections) are logically coherent with their inputs.',
     requiresUserData: false,
     category: 'audit',
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
-        prompt: `You are a financial model auditor reviewing internal consistency of AST SpaceMobile (NASDAQ: ASTS) data in the ABISON investment database.
+    variants: [],
+    promptTemplate: `You are a financial model auditor reviewing internal consistency of {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}) data in the ABISON investment database.
 
-Current date: February 22, 2026.
+Company context: {{DESCRIPTION}}. Fiscal year ends {{FISCAL_YEAR_END}}.
+Share structure: {{SHARE_STRUCTURE}}
+
+Key metrics to cross-check:
+{{STOCK_SPECIFIC_METRICS}}
 
 ════════════════════════════════════════
 PHASE 1: INPUT VALIDATION
@@ -3331,6 +3124,9 @@ Share count: Capital module vs financials diluted shares. Warrants/options/conve
 Revenue/financials: Figures in financials module match SEC filings? Projections anchored to latest actuals?
 
 Cash & capital: Capital module cash matches latest balance sheet? Debt consistent between capital and financials?
+
+Domain-specific inputs — use the company's business areas to identify additional cross-module checks:
+{{DOMAIN_SECTIONS}}
 
 | Data Point | Module A | Value A | Module B | Value B | Match? |
 |-----------|---------|---------|---------|---------|--------|
@@ -3347,6 +3143,7 @@ Check derived values:
 - EPS = net income / diluted shares (components match?)
 - Valuation multiples from consistent inputs?
 - YoY / QoQ growth rates match underlying figures?
+- Domain-specific derived values (NAV, yields, unit economics, etc.) calculated consistently?
 
 | Calculation | Formula | Inputs | Expected | Actual | Match? |
 |------------|---------|--------|---------|--------|--------|
@@ -3356,11 +3153,12 @@ PHASE 3: ASSUMPTION CONSISTENCY
 ════════════════════════════════════════
 
 Check coherence:
-- Catalysts reference launch date → projections use same timeline?
+- Catalysts and timelines → projections use same assumptions?
 - Capital module cash → catalysts reflect same runway?
 - Competitor comparisons using consistent time periods?
 - Bull/bear/base scenarios internally consistent?
 - Discount rates, growth rates, terminal values sourced?
+- Domain-specific assumptions aligned across modules?
 
 Flag: "ASSUMPTION-[NNN]: [module A says X] vs [module B says Y]"
 
@@ -3371,6 +3169,7 @@ PHASE 4: OUTPUT REASONABLENESS
 - Valuation targets within reasonable range of current price?
 - Projected financials follow from stated assumptions?
 - Investment thesis aligns with quantitative data?
+- Domain-specific outputs plausible given inputs?
 
 | Output | Value | Reasonableness | Status |
 |--------|-------|---------------|--------|
@@ -3392,91 +3191,6 @@ PRIORITY FIXES:
 3. [MEDIUM] [description]
 
 Rules: Compare actual values. Do not fill gaps with estimates. Flag every cross-module discrepancy.`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-        prompt: `You are a financial model auditor reviewing internal consistency of BitMine Immersion Technologies (NYSE American: BMNR) data in the ABISON investment database.
-
-Current date: February 22, 2026.
-
-BMNR context: Unique complexity from ETH treasury valuation, mining economics, and frequent capital activity. Focus on ETH quantity × price consistency and dilution math.
-
-════════════════════════════════════════
-PHASE 1: INPUT VALIDATION
-════════════════════════════════════════
-
-Cross-check inputs across modules:
-
-Share count: Capital module vs financial data. Warrants, ATM shares, convertibles consistent? Reflects latest ATM? MAJOR_SHAREHOLDERS counts consistent with total?
-
-ETH holdings: Quantities match between company and capital modules? ETH price used for valuation current? Cost basis tracked consistently?
-
-Cash & capital: Same in capital module and latest financials? Total treasury (cash + ETH) calculated consistently?
-
-| Data Point | Module A | Value A | Module B | Value B | Match? |
-|-----------|---------|---------|---------|---------|--------|
-
-Flag: "INPUT-[NNN]: [data point] — [module A]: [value] vs [module B]: [value]"
-
-════════════════════════════════════════
-PHASE 2: CALCULATION VERIFICATION
-════════════════════════════════════════
-
-Check derived values:
-- Market cap = price × shares outstanding
-- NAV = (ETH × price) + cash - debt
-- NAV per share = NAV / shares
-- NAV premium/discount = (market cap - NAV) / NAV
-- Mining economics: revenue per ETH, cost per ETH, margin
-- EV: properly includes/excludes crypto treasury?
-
-| Calculation | Formula | Inputs | Expected | Actual | Match? |
-|------------|---------|--------|---------|--------|--------|
-
-════════════════════════════════════════
-PHASE 3: ASSUMPTION CONSISTENCY
-════════════════════════════════════════
-
-- ETH price assumptions same across all projections?
-- Mining growth consistent with stated facility plans?
-- Dilution assumptions account for ongoing ATM?
-- Staking yield consistent with current protocol rates?
-- Operating costs aligned with historical trends?
-
-Flag: "ASSUMPTION-[NNN]: [conflict description]"
-
-════════════════════════════════════════
-PHASE 4: OUTPUT REASONABLENESS
-════════════════════════════════════════
-
-- NAV premium/discount reasonable for company profile?
-- Mining revenue projections sensible given hash rate/stake?
-- Dilution-adjusted figures realistic?
-
-════════════════════════════════════════
-PHASE 5: CONSISTENCY REPORT
-════════════════════════════════════════
-
-INPUT MISMATCHES: X
-CALCULATION ERRORS: X
-ASSUMPTION CONFLICTS: X
-IMPLAUSIBLE OUTPUTS: X
-
-CONSISTENCY SCORE: [A-F]
-
-ETH TREASURY RECONCILIATION:
-- Canonical ETH quantity: [authoritative source value]
-- Canonical ETH price date: [date]
-- Modules needing update: [list]
-
-PRIORITY FIXES:
-1. [CRITICAL] [mismatch and reconciliation source]
-2. [HIGH] [description]
-
-Rules: Compare actual values. Do not estimate. Flag every cross-module discrepancy.`,
-      },
-    ],
   },
 
   // ── PROMPT AUDITOR (Bobman's team) ──────────────────────────────────────
