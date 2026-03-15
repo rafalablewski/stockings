@@ -9,6 +9,8 @@ import Desk3D from './Desk3D';
 import CoffeeStation3D from './CoffeeStation3D';
 import Lounge3D from './Lounge3D';
 import Plant3D from './Plant3D';
+import CeilingLight3D from './CeilingLight3D';
+import ServerRack3D from './ServerRack3D';
 import Avatar3D from './Avatar3D';
 import { DESK_POS } from './activities';
 import { ROOM_W, ROOM_D } from './constants';
@@ -113,9 +115,7 @@ const SceneCanvas = forwardRef<SceneCanvasHandle, SceneCanvasProps>(
           shadow-camera-bottom={-50}
         />
         {/* Subtle fill from below/side */}
-        <pointLight position={[cx, 2, cz]} intensity={0.5} color="#22d3ee" distance={100} />
-        {/* Overhead fill to brighten the room */}
-        <pointLight position={[cx, 20, cz]} intensity={0.5} color="#e0e0ff" distance={120} />
+        <pointLight position={[cx, 2, cz]} intensity={0.3} color="#22d3ee" distance={80} />
 
         <OrbitControls
           ref={controlsRef}
@@ -163,6 +163,25 @@ const SceneCanvas = forwardRef<SceneCanvasHandle, SceneCanvasProps>(
         {/* Flanking the lounge */}
         <Plant3D position={[12, 0, 33]} variant="fiddleleaf" scale={0.85} leafColor="#35a055" />
         <Plant3D position={[28, 0, 33]} variant="fern" scale={1.1} leafColor="#2e9050" potColor="#5c3d2e" />
+
+        {/* ── Ceiling pendant lights — 3×2 grid across the office ── */}
+        {[20, 40, 60].map((x) =>
+          [15, 35].map((z) => (
+            <CeilingLight3D
+              key={`cl-${x}-${z}`}
+              position={[x, 9.8, z]}
+              color="#ffe4b5"
+              intensity={1.0}
+              scale={1.1}
+            />
+          ))
+        )}
+        {/* Extra accent light over lounge area */}
+        <CeilingLight3D position={[20, 9.8, 40]} color="#ffd8a8" intensity={0.7} scale={0.9} />
+
+        {/* ── Server racks along the right wall ── */}
+        <ServerRack3D position={[76, 0, 12]} rotation={-Math.PI / 2} scale={1.0} />
+        <ServerRack3D position={[76, 0, 18]} rotation={-Math.PI / 2} scale={1.0} />
 
         {/* Avatars */}
         {avatars.map((avatar) => (
