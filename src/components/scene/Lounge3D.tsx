@@ -8,8 +8,8 @@ interface Lounge3DProps {
 }
 
 /**
- * Leisure lounge area: two sofas facing each other, two armchairs on the sides,
- * a low coffee table in the center, and a decorative rug underneath.
+ * Leisure lounge area — Japandi style: natural wood frames, warm linen
+ * upholstery, muted earth-tone accents on a raised access floor.
  *
  * Layout (top-down, +X right, +Z back):
  *
@@ -18,14 +18,15 @@ interface Lounge3DProps {
  *              Sofa A (facing back)
  */
 export default function Lounge3D({ position }: Lounge3DProps) {
-  const cushionColor = '#35304a';    // dark plum-violet fabric
-  const frameColor = '#28242e';      // darker frame / base
-  const accentColor = '#4a3860';     // armchair accent
-  const legColor = '#555060';        // metal/wood legs
-  const tableTopColor = '#3a3545';   // dark table surface
-  const tableLegColor = '#606068';   // metal table legs
-  const rugColor = '#2a2540';        // base rug
-  const rugBorderColor = '#3d3555';  // rug border accent
+  // ── Japandi palette ──
+  const cushionColor = '#c8bfb0';    // warm linen / oatmeal fabric
+  const frameColor = '#6e5540';      // walnut wood frame
+  const accentColor = '#bab2a2';     // lighter stone fabric for armchairs
+  const legColor = '#8a7260';        // light walnut legs
+  const tableTopColor = '#a08c74';   // natural oak surface
+  const tableLegColor = '#2a2826';   // blackened steel legs
+  const rugColor = '#d2c8ba';        // warm sand rug
+  const rugBorderColor = '#b8a998';  // slightly darker border
 
   return (
     <group position={position}>
@@ -81,20 +82,20 @@ function SofaModel({ color, frameColor, legColor }: {
 
   return (
     <group>
-      {/* Legs (4 short metal cylinders) */}
+      {/* Legs (4 tapered wooden) */}
       {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
         <mesh key={`sleg${i}`}
           position={[sx * (sofaW / 2 - 0.25), baseH / 2, sz * (sofaD / 2 - 0.2)]}
           castShadow>
-          <cylinderGeometry args={[0.06, 0.06, baseH, 6]} />
-          <meshStandardMaterial color={legColor} metalness={0.5} roughness={0.4} />
+          <cylinderGeometry args={[0.05, 0.07, baseH, 6]} />
+          <meshStandardMaterial color={legColor} roughness={0.6} />
         </mesh>
       ))}
 
       {/* Seat base / frame */}
       <RoundedBox args={[sofaW, 0.2, sofaD]} radius={0.04}
         position={[0, baseH + 0.1, 0]} castShadow receiveShadow>
-        <meshStandardMaterial color={frameColor} roughness={0.85} />
+        <meshStandardMaterial color={frameColor} roughness={0.7} />
       </RoundedBox>
 
       {/* Seat cushions (3 sections) */}
@@ -119,28 +120,28 @@ function SofaModel({ color, frameColor, legColor }: {
         </RoundedBox>
       ))}
 
-      {/* Left arm */}
+      {/* Left arm — exposed wood */}
       <RoundedBox args={[armW, armH, sofaD]} radius={0.05}
         position={[-(sofaW / 2 - armW / 2), baseH + seatH / 2 + armH / 2 - 0.05, 0]} castShadow>
-        <meshStandardMaterial color={frameColor} roughness={0.85} />
+        <meshStandardMaterial color={frameColor} roughness={0.7} />
       </RoundedBox>
 
-      {/* Right arm */}
+      {/* Right arm — exposed wood */}
       <RoundedBox args={[armW, armH, sofaD]} radius={0.05}
         position={[sofaW / 2 - armW / 2, baseH + seatH / 2 + armH / 2 - 0.05, 0]} castShadow>
-        <meshStandardMaterial color={frameColor} roughness={0.85} />
+        <meshStandardMaterial color={frameColor} roughness={0.7} />
       </RoundedBox>
 
-      {/* Throw pillows */}
+      {/* Throw pillows — muted earth tones */}
       <RoundedBox args={[0.5, 0.5, 0.15]} radius={0.06}
         position={[-1.8, baseH + seatH + 0.5, -0.35]}
         rotation={[0.15, 0.2, 0.1]} castShadow>
-        <meshStandardMaterial color="#5a4070" roughness={0.9} />
+        <meshStandardMaterial color="#8a9a7c" roughness={0.9} />
       </RoundedBox>
       <RoundedBox args={[0.5, 0.5, 0.15]} radius={0.06}
         position={[1.9, baseH + seatH + 0.5, -0.3]}
         rotation={[-0.1, -0.15, -0.08]} castShadow>
-        <meshStandardMaterial color="#406060" roughness={0.9} />
+        <meshStandardMaterial color="#b09878" roughness={0.9} />
       </RoundedBox>
     </group>
   );
@@ -157,20 +158,20 @@ function ArmchairModel({ color, frameColor, legColor }: {
 
   return (
     <group>
-      {/* Legs (4 tapered wooden/metal) */}
+      {/* Legs (4 tapered wooden) */}
       {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
         <mesh key={`aleg${i}`}
           position={[sx * (chairW / 2 - 0.2), baseH / 2, sz * (chairD / 2 - 0.2)]}
           castShadow>
           <cylinderGeometry args={[0.05, 0.07, baseH, 6]} />
-          <meshStandardMaterial color={legColor} metalness={0.4} roughness={0.5} />
+          <meshStandardMaterial color={legColor} roughness={0.6} />
         </mesh>
       ))}
 
       {/* Seat frame */}
       <RoundedBox args={[chairW, 0.15, chairD]} radius={0.03}
         position={[0, baseH + 0.075, 0]} castShadow>
-        <meshStandardMaterial color={frameColor} roughness={0.85} />
+        <meshStandardMaterial color={frameColor} roughness={0.7} />
       </RoundedBox>
 
       {/* Seat cushion */}
@@ -191,23 +192,23 @@ function ArmchairModel({ color, frameColor, legColor }: {
         <meshStandardMaterial color={color} roughness={0.93} />
       </RoundedBox>
 
-      {/* Left arm */}
+      {/* Left arm — exposed wood */}
       <RoundedBox args={[armW, armH, chairD - 0.1]} radius={0.06}
         position={[-(chairW / 2 - armW / 2), baseH + seatH / 2 + armH / 2, 0]} castShadow>
-        <meshStandardMaterial color={frameColor} roughness={0.85} />
+        <meshStandardMaterial color={frameColor} roughness={0.7} />
       </RoundedBox>
 
-      {/* Right arm */}
+      {/* Right arm — exposed wood */}
       <RoundedBox args={[armW, armH, chairD - 0.1]} radius={0.06}
         position={[chairW / 2 - armW / 2, baseH + seatH / 2 + armH / 2, 0]} castShadow>
-        <meshStandardMaterial color={frameColor} roughness={0.85} />
+        <meshStandardMaterial color={frameColor} roughness={0.7} />
       </RoundedBox>
 
-      {/* Accent pillow */}
+      {/* Accent pillow — sage green */}
       <RoundedBox args={[0.45, 0.45, 0.12]} radius={0.06}
         position={[0.1, baseH + seatH + 0.45, -0.3]}
         rotation={[0.1, 0.15, 0.05]} castShadow>
-        <meshStandardMaterial color="#504565" roughness={0.9} />
+        <meshStandardMaterial color="#7a8a6c" roughness={0.9} />
       </RoundedBox>
     </group>
   );
@@ -222,7 +223,7 @@ function CoffeeTable({ topColor, legColor }: { topColor: string; legColor: strin
 
   return (
     <group>
-      {/* Legs (4 thin metal rods) */}
+      {/* Legs (4 thin blackened steel rods) */}
       {[[-1, -1], [1, -1], [-1, 1], [1, 1]].map(([sx, sz], i) => (
         <mesh key={`tleg${i}`}
           position={[sx * (tableW / 2 - 0.15), legH / 2, sz * (tableD / 2 - 0.12)]}
@@ -232,43 +233,43 @@ function CoffeeTable({ topColor, legColor }: { topColor: string; legColor: strin
         </mesh>
       ))}
 
-      {/* Table top */}
+      {/* Table top — natural oak */}
       <RoundedBox args={[tableW, tableH, tableD]} radius={0.02}
         position={[0, topY, 0]} castShadow receiveShadow>
-        <meshStandardMaterial color={topColor} roughness={0.6} metalness={0.05} />
+        <meshStandardMaterial color={topColor} roughness={0.55} metalness={0.02} />
       </RoundedBox>
 
-      {/* Lower shelf */}
+      {/* Lower shelf — matching oak */}
       <RoundedBox args={[tableW - 0.3, 0.06, tableD - 0.2]} radius={0.01}
         position={[0, shelfY, 0]} castShadow>
-        <meshStandardMaterial color={topColor} roughness={0.7} />
+        <meshStandardMaterial color={topColor} roughness={0.6} />
       </RoundedBox>
 
-      {/* Items on table: a couple of books and a small plant */}
+      {/* Items on table: books and a small plant */}
       {/* Book stack */}
       <RoundedBox args={[0.5, 0.12, 0.35]} radius={0.01}
         position={[-0.7, topY + 0.11, 0.1]} rotation={[0, 0.15, 0]} castShadow>
-        <meshStandardMaterial color="#4a3060" roughness={0.85} />
+        <meshStandardMaterial color="#5a6e5a" roughness={0.85} />
       </RoundedBox>
       <RoundedBox args={[0.45, 0.08, 0.32]} radius={0.01}
         position={[-0.68, topY + 0.19, 0.08]} rotation={[0, -0.1, 0]} castShadow>
-        <meshStandardMaterial color="#305050" roughness={0.85} />
+        <meshStandardMaterial color="#c4a882" roughness={0.85} />
       </RoundedBox>
 
-      {/* Small decorative plant on table */}
+      {/* Small decorative plant — ceramic pot */}
       <mesh position={[0.8, topY + 0.15, -0.15]} castShadow>
         <cylinderGeometry args={[0.1, 0.08, 0.2, 8]} />
-        <meshStandardMaterial color="#6b4c3b" roughness={0.85} />
+        <meshStandardMaterial color="#d4ccc0" roughness={0.8} />
       </mesh>
       <mesh position={[0.8, topY + 0.4, -0.15]} castShadow>
         <sphereGeometry args={[0.18, 7, 7]} />
-        <meshStandardMaterial color="#2d8a4e" roughness={0.9} />
+        <meshStandardMaterial color="#5a8a5a" roughness={0.9} />
       </mesh>
 
       {/* Magazines on lower shelf */}
       <RoundedBox args={[0.6, 0.04, 0.4]} radius={0.005}
         position={[0.3, shelfY + 0.05, 0]} rotation={[0, 0.08, 0]} castShadow>
-        <meshStandardMaterial color="#505060" roughness={0.8} />
+        <meshStandardMaterial color="#b8a890" roughness={0.8} />
       </RoundedBox>
     </group>
   );
