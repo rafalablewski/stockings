@@ -67,14 +67,14 @@ export default function AIAgentsView({ engineers, workflows }: Props) {
   const requiresDataCount = engineers.filter(e => e.requiresData).length;
 
   const openPromptPreview = useCallback((wf: Workflow, ticker: string, label: string) => {
-    const variant = wf.variants.find(v => v.ticker === ticker.toLowerCase());
-    if (!variant) return;
+    const prompt = wf.promptTemplate ?? wf.variants.find(v => v.ticker === ticker.toLowerCase())?.prompt;
+    if (!prompt) return;
     setPromptPreview({
       workflowName: wf.name,
       workflowDescription: wf.description,
       ticker: ticker.toUpperCase(),
       label,
-      prompt: variant.prompt,
+      prompt,
       requiresUserData: wf.requiresUserData,
     });
   }, []);
@@ -257,7 +257,19 @@ export default function AIAgentsView({ engineers, workflows }: Props) {
                             </div>
                             <div className="eng-resource-desc">{wf.description}</div>
                             <div className="eng-resource-agents">
-                              {wf.variants.map(v => (
+                              {wf.promptTemplate ? (
+                                <span
+                                  className="eng-resource-agent-chip"
+                                  data-clickable="true"
+                                  title={`Preview ${wf.name} template`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openPromptPreview(wf, 'template', 'Template');
+                                  }}
+                                >
+                                  Template
+                                </span>
+                              ) : wf.variants.map(v => (
                                 <span
                                   key={v.ticker}
                                   className="eng-resource-agent-chip"

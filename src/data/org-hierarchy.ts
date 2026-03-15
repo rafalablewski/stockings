@@ -35,7 +35,7 @@ export const ORG_COLORS = {
   claude:     '#22d3ee',
   cursor:     '#a78bfa',
   gemini:     '#34d399',
-  aiEngineer: '#f472b6',
+  maszka: '#f472b6',
   pm:         '#fb923c',
 } as const;
 
@@ -86,22 +86,22 @@ export const orgNodes: OrgNode[] = [
     parentId: 'boss',
   },
   {
-    id: 'div-ai-engineer',
+    id: 'div-maszka',
     type: 'division',
-    label: 'AI Engineer',
+    label: 'Maszka',
     badge: 'ML',
     role: 'ML & AI Systems',
-    description: 'Builds and maintains the ML models, AI features, and data pipelines that power the autonomous engineers. Develops the execution engine, prompt templates, and workflow orchestration layer. Does not manage engineers — focuses on the infrastructure that makes them run. Reports technical capabilities and pipeline health to the Boss in the Room.',
-    color: ORG_COLORS.aiEngineer,
+    description: 'Builds and maintains the ML models, AI features, and data pipelines that power the autonomous engineers. Develops the execution engine, prompt templates, and workflow orchestration layer. Manages the Prompt Remediation Engineer that implements audit-driven fixes to workflow templates. Reviews remediation patches via the Decision Dashboard before Boss approval. Reports technical capabilities and pipeline health to the Boss in the Room.',
+    color: ORG_COLORS.maszka,
     parentId: 'boss',
   },
   {
     id: 'div-pm',
     type: 'division',
-    label: 'Project Mgmt',
+    label: 'Bobman',
     badge: 'PM',
-    role: 'Planning & Coordination',
-    description: 'Coordinates across all divisions without managing engineers directly. Breaks Boss specifications into actionable task lists, assigns work to the right division, tracks sprint progress, and ensures deadlines are met. Facilitates cross-division communication and flags blockers. Reports project status and timeline updates to the Boss in the Room.',
+    role: 'ML & AI Project Manager',
+    description: 'Manages 1 engineer (Prompt Auditor) focused on prompt-codebase sync and drift detection. Coordinates across all divisions, breaks Boss specifications into actionable task lists, assigns work to the right division, tracks sprint progress, and ensures deadlines are met. Facilitates cross-division communication and flags blockers. Reports project status and timeline updates to the Boss in the Room.',
     color: ORG_COLORS.pm,
     parentId: 'boss',
   },
@@ -254,6 +254,32 @@ export const orgNodes: OrgNode[] = [
     parentId: 'div-gemini',
     engineerId: 'disclosure-engineer',
   },
+
+  // ── Engineers under Maszka (1) ────────────────────────────────────────
+  // Prompt template maintenance and remediation
+  {
+    id: 'eng-prompt-remediation',
+    type: 'engineer',
+    label: 'Prompt Remediation',
+    badge: 'REM',
+    role: 'Prompt Template Maintenance',
+    color: ORG_COLORS.maszka,
+    parentId: 'div-maszka',
+    engineerId: 'prompt-remediation-engineer',
+  },
+
+  // ── Engineers under Project Mgmt / Bobman (1) ─────────────────────────
+  // Prompt-codebase sync auditing, drift detection
+  {
+    id: 'eng-prompt-auditor',
+    type: 'engineer',
+    label: 'Prompt Auditor',
+    badge: 'PRA',
+    role: 'Prompt-to-Codebase Sync',
+    color: ORG_COLORS.pm,
+    parentId: 'div-pm',
+    engineerId: 'prompt-auditor',
+  },
 ];
 
 // ── Hierarchy edges (auto-computed from parentId) ──────────────────────────
@@ -315,12 +341,15 @@ export function computeTriggerEdges(engineers: EngineerTask[]): OrgEdge[] {
   return edges;
 }
 
-// ── Data flow edges (Gemini → Claude → Cursor) ───────────────────────────
+// ── Data flow edges (Gemini → Claude → Cursor + Audit → Remediation) ─────
 // Gemini ingests external data → Claude reasons over it → Cursor profiles output
+// Prompt Auditor findings → Remediation Engineer (chain) + Bobman (report)
 
 export const dataFlowEdges: OrgEdge[] = [
   { from: 'div-gemini', to: 'div-claude', type: 'dataflow', label: 'filings & signals', color: 'rgba(52, 211, 153, 0.5)' },
   { from: 'div-claude', to: 'div-cursor', type: 'dataflow', label: 'data updated', color: 'rgba(34, 211, 238, 0.5)' },
+  { from: 'eng-prompt-auditor', to: 'eng-prompt-remediation', type: 'dataflow', label: 'audit → remediate', color: 'rgba(244, 114, 182, 0.6)' },
+  { from: 'eng-prompt-auditor', to: 'div-pm', type: 'dataflow', label: 'audit report', color: 'rgba(251, 146, 60, 0.5)' },
 ];
 
 // ── Layout computation ─────────────────────────────────────────────────────

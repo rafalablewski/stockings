@@ -25,7 +25,7 @@ export default function PromptDatabase({ tickers }: Props) {
     const dataInputCount = workflows.filter(w => w.requiresUserData && w.category !== 'audit').length;
     const auditCount = workflows.filter(w => w.category === 'audit').length;
     const tickerWorkflows = workflows.filter(w =>
-      w.variants.some(v => v.ticker === selectedTicker.toLowerCase())
+      w.promptTemplate || w.variants.some(v => v.ticker === selectedTicker.toLowerCase())
     ).length;
     return { totalWorkflows, autonomousCount, dataInputCount, auditCount, tickerWorkflows };
   }, [selectedTicker]);

@@ -372,7 +372,7 @@ export default function AuditDashboard({ auditMd }: { auditMd?: string } = {}) {
 
   const codeAuditPrompt = useMemo(() => {
     const wf = workflows.find(w => w.id === 'code-audit');
-    return wf?.variants[0]?.prompt ?? '';
+    return wf?.promptTemplate ?? wf?.variants[0]?.prompt ?? '';
   }, []);
 
   const handleRerun = useCallback(async () => {

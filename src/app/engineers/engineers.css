@@ -481,6 +481,12 @@
   gap: 16px;
 }
 
+/* ── Decisions inline within PMs tab ── */
+
+.eng-pms-tab > .dec-dashboard {
+  padding: 0;
+}
+
 /* ── PM Card ── */
 .eng-pm-card {
   padding: 20px 24px;
@@ -3267,5 +3273,157 @@
 .eng-btn-danger:hover {
   background: rgba(239, 68, 68, 0.1);
   border-color: rgba(239, 68, 68, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DECISION DASHBOARD — PM approval/rejection workflow
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.dec-dashboard {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.dec-pm-count {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* Decision cards */
+.dec-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dec-card {
+  border: 1px solid rgba(255,255,255,0.06);
+  border-left: 3px solid var(--pm-color, rgba(255,255,255,0.1));
+  border-radius: 10px;
+  background: rgba(255,255,255,0.015);
+  overflow: hidden;
+}
+
+.dec-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.dec-card-header:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+.dec-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dec-card-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #000;
+  flex-shrink: 0;
+}
+
+.dec-card-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+}
+
+.dec-card-meta {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 2px;
+}
+
+.dec-card-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dec-status-badge {
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.dec-expand-icon {
+  font-size: 10px;
+  color: rgba(255,255,255,0.3);
+}
+
+/* Expanded card body */
+.dec-card-body {
+  padding: 0 16px 16px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+.dec-payload-section {
+  margin-top: 12px;
+}
+
+.dec-payload-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 6px;
+}
+
+.dec-payload-pre {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.6);
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.dec-notes {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+}
+
+/* Action buttons */
+.dec-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+
+.dec-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255,255,255,0.3);
+  font-size: 14px;
 }
 

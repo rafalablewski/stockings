@@ -224,6 +224,7 @@ import { BMNR_INVESTMENT_CURRENT, BMNR_INVESTMENT_ARCHIVE } from '@/data/bmnr/in
 import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
+import { bmnrTabs } from '@/data/tab-registry';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
 
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
@@ -502,34 +503,7 @@ const BMNRDilutionAnalysis = () => {
     return { currentNAV: safe(currentNAV), ethPerShare: safe(ethPerShare), marketCap: safe(marketCap), navPremium: safe(navPremium), impliedStockPrice: safe(impliedStockPrice), effectiveAPY, stakedETH, annualYieldETH: safe(annualYieldETH), annualYieldUSD: safe(annualYieldUSD), debtUSD, leverageRatio: safe(leverageRatio), ltv: safe(ltv), conversionPrice: safe(conversionPrice), deathSpiralETHPrice: safe(deathSpiralETHPrice), totalShares, annualDividend, dividendYield: safe(dividendYield), totalAnnualDividendPayout: safe(totalAnnualDividendPayout), dividendPayoutRatio: safe(dividendPayoutRatio) };
   }, [currentETH, currentShares, currentStockPrice, ethPrice, navMultiple, stakingType, baseStakingAPY, restakingBonus, stakingRatio, useDebt, debtAmount, conversionPremium, debtCovenantLTV, quarterlyDividend]);
 
-  // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
-  // Order: Overview first, then stock-specific projections, common projections, then tracking
-  // group: optional grouping for nested display (stock-specific tabs)
-  const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
-    { id: 'overview', label: 'Overview', type: 'tracking' },
-    // Stock-specific projections (grouped under "BMNR Analysis")
-    { id: 'ethereum', label: 'Ethereum', type: 'projection', group: 'BMNR Analysis' },
-    { id: 'staking', label: 'Staking', type: 'projection', group: 'BMNR Analysis' },
-    { id: 'dilution', label: 'Dilution', type: 'projection', group: 'BMNR Analysis' },
-    { id: 'debt', label: 'Debt', type: 'projection', group: 'BMNR Analysis' },
-    { id: 'sensitivity', label: 'Sensitivity', type: 'projection', group: 'BMNR Analysis' },
-    { id: 'backtest', label: 'Backtest', type: 'projection', group: 'BMNR Analysis' },
-    // Unified valuation model (combines Scenarios + DCF)
-    { id: 'model', label: 'Model', type: 'projection' },
-    // Other projections
-    { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
-    { id: 'comps', label: 'Comps', type: 'projection' },
-    // Tracking
-    { id: 'purchases', label: 'Purchases', type: 'projection', group: 'BMNR Analysis' },
-    { id: 'capital', label: 'Capital', type: 'tracking' },
-    { id: 'financials', label: 'Financials', type: 'tracking' },
-    { id: 'timeline', label: 'Timeline', type: 'tracking' },
-    { id: 'investment', label: 'Investment', type: 'tracking' },
-    { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
-    // AI hub (grouped under "AI")
-    { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
-    { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
-  ];
+  const tabs = bmnrTabs;
 
   const [activeTab, setActiveTab] = useHashTab(tabs.map(t => t.id));
 

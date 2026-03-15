@@ -124,6 +124,7 @@ import { CRCL_INVESTMENT_CURRENT, CRCL_INVESTMENT_ARCHIVE } from '@/data/crcl/in
 import type { SourceGroup, Competitor } from '../shared/SharedSourcesTab';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
+import { crclTabs } from '@/data/tab-registry';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
   ResponsiveContainer, ScatterChart, Scatter, Cell, ReferenceLine,
@@ -2357,28 +2358,7 @@ const CRCLQuarterlyMetricsPanel = () => {
 };
 
 function CRCLModel() {
-  // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
-  // Order: Overview first, then stock-specific projections, common projections, then tracking
-  // group: optional grouping for nested display (stock-specific tabs)
-  const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
-    { id: 'overview', label: 'Overview', type: 'tracking' },
-    // Stock-specific projections (grouped under "CRCL Analysis")
-    { id: 'usdc', label: 'USDC', type: 'projection', group: 'CRCL Analysis' },
-    // Unified valuation model (combines Scenarios + DCF)
-    { id: 'model', label: 'Model', type: 'projection' },
-    // Other projections
-    { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
-    { id: 'comps', label: 'Comps', type: 'projection' },
-    // Tracking
-    { id: 'capital', label: 'Capital', type: 'tracking' },
-    { id: 'financials', label: 'Financials', type: 'tracking' },
-    { id: 'timeline', label: 'Timeline', type: 'tracking' },
-    { id: 'investment', label: 'Investment', type: 'tracking' },
-    { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
-    // AI hub (grouped under "AI")
-    { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
-    { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
-  ];
+  const tabs = crclTabs;
 
   const [activeTab, setActiveTab] = useHashTab(tabs.map(t => t.id));
 

@@ -28,8 +28,8 @@ const DIVISIONS = [
   { id: 'claude',          divId: 'div-claude',      color: '#22d3ee', badge: 'ARCH', label: 'Claude' },
   { id: 'gemini',          divId: 'div-gemini',      color: '#34d399', badge: 'R&D',  label: 'Gemini' },
   { id: 'cursor',          divId: 'div-cursor',      color: '#a78bfa', badge: 'UI',   label: 'Cursor' },
-  { id: 'ai-engineer',     divId: 'div-ai-engineer', color: '#f472b6', badge: 'ML',   label: 'AI Eng' },
-  { id: 'project-manager', divId: 'div-pm',          color: '#fb923c', badge: 'PM',   label: 'PM' },
+  { id: 'maszka',           divId: 'div-maszka',      color: '#f472b6', badge: 'ML',   label: 'Maszka' },
+  { id: 'bobman',           divId: 'div-pm',          color: '#fb923c', badge: 'PM',   label: 'Bobman' },
 ] as const;
 
 export interface AvatarState {

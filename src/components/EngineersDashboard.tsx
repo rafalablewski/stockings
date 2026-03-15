@@ -6,6 +6,7 @@ import type { EngineerTask } from '@/lib/engineers';
 import type { Workflow } from '@/data/workflows';
 import type { RunStatus } from '@/lib/engineer-engine';
 import NetworkGraph from '@/components/NetworkGraph';
+import DecisionDashboard from '@/components/DecisionDashboard';
 import { orgNodes } from '@/data/org-hierarchy';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -304,9 +305,9 @@ function EngineerDetailPanel({
         {linkedWorkflows.length > 0 ? (
           <div className="eng-resources-grid eng-detail-block-sm">
             {linkedWorkflows.map(wf => {
-              const tickerVariants = wf.variants.filter(
+              const hasPrompt = !!(wf.promptTemplate || wf.variants.find(
                 v => v.ticker === selectedTicker.toLowerCase()
-              );
+              ));
 
               return (
                 <div key={wf.id} className="eng-resource-card">
@@ -320,12 +321,12 @@ function EngineerDetailPanel({
                     </div>
                   </div>
                   <div className="eng-resource-desc">{wf.description}</div>
-                  {tickerVariants.length > 0 ? (
+                  {hasPrompt ? (
                     <div className="eng-resource-footer">
                       <button
                         className="eng-btn eng-btn-prompt"
                         data-color={color}
-                        onClick={() => onPromptPreview(wf, tickerVariants[0].ticker, tickerVariants[0].label)}
+                        onClick={() => onPromptPreview(wf, selectedTicker.toLowerCase(), selectedTicker)}
                       >
                         <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                           <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
@@ -635,14 +636,14 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   }, []);
 
   const openPromptPreview = useCallback((wf: Workflow, ticker: string, label: string) => {
-    const variant = wf.variants.find(v => v.ticker === ticker.toLowerCase());
-    if (!variant) return;
+    const prompt = wf.promptTemplate ?? wf.variants.find(v => v.ticker === ticker.toLowerCase())?.prompt;
+    if (!prompt) return;
     setPromptPreview({
       workflowName: wf.name,
       workflowDescription: wf.description,
       ticker: ticker.toUpperCase(),
       label,
-      prompt: variant.prompt,
+      prompt,
       requiresUserData: wf.requiresUserData,
     });
   }, []);
@@ -1171,7 +1172,20 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
               </div>
             </div>
 
+            {/* Decision Queue */}
+            <div className="eng-section-header">
+              <span className="eng-section-dot" data-color="gold" />
+              <span className="eng-section-label">Decision Queue</span>
+              <span className="eng-section-line" />
+            </div>
+            <DecisionDashboard />
+
             {/* Division Cards */}
+            <div className="eng-section-header">
+              <span className="eng-section-dot" data-color="cyan" />
+              <span className="eng-section-label">Division Leads</span>
+              <span className="eng-section-line" />
+            </div>
             <div className="eng-pms-grid">
               {divisionLeads.map(div => {
                 // Find engineers under this division

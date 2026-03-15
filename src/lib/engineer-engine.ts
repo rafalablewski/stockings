@@ -10,10 +10,11 @@
 // ============================================================================
 
 import { getDb } from './db';
-import { agentRuns, engineerSchedules } from './schema';
+import { agentRuns, engineerSchedules, roomMessages, pmDecisions } from './schema';
 import { eq, and, lte, sql } from 'drizzle-orm';
 import { getEngineer, type EngineerTask } from './engineers';
 import { workflows } from '@/data/workflows';
+import { resolvePromptPlaceholders } from './prompt-placeholders';
 import { asts, bmnr, crcl } from '@/data';
 
 // Claude model used for engineer runs
@@ -29,6 +30,7 @@ interface RunEngineerOptions {
   triggerType: TriggerType;
   triggerReason?: string;
   userData?: string;          // optional user-provided data for data-requiring engineers
+  chainContext?: Record<string, string>;  // placeholder values injected from upstream engineer
 }
 
 interface RunResult {
@@ -58,7 +60,7 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
   const startTime = Date.now();
 
   // Resolve ALL matching workflow prompts for this engineer + ticker
-  const resolvedWorkflows = resolveAllEngineerPrompts(engineer, opts.ticker);
+  const resolvedWorkflows = resolveAllEngineerPrompts(engineer, opts.ticker, opts.chainContext);
   if (resolvedWorkflows.length === 0) {
     throw new Error(`No prompts found for engineer ${opts.engineerId} on ticker ${opts.ticker}`);
   }
@@ -180,6 +182,53 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
   const totalDuration = Date.now() - startTime;
   const hasFailure = allOutputs.some(o => o.includes('(FAILED)'));
 
+  // ── Notify PM in the Room if configured ──────────────────────────────
+  if (engineer.notifyPm) {
+    const severityCounts = combinedOutput.match(/CRITICAL/g)?.length ?? 0;
+    const summary = severityCounts > 0
+      ? `completed with ${severityCounts} CRITICAL findings`
+      : hasFailure ? 'failed' : 'completed successfully';
+    db.insert(roomMessages).values({
+      sender: engineer.notifyPm,
+      content: `[Auto] ${engineer.name} run #${lastRunId} for ${opts.ticker} ${summary}. ${hasFailure ? 'Please investigate.' : 'Review the findings in the Decision Dashboard.'}`,
+      channel: 'ml',
+    }).catch(err => {
+      console.error(`[engine] Room notify failed for ${engineer.notifyPm}:`, err);
+    });
+  }
+
+  // ── Create PM decision item if configured ────────────────────────────
+  if (!hasFailure && engineer.decisionsFor) {
+    const patchCount = (combinedOutput.match(/"finding_id"/g) || []).length;
+    db.insert(pmDecisions).values({
+      pm: engineer.decisionsFor,
+      engineerId: engineer.id,
+      runId: lastRunId,
+      ticker: opts.ticker,
+      title: `${engineer.name}: ${patchCount} prompt patches for review`,
+      category: 'prompt-patch',
+      payload: combinedOutput,
+    }).catch(err => {
+      console.error(`[engine] Decision creation failed for ${engineer.decisionsFor}:`, err);
+    });
+  }
+
+  // ── Chaining: trigger downstream engineer if configured ──────────────
+  if (!hasFailure && engineer.chainsTo) {
+    const downstreamEngineer = getEngineer(engineer.chainsTo);
+    if (downstreamEngineer) {
+      runEngineer({
+        ticker: opts.ticker,
+        engineerId: engineer.chainsTo,
+        triggerType: 'event',
+        triggerReason: `Chained from ${engineer.id} (run #${lastRunId})`,
+        chainContext: { LATEST_AUDIT_OUTPUT: combinedOutput },
+      }).catch(err => {
+        console.error(`[engine] Chain failed for ${engineer.chainsTo}:`, err);
+      });
+    }
+  }
+
   return {
     runId: lastRunId,
     status: hasFailure ? 'failed' : 'completed',
@@ -249,7 +298,7 @@ interface ResolvedWorkflow {
  * Resolve ALL matching prompts for an engineer + ticker combination.
  * Returns a prompt for each workflow that has a variant for this ticker.
  */
-function resolveAllEngineerPrompts(engineer: EngineerTask, ticker: string): ResolvedWorkflow[] {
+function resolveAllEngineerPrompts(engineer: EngineerTask, ticker: string, chainContext?: Record<string, string>): ResolvedWorkflow[] {
   const tickerLower = ticker.toLowerCase();
   const results: ResolvedWorkflow[] = [];
 
@@ -257,12 +306,15 @@ function resolveAllEngineerPrompts(engineer: EngineerTask, ticker: string): Reso
     const workflow = workflows.find(w => w.id === wfId);
     if (!workflow) continue;
 
-    const variant = workflow.variants.find(v => v.ticker === tickerLower);
-    if (variant) {
+    // Prefer promptTemplate (works for any ticker) over per-ticker variants
+    const promptText = workflow.promptTemplate ?? workflow.variants.find(v => v.ticker === tickerLower)?.prompt;
+    if (promptText) {
+      // Resolve {{PLACEHOLDER}} tokens in the prompt (including chain-injected context)
+      const resolvedPrompt = resolvePromptPlaceholders(promptText, ticker, chainContext);
       const companyCtx = getCompanyContext(ticker);
       results.push({
         workflowId: wfId,
-        prompt: `[AUTONOMOUS AI ENGINEER MODE]\nYou are operating as the "${engineer.name}" — ${engineer.role}.\n${engineer.description}\n\nThis is an autonomous run. Provide actionable analysis and flag any items that require human review.${companyCtx}\n\n---\n\n${variant.prompt}`,
+        prompt: `[AUTONOMOUS AI ENGINEER MODE]\nYou are operating as the "${engineer.name}" — ${engineer.role}.\n${engineer.description}\n\nThis is an autonomous run. Provide actionable analysis and flag any items that require human review.${companyCtx}\n\n---\n\n${resolvedPrompt}`,
       });
     }
   }

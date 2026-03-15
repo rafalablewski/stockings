@@ -14,6 +14,8 @@ export const dynamic = 'force-dynamic';
 
 const DATA_ROOT = path.join(process.cwd(), 'src', 'data');
 const STOCKS_FILE = path.join(process.cwd(), 'src', 'lib', 'stocks.ts');
+const TAB_REGISTRY_FILE = path.join(process.cwd(), 'src', 'data', 'tab-registry.ts');
+const STOCK_CONTEXT_FILE = path.join(process.cwd(), 'src', 'data', 'stock-context.ts');
 
 function companyTemplate(ticker: string, name: string, sector: string, description: string): string {
   const today = new Date().toISOString().slice(0, 10);
@@ -552,6 +554,27 @@ export async function POST(request: NextRequest) {
       await fs.writeFile(STOCKS_FILE, updatedStocks);
     }
 
+    // 3. Add default tabs to tab-registry.ts
+    const tabRegistryContent = await fs.readFile(TAB_REGISTRY_FILE, 'utf-8');
+    if (!tabRegistryContent.includes(`  ${normalizedTicker}:`)) {
+      const tabEntry = `  ${normalizedTicker}: defaultTabs,\n`;
+      const registryInsertPoint = tabRegistryContent.lastIndexOf('};');
+      const updatedTabRegistry = tabRegistryContent.slice(0, registryInsertPoint) + tabEntry + tabRegistryContent.slice(registryInsertPoint);
+      await fs.writeFile(TAB_REGISTRY_FILE, updatedTabRegistry);
+    }
+
+    // 4. Add starter context to stock-context.ts
+    const stockContextContent = await fs.readFile(STOCK_CONTEXT_FILE, 'utf-8');
+    if (!stockContextContent.includes(`  ${normalizedTicker}:`)) {
+      const escapedName = name.replace(/'/g, "\\'");
+      const escapedSector = sector.replace(/'/g, "\\'");
+      const escapedDesc = description.replace(/'/g, "\\'");
+      const contextEntry = `  ${normalizedTicker}: createStarterContext('${normalizedTicker}', '${escapedName}', '${escapedSector}', '${escapedDesc}'),\n`;
+      const contextInsertPoint = stockContextContent.lastIndexOf('};');
+      const updatedStockContext = stockContextContent.slice(0, contextInsertPoint) + contextEntry + stockContextContent.slice(contextInsertPoint);
+      await fs.writeFile(STOCK_CONTEXT_FILE, updatedStockContext);
+    }
+
     return NextResponse.json({
       success: true,
       ticker: normalizedTicker,
@@ -560,7 +583,8 @@ export async function POST(request: NextRequest) {
         'analyst-coverage.ts', 'capital.ts', 'competitor-news.ts', 'financials.ts',
         'historical.ts', 'press-releases.ts', 'quarterly-metrics.ts', 'sec-filings.ts',
       ],
-      message: `Research scaffolded for ${normalizedTicker}. Data files created at src/data/${normalizedTicker.toLowerCase()}/`,
+      registries: ['tab-registry.ts', 'stock-context.ts'],
+      message: `Research scaffolded for ${normalizedTicker}. Data files, tab registry, and stock context created.`,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Unknown error';

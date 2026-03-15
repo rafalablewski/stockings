@@ -19,6 +19,9 @@ export interface EngineerTask {
   requiresData: boolean;             // whether it needs external data (SEC, news, etc.)
   dataSource?: string;                // where it gets its data from autonomously
   category: 'research' | 'monitoring' | 'audit' | 'intelligence';
+  chainsTo?: string;              // engineer ID to auto-trigger after successful completion
+  notifyPm?: string;              // PM sender name to notify in the Room on completion
+  decisionsFor?: string;          // PM id to create decision items for on completion
 }
 
 export const engineers: EngineerTask[] = [
@@ -239,6 +242,47 @@ export const engineers: EngineerTask[] = [
     requiresData: true,
     dataSource: 'User input, research database',
     category: 'intelligence',
+  },
+
+  // ── BOBMAN'S TEAM ─────────────────────────────────────────────────────
+  {
+    id: 'prompt-auditor',
+    name: 'Prompt Auditor',
+    role: 'Prompt-to-Codebase Sync Analyst',
+    description: 'Analyses every prompt in the workflow/prompt database and cross-references it against the live codebase to detect drift. When new features, tabs, data sources, API routes, or UI components are added but the corresponding AI engineer prompts are not updated, the Prompt Auditor flags the gap so engineers never operate on stale instructions. Reports to Bobman.',
+    capabilities: [
+      'Scan all workflow prompts and engineer prompt templates for referenced features',
+      'Inventory live codebase tabs, pages, API routes, data sources, and components',
+      'Diff prompt references against actual codebase to find missing or outdated entries',
+      'Flag prompts that reference removed or renamed features',
+      'Generate a prompt-drift report with specific remediation suggestions',
+      'Detect newly added tabs or routes that no prompt currently covers',
+    ],
+    workflowIds: ['prompt-audit'],
+    defaultIntervalMinutes: 1440, // daily
+    triggerEvents: ['code-deployed', 'workflow-updated', 'engineer-config-changed'],
+    requiresData: false,
+    category: 'audit',
+    chainsTo: 'prompt-remediation-engineer',
+    notifyPm: 'bobman',
+  },
+  {
+    id: 'prompt-remediation-engineer',
+    name: 'Prompt Remediation Engineer',
+    role: 'Prompt Template Maintenance Specialist',
+    description: 'Receives drift findings from the Prompt Auditor and generates structured remediation patches for workflow prompt templates. Focuses on CRITICAL and HIGH severity drift, producing safe text edits that keep prompts aligned with the live codebase. Reports to Bobman.',
+    capabilities: [
+      'Parse prompt-audit drift reports and extract actionable findings',
+      'Generate anchor-based patch operations for workflow promptTemplates',
+      'Prioritize CRITICAL and HIGH severity drift items',
+      'Flag findings requiring human intervention (new workflows, structural changes)',
+    ],
+    workflowIds: ['prompt-remediation'],
+    defaultIntervalMinutes: 0, // triggered only via chain, never scheduled
+    triggerEvents: ['prompt-audit-completed'],
+    requiresData: false,
+    category: 'audit',
+    decisionsFor: 'maszka',
   },
 
   // ── ADDITIONAL AUDIT ENGINEERS ────────────────────────────────────────

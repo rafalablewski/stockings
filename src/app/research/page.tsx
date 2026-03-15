@@ -25,10 +25,12 @@ export default function ResearchPage() {
   const workflowPrompts = workflows.map((w) => ({
     name: w.name,
     description: w.description,
-    variants: w.variants.map((v) => ({
-      label: v.label,
-      content: v.prompt,
-    })),
+    variants: w.promptTemplate
+      ? [{ label: 'Template', content: w.promptTemplate }]
+      : w.variants.map((v) => ({
+          label: v.label,
+          content: v.prompt,
+        })),
   }));
 
   return (

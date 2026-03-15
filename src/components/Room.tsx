@@ -30,17 +30,17 @@ const DIVISIONS: Record<string, { label: string; color: string; badge: string; r
     badge: 'R&D',
     role: 'Research & Data',
   },
-  'ai-engineer': {
-    label: 'AI Engineer',
+  'bobman': {
+    label: 'Bobman',
+    color: '#fb923c',
+    badge: 'PM',
+    role: 'ML & AI Project Manager',
+  },
+  'maszka': {
+    label: 'Maszka',
     color: '#f472b6',
     badge: 'ML',
     role: 'ML & AI Systems',
-  },
-  'project-manager': {
-    label: 'Project Manager',
-    color: '#fb923c',
-    badge: 'PM',
-    role: 'Planning & Coordination',
   },
 };
 

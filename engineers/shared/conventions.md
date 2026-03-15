@@ -21,8 +21,7 @@ These conventions apply to all AI divisions equally. When in doubt, follow these
 | Architecture & Backend | Claude | APIs, server logic, database, infrastructure |
 | Frontend & UI | Cursor | Components, styling, client interactivity |
 | Research & Data | Gemini | Research, analysis, documentation, testing |
-| ML & AI Systems | AI Engineer | ML models, AI features, data pipelines, MLOps |
-| Planning & Coordination | Project Manager | Spec breakdown, task lists, sprint planning |
+| ML & AI Project Management | Bobman | ML models, AI features, data pipelines, MLOps, sprint planning, task coordination |
 
 ## Git & Workflow
 - Each division works on its own tasks from `engineers/board/current-sprint.md`

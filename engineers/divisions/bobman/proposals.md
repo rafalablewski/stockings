@@ -1,4 +1,4 @@
-# AI Engineer Division — ML & AI Proposals
+# Bobman Division — ML & AI Proposals
 
 ## Proposal Template
 
@@ -9,7 +9,7 @@
 **Data Requirements**: What data is needed and where it comes from.
 **Performance Targets**: Expected accuracy, latency, throughput.
 **Ethics & Safety**: Bias considerations, privacy implications.
-**Impact on Other Divisions**: How this affects Claude, Cursor, Gemini, PM.
+**Impact on Other Divisions**: How this affects Claude, Cursor, Gemini.
 **Boss Approval Needed**: Yes/No
 
 ---
