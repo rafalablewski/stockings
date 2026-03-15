@@ -164,24 +164,27 @@ const SceneCanvas = forwardRef<SceneCanvasHandle, SceneCanvasProps>(
         <Plant3D position={[12, 0, 33]} variant="fiddleleaf" scale={0.85} leafColor="#35a055" />
         <Plant3D position={[28, 0, 33]} variant="fern" scale={1.1} leafColor="#2e9050" potColor="#5c3d2e" />
 
-        {/* ── Ceiling pendant lights — 3×2 grid across the office ── */}
+        {/* ── Ceiling pendant lights — 3×2 grid, hung from drop ceiling (y=8.5) ── */}
         {[20, 40, 60].map((x) =>
           [15, 35].map((z) => (
             <CeilingLight3D
               key={`cl-${x}-${z}`}
-              position={[x, 9.8, z]}
+              position={[x, 8.48, z]}
               color="#ffe4b5"
-              intensity={1.0}
-              scale={1.1}
+              intensity={0.9}
             />
           ))
         )}
-        {/* Extra accent light over lounge area */}
-        <CeilingLight3D position={[20, 9.8, 40]} color="#ffd8a8" intensity={0.7} scale={0.9} />
+        {/* Accent light over lounge */}
+        <CeilingLight3D position={[20, 8.48, 40]} color="#ffd8a8" intensity={0.6} scale={0.85} />
 
-        {/* ── Server racks along the right wall ── */}
-        <ServerRack3D position={[76, 0, 12]} rotation={-Math.PI / 2} scale={1.0} />
-        <ServerRack3D position={[76, 0, 18]} rotation={-Math.PI / 2} scale={1.0} />
+        {/* ── Server racks — row along right wall ── */}
+        <ServerRack3D position={[76, 0, 8]} rotation={-Math.PI / 2} scale={1.0} />
+        <ServerRack3D position={[76, 0, 14]} rotation={-Math.PI / 2} scale={1.0} />
+        <ServerRack3D position={[76, 0, 20]} rotation={-Math.PI / 2} scale={1.0} />
+        <ServerRack3D position={[76, 0, 26]} rotation={-Math.PI / 2} scale={1.0} />
+        <ServerRack3D position={[76, 0, 32]} rotation={-Math.PI / 2} scale={1.0} />
+        <ServerRack3D position={[76, 0, 38]} rotation={-Math.PI / 2} scale={1.0} />
 
         {/* Avatars */}
         {avatars.map((avatar) => (
