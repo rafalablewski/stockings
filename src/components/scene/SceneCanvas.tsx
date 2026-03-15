@@ -22,9 +22,9 @@ export interface SceneCanvasHandle {
   zoomOut: () => void;
 }
 
-const MIN_DISTANCE = 12;
-const MAX_DISTANCE = 80;
-const ZOOM_STEP = 6;
+const MIN_DISTANCE = 15;
+const MAX_DISTANCE = 120;
+const ZOOM_STEP = 8;
 
 /** Inner component that has access to useThree / useFrame */
 function ZoomController({ controlsRef, targetDistanceRef }: {
@@ -87,10 +87,10 @@ const SceneCanvas = forwardRef<SceneCanvasHandle, SceneCanvasProps>(
       <Canvas
         shadows
         camera={{
-          position: [cx + 30, 32, cz + 30],
+          position: [cx + 40, 45, cz + 40],
           fov: 40,
           near: 0.5,
-          far: 400,
+          far: 500,
         }}
         style={{ background: '#0a0a12' }}
         gl={{ antialias: true }}
@@ -98,21 +98,21 @@ const SceneCanvas = forwardRef<SceneCanvasHandle, SceneCanvasProps>(
         {/* Lighting */}
         <ambientLight intensity={0.55} color="#c8d0ff" />
         <directionalLight
-          position={[cx + 15, 30, cz - 10]}
+          position={[cx + 20, 40, cz - 15]}
           intensity={0.9}
           color="#eee8ff"
           castShadow
           shadow-mapSize-width={2048}
           shadow-mapSize-height={2048}
-          shadow-camera-left={-40}
-          shadow-camera-right={40}
-          shadow-camera-top={40}
-          shadow-camera-bottom={-40}
+          shadow-camera-left={-50}
+          shadow-camera-right={50}
+          shadow-camera-top={50}
+          shadow-camera-bottom={-50}
         />
         {/* Subtle fill from below/side */}
-        <pointLight position={[cx, 1, cz]} intensity={0.4} color="#22d3ee" distance={70} />
+        <pointLight position={[cx, 2, cz]} intensity={0.5} color="#22d3ee" distance={100} />
         {/* Overhead fill to brighten the room */}
-        <pointLight position={[cx, 16, cz]} intensity={0.45} color="#e0e0ff" distance={80} />
+        <pointLight position={[cx, 20, cz]} intensity={0.5} color="#e0e0ff" distance={120} />
 
         <OrbitControls
           ref={controlsRef}
