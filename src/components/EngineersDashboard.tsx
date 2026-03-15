@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { authFetch } from '@/lib/auth-fetch';
 import type { EngineerTask } from '@/lib/engineers';
 import type { Workflow } from '@/data/workflows';
+import type { RunStatus } from '@/lib/engineer-engine';
 import NetworkGraph from '@/components/NetworkGraph';
 import { orgNodes } from '@/data/org-hierarchy';
 
@@ -33,12 +34,26 @@ interface EngineerStatus {
   lastRun: LastRunState | null;
 }
 
+const STATUS_LABELS: Record<RunStatus, string> = {
+  completed: 'OK',
+  failed: 'FAIL',
+  running: 'RUN',
+  queued: 'QUEUE',
+  cancelled: 'CANCEL',
+};
+
+function extractPreview(text: string | null, maxLen = 120): string {
+  if (!text) return '';
+  const line = text.split('\n').find(l => l.trim());
+  return line?.trim().slice(0, maxLen) || '';
+}
+
 interface HistoryRun {
   id: number;
   ticker: string;
   engineerId: string;
   workflowId: string | null;
-  status: string;
+  status: RunStatus;
   triggerType: string;
   triggerReason: string | null;
   outputSummary: string | null;
@@ -914,47 +929,41 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
             ) : (
               <div className="eng-history-list">
                 {/* ── Toolbar ── */}
-                <div className="eng-history-toolbar">
-                  <div className="eng-history-toolbar-left">
-                    <span className="eng-history-count">
-                      {historyRuns.filter(r => !r.hidden).length} run{historyRuns.filter(r => !r.hidden).length !== 1 ? 's' : ''}
-                      {showHidden && historyRuns.some(r => r.hidden) && (
-                        <span className="eng-history-hidden-count">
-                          {' + '}{historyRuns.filter(r => r.hidden).length} hidden
-                        </span>
-                      )}
-                    </span>
-                  </div>
-                  <div className="eng-history-toolbar-right">
-                    <label className="eng-history-toggle">
-                      <input
-                        type="checkbox"
-                        checked={showHidden}
-                        onChange={() => setShowHidden(h => !h)}
-                      />
-                      <span>Show hidden</span>
-                    </label>
-                    <button className="eng-btn" onClick={fetchHistory} disabled={historyLoading}>
-                      {historyLoading ? 'Refreshing...' : 'Refresh'}
-                    </button>
-                  </div>
-                </div>
+                {(() => {
+                  const hiddenCount = historyRuns.filter(r => r.hidden).length;
+                  const visibleCount = historyRuns.length - hiddenCount;
+                  return (
+                    <div className="eng-history-toolbar">
+                      <span className="eng-history-count">
+                        {visibleCount} run{visibleCount !== 1 ? 's' : ''}
+                        {showHidden && hiddenCount > 0 && (
+                          <span className="eng-history-hidden-count">
+                            {' + '}{hiddenCount} hidden
+                          </span>
+                        )}
+                      </span>
+                      <div className="eng-history-toolbar-right">
+                        <label className="eng-history-toggle">
+                          <input
+                            type="checkbox"
+                            checked={showHidden}
+                            onChange={() => setShowHidden(h => !h)}
+                          />
+                          <span>Show hidden</span>
+                        </label>
+                        <button className="eng-btn" onClick={fetchHistory} disabled={historyLoading}>
+                          {historyLoading ? 'Refreshing...' : 'Refresh'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* ── Run list ── */}
                 {historyRuns.map(run => {
                   const isExpanded = expandedRunId === run.id;
-                  const statusLabel = run.status === 'completed' ? 'OK'
-                    : run.status === 'failed' ? 'FAIL'
-                    : run.status === 'running' ? 'RUN'
-                    : run.status === 'queued' ? 'QUEUE'
-                    : run.status.toUpperCase();
-
-                  // First line of output as a preview
-                  const preview = run.outputSummary
-                    ? run.outputSummary.split('\n').find(l => l.trim())?.trim().slice(0, 120) || ''
-                    : run.errorsEncountered
-                      ? run.errorsEncountered.split('\n')[0]?.trim().slice(0, 120) || ''
-                      : '';
+                  const statusLabel = STATUS_LABELS[run.status];
+                  const preview = extractPreview(run.outputSummary) || extractPreview(run.errorsEncountered);
 
                   return (
                     <div
@@ -968,14 +977,14 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                         onClick={() => setExpandedRunId(isExpanded ? null : run.id)}
                       >
                         <span className="eng-history-chevron">{isExpanded ? '\u25BC' : '\u25B6'}</span>
-                        <span className={`eng-history-pill eng-history-pill-${run.status}`}>
+                        <span className="eng-history-pill" data-status={run.status}>
                           {statusLabel}
                         </span>
                         <span className="eng-history-engineer">{run.engineerId}</span>
                         {run.workflowId && (
                           <span className="eng-history-workflow">{run.workflowId}</span>
                         )}
-                        <span className={`eng-history-trigger eng-history-trigger-${run.triggerType}`}>
+                        <span className="eng-history-trigger" data-trigger={run.triggerType}>
                           {run.triggerType}
                         </span>
                         {run.hidden && <span className="eng-history-badge-hidden">HIDDEN</span>}
