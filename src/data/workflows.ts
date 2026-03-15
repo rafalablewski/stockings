@@ -156,6 +156,22 @@ Q&A INTELLIGENCE
    Database Impact:    [which tab/field to update, or "None"]
    ────────────────────────────────────────
 
+TICKER-SPECIFIC KPI EXTRACTION
+   Based on {{TICKER}}, extract and cross-reference these tab-specific KPIs from the transcript:
+
+   ASTS-specific:
+   - **Constellation tab**: Any satellite deployment updates — launch dates, in-orbit count changes, unfurling status, coverage milestones. Cross-reference with Constellation tab projections.
+   - **Subscribers tab**: Subscriber guidance — projected users, MNO partner commitments, ARPU estimates, TAM commentary. Cross-reference with Subscribers tab models and flag guidance changes.
+
+   BMNR-specific:
+   - **Ethereum tab**: ETH holdings updates, acquisition/disposition activity, staked vs. unstaked changes. Cross-reference with Ethereum tab totals.
+   - **Staking tab**: Staking revenue reported, yield rate changes, validator economics updates. Cross-reference with Staking tab models.
+
+   CRCL-specific:
+   - **USDC tab**: USDC circulation figures, reserve composition updates, redemption volume, regulatory commentary. Cross-reference with USDC tab data.
+
+   For each KPI extracted, output: [KPI | Transcript Value | Current Tab Value | Delta | Update Needed?]
+
 CAPITAL STRUCTURE IMPLICATIONS
    - New offering commentary (ATM utilization, convert terms, shelf capacity)
    - Share count guidance (basic, fully diluted)
@@ -281,7 +297,26 @@ D. RISK MATRIX UPDATE
    Cross-reference risks against the competitive landscape and domain sections above.
    Flag any NEW risks not currently tracked.
 
-E. PERSPECTIVE REFRESH
+E. TICKER-SPECIFIC TAB DEEP DIVE
+   Review the following tabs if they exist for {{TICKER}} (check {{TICKER_TABS}}):
+
+   ASTS-specific:
+   - **Constellation tab**: Satellite deployment status — in-orbit vs. planned count, Block 2/3 launch schedule, unfurling success rate, coverage footprint progress. This is the primary execution risk indicator.
+   - **Subscribers tab**: Subscriber projection models — TAM assumptions, penetration rates, ARPU estimates, MNO partner committed vs. projected subscribers. This is the primary revenue driver.
+
+   BMNR-specific:
+   - **Ethereum tab**: ETH treasury exposure — total holdings, market value, staked vs. unstaked split, protocol positioning, correlation risk to crypto markets.
+   - **Staking tab**: Staking economics — yield rates, locked capital duration, validator economics, staking revenue as % of total revenue. Assess if staked capital creates liquidity constraints.
+
+   CRCL-specific:
+   - **USDC tab**: Reserve composition — Treasury/repo vs. cash split, redemption mechanisms, reserve attestation freshness, regulatory risk exposure. Assess reserve adequacy and confidence.
+
+   All tickers:
+   - **Monte Carlo tab**: Review probabilistic outcome distributions. Compare base/bear/bull case probabilities with your scenario analysis in Section B. Flag any divergence between Monte Carlo outputs and your qualitative assessment.
+   - **Comps tab**: Cross-reference peer valuation multiples and relative positioning against your price/NAV targets.
+   - **Timeline tab**: Review upcoming catalysts, product launches, regulatory dates, and earnings. Ensure your scenario timelines align with tracked catalyst dates.
+
+F. PERSPECTIVE REFRESH
    Update each of the 4 analyst perspectives (CFA, Hedge Fund PM, Family Office CIO, Technical Analyst) with current market conditions and recent developments.
 
 OUTPUT:
@@ -485,14 +520,33 @@ DIGEST STRUCTURE:
    Include one row per domain section plus: Capital adequacy, Regulatory, Competition.
    Net thesis momentum: [Strengthening / Steady / Weakening]
 
-8. ACTION ITEMS FOR NEXT PERIOD
+8. TICKER-SPECIFIC PULSE
+   Check the following tabs for material changes this period (if they exist for {{TICKER}}):
+
+   ASTS-specific:
+   - **Constellation tab**: New satellite deployments, launch schedule changes, constellation status updates
+   - **Subscribers tab**: Subscriber projection revisions, new MNO partnership announcements, TAM updates
+
+   BMNR-specific:
+   - **Ethereum tab**: ETH holdings changes, acquisition/disposition activity, price impact on treasury value
+   - **Staking tab**: Staking yield changes, locked capital movements, validator economics shifts
+
+   CRCL-specific:
+   - **USDC tab**: Circulation changes, reserve composition updates, regulatory developments affecting reserves
+
+   All tickers:
+   - **Monte Carlo tab**: Have probabilistic scenario distributions shifted based on this period's developments? Flag if base case probability moved more than 5%.
+
+   For each tab checked, output: [Tab | Prior Status | Current Status | Change | Action Needed]
+
+9. ACTION ITEMS FOR NEXT PERIOD
    - [ ] Database updates needed (list specific tabs/fields from [{{TICKER_TABS}}])
    - [ ] Upcoming catalysts to monitor (with dates)
    - [ ] Filing deadlines (10-Q, 10-K, proxy, Form 4s)
    - [ ] Position sizing review triggered? [Yes/No — why]
    - [ ] Competitors to track (specific upcoming events)
 
-9. APPENDIX: RAW ENTRY LOG
+10. APPENDIX: RAW ENTRY LOG
    Chronological list of all items processed, one line each:
    [Date] | [Source Type] | [Headline] | [Section] | [Materiality]
 
@@ -598,6 +652,13 @@ ANALYSIS FRAMEWORK:
    - SBC data gaps (options outstanding, RSU vesting schedules)
    - Missing cost basis or acquisition data (for treasury strategies)
    Output: specific list of data points to add or verify in next filing update.
+
+TICKER-SPECIFIC CAPITAL CONSIDERATIONS:
+   BMNR-specific:
+   - **Staking tab**: Does locked/staked capital affect liquidity? Quantify staked ETH as % of total treasury. Assess if staking lockup periods create capital structure risk (inability to liquidate during drawdowns). Include staking yield as a capital return metric alongside dividends/buybacks.
+
+   CRCL-specific:
+   - **USDC tab**: Include USDC reserves in liquidity analysis — reserve composition (Treasuries, repo, cash), reserve ratio, and redemption capacity under stress. Assess if reserve assets are encumbered or available for corporate use. USDC circulation changes directly impact revenue capacity.
 
 DOMAIN-SPECIFIC CAPITAL CONSIDERATIONS:
 Reference the company's business areas when assessing capital needs:
@@ -2286,6 +2347,12 @@ For each peer:
 
 | Peer | Last Updated | Days Stale | Events Missed? | Priority |
 |------|-------------|-----------|----------------|----------|
+
+COMPETITOR FEED ENRICHMENT:
+For each peer in the comp set, call /api/competitor-feed/[company] to pull latest news and press releases.
+- Cross-reference competitor developments with staleness findings above — if a peer has material news but stale data, escalate priority
+- Flag material competitor events (M&A, offerings, pivots, earnings surprises) not yet reflected in comps data
+- Output: [Peer | Recent Event | Date | Reflected in Comps? | Action]
 
 ════════════════════════════════════════
 PHASE 4: VALUATION FRAMEWORK
