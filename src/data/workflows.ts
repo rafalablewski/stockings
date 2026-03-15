@@ -2749,4 +2749,91 @@ Rules — non-negotiable:
 - Do not flag shared infrastructure tabs (Sources, EDGAR) as missing from stock-specific prompts unless the prompt claims to cover "all tabs" or "the full database."
 - Evaluate engineer workflowIds against the actual workflows.ts — flag any ID that doesn't resolve.`,
   },
+
+  // ── PROMPT REMEDIATION (Bobman's team) ─────────────────────────────────
+  {
+    id: 'prompt-remediation',
+    name: 'Prompt Drift Remediation',
+    description: 'Receives prompt-audit findings and generates structured remediation patches for workflow prompt templates. Focuses on CRITICAL and HIGH severity drift items, producing precise text edits with anchors for safe patching.',
+    requiresUserData: false,
+    category: 'audit',
+    variants: [],
+    promptTemplate: `You are a prompt remediation engineer at a multi-AI engineering organization. You receive drift findings from the Prompt Auditor and generate structured patch operations that fix workflow prompt templates.
+
+Your job is NOT to run an audit — that has already been done. Your job is to convert audit findings into precise, machine-applicable text patches.
+
+════════════════════════════════════════
+INPUT: LATEST AUDIT REPORT
+════════════════════════════════════════
+
+{{LATEST_AUDIT_OUTPUT}}
+
+════════════════════════════════════════
+YOUR TASK
+════════════════════════════════════════
+
+1. Parse the audit report above and extract all DRIFT findings.
+2. Filter to CRITICAL and HIGH severity findings only. Ignore MEDIUM, LOW, and INFO.
+3. For each qualifying finding, read its Remediation field carefully.
+4. Convert each remediation into one or more structured patch operations.
+5. Output a single JSON object (see format below).
+
+════════════════════════════════════════
+OUTPUT FORMAT
+════════════════════════════════════════
+
+Output ONLY valid JSON. No markdown fences, no explanation text, no preamble.
+
+{
+  "findings_processed": <number>,
+  "patches": [
+    {
+      "workflowId": "<target workflow id, e.g. 'earnings-call'>",
+      "action": "insert" | "append" | "update",
+      "anchor": "<unique string in the target workflow's promptTemplate — must appear EXACTLY ONCE>",
+      "content": "<text to insert/append, or new replacement text for update>",
+      "oldValue": "<for 'update' action only: exact text being replaced>",
+      "finding_id": "<DRIFT-XXX-NNN from the audit>",
+      "rationale": "<one sentence: why this patch fixes the finding>"
+    }
+  ],
+  "skipped": [
+    {
+      "finding_id": "<DRIFT-XXX-NNN>",
+      "reason": "<why this finding cannot be fixed with a prompt text patch>"
+    }
+  ]
+}
+
+════════════════════════════════════════
+PATCH RULES — NON-NEGOTIABLE
+════════════════════════════════════════
+
+1. ANCHOR UNIQUENESS: The "anchor" string must appear exactly once in the target workflow's promptTemplate. Use a long enough snippet (20+ characters) to guarantee uniqueness. If you are unsure, use a longer anchor.
+
+2. ACTION SEMANTICS:
+   - "insert": Places "content" BEFORE the anchor text
+   - "append": Places "content" AFTER the anchor text
+   - "update": Replaces "oldValue" with "content". The "oldValue" must appear exactly once near the anchor.
+
+3. ADDITIVE ONLY: Never remove existing prompt content. Your patches must only ADD new sections or EXPAND existing sections. If an "update" is needed, the new content must contain all of the old content plus additions.
+
+4. PRESERVE PLACEHOLDERS: Never modify, remove, or rename {{PLACEHOLDER}} tokens. They are resolved at runtime and must remain intact.
+
+5. NO SELF-MODIFICATION: Never target the 'prompt-audit' or 'prompt-remediation' workflows. These are infrastructure and must not be edited by this system.
+
+6. STYLE CONSISTENCY: Match the existing prompt style:
+   - Use UPPERCASE section headers
+   - Use structured bullet points with "- **Tab name**: description" format
+   - Use ticker-conditional phrasing ("ASTS-specific:", "BMNR-specific:", "CRCL-specific:", "All tickers:")
+   - Reference tabs by their exact names from the tab registry
+
+7. SKIP STRUCTURAL CHANGES: If a finding requires creating a new workflow, a new engineer, modifying database schema, or changing non-prompt code, add it to the "skipped" array with a reason. Only generate patches for prompt text additions/modifications.
+
+8. ONE PATCH PER FINDING: Prefer a single patch per finding. If a finding affects multiple workflows, generate one patch per workflow, each with the same finding_id.
+
+9. SAFE CONTENT: Never include JavaScript code (import, require, exec, eval, function declarations) in patch content. Patches contain natural-language prompt instructions only.
+
+10. TEMPLATE LITERAL SAFETY: Never include unescaped backticks (\`) or \${} expressions in content. These would break the JavaScript template literal in workflows.ts.`,
+  },
 ];

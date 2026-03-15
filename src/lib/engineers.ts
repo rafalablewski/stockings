@@ -19,6 +19,7 @@ export interface EngineerTask {
   requiresData: boolean;             // whether it needs external data (SEC, news, etc.)
   dataSource?: string;                // where it gets its data from autonomously
   category: 'research' | 'monitoring' | 'audit' | 'intelligence';
+  chainsTo?: string;              // engineer ID to auto-trigger after successful completion
 }
 
 export const engineers: EngineerTask[] = [
@@ -258,6 +259,24 @@ export const engineers: EngineerTask[] = [
     workflowIds: ['prompt-audit'],
     defaultIntervalMinutes: 1440, // daily
     triggerEvents: ['code-deployed', 'workflow-updated', 'engineer-config-changed'],
+    requiresData: false,
+    category: 'audit',
+    chainsTo: 'prompt-remediation-engineer',
+  },
+  {
+    id: 'prompt-remediation-engineer',
+    name: 'Prompt Remediation Engineer',
+    role: 'Prompt Template Maintenance Specialist',
+    description: 'Receives drift findings from the Prompt Auditor and generates structured remediation patches for workflow prompt templates. Focuses on CRITICAL and HIGH severity drift, producing safe text edits that keep prompts aligned with the live codebase. Reports to Bobman.',
+    capabilities: [
+      'Parse prompt-audit drift reports and extract actionable findings',
+      'Generate anchor-based patch operations for workflow promptTemplates',
+      'Prioritize CRITICAL and HIGH severity drift items',
+      'Flag findings requiring human intervention (new workflows, structural changes)',
+    ],
+    workflowIds: ['prompt-remediation'],
+    defaultIntervalMinutes: 0, // triggered only via chain, never scheduled
+    triggerEvents: ['prompt-audit-completed'],
     requiresData: false,
     category: 'audit',
   },

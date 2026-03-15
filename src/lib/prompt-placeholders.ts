@@ -20,6 +20,7 @@
 //   {{DOMAIN_SECTIONS}}       — Formatted domain-specific analysis sections
 //   {{TICKER_TABS}}           — Current research tabs for the ticker
 //   {{CODEBASE_INVENTORY}}    — Full platform inventory (prompt-audit only)
+//   {{LATEST_AUDIT_OUTPUT}}   — Latest prompt-audit run output (chain-injected)
 // ============================================================================
 
 import { buildCodebaseInventory } from './codebase-inventory';
@@ -32,8 +33,14 @@ import { tabRegistry } from '@/data/tab-registry';
  * @param prompt  The raw prompt text (may contain {{PLACEHOLDERS}})
  * @param ticker  Optional ticker for stock-specific resolution.
  *                If omitted, stock-specific placeholders are left as-is.
+ * @param context Optional key-value map for chain-injected placeholders
+ *                (e.g. { LATEST_AUDIT_OUTPUT: '...' } from upstream engineer).
  */
-export function resolvePromptPlaceholders(prompt: string, ticker?: string): string {
+export function resolvePromptPlaceholders(
+  prompt: string,
+  ticker?: string,
+  context?: Record<string, string>,
+): string {
   if (!prompt.includes('{{')) return prompt;
 
   // ── Stock-specific placeholders ──────────────────────────────────────────
@@ -103,6 +110,13 @@ export function resolvePromptPlaceholders(prompt: string, ticker?: string): stri
   // ── Platform-wide placeholders ───────────────────────────────────────────
   if (prompt.includes('{{CODEBASE_INVENTORY}}')) {
     prompt = prompt.replace('{{CODEBASE_INVENTORY}}', buildCodebaseInventory());
+  }
+
+  // ── Chain-injected context (from upstream engineer runs) ────────────────
+  if (context) {
+    for (const [key, value] of Object.entries(context)) {
+      prompt = prompt.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), value);
+    }
   }
 
   return prompt;
