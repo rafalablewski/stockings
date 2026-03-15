@@ -107,14 +107,14 @@ function SofaModel({ color, frameColor, legColor }: {
 
       {/* Backrest */}
       <RoundedBox args={[sofaW - 0.1, backH, backD]} radius={0.06}
-        position={[0, baseH + seatH + backH / 2, sofaD / 2 - backD / 2 + 0.05]} castShadow>
+        position={[0, baseH + seatH + backH / 2, -(sofaD / 2 - backD / 2 + 0.05)]} castShadow>
         <meshStandardMaterial color={color} roughness={0.9} />
       </RoundedBox>
 
       {/* Back cushions (3 matching seat sections) */}
       {[-1.55, 0, 1.55].map((cx, i) => (
         <RoundedBox key={`bcush${i}`} args={[1.35, 0.8, 0.25]} radius={0.06}
-          position={[cx, baseH + seatH + 0.45, sofaD / 2 - 0.1]} castShadow>
+          position={[cx, baseH + seatH + 0.45, -(sofaD / 2 - 0.1)]} castShadow>
           <meshStandardMaterial color={color} roughness={0.92} />
         </RoundedBox>
       ))}
@@ -133,12 +133,12 @@ function SofaModel({ color, frameColor, legColor }: {
 
       {/* Throw pillows */}
       <RoundedBox args={[0.5, 0.5, 0.15]} radius={0.06}
-        position={[-1.8, baseH + seatH + 0.5, 0.35]}
+        position={[-1.8, baseH + seatH + 0.5, -0.35]}
         rotation={[0.15, 0.2, 0.1]} castShadow>
         <meshStandardMaterial color="#5a4070" roughness={0.9} />
       </RoundedBox>
       <RoundedBox args={[0.5, 0.5, 0.15]} radius={0.06}
-        position={[1.9, baseH + seatH + 0.5, 0.3]}
+        position={[1.9, baseH + seatH + 0.5, -0.3]}
         rotation={[-0.1, -0.15, -0.08]} castShadow>
         <meshStandardMaterial color="#406060" roughness={0.9} />
       </RoundedBox>
@@ -181,13 +181,13 @@ function ArmchairModel({ color, frameColor, legColor }: {
 
       {/* Backrest */}
       <RoundedBox args={[chairW - 0.15, backH, backD]} radius={0.08}
-        position={[0, baseH + seatH + backH / 2, chairD / 2 - backD / 2]} castShadow>
+        position={[0, baseH + seatH + backH / 2, -(chairD / 2 - backD / 2)]} castShadow>
         <meshStandardMaterial color={color} roughness={0.9} />
       </RoundedBox>
 
       {/* Back cushion */}
       <RoundedBox args={[chairW - 0.6, 0.85, 0.2]} radius={0.08}
-        position={[0, baseH + seatH + 0.5, chairD / 2 - 0.2]} castShadow>
+        position={[0, baseH + seatH + 0.5, -(chairD / 2 - 0.2)]} castShadow>
         <meshStandardMaterial color={color} roughness={0.93} />
       </RoundedBox>
 
@@ -205,7 +205,7 @@ function ArmchairModel({ color, frameColor, legColor }: {
 
       {/* Accent pillow */}
       <RoundedBox args={[0.45, 0.45, 0.12]} radius={0.06}
-        position={[0.1, baseH + seatH + 0.45, 0.3]}
+        position={[0.1, baseH + seatH + 0.45, -0.3]}
         rotation={[0.1, 0.15, 0.05]} castShadow>
         <meshStandardMaterial color="#504565" roughness={0.9} />
       </RoundedBox>
