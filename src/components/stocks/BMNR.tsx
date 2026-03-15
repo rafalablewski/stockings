@@ -224,6 +224,7 @@ import { BMNR_INVESTMENT_CURRENT, BMNR_INVESTMENT_ARCHIVE } from '@/data/bmnr/in
 import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
+import DashboardTab from './BMNRDashboard';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Area, AreaChart, ReferenceLine } from 'recharts';
 
 // Data imports - All hardcoded data extracted to separate files for easy AI updates
@@ -521,6 +522,7 @@ const BMNRDilutionAnalysis = () => {
     { id: 'comps', label: 'Comps', type: 'projection' },
     // Tracking
     { id: 'purchases', label: 'Purchases', type: 'projection', group: 'BMNR Analysis' },
+    { id: 'dashboard', label: 'Dashboard', type: 'tracking', group: 'BMNR Analysis' },
     { id: 'capital', label: 'Capital', type: 'tracking' },
     { id: 'financials', label: 'Financials', type: 'tracking' },
     { id: 'timeline', label: 'Timeline', type: 'tracking' },
@@ -664,6 +666,7 @@ const BMNRDilutionAnalysis = () => {
         {activeTab === 'dilution' && <TabPanel id="dilution"><DilutionTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} currentStockPrice={currentStockPrice} tranches={tranches} setTranches={setTranches} dilutionPercent={dilutionPercent} setDilutionPercent={setDilutionPercent} saleDiscount={saleDiscount} setSaleDiscount={setSaleDiscount} navMultiple={navMultiple} setNavMultiple={setNavMultiple} maxAuthorizedShares={maxAuthorizedShares} slashingRisk={slashingRisk} liquidityDiscount={liquidityDiscount} regulatoryRisk={regulatoryRisk} /></TabPanel>}
         {activeTab === 'debt' && <TabPanel id="debt"><DebtTab calc={calc} currentETH={currentETH} ethPrice={ethPrice} currentStockPrice={currentStockPrice} useDebt={useDebt} setUseDebt={setUseDebt} debtAmount={debtAmount} setDebtAmount={setDebtAmount} debtRate={debtRate} setDebtRate={setDebtRate} debtMaturity={debtMaturity} setDebtMaturity={setDebtMaturity} conversionPremium={conversionPremium} setConversionPremium={setConversionPremium} debtCovenantLTV={debtCovenantLTV} setDebtCovenantLTV={setDebtCovenantLTV} /></TabPanel>}
         {activeTab === 'purchases' && <TabPanel id="purchases"><PurchasesTab ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} /></TabPanel>}
+        {activeTab === 'dashboard' && <TabPanel id="dashboard"><DashboardTab currentETH={currentETH} ethPrice={ethPrice} currentShares={currentShares} currentStockPrice={currentStockPrice} /></TabPanel>}
         {activeTab === 'capital' && <TabPanel id="capital"><CapitalTab currentShares={currentShares} currentStockPrice={currentStockPrice} currentETH={currentETH} ethPrice={ethPrice} /></TabPanel>}
         {activeTab === 'comps' && <TabPanel id="comps"><CompsTab comparables={comparables} ethPrice={ethPrice} /></TabPanel>}
         {activeTab === 'sensitivity' && <TabPanel id="sensitivity"><SensitivityTab calc={calc} currentETH={currentETH} currentShares={currentShares} ethPrice={ethPrice} /></TabPanel>}
