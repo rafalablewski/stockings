@@ -6,6 +6,8 @@ import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import OfficeRoom from './OfficeRoom';
 import Desk3D from './Desk3D';
+import CoffeeStation3D from './CoffeeStation3D';
+import Plant3D from './Plant3D';
 import Avatar3D from './Avatar3D';
 import { DESK_POS } from './activities';
 import { ROOM_W, ROOM_D } from './constants';
@@ -139,6 +141,23 @@ const SceneCanvas = forwardRef<SceneCanvasHandle, SceneCanvasProps>(
             isActive={workingState[avatars[i]?.id] ?? false}
           />
         ))}
+
+        {/* Coffee Station (near back-left, zone at 14,42) */}
+        <CoffeeStation3D position={[14, 0, 43]} />
+
+        {/* Plants scattered around the office */}
+        {/* Tall floor plants in corners */}
+        <Plant3D position={[3, 0, 3]} variant="tall" scale={1.1} leafColor="#2d8a4e" />
+        <Plant3D position={[77, 0, 3]} variant="tall" scale={1.0} leafColor="#3a9a5e" potColor="#5c3d2e" />
+        <Plant3D position={[3, 0, 47]} variant="tall" scale={0.9} leafColor="#28804a" potColor="#7a5a42" />
+        <Plant3D position={[77, 0, 47]} variant="tall" scale={1.05} leafColor="#35905a" />
+        {/* Bush plants flanking the desk row */}
+        <Plant3D position={[14, 0, 26]} variant="bush" scale={1.2} leafColor="#3aaa60" />
+        <Plant3D position={[66, 0, 26]} variant="bush" scale={1.1} leafColor="#2e9050" potColor="#8a6548" />
+        {/* Near the couch / lounge area */}
+        <Plant3D position={[60, 0, 6]} variant="bush" scale={1.0} leafColor="#40b070" potColor="#6b4c3b" />
+        {/* Near coffee station */}
+        <Plant3D position={[10, 0, 40]} variant="bush" scale={0.9} leafColor="#35a055" />
 
         {/* Avatars */}
         {avatars.map((avatar) => (
