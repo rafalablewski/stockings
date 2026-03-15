@@ -26,6 +26,12 @@ export interface Competitor {
   relevance: string;
 }
 
+/** A domain-specific business area for analysis extraction across workflows. */
+export interface DomainSection {
+  name: string;            // e.g. "Satellite & Constellation Updates"
+  analysisPoints: string[]; // Bullet points of what to extract/track
+}
+
 export interface StockContext {
   ticker: string;
   companyName: string;
@@ -35,9 +41,17 @@ export interface StockContext {
   specialistDomain: string;
   fiscalYearEnd?: string;
   shareStructureNotes?: string;
+  /** CEO name for management tone analysis in earnings/conference workflows. */
+  ceoName?: string;
   keyInsiders: Insider[];
   competitors: Competitor[];
   stockSpecificMetrics: string[];
+  /**
+   * Domain-specific business areas for extraction across workflows.
+   * Used by earnings-call, thesis-review, weekly-digest, etc. to generate
+   * the "what to look for" sections specific to this company's business model.
+   */
+  domainSections: DomainSection[];
 }
 
 // ── ASTS ────────────────────────────────────────────────────────────────────
@@ -50,6 +64,7 @@ export const astsContext: StockContext = {
   description: 'Space-based cellular broadband network accessible by standard smartphones',
   specialistDomain: 'satellite-enabled direct-to-device (D2D) cellular broadband and LEO constellations',
   shareStructureNotes: '3-class share structure: Class A (trading, 1 vote), Class B (insider, 1 vote), Class C (founder, 10x super-voting). Multiple convertible tranches (4.25%, 2.375%, 2.00%, 2.25% Notes). Active ATM program.',
+  ceoName: 'Abel Avellan',
   keyInsiders: [
     { name: 'Abel Avellan', title: 'Founder, Chairman & CEO', notes: 'Holds ~78.2M Class C shares (10x voting power). Class C → Class A conversion is a major signal.' },
     { name: 'Scott Wisniewski', title: 'CFO', notes: 'Watch for direct market transactions. Assess financial conservatism tone in earnings calls.' },
@@ -84,6 +99,36 @@ export const astsContext: StockContext = {
     'Burn rate / runway commentary',
     'Dilution overhang (fully diluted vs. basic)',
   ],
+  domainSections: [
+    {
+      name: 'Satellite & Constellation Updates',
+      analysisPoints: [
+        'Launch cadence (Block 2, Block 3 timelines)',
+        'Satellite performance data (throughput, coverage, unfurling status)',
+        'Manufacturing updates (production rate, supplier commentary)',
+        'Ground gateway buildout progress',
+      ],
+    },
+    {
+      name: 'Partner & MNO Pipeline',
+      analysisPoints: [
+        'MoU → Definitive agreement conversions',
+        'New partner announcements or hints',
+        'Revenue share / prepayment term changes',
+        'Subscriber reach changes per partner',
+        'Named partners: AT&T, Verizon, Vodafone, stc, Rakuten',
+      ],
+    },
+    {
+      name: 'Spectrum & Regulatory',
+      analysisPoints: [
+        'FCC / NTIA updates and spectrum positions',
+        'International spectrum positions by country',
+        '3GPP / standards body progress',
+        'Government / defense contract pipeline (DoD, GSA)',
+      ],
+    },
+  ],
 };
 
 // ── BMNR ────────────────────────────────────────────────────────────────────
@@ -97,6 +142,7 @@ export const bmnrContext: StockContext = {
   specialistDomain: 'digital asset treasuries, blockchain infrastructure, and ETH/BTC ecosystem plays',
   fiscalYearEnd: 'September 30',
   shareStructureNotes: 'Aggressive ATM equity issuance to fund ETH treasury accumulation. Pre-funded warrants, advisor warrants. Pending vote to increase authorized shares to 50B.',
+  ceoName: 'Tom Lee',
   keyInsiders: [
     { name: 'Tom Lee', title: 'Chairman of the Board', notes: 'High-profile investor. Watch for personal purchases — Chairman conviction is a powerful signal.' },
     { name: 'Bill Miller III', title: 'Board Member', notes: 'Value investor, early backer. Recently reconstituted board.' },
@@ -129,6 +175,36 @@ export const bmnrContext: StockContext = {
     'DeFi / restaking strategy updates',
     'Authorized share count vs. planned ATM',
   ],
+  domainSections: [
+    {
+      name: 'Treasury & Staking Updates',
+      analysisPoints: [
+        'ETH accumulation pace (weekly/monthly run rate)',
+        'Staking deployment progress (% of holdings staked)',
+        'Validator network (MAVAN) status and scale',
+        'DeFi / restaking strategy updates',
+        'Yield generation (staking APR, protocol rewards)',
+        'Treasury composition shifts (ETH vs. BTC vs. cash)',
+      ],
+    },
+    {
+      name: 'Capital Deployment Strategy',
+      analysisPoints: [
+        'ATM program utilization and pacing',
+        'New offerings (registered directs, converts)',
+        'ETH purchases (timing, price, quantities)',
+        'Mining equipment disposition / wind-down timeline',
+      ],
+    },
+    {
+      name: 'Competitive Positioning',
+      analysisPoints: [
+        'Competitor commentary (Strategy Inc., ETHZilla, Marathon)',
+        'Differentiation claims (staking yield, MAVAN, regulatory positioning)',
+        'Market share and treasury size comparisons',
+      ],
+    },
+  ],
 };
 
 // ── CRCL ────────────────────────────────────────────────────────────────────
@@ -142,6 +218,7 @@ export const crclContext: StockContext = {
   specialistDomain: 'stablecoin infrastructure, digital dollar ecosystems, and regulated fintech payments',
   fiscalYearEnd: 'December 31',
   shareStructureNotes: 'Class A and Class B shares (229.9M outstanding). IPO June 2025 at $31/share. Founder-led with Class B voting control through 2030. Zero debt, $1.15B cash.',
+  ceoName: 'Jeremy Allaire',
   keyInsiders: [
     { name: 'Jeremy Allaire', title: 'Founder & CEO', notes: 'Serial entrepreneur, former Macromedia CTO. Controls voting through Class B shares.' },
     { name: 'Sean Neville', title: 'Co-Founder', notes: 'Technical co-founder.' },
@@ -168,6 +245,35 @@ export const crclContext: StockContext = {
     'Circle Mint API institutional adoption',
     'Rule of 40 score (growth + margin)',
     'OCC bank charter status',
+  ],
+  domainSections: [
+    {
+      name: 'USDC & Stablecoin Ecosystem',
+      analysisPoints: [
+        'USDC circulation growth and market share trends',
+        'Reserve composition and yield dynamics',
+        'Cross-chain expansion (CCTP, new blockchain deployments)',
+        'EURC and international stablecoin adoption',
+      ],
+    },
+    {
+      name: 'Revenue & Distribution',
+      analysisPoints: [
+        'Reserve yield revenue and interest rate sensitivity',
+        'Coinbase revenue share dynamics and RLDC margin trends',
+        'New distribution partnerships and API adoption',
+        'Transaction fee and platform revenue growth',
+      ],
+    },
+    {
+      name: 'Regulatory & Competitive Positioning',
+      analysisPoints: [
+        'OCC bank charter status and implications',
+        'Stablecoin legislation progress (federal/state)',
+        'MiCA compliance for EU operations',
+        'Competitive dynamics vs. Tether, PayPal, bank stablecoins',
+      ],
+    },
   ],
 };
 
@@ -207,5 +313,6 @@ export function createStarterContext(
     keyInsiders: [],
     competitors: [],
     stockSpecificMetrics: [],
+    domainSections: [],
   };
 }

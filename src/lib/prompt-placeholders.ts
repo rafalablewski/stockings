@@ -16,6 +16,8 @@
 //   {{KEY_INSIDERS}}          — Formatted insider list
 //   {{COMPETITORS}}           — Formatted competitor list
 //   {{STOCK_SPECIFIC_METRICS}} — Formatted metrics list
+//   {{CEO_NAME}}              — CEO name for management tone analysis
+//   {{DOMAIN_SECTIONS}}       — Formatted domain-specific analysis sections
 //   {{TICKER_TABS}}           — Current research tabs for the ticker
 //   {{CODEBASE_INVENTORY}}    — Full platform inventory (prompt-audit only)
 // ============================================================================
@@ -46,7 +48,19 @@ export function resolvePromptPlaceholders(prompt: string, ticker?: string): stri
         .replace(/\{\{DESCRIPTION\}\}/g, ctx.description)
         .replace(/\{\{SPECIALIST_DOMAIN\}\}/g, ctx.specialistDomain)
         .replace(/\{\{SHARE_STRUCTURE\}\}/g, ctx.shareStructureNotes || 'No share structure notes available.')
-        .replace(/\{\{FISCAL_YEAR_END\}\}/g, ctx.fiscalYearEnd || 'December 31');
+        .replace(/\{\{FISCAL_YEAR_END\}\}/g, ctx.fiscalYearEnd || 'December 31')
+        .replace(/\{\{CEO_NAME\}\}/g, ctx.ceoName || ctx.keyInsiders[0]?.name || 'CEO');
+
+      // Domain sections — formatted as numbered sections with bullet points
+      if (prompt.includes('{{DOMAIN_SECTIONS}}')) {
+        const sectionText = ctx.domainSections.length > 0
+          ? ctx.domainSections.map((s, i) => {
+            const points = s.analysisPoints.map(p => `   - ${p}`).join('\n');
+            return `${i + 1}. ${s.name.toUpperCase()}\n${points}`;
+          }).join('\n\n')
+          : 'No domain-specific sections defined yet.';
+        prompt = prompt.replace(/\{\{DOMAIN_SECTIONS\}\}/g, sectionText);
+      }
 
       // Key insiders — formatted as bullet list
       if (prompt.includes('{{KEY_INSIDERS}}')) {
