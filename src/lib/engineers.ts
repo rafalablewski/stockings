@@ -241,6 +241,27 @@ export const engineers: EngineerTask[] = [
     category: 'intelligence',
   },
 
+  // ── BOBMAN'S TEAM ─────────────────────────────────────────────────────
+  {
+    id: 'prompt-auditor',
+    name: 'Prompt Auditor',
+    role: 'Prompt-to-Codebase Sync Analyst',
+    description: 'Analyses every prompt in the workflow/prompt database and cross-references it against the live codebase to detect drift. When new features, tabs, data sources, API routes, or UI components are added but the corresponding AI engineer prompts are not updated, the Prompt Auditor flags the gap so engineers never operate on stale instructions. Reports to Bobman.',
+    capabilities: [
+      'Scan all workflow prompts and engineer prompt templates for referenced features',
+      'Inventory live codebase tabs, pages, API routes, data sources, and components',
+      'Diff prompt references against actual codebase to find missing or outdated entries',
+      'Flag prompts that reference removed or renamed features',
+      'Generate a prompt-drift report with specific remediation suggestions',
+      'Detect newly added tabs or routes that no prompt currently covers',
+    ],
+    workflowIds: ['prompt-audit'],
+    defaultIntervalMinutes: 1440, // daily
+    triggerEvents: ['code-deployed', 'workflow-updated', 'engineer-config-changed'],
+    requiresData: false,
+    category: 'audit',
+  },
+
   // ── ADDITIONAL AUDIT ENGINEERS ────────────────────────────────────────
   {
     id: 'code-security-engineer',
