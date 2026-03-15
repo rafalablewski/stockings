@@ -72,56 +72,6 @@ export default function OfficeRoom() {
         <planeGeometry args={[ROOM_D, WALL_H]} />
         {wallMat('#1e1e28')}
       </mesh>
-      {/* ══ DROPPED CEILING ══ */}
-      {(() => {
-        const ceilY = 8.5;
-        const tileW = 4;
-        const tileD = 4;
-        const colsX = Math.floor(ROOM_W / tileW);
-        const colsZ = Math.floor(ROOM_D / tileD);
-        const gridColor = '#2a2a34';
-        const tileColors = ['#222230', '#242432', '#202030'];
-
-        return (
-          <group>
-            {/* Main ceiling plane (slightly above tiles for ambient bounce) */}
-            <mesh rotation={[Math.PI / 2, 0, 0]} position={[ROOM_W / 2, ceilY + 0.05, ROOM_D / 2]}>
-              <planeGeometry args={[ROOM_W, ROOM_D]} />
-              <meshStandardMaterial color="#1a1a26" roughness={0.95} />
-            </mesh>
-
-            {/* T-bar grid — long runners along X */}
-            {Array.from({ length: colsZ + 1 }).map((_, i) => (
-              <mesh key={`tz-${i}`} position={[ROOM_W / 2, ceilY, i * tileD]}>
-                <boxGeometry args={[ROOM_W, 0.06, 0.04]} />
-                <meshStandardMaterial color={gridColor} metalness={0.5} roughness={0.5} />
-              </mesh>
-            ))}
-            {/* T-bar grid — cross tees along Z */}
-            {Array.from({ length: colsX + 1 }).map((_, i) => (
-              <mesh key={`tx-${i}`} position={[i * tileW, ceilY, ROOM_D / 2]}>
-                <boxGeometry args={[0.04, 0.06, ROOM_D]} />
-                <meshStandardMaterial color={gridColor} metalness={0.5} roughness={0.5} />
-              </mesh>
-            ))}
-
-            {/* Ceiling tiles (slightly recessed, alternating shades) */}
-            {Array.from({ length: colsX }).map((_, xi) =>
-              Array.from({ length: colsZ }).map((_, zi) => (
-                <mesh key={`tile-${xi}-${zi}`}
-                  rotation={[Math.PI / 2, 0, 0]}
-                  position={[xi * tileW + tileW / 2, ceilY - 0.02, zi * tileD + tileD / 2]}>
-                  <planeGeometry args={[tileW - 0.08, tileD - 0.08]} />
-                  <meshStandardMaterial
-                    color={tileColors[(xi + zi) % tileColors.length]}
-                    roughness={0.92}
-                  />
-                </mesh>
-              ))
-            )}
-          </group>
-        );
-      })()}
     </group>
   );
 }
