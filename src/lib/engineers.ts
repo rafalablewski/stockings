@@ -20,6 +20,8 @@ export interface EngineerTask {
   dataSource?: string;                // where it gets its data from autonomously
   category: 'research' | 'monitoring' | 'audit' | 'intelligence';
   chainsTo?: string;              // engineer ID to auto-trigger after successful completion
+  notifyPm?: string;              // PM sender name to notify in the Room on completion
+  decisionsFor?: string;          // PM id to create decision items for on completion
 }
 
 export const engineers: EngineerTask[] = [
@@ -262,6 +264,7 @@ export const engineers: EngineerTask[] = [
     requiresData: false,
     category: 'audit',
     chainsTo: 'prompt-remediation-engineer',
+    notifyPm: 'bobman',
   },
   {
     id: 'prompt-remediation-engineer',
@@ -279,6 +282,7 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['prompt-audit-completed'],
     requiresData: false,
     category: 'audit',
+    decisionsFor: 'ai-engineer',
   },
 
   // ── ADDITIONAL AUDIT ENGINEERS ────────────────────────────────────────

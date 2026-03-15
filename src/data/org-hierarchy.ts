@@ -91,7 +91,7 @@ export const orgNodes: OrgNode[] = [
     label: 'AI Engineer',
     badge: 'ML',
     role: 'ML & AI Systems',
-    description: 'Builds and maintains the ML models, AI features, and data pipelines that power the autonomous engineers. Develops the execution engine, prompt templates, and workflow orchestration layer. Does not manage engineers — focuses on the infrastructure that makes them run. Reports technical capabilities and pipeline health to the Boss in the Room.',
+    description: 'Builds and maintains the ML models, AI features, and data pipelines that power the autonomous engineers. Develops the execution engine, prompt templates, and workflow orchestration layer. Manages the Prompt Remediation Engineer that implements audit-driven fixes to workflow templates. Reviews remediation patches via the Decision Dashboard before Boss approval. Reports technical capabilities and pipeline health to the Boss in the Room.',
     color: ORG_COLORS.aiEngineer,
     parentId: 'boss',
   },
@@ -255,6 +255,19 @@ export const orgNodes: OrgNode[] = [
     engineerId: 'disclosure-engineer',
   },
 
+  // ── Engineers under AI Engineer (1) ───────────────────────────────────
+  // Prompt template maintenance and remediation
+  {
+    id: 'eng-prompt-remediation',
+    type: 'engineer',
+    label: 'Prompt Remediation',
+    badge: 'REM',
+    role: 'Prompt Template Maintenance',
+    color: ORG_COLORS.aiEngineer,
+    parentId: 'div-ai-engineer',
+    engineerId: 'prompt-remediation-engineer',
+  },
+
   // ── Engineers under Project Mgmt / Bobman (1) ─────────────────────────
   // Prompt-codebase sync auditing, drift detection
   {
@@ -328,12 +341,15 @@ export function computeTriggerEdges(engineers: EngineerTask[]): OrgEdge[] {
   return edges;
 }
 
-// ── Data flow edges (Gemini → Claude → Cursor) ───────────────────────────
+// ── Data flow edges (Gemini → Claude → Cursor + Audit → Remediation) ─────
 // Gemini ingests external data → Claude reasons over it → Cursor profiles output
+// Prompt Auditor findings → Remediation Engineer (chain) + Bobman (report)
 
 export const dataFlowEdges: OrgEdge[] = [
   { from: 'div-gemini', to: 'div-claude', type: 'dataflow', label: 'filings & signals', color: 'rgba(52, 211, 153, 0.5)' },
   { from: 'div-claude', to: 'div-cursor', type: 'dataflow', label: 'data updated', color: 'rgba(34, 211, 238, 0.5)' },
+  { from: 'eng-prompt-auditor', to: 'eng-prompt-remediation', type: 'dataflow', label: 'audit → remediate', color: 'rgba(244, 114, 182, 0.6)' },
+  { from: 'eng-prompt-auditor', to: 'div-pm', type: 'dataflow', label: 'audit report', color: 'rgba(251, 146, 60, 0.5)' },
 ];
 
 // ── Layout computation ─────────────────────────────────────────────────────

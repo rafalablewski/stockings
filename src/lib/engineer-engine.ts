@@ -10,7 +10,7 @@
 // ============================================================================
 
 import { getDb } from './db';
-import { agentRuns, engineerSchedules } from './schema';
+import { agentRuns, engineerSchedules, roomMessages, pmDecisions } from './schema';
 import { eq, and, lte, sql } from 'drizzle-orm';
 import { getEngineer, type EngineerTask } from './engineers';
 import { workflows } from '@/data/workflows';
@@ -181,6 +181,37 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
   const combinedOutput = allOutputs.join('\n\n');
   const totalDuration = Date.now() - startTime;
   const hasFailure = allOutputs.some(o => o.includes('(FAILED)'));
+
+  // ── Notify PM in the Room if configured ──────────────────────────────
+  if (engineer.notifyPm) {
+    const severityCounts = combinedOutput.match(/CRITICAL/g)?.length ?? 0;
+    const summary = severityCounts > 0
+      ? `completed with ${severityCounts} CRITICAL findings`
+      : hasFailure ? 'failed' : 'completed successfully';
+    db.insert(roomMessages).values({
+      sender: engineer.notifyPm,
+      content: `[Auto] ${engineer.name} run #${lastRunId} for ${opts.ticker} ${summary}. ${hasFailure ? 'Please investigate.' : 'Review the findings in the Decision Dashboard.'}`,
+      channel: 'ml',
+    }).catch(err => {
+      console.error(`[engine] Room notify failed for ${engineer.notifyPm}:`, err);
+    });
+  }
+
+  // ── Create PM decision item if configured ────────────────────────────
+  if (!hasFailure && engineer.decisionsFor) {
+    const patchCount = (combinedOutput.match(/"finding_id"/g) || []).length;
+    db.insert(pmDecisions).values({
+      pm: engineer.decisionsFor,
+      engineerId: engineer.id,
+      runId: lastRunId,
+      ticker: opts.ticker,
+      title: `${engineer.name}: ${patchCount} prompt patches for review`,
+      category: 'prompt-patch',
+      payload: combinedOutput,
+    }).catch(err => {
+      console.error(`[engine] Decision creation failed for ${engineer.decisionsFor}:`, err);
+    });
+  }
 
   // ── Chaining: trigger downstream engineer if configured ──────────────
   if (!hasFailure && engineer.chainsTo) {
