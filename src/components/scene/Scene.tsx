@@ -336,7 +336,7 @@ export default function Scene() {
 
   return (
     <div className={`scene-container ${fullscreen ? 'scene-fullscreen' : ''}`}>
-      <div className="scene-upper" style={{ position: 'relative' }}>
+      <div className="scene-upper">
         <button
           className="scene-fullscreen-btn"
           onClick={() => setFullscreen(f => !f)}
@@ -345,7 +345,9 @@ export default function Scene() {
           {fullscreen ? '\u2715' : '\u26F6'}
         </button>
 
-        <SceneCanvas avatars={avatars} workingState={workingState} />
+        <div style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
+          <SceneCanvas avatars={avatars} workingState={workingState} />
+        </div>
       </div>
       {!fullscreen && (
         <div className="scene-lower">

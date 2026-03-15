@@ -120,12 +120,11 @@ export default function Avatar3D({ wx, wy, color, badge, label, activity, isWork
         <meshStandardMaterial color={color} roughness={0.7} transparent opacity={0.9} />
       </RoundedBox>
       {/* Badge text */}
-      <Billboard position={[0, bodyY, -bodyD / 2 - 0.01]} follow={false} lockX lockY>
-        <Text fontSize={0.12} color="#0a0a0a" font="/fonts/SpaceMono-Bold.ttf"
-          anchorX="center" anchorY="middle">
-          {badge}
-        </Text>
-      </Billboard>
+      <Text fontSize={0.12} color="#0a0a0a" fontWeight="bold"
+        position={[0, bodyY, -bodyD / 2 - 0.01]}
+        anchorX="center" anchorY="middle">
+        {badge}
+      </Text>
 
       {/* Left arm (pivot at shoulder) */}
       <group ref={leftArmRef} position={[-bodyW / 2 - armW / 2 - 0.02, bodyY + bodyH / 2 - 0.05, 0]}>

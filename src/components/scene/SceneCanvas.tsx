@@ -23,12 +23,12 @@ export default function SceneCanvas({ avatars, workingState }: SceneCanvasProps)
     <Canvas
       shadows
       camera={{
-        position: [cx + 12, 14, cz - 16],
-        fov: 45,
+        position: [cx + 18, 20, cz + 18],
+        fov: 40,
         near: 0.5,
         far: 200,
       }}
-      style={{ width: '100%', height: '100%', background: '#06060a' }}
+      style={{ background: '#06060a' }}
       gl={{ antialias: true }}
     >
       {/* Lighting */}
