@@ -1164,58 +1164,11 @@ Now analyze the following pasted content:`,
     name: 'Patent / IP Filing Analyzer',
     description: 'Paste patent applications, grants, or IP-related filings. Extracts technology claims, moat contribution, competitive implications, and portfolio context.',
     requiresUserData: true,
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
+    variants: [],
+    promptTemplate: `You are a senior equity research analyst with IP expertise for {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). You specialize in {{SPECIALIST_DOMAIN}}. Process patent applications/grants.
 
-        prompt: `You are a senior equity research analyst with IP expertise for AST SpaceMobile (NASDAQ: ASTS). Process patent applications/grants.
-
-FOR EACH PATENT/APPLICATION:
-────────────────────────────────────────
-Type:                       [Application / Grant / Continuation / Provisional / PCT]
-Number:                     [patent/application number]
-Filing Date (YYYY-MM-DD):   [date]
-Assignee:                   [company]
-Title:                      [patent title]
-Status:                     [Pending / Granted / Abandoned]
-────────────────────────────────────────
-
-TECHNOLOGY ANALYSIS:
-- Core innovation: [1-2 sentence summary]
-- Domain: [e.g., satellite antenna, NTN signal processing]
-- Key claims: [2-3 independent claims summarized]
-- Prior art: [notable citations indicating comps]
-
-STRATEGIC ASSESSMENT:
-- Moat contribution: [High / Medium / Low; explain workarounds]
-- Competitive implications: [affects which comps? Licensing potential?]
-- Portfolio fit: [trend in filings; accelerating?]
-
-Materiality & Action: [High / Medium / Low] – [Add new / Update existing / Skip]
-Rationale (2-4 sentences): [Novelty | Hedge-fund relevance: tech moat vs. Starlink/Kuiper]
-
-DATABASE CROSS-CHECK (mandatory):
-1. ALREADY INCORPORATED: Patent/IP data already in database (cite entries).
-2. NEW TO DATABASE: New IP filings, portfolio updates. List with target field.
-3. CONFLICTS: Contradicts existing data (e.g., patent status changed, claims narrowed).
-4. OVERALL RELEVANCE: [Critical / Important / Low / Already Incorporated]
-
-DATABASE UPDATES:
-- ASTS Core: IP portfolio
-- Comps tab: Positioning implications
-- Sources tab: Flag if missing
-- Commit message: git commit -m "..."
-
-Rules: Conservative; no speculation on validity.
-
-Now analyze the following pasted content:`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-
-        prompt: `You are a senior equity research analyst with IP expertise for Bitmine Immersion Technologies (NYSE American: BMNR). Process patent applications/grants.
+Competitors for competitive assessment:
+{{COMPETITORS}}
 
 FOR EACH PATENT/APPLICATION:
 ────────────────────────────────────────
@@ -1229,7 +1182,7 @@ Status:                     [Pending / Granted / Abandoned]
 
 TECHNOLOGY ANALYSIS:
 - Core innovation: [1-2 sentence summary]
-- Domain: [e.g., immersion cooling, staking protocol, ETH validator]
+- Domain: [map to company's specialist domain]
 - Key claims: [2-3 independent claims summarized]
 - Prior art: [notable citations indicating comps]
 
@@ -1239,7 +1192,7 @@ STRATEGIC ASSESSMENT:
 - Portfolio fit: [trend in filings; accelerating?]
 
 Materiality & Action: [High / Medium / Low] – [Add new / Update existing / Skip]
-Rationale (2-4 sentences): [Novelty | Hedge-fund relevance: staking moat vs. ETHZilla]
+Rationale (2-4 sentences): [Novelty | Hedge-fund relevance: competitive moat assessment]
 
 DATABASE CROSS-CHECK (mandatory):
 1. ALREADY INCORPORATED: Patent/IP data already in database (cite entries).
@@ -1248,7 +1201,7 @@ DATABASE CROSS-CHECK (mandatory):
 4. OVERALL RELEVANCE: [Critical / Important / Low / Already Incorporated]
 
 DATABASE UPDATES:
-- BMNR Core: IP portfolio
+- {{TICKER}} Core: IP portfolio
 - Comps tab: Positioning implications
 - Sources tab: Flag if missing
 - Commit message: git commit -m "..."
@@ -1256,8 +1209,6 @@ DATABASE UPDATES:
 Rules: Conservative; no speculation on validity.
 
 Now analyze the following pasted content:`,
-      },
-    ],
   },
 
   // =========================================================================
@@ -1268,16 +1219,21 @@ Now analyze the following pasted content:`,
     name: 'Conference / Investor Day Notes Extractor',
     description: 'Paste conference transcripts, fireside chat notes, or investor day materials. Extracts strategy updates, new disclosures, management tone shifts, and peer comparisons.',
     requiresUserData: true,
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
+    variants: [],
+    promptTemplate: `You are a senior equity research analyst processing conference/investor day content for {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). You specialize in {{SPECIALIST_DOMAIN}}.
 
-        prompt: `You are a senior equity research analyst processing conference/investor day content for AST SpaceMobile (NASDAQ: ASTS).
+Key insiders / presenters to watch:
+{{KEY_INSIDERS}}
+
+Competitors for peer comparison:
+{{COMPETITORS}}
+
+Domain-specific areas to extract updates for:
+{{DOMAIN_SECTIONS}}
 
 EVENT HEADER:
 ────────────────────────────────────────
-Company:                    ASTS
+Company:                    {{TICKER}}
 Event:                      [conference / investor day / fireside chat]
 Date (YYYY-MM-DD):          [date]
 Presenter(s):               [names, titles]
@@ -1285,7 +1241,7 @@ Moderator:                  [name, firm if applicable]
 ────────────────────────────────────────
 
 STRATEGY & VISION UPDATES:
-- Pivots/initiatives: [e.g., launch cadence acceleration]
+- Pivots/initiatives: [reference domain sections above]
 - TAM/SAM: [updated estimates]
 - Expansions: [new markets/products]
 - M&A/Capital: [commentary]
@@ -1294,7 +1250,7 @@ NEW DISCLOSURES:
 For each: Disclosure, Significance [High/Med/Low], Database Impact [tab/field], Previously Unknown [Yes/No]
 
 MANAGEMENT TONE:
-- Confidence: [1-5 scale vs. prior]
+- Confidence: [1-5 scale vs. prior] ({{CEO_NAME}})
 - Language changes: [hedging, buzzwords]
 
 PEER COMPARISON (if applicable):
@@ -1313,67 +1269,13 @@ DATABASE CROSS-CHECK (mandatory):
 4. OVERALL RELEVANCE: [Critical / Important / Low / Already Incorporated]
 
 DATABASE UPDATES:
-- ASTS Core: Strategy updates
+- {{TICKER}} Core: Strategy updates
 - Sources tab: Flag if missing
 - Commit message: git commit -m "..."
 
 Rules: Conservative; focus on verifiable disclosures.
 
 Now analyze the following pasted content:`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-
-        prompt: `You are a senior equity research analyst processing conference/investor day content for Bitmine Immersion Technologies (NYSE American: BMNR).
-
-EVENT HEADER:
-────────────────────────────────────────
-Company:                    BMNR
-Event:                      [conference / investor day / fireside chat]
-Date (YYYY-MM-DD):          [date]
-Presenter(s):               [names, titles]
-Moderator:                  [name, firm if applicable]
-────────────────────────────────────────
-
-STRATEGY & VISION UPDATES:
-- Pivots/initiatives: [e.g., staking ramp, ETH accumulation]
-- TAM/SAM: [updated estimates]
-- Expansions: [new markets/products]
-- M&A/Capital: [commentary]
-
-NEW DISCLOSURES:
-For each: Disclosure, Significance [High/Med/Low], Database Impact [tab/field], Previously Unknown [Yes/No]
-
-MANAGEMENT TONE:
-- Confidence: [1-5 scale vs. prior]
-- Language changes: [hedging, buzzwords]
-
-PEER COMPARISON (if applicable):
-- Positioning vs. comps: [claims with data]
-
-Q&A HIGHLIGHTS:
-- Key Q&A: [question, answer]
-- Dodged: [any?]
-
-KEY QUOTES (top 5): [speaker, quote, relevance]
-
-DATABASE CROSS-CHECK (mandatory):
-1. ALREADY INCORPORATED: Data already in database.
-2. NEW TO DATABASE: Actionable updates.
-3. CONFLICTS: Contradictions.
-4. OVERALL RELEVANCE: [Critical / Important / Low / Already Incorporated]
-
-DATABASE UPDATES:
-- BMNR Core: Strategy updates
-- Sources tab: Flag if missing
-- Commit message: git commit -m "..."
-
-Rules: Conservative; focus on verifiable disclosures.
-
-Now analyze the following pasted content:`,
-      },
-    ],
   },
   // =========================================================================
   // 13. REGULATORY / GOVERNMENT ACTION TRACKER
@@ -1383,17 +1285,16 @@ Now analyze the following pasted content:`,
     name: 'Regulatory / Government Action Tracker',
     description: 'Paste FCC filings, NTIA decisions, SEC enforcement actions, congressional testimony, or executive orders. Extracts rulings, deadlines, impact assessments, and catalyst timeline adjustments.',
     requiresUserData: true,
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
+    variants: [],
+    promptTemplate: `You are a senior equity research analyst specializing in regulatory analysis for {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). You specialize in {{SPECIALIST_DOMAIN}}. Process government/regulatory content.
 
-        prompt: `You are a senior equity research analyst specializing in regulatory analysis for AST SpaceMobile (NASDAQ: ASTS). Process FCC/NTIA/SEC/government content.
+Competitors affected by regulatory actions:
+{{COMPETITORS}}
 
 FOR EACH ITEM:
 ────────────────────────────────────────
 Date (YYYY-MM-DD):          [action date]
-Agency:                     [FCC / NTIA / SEC / DoD / etc.]
+Agency:                     [relevant agency]
 Action Type:                [Rule / Order / NPRM / Enforcement / License / Waiver]
 Docket/Case:                [number if available]
 Headline / Summary:         [concise 8–12 word title]
@@ -1408,7 +1309,7 @@ IMPACT ASSESSMENT:
 - Affected companies: [tickers]
 - Impact type: [Enabling / Restricting / Neutral]
 - Severity: [Thesis-changing / Material / Minor]
-- Timeline/Comps: [delays launches? Benefits rivals?]
+- Timeline/Comps: [delays milestones? Benefits rivals?]
 
 INDUSTRY CONTEXT:
 - Trend: [broader regulatory shift?]
@@ -1419,7 +1320,7 @@ DEADLINES & NEXT STEPS:
 • Implementation: [date]
 
 Materiality & Action: [High / Medium / Low] – [Add new / Update existing / Skip]
-Rationale (2-4 sentences): [Novelty | Hedge-fund relevance: spectrum de-risking]
+Rationale (2-4 sentences): [Novelty | Hedge-fund relevance]
 
 DATABASE CROSS-CHECK (mandatory):
 1. ALREADY INCORPORATED: Regulatory data already in database (cite entries).
@@ -1428,7 +1329,7 @@ DATABASE CROSS-CHECK (mandatory):
 4. OVERALL RELEVANCE: [Critical / Important / Low / Already Incorporated]
 
 DATABASE UPDATES:
-- ASTS Core: Regulatory milestones
+- {{TICKER}} Core: Regulatory milestones
 - Catalysts tab: Timeline adjustments
 - Sources tab: Flag if missing
 - Commit message: git commit -m "..."
@@ -1436,61 +1337,6 @@ DATABASE UPDATES:
 Rules: Conservative; prioritize timeline/risk impacts.
 
 Now analyze the following pasted content:`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-
-        prompt: `You are a senior equity research analyst specializing in regulatory analysis for Bitmine Immersion Technologies (NYSE American: BMNR). Process SEC/IRS/government content on crypto.
-
-FOR EACH ITEM:
-────────────────────────────────────────
-Date (YYYY-MM-DD):          [action date]
-Agency:                     [SEC / IRS / CFTC / DoJ / etc.]
-Action Type:                [Rule / Order / NPRM / Enforcement / License / Waiver]
-Docket/Case:                [number if available]
-Headline / Summary:         [concise 8–12 word title]
-────────────────────────────────────────
-
-SUBSTANCE:
-- Decision/proposal: [2-3 sentences]
-- Key dates: [effective / comment deadline]
-- Requirements: [bullets]
-
-IMPACT ASSESSMENT:
-- Affected companies: [tickers]
-- Impact type: [Enabling / Restricting / Neutral]
-- Severity: [Thesis-changing / Material / Minor]
-- Timeline/Comps: [affects staking? Benefits BTC treasuries?]
-
-INDUSTRY CONTEXT:
-- Trend: [broader crypto reg shift?]
-- Precedent: [first-of-kind / consistent]
-
-DEADLINES & NEXT STEPS:
-• Comment ends: [date]
-• Implementation: [date]
-
-Materiality & Action: [High / Medium / Low] – [Add new / Update existing / Skip]
-Rationale (2-4 sentences): [Novelty | Hedge-fund relevance: treasury tax risks]
-
-DATABASE CROSS-CHECK (mandatory):
-1. ALREADY INCORPORATED: Regulatory data already in database (cite entries).
-2. NEW TO DATABASE: New rulings, approvals, deadlines. List with target field.
-3. CONFLICTS: Contradicts existing timeline or milestone data.
-4. OVERALL RELEVANCE: [Critical / Important / Low / Already Incorporated]
-
-DATABASE UPDATES:
-- BMNR Core: Regulatory milestones
-- Catalysts tab: Timeline adjustments
-- Sources tab: Flag if missing
-- Commit message: git commit -m "..."
-
-Rules: Conservative; prioritize timeline/risk impacts.
-
-Now analyze the following pasted content:`,
-      },
-    ],
   },
 
   // =========================================================================
@@ -1501,12 +1347,8 @@ Now analyze the following pasted content:`,
     name: 'Social Media / Sentiment Aggregator',
     description: 'Paste social media posts, Reddit threads, StockTwits feeds, or X threads. Extracts narrative trends, identifies misinformation, separates signal from noise for thesis monitoring.',
     requiresUserData: true,
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
-
-        prompt: `You are a senior equity research analyst monitoring social sentiment for AST SpaceMobile (NASDAQ: ASTS). Process posts/threads from X/Reddit/StockTwits.
+    variants: [],
+    promptTemplate: `You are a senior equity research analyst monitoring social sentiment for {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). You specialize in {{SPECIALIST_DOMAIN}}. Process posts/threads from X/Reddit/StockTwits.
 
 IMPORTANT: Social is sentiment only — not facts unless verifiable via tools.
 
@@ -1536,12 +1378,12 @@ MISINFORMATION FLAGS:
 - Claim: [stated] → Reality: [true fact, source] → Spread/Risk: [stock impact?]
 
 ACTIONABLE INTELLIGENCE:
-1. Genuine new info: [e.g., employee leaks; verify]
+1. Genuine new info: [verify before acting]
 2. Sentiment extremes: [contrarian signal?]
 3. Regulatory risks from narratives
 
 Materiality & Action: [High / Medium / Low] – [Add new / Update existing / Skip]
-Rationale (2-4 sentences): [Trends | Hedge-fund relevance: retail-driven volatility]
+Rationale (2-4 sentences): [Trends | Hedge-fund relevance]
 
 DATABASE CROSS-CHECK (mandatory):
 1. ALREADY INCORPORATED: Sentiment data or narratives already tracked in database.
@@ -1550,69 +1392,12 @@ DATABASE CROSS-CHECK (mandatory):
 4. OVERALL RELEVANCE: [Critical / Important / Low / Already Incorporated]
 
 DATABASE UPDATES:
-- ASTS Core: Sentiment indicators
+- {{TICKER}} Core: Sentiment indicators
 - Commit message: git commit -m "..."
 
 Rules: Never treat unverified as fact; flag coordination.
 
 Now analyze the following pasted content:`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-
-        prompt: `You are a senior equity research analyst monitoring social sentiment for Bitmine Immersion Technologies (NYSE American: BMNR). Process posts/threads from X/Reddit/StockTwits.
-
-IMPORTANT: Social is sentiment only — not facts unless verifiable via tools.
-
-FOR EACH NOTABLE POST/THREAD:
-────────────────────────────────────────
-Platform:                   [X / Reddit / etc.]
-Author:                     [handle; note influence]
-Date (YYYY-MM-DD):          [post date]
-Engagement:                 [likes/retweets if available]
-────────────────────────────────────────
-Content Summary:            [1-2 sentences]
-Claims:                     [list factual claims]
-Verifiable:                 [Yes/No]
-Misleading:                 [correction if false]
-
-NARRATIVE TRACKING:
-- Bull narratives: [1-3 with strength: Strong/Weak]
-- Bear narratives: [1-3 with strength]
-- Emerging: [new ones]
-
-SENTIMENT METRICS:
-- Tone: [Very Bullish / Mixed / Very Bearish]
-- Volume trend: [Increasing / Declining]
-- Quality: [Informed / Noise]
-
-MISINFORMATION FLAGS:
-- Claim: [stated] → Reality: [true fact, source] → Spread/Risk: [stock impact?]
-
-ACTIONABLE INTELLIGENCE:
-1. Genuine new info: [e.g., treasury leaks; verify]
-2. Sentiment extremes: [contrarian signal?]
-3. Regulatory risks from narratives
-
-Materiality & Action: [High / Medium / Low] – [Add new / Update existing / Skip]
-Rationale (2-4 sentences): [Trends | Hedge-fund relevance: crypto volatility signals]
-
-DATABASE CROSS-CHECK (mandatory):
-1. ALREADY INCORPORATED: Sentiment data or narratives already tracked in database.
-2. NEW TO DATABASE: Actionable sentiment signals not yet captured.
-3. CONFLICTS: Social claims that contradict database facts (flag with correction).
-4. OVERALL RELEVANCE: [Critical / Important / Low / Already Incorporated]
-
-DATABASE UPDATES:
-- BMNR Core: Sentiment indicators
-- Commit message: git commit -m "..."
-
-Rules: Never treat unverified as fact; flag coordination.
-
-Now analyze the following pasted content:`,
-      },
-    ],
   },
   // =========================================================================
   // 15. CAPITAL SECTION PARITY AUDIT
