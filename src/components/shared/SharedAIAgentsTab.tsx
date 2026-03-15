@@ -533,13 +533,14 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
 
   const availableWorkflows: AgentWorkflow[] = workflows
     .map((w) => {
-      const variant = w.variants.find((v) => v.ticker === tickerLower);
-      if (!variant) return null;
+      // Prefer promptTemplate (works for any ticker) over per-ticker variants
+      const prompt = w.promptTemplate ?? w.variants.find((v) => v.ticker === tickerLower)?.prompt;
+      if (!prompt) return null;
       return {
         id: w.id,
         name: w.name,
         description: w.description,
-        prompt: variant.prompt,
+        prompt,
         requiresUserData: w.requiresUserData,
         ...(w.category ? { category: w.category } : {}),
         ...(w.category === 'audit' ? { auditType: CODE_AUDIT_IDS.has(w.id) ? 'code' as const : 'data' as const } : {}),

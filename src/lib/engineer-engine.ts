@@ -209,9 +209,10 @@ function resolveEngineerPrompt(engineer: EngineerTask, ticker: string): string |
     const workflow = workflows.find(w => w.id === wfId);
     if (!workflow) continue;
 
-    const variant = workflow.variants.find(v => v.ticker === tickerLower);
-    if (variant) {
-      return `[AUTONOMOUS AI ENGINEER MODE]\nYou are operating as the "${engineer.name}" — ${engineer.role}.\n${engineer.description}\n\nThis is an autonomous run. Provide actionable analysis and flag any items that require human review.\n\n---\n\n${variant.prompt}`;
+    // Prefer promptTemplate (works for any ticker) over per-ticker variants
+    const promptText = workflow.promptTemplate ?? workflow.variants.find(v => v.ticker === tickerLower)?.prompt;
+    if (promptText) {
+      return `[AUTONOMOUS AI ENGINEER MODE]\nYou are operating as the "${engineer.name}" — ${engineer.role}.\n${engineer.description}\n\nThis is an autonomous run. Provide actionable analysis and flag any items that require human review.\n\n---\n\n${promptText}`;
     }
   }
 

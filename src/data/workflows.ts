@@ -10,7 +10,17 @@ export interface Workflow {
   description: string;
   requiresUserData: boolean;
   category?: 'audit';
+  /**
+   * Per-ticker prompt variants (legacy — being replaced by promptTemplate).
+   * If promptTemplate is set, variants is ignored for prompt resolution.
+   */
   variants: WorkflowVariant[];
+  /**
+   * Template prompt with {{PLACEHOLDER}} tokens resolved at runtime.
+   * When set, this workflow works for ANY ticker in the stock context registry
+   * without needing per-ticker variants.
+   */
+  promptTemplate?: string;
 }
 
 // ── Code Audit prompt template ──────────────────────────────────────────────
