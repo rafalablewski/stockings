@@ -35,7 +35,7 @@ export const ORG_COLORS = {
   claude:     '#22d3ee',
   cursor:     '#a78bfa',
   gemini:     '#34d399',
-  aiEngineer: '#f472b6',
+  maszka: '#f472b6',
   pm:         '#fb923c',
 } as const;
 
@@ -86,13 +86,13 @@ export const orgNodes: OrgNode[] = [
     parentId: 'boss',
   },
   {
-    id: 'div-ai-engineer',
+    id: 'div-maszka',
     type: 'division',
-    label: 'AI Engineer',
+    label: 'Maszka',
     badge: 'ML',
     role: 'ML & AI Systems',
     description: 'Builds and maintains the ML models, AI features, and data pipelines that power the autonomous engineers. Develops the execution engine, prompt templates, and workflow orchestration layer. Manages the Prompt Remediation Engineer that implements audit-driven fixes to workflow templates. Reviews remediation patches via the Decision Dashboard before Boss approval. Reports technical capabilities and pipeline health to the Boss in the Room.',
-    color: ORG_COLORS.aiEngineer,
+    color: ORG_COLORS.maszka,
     parentId: 'boss',
   },
   {
@@ -255,7 +255,7 @@ export const orgNodes: OrgNode[] = [
     engineerId: 'disclosure-engineer',
   },
 
-  // ── Engineers under AI Engineer (1) ───────────────────────────────────
+  // ── Engineers under Maszka (1) ────────────────────────────────────────
   // Prompt template maintenance and remediation
   {
     id: 'eng-prompt-remediation',
@@ -263,8 +263,8 @@ export const orgNodes: OrgNode[] = [
     label: 'Prompt Remediation',
     badge: 'REM',
     role: 'Prompt Template Maintenance',
-    color: ORG_COLORS.aiEngineer,
-    parentId: 'div-ai-engineer',
+    color: ORG_COLORS.maszka,
+    parentId: 'div-maszka',
     engineerId: 'prompt-remediation-engineer',
   },
 

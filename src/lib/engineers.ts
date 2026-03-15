@@ -282,7 +282,7 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['prompt-audit-completed'],
     requiresData: false,
     category: 'audit',
-    decisionsFor: 'ai-engineer',
+    decisionsFor: 'maszka',
   },
 
   // ── ADDITIONAL AUDIT ENGINEERS ────────────────────────────────────────

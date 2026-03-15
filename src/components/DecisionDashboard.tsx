@@ -40,7 +40,7 @@ const PM_META: Record<string, { label: string; color: string; badge: string }> =
   'claude':       { label: 'Claude',      color: '#22d3ee', badge: 'ARCH' },
   'cursor':       { label: 'Cursor',      color: '#a78bfa', badge: 'UI' },
   'gemini':       { label: 'Gemini',      color: '#34d399', badge: 'R&D' },
-  'ai-engineer':  { label: 'AI Engineer', color: '#f472b6', badge: 'ML' },
+  'maszka':       { label: 'Maszka',      color: '#f472b6', badge: 'ML' },
   'bobman':       { label: 'Bobman',      color: '#fb923c', badge: 'PM' },
 };
 

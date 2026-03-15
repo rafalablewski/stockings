@@ -299,7 +299,7 @@ export const roomMessages = pgTable('room_messages', {
 // Used by the Decision Dashboard at /engineers/decisions.
 export const pmDecisions = pgTable('pm_decisions', {
   id: serial('id').primaryKey(),
-  pm: text('pm').notNull(),                   // PM who owns this decision: 'claude' | 'cursor' | 'gemini' | 'bobman' | 'ai-engineer'
+  pm: text('pm').notNull(),                   // PM who owns this decision: 'claude' | 'cursor' | 'gemini' | 'bobman' | 'maszka'
   engineerId: text('engineer_id').notNull(),  // engineer that produced the item
   runId: integer('run_id'),                   // agentRuns.id that generated the content
   ticker: text('ticker').notNull(),
