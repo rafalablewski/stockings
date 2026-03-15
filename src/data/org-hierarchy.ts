@@ -98,10 +98,10 @@ export const orgNodes: OrgNode[] = [
   {
     id: 'div-pm',
     type: 'division',
-    label: 'Project Mgmt',
+    label: 'Bobman',
     badge: 'PM',
-    role: 'Planning & Coordination',
-    description: 'Coordinates across all divisions without managing engineers directly. Breaks Boss specifications into actionable task lists, assigns work to the right division, tracks sprint progress, and ensures deadlines are met. Facilitates cross-division communication and flags blockers. Reports project status and timeline updates to the Boss in the Room.',
+    role: 'ML & AI Project Manager',
+    description: 'Manages 1 engineer (Prompt Auditor) focused on prompt-codebase sync and drift detection. Coordinates across all divisions, breaks Boss specifications into actionable task lists, assigns work to the right division, tracks sprint progress, and ensures deadlines are met. Facilitates cross-division communication and flags blockers. Reports project status and timeline updates to the Boss in the Room.',
     color: ORG_COLORS.pm,
     parentId: 'boss',
   },
@@ -253,6 +253,19 @@ export const orgNodes: OrgNode[] = [
     color: ORG_COLORS.gemini,
     parentId: 'div-gemini',
     engineerId: 'disclosure-engineer',
+  },
+
+  // ── Engineers under Project Mgmt / Bobman (1) ─────────────────────────
+  // Prompt-codebase sync auditing, drift detection
+  {
+    id: 'eng-prompt-auditor',
+    type: 'engineer',
+    label: 'Prompt Auditor',
+    badge: 'PRA',
+    role: 'Prompt-to-Codebase Sync',
+    color: ORG_COLORS.pm,
+    parentId: 'div-pm',
+    engineerId: 'prompt-auditor',
   },
 ];
 
