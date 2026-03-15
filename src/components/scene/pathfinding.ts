@@ -2,7 +2,7 @@
 // PATHFINDING — A* grid-based obstacle avoidance for avatar movement
 // ═══════════════════════════════════════════════════════════════════════════
 
-import { ROOM_W, ROOM_D } from './iso';
+import { ROOM_W, ROOM_D } from './constants';
 import type { WorldPos } from './activities';
 
 // ── Obstacle rectangles (world coordinates) ──

@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import SceneView from './SceneView';
+import dynamic from 'next/dynamic';
 import Room from '../Room';
+
+const SceneCanvas = dynamic(() => import('./SceneCanvas'), { ssr: false });
 
 import { orgNodes } from '@/data/org-hierarchy';
 import { authFetch } from '@/lib/auth-fetch';
@@ -113,39 +115,6 @@ export default function Scene() {
   const [engineerWorking, setEngineerWorking] = useState<Record<string, boolean>>({});
   const [bridgeThinking, setBridgeThinking] = useState<Record<string, boolean>>({});
   const [fullscreen, setFullscreen] = useState(false);
-  const [rotation, setRotation] = useState(0);
-  const [pitch, setPitch] = useState(0);
-  const [zoom, setZoom] = useState(1.8);
-  // Drag-to-rotate (horizontal = yaw, vertical = pitch)
-  const dragRef = useRef<{ startX: number; startY: number; startRot: number; startPitch: number } | null>(null);
-
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    if ((e.target as HTMLElement).closest('.scene-controls')) return;
-    dragRef.current = { startX: e.clientX, startY: e.clientY, startRot: rotation, startPitch: pitch };
-    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
-  }, [rotation, pitch]);
-
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!dragRef.current) return;
-    const dx = e.clientX - dragRef.current.startX;
-    const dy = e.clientY - dragRef.current.startY;
-    const newRot = dragRef.current.startRot + dx * 0.4;
-    const newPitch = Math.max(-20, Math.min(30, dragRef.current.startPitch - dy * 0.15));
-    setRotation(((newRot % 360) + 360) % 360);
-    setPitch(newPitch);
-  }, []);
-
-  const handlePointerUp = useCallback(() => {
-    dragRef.current = null;
-  }, []);
-
-  const rotateBy = useCallback((deg: number) => {
-    setRotation(prev => ((prev + deg) % 360 + 360) % 360);
-  }, []);
-
-  const tiltBy = useCallback((deg: number) => {
-    setPitch(prev => Math.max(-20, Math.min(30, prev + deg)));
-  }, []);
 
   // Activity state
   const [avatars, setAvatars] = useState<AvatarState[]>(() =>
@@ -367,33 +336,7 @@ export default function Scene() {
 
   return (
     <div className={`scene-container ${fullscreen ? 'scene-fullscreen' : ''}`}>
-      <div
-        className="scene-upper"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-        style={{ cursor: dragRef.current ? 'grabbing' : 'grab' }}
-      >
-        {/* 3D Controls */}
-        <div className="scene-controls">
-          <button className="scene-ctrl-btn" onClick={() => rotateBy(-90)} title="Rotate left">
-            {'\u21B6'}
-          </button>
-          <button className="scene-ctrl-btn" onClick={() => rotateBy(90)} title="Rotate right">
-            {'\u21B7'}
-          </button>
-          <button className="scene-ctrl-btn" onClick={() => tiltBy(10)} title="Tilt up (bird's eye)">
-            {'\u25B2'}
-          </button>
-          <button className="scene-ctrl-btn" onClick={() => tiltBy(-10)} title="Tilt down (side view)">
-            {'\u25BC'}
-          </button>
-          <button className="scene-ctrl-btn" onClick={() => { setRotation(0); setPitch(0); }} title="Reset view">
-            {'\u2302'}
-          </button>
-        </div>
-
+      <div className="scene-upper" style={{ position: 'relative' }}>
         <button
           className="scene-fullscreen-btn"
           onClick={() => setFullscreen(f => !f)}
@@ -402,23 +345,7 @@ export default function Scene() {
           {fullscreen ? '\u2715' : '\u26F6'}
         </button>
 
-        {/* Zoom slider */}
-        <div className="scene-zoom-rail">
-          <button className="scene-ctrl-btn scene-zoom-btn" onClick={() => setZoom(z => Math.min(3.5, z + 0.3))} title="Zoom in">+</button>
-          <input
-            type="range"
-            className="scene-zoom-slider"
-            min={0.8}
-            max={3.5}
-            step={0.1}
-            value={zoom}
-            onChange={e => setZoom(Number(e.target.value))}
-            title={`Zoom: ${zoom.toFixed(1)}x`}
-          />
-          <button className="scene-ctrl-btn scene-zoom-btn" onClick={() => setZoom(z => Math.max(0.8, z - 0.3))} title="Zoom out">&minus;</button>
-        </div>
-
-        <SceneView avatars={avatars} workingState={workingState} rotation={rotation} pitch={pitch} zoom={zoom} />
+        <SceneCanvas avatars={avatars} workingState={workingState} />
       </div>
       {!fullscreen && (
         <div className="scene-lower">
