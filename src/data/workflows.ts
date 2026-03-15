@@ -112,60 +112,41 @@ export const workflows: Workflow[] = [
   {
     id: 'earnings-call',
     name: 'Earnings Call Analyzer',
-    description: 'Paste an earnings call transcript. Extracts guidance changes, constellation/treasury updates, partner pipeline, management tone, Q&A intelligence, and capital structure implications. Maps each finding to the correct ABISON database tab.',
+    description: 'Paste an earnings call transcript. Extracts guidance changes, domain-specific updates, management tone, Q&A intelligence, and capital structure implications. Maps each finding to the correct ABISON database tab.',
     requiresUserData: true,
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
+    variants: [],
+    promptTemplate: `You are a senior equity research analyst at a long/short technology hedge fund covering {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). You specialize in {{SPECIALIST_DOMAIN}}.
 
-        prompt: `You are a senior equity research analyst at a long/short technology hedge fund covering AST SpaceMobile (NASDAQ: ASTS). You specialize in satellite-enabled direct-to-device (D2D) cellular broadband and LEO constellations.
-
-You are analyzing an earnings call transcript. Your job is to extract every piece of actionable intelligence and map it to the ABISON database structure: Financials, Capital, Catalysts, Partners, Investment thesis, and Wall Street tabs.
+You are analyzing an earnings call transcript. Your job is to extract every piece of actionable intelligence and map it to the ABISON database structure. Available tabs for {{TICKER}}: {{TICKER_TABS}}.
 
 EXTRACTION FRAMEWORK — process the transcript in this exact order:
 
 1. GUIDANCE & FINANCIAL UPDATES
    For each metric, compare stated vs. prior guidance (flag unchanged / raised / lowered / new):
-   - Revenue guidance (quarterly, H2, FY)
+   - Revenue guidance (quarterly and annual, by segment if applicable)
    - Operating expense guidance (GAAP and adjusted)
-   - Cash position and liquidity (pro forma if applicable)
-   - Capital expenditure (satellite build, ground infrastructure)
+   - Cash position and total liquidity
    - Burn rate / runway commentary
    - Debt maturity or refinancing commentary
+   Stock-specific financial metrics to track:
+{{STOCK_SPECIFIC_METRICS}}
    Output: Table with columns [Metric | Prior | Current | Change | Filing Update Needed]
 
-2. SATELLITE & CONSTELLATION UPDATES
-   - Launch cadence changes (Block 2, Block 3 timelines)
-   - Satellite performance data (throughput, coverage, unfurling status)
-   - Manufacturing updates (production rate, supplier commentary)
-   - Ground gateway buildout progress
-   Output: Timeline update block for Catalysts tab
+DOMAIN-SPECIFIC EXTRACTION SECTIONS — extract updates for each business area:
 
-3. PARTNER & MNO PIPELINE
-   - New MoU → Definitive conversions
-   - Revenue share / prepayment terms disclosed
-   - Subscriber reach changes (total addressable)
-   - Named partner commentary (AT&T, Verizon, Vodafone, stc, Rakuten, etc.)
-   - New partner mentions or pipeline hints
-   Output: Partners tab update block
+{{DOMAIN_SECTIONS}}
 
-4. SPECTRUM & REGULATORY
-   - FCC/NTIA updates
-   - International spectrum positions
-   - 3GPP / standards body progress
-   - Government/defense contract pipeline
-   Output: Core update block
+   For each section, output an update block mapped to the appropriate database tab.
 
-5. MANAGEMENT TONE & QUALITATIVE SIGNALS
+MANAGEMENT TONE & QUALITATIVE SIGNALS
    Assess on a 5-point scale (Very Bearish → Very Bullish) with evidence:
-   - CEO confidence level (Abel Avellan)
-   - CFO financial conservatism
+   - CEO/Chairman confidence level ({{CEO_NAME}})
+   - CFO / management team financial messaging
    - Hedging language changes (more/fewer qualifiers vs. prior call)
    - New risks acknowledged
    - Topics conspicuously avoided
 
-6. Q&A INTELLIGENCE
+Q&A INTELLIGENCE
    For each analyst question:
    ────────────────────────────────────────
    Analyst / Firm:     [name if identifiable]
@@ -175,21 +156,18 @@ EXTRACTION FRAMEWORK — process the transcript in this exact order:
    Database Impact:    [which tab/field to update, or "None"]
    ────────────────────────────────────────
 
-7. CAPITAL STRUCTURE IMPLICATIONS
+CAPITAL STRUCTURE IMPLICATIONS
    - New offering commentary (ATM utilization, convert terms, shelf capacity)
    - Share count guidance (basic, fully diluted)
    - Dilution trajectory commentary
-   - Debt covenant or maturity updates
+   - Warrant exercise / expiration updates
+   Share structure context: {{SHARE_STRUCTURE}}
    Output: Capital tab update block
 
 SUMMARY OUTPUT:
 1. Database Update Checklist
-   - Financials tab: [list specific field updates with old → new values]
-   - Capital tab: [list updates]
-   - Catalysts tab: [list timeline changes]
-   - Partners tab: [list updates]
-   - Investment tab: [scorecard rating changes, if any]
-   - Wall Street tab: [new analyst commentary]
+   For each tab in [{{TICKER_TABS}}]:
+   - [Tab name]: [list specific field updates with old → new values]
 2. Thesis Impact Assessment
    - Bull case strengthened/weakened: [why]
    - Bear case strengthened/weakened: [why]
@@ -211,107 +189,6 @@ Rules — non-negotiable:
 - If management dodges a question, note the dodge explicitly.
 
 Paste the transcript below:`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-
-        prompt: `You are a senior equity research analyst at a long/short technology hedge fund covering Bitmine Immersion Technologies (NYSE American: BMNR). You specialize in digital asset treasuries, blockchain infrastructure, and ETH/BTC ecosystem plays.
-
-You are analyzing an earnings call transcript. Your job is to extract every piece of actionable intelligence and map it to the ABISON database structure: Financials, Capital, Catalysts, Ethereum Ecosystem, Investment thesis, and Wall Street tabs.
-
-EXTRACTION FRAMEWORK — process the transcript in this exact order:
-
-1. GUIDANCE & FINANCIAL UPDATES
-   For each metric, compare stated vs. prior guidance (flag unchanged / raised / lowered / new):
-   - Revenue guidance (advisory, hosting, mining, staking)
-   - Operating expense breakdown (G&A, treasury ops, mining wind-down)
-   - Cash position and total liquidity
-   - ETH holdings count (total, staked, unstaked)
-   - BTC holdings and disposition plans
-   - Unrealized gain/loss on crypto holdings
-   - Burn rate / runway commentary
-   Output: Table with columns [Metric | Prior | Current | Change | Filing Update Needed]
-
-2. TREASURY & STAKING UPDATES
-   - ETH accumulation pace (weekly/monthly run rate)
-   - Staking deployment progress (% of holdings staked)
-   - Validator network (MAVAN) status and scale
-   - DeFi / restaking strategy updates
-   - Yield generation (staking APR, protocol rewards)
-   - Treasury composition shifts (ETH vs. BTC vs. cash)
-   Output: Ethereum tab update block
-
-3. CAPITAL DEPLOYMENT STRATEGY
-   - ATM program utilization and remaining capacity
-   - New offering plans (shelf, converts, PIPE)
-   - ETH purchase execution (average cost basis disclosed)
-   - Mining equipment disposition / wind-down timeline
-   Output: Capital tab update block
-
-4. COMPETITIVE POSITIONING
-   - Commentary on Strategy Inc., ETHZilla, Marathon, other treasuries
-   - Differentiation claims (yield vs. HODL, ETH vs. BTC)
-   - Market share / positioning statements
-   Output: Comps tab context
-
-5. MANAGEMENT TONE & QUALITATIVE SIGNALS
-   Assess on a 5-point scale (Very Bearish → Very Bullish) with evidence:
-   - Chairman confidence level (Tom Lee)
-   - CEO / management team financial messaging
-   - Hedging language changes (more/fewer qualifiers vs. prior call)
-   - New risks acknowledged (ETH price, regulatory, dilution)
-   - Topics conspicuously avoided
-
-6. Q&A INTELLIGENCE
-   For each analyst question:
-   ────────────────────────────────────────
-   Analyst / Firm:     [name if identifiable]
-   Topic:              [1-line summary]
-   Management Answer:  [key substance, 2-3 sentences]
-   Signal:             [what this reveals — treasury strategy shift, dilution pace, competitive concern, etc.]
-   Database Impact:    [which tab/field to update, or "None"]
-   ────────────────────────────────────────
-
-7. CAPITAL STRUCTURE IMPLICATIONS
-   - Share count updates (basic, fully diluted)
-   - ATM shelf remaining capacity
-   - Warrant exercise / expiration updates
-   - Dilution-to-NAV accretion ratio
-   Output: Capital tab update block
-
-SUMMARY OUTPUT:
-1. Database Update Checklist
-   - Financials tab: [list specific field updates with old → new values]
-   - Capital tab: [list updates]
-   - Catalysts tab: [list timeline changes]
-   - Ethereum tab: [list updates]
-   - Purchase History tab: [new purchase entry — ethBought, ethPrice, mNAV]
-   - Investment tab: [scorecard rating changes, if any]
-   - Wall Street tab: [new analyst commentary]
-2. Thesis Impact Assessment
-   - Bull case strengthened/weakened: [why — ETH treasury accretion, yield ramp, institutional adoption]
-   - Bear case strengthened/weakened: [why — dilution pace, ETH volatility, unrealized losses]
-   - Net conviction change: [↑ / ↓ / unchanged]
-3. Key Surprises (things not in consensus)
-4. Suggested commit message
-
-DATABASE CROSS-CHECK (mandatory final section):
-Cross-reference your analysis against the auto-injected database context:
-1. ALREADY INCORPORATED: Data points from the analyzed content that are already reflected in the current database (cite matching fields and values). If fully incorporated: "This content appears fully reflected in the current database as of [date] — no updates needed."
-2. NEW TO DATABASE: Data points NOT yet in the database — these are the actionable updates. List each with the target tab and field.
-3. CONFLICTS: Cases where the analyzed content contradicts current database values (e.g., revised guidance vs. stored figures, updated share counts).
-4. OVERALL RELEVANCE: [Critical — immediate update needed / Important — update at next review / Low — no material database changes / Already Incorporated — no action needed]
-
-Rules — non-negotiable:
-- Quote exact numbers from the transcript. Never round or estimate unless clearly labeled.
-- Flag ambiguous statements separately from confirmed guidance.
-- Professional, dispassionate tone — no promotional language.
-- If management dodges a question, note the dodge explicitly.
-
-Paste the transcript below:`,
-      },
-    ],
   },
 
   // =========================================================================
@@ -322,107 +199,28 @@ Paste the transcript below:`,
     name: 'Thesis Review (Bull / Bear / Base)',
     description: 'Stress-tests each scenario against the database, identifies thesis drift, scores conviction changes, and outputs an updated Investment tab block with specific rating adjustments.',
     requiresUserData: false,
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
+    variants: [],
+    promptTemplate: `You are the lead portfolio manager at a concentrated long/short technology hedge fund. You are conducting a formal quarterly thesis review on {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}) — {{DESCRIPTION}}.
 
-        prompt: `You are the lead portfolio manager at a concentrated long/short technology hedge fund. You are conducting a formal quarterly thesis review on AST SpaceMobile (NASDAQ: ASTS) — a pre-revenue satellite company building a space-based cellular broadband network.
+You specialize in {{SPECIALIST_DOMAIN}}.
 
 Your goal is to pressure-test the investment thesis from all angles, identify thesis drift, and output actionable updates to the Investment tab.
 
 DATA SOURCE:
 The ABISON database context is auto-injected below. It contains the current scorecard ratings, financial metrics, capital structure, catalyst timeline, and recent developments. Use this data as the basis for your review.
 
-REVIEW FRAMEWORK:
+COMPANY CONTEXT:
+Share structure: {{SHARE_STRUCTURE}}
+Fiscal year end: {{FISCAL_YEAR_END}}
 
-A. SCORECARD AUDIT
-   For each of the 8 categories (Financial Strength, Profitability, Growth, Valuation, Competitive Position, Execution, Regulatory/External, Capital Structure):
-   ────────────────────────────────────────
-   Category:           [name]
-   Current Rating:     [e.g., A-]
-   Evidence For:       [2-3 bullets supporting current rating]
-   Evidence Against:   [2-3 bullets challenging current rating]
-   Recommended:        [same / upgrade / downgrade + new rating]
-   Rationale:          [1-2 sentences]
-   ────────────────────────────────────────
+Key insiders to consider:
+{{KEY_INSIDERS}}
 
-B. THREE-SCENARIO DEEP DIVE
+Competitive landscape:
+{{COMPETITORS}}
 
-   BULL CASE (assign probability: __%)
-   - Core assumptions: [constellation build-out on schedule, MNO conversion accelerates, revenue ramps]
-   - Key enablers: [what must go right — launch cadence, FCC approvals, partner commitments]
-   - Price target range: [$__ – $__]
-   - Timeline: [when does this scenario play out]
-   - What would CONFIRM this: [specific observable events]
-   - What would INVALIDATE this: [specific observable events]
-   - Conviction level vs. last review: [higher / lower / unchanged]
-
-   BASE CASE (assign probability: __%)
-   - Core assumptions: [moderate deployment pace, selective MNO conversion, measured revenue growth]
-   - Key risks priced in: [some delays, competitive pressure, moderate dilution]
-   - Price target range: [$__ – $__]
-   - Timeline: [when does this scenario play out]
-   - What would shift to Bull: [triggers]
-   - What would shift to Bear: [triggers]
-
-   BEAR CASE (assign probability: __%)
-   - Core assumptions: [launch delays, tech underperformance, capital exhaustion, competitive displacement]
-   - Key risks: [Starlink D2C dominance, FCC denial, MNO churn, funding gap]
-   - Price target range: [$__ – $__]
-   - Downside floor: [asset value, spectrum value, strategic acquisition value]
-   - What would CONFIRM this: [specific observable events]
-   - What would INVALIDATE this: [specific observable events]
-
-C. THESIS DRIFT ANALYSIS
-   - Original thesis (when position was established): [state it]
-   - Current thesis (as reflected in Investment tab): [state it]
-   - Has the thesis drifted? [Yes/No]
-   - If yes: is the drift justified by fundamentals, or is it anchoring bias?
-   - Kill switch: what single event would cause you to exit the position entirely?
-
-D. RISK MATRIX UPDATE
-   For each existing risk, reassess:
-   - Has severity changed? [↑ / ↓ / unchanged]
-   - Has likelihood changed? [↑ / ↓ / unchanged]
-   - Are mitigants working?
-   Flag any NEW risks not currently tracked.
-
-E. PERSPECTIVE REFRESH
-   Update each of the 4 analyst perspectives (CFA, Hedge Fund PM, Family Office CIO, Technical Analyst) with current market conditions and recent developments.
-
-OUTPUT:
-1. Updated scorecard ratings (only those that changed, with justification)
-2. Probability-weighted expected value calculation
-3. Position sizing recommendation (current vs. recommended)
-4. Updated "What's New" bullets for executiveSummary
-5. Suggested commit message for Investment tab update
-6. One-line verdict: [Strong Buy / Buy / Hold / Trim / Sell]
-
-DATA CURRENCY CHECK (mandatory final section):
-Assess the freshness and completeness of the database context used:
-1. STALE DATA: Flag any data points that appear outdated based on date references or internal inconsistencies (e.g., "Cash position is from [quarter] but catalysts reference events past that date").
-2. MISSING DATA: Specific fields or metrics that are absent and would strengthen this analysis.
-3. RECOMMENDED REFRESH: Suggest which filings to check or paste agents to run to bring the database current before acting on this review.
-
-Rules — non-negotiable:
-- Be adversarial. Actively look for reasons the thesis is wrong.
-- Distinguish between "thesis is intact" and "thesis is working" — a stock can go up for wrong reasons.
-- No confirmation bias. Weight disconfirming evidence equally.
-- Professional, dispassionate tone.
-
-Analyze the auto-injected database context below:`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-
-        prompt: `You are the lead portfolio manager at a concentrated long/short technology hedge fund. You are conducting a formal quarterly thesis review on Bitmine Immersion Technologies (NYSE American: BMNR) — a company that has pivoted from Bitcoin mining to an Ethereum treasury/staking strategy.
-
-Your goal is to pressure-test the investment thesis from all angles, identify thesis drift, and output actionable updates to the Investment tab.
-
-DATA SOURCE:
-The ABISON database context is auto-injected below. It contains the current scorecard ratings, financial metrics, capital structure, catalyst timeline, and recent developments. Use this data as the basis for your review.
+Key metrics to track:
+{{STOCK_SPECIFIC_METRICS}}
 
 REVIEW FRAMEWORK:
 
@@ -439,45 +237,48 @@ A. SCORECARD AUDIT
 
 B. THREE-SCENARIO DEEP DIVE
 
+   Use the company's domain-specific business areas to inform scenario assumptions:
+
+{{DOMAIN_SECTIONS}}
+
    BULL CASE (assign probability: __%)
-   - Core assumptions: [ETH price appreciation, staking yield expansion, institutional adoption, MAVAN scales, premium-to-NAV sustains]
-   - Key enablers: [what must go right — ETH bull market, regulatory clarity, yield > dilution cost, competitive moat via staking]
-   - NAV / price target range: [$__ – $__]
+   - Core assumptions: [based on domain sections above — what goes right across each business area]
+   - Key enablers: [what must go right — reference specific metrics and milestones]
+   - Price / NAV target range: [$__ – $__]
    - Timeline: [when does this scenario play out]
    - What would CONFIRM this: [specific observable events]
    - What would INVALIDATE this: [specific observable events]
    - Conviction level vs. last review: [higher / lower / unchanged]
 
    BASE CASE (assign probability: __%)
-   - Core assumptions: [moderate ETH appreciation, steady staking yield ~3-4%, continued ATM-funded accumulation, mining fully wound down]
-   - Key risks priced in: [dilution pace, ETH volatility, premium-to-NAV compression]
-   - NAV / price target range: [$__ – $__]
+   - Core assumptions: [moderate progress across domain sections, key risks partially priced in]
+   - Key risks priced in: [competitive pressure, execution risk, capital needs]
+   - Price / NAV target range: [$__ – $__]
    - Timeline: [when does this scenario play out]
    - What would shift to Bull: [triggers]
    - What would shift to Bear: [triggers]
 
    BEAR CASE (assign probability: __%)
-   - Core assumptions: [ETH price crash, regulatory crackdown on staking, dilution overwhelms NAV accretion, premium-to-NAV collapses]
-   - Key risks: [ETH below cost basis, forced selling, shareholder revolt over dilution, ETHZilla captures market]
-   - NAV / price target range: [$__ – $__]
-   - Downside floor: [liquidation value of ETH holdings, cash, equipment]
+   - Core assumptions: [domain-specific failures — what goes wrong across each business area]
+   - Key risks: [reference competitors and structural challenges]
+   - Price / NAV target range: [$__ – $__]
+   - Downside floor: [asset value, liquidation value, strategic acquisition value]
    - What would CONFIRM this: [specific observable events]
    - What would INVALIDATE this: [specific observable events]
 
 C. THESIS DRIFT ANALYSIS
-   - Original thesis (when position was established): [state it — likely BTC miner pivot to ETH treasury]
+   - Original thesis (when position was established): [state it]
    - Current thesis (as reflected in Investment tab): [state it]
    - Has the thesis drifted? [Yes/No]
-   - If yes: is the drift justified (e.g., pivot was the thesis), or is it scope creep?
+   - If yes: is the drift justified by fundamentals, or is it anchoring bias / scope creep?
    - Kill switch: what single event would cause you to exit the position entirely?
-   - Special consideration: NAV premium sustainability — is the market paying for ETH treasury or for growth/yield optionality?
 
 D. RISK MATRIX UPDATE
    For each existing risk, reassess:
    - Has severity changed? [↑ / ↓ / unchanged]
    - Has likelihood changed? [↑ / ↓ / unchanged]
    - Are mitigants working?
-   Special risks to re-examine: ETH price sensitivity, dilution-to-accretion ratio, unrealized loss triggers, regulatory (staking as security?), competitive (ETHZilla, Strategy Inc. adding ETH).
+   Cross-reference risks against the competitive landscape and domain sections above.
    Flag any NEW risks not currently tracked.
 
 E. PERSPECTIVE REFRESH
@@ -485,7 +286,7 @@ E. PERSPECTIVE REFRESH
 
 OUTPUT:
 1. Updated scorecard ratings (only those that changed, with justification)
-2. NAV analysis: current NAV/share vs. stock price, premium/discount
+2. Probability-weighted expected value calculation (include NAV analysis if applicable)
 3. Position sizing recommendation (current vs. recommended)
 4. Updated "What's New" bullets for executiveSummary
 5. Suggested commit message for Investment tab update
@@ -493,19 +294,18 @@ OUTPUT:
 
 DATA CURRENCY CHECK (mandatory final section):
 Assess the freshness and completeness of the database context used:
-1. STALE DATA: Flag any data points that appear outdated based on date references or internal inconsistencies (e.g., "ETH holdings from [quarter] but ATM activity has continued since").
-2. MISSING DATA: Specific fields or metrics that are absent and would strengthen this analysis (e.g., missing shareholder counts, cost basis data).
+1. STALE DATA: Flag any data points that appear outdated based on date references or internal inconsistencies.
+2. MISSING DATA: Specific fields or metrics that are absent and would strengthen this analysis.
 3. RECOMMENDED REFRESH: Suggest which filings to check or paste agents to run to bring the database current before acting on this review.
 
 Rules — non-negotiable:
 - Be adversarial. Actively look for reasons the thesis is wrong.
-- For treasury plays, always compute dilution-adjusted NAV — a rising ETH price means nothing if share count rises faster.
+- Distinguish between "thesis is intact" and "thesis is working" — a stock can go up for wrong reasons.
+- For treasury/asset-heavy plays, always compute dilution-adjusted NAV — a rising asset price means nothing if share count rises faster.
 - No confirmation bias. Weight disconfirming evidence equally.
 - Professional, dispassionate tone.
 
 Analyze the auto-injected database context below:`,
-      },
-    ],
   },
 
   // =========================================================================
@@ -933,77 +733,90 @@ Analyze the auto-injected database context below:`,
     name: 'Capital Structure / Dilution Waterfall',
     description: 'Builds a complete dilution waterfall from the database showing each instrument layer, models fully diluted shares at multiple stock price scenarios, and calculates the dilution cost of capital. Identifies gaps in convert terms, missing warrant schedules, or incomplete ATM tracking.',
     requiresUserData: false,
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
+    variants: [],
+    promptTemplate: `You are a capital structure specialist at a long/short technology hedge fund analyzing {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). You specialize in {{SPECIALIST_DOMAIN}}.
 
-        prompt: `You are a capital structure specialist at a long/short technology hedge fund analyzing AST SpaceMobile (NASDAQ: ASTS). The company has a complex 3-class share structure with multiple convertible tranches, ATM programs, registered directs, and super-voting founder shares.
+Company overview: {{DESCRIPTION}}
 
 DATA SOURCE:
-The ABISON database context is auto-injected below. It contains the current Capital tab data (share classes, major shareholders, equity offerings, dilution history, SBC) and financial metrics. Use this data for the analysis.
+The ABISON database context is auto-injected below. It contains the current Capital tab data (share classes, major shareholders, equity offerings, dilution history) and financial metrics. Use this data for the analysis.
+
+SHARE STRUCTURE CONTEXT:
+{{SHARE_STRUCTURE}}
+
+Key insiders and their holdings:
+{{KEY_INSIDERS}}
 
 ANALYSIS FRAMEWORK:
 
 1. CURRENT STRUCTURE SNAPSHOT
+   Build from the share structure context above. For each share class or instrument type:
    ════════════════════════════════════════
-   Class A (trading):     [shares]M — 1 vote/share
-   Class B (insider):     [shares]M — 1 vote/share
-   Class C (founder):     [shares]M — 10 votes/share
+   [Class/Type]:          [shares]M — [voting rights, strike price, or other terms]
    ────────────────────────────────────────
    Basic shares:          [sum]M
    Fully diluted:         [sum]M
    Dilution overhang:     [FD - basic]M = [%]
+   Authorized headroom:   [authorized - outstanding]M = [%] remaining (if applicable)
    ════════════════════════════════════════
 
 2. DILUTION WATERFALL — stack each instrument from basic → fully diluted:
    ┌──────────────────────────────────────┐
    │ Layer              Shares(M)  Cumul. │
    ├──────────────────────────────────────┤
-   │ Basic (A+B+C)      [X]        [X]    │
-   │ + RSUs/Options      [X]        [X]    │
-   │ + 4.25% Notes       [X]        [X]    │
-   │ + 2.375% Notes      [X]        [X]    │
-   │ + 2.00% Notes       [X]        [X]    │
-   │ + 2.25% Notes       [X]        [X]    │
-   │ + ATM remaining     [X]        [X]    │
+   │ [Identify each layer from database]  │
+   │ Basic shares        [X]        [X]    │
+   │ + [instrument 1]    [X]        [X]    │
+   │ + [instrument 2]    [X]        [X]    │
+   │ + ...               [X]        [X]    │
    │ = Fully Diluted     [X]              │
    └──────────────────────────────────────┘
-   For each convertible tranche: maturity, coupon, conversion price, conversion rate, current conversion shares, force-conversion trigger (if any), put/call provisions.
+   For each convertible instrument: maturity, coupon, conversion price, conversion rate, current conversion shares, force-conversion trigger (if any), put/call provisions.
+   For each warrant class: strike price, expiration, exercise conditions.
 
 3. PRICE-DEPENDENT DILUTION TABLE
-   Model fully diluted share count at multiple stock prices:
-   [Stock Price | $50 | $75 | $100 | $125 | $150 | $200 | $300]
-   Show for each: which converts are in-the-money, conversion shares at that price, total FD count, FD market cap, dilution % vs. basic.
-   Note: some converts have fixed conversion rates regardless of stock price — separate these from any variable-rate instruments.
+   Model fully diluted share count at multiple stock prices relevant to current trading range.
+   Show for each price point: which instruments are in-the-money, conversion shares, total FD count, FD market cap, dilution % vs. basic.
+   Separate fixed-rate instruments from variable-rate instruments.
 
-4. VOTING POWER ANALYSIS
-   - Abel Avellan (Class C): [%] economic ownership, [%] voting control
-   - At what point does voting control drop below 50%? (calculate Class A issuance threshold)
-   - Strategic implications of founder control for M&A, governance, capital decisions
+4. VOTING POWER ANALYSIS (if multi-class structure)
+   - Identify super-voting or controlling shareholders
+   - Calculate economic ownership vs. voting control
+   - At what point does voting control shift? (calculate issuance thresholds)
+   - Strategic implications for M&A, governance, capital decisions
 
 5. CAPITAL RAISE EFFICIENCY
    Historical analysis:
    [Date | Event | Raised($M) | Shares Issued(M) | Effective $/Share | Dilution %]
-   - Trend: is the company raising at higher prices over time? (improving execution)
+   - Trend: is the company raising at higher prices over time?
    - Cost of capital: weighted average dilution cost across all raises
-   - ATM vs. converts vs. registered directs: which channel is most efficient?
+   - Channel comparison: which capital raise method is most efficient?
+   - For treasury/asset-accumulation strategies: pair each raise with what was acquired (dilution-to-accretion analysis)
 
 6. FORWARD-LOOKING DILUTION SCENARIOS
-   Model 3 scenarios over next 12 months:
-   A) Conservative: ATM remaining only, no new raises
-   B) Base: ATM + one new convert (~$500M-1B)
-   C) Aggressive: ATM + new convert + registered direct + SBC ramp
-   For each: projected FD count, market cap at current price, dilution %, impact on per-share metrics.
+   Model 3+ scenarios over next 12 months:
+   A) Conservative: existing programs only, no new raises
+   B) Base: moderate additional capital raise activity
+   C) Aggressive: full shelf utilization + new programs
+   D) Stress: worst-case dilution + adverse market conditions
+   For each: projected FD count, market cap, dilution %, impact on per-share metrics and NAV (if applicable).
 
 7. CAPITAL TAB GAP ANALYSIS
    Review the Capital tab data and flag:
-   - Missing convertible note terms (conversion rate, maturity, trigger provisions)
+   - Missing instrument terms (conversion rates, maturities, trigger provisions)
    - Incomplete warrant schedules (strike prices, expiration dates)
-   - ATM program tracking gaps (utilization pace, remaining capacity not current)
+   - ATM/offering program tracking gaps
    - Shareholder data staleness (13F/D/G filing dates vs. current quarter)
-   - SBC data gaps (options outstanding, RSU vesting schedule)
+   - SBC data gaps (options outstanding, RSU vesting schedules)
+   - Missing cost basis or acquisition data (for treasury strategies)
    Output: specific list of data points to add or verify in next filing update.
+
+DOMAIN-SPECIFIC CAPITAL CONSIDERATIONS:
+Reference the company's business areas when assessing capital needs:
+{{DOMAIN_SECTIONS}}
+
+Relevant metrics for capital structure assessment:
+{{STOCK_SPECIFIC_METRICS}}
 
 SUMMARY OUTPUT:
 1. Key Dilution Metrics
@@ -1011,136 +824,24 @@ SUMMARY OUTPUT:
    - Worst-case fully diluted (all instruments convert): [M] shares
    - Annualized dilution rate (trailing 4 quarters): [%]
    - Remaining authorized but unissued: [M] shares
+   - NAV accretion test (if applicable): [passing / failing / marginal]
 2. Capital Tab Updates — specific fields to add/modify
-3. Risk Assessment: is dilution accelerating, stable, or decelerating?
+3. Risk Assessment: is dilution accelerating, stable, or decelerating? Is it creating or destroying value?
 4. Suggested commit message
 
 DATA CURRENCY CHECK (mandatory final section):
 Assess the freshness and completeness of the database context used:
 1. STALE DATA: Flag any capital structure data points that appear outdated (e.g., share counts from a prior quarter, ATM utilization not reflecting recent 424B5 filings).
-2. MISSING DATA: Specific fields critical to capital structure analysis that are absent (convert terms, warrant schedules, authorized shares, SBC grants).
+2. MISSING DATA: Specific fields critical to capital structure analysis that are absent.
 3. RECOMMENDED REFRESH: Suggest which filings to check or paste agents to run to bring the capital data current before acting on this analysis.
 
 Rules — non-negotiable:
-- Use exact figures from filings. Do not estimate conversion rates — use the stated rate per $1,000 principal.
+- Use exact figures from filings. Do not estimate conversion rates — use stated terms.
 - Separate "certain" dilution (RSUs, vested options) from "contingent" dilution (converts, warrants with conditions).
+- For treasury/asset plays, dilution is only meaningful in context of what's acquired — always pair share issuance with asset accumulation.
 - Professional, forensic tone — capital structure analysis is precision work.
 
 Analyze the auto-injected database context below:`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-
-        prompt: `You are a capital structure specialist at a long/short technology hedge fund analyzing Bitmine Immersion Technologies (NYSE American: BMNR). The company uses aggressive ATM equity issuance to fund ETH treasury accumulation, making dilution analysis central to the thesis.
-
-DATA SOURCE:
-The ABISON database context is auto-injected below. It contains the current Capital tab data (share classes, warrants, equity offerings, major shareholders) and financial metrics. Use this data for the analysis.
-
-ANALYSIS FRAMEWORK:
-
-1. CURRENT STRUCTURE SNAPSHOT
-   ════════════════════════════════════════
-   Common Stock:          [shares]M outstanding of [authorized]M
-   Pre-Funded Warrants:   [shares]M @ $0.0001
-   Advisor Warrants:      [shares]M @ $[strike]
-   ────────────────────────────────────────
-   Basic shares:          [outstanding]M
-   Fully diluted:         [outstanding + warrants]M
-   Dilution overhang:     [FD - basic]M = [%]
-   Authorized headroom:   [authorized - outstanding]M = [%] remaining
-   ════════════════════════════════════════
-   CRITICAL: Is authorized share count sufficient for planned ATM? If pending vote to increase to 50B shares — what does this signal about future dilution plans?
-
-2. DILUTION WATERFALL — stack each instrument:
-   ┌──────────────────────────────────────┐
-   │ Layer              Shares(M)  Cumul. │
-   ├──────────────────────────────────────┤
-   │ Common outstanding  [X]        [X]    │
-   │ + Pre-funded warr.  [X]        [X]    │
-   │ + Advisor warrants  [X]        [X]    │
-   │ + Options/RSUs      [X]        [X]    │
-   │ + S-8 plan shares   [X]        [X]    │
-   │ = Fully Diluted     [X]              │
-   └──────────────────────────────────────┘
-
-3. ATM PROGRAM DEEP DIVE
-   This is the critical capital instrument for BMNR:
-   - Total shelf capacity: $[B]
-   - Amount utilized to date: $[M]
-   - Shares issued via ATM: [M]
-   - Average price per ATM share: $[price]
-   - Remaining capacity: $[B]
-   - Utilization rate: $[M]/week or $[M]/month (calculate from dates)
-   - At current pace, shelf exhaustion date: [estimate]
-   - ETH acquired per ATM tranche (if traceable)
-
-4. DILUTION-TO-ACCRETION ANALYSIS (unique to treasury plays)
-   This is the core question for BMNR:
-   ────────────────────────────────────────
-   Period:              [date range]
-   Shares issued:       [M] shares
-   Proceeds raised:     $[M]
-   ETH acquired:        [tokens]
-   ETH value acquired:  $[M] (at acquisition prices)
-   NAV/share BEFORE:    $[X]
-   NAV/share AFTER:     $[X]
-   Net accretive?       [Yes / No / Breakeven]
-   ────────────────────────────────────────
-   Run this for each identifiable ATM tranche or raise period.
-   KEY METRIC: What ETH price makes ATM issuance NAV-accretive vs. dilutive?
-
-5. SHARE COUNT TRAJECTORY
-   Historical and projected:
-   [Quarter | Shares Out | Δ Shares | % Dilution | ETH Holdings | NAV/Share]
-   Project forward 4 quarters at current issuance pace.
-   Calculate: at what share count does NAV/share stop growing even if ETH appreciates 20%?
-
-6. FORWARD-LOOKING SCENARIOS
-   Model 3 scenarios over next 12 months:
-   A) Conservative: current ATM pace, ETH flat
-   B) Base: accelerated ATM, ETH +30%
-   C) Aggressive: full shelf utilization, ETH +50%
-   For each: projected shares, ETH holdings, NAV/share, premium-to-NAV sustainability, market cap.
-
-   Also model the BEAR scenario:
-   D) Stress: current ATM pace, ETH -40%
-   What happens to NAV/share? At what ETH price does NAV/share go negative (if ever)?
-
-7. CAPITAL TAB GAP ANALYSIS
-   Review the Capital tab data and flag:
-   - Missing warrant details (expiration dates, exercise conditions)
-   - ATM utilization data not current (last 424B5 filing date)
-   - S-8 plan details missing (shares reserved, vesting schedules)
-   - Shareholder data gaps (13F/D/G filings, actual share counts vs. "null")
-   - Missing ETH acquisition cost basis data
-   Output: specific list of data points to add or verify in next filing update.
-
-SUMMARY OUTPUT:
-1. Key Dilution Metrics
-   - Current dilution overhang: [%]
-   - Annualized dilution rate: [%]
-   - NAV accretion test: [passing / failing / marginal]
-   - Authorized headroom: [M] shares = [X] months at current pace
-2. Capital Tab Updates — specific fields to add/modify
-3. Critical Question: Is dilution creating or destroying value for shareholders?
-4. Suggested commit message
-
-DATA CURRENCY CHECK (mandatory final section):
-Assess the freshness and completeness of the database context used:
-1. STALE DATA: Flag any capital structure data points that appear outdated (e.g., ATM utilization not reflecting recent 424B5 filings, ETH holdings from prior quarter).
-2. MISSING DATA: Specific fields critical to capital structure analysis that are absent (warrant expiration dates, cost basis data, exact staking positions).
-3. RECOMMENDED REFRESH: Suggest which filings to check or paste agents to run to bring the capital data current before acting on this analysis.
-
-Rules — non-negotiable:
-- For treasury plays, dilution is only meaningful in the context of what's acquired — always pair share issuance with ETH accumulation.
-- Use exact figures from filings. If ATM data is approximate, label it clearly.
-- Professional, forensic tone.
-- The NAV accretion test is the single most important output — get it right.
-
-Analyze the auto-injected database context below:`,
-      },
-    ],
   },
 
   // =========================================================================
