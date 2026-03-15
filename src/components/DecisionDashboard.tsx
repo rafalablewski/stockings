@@ -242,27 +242,28 @@ export default function DecisionDashboard() {
                     <div className="dec-actions">
                       {d.status === 'pending' && (
                         <>
-                          <button className="dec-btn dec-btn-approve" onClick={() => updateStatus(d.id, 'pm-approved', 'Approved by PM')}>
+                          <button className="eng-btn" data-variant="active" onClick={() => updateStatus(d.id, 'pm-approved', 'Approved by PM')}>
                             PM Approve
                           </button>
-                          <button className="dec-btn dec-btn-reject" onClick={() => updateStatus(d.id, 'pm-rejected', 'Rejected by PM')}>
+                          <button className="eng-btn eng-btn-danger" onClick={() => updateStatus(d.id, 'pm-rejected', 'Rejected by PM')}>
                             PM Reject
                           </button>
                         </>
                       )}
                       {d.status === 'pm-approved' && (
                         <>
-                          <button className="dec-btn dec-btn-boss-approve" onClick={() => updateStatus(d.id, 'boss-approved', 'Final approval by Boss')}>
+                          <button className="eng-btn" data-variant="run" onClick={() => updateStatus(d.id, 'boss-approved', 'Final approval by Boss')}>
                             Boss Approve
                           </button>
-                          <button className="dec-btn dec-btn-reject" onClick={() => updateStatus(d.id, 'boss-rejected', 'Rejected by Boss')}>
+                          <button className="eng-btn eng-btn-danger" onClick={() => updateStatus(d.id, 'boss-rejected', 'Rejected by Boss')}>
                             Boss Reject
                           </button>
                         </>
                       )}
                       {d.status === 'boss-approved' && d.category === 'prompt-patch' && (
                         <button
-                          className="dec-btn dec-btn-apply"
+                          className="eng-btn"
+                          data-variant="active"
                           onClick={() => applyPatches(d)}
                           disabled={applying === d.id}
                         >

@@ -3459,55 +3459,6 @@
   margin-top: 14px;
 }
 
-.dec-btn {
-  padding: 6px 16px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.dec-btn-approve {
-  background: rgba(52, 211, 153, 0.12);
-  border-color: rgba(52, 211, 153, 0.3);
-  color: #34d399;
-}
-.dec-btn-approve:hover {
-  background: rgba(52, 211, 153, 0.2);
-}
-
-.dec-btn-boss-approve {
-  background: rgba(34, 211, 238, 0.12);
-  border-color: rgba(34, 211, 238, 0.3);
-  color: #22d3ee;
-}
-.dec-btn-boss-approve:hover {
-  background: rgba(34, 211, 238, 0.2);
-}
-
-.dec-btn-reject {
-  background: rgba(248, 113, 113, 0.1);
-  border-color: rgba(248, 113, 113, 0.25);
-  color: #f87171;
-}
-.dec-btn-reject:hover {
-  background: rgba(248, 113, 113, 0.18);
-}
-
-.dec-btn-apply {
-  background: rgba(126, 231, 135, 0.12);
-  border-color: rgba(126, 231, 135, 0.3);
-  color: #7ee787;
-}
-.dec-btn-apply:hover {
-  background: rgba(126, 231, 135, 0.2);
-}
-.dec-btn-apply:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
 
 .dec-empty {
   text-align: center;
