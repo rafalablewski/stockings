@@ -37,17 +37,70 @@ export default function OfficeRoom() {
 
   return (
     <group>
-      {/* Floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[ROOM_W / 2, 0, ROOM_D / 2]} receiveShadow>
-        <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial color="#18181f" />
-      </mesh>
+      {/* ══ RAISED ACCESS FLOOR ══ */}
+      {(() => {
+        const tileSize = 2;          // 600 mm standard raised-floor tile
+        const gap = 0.04;            // pedestal / stringer gap
+        const cols = Math.floor(ROOM_W / tileSize);
+        const rows = Math.floor(ROOM_D / tileSize);
 
-      {/* Grid */}
-      <gridHelper
-        args={[Math.max(ROOM_W, ROOM_D), Math.max(ROOM_W, ROOM_D), 0x252530, 0x252530]}
-        position={[ROOM_W / 2, 0.01, ROOM_D / 2]}
-      />
+        // Muted trading-floor palette: light warm grays with subtle variation
+        const tileShades = ['#b8b4ac', '#b0aca4', '#ada9a0', '#b5b1a8'];
+        // Perforated vent tiles — every ~8th tile
+        const isVentTile = (xi: number, zi: number) =>
+          (xi % 8 === 3 && zi % 6 === 2);
+
+        return (
+          <group>
+            {/* Sub-floor void (visible through gaps) */}
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[ROOM_W / 2, -0.08, ROOM_D / 2]}>
+              <planeGeometry args={[ROOM_W, ROOM_D]} />
+              <meshStandardMaterial color="#0a0a0e" />
+            </mesh>
+
+            {/* Pedestal grid — stringers along X */}
+            {Array.from({ length: rows + 1 }).map((_, i) => (
+              <mesh key={`sx-${i}`} position={[ROOM_W / 2, -0.02, i * tileSize]} receiveShadow>
+                <boxGeometry args={[ROOM_W, 0.06, gap]} />
+                <meshStandardMaterial color="#6e6b64" metalness={0.6} roughness={0.4} />
+              </mesh>
+            ))}
+            {/* Pedestal grid — stringers along Z */}
+            {Array.from({ length: cols + 1 }).map((_, i) => (
+              <mesh key={`sz-${i}`} position={[i * tileSize, -0.02, ROOM_D / 2]} receiveShadow>
+                <boxGeometry args={[gap, 0.06, ROOM_D]} />
+                <meshStandardMaterial color="#6e6b64" metalness={0.6} roughness={0.4} />
+              </mesh>
+            ))}
+
+            {/* Floor tiles */}
+            {Array.from({ length: cols }).map((_, xi) =>
+              Array.from({ length: rows }).map((_, zi) => {
+                const vent = isVentTile(xi, zi);
+                return (
+                  <mesh
+                    key={`ft-${xi}-${zi}`}
+                    rotation={[-Math.PI / 2, 0, 0]}
+                    position={[
+                      xi * tileSize + tileSize / 2,
+                      0,
+                      zi * tileSize + tileSize / 2,
+                    ]}
+                    receiveShadow
+                  >
+                    <planeGeometry args={[tileSize - gap, tileSize - gap]} />
+                    <meshStandardMaterial
+                      color={vent ? '#9e9a92' : tileShades[(xi + zi) % tileShades.length]}
+                      roughness={vent ? 0.7 : 0.55}
+                      metalness={vent ? 0.15 : 0.05}
+                    />
+                  </mesh>
+                );
+              })
+            )}
+          </group>
+        );
+      })()}
 
       {/* Back wall (z = ROOM_D) */}
       <mesh ref={backRef} position={[ROOM_W / 2, WALL_H / 2, ROOM_D]}>
