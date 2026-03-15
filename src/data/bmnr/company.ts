@@ -109,6 +109,34 @@ export const DEFAULTS: StockDefaults & {
 };
 
 // ============================================================================
+// OTHER HOLDINGS - BTC, Moonshots, Strategic Investments
+// ============================================================================
+
+/**
+ * Non-ETH holdings tracked separately for Total NAV calculation
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - Update btcHoldings from weekly PR if BTC count changes
+ * - Update btcPrice regularly (Coinbase)
+ * - Update beastIndustriesEquity if investment value changes
+ * - Update moonshotsValue from quarterly filings
+ */
+export const OTHER_HOLDINGS = {
+  // BTC Holdings (193 BTC — legacy from mining era, unchanged since Jan 2026)
+  btcHoldings: 193,
+  btcPrice: 84000,               // UPDATE REGULARLY — Last: Mar 14, 2026
+  btcPriceAsOf: '2026-03-14',
+
+  // Strategic Investments
+  beastIndustriesEquity: 200,    // $200M — Beast Industries (MrBeast), closed Jan 17, 2026
+  beastIndustriesNote: 'MrBeast partnership — Step Banking App (7M+ users)',
+
+  // Moonshot Investments
+  moonshotsValue: 19,            // $19M — Eightco ORBS stake
+  moonshotsNote: 'Eightco ORBS stake',
+};
+
+// ============================================================================
 // ETH HOLDINGS DATA - Update from weekly 8-K filings
 // ============================================================================
 
