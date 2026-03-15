@@ -1094,6 +1094,7 @@ Rules — non-negotiable:
 - Never output full file content — only structured blocks + summary.
 
 Now analyze the following pasted content:`,
+
   },
   // =========================================================================
   // 10. 13F / INSTITUTIONAL HOLDINGS TRACKER
@@ -1530,6 +1531,7 @@ SUGGESTED NEXT ACTIONS:
 - Specific data points to verify in next 10-Q/10-K
 
 Rules: Report facts only. Do not hallucinate data values. Flag uncertainty explicitly.`,
+
   },
   // =========================================================================
   // 16. CROSS-REFERENCE INTEGRITY AUDIT
@@ -1746,6 +1748,7 @@ Check for expected quarterly filings/data (FY ends {{FISCAL_YEAR_END}}):
 - 10-Q: Should have data for each quarter. Identify missing quarters.
 - 10-K: Annual report. Is the latest fiscal year covered?
 - Earnings: Are all recent earnings calls processed?
+
 
 Expected quarterly cadence:
 | Period | 10-Q/10-K Filed? | In Database? | Financials Tab? | Gap? |
@@ -2215,6 +2218,7 @@ PRIORITY FIXES:
 3. [MEDIUM] [description]
 
 Rules: Compare actual database values. Do not estimate or infer figures not present.`,
+
   },
   // =========================================================================
   // 25. PEER COMPARABLES AUDIT
@@ -2313,6 +2317,7 @@ PRIORITY ACTIONS:
 3. [MEDIUM] Standardize [metric]
 
 Rules: Use actual database values. Flag gaps; do not fill with estimates.`,
+
   },
   // =========================================================================
   // 26. DISCLOSURE COMPLETENESS AUDIT
@@ -2412,6 +2417,7 @@ PRIORITY GAPS:
 3. [MEDIUM] [description]
 
 Rules: Use actual database contents. Flag what's missing; don't fabricate filing contents.`,
+
   },
   // =========================================================================
   // 27. MODEL CONSISTENCY AUDIT

@@ -4,6 +4,9 @@ import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { authFetch } from '@/lib/auth-fetch';
 import type { EngineerTask } from '@/lib/engineers';
 import type { Workflow } from '@/data/workflows';
+import type { RunStatus } from '@/lib/engineer-engine';
+import NetworkGraph from '@/components/NetworkGraph';
+import { orgNodes } from '@/data/org-hierarchy';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -29,6 +32,38 @@ interface EngineerStatus {
   engineer: EngineerTask;
   schedule: ScheduleState | null;
   lastRun: LastRunState | null;
+}
+
+const STATUS_LABELS: Record<RunStatus, string> = {
+  completed: 'OK',
+  failed: 'FAIL',
+  running: 'RUN',
+  queued: 'QUEUE',
+  cancelled: 'CANCEL',
+};
+
+function extractPreview(text: string | null, maxLen = 120): string {
+  if (!text) return '';
+  const line = text.split('\n').find(l => l.trim());
+  return line?.trim().slice(0, maxLen) || '';
+}
+
+interface HistoryRun {
+  id: number;
+  ticker: string;
+  engineerId: string;
+  workflowId: string | null;
+  status: RunStatus;
+  triggerType: string;
+  triggerReason: string | null;
+  outputSummary: string | null;
+  patchesApplied: number;
+  errorsEncountered: string | null;
+  durationMs: number | null;
+  hidden: boolean;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
 }
 
 interface TickerInfo {
@@ -127,6 +162,8 @@ function EngineerDetailPanel({
   onSchedule,
   onEnableSchedule,
   onPromptPreview,
+  onViewFullReport,
+  fullReportLoading,
 }: {
   engineer: EngineerTask;
   workflows: Workflow[];
@@ -139,6 +176,8 @@ function EngineerDetailPanel({
   onSchedule: (engineerId: string, enabled: boolean, interval: number) => void;
   onEnableSchedule: (engineer: EngineerTask) => void;
   onPromptPreview: (wf: Workflow, ticker: string, label: string) => void;
+  onViewFullReport: (runId: number) => void;
+  fullReportLoading: boolean;
 }) {
   const linkedWorkflows = workflows.filter(w => engineer.workflowIds.includes(w.id));
   const color = categoryColors[engineer.category] || 'cyan';
@@ -164,6 +203,13 @@ function EngineerDetailPanel({
           <div>
             <h2 className="eng-detail-name">{engineer.name}</h2>
             <div className="eng-detail-role">{engineer.role}</div>
+            {(() => {
+              const engNode = orgNodes.find(n => n.engineerId === engineer.id);
+              const pm = engNode?.parentId ? orgNodes.find(n => n.id === engNode.parentId) : null;
+              return pm ? (
+                <div className="eng-detail-pm" style={{ color: pm.color }}>Reports to {pm.label}</div>
+              ) : null;
+            })()}
           </div>
         </div>
         <div className="eng-detail-actions">
@@ -334,7 +380,34 @@ function EngineerDetailPanel({
       {/* Last run output */}
       {status?.lastRun?.outputSummary && (
         <div className="eng-detail-block">
-          <div className="eng-detail-section-title">Last Run Output</div>
+          <div className="eng-detail-section-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            Last Run Output
+            <div style={{ display: 'flex', gap: '6px' }}>
+              <button
+                className="eng-btn eng-btn-pdf"
+                onClick={() => onViewFullReport(status.lastRun!.id)}
+                title="View full report"
+              >
+                {fullReportLoading ? '...' : 'View Full'}
+              </button>
+              <button
+                className="eng-btn eng-btn-pdf"
+                onClick={() => {
+                  const url = `/api/engineers/report?runId=${status.lastRun!.id}`;
+                  window.open(url, '_blank');
+                }}
+                title="Download full report as PDF"
+              >
+                <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                  <path d="M14 2v6h6" />
+                  <path d="M12 18v-6" />
+                  <path d="M9 15l3 3 3-3" />
+                </svg>
+                PDF
+              </button>
+            </div>
+          </div>
           <pre className="eng-output-pre eng-detail-block-sm">{status.lastRun.outputSummary}</pre>
         </div>
       )}
@@ -369,7 +442,8 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const [statuses, setStatuses] = useState<EngineerStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [runningIds, setRunningIds] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState<'network' | 'history'>('network');
+  const [activeTab, setActiveTab] = useState<'network' | 'history' | 'pms'>('network');
+  const [graphView, setGraphView] = useState<'default' | 'interactive'>('default');
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
   // ── Ticker dropdown state ──
@@ -379,6 +453,14 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const tickerSearchRef = useRef<HTMLInputElement>(null);
 
   const [promptPreview, setPromptPreview] = useState<PromptPreview | null>(null);
+
+  // ── History tab state ──
+  const [historyRuns, setHistoryRuns] = useState<HistoryRun[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [expandedRunId, setExpandedRunId] = useState<number | null>(null);
+  const [showHidden, setShowHidden] = useState(false);
+  const [fullReport, setFullReport] = useState<{ runId: number; output: string; error: string | null } | null>(null);
+  const [fullReportLoading, setFullReportLoading] = useState(false);
 
   // ── Ticker dropdown helpers ──
   const selectedTickerInfo = tickers.find(t => t.ticker === selectedTicker);
@@ -447,6 +529,60 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
     fetchStatus();
   }, [fetchStatus]);
 
+  // ── Fetch history when history tab is active ──
+  const fetchHistory = useCallback(async () => {
+    setHistoryLoading(true);
+    try {
+      const hiddenParam = showHidden ? '&showHidden=true' : '';
+      const res = await authFetch(`/api/engineers/history?ticker=${selectedTicker}&limit=50${hiddenParam}`);
+      if (res.ok) {
+        const data = await res.json();
+        setHistoryRuns(data.runs || []);
+      }
+    } catch { /* silent */ }
+    setHistoryLoading(false);
+  }, [selectedTicker, showHidden]);
+
+  useEffect(() => {
+    if (activeTab === 'history') fetchHistory();
+  }, [activeTab, fetchHistory]);
+
+  const handleHideRun = useCallback(async (id: number, hidden: boolean) => {
+    try {
+      await authFetch(`/api/engineers/history?id=${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hidden }),
+      });
+      // Update in place so hidden rows stay visible when showHidden is on
+      setHistoryRuns(prev => showHidden
+        ? prev.map(r => r.id === id ? { ...r, hidden } : r)
+        : prev.filter(r => r.id !== id)
+      );
+      if (expandedRunId === id) setExpandedRunId(null);
+    } catch { /* silent */ }
+  }, [expandedRunId, showHidden]);
+
+  const handleDeleteRun = useCallback(async (id: number) => {
+    try {
+      await authFetch(`/api/engineers/history?id=${id}`, { method: 'DELETE' });
+      setHistoryRuns(prev => prev.filter(r => r.id !== id));
+      if (expandedRunId === id) setExpandedRunId(null);
+    } catch { /* silent */ }
+  }, [expandedRunId]);
+
+  const openFullReport = useCallback(async (runId: number) => {
+    setFullReportLoading(true);
+    try {
+      const res = await authFetch(`/api/engineers/history/full?id=${runId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setFullReport({ runId: data.id, output: data.output, error: data.error });
+      }
+    } catch { /* silent */ }
+    setFullReportLoading(false);
+  }, []);
+
   const handleRun = async (engineerId: string) => {
     setRunningIds(prev => { const next = new Set(prev); next.add(engineerId); return next; });
     try {
@@ -486,6 +622,17 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   };
 
   const categories = ['research', 'monitoring', 'intelligence', 'audit'] as const;
+
+  // Division leads data for the PM section
+  const divisionLeads = useMemo(() => {
+    const divNodes = orgNodes.filter(n => n.type === 'division');
+    return divNodes.map(div => {
+      const managedEngineers = orgNodes.filter(
+        n => n.parentId === div.id && n.type === 'engineer'
+      );
+      return { ...div, engineerCount: managedEngineers.length, managedEngineers };
+    });
+  }, []);
 
   const openPromptPreview = useCallback((wf: Workflow, ticker: string, label: string) => {
     const prompt = wf.promptTemplate ?? wf.variants.find(v => v.ticker === ticker.toLowerCase())?.prompt;
@@ -604,6 +751,9 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
             <button className="eng-tab" data-active={activeTab === 'history'} onClick={() => setActiveTab('history')}>
               History
             </button>
+            <button className="eng-tab" data-active={activeTab === 'pms'} onClick={() => setActiveTab('pms')}>
+              PMs<span className="eng-tab-count">{divisionLeads.length}</span>
+            </button>
           </div>
         </div>
       </div>
@@ -611,136 +761,159 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
       {/* Feed */}
       <div className="eng-feed">
 
-        {/* ══ NETWORK GRAPH TAB — Category Swimlanes ══ */}
+        {/* ══ NETWORK GRAPH TAB ══ */}
         {activeTab === 'network' && (
           <div>
-            {/* Swimlanes */}
-            {categories.map(cat => {
-              const engs = grouped[cat] || [];
-              if (engs.length === 0) return null;
-              const color = categoryColors[cat];
+            {/* View toggle */}
+            <div className="eng-view-toggle-bar">
+              <button
+                className={`eng-view-toggle ${graphView === 'default' ? 'active' : ''}`}
+                onClick={() => setGraphView('default')}
+              >
+                Swimlane
+              </button>
+              <button
+                className={`eng-view-toggle ${graphView === 'interactive' ? 'active' : ''}`}
+                onClick={() => setGraphView('interactive')}
+              >
+                Interactive
+              </button>
+            </div>
 
-              return (
-                <div key={cat} className="eng-swimlane" data-color={color}>
-                  <div className="eng-swimlane-header">
-                    <div className="eng-swimlane-label-row">
-                      <span className="eng-swimlane-dot" data-color={color} />
-                      <span className="eng-swimlane-label">{categoryLabels[cat]}</span>
-                      <span className="eng-swimlane-count">{engs.length}</span>
-                    </div>
-                    <div className="eng-swimlane-desc">{categoryDescriptions[cat]}</div>
-                  </div>
+            {/* ── Default: Category Swimlanes ── */}
+            {graphView === 'default' && (
+              <>
+                {categories.map(cat => {
+                  const engs = grouped[cat] || [];
+                  if (engs.length === 0) return null;
+                  const color = categoryColors[cat];
 
-                  <div className="eng-swimlane-cards">
-                    {engs.map(eng => {
-                      const linkedWfs = workflows.filter(w => eng.workflowIds.includes(w.id));
-                      const isSelected = selectedNode === eng.id;
+                  return (
+                    <div key={cat} className="eng-swimlane" data-color={color}>
+                      <div className="eng-swimlane-header">
+                        <div className="eng-swimlane-label-row">
+                          <span className="eng-swimlane-dot" data-color={color} />
+                          <span className="eng-swimlane-label">{categoryLabels[cat]}</span>
+                          <span className="eng-swimlane-count">{engs.length}</span>
+                        </div>
+                        <div className="eng-swimlane-desc">{categoryDescriptions[cat]}</div>
+                      </div>
 
-                      return (
-                        <div
-                          key={eng.id}
-                          className="eng-swim-card"
-                          data-color={color}
-                          data-selected={isSelected || undefined}
-                          onClick={() => setSelectedNode(isSelected ? null : eng.id)}
-                        >
-                          {/* Engineer name + role */}
-                          <div className="eng-swim-card-header">
-                            <div className="eng-swim-card-icon" data-color={color}>{'\u2B22'}</div>
-                            <div>
-                              <div className="eng-swim-card-name">{eng.name}</div>
-                              <div className="eng-swim-card-role">{eng.role}</div>
+                      <div className="eng-swimlane-cards">
+                        {engs.map(eng => {
+                          const linkedWfs = workflows.filter(w => eng.workflowIds.includes(w.id));
+                          const isSelected = selectedNode === eng.id;
+
+                          return (
+                            <div
+                              key={eng.id}
+                              className="eng-swim-card"
+                              data-color={color}
+                              data-selected={isSelected || undefined}
+                              onClick={() => setSelectedNode(isSelected ? null : eng.id)}
+                            >
+                              <div className="eng-swim-card-header">
+                                <div className="eng-swim-card-icon" data-color={color}>{'\u2B22'}</div>
+                                <div>
+                                  <div className="eng-swim-card-name">{eng.name}</div>
+                                  <div className="eng-swim-card-role">{eng.role}</div>
+                                </div>
+                              </div>
+
+                              <div className="eng-swim-card-badges">
+                                <span className="eng-swim-badge-label">Workflows</span>
+                                {linkedWfs.map(wf => (
+                                  <span key={wf.id} className="eng-swim-badge" data-type="workflow">
+                                    {'\u2726'} {wf.name}
+                                  </span>
+                                ))}
+                                {eng.workflowIds
+                                  .filter(id => !linkedWfs.some(w => w.id === id))
+                                  .map(id => (
+                                    <span key={id} className="eng-swim-badge" data-type="workflow">{id}</span>
+                                  ))}
+                              </div>
+
+                              <div className="eng-swim-card-badges">
+                                <span className="eng-swim-badge-label">Triggers</span>
+                                {eng.triggerEvents.map(ev => {
+                                  const isShared = sharedTriggers.some(st => st.event === ev);
+                                  return (
+                                    <span
+                                      key={ev}
+                                      className="eng-swim-badge"
+                                      data-type={isShared ? 'shared-trigger' : 'trigger'}
+                                    >
+                                      {'\u26A1'} {ev.replace(/-/g, ' ')}
+                                    </span>
+                                  );
+                                })}
+                              </div>
+
+                              {eng.requiresData && eng.dataSource && (
+                                <div className="eng-swim-card-badges">
+                                  <span className="eng-swim-badge-label">Data</span>
+                                  <span className="eng-swim-badge" data-type="datasource">
+                                    {eng.dataSource}
+                                  </span>
+                                </div>
+                              )}
+
+                              <div className="eng-swim-card-schedule">
+                                Every {formatInterval(eng.defaultIntervalMinutes)}
+                              </div>
                             </div>
-                          </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
 
-                          {/* Workflow badges */}
-                          <div className="eng-swim-card-badges">
-                            <span className="eng-swim-badge-label">Workflows</span>
-                            {linkedWfs.map(wf => (
-                              <span key={wf.id} className="eng-swim-badge" data-type="workflow">
-                                {'\u2726'} {wf.name}
+                {/* Cross-Category Triggers */}
+                {sharedTriggers.length > 0 && (
+                  <div className="eng-cross-triggers">
+                    <div className="eng-section-header">
+                      <span className="eng-section-dot" data-color="violet" />
+                      <span className="eng-section-label">Cross-Category Triggers</span>
+                      <div className="eng-section-line" />
+                    </div>
+                    <div className="eng-cross-trigger-desc">
+                      Events that fire engineers across multiple categories — these are the key system-wide connections.
+                    </div>
+
+                    <div className="eng-cross-trigger-grid">
+                      {sharedTriggers.map(st => (
+                        <div key={st.event} className="eng-cross-trigger-card">
+                          <div className="eng-cross-trigger-event">
+                            {'\u26A1'} {st.event.replace(/-/g, ' ')}
+                          </div>
+                          <div className="eng-cross-trigger-agents">
+                            {st.engineers.map(eng => (
+                              <span
+                                key={eng.id}
+                                className="eng-cross-trigger-chip"
+                                data-color={categoryColors[eng.category]}
+                              >
+                                {eng.name}
                               </span>
                             ))}
-                            {eng.workflowIds
-                              .filter(id => !linkedWfs.some(w => w.id === id))
-                              .map(id => (
-                                <span key={id} className="eng-swim-badge" data-type="workflow">{id}</span>
-                              ))}
-                          </div>
-
-                          {/* Trigger badges */}
-                          <div className="eng-swim-card-badges">
-                            <span className="eng-swim-badge-label">Triggers</span>
-                            {eng.triggerEvents.map(ev => {
-                              // Check if this trigger is shared cross-category
-                              const isShared = sharedTriggers.some(st => st.event === ev);
-                              return (
-                                <span
-                                  key={ev}
-                                  className="eng-swim-badge"
-                                  data-type={isShared ? 'shared-trigger' : 'trigger'}
-                                >
-                                  {'\u26A1'} {ev.replace(/-/g, ' ')}
-                                </span>
-                              );
-                            })}
-                          </div>
-
-                          {/* Data source badge */}
-                          {eng.requiresData && eng.dataSource && (
-                            <div className="eng-swim-card-badges">
-                              <span className="eng-swim-badge-label">Data</span>
-                              <span className="eng-swim-badge" data-type="datasource">
-                                {eng.dataSource}
-                              </span>
-                            </div>
-                          )}
-
-                          {/* Schedule */}
-                          <div className="eng-swim-card-schedule">
-                            Every {formatInterval(eng.defaultIntervalMinutes)}
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-
-            {/* Cross-Category Triggers */}
-            {sharedTriggers.length > 0 && (
-              <div className="eng-cross-triggers">
-                <div className="eng-section-header">
-                  <span className="eng-section-dot" data-color="violet" />
-                  <span className="eng-section-label">Cross-Category Triggers</span>
-                  <div className="eng-section-line" />
-                </div>
-                <div className="eng-cross-trigger-desc">
-                  Events that fire engineers across multiple categories — these are the key system-wide connections.
-                </div>
-
-                <div className="eng-cross-trigger-grid">
-                  {sharedTriggers.map(st => (
-                    <div key={st.event} className="eng-cross-trigger-card">
-                      <div className="eng-cross-trigger-event">
-                        {'\u26A1'} {st.event.replace(/-/g, ' ')}
-                      </div>
-                      <div className="eng-cross-trigger-agents">
-                        {st.engineers.map(eng => (
-                          <span
-                            key={eng.id}
-                            className="eng-cross-trigger-chip"
-                            data-color={categoryColors[eng.category]}
-                          >
-                            {eng.name}
-                          </span>
-                        ))}
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* ── Interactive: SVG Org Hierarchy ── */}
+            {graphView === 'interactive' && (
+              <NetworkGraph
+                engineers={engineers}
+                runningIds={runningIds}
+                onSelectEngineer={(engineerId) => setSelectedNode(engineerId)}
+              />
             )}
 
             {/* Detail Modal */}
@@ -759,6 +932,8 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                     onSchedule={handleToggleSchedule}
                     onEnableSchedule={handleEnableSchedule}
                     onPromptPreview={openPromptPreview}
+                    onViewFullReport={openFullReport}
+                    fullReportLoading={fullReportLoading}
                   />
                 </div>
               </div>
@@ -769,12 +944,330 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
         {/* ══ HISTORY TAB ══ */}
         {activeTab === 'history' && (
           <div>
-            <div className="eng-empty">
-              <div>No operations history recorded yet for {selectedTicker}.</div>
-              <div className="eng-empty-sub">
-                History will appear here as agents execute tasks — showing comprehensive
-                descriptions of each operation, its inputs, outputs, and duration.
+            {historyLoading && historyRuns.length === 0 ? (
+              <div className="eng-empty">
+                <div>Loading history...</div>
               </div>
+            ) : historyRuns.length === 0 && !showHidden ? (
+              <div className="eng-empty">
+                <div>No operations history recorded yet for {selectedTicker}.</div>
+                <div className="eng-empty-sub">
+                  History will appear here as agents execute tasks.
+                </div>
+              </div>
+            ) : (
+              <div className="eng-history-list">
+                {/* ── Toolbar ── */}
+                {(() => {
+                  const hiddenCount = historyRuns.filter(r => r.hidden).length;
+                  const visibleCount = historyRuns.length - hiddenCount;
+                  return (
+                    <div className="eng-history-toolbar">
+                      <span className="eng-history-count">
+                        {visibleCount} run{visibleCount !== 1 ? 's' : ''}
+                        {showHidden && hiddenCount > 0 && (
+                          <span className="eng-history-hidden-count">
+                            {' + '}{hiddenCount} hidden
+                          </span>
+                        )}
+                      </span>
+                      <div className="eng-history-toolbar-right">
+                        <label className="eng-history-toggle">
+                          <input
+                            type="checkbox"
+                            checked={showHidden}
+                            onChange={() => setShowHidden(h => !h)}
+                          />
+                          <span>Show hidden</span>
+                        </label>
+                        <button className="eng-btn" onClick={fetchHistory} disabled={historyLoading}>
+                          {historyLoading ? 'Refreshing...' : 'Refresh'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* ── Run list ── */}
+                {historyRuns.map(run => {
+                  const isExpanded = expandedRunId === run.id;
+                  const statusLabel = STATUS_LABELS[run.status];
+                  const preview = extractPreview(run.outputSummary) || extractPreview(run.errorsEncountered);
+
+                  return (
+                    <div
+                      key={run.id}
+                      className={`eng-history-row ${run.hidden ? 'eng-history-row-hidden' : ''}`}
+                      data-status={run.status}
+                    >
+                      {/* ── Collapsed header ── */}
+                      <div
+                        className={`eng-history-row-header ${isExpanded ? 'eng-history-row-header-active' : ''}`}
+                        onClick={() => setExpandedRunId(isExpanded ? null : run.id)}
+                      >
+                        <span className="eng-history-chevron">{isExpanded ? '\u25BC' : '\u25B6'}</span>
+                        <span className="eng-history-pill" data-status={run.status}>
+                          {statusLabel}
+                        </span>
+                        <span className="eng-history-engineer">{run.engineerId}</span>
+                        {run.workflowId && (
+                          <span className="eng-history-workflow">{run.workflowId}</span>
+                        )}
+                        <span className="eng-history-trigger" data-trigger={run.triggerType}>
+                          {run.triggerType}
+                        </span>
+                        {run.hidden && <span className="eng-history-badge-hidden">HIDDEN</span>}
+                        <span className="eng-history-spacer" />
+                        <span className="eng-history-duration">{formatDuration(run.durationMs)}</span>
+                        <span className="eng-history-time">{formatTime(run.completedAt || run.startedAt || run.createdAt)}</span>
+                      </div>
+
+                      {/* ── Preview line (only when collapsed) ── */}
+                      {!isExpanded && preview && (
+                        <div
+                          className="eng-history-preview"
+                          onClick={() => setExpandedRunId(run.id)}
+                        >
+                          {preview}{preview.length >= 120 ? '...' : ''}
+                        </div>
+                      )}
+
+                      {/* ── Expanded details ── */}
+                      {isExpanded && (
+                        <div className="eng-history-details">
+                          {/* Meta grid */}
+                          <div className="eng-history-meta">
+                            <div className="eng-history-meta-item">
+                              <span className="eng-history-meta-label">Trigger</span>
+                              <span className="eng-history-meta-value">{run.triggerReason || run.triggerType}</span>
+                            </div>
+                            <div className="eng-history-meta-item">
+                              <span className="eng-history-meta-label">Started</span>
+                              <span className="eng-history-meta-value">{run.startedAt ? new Date(run.startedAt).toLocaleString() : '\u2014'}</span>
+                            </div>
+                            <div className="eng-history-meta-item">
+                              <span className="eng-history-meta-label">Duration</span>
+                              <span className="eng-history-meta-value">{formatDuration(run.durationMs)}</span>
+                            </div>
+                            {run.patchesApplied > 0 && (
+                              <div className="eng-history-meta-item">
+                                <span className="eng-history-meta-label">Patches</span>
+                                <span className="eng-history-meta-value">{run.patchesApplied}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Output */}
+                          {run.outputSummary && (
+                            <div className="eng-history-section">
+                              <div className="eng-history-section-label">Output</div>
+                              <pre className="eng-history-output">{run.outputSummary}</pre>
+                            </div>
+                          )}
+
+                          {/* Error */}
+                          {run.errorsEncountered && (
+                            <div className="eng-history-section">
+                              <div className="eng-history-section-label eng-history-section-label-error">Error</div>
+                              <pre className="eng-history-output eng-history-error">{run.errorsEncountered}</pre>
+                            </div>
+                          )}
+
+                          {/* Actions */}
+                          <div className="eng-history-actions">
+                            <button
+                              className="eng-btn eng-btn-ghost"
+                              onClick={(e) => { e.stopPropagation(); openFullReport(run.id); }}
+                            >
+                              {fullReportLoading ? '...' : 'View Full'}
+                            </button>
+                            <button
+                              className="eng-btn eng-btn-ghost"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(`/api/engineers/report?runId=${run.id}`, '_blank');
+                              }}
+                            >
+                              <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                                <path d="M14 2v6h6" />
+                                <path d="M12 18v-6" />
+                                <path d="M9 15l3 3 3-3" />
+                              </svg>
+                              PDF
+                            </button>
+                            <span className="eng-history-spacer" />
+                            {run.hidden ? (
+                              <button
+                                className="eng-btn eng-btn-ghost"
+                                onClick={(e) => { e.stopPropagation(); handleHideRun(run.id, false); }}
+                              >
+                                Unhide
+                              </button>
+                            ) : (
+                              <button
+                                className="eng-btn eng-btn-ghost"
+                                onClick={(e) => { e.stopPropagation(); handleHideRun(run.id, true); }}
+                              >
+                                Hide
+                              </button>
+                            )}
+                            <button
+                              className="eng-btn eng-btn-danger"
+                              onClick={(e) => { e.stopPropagation(); handleDeleteRun(run.id); }}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {/* Empty state when only hidden exist but toggle is off */}
+                {historyRuns.length === 0 && showHidden && (
+                  <div className="eng-empty">
+                    <div>No hidden runs found for {selectedTicker}.</div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ══ PMS TAB ══ */}
+        {activeTab === 'pms' && (
+          <div className="eng-pms-tab">
+            {/* KPI Bar */}
+            <div className="eng-pms-kpi-bar">
+              <div className="eng-kpi-bar-cell">
+                <div className="eng-kpi-bar-value" data-color="gold">{divisionLeads.length}</div>
+                <div className="eng-kpi-bar-label">Divisions</div>
+              </div>
+              <div className="eng-kpi-bar-cell">
+                <div className="eng-kpi-bar-value" data-color="cyan">
+                  {divisionLeads.reduce((sum, d) => sum + d.engineerCount, 0)}
+                </div>
+                <div className="eng-kpi-bar-label">Total Engineers</div>
+              </div>
+              <div className="eng-kpi-bar-cell">
+                <div className="eng-kpi-bar-value" data-color="mint">
+                  {divisionLeads.filter(d => d.engineerCount > 0).length}
+                </div>
+                <div className="eng-kpi-bar-label">Active Teams</div>
+              </div>
+              <div className="eng-kpi-bar-cell">
+                <div className="eng-kpi-bar-value" data-color="violet">
+                  {Math.round(divisionLeads.reduce((sum, d) => sum + d.engineerCount, 0) / divisionLeads.filter(d => d.engineerCount > 0).length) || 0}
+                </div>
+                <div className="eng-kpi-bar-label">Avg Team Size</div>
+              </div>
+              <div className="eng-kpi-bar-cell">
+                <div className="eng-kpi-bar-value" data-color="coral">
+                  {uniqueWorkflows}
+                </div>
+                <div className="eng-kpi-bar-label">Total Workflows</div>
+              </div>
+            </div>
+
+            {/* Division Cards */}
+            <div className="eng-pms-grid">
+              {divisionLeads.map(div => {
+                // Find engineers under this division
+                const divEngineers = engineers.filter(eng => {
+                  const engNode = orgNodes.find(n => n.engineerId === eng.id);
+                  return engNode?.parentId === div.id;
+                });
+                const divWorkflowCount = new Set(divEngineers.flatMap(e => e.workflowIds)).size;
+                const divScheduledCount = statuses.filter(s =>
+                  divEngineers.some(e => e.id === s.engineer.id) && s.schedule?.enabled
+                ).length;
+                const divRunningCount = divEngineers.filter(e => runningIds.has(e.id)).length;
+                const divCategories = [...new Set(divEngineers.map(e => e.category))];
+
+                return (
+                  <div
+                    key={div.id}
+                    className="eng-pm-card"
+                    style={{ '--div-color': div.color } as React.CSSProperties}
+                  >
+                    {/* Card Header */}
+                    <div className="eng-pm-card-header">
+                      <div className="eng-division-card-badge" style={{ background: `${div.color}18`, color: div.color }}>
+                        {div.badge}
+                      </div>
+                      <div className="eng-pm-card-title">
+                        <div className="eng-division-card-name">{div.label}</div>
+                        <div className="eng-division-card-role">{div.role}</div>
+                      </div>
+                      {divRunningCount > 0 && (
+                        <span className="eng-pm-running-badge">
+                          {divRunningCount} running
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Description */}
+                    {div.description && (
+                      <div className="eng-pm-card-desc">{div.description}</div>
+                    )}
+
+                    {/* Mini KPIs */}
+                    <div className="eng-pm-card-metrics">
+                      <div className="eng-pm-metric">
+                        <span className="eng-pm-metric-value" style={{ color: div.color }}>{div.engineerCount}</span>
+                        <span className="eng-pm-metric-label">Engineers</span>
+                      </div>
+                      <div className="eng-pm-metric">
+                        <span className="eng-pm-metric-value">{divWorkflowCount}</span>
+                        <span className="eng-pm-metric-label">Workflows</span>
+                      </div>
+                      <div className="eng-pm-metric">
+                        <span className="eng-pm-metric-value">{divScheduledCount}</span>
+                        <span className="eng-pm-metric-label">Scheduled</span>
+                      </div>
+                      <div className="eng-pm-metric">
+                        <span className="eng-pm-metric-value">{divCategories.length}</span>
+                        <span className="eng-pm-metric-label">Categories</span>
+                      </div>
+                    </div>
+
+                    {/* Engineer List */}
+                    {divEngineers.length > 0 ? (
+                      <div className="eng-pm-engineer-list">
+                        <div className="eng-pm-engineer-list-title">Managed Engineers</div>
+                        {divEngineers.map(eng => {
+                          const engStatus = statuses.find(s => s.engineer.id === eng.id);
+                          const isRunning = runningIds.has(eng.id);
+                          const dotStatus = isRunning || engStatus?.lastRun?.status === 'running'
+                            ? 'running'
+                            : engStatus?.schedule?.enabled ? 'active' : 'idle';
+
+                          return (
+                            <div
+                              key={eng.id}
+                              className="eng-pm-engineer-row"
+                              onClick={() => setSelectedNode(eng.id)}
+                            >
+                              <span className="eng-status-dot" data-status={dotStatus} />
+                              <span className="eng-pm-engineer-name">{eng.name}</span>
+                              <span className="eng-pm-engineer-role">{eng.role}</span>
+                              <span className="eng-pm-engineer-interval">
+                                {formatInterval(eng.defaultIntervalMinutes)}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="eng-pm-no-engineers">
+                        No engineers managed — this division focuses on infrastructure and coordination.
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -785,6 +1278,54 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
           </div>
         )}
       </div>
+
+      {/* Full Report Modal */}
+      {fullReport && (
+        <div className="eng-modal-overlay" onClick={() => setFullReport(null)}>
+          <div className="eng-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="eng-modal-header">
+              <h2 className="eng-modal-title">Full Report</h2>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  className="eng-btn eng-btn-pdf"
+                  onClick={() => window.open(`/api/engineers/report?runId=${fullReport.runId}`, '_blank')}
+                  title="Download as PDF"
+                >
+                  <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                    <path d="M14 2v6h6" />
+                    <path d="M12 18v-6" />
+                    <path d="M9 15l3 3 3-3" />
+                  </svg>
+                  PDF
+                </button>
+                <button className="eng-modal-close" onClick={() => setFullReport(null)}>
+                  &times;
+                </button>
+              </div>
+            </div>
+            <div className="eng-modal-body">
+              {fullReport.output && (
+                <div className="eng-modal-section">
+                  <div className="eng-modal-heading">Output</div>
+                  <pre className="eng-modal-prompt">{fullReport.output}</pre>
+                </div>
+              )}
+              {fullReport.error && (
+                <div className="eng-modal-section">
+                  <div className="eng-modal-heading" style={{ color: 'var(--color-red, #ef4444)' }}>Error</div>
+                  <pre className="eng-modal-prompt" style={{ color: 'var(--color-red, #ef4444)' }}>{fullReport.error}</pre>
+                </div>
+              )}
+              {!fullReport.output && !fullReport.error && (
+                <div className="eng-modal-section">
+                  <div className="eng-modal-desc">No output recorded for this run.</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Prompt Preview Modal */}
       {promptPreview && (

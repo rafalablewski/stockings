@@ -3,6 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import type { EngineerTask } from '@/lib/engineers';
 import type { Workflow } from '@/data/workflows';
+import { orgNodes } from '@/data/org-hierarchy';
 
 interface Props {
   engineers: EngineerTask[];
@@ -13,6 +14,12 @@ function formatInterval(minutes: number): string {
   if (minutes < 60) return `${minutes}m`;
   if (minutes < 1440) return `${(minutes / 60).toFixed(0)}h`;
   return `${(minutes / 1440).toFixed(0)}d`;
+}
+
+function getEngineerPM(engineerId: string) {
+  const engNode = orgNodes.find(n => n.engineerId === engineerId);
+  if (!engNode?.parentId) return null;
+  return orgNodes.find(n => n.id === engNode.parentId) ?? null;
 }
 
 const categoryColors: Record<string, string> = {
@@ -150,6 +157,14 @@ export default function AIAgentsView({ engineers, workflows }: Props) {
                   <div className="eng-card-name-row">
                     <span className="eng-card-name">{eng.name}</span>
                     <span className="eng-card-role">{eng.role}</span>
+                    {(() => {
+                      const pm = getEngineerPM(eng.id);
+                      return pm ? (
+                        <span className="eng-card-pm" style={{ color: pm.color }}>
+                          PM: {pm.label}
+                        </span>
+                      ) : null;
+                    })()}
                   </div>
                   <div className="eng-card-desc">{eng.description}</div>
                   <div className="eng-card-meta">
@@ -188,6 +203,15 @@ export default function AIAgentsView({ engineers, workflows }: Props) {
                     {/* Configuration */}
                     <div>
                       <div className="eng-expand-label">Configuration</div>
+                      {(() => {
+                        const pm = getEngineerPM(eng.id);
+                        return pm ? (
+                          <div className="eng-config-row">
+                            <span className="eng-config-key">Reports to</span>
+                            <span className="eng-config-val" style={{ color: pm.color, fontWeight: 600 }}>{pm.label}</span>
+                          </div>
+                        ) : null;
+                      })()}
                       <div className="eng-config-row">
                         <span className="eng-config-key">Schedule</span>
                         <span className="eng-config-val">Every {formatInterval(eng.defaultIntervalMinutes)}</span>

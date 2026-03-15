@@ -218,6 +218,7 @@ CREATE TABLE IF NOT EXISTS agent_runs (
   patches_applied INTEGER NOT NULL DEFAULT 0,
   errors_encountered TEXT,
   duration_ms INTEGER,
+  hidden BOOLEAN NOT NULL DEFAULT false,
   scheduled_at TIMESTAMP,
   started_at TIMESTAMP,
   completed_at TIMESTAMP,

@@ -178,6 +178,7 @@ export const agents: AgentNode[] = [
     prompts: ['article-classification', 'sentiment-analysis', 'filing-extraction'],
     metrics: { runsPerDay: 48, avgLatencyMs: 3200, lastRun: '2026-03-13', findings: 12 },
   },
+
 ];
 
 // ── Resource nodes ──────────────────────────────────────────────────────────

@@ -1,8 +1,14 @@
 import { NextRequest } from 'next/server';
 import { checkAiGate } from '@/lib/ai-gate';
 import { resolvePromptPlaceholders } from '@/lib/prompt-placeholders';
+import { getDb } from '@/lib/db';
+import { agentRuns } from '@/lib/schema';
+import { asts, bmnr, crcl } from '@/data';
 
-export const runtime = 'edge';
+// Map ticker -> company data for context injection
+const TICKER_DATA: Record<string, { COMPANY_INFO: { name: string; ticker: string; exchange: string; sector: string; description: string } }> = {
+  asts, bmnr, crcl,
+};
 
 export async function POST(request: NextRequest) {
   const gateError = checkAiGate(request);
@@ -19,7 +25,13 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { prompt, data, ticker } = body as { prompt: string; data: string; ticker?: string };
+    const { prompt, data, ticker, workflowId, workflowName } = body as {
+      prompt: string;
+      data?: string;
+      ticker?: string;
+      workflowId?: string;
+      workflowName?: string;
+    };
 
     if (!prompt) {
       return new Response(JSON.stringify({ error: 'Missing prompt' }), {
@@ -28,13 +40,27 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Resolve any {{PLACEHOLDER}} tokens in the prompt
+    const startTime = Date.now();
+
+    // Resolve any {{PLACEHOLDER}} tokens in the prompt (stock context, tabs, etc.)
     const resolvedPrompt = resolvePromptPlaceholders(prompt, ticker);
 
-    // Build the full message: prompt + optional user data
+    // Build the full message: today's date + company context + prompt + optional user data
     const dataSeparator = '\n\n════════════════════════════════════════════════════════════\nUSER-PROVIDED DATA\n════════════════════════════════════════════════════════════\n\n';
 
-    let fullMessage = resolvedPrompt;
+    const today = new Date().toISOString().split('T')[0];
+    // Inject company context if ticker is provided
+    let companyCtx = '';
+    if (ticker) {
+      const companyData = TICKER_DATA[ticker.toLowerCase()];
+      if (companyData?.COMPANY_INFO) {
+        const c = companyData.COMPANY_INFO;
+        companyCtx = `\nCompany: ${c.name} (${c.exchange}: ${c.ticker})\nSector: ${c.sector}\nDescription: ${c.description}\n`;
+      }
+    }
+    // Replace any remaining {{CURRENT_DATE}} placeholders with today's date
+    const datedPrompt = resolvedPrompt.replace(/\{\{CURRENT_DATE\}\}/g, today);
+    let fullMessage = `[Today's date: ${today}]${companyCtx}\n\n${datedPrompt}`;
     if (data) {
       fullMessage += dataSeparator + data;
     }
@@ -57,7 +83,6 @@ export async function POST(request: NextRequest) {
     if (!claudeRes.ok) {
       const errText = await claudeRes.text();
       console.error('Claude API error:', claudeRes.status, errText);
-      // Parse the Anthropic error for a user-visible reason
       let reason = `Upstream API returned ${claudeRes.status}`;
       try {
         const parsed = JSON.parse(errText);
@@ -69,9 +94,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Stream the response through
+    // Stream the response through, collecting full output for history
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
+    let fullOutput = '';
 
     const stream = new ReadableStream({
       async start(controller) {
@@ -100,6 +126,7 @@ export async function POST(request: NextRequest) {
                 try {
                   const event = JSON.parse(jsonStr);
                   if (event.type === 'content_block_delta' && event.delta?.text) {
+                    fullOutput += event.delta.text;
                     controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`));
                   } else if (event.type === 'message_stop') {
                     controller.enqueue(encoder.encode('data: [DONE]\n\n'));
@@ -114,6 +141,30 @@ export async function POST(request: NextRequest) {
           console.error('Stream error:', err);
         } finally {
           controller.close();
+
+          // Save to history (fire-and-forget, don't block the stream)
+          if (ticker) {
+            const durationMs = Date.now() - startTime;
+            try {
+              const db = getDb();
+              await db.insert(agentRuns).values({
+                ticker,
+                engineerId: 'manual-workflow',
+                workflowId: workflowId || null,
+                status: 'completed',
+                triggerType: 'manual',
+                triggerReason: `Manual run: ${workflowName || workflowId || 'workflow'}`,
+                inputSummary: data ? `User data: ${data.slice(0, 200)}...` : 'Prompt only',
+                outputSummary: fullOutput.slice(0, 500),
+                outputFull: fullOutput,
+                durationMs,
+                startedAt: new Date(startTime),
+                completedAt: new Date(),
+              });
+            } catch (dbErr) {
+              console.error('Failed to save workflow run to history:', dbErr);
+            }
+          }
         }
       },
     });

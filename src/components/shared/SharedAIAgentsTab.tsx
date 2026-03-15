@@ -57,6 +57,8 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
           prompt: workflow.prompt,
           data: userData || undefined,
           ticker,
+          workflowId: workflow.id,
+          workflowName: workflow.name,
         }),
         signal: abortRef.current.signal,
       });
@@ -108,7 +110,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
     } finally {
       setRunning(false);
     }
-  }, [userData, workflow]);
+  }, [userData, workflow, ticker]);
 
   const handleStop = () => {
     abortRef.current?.abort();
