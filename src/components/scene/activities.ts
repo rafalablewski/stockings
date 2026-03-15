@@ -22,36 +22,36 @@ export interface Activity {
   bubble?: boolean;
 }
 
-// ── World-grid positions for zones (room is 28×14) ──
+// ── World-grid positions for zones (room is 56×30) ──
 export interface WorldPos {
   x: number;
   y: number;
 }
 
 export const ZONES = {
-  bathroom:   { x: 2,   y: 12.5 },
-  coffee:     { x: 5,   y: 12 },
-  couch:      { x: 23,  y: 3 },
-  bookshelf:  { x: 25,  y: 12 },
-  waterCooler: { x: 8,  y: 12 },
+  bathroom:    { x: 4,   y: 27 },
+  coffee:      { x: 10,  y: 26 },
+  couch:       { x: 44,  y: 5 },
+  bookshelf:   { x: 48,  y: 26 },
+  waterCooler: { x: 16,  y: 26 },
 } as const;
 
-// Desk world positions (where the desk surface is) — 28×14 room
+// Desk world positions (where the desk surface is) — 56×30 room
 export const DESK_POS: WorldPos[] = [
-  { x: 8,  y: 9 },   // Claude
-  { x: 12, y: 9 },   // Gemini
-  { x: 16, y: 9 },   // AI Eng
-  { x: 20, y: 9 },   // Cursor
-  { x: 24, y: 9 },   // PM
+  { x: 14, y: 19 },  // Claude
+  { x: 22, y: 19 },  // Gemini
+  { x: 30, y: 19 },  // AI Eng
+  { x: 38, y: 19 },  // Cursor
+  { x: 46, y: 19 },  // PM
 ];
 
 // Chair positions (where avatar sits, in front of desk)
 export const CHAIR_POS: WorldPos[] = [
-  { x: 8,  y: 7 },
-  { x: 12, y: 7 },
-  { x: 16, y: 7 },
-  { x: 20, y: 7 },
-  { x: 24, y: 7 },
+  { x: 14, y: 16 },
+  { x: 22, y: 16 },
+  { x: 30, y: 16 },
+  { x: 38, y: 16 },
+  { x: 46, y: 16 },
 ];
 
 // ── Activity definitions ──

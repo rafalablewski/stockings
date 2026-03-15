@@ -55,13 +55,13 @@ function activityPos(activity: ActivityType, pmIndex: number, chattingWith: numb
     case 'idle':
       return { x: CHAIR_POS[pmIndex].x, y: CHAIR_POS[pmIndex].y - 0.5 };
     case 'coffee':
-      return { x: ZONES.coffee.x + pmIndex * 0.4, y: ZONES.coffee.y };
+      return { x: ZONES.coffee.x + pmIndex * 0.8, y: ZONES.coffee.y };
     case 'reading':
-      return { x: ZONES.bookshelf.x, y: ZONES.bookshelf.y - 0.5 + pmIndex * 0.3 };
+      return { x: ZONES.bookshelf.x, y: ZONES.bookshelf.y - 1 + pmIndex * 0.6 };
     case 'gaming':
-      return { x: ZONES.couch.x + (pmIndex % 2 === 0 ? -0.8 : 0.8), y: ZONES.couch.y };
+      return { x: ZONES.couch.x + (pmIndex % 2 === 0 ? -1.5 : 1.5), y: ZONES.couch.y };
     case 'phone':
-      return { x: CHAIR_POS[pmIndex].x + 1.5, y: CHAIR_POS[pmIndex].y - 1 };
+      return { x: CHAIR_POS[pmIndex].x + 2.5, y: CHAIR_POS[pmIndex].y - 2 };
     case 'bathroom':
       return ZONES.bathroom;
     case 'chatting': {
@@ -69,8 +69,8 @@ function activityPos(activity: ActivityType, pmIndex: number, chattingWith: numb
         const my = CHAIR_POS[pmIndex];
         const their = CHAIR_POS[chattingWith];
         return {
-          x: (my.x + their.x) / 2 + (pmIndex < chattingWith ? -0.8 : 0.8),
-          y: (my.y + their.y) / 2 - 1,
+          x: (my.x + their.x) / 2 + (pmIndex < chattingWith ? -1.5 : 1.5),
+          y: (my.y + their.y) / 2 - 2,
         };
       }
       return CHAIR_POS[pmIndex];

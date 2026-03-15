@@ -10,25 +10,25 @@ import type { WorldPos } from './activities';
 // Interaction zones (chair positions, coffee counter front) are kept clear.
 const OBSTACLES: ReadonlyArray<{ x: number; y: number; w: number; d: number }> = [
   // Desk surfaces (the desk itself — chairs are in front, walkable)
-  { x: 7, y: 9, w: 2, d: 2 },     // Claude
-  { x: 11, y: 9, w: 2, d: 2 },    // Gemini
-  { x: 15, y: 9, w: 2, d: 2 },    // AI Eng
-  { x: 19, y: 9, w: 2, d: 2 },    // Cursor
-  { x: 23, y: 9, w: 2, d: 2 },    // PM
+  { x: 13, y: 19, w: 3, d: 2 },   // Claude
+  { x: 21, y: 19, w: 3, d: 2 },   // Gemini
+  { x: 29, y: 19, w: 3, d: 2 },   // AI Eng
+  { x: 37, y: 19, w: 3, d: 2 },   // Cursor
+  { x: 45, y: 19, w: 3, d: 2 },   // PM
   // Conference table
-  { x: 4, y: 4, w: 3, d: 2 },
+  { x: 6, y: 6, w: 5, d: 3 },
   // Couch back (front is accessible for sitting)
-  { x: 21, y: 3, w: 5, d: 1 },
+  { x: 42, y: 4, w: 6, d: 2 },
   // TV stand area
-  { x: 22, y: 5, w: 3, d: 1 },
+  { x: 43, y: 7, w: 4, d: 1 },
   // Server rack
-  { x: 1, y: 2, w: 2, d: 2 },
+  { x: 2, y: 3, w: 3, d: 3 },
   // Filing cabinets
-  { x: 1, y: 11, w: 4, d: 1 },
+  { x: 2, y: 24, w: 5, d: 1 },
   // Coffee counter (back wall side blocked, front accessible)
-  { x: 4, y: 13, w: 3, d: 1 },
+  { x: 8, y: 28, w: 5, d: 2 },
   // Bookshelf (back blocked, front accessible)
-  { x: 25, y: 13, w: 3, d: 1 },
+  { x: 46, y: 28, w: 5, d: 2 },
 ];
 
 // ── Build occupancy grid ──

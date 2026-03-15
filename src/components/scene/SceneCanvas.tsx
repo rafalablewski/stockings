@@ -22,9 +22,9 @@ export interface SceneCanvasHandle {
   zoomOut: () => void;
 }
 
-const MIN_DISTANCE = 8;
-const MAX_DISTANCE = 40;
-const ZOOM_STEP = 4;
+const MIN_DISTANCE = 12;
+const MAX_DISTANCE = 80;
+const ZOOM_STEP = 6;
 
 /** Inner component that has access to useThree / useFrame */
 function ZoomController({ controlsRef, targetDistanceRef }: {
@@ -87,10 +87,10 @@ const SceneCanvas = forwardRef<SceneCanvasHandle, SceneCanvasProps>(
       <Canvas
         shadows
         camera={{
-          position: [cx + 18, 20, cz + 18],
+          position: [cx + 30, 32, cz + 30],
           fov: 40,
           near: 0.5,
-          far: 200,
+          far: 400,
         }}
         style={{ background: '#0a0a12' }}
         gl={{ antialias: true }}
@@ -98,21 +98,21 @@ const SceneCanvas = forwardRef<SceneCanvasHandle, SceneCanvasProps>(
         {/* Lighting */}
         <ambientLight intensity={0.55} color="#c8d0ff" />
         <directionalLight
-          position={[cx + 10, 20, cz - 8]}
+          position={[cx + 15, 30, cz - 10]}
           intensity={0.9}
           color="#eee8ff"
           castShadow
-          shadow-mapSize-width={1024}
-          shadow-mapSize-height={1024}
-          shadow-camera-left={-20}
-          shadow-camera-right={20}
-          shadow-camera-top={20}
-          shadow-camera-bottom={-20}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          shadow-camera-left={-40}
+          shadow-camera-right={40}
+          shadow-camera-top={40}
+          shadow-camera-bottom={-40}
         />
         {/* Subtle fill from below/side */}
-        <pointLight position={[cx, 1, cz]} intensity={0.3} color="#22d3ee" distance={40} />
+        <pointLight position={[cx, 1, cz]} intensity={0.4} color="#22d3ee" distance={70} />
         {/* Overhead fill to brighten the room */}
-        <pointLight position={[cx, 12, cz]} intensity={0.35} color="#e0e0ff" distance={50} />
+        <pointLight position={[cx, 16, cz]} intensity={0.45} color="#e0e0ff" distance={80} />
 
         <OrbitControls
           ref={controlsRef}
