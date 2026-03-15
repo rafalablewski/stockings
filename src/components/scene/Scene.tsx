@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Room from '../Room';
 
+import type { SceneCanvasHandle } from './SceneCanvas';
 const SceneCanvas = dynamic(() => import('./SceneCanvas'), { ssr: false });
 
 import { orgNodes } from '@/data/org-hierarchy';
@@ -115,6 +116,7 @@ export default function Scene() {
   const [engineerWorking, setEngineerWorking] = useState<Record<string, boolean>>({});
   const [bridgeThinking, setBridgeThinking] = useState<Record<string, boolean>>({});
   const [fullscreen, setFullscreen] = useState(false);
+  const canvasRef = useRef<SceneCanvasHandle>(null);
 
   // Activity state
   const [avatars, setAvatars] = useState<AvatarState[]>(() =>
@@ -345,8 +347,25 @@ export default function Scene() {
           {fullscreen ? '\u2715' : '\u26F6'}
         </button>
 
+        <div className="scene-zoom-controls">
+          <button
+            className="scene-zoom-btn"
+            onClick={() => canvasRef.current?.zoomIn()}
+            title="Zoom in"
+          >
+            +
+          </button>
+          <button
+            className="scene-zoom-btn"
+            onClick={() => canvasRef.current?.zoomOut()}
+            title="Zoom out"
+          >
+            &minus;
+          </button>
+        </div>
+
         <div style={{ width: '100%', height: '100%', position: 'absolute', inset: 0 }}>
-          <SceneCanvas avatars={avatars} workingState={workingState} />
+          <SceneCanvas ref={canvasRef} avatars={avatars} workingState={workingState} />
         </div>
       </div>
       {!fullscreen && (

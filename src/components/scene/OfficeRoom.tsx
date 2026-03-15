@@ -40,37 +40,37 @@ export default function OfficeRoom() {
       {/* Floor */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[ROOM_W / 2, 0, ROOM_D / 2]} receiveShadow>
         <planeGeometry args={[ROOM_W, ROOM_D]} />
-        <meshStandardMaterial color="#0c0c10" />
+        <meshStandardMaterial color="#18181f" />
       </mesh>
 
       {/* Grid */}
       <gridHelper
-        args={[Math.max(ROOM_W, ROOM_D), Math.max(ROOM_W, ROOM_D), 0x181820, 0x181820]}
+        args={[Math.max(ROOM_W, ROOM_D), Math.max(ROOM_W, ROOM_D), 0x252530, 0x252530]}
         position={[ROOM_W / 2, 0.01, ROOM_D / 2]}
       />
 
       {/* Back wall (z = ROOM_D) */}
       <mesh ref={backRef} position={[ROOM_W / 2, WALL_H / 2, ROOM_D]}>
         <planeGeometry args={[ROOM_W, WALL_H]} />
-        {wallMat('#0e0e14')}
+        {wallMat('#1a1a24')}
       </mesh>
 
       {/* Front wall (z = 0) */}
       <mesh ref={frontRef} position={[ROOM_W / 2, WALL_H / 2, 0]} rotation={[0, Math.PI, 0]}>
         <planeGeometry args={[ROOM_W, WALL_H]} />
-        {wallMat('#0e0e14')}
+        {wallMat('#1a1a24')}
       </mesh>
 
       {/* Left wall (x = 0) */}
       <mesh ref={leftRef} position={[0, WALL_H / 2, ROOM_D / 2]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D, WALL_H]} />
-        {wallMat('#111118')}
+        {wallMat('#1e1e28')}
       </mesh>
 
       {/* Right wall (x = ROOM_W) */}
       <mesh ref={rightRef} position={[ROOM_W, WALL_H / 2, ROOM_D / 2]} rotation={[0, -Math.PI / 2, 0]}>
         <planeGeometry args={[ROOM_D, WALL_H]} />
-        {wallMat('#111118')}
+        {wallMat('#1e1e28')}
       </mesh>
     </group>
   );

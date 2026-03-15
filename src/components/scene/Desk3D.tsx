@@ -130,9 +130,9 @@ export default function Desk3D({ position, color, isActive }: Desk3DProps) {
             position={[0, deskZ + 0.65, -0.021]}>
             <planeGeometry args={[0.88, 0.58]} />
             <meshStandardMaterial
-              color={isActive ? color : '#141422'}
-              emissive={isActive ? glowColor : new THREE.Color('#000')}
-              emissiveIntensity={isActive ? 0.6 : 0}
+              color={isActive ? color : '#2a2a40'}
+              emissive={isActive ? glowColor : new THREE.Color('#3a3a55')}
+              emissiveIntensity={isActive ? 0.6 : 0.15}
               toneMapped={false}
             />
           </mesh>
