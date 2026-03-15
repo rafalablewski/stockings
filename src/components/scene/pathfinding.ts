@@ -29,6 +29,17 @@ const OBSTACLES: ReadonlyArray<{ x: number; y: number; w: number; d: number }> =
   { x: 12, y: 44, w: 6, d: 2 },
   // Bookshelf (back blocked, front accessible)
   { x: 66, y: 44, w: 6, d: 2 },
+  // ── Lounge area (centered at 20,37) ──
+  // Sofa A (front, z=33-35)
+  { x: 17, y: 33, w: 6, d: 2 },
+  // Sofa B (back, z=39-41)
+  { x: 17, y: 39, w: 6, d: 2 },
+  // Armchair left (x=13-16, z=36-38)
+  { x: 13, y: 36, w: 3, d: 3 },
+  // Armchair right (x=24-27, z=36-38)
+  { x: 24, y: 36, w: 3, d: 3 },
+  // Coffee table (center)
+  { x: 18, y: 36, w: 4, d: 2 },
 ];
 
 // ── Build occupancy grid ──

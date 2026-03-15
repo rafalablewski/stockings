@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import OfficeRoom from './OfficeRoom';
 import Desk3D from './Desk3D';
 import CoffeeStation3D from './CoffeeStation3D';
+import Lounge3D from './Lounge3D';
 import Plant3D from './Plant3D';
 import Avatar3D from './Avatar3D';
 import { DESK_POS } from './activities';
@@ -145,6 +146,9 @@ const SceneCanvas = forwardRef<SceneCanvasHandle, SceneCanvasProps>(
         {/* Coffee Station (near back-left, zone at 14,42) */}
         <CoffeeStation3D position={[14, 0, 43]} />
 
+        {/* Lounge / leisure area in front of coffee station */}
+        <Lounge3D position={[20, 0, 37]} />
+
         {/* Plants scattered around the office */}
         {/* Tall floor plants in corners */}
         <Plant3D position={[3, 0, 3]} variant="tall" scale={1.1} leafColor="#2d8a4e" />
@@ -156,8 +160,9 @@ const SceneCanvas = forwardRef<SceneCanvasHandle, SceneCanvasProps>(
         <Plant3D position={[66, 0, 26]} variant="bush" scale={1.1} leafColor="#2e9050" potColor="#8a6548" />
         {/* Near the couch / lounge area */}
         <Plant3D position={[60, 0, 6]} variant="bush" scale={1.0} leafColor="#40b070" potColor="#6b4c3b" />
-        {/* Near coffee station */}
-        <Plant3D position={[10, 0, 40]} variant="bush" scale={0.9} leafColor="#35a055" />
+        {/* Flanking the lounge */}
+        <Plant3D position={[12, 0, 33]} variant="tall" scale={0.85} leafColor="#35a055" />
+        <Plant3D position={[28, 0, 33]} variant="tall" scale={0.8} leafColor="#2e9050" potColor="#5c3d2e" />
 
         {/* Avatars */}
         {avatars.map((avatar) => (
