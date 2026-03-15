@@ -77,6 +77,7 @@ const mobileNavItems = [
     label: 'Engineers',
     children: [
       { label: 'Dashboard', href: '/engineers' },
+      { label: 'Decisions', href: '/engineers/decisions' },
       { label: 'Room', href: '/engineers/room' },
       { label: 'Prompt Database', href: '/engineers/prompts' },
     ],
@@ -193,6 +194,14 @@ function Navigation() {
                   >
                     <span className="text-[12px] text-white/80">
                       Dashboard
+                    </span>
+                  </Link>
+                  <Link
+                    href="/engineers/decisions"
+                    className="block px-4 py-2.5 hover:bg-white/[0.04] transition-colors"
+                  >
+                    <span className="text-[12px] text-white/80">
+                      Decisions
                     </span>
                   </Link>
                   <Link
