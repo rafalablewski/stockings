@@ -1172,7 +1172,20 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
               </div>
             </div>
 
+            {/* Decision Queue */}
+            <div className="eng-section-header">
+              <span className="eng-section-dot" data-color="gold" />
+              <span className="eng-section-label">Decision Queue</span>
+              <span className="eng-section-line" />
+            </div>
+            <DecisionDashboard />
+
             {/* Division Cards */}
+            <div className="eng-section-header">
+              <span className="eng-section-dot" data-color="cyan" />
+              <span className="eng-section-label">Division Leads</span>
+              <span className="eng-section-line" />
+            </div>
             <div className="eng-pms-grid">
               {divisionLeads.map(div => {
                 // Find engineers under this division
@@ -1269,12 +1282,6 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                   </div>
                 );
               })}
-            </div>
-
-            {/* Decision Queue */}
-            <div className="eng-pms-decisions">
-              <div className="eng-pms-decisions-header">Decision Queue</div>
-              <DecisionDashboard />
             </div>
           </div>
         )}
