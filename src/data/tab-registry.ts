@@ -72,8 +72,26 @@ export const crclTabs: TabConfig[] = [
   { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
 ];
 
+// ── DEFAULT TABS ────────────────────────────────────────────────────────────
+// Every new stock gets these tabs. Stock-specific tabs (Partners, Ethereum, etc.)
+// are added manually later when a custom analysis component is built.
+export const defaultTabs: TabConfig[] = [
+  { id: 'overview', label: 'Overview', type: 'tracking' },
+  { id: 'model', label: 'Model', type: 'projection' },
+  { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
+  { id: 'comps', label: 'Comps', type: 'projection' },
+  { id: 'capital', label: 'Capital', type: 'tracking' },
+  { id: 'financials', label: 'Financials', type: 'tracking' },
+  { id: 'timeline', label: 'Timeline', type: 'tracking' },
+  { id: 'investment', label: 'Investment', type: 'tracking' },
+  { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
+  { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
+  { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
+];
+
 // ── REGISTRY ────────────────────────────────────────────────────────────────
 // Maps ticker → tab config. Add new tickers here when creating stock components.
+// Initiate Research auto-adds entries with defaultTabs.
 export const tabRegistry: Record<string, TabConfig[]> = {
   ASTS: astsTabs,
   BMNR: bmnrTabs,

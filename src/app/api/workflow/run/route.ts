@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { prompt, data } = body as { prompt: string; data: string };
+    const { prompt, data, ticker } = body as { prompt: string; data: string; ticker?: string };
 
     if (!prompt) {
       return new Response(JSON.stringify({ error: 'Missing prompt' }), {
@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Resolve any {{PLACEHOLDER}} tokens in the prompt (e.g. {{CODEBASE_INVENTORY}})
-    const resolvedPrompt = resolvePromptPlaceholders(prompt);
+    // Resolve any {{PLACEHOLDER}} tokens in the prompt
+    const resolvedPrompt = resolvePromptPlaceholders(prompt, ticker);
 
     // Build the full message: prompt + optional user data
     const dataSeparator = '\n\n════════════════════════════════════════════════════════════\nUSER-PROVIDED DATA\n════════════════════════════════════════════════════════════\n\n';

@@ -84,7 +84,7 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
     }
 
     // 3b. Resolve {{PLACEHOLDER}} tokens in the prompt
-    const resolvedPrompt = resolvePromptPlaceholders(prompt);
+    const resolvedPrompt = resolvePromptPlaceholders(prompt, opts.ticker);
 
     // 4. Call Claude API
     const apiKey = process.env.ANTHROPIC_API_KEY || '';

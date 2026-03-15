@@ -56,6 +56,7 @@ function AgentRunner({ workflow, ticker }: { workflow: AgentWorkflow; ticker: st
         body: JSON.stringify({
           prompt: workflow.prompt,
           data: userData || undefined,
+          ticker,
         }),
         signal: abortRef.current.signal,
       });
