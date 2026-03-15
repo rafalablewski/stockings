@@ -66,6 +66,15 @@ export function buildCodebaseInventory(): string {
   lines.push(`   ${wfIds}`);
   lines.push('');
 
+  // 8. Workflow prompt templates (full text for drift auditing)
+  lines.push('8. WORKFLOW PROMPT TEMPLATES (full text for reference extraction)');
+  for (const wf of workflows) {
+    lines.push(`   ── ${wf.id} ──`);
+    lines.push(`   ${wf.promptTemplate}`);
+    lines.push('');
+  }
+  lines.push('');
+
   // 7. Engineer → workflow cross-reference
   lines.push('7. ENGINEER → WORKFLOW MAPPING');
   for (const eng of engineers) {
