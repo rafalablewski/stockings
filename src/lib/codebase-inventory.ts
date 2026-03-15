@@ -7,74 +7,14 @@
 // placeholder so the auditor always sees the current state of the platform.
 //
 // Edge-runtime compatible — no fs, no child_process, imports only.
+// Pages, API routes, and DB tables are auto-scanned at build time by
+// scripts/scan-routes.ts → src/data/generated/route-inventory.json
 // ============================================================================
 
 import { tabRegistry } from '@/data/tab-registry';
 import { workflows } from '@/data/workflows';
 import { engineers } from './engineers';
-
-// ── Database tables ─────────────────────────────────────────────────────────
-// Extracted from schema.ts pgTable() calls. When a new table is added to
-// schema.ts, add it here too. (These are string constants because importing
-// drizzle table objects would pull in the full ORM on Edge.)
-const DB_TABLES = [
-  'analysis_cache', 'sec_filings', 'filing_cross_refs', 'timeline_events',
-  'catalysts', 'partner_news', 'seen_filings', 'seen_articles', 'audit_checks',
-  'press_releases', 'notes', 'agent_runs', 'engineer_schedules', 'room_messages',
-] as const;
-
-// ── Pages / routes ──────────────────────────────────────────────────────────
-// Directory-structure features that can't be scanned on Edge. When a new page
-// or API route is added, add it here. This list is verified by the Prompt
-// Auditor against the actual prompt references.
-const PAGES = [
-  { path: '/', purpose: 'Home — research universe overview' },
-  { path: '/research', purpose: 'Research listing' },
-  { path: '/research/[ticker]', purpose: 'Per-ticker deep-dive (hosts all stock tabs)' },
-  { path: '/engineers', purpose: 'Engineers dashboard — agent control center' },
-  { path: '/engineers/agents', purpose: 'Agent network graph' },
-  { path: '/engineers/prompts', purpose: 'Prompt database browser' },
-  { path: '/engineers/room', purpose: 'Multi-AI division chat' },
-  { path: '/press-intelligence', purpose: 'Unified press feed (news + filings + PRs)' },
-  { path: '/sec-intelligence', purpose: 'SEC filing intelligence' },
-  { path: '/audit/comprehensive-code-audit', purpose: '35-category code audit runner' },
-  { path: '/docs', purpose: 'Platform documentation' },
-  { path: '/docs/firecrawl', purpose: 'Firecrawl integration docs' },
-  { path: '/db-setup', purpose: 'Database setup / seed utility' },
-  { path: '/hooks', purpose: 'Agent hook configuration viewer' },
-] as const;
-
-const API_ROUTES = [
-  { path: '/api/analysis-cache', purpose: 'Analysis cache CRUD' },
-  { path: '/api/asts-story', purpose: 'ASTS narrative generation' },
-  { path: '/api/audit-checks', purpose: 'Audit check read/write' },
-  { path: '/api/auth/verify-pin', purpose: 'PIN authentication' },
-  { path: '/api/check-analyzed', purpose: 'Check if content is already analysed' },
-  { path: '/api/competitor-feed/[company]', purpose: 'Competitor news feed' },
-  { path: '/api/db/setup', purpose: 'Database setup / migration' },
-  { path: '/api/edgar/[ticker]', purpose: 'EDGAR filing fetch per ticker' },
-  { path: '/api/edgar/analyze', purpose: 'EDGAR filing analysis' },
-  { path: '/api/edgar/refresh-local', purpose: 'Refresh local EDGAR cache' },
-  { path: '/api/engineers/history', purpose: 'Engineer run history' },
-  { path: '/api/engineers/run', purpose: 'Manual engineer trigger' },
-  { path: '/api/engineers/schedule', purpose: 'Engineer schedule CRUD' },
-  { path: '/api/engineers/status', purpose: 'Engineer status query' },
-  { path: '/api/news/[symbol]', purpose: 'News feed per symbol' },
-  { path: '/api/notes', purpose: 'Notes CRUD' },
-  { path: '/api/notes/generate', purpose: 'AI note generation' },
-  { path: '/api/press-releases/[symbol]', purpose: 'Press releases per symbol' },
-  { path: '/api/research/init', purpose: 'Research data initialization' },
-  { path: '/api/room', purpose: 'Room chat messages' },
-  { path: '/api/room/gemini-bridge', purpose: 'Gemini AI response bridge' },
-  { path: '/api/sec-intelligence', purpose: 'SEC intelligence feed' },
-  { path: '/api/seen-articles', purpose: 'Article dedup tracking' },
-  { path: '/api/seen-filings', purpose: 'Filing dedup tracking' },
-  { path: '/api/sources/analyze', purpose: 'Multi-source analysis' },
-  { path: '/api/stock/[symbol]', purpose: 'Stock data endpoint' },
-  { path: '/api/workflow/apply', purpose: 'Workflow result application' },
-  { path: '/api/workflow/commit', purpose: 'Workflow result commit' },
-  { path: '/api/workflow/run', purpose: 'Workflow execution engine' },
-] as const;
+import routeInventory from '@/data/generated/route-inventory.json';
 
 // ============================================================================
 // buildCodebaseInventory()
@@ -91,23 +31,23 @@ export function buildCodebaseInventory(): string {
   }
   lines.push('');
 
-  // 2. Pages
-  lines.push(`2. PAGES (${PAGES.length} pages)`);
-  for (const p of PAGES) {
-    lines.push(`   ${p.path.padEnd(40)} ${p.purpose}`);
+  // 2. Pages (auto-scanned at build time)
+  lines.push(`2. PAGES (${routeInventory.pages.length} pages, auto-scanned)`);
+  for (const p of routeInventory.pages) {
+    lines.push(`   ${p}`);
   }
   lines.push('');
 
-  // 3. API routes
-  lines.push(`3. API ROUTES (${API_ROUTES.length} endpoints)`);
-  for (const r of API_ROUTES) {
-    lines.push(`   ${r.path.padEnd(40)} ${r.purpose}`);
+  // 3. API routes (auto-scanned at build time)
+  lines.push(`3. API ROUTES (${routeInventory.apiRoutes.length} endpoints, auto-scanned)`);
+  for (const r of routeInventory.apiRoutes) {
+    lines.push(`   ${r}`);
   }
   lines.push('');
 
-  // 4. Database tables
-  lines.push(`4. DATABASE TABLES (${DB_TABLES.length} tables in src/lib/schema.ts)`);
-  lines.push(`   ${DB_TABLES.join(', ')}`);
+  // 4. Database tables (auto-scanned from schema.ts pgTable() calls)
+  lines.push(`4. DATABASE TABLES (${routeInventory.dbTables.length} tables in src/lib/schema.ts, auto-scanned)`);
+  lines.push(`   ${routeInventory.dbTables.join(', ')}`);
   lines.push('');
 
   // 5. Engineers (dynamic from src/lib/engineers.ts)
