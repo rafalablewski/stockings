@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "node scripts/scan-routes.mjs && next dev",
-    "build": "node scripts/scan-routes.mjs && next build",
+    "build": "next build",
+    "scan-routes": "node scripts/scan-routes.mjs",
     "start": "next start",
     "lint": "eslint",
     "validate": "npx tsx scripts/validate-data.ts",
