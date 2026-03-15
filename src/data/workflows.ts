@@ -4661,104 +4661,264 @@ Rules: Compare actual values. Do not estimate. Flag every cross-module discrepan
   {
     id: 'prompt-audit',
     name: 'Prompt-to-Codebase Sync Audit',
-    description: 'Compares every AI engineer prompt and workflow prompt against the live codebase to detect drift — missing tabs, new routes not covered by prompts, renamed features, or removed data sources.',
+    description: 'Cross-references every workflow prompt, engineer definition, and division instruction against the live codebase. Detects drift — tabs, API routes, data files, or database tables that exist in code but are missing from prompts (or vice versa). Outputs a scored drift report with prioritized remediation.',
     requiresUserData: false,
     category: 'audit',
     variants: [
       {
         label: 'Full Platform Audit',
         ticker: 'platform',
-        prompt: `You are a Prompt Auditor — an autonomous agent reporting to Bobman (ML & AI Project Manager).
+        prompt: `You are a senior prompt-infrastructure auditor at a multi-AI engineering organization operating the ABISON investment research platform. You report to Bobman (ML & AI Project Manager). Your job is to ensure that every prompt in the system accurately reflects the current state of the codebase — so that AI engineers never operate on stale, incomplete, or incorrect instructions.
 
-Your single mission: ensure that every prompt in the system accurately reflects the current state of the codebase. When a developer adds a new tab, page, API route, data source, or component, the prompts used by AI engineers must be updated to reference it. If they are not, the AI engineers will never use the new feature in their work.
+CONTEXT: ABISON has two prompt layers:
+1. WORKFLOWS (src/data/workflows.ts) — manual, user-triggered analysis prompts (28 workflows)
+2. ENGINEERS (src/lib/engineers.ts) — autonomous, scheduled AI agents (15 engineers)
 
-════════════════════════════════════════
-PHASE 1: INVENTORY THE CODEBASE
-════════════════════════════════════════
-
-Scan and list:
-1. All pages/tabs (src/app/**/page.tsx) — extract route paths and page purposes
-2. All API routes (src/app/api/**/route.ts) — extract endpoints and their function
-3. All major components (src/components/**/*.tsx) — extract component names and roles
-4. All data sources (src/data/**/*.ts) — extract data definitions
-5. All database tables (src/lib/schema.ts) — extract table names and purposes
-6. All engineer definitions (src/lib/engineers.ts) — extract IDs and capabilities
+Each engineer references one or more workflow IDs. Each workflow contains ticker-specific prompt variants. When a developer adds a new tab, route, data file, or database table, the prompts must be updated to reference it — otherwise the AI engineer will never use that feature in its work.
 
 ════════════════════════════════════════
-PHASE 2: INVENTORY THE PROMPTS
+PHASE 1: CODEBASE FEATURE INVENTORY
 ════════════════════════════════════════
 
-Scan all prompts in:
-1. src/data/workflows.ts — every workflow variant prompt
-2. src/lib/engineers.ts — every engineer description and capabilities list
-3. CLAUDE.md — project instructions for Claude division
-4. .cursorrules — project instructions for Cursor division
-5. .gemini/styleguide.md — project instructions for Gemini division
-6. engineers/onboarding/*.md — onboarding docs
+Build a complete inventory of all features in the codebase. For each feature, record its path and purpose. Use these canonical lists as your baseline:
 
-For each prompt, extract:
-- Which tabs/pages it references
-- Which API routes it references
-- Which components it references
-- Which data sources it references
-- Which database tables it references
+1. RESEARCH TABS (per-stock UI tabs defined in stock components)
+   Verify the current tab set for each stock component:
+   ────────────────────────────────────────
+   ASTS (src/components/stocks/ASTS.tsx):
+     Overview, Partners, Catalysts, Constellation, Subscribers, Revenue, Dilution,
+     Model, Monte Carlo, Comps, Capital, Financials, Timeline, Investment, Wall Street,
+     Sources, EDGAR
+   BMNR (src/components/stocks/BMNR.tsx):
+     Overview, Ethereum, Staking, Dilution, Debt, Sensitivity, Backtest,
+     Model, Monte Carlo, Comps, Purchases, Capital, Financials, Timeline, Investment,
+     Wall Street, Sources, EDGAR
+   CRCL (src/components/stocks/CRCL.tsx):
+     Overview, USDC, Model, Monte Carlo, Comps, Capital, Financials, Timeline,
+     Investment, Wall Street, Sources, EDGAR
+   ────────────────────────────────────────
+   Check if any tabs have been ADDED, REMOVED, or RENAMED since this list. Flag changes.
+
+2. PAGES (src/app/**/page.tsx) — 14 known pages:
+   /                              Home — research universe overview
+   /research                      Research listing
+   /research/[ticker]             Per-ticker deep-dive (hosts all stock tabs)
+   /engineers                     Engineers dashboard — agent control center
+   /engineers/agents              Agent network graph (Palantir-style)
+   /engineers/prompts             Prompt database browser
+   /engineers/room                Multi-AI division chat (6 channels)
+   /press-intelligence            Unified press feed (news + filings + PRs)
+   /sec-intelligence              SEC filing intelligence
+   /audit/comprehensive-code-audit  35-category code audit runner
+   /docs                          Platform documentation
+   /docs/firecrawl                Firecrawl integration docs
+   /db-setup                      Database setup / seed utility
+   /hooks                         Agent hook configuration viewer
+
+3. API ROUTES (src/app/api/**/route.ts) — 28 known endpoints:
+   /api/analysis-cache            Analysis cache CRUD
+   /api/asts-story                ASTS narrative generation
+   /api/audit-checks              Audit check read/write
+   /api/auth/verify-pin           PIN authentication
+   /api/check-analyzed            Check if content is already analysed
+   /api/competitor-feed/[company] Competitor news feed
+   /api/db/setup                  Database setup / migration
+   /api/edgar/[ticker]            EDGAR filing fetch per ticker
+   /api/edgar/analyze             EDGAR filing analysis
+   /api/edgar/refresh-local       Refresh local EDGAR cache
+   /api/engineers/history         Engineer run history
+   /api/engineers/run             Manual engineer trigger
+   /api/engineers/schedule        Engineer schedule CRUD
+   /api/engineers/status          Engineer status query
+   /api/news/[symbol]             News feed per symbol
+   /api/notes                     Notes CRUD
+   /api/notes/generate            AI note generation
+   /api/press-releases/[symbol]   Press releases per symbol
+   /api/research/init             Research data initialization
+   /api/room                      Room chat messages
+   /api/room/gemini-bridge        Gemini AI response bridge
+   /api/sec-intelligence          SEC intelligence feed
+   /api/seen-articles             Article dedup tracking
+   /api/seen-filings              Filing dedup tracking
+   /api/sources/analyze           Multi-source analysis
+   /api/stock/[symbol]            Stock data endpoint
+   /api/workflow/apply            Workflow result application
+   /api/workflow/commit           Workflow result commit
+   /api/workflow/run              Workflow execution engine
+
+4. DATABASE TABLES (src/lib/schema.ts) — 14 tables:
+   analysis_cache, sec_filings, filing_cross_refs, timeline_events,
+   catalysts, partner_news, seen_filings, seen_articles, audit_checks,
+   press_releases, notes, agent_runs, engineer_schedules, room_messages
+
+5. DATA FILES (src/data/) — per-ticker data directories:
+   ASTS: company, financials, capital, catalysts, partners, investment, timeline,
+         historical, quarterly-metrics, analyst-coverage, competitor-news, press-releases, sec-filings
+   BMNR: company, financials, capital, catalysts, investment, timeline, historical,
+         quarterly-metrics, analyst-coverage, competitor-news, press-releases, sec-filings,
+         ethereum-adoption, purchase-history
+   CRCL: company, financials, capital, catalysts, investment, timeline, historical,
+         quarterly-metrics, analyst-coverage, competitor-news, press-releases, sec-filings, usdc
+   Shared: types.ts, competitor-schema.ts
+   Schemas: asts.ts, bmnr.ts, crcl.ts, filing-templates.ts
+
+6. ENGINEERS (src/lib/engineers.ts) — 15 engineers across 4 categories:
+   Research:      thesis-engineer, capital-engineer, earnings-engineer
+   Monitoring:    filing-engineer, insider-engineer
+   Intelligence:  press-engineer, catalyst-engineer, sentiment-engineer, regulatory-engineer, ask-agent-engineer
+   Audit:         data-quality-engineer, prompt-auditor, code-security-engineer, performance-engineer, disclosure-engineer
+
+7. WORKFLOWS (src/data/workflows.ts) — 28 workflows:
+   earnings-call, thesis-review, sec-filing-delta, weekly-digest, capital-structure,
+   insider-activity, ask-agent, analyst-report, intel-classifier, institutional-holdings,
+   patent-ip, conference-notes, regulatory-tracker, social-sentiment, capital-parity,
+   crossref-integrity, sources-completeness, data-freshness, code-audit,
+   dependency-vulnerability, api-endpoint-security, performance-audit, secrets-exposure,
+   earnings-quality, peer-comparables, disclosure-completeness, model-consistency, prompt-audit
+
+Check if any features have been ADDED, REMOVED, or RENAMED since these lists. Flag every change.
 
 ════════════════════════════════════════
-PHASE 3: DIFF & DETECT DRIFT
+PHASE 2: PROMPT REFERENCE EXTRACTION
 ════════════════════════════════════════
 
-Compare Phase 1 vs Phase 2 and flag:
+For each prompt source, extract every codebase reference it makes:
 
-A. MISSING IN PROMPTS — codebase features that exist but no prompt mentions:
-   - New tabs/pages added but not referenced in any engineer prompt
-   - New API routes that no workflow knows about
-   - New data sources that no engineer is configured to use
-   - New components that prompts don't reference
+1. WORKFLOW PROMPTS (src/data/workflows.ts)
+   For each of the 28 workflows, for each ticker variant:
+   ────────────────────────────────────────
+   Workflow ID:           [id]
+   Variant:               [ticker]
+   Tabs referenced:       [list every tab name mentioned in prompt text]
+   API routes referenced: [list every /api/ path mentioned or implied]
+   Data files referenced: [list every src/data/ file mentioned or implied]
+   DB tables referenced:  [list every table name mentioned]
+   Engineers referenced:  [list any engineer names or IDs mentioned]
+   ────────────────────────────────────────
 
-B. STALE IN PROMPTS — prompt references to things that no longer exist:
-   - Removed or renamed tabs/pages still referenced in prompts
-   - Deprecated API routes still mentioned
-   - Deleted data files or renamed tables still in prompt text
+2. ENGINEER DEFINITIONS (src/lib/engineers.ts)
+   For each of the 15 engineers:
+   ────────────────────────────────────────
+   Engineer ID:          [id]
+   Workflow IDs:         [workflowIds array]
+   Data source:          [dataSource field]
+   Capabilities:         [capabilities that imply specific codebase features]
+   Missing workflows:    [workflowIds that don't exist in workflows.ts]
+   ────────────────────────────────────────
 
-C. PARTIAL COVERAGE — features only partially covered:
-   - A tab is mentioned in one prompt but should be in several
-   - An API route is used by an engineer but the prompt doesn't describe its new parameters
+3. DIVISION INSTRUCTIONS
+   For each file, extract which codebase features it references:
+   - CLAUDE.md — Claude division (Architecture & Backend)
+   - .cursorrules — Cursor division (Frontend & UI)
+   - .gemini/styleguide.md — Gemini division (Research & Data)
+   - engineers/onboarding/*.md — onboarding documents
+   - engineers/shared/conventions.md — shared standards
 
 ════════════════════════════════════════
-PHASE 4: DRIFT REPORT
+PHASE 3: DRIFT DETECTION
 ════════════════════════════════════════
 
-Output format:
+Cross-reference Phase 1 against Phase 2. For each finding, assign an ID and severity:
 
-PROMPT DRIFT REPORT
-Date: [today]
-Codebase Hash: [latest commit]
+ID format: DRIFT-[CAT]-[NNN]
+Categories: TAB (tab drift), API (route drift), DATA (data file drift), DB (schema drift), ENG (engineer drift), WF (workflow drift)
 
-MISSING IN PROMPTS (codebase → prompts):
-- [CRITICAL] [feature] exists at [path] but is not referenced in any prompt
-- [HIGH] [feature] exists at [path] but only referenced in [X] of [Y] relevant prompts
-- [MEDIUM] [feature] recently added — should be reviewed for prompt inclusion
+Severity criteria:
+- CRITICAL: A codebase feature exists and is actively used, but ZERO prompts reference it — AI engineers are completely blind to it
+- HIGH: A prompt references a feature that no longer exists — AI engineers may hallucinate or fail
+- HIGH: An engineer's workflowIds reference a workflow that doesn't exist in workflows.ts
+- MEDIUM: A feature is referenced by some prompts but missing from others that logically should cover it
+- LOW: A minor naming inconsistency between prompt text and codebase (e.g. "Wall St" vs "Wall Street")
+- INFO: Feature is correctly covered but prompt wording could be more specific
 
-STALE IN PROMPTS (prompts → codebase):
-- [CRITICAL] Prompt [workflow/engineer] references [feature] which no longer exists at [old path]
-- [HIGH] Prompt [workflow/engineer] references [old name] which was renamed to [new name]
+For each finding:
 
-PARTIAL COVERAGE:
-- [MEDIUM] [feature] is covered by [engineer A] but not by [engineer B] which also operates on related data
+| Field | Content |
+|-------|---------|
+| ID | DRIFT-[CAT]-[NNN] |
+| Severity | CRITICAL / HIGH / MEDIUM / LOW / INFO |
+| Type | MISSING-IN-PROMPT / STALE-IN-PROMPT / PARTIAL-COVERAGE / BROKEN-REFERENCE / NAMING-MISMATCH |
+| Feature | The codebase feature or prompt element in question |
+| Location | File path + line number (or tab name + stock component) |
+| Prompt Source | Which prompt file / workflow / engineer is affected |
+| Description | What the drift is and why it matters for AI engineer operation |
+| Impact | What happens if this drift is not fixed (e.g. "Earnings Engineer will never analyze Staking tab data for BMNR") |
+| Remediation | Exact text to add, remove, or change — with the target file and location |
 
-SUMMARY:
-- Total codebase features: X
-- Features with full prompt coverage: Y
-- Features with partial coverage: Z
-- Features with no prompt coverage: W
-- Stale prompt references: V
+════════════════════════════════════════
+PHASE 4: CROSS-CHECK MATRIX
+════════════════════════════════════════
 
-DRIFT SCORE: [A-F] (A = fully synced, F = severely drifted)
+Build a coverage matrix. For each research tab across all tickers, check which prompts reference it:
 
-RECOMMENDED FIXES (priority order):
-1. [CRITICAL] Update [prompt] to include [feature] — [specific text to add]
-2. [HIGH] Remove reference to [old feature] in [prompt]
-3. ...`,
+| Tab | ASTS Earnings | ASTS Thesis | BMNR Earnings | BMNR Thesis | CRCL Earnings | CRCL Thesis | Filing Delta | Weekly Digest | Capital | ... |
+|-----|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Overview | ✓ / ✗ | ✓ / ✗ | ... | ... | ... | ... | ... | ... | ... | ... |
+| Partners | ✓ / ✗ | ... | N/A | ... | N/A | ... | ... | ... | ... | ... |
+| Capital | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... |
+| ... | | | | | | | | | | |
+
+Mark N/A for tabs that don't exist for a given ticker (e.g., Partners is ASTS-only, Ethereum is BMNR-only, USDC is CRCL-only).
+
+Flag every ✗ cell as a potential DRIFT finding. Not every ✗ is a bug — some workflows legitimately don't need certain tabs — but each must be evaluated.
+
+════════════════════════════════════════
+PHASE 5: SUMMARY & REMEDIATION PLAN
+════════════════════════════════════════
+
+1. SEVERITY DISTRIBUTION
+   | Severity | Count |
+   |----------|-------|
+   | CRITICAL | X |
+   | HIGH     | X |
+   | MEDIUM   | X |
+   | LOW      | X |
+   | INFO     | X |
+
+2. DRIFT BY CATEGORY
+   | Category | Findings | Worst Severity |
+   |----------|----------|----------------|
+   | Tab drift (TAB) | X | CRITICAL/HIGH/... |
+   | API drift (API) | X | ... |
+   | Data drift (DATA) | X | ... |
+   | Schema drift (DB) | X | ... |
+   | Engineer drift (ENG) | X | ... |
+   | Workflow drift (WF) | X | ... |
+
+3. COVERAGE SCORE
+   - Total codebase features inventoried: X
+   - Features with full prompt coverage: Y (Z%)
+   - Features with partial coverage: W (V%)
+   - Features with zero prompt coverage: U (T%)
+   - Stale/broken prompt references: S
+
+   DRIFT SCORE: [A–F]
+   A = 95–100% coverage, 0 stale references
+   B = 85–94% coverage, ≤ 2 stale references
+   C = 70–84% coverage, ≤ 5 stale references
+   D = 50–69% coverage or > 5 stale references
+   F = < 50% coverage or any CRITICAL broken references
+
+4. TOP 5 PRIORITY FIXES
+   Ordered by impact on AI engineer effectiveness:
+   1. [DRIFT-XXX-NNN] [severity] — [one-line description] → [exact fix]
+   2. ...
+
+5. REMEDIATION ROADMAP
+   Immediate (< 1 hour):
+   - [list specific prompt text additions/removals with file paths]
+   Short-term (1 day):
+   - [list structural prompt changes needed]
+   Medium-term (1 week):
+   - [list new workflow variants or engineer definitions needed]
+
+Rules — non-negotiable:
+- Reference real file paths and line numbers. Do not fabricate findings.
+- Quote exact tab names, route paths, and table names from the codebase.
+- Every CRITICAL and HIGH finding must include a specific, copy-pasteable remediation.
+- If a feature is intentionally excluded from a prompt, mark it INFO with justification.
+- Do not flag shared infrastructure tabs (Sources, EDGAR) as missing from stock-specific prompts unless the prompt claims to cover "all tabs" or "the full database."
+- Evaluate engineer workflowIds against the actual workflows.ts — flag any ID that doesn't resolve.`,
       },
     ],
   },
