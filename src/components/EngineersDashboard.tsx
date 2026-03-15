@@ -6,6 +6,7 @@ import type { EngineerTask } from '@/lib/engineers';
 import type { Workflow } from '@/data/workflows';
 import type { RunStatus } from '@/lib/engineer-engine';
 import NetworkGraph from '@/components/NetworkGraph';
+import DecisionDashboard from '@/components/DecisionDashboard';
 import { orgNodes } from '@/data/org-hierarchy';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -442,7 +443,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const [statuses, setStatuses] = useState<EngineerStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [runningIds, setRunningIds] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState<'network' | 'history' | 'pms'>('network');
+  const [activeTab, setActiveTab] = useState<'network' | 'history' | 'decisions' | 'pms'>('network');
   const [graphView, setGraphView] = useState<'default' | 'interactive'>('default');
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
@@ -750,6 +751,9 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
             </button>
             <button className="eng-tab" data-active={activeTab === 'history'} onClick={() => setActiveTab('history')}>
               History
+            </button>
+            <button className="eng-tab" data-active={activeTab === 'decisions'} onClick={() => setActiveTab('decisions')}>
+              Decisions
             </button>
             <button className="eng-tab" data-active={activeTab === 'pms'} onClick={() => setActiveTab('pms')}>
               PMs<span className="eng-tab-count">{divisionLeads.length}</span>
@@ -1134,6 +1138,11 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
               </div>
             )}
           </div>
+        )}
+
+        {/* ══ DECISIONS TAB ══ */}
+        {activeTab === 'decisions' && (
+          <DecisionDashboard />
         )}
 
         {/* ══ PMS TAB ══ */}
