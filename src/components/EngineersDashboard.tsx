@@ -258,9 +258,9 @@ function EngineerDetailPanel({
         {linkedWorkflows.length > 0 ? (
           <div className="eng-resources-grid eng-detail-block-sm">
             {linkedWorkflows.map(wf => {
-              const tickerVariants = wf.variants.filter(
+              const hasPrompt = !!(wf.promptTemplate || wf.variants.find(
                 v => v.ticker === selectedTicker.toLowerCase()
-              );
+              ));
 
               return (
                 <div key={wf.id} className="eng-resource-card">
@@ -274,12 +274,12 @@ function EngineerDetailPanel({
                     </div>
                   </div>
                   <div className="eng-resource-desc">{wf.description}</div>
-                  {tickerVariants.length > 0 ? (
+                  {hasPrompt ? (
                     <div className="eng-resource-footer">
                       <button
                         className="eng-btn eng-btn-prompt"
                         data-color={color}
-                        onClick={() => onPromptPreview(wf, tickerVariants[0].ticker, tickerVariants[0].label)}
+                        onClick={() => onPromptPreview(wf, selectedTicker.toLowerCase(), selectedTicker)}
                       >
                         <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                           <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
@@ -488,14 +488,14 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const categories = ['research', 'monitoring', 'intelligence', 'audit'] as const;
 
   const openPromptPreview = useCallback((wf: Workflow, ticker: string, label: string) => {
-    const variant = wf.variants.find(v => v.ticker === ticker.toLowerCase());
-    if (!variant) return;
+    const prompt = wf.promptTemplate ?? wf.variants.find(v => v.ticker === ticker.toLowerCase())?.prompt;
+    if (!prompt) return;
     setPromptPreview({
       workflowName: wf.name,
       workflowDescription: wf.description,
       ticker: ticker.toUpperCase(),
       label,
-      prompt: variant.prompt,
+      prompt,
       requiresUserData: wf.requiresUserData,
     });
   }, []);
