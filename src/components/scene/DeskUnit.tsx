@@ -20,16 +20,16 @@ export default function IsoDeskUnit({ wx, wy, color, isActive, rotation: rot, pi
   const monitorFilter = isActive ? `url(#glow-${color.replace('#', '')})` : undefined;
   const p = (x: number, y: number, z: number) => toIso(x, y, z, rot, pitchDeg);
 
-  const deskFaces = blockFaces(wx - 1.4, wy - 0.2, 1.5, 2.8, 1.4, 0.12, rot, pitchDeg);
+  const deskFaces = blockFaces(wx - 2.0, wy - 0.3, 1.5, 4.0, 1.6, 0.12, rot, pitchDeg);
   const legs = [
-    blockFaces(wx - 1.25, wy, 0, 0.12, 0.12, 1.5, rot, pitchDeg),
-    blockFaces(wx + 1.13, wy, 0, 0.12, 0.12, 1.5, rot, pitchDeg),
-    blockFaces(wx - 1.25, wy + 1, 0, 0.12, 0.12, 1.5, rot, pitchDeg),
-    blockFaces(wx + 1.13, wy + 1, 0, 0.12, 0.12, 1.5, rot, pitchDeg),
+    blockFaces(wx - 1.85, wy, 0, 0.12, 0.12, 1.5, rot, pitchDeg),
+    blockFaces(wx + 1.73, wy, 0, 0.12, 0.12, 1.5, rot, pitchDeg),
+    blockFaces(wx - 1.85, wy + 1.1, 0, 0.12, 0.12, 1.5, rot, pitchDeg),
+    blockFaces(wx + 1.73, wy + 1.1, 0, 0.12, 0.12, 1.5, rot, pitchDeg),
   ];
 
-  const monL = { cx: wx - 0.55, cy: wy + 0.5 };
-  const monR = { cx: wx + 0.55, cy: wy + 0.5 };
+  const monL = { cx: wx - 0.8, cy: wy + 0.5 };
+  const monR = { cx: wx + 0.8, cy: wy + 0.5 };
 
   // ── Chair geometry ──
   // Five-star base (5 short legs radiating from center)
@@ -109,17 +109,17 @@ export default function IsoDeskUnit({ wx, wy, color, isActive, rotation: rot, pi
         return <polygon key={`stand${mi}`} points={standFaces.top} fill="#555560" stroke="#48484f" strokeWidth={0.5} />;
       })}
 
-      {/* ── Dual monitors (dark bezels, blue-black screens) ── */}
+      {/* ── Dual monitors — wide trading panels ── */}
       {[monL, monR].map((mon, mi) => {
-        const bl = p(mon.cx - 0.5, mon.cy, 1.65);
-        const br = p(mon.cx + 0.5, mon.cy, 1.65);
-        const tr = p(mon.cx + 0.5, mon.cy, 2.7);
-        const tl = p(mon.cx - 0.5, mon.cy, 2.7);
+        const bl = p(mon.cx - 0.7, mon.cy, 1.65);
+        const br = p(mon.cx + 0.7, mon.cy, 1.65);
+        const tr = p(mon.cx + 0.7, mon.cy, 2.85);
+        const tl = p(mon.cx - 0.7, mon.cy, 2.85);
 
-        const sbl = p(mon.cx - 0.4, mon.cy, 1.75);
-        const sbr = p(mon.cx + 0.4, mon.cy, 1.75);
-        const str = p(mon.cx + 0.4, mon.cy, 2.6);
-        const stl = p(mon.cx - 0.4, mon.cy, 2.6);
+        const sbl = p(mon.cx - 0.6, mon.cy, 1.75);
+        const sbr = p(mon.cx + 0.6, mon.cy, 1.75);
+        const str = p(mon.cx + 0.6, mon.cy, 2.75);
+        const stl = p(mon.cx - 0.6, mon.cy, 2.75);
 
         return (
           <g key={`mon${mi}`}>
@@ -133,8 +133,8 @@ export default function IsoDeskUnit({ wx, wy, color, isActive, rotation: rot, pi
               className={isActive ? 'scene-monitor-active' : ''} />
             {/* Content lines */}
             {isActive && [0, 0.2, 0.4, 0.6].map((off, li) => {
-              const ll = p(mon.cx - 0.3, mon.cy, 2.45 - off);
-              const lr = p(mon.cx - 0.3 + [0.4, 0.3, 0.5, 0.2][li], mon.cy, 2.45 - off);
+              const ll = p(mon.cx - 0.45, mon.cy, 2.55 - off);
+              const lr = p(mon.cx - 0.45 + [0.55, 0.4, 0.65, 0.3][li], mon.cy, 2.55 - off);
               return <line key={li} x1={ll.x} y1={ll.y} x2={lr.x} y2={lr.y}
                 stroke={`${color}${['80', '60', '70', '50'][li]}`} strokeWidth={1.5} />;
             })}

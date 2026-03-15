@@ -9,12 +9,12 @@ import type { WorldPos } from './activities';
 // These define the solid core of each furniture piece.
 // Interaction zones (chair positions, coffee counter front) are kept clear.
 const OBSTACLES: ReadonlyArray<{ x: number; y: number; w: number; d: number }> = [
-  // Desk surfaces (the desk itself — chairs are in front, walkable)
-  { x: 19, y: 28, w: 3, d: 2 },   // Claude
-  { x: 29, y: 28, w: 3, d: 2 },   // Gemini
-  { x: 39, y: 28, w: 3, d: 2 },   // AI Eng
-  { x: 49, y: 28, w: 3, d: 2 },   // Cursor
-  { x: 59, y: 28, w: 3, d: 2 },   // PM
+  // Desk surfaces — wide trading desks (chairs are in front, walkable)
+  { x: 18, y: 28, w: 5, d: 2 },   // Claude
+  { x: 28, y: 28, w: 5, d: 2 },   // Gemini
+  { x: 38, y: 28, w: 5, d: 2 },   // AI Eng
+  { x: 48, y: 28, w: 5, d: 2 },   // Cursor
+  { x: 58, y: 28, w: 5, d: 2 },   // PM
   // Conference table
   { x: 10, y: 10, w: 6, d: 4 },
   // Couch back (front is accessible for sitting)

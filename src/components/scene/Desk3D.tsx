@@ -28,8 +28,8 @@ export default function Desk3D({ position, color, isActive }: Desk3DProps) {
     });
   });
 
-  // Desk dimensions
-  const deskW = 2.8, deskD = 1.4, deskH = 0.12, deskZ = 1.5;
+  // Desk dimensions — wide trading-floor style
+  const deskW = 4.0, deskD = 1.6, deskH = 0.12, deskZ = 1.5;
   const legW = 0.1, legH = deskZ;
 
   // Chair dimensions
@@ -107,9 +107,9 @@ export default function Desk3D({ position, color, isActive }: Desk3DProps) {
         <meshStandardMaterial color="#a5845a" roughness={0.7} />
       </RoundedBox>
 
-      {/* ══ MONITORS ══ */}
-      {[-0.55, 0.55].map((mx, mi) => (
-        <group key={`mon${mi}`} position={[mx, 0, 0.3]}>
+      {/* ══ MONITORS — wide trading-floor panels ══ */}
+      {[-0.8, 0.8].map((mx, mi) => (
+        <group key={`mon${mi}`} position={[mx, 0, 0.35]}>
           {/* Stand */}
           <mesh position={[0, deskZ + 0.15, 0]} castShadow>
             <cylinderGeometry args={[0.04, 0.06, 0.3, 8]} />
@@ -117,18 +117,18 @@ export default function Desk3D({ position, color, isActive }: Desk3DProps) {
           </mesh>
           {/* Stand base */}
           <mesh position={[0, deskZ + 0.01, 0]} castShadow>
-            <cylinderGeometry args={[0.15, 0.15, 0.02, 12]} />
+            <cylinderGeometry args={[0.18, 0.18, 0.02, 12]} />
             <meshStandardMaterial color="#333" metalness={0.6} roughness={0.4} />
           </mesh>
           {/* Bezel */}
-          <RoundedBox args={[1.0, 0.7, 0.04]} radius={0.015}
-            position={[0, deskZ + 0.65, 0]} castShadow>
+          <RoundedBox args={[1.4, 0.85, 0.04]} radius={0.015}
+            position={[0, deskZ + 0.72, 0]} castShadow>
             <meshStandardMaterial color="#2a2a32" roughness={0.8} />
           </RoundedBox>
           {/* Screen */}
           <mesh ref={mi === 0 ? screenLRef : screenRRef}
-            position={[0, deskZ + 0.65, -0.021]}>
-            <planeGeometry args={[0.88, 0.58]} />
+            position={[0, deskZ + 0.72, -0.021]}>
+            <planeGeometry args={[1.26, 0.72]} />
             <meshStandardMaterial
               color={isActive ? color : '#2a2a40'}
               emissive={isActive ? glowColor : new THREE.Color('#3a3a55')}
