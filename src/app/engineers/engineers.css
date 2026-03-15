@@ -481,6 +481,25 @@
   gap: 16px;
 }
 
+/* ── Decisions section inside PMs tab ── */
+
+.eng-pms-decisions {
+  margin-top: 8px;
+}
+
+.eng-pms-decisions-header {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.eng-pms-decisions .dec-dashboard {
+  padding: 0;
+}
+
 /* ── PM Card ── */
 .eng-pm-card {
   padding: 20px 24px;
