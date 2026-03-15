@@ -228,6 +228,7 @@ export const agentRuns = pgTable('agent_runs', {
   patchesApplied: integer('patches_applied').default(0).notNull(),
   errorsEncountered: text('errors_encountered'), // error details if failed
   durationMs: integer('duration_ms'),            // how long the run took
+  hidden: boolean('hidden').default(false).notNull(), // soft-hide from history UI
   scheduledAt: timestamp('scheduled_at'),        // when this run was scheduled for
   startedAt: timestamp('started_at'),            // when execution began
   completedAt: timestamp('completed_at'),        // when execution finished
@@ -256,6 +257,22 @@ export const engineerSchedules = pgTable('engineer_schedules', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 }, (table) => [
   uniqueIndex('engineer_schedules_ticker_engineer_idx').on(table.ticker, table.engineerId),
+]);
+
+// ============================================================================
+// OFFICE ACTIVITIES — which avatar activities are currently available in the
+// 3D office scene. Activities are unlocked as furniture/appliances are added.
+// ============================================================================
+
+export const officeActivities = pgTable('office_activities', {
+  id: serial('id').primaryKey(),
+  type: text('type').notNull(),              // activity key: 'working', 'chatting', 'phone', 'coffee', etc.
+  label: text('label').notNull(),            // display name: 'Working', 'Chatting', 'Phone Call'
+  enabled: boolean('enabled').default(true).notNull(),
+  requiresFurniture: text('requires_furniture'), // null = always available, else furniture key like 'coffee-machine'
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  uniqueIndex('office_activities_type_idx').on(table.type),
 ]);
 
 // ============================================================================

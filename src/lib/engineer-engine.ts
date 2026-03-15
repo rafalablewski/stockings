@@ -14,6 +14,7 @@ import { agentRuns, engineerSchedules } from './schema';
 import { eq, and, lte, sql } from 'drizzle-orm';
 import { getEngineer, type EngineerTask } from './engineers';
 import { workflows } from '@/data/workflows';
+import { asts, bmnr, crcl } from '@/data';
 
 // Claude model used for engineer runs
 const CLAUDE_MODEL = 'claude-sonnet-4-5-20250929';
@@ -56,110 +57,137 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
 
   const startTime = Date.now();
 
-  // 1. Create a queued run record
-  const [run] = await db.insert(agentRuns).values({
-    ticker: opts.ticker,
-    engineerId: opts.engineerId,
-    workflowId: engineer.workflowIds[0] || null,
-    status: 'queued',
-    triggerType: opts.triggerType,
-    triggerReason: opts.triggerReason || `${opts.triggerType} run`,
-    inputSummary: opts.userData ? `User data: ${opts.userData.slice(0, 200)}...` : 'Database context',
-    scheduledAt: new Date(),
-  }).returning({ id: agentRuns.id });
-
-  const runId = run.id;
-
-  try {
-    // 2. Mark as running
-    await db.update(agentRuns)
-      .set({ status: 'running', startedAt: new Date() })
-      .where(eq(agentRuns.id, runId));
-
-    // 3. Resolve the prompt from the linked workflow
-    const prompt = resolveEngineerPrompt(engineer, opts.ticker);
-    if (!prompt) {
-      throw new Error(`No prompt found for engineer ${opts.engineerId} on ticker ${opts.ticker}`);
-    }
-
-    // 4. Call Claude API
-    const apiKey = process.env.ANTHROPIC_API_KEY || '';
-    if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured');
-
-    const fullMessage = opts.userData
-      ? `${prompt}\n\n════════════════════════════════════════════════════════════\nAUTO-FETCHED DATA\n════════════════════════════════════════════════════════════\n\n${opts.userData}`
-      : prompt;
-
-    const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: 16384,
-        messages: [{ role: 'user', content: fullMessage }],
-      }),
-    });
-
-    if (!claudeRes.ok) {
-      const errText = await claudeRes.text();
-      let reason = `Claude API returned ${claudeRes.status}`;
-      try {
-        const parsed = JSON.parse(errText);
-        if (parsed?.error?.message) reason = parsed.error.message;
-      } catch { /* use default */ }
-      throw new Error(reason);
-    }
-
-    const result = await claudeRes.json();
-    const outputFull = result.content?.[0]?.text || '';
-    const outputSummary = outputFull.slice(0, 500);
-    const durationMs = Date.now() - startTime;
-
-    // 5. Mark as completed
-    await db.update(agentRuns)
-      .set({
-        status: 'completed',
-        outputSummary,
-        outputFull,
-        durationMs,
-        completedAt: new Date(),
-      })
-      .where(eq(agentRuns.id, runId));
-
-    // 6. Update the schedule's lastRunAt
-    await db.update(engineerSchedules)
-      .set({
-        lastRunAt: new Date(),
-        nextRunAt: sql`NOW() + (interval_minutes || ' minutes')::interval`,
-        updatedAt: new Date(),
-      })
-      .where(
-        and(
-          eq(engineerSchedules.ticker, opts.ticker),
-          eq(engineerSchedules.engineerId, opts.engineerId),
-        )
-      );
-
-    return { runId, status: 'completed', outputSummary, outputFull, durationMs };
-  } catch (err) {
-    const durationMs = Date.now() - startTime;
-    const errorMsg = err instanceof Error ? err.message : String(err);
-
-    await db.update(agentRuns)
-      .set({
-        status: 'failed',
-        errorsEncountered: errorMsg,
-        durationMs,
-        completedAt: new Date(),
-      })
-      .where(eq(agentRuns.id, runId));
-
-    return { runId, status: 'failed', outputSummary: null, outputFull: null, durationMs, error: errorMsg };
+  // Resolve ALL matching workflow prompts for this engineer + ticker
+  const resolvedWorkflows = resolveAllEngineerPrompts(engineer, opts.ticker);
+  if (resolvedWorkflows.length === 0) {
+    throw new Error(`No prompts found for engineer ${opts.engineerId} on ticker ${opts.ticker}`);
   }
+
+  const apiKey = process.env.ANTHROPIC_API_KEY || '';
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured');
+
+  const today = new Date().toISOString().split('T')[0];
+  const allOutputs: string[] = [];
+  let lastRunId = 0;
+
+  // Execute each workflow sequentially (each gets its own run record)
+  for (const resolved of resolvedWorkflows) {
+    const wfStartTime = Date.now();
+
+    // 1. Create a queued run record per workflow
+    const [run] = await db.insert(agentRuns).values({
+      ticker: opts.ticker,
+      engineerId: opts.engineerId,
+      workflowId: resolved.workflowId,
+      status: 'queued',
+      triggerType: opts.triggerType,
+      triggerReason: opts.triggerReason || `${opts.triggerType} run`,
+      inputSummary: opts.userData ? `User data: ${opts.userData.slice(0, 200)}...` : 'Database context',
+      scheduledAt: new Date(),
+    }).returning({ id: agentRuns.id });
+
+    const runId = run.id;
+    lastRunId = runId;
+
+    try {
+      // 2. Mark as running
+      await db.update(agentRuns)
+        .set({ status: 'running', startedAt: new Date() })
+        .where(eq(agentRuns.id, runId));
+
+      // 3. Build the message with date + prompt + optional user data
+      // Replace {{CURRENT_DATE}} placeholders in prompt with today's date
+      const resolvedPrompt = resolved.prompt.replace(/\{\{CURRENT_DATE\}\}/g, today);
+      const datedPrompt = `[Today's date: ${today}]\n\n${resolvedPrompt}`;
+      const fullMessage = opts.userData
+        ? `${datedPrompt}\n\n════════════════════════════════════════════════════════════\nAUTO-FETCHED DATA\n════════════════════════════════════════════════════════════\n\n${opts.userData}`
+        : datedPrompt;
+
+      // 4. Call Claude API
+      const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: CLAUDE_MODEL,
+          max_tokens: 16384,
+          messages: [{ role: 'user', content: fullMessage }],
+        }),
+      });
+
+      if (!claudeRes.ok) {
+        const errText = await claudeRes.text();
+        let reason = `Claude API returned ${claudeRes.status}`;
+        try {
+          const parsed = JSON.parse(errText);
+          if (parsed?.error?.message) reason = parsed.error.message;
+        } catch { /* use default */ }
+        throw new Error(reason);
+      }
+
+      const result = await claudeRes.json();
+      const outputFull = result.content?.[0]?.text || '';
+      const outputSummary = outputFull.slice(0, 500);
+      const durationMs = Date.now() - wfStartTime;
+
+      allOutputs.push(`═══ WORKFLOW: ${resolved.workflowId} ═══\n\n${outputFull}`);
+
+      // 5. Mark as completed
+      await db.update(agentRuns)
+        .set({
+          status: 'completed',
+          outputSummary,
+          outputFull,
+          durationMs,
+          completedAt: new Date(),
+        })
+        .where(eq(agentRuns.id, runId));
+    } catch (err) {
+      const durationMs = Date.now() - wfStartTime;
+      const errorMsg = err instanceof Error ? err.message : String(err);
+
+      await db.update(agentRuns)
+        .set({
+          status: 'failed',
+          errorsEncountered: errorMsg,
+          durationMs,
+          completedAt: new Date(),
+        })
+        .where(eq(agentRuns.id, runId));
+
+      allOutputs.push(`═══ WORKFLOW: ${resolved.workflowId} (FAILED) ═══\n\nError: ${errorMsg}`);
+    }
+  }
+
+  // Update the schedule's lastRunAt
+  await db.update(engineerSchedules)
+    .set({
+      lastRunAt: new Date(),
+      nextRunAt: sql`NOW() + (interval_minutes || ' minutes')::interval`,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(engineerSchedules.ticker, opts.ticker),
+        eq(engineerSchedules.engineerId, opts.engineerId),
+      )
+    );
+
+  const combinedOutput = allOutputs.join('\n\n');
+  const totalDuration = Date.now() - startTime;
+  const hasFailure = allOutputs.some(o => o.includes('(FAILED)'));
+
+  return {
+    runId: lastRunId,
+    status: hasFailure ? 'failed' : 'completed',
+    outputSummary: combinedOutput.slice(0, 500),
+    outputFull: combinedOutput,
+    durationMs: totalDuration,
+    error: hasFailure ? 'One or more workflows failed — see output for details' : undefined,
+  };
 }
 
 /**
@@ -194,12 +222,36 @@ export async function checkAndRunDueEngineers(): Promise<RunResult[]> {
   return results;
 }
 
+// Map ticker -> company data module for dynamic context injection
+const TICKER_DATA: Record<string, { COMPANY_INFO: { name: string; ticker: string; exchange: string; sector: string; description: string } }> = {
+  asts,
+  bmnr,
+  crcl,
+};
+
 /**
- * Resolve the appropriate prompt for an engineer + ticker combination.
- * Uses the first matching workflow variant.
+ * Build a company context block from the data files.
+ * This ensures every prompt has fresh, authoritative company info.
  */
-function resolveEngineerPrompt(engineer: EngineerTask, ticker: string): string | null {
+function getCompanyContext(ticker: string): string {
+  const data = TICKER_DATA[ticker.toLowerCase()];
+  if (!data?.COMPANY_INFO) return '';
+  const c = data.COMPANY_INFO;
+  return `\n\n════════════════════════════════════════════════════════════\nCOMPANY CONTEXT (auto-injected from database)\n════════════════════════════════════════════════════════════\nCompany: ${c.name}\nTicker: ${c.ticker}\nExchange: ${c.exchange}\nSector: ${c.sector}\nDescription: ${c.description}\n`;
+}
+
+interface ResolvedWorkflow {
+  workflowId: string;
+  prompt: string;
+}
+
+/**
+ * Resolve ALL matching prompts for an engineer + ticker combination.
+ * Returns a prompt for each workflow that has a variant for this ticker.
+ */
+function resolveAllEngineerPrompts(engineer: EngineerTask, ticker: string): ResolvedWorkflow[] {
   const tickerLower = ticker.toLowerCase();
+  const results: ResolvedWorkflow[] = [];
 
   for (const wfId of engineer.workflowIds) {
     const workflow = workflows.find(w => w.id === wfId);
@@ -207,9 +259,13 @@ function resolveEngineerPrompt(engineer: EngineerTask, ticker: string): string |
 
     const variant = workflow.variants.find(v => v.ticker === tickerLower);
     if (variant) {
-      return `[AUTONOMOUS AI ENGINEER MODE]\nYou are operating as the "${engineer.name}" — ${engineer.role}.\n${engineer.description}\n\nThis is an autonomous run. Provide actionable analysis and flag any items that require human review.\n\n---\n\n${variant.prompt}`;
+      const companyCtx = getCompanyContext(ticker);
+      results.push({
+        workflowId: wfId,
+        prompt: `[AUTONOMOUS AI ENGINEER MODE]\nYou are operating as the "${engineer.name}" — ${engineer.role}.\n${engineer.description}\n\nThis is an autonomous run. Provide actionable analysis and flag any items that require human review.${companyCtx}\n\n---\n\n${variant.prompt}`,
+      });
     }
   }
 
-  return null;
+  return results;
 }

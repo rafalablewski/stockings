@@ -2,47 +2,46 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { roomMessages, agentRuns, engineerSchedules } from '@/lib/schema';
 import { desc, eq, inArray } from 'drizzle-orm';
-import { generateGeminiResponse } from '@/lib/gemini-bridge';
+import { generateClaudeResponse } from '@/lib/claude-bridge';
 import { VALID_CHANNELS } from '@/lib/types';
 
-// Gemini's engineers (from org-hierarchy)
-const GEMINI_ENGINEER_IDS = [
-  'filing-engineer',
-  'insider-engineer',
-  'press-engineer',
-  'sentiment-engineer',
-  'regulatory-engineer',
-  'disclosure-engineer',
+// Claude's engineers (from org-hierarchy)
+const CLAUDE_ENGINEER_IDS = [
+  'thesis-engineer',
+  'capital-engineer',
+  'earnings-engineer',
+  'catalyst-engineer',
+  'code-security-engineer',
+  'data-quality-engineer',
+  'ask-agent-engineer',
 ];
 
 const ENGINEER_LABELS: Record<string, string> = {
-  'filing-engineer': 'SEC Filing',
-  'insider-engineer': 'Insider Activity',
-  'press-engineer': 'Press Intel',
-  'sentiment-engineer': 'Market Sentiment',
-  'regulatory-engineer': 'Regulatory & IP',
-  'disclosure-engineer': 'Disclosure & Model',
+  'thesis-engineer': 'Thesis Engineer',
+  'capital-engineer': 'Capital Structure',
+  'earnings-engineer': 'Earnings Engineer',
+  'catalyst-engineer': 'Catalyst Tracker',
+  'code-security-engineer': 'Code Security',
+  'data-quality-engineer': 'Data Quality',
+  'ask-agent-engineer': 'General Intel',
 };
 
 /**
- * Build a live status snapshot of Gemini's engineers from the database.
+ * Build a live status snapshot of Claude's engineers from the database.
  */
 async function buildEngineerContext(db: ReturnType<typeof getDb>): Promise<string> {
-  // Fetch latest run per Gemini engineer (across all tickers)
   const recentRuns = await db
     .select()
     .from(agentRuns)
-    .where(inArray(agentRuns.engineerId, GEMINI_ENGINEER_IDS))
+    .where(inArray(agentRuns.engineerId, CLAUDE_ENGINEER_IDS))
     .orderBy(desc(agentRuns.createdAt))
     .limit(30);
 
-  // Fetch schedules for Gemini engineers
   const schedules = await db
     .select()
     .from(engineerSchedules)
-    .where(inArray(engineerSchedules.engineerId, GEMINI_ENGINEER_IDS));
+    .where(inArray(engineerSchedules.engineerId, CLAUDE_ENGINEER_IDS));
 
-  // Dedupe to latest run per engineer
   const latestByEngineer = new Map<string, typeof recentRuns[number]>();
   for (const run of recentRuns) {
     if (!latestByEngineer.has(run.engineerId)) {
@@ -56,7 +55,7 @@ async function buildEngineerContext(db: ReturnType<typeof getDb>): Promise<strin
   }
 
   const lines: string[] = [];
-  for (const engId of GEMINI_ENGINEER_IDS) {
+  for (const engId of CLAUDE_ENGINEER_IDS) {
     const label = ENGINEER_LABELS[engId] || engId;
     const run = latestByEngineer.get(engId);
     const sched = scheduleByEngineer.get(engId);
@@ -96,9 +95,9 @@ async function buildEngineerContext(db: ReturnType<typeof getDb>): Promise<strin
 }
 
 /**
- * POST /api/room/gemini-bridge
+ * POST /api/room/claude-bridge
  *
- * Triggers Gemini to read the latest messages in a channel and post a response.
+ * Triggers Claude to read the latest messages in a channel and post a response.
  * Body: { "channel": "general" }
  */
 export async function POST(req: NextRequest) {
@@ -127,20 +126,20 @@ export async function POST(req: NextRequest) {
   // 2. Fetch live engineer status data
   const engineerContext = await buildEngineerContext(db);
 
-  // 3. Generate Gemini response with real data
+  // 3. Generate Claude response with real data
   let responseText: string;
   try {
-    responseText = await generateGeminiResponse(messages, channel, engineerContext);
+    responseText = await generateClaudeResponse(messages, channel, engineerContext);
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-    return NextResponse.json({ error: `Gemini error: ${message}` }, { status: 502 });
+    return NextResponse.json({ error: `Claude error: ${message}` }, { status: 502 });
   }
 
   // 4. Post response to the room
   const [newMessage] = await db
     .insert(roomMessages)
     .values({
-      sender: 'gemini',
+      sender: 'claude',
       content: responseText,
       channel,
       replyTo: null,
