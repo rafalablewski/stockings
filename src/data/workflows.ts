@@ -1408,12 +1408,17 @@ Now analyze the following pasted content:`,
     description: 'Audits the capital structure database for completeness and consistency. Checks a standard 7-section checklist against actual data, validates cross-reference coverage in sec-filings.ts, detects staleness, and outputs a parity report with specific TODOs. Run when onboarding a new company or periodically to catch drift.',
     requiresUserData: false,
     category: 'audit',
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
+    variants: [],
+    promptTemplate: `You are a capital structure data quality auditor for an institutional investment database (ABISON) covering {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). Your job is to audit the capital section for completeness, consistency, and cross-reference coverage.
 
-        prompt: `You are a capital structure data quality auditor for an institutional investment database (ABISON) covering AST SpaceMobile (NASDAQ: ASTS). Your job is to audit the capital section for completeness, consistency, and cross-reference coverage.
+Company context: {{DESCRIPTION}}. Fiscal year ends {{FISCAL_YEAR_END}}.
+Share structure: {{SHARE_STRUCTURE}}
+
+Key insiders:
+{{KEY_INSIDERS}}
+
+Key metrics to verify:
+{{STOCK_SPECIFIC_METRICS}}
 
 ════════════════════════════════════════
 SECTION 1: CAPITAL SECTION PARITY CHECKLIST
@@ -1457,14 +1462,14 @@ Audit EACH of the 7 standard capital sections. For each, determine status and pr
 For each section:
 - IMPLEMENTED = exports exist with substantive data (not placeholder/empty arrays)
 - TODO = section is missing or has only skeleton/placeholder data — list specific data points needed
-- N/A = section does not apply to this company — state why (e.g., "no warrants outstanding")
+- N/A = section does not apply to this company — state why
 
 ════════════════════════════════════════
 SECTION 2: CROSS-REFERENCE COVERAGE AUDIT
 ════════════════════════════════════════
 
 For EVERY filing entry in the local database (sec-filings.ts) that has status "IN DB":
-- Does it have corresponding cross-reference entries in ASTS_FILING_CROSS_REFS?
+- Does it have corresponding cross-reference entries in {{TICKER}}_FILING_CROSS_REFS?
 - If not, flag as: "MISSING CROSS-REF: [Form]|[Date] — no cross-ref entries"
 - If yes, assess quality: does each cross-ref accurately describe data captured?
 
@@ -1479,13 +1484,16 @@ SECTION 3: STALENESS DETECTION
 ════════════════════════════════════════
 
 Check metadata for each data file:
-- CAPITAL_METADATA.lastUpdated — is it older than 30 days from current date (Feb 16, 2026)?
+- CAPITAL_METADATA.lastUpdated — is it older than 30 days from current date?
 - FINANCIALS_METADATA.lastUpdated — same check
 - CATALYSTS_METADATA.lastUpdated — same check
 - nextExpectedUpdate — is it in the past?
 
 For each stale section:
   → "STALE: [section] last updated [date] — [X] days ago. Next expected: [date]. Action: check [filing type]."
+
+Apply domain-appropriate staleness thresholds based on the company's business:
+{{DOMAIN_SECTIONS}}
 
 ════════════════════════════════════════
 SECTION 4: DATA CONSISTENCY CHECKS
@@ -1522,123 +1530,6 @@ SUGGESTED NEXT ACTIONS:
 - Specific data points to verify in next 10-Q/10-K
 
 Rules: Report facts only. Do not hallucinate data values. Flag uncertainty explicitly.`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-
-        prompt: `You are a capital structure data quality auditor for an institutional investment database (ABISON) covering Bitmine Immersion Technologies, Inc. (NYSE American: BMNR). Your job is to audit the capital section for completeness, consistency, and cross-reference coverage.
-
-════════════════════════════════════════
-SECTION 1: CAPITAL SECTION PARITY CHECKLIST
-════════════════════════════════════════
-
-Audit EACH of the 7 standard capital sections. For each, determine status and provide evidence:
-
-┌────────────────────────────────────────────────────────────────────┐
-│ #  Section              Status                Evidence / Notes    │
-├────────────────────────────────────────────────────────────────────┤
-│ 1  Structure            [IMPLEMENTED/TODO/N/A] [share classes,    │
-│    (share classes,       with reason]          voting, authorized │
-│    voting, authorized)                         vs outstanding]    │
-│                                                                    │
-│ 2  Shareholders         [IMPLEMENTED/TODO/N/A] [major holders,   │
-│    (major holders,       with reason]          % ownership,      │
-│    institutional, insider)                      13F/D/G dates]   │
-│                                                                    │
-│ 3  Offerings            [IMPLEMENTED/TODO/N/A] [equity offerings │
-│    (equity, convertible, with reason]          history, ATM      │
-│    ATM, shelf)                                 programs, shelf   │
-│                                                capacity]          │
-│                                                                    │
-│ 4  Warrants & Plans     [IMPLEMENTED/TODO/N/A] [warrants, SBC,  │
-│    (warrants, SBC,       with reason]          RSU grants,      │
-│    options, RSUs)                               option pools]    │
-│                                                                    │
-│ 5  Dilution             [IMPLEMENTED/TODO/N/A] [dilution history │
-│    (history, scenarios,  with reason]          waterfall,        │
-│    waterfall)                                   FD calculations] │
-│                                                                    │
-│ 6  Liquidity            [IMPLEMENTED/TODO/N/A] [cash position,  │
-│    (cash, runway,        with reason]          burn rate,        │
-│    debt schedule)                               runway scenarios]│
-│                                                                    │
-│ 7  Insiders             [IMPLEMENTED/TODO/N/A] [Form 4 sales,   │
-│    (Form 4 activity,     with reason]          purchases, RSU   │
-│    sales, purchases)                            vestings, plans] │
-└────────────────────────────────────────────────────────────────────┘
-
-For each section:
-- IMPLEMENTED = exports exist with substantive data (not placeholder/empty arrays)
-- TODO = section is missing or has only skeleton/placeholder data — list specific data points needed
-- N/A = section does not apply to this company — state why (e.g., "single share class, no convertibles")
-
-════════════════════════════════════════
-SECTION 2: CROSS-REFERENCE COVERAGE AUDIT
-════════════════════════════════════════
-
-For EVERY filing entry in the local database (sec-filings.ts) that has status "IN DB":
-- Does it have corresponding cross-reference entries in BMNR_FILING_CROSS_REFS?
-- If not, flag as: "MISSING CROSS-REF: [Form]|[Date] — no cross-ref entries"
-- If yes, assess quality: does each cross-ref accurately describe data captured?
-
-Coverage metrics:
-- Total filings in database: X
-- Filings WITH cross-refs: Y
-- Filings WITHOUT cross-refs: Z
-- Coverage rate: Y/X = XX%
-
-════════════════════════════════════════
-SECTION 3: STALENESS DETECTION
-════════════════════════════════════════
-
-Check metadata for each data file:
-- CAPITAL_METADATA.lastUpdated — is it older than 30 days from current date (Feb 16, 2026)?
-- nextExpectedUpdate — is it in the past?
-
-For each stale section:
-  → "STALE: [section] last updated [date] — [X] days ago. Next expected: [date]. Action: check [filing type]."
-
-BMNR-specific staleness: ETH holdings and staking data moves fast. Flag if ETH treasury position is > 7 days old.
-
-════════════════════════════════════════
-SECTION 4: DATA CONSISTENCY CHECKS
-════════════════════════════════════════
-
-Cross-validate:
-1. Share counts: current outstanding consistent across capital.ts and quarterly-metrics.ts?
-2. Warrant math: pre-funded + advisor warrants = total dilutive shares correctly?
-3. ETH treasury: ethHoldings × ethPrice ≈ reported crypto fair value?
-4. Offering totals: sum of EQUITY_OFFERINGS amounts vs. total raised narrative
-5. Shareholder data: insider sales volumes + dates consistent with Form 4 entries?
-6. Staking yield: STAKING_APY × staked ETH ≈ reported yield income?
-
-For each inconsistency:
-  → "INCONSISTENCY: [description] — Expected: [X], Found: [Y]. Resolution: [action]."
-
-════════════════════════════════════════
-SECTION 5: PARITY REPORT
-════════════════════════════════════════
-
-PARITY SCORE: X/7 sections implemented
-CROSS-REF COVERAGE: XX%
-STALENESS: X stale sections
-INCONSISTENCIES: X found
-
-TODO LIST (prioritized by impact):
-1. [HIGH] [description — specific data to add/fix]
-2. [HIGH] [description]
-3. [MEDIUM] [description]
-...
-
-SUGGESTED NEXT ACTIONS:
-- Which SEC filings to review to fill gaps
-- Which agents to run (e.g., "Run 13F Tracker to update shareholders")
-- Specific data points to verify in next 10-Q/10-K
-
-Rules: Report facts only. Do not hallucinate data values. Flag uncertainty explicitly.`,
-      },
-    ],
   },
   // =========================================================================
   // 16. CROSS-REFERENCE INTEGRITY AUDIT
@@ -1649,20 +1540,21 @@ Rules: Report facts only. Do not hallucinate data values. Flag uncertainty expli
     description: 'Validates that every filing in sec-filings.ts has corresponding cross-reference entries in FILING_CROSS_REFS, and that every cross-ref key maps to an actual filing. Detects orphans, mismatches, and coverage gaps. Run after batch filing updates.',
     requiresUserData: false,
     category: 'audit',
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
+    variants: [],
+    promptTemplate: `You are a data integrity auditor for the ABISON investment database covering {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). Your job is to audit the cross-reference system that links SEC filings to the data they populated across the database.
 
-        prompt: `You are a data integrity auditor for the ABISON investment database covering AST SpaceMobile (NASDAQ: ASTS). Your job is to audit the cross-reference system that links SEC filings to the data they populated across the database.
+Company context: {{DESCRIPTION}}. Specializes in {{SPECIALIST_DOMAIN}}.
+
+Domain areas to verify cross-referencing for:
+{{DOMAIN_SECTIONS}}
 
 ════════════════════════════════════════
 PHASE 1: FILING → CROSS-REF COVERAGE
 ════════════════════════════════════════
 
-For EVERY entry in ASTS_SEC_FILINGS (sec-filings.ts):
+For EVERY entry in {{TICKER}}_SEC_FILINGS (sec-filings.ts):
 1. Construct the expected cross-ref key: "[type]|[YYYY-MM-DD]"
-2. Check if that key exists in ASTS_FILING_CROSS_REFS
+2. Check if that key exists in {{TICKER}}_FILING_CROSS_REFS
 3. Classify:
    - COVERED: Key exists with 1+ cross-ref entries
    - MISSING: Key does not exist — filing data was never cross-referenced
@@ -1682,9 +1574,9 @@ Coverage metrics:
 PHASE 2: ORPHAN CROSS-REF DETECTION
 ════════════════════════════════════════
 
-For EVERY key in ASTS_FILING_CROSS_REFS:
+For EVERY key in {{TICKER}}_FILING_CROSS_REFS:
 1. Parse the key: "[type]|[YYYY-MM-DD]"
-2. Check if a matching filing exists in ASTS_SEC_FILINGS with that type and date
+2. Check if a matching filing exists in {{TICKER}}_SEC_FILINGS with that type and date
 3. Flag orphans: cross-ref keys that point to filings NOT in the local database
 
 Orphan list:
@@ -1698,6 +1590,7 @@ For each covered filing, assess cross-ref quality:
 - Does the cross-ref 'source' field match the correct database file? (capital, financials, catalysts, company, timeline)
 - Is the 'data' field specific enough to locate the actual database entry?
 - Are important data points from the filing captured, or are cross-refs shallow?
+- Are domain-specific data points (from the company's business areas above) properly cross-referenced?
 
 Quality grades:
 - COMPLETE: All material data points from the filing are cross-referenced
@@ -1718,78 +1611,6 @@ PRIORITY FIXES:
 3. [LOW] Shallow cross-refs to enrich: [list]
 
 Rules: Report facts only. Do not hallucinate cross-ref entries or filing data.`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-
-        prompt: `You are a data integrity auditor for the ABISON investment database covering Bitmine Immersion Technologies, Inc. (NYSE American: BMNR). Your job is to audit the cross-reference system that links SEC filings to the data they populated across the database.
-
-════════════════════════════════════════
-PHASE 1: FILING → CROSS-REF COVERAGE
-════════════════════════════════════════
-
-For EVERY entry in BMNR_SEC_FILINGS (sec-filings.ts):
-1. Construct the expected cross-ref key: "[type]|[YYYY-MM-DD]"
-2. Check if that key exists in BMNR_FILING_CROSS_REFS
-3. Classify:
-   - COVERED: Key exists with 1+ cross-ref entries
-   - MISSING: Key does not exist — filing data was never cross-referenced
-   - EXEMPT: Filing type unlikely to generate database updates (e.g., CORRESP, NT 10-K) — list but don't flag
-
-Output table:
-| Filing Date | Type | Description (truncated) | Cross-Ref Status | # Refs |
-|-------------|------|------------------------|------------------|--------|
-
-Coverage metrics:
-- Total filings: X
-- Covered: Y (XX%)
-- Missing: Z (list each)
-- Exempt: W
-
-════════════════════════════════════════
-PHASE 2: ORPHAN CROSS-REF DETECTION
-════════════════════════════════════════
-
-For EVERY key in BMNR_FILING_CROSS_REFS:
-1. Parse the key: "[type]|[YYYY-MM-DD]"
-2. Check if a matching filing exists in BMNR_SEC_FILINGS with that type and date
-3. Flag orphans: cross-ref keys that point to filings NOT in the local database
-
-Orphan list:
-- "[key]" — no matching filing in sec-filings.ts. Action: [add filing or remove cross-ref]
-
-════════════════════════════════════════
-PHASE 3: CROSS-REF QUALITY ASSESSMENT
-════════════════════════════════════════
-
-For each covered filing, assess cross-ref quality:
-- Does the cross-ref 'source' field match the correct database file? (capital, financials, catalysts, company, timeline)
-- Is the 'data' field specific enough to locate the actual database entry?
-- Are important data points from the filing captured, or are cross-refs shallow?
-- BMNR-specific: Are ETH treasury holdings, staking data, and ATM utilization properly cross-referenced from 8-Ks?
-
-Quality grades:
-- COMPLETE: All material data points from the filing are cross-referenced
-- PARTIAL: Some data captured but material items missing (list what's missing)
-- SHALLOW: Cross-ref exists but is too vague to be useful
-
-════════════════════════════════════════
-PHASE 4: INTEGRITY REPORT
-════════════════════════════════════════
-
-COVERAGE: XX% (Y/X filings cross-referenced)
-ORPHANS: X cross-ref keys with no matching filing
-QUALITY: X complete, Y partial, Z shallow
-
-PRIORITY FIXES:
-1. [HIGH] Missing cross-refs for material filings: [list]
-2. [MEDIUM] Orphan keys to resolve: [list]
-3. [LOW] Shallow cross-refs to enrich: [list]
-
-Rules: Report facts only. Do not hallucinate cross-ref entries or filing data.`,
-      },
-    ],
   },
   // =========================================================================
   // 17. SOURCES COMPLETENESS AUDIT
@@ -1800,18 +1621,21 @@ Rules: Report facts only. Do not hallucinate cross-ref entries or filing data.`,
     description: 'Checks that every press release, 8-K, and material filing referenced across the database has a corresponding entry in the Sources tab with a URL. Detects missing source citations, broken references, and logging gaps. Run after adding new entries to any tab.',
     requiresUserData: false,
     category: 'audit',
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
+    variants: [],
+    promptTemplate: `You are a source citation auditor for the ABISON investment database covering {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). Your job is to verify that every material data entry across the database has proper source documentation in the Sources tab.
 
-        prompt: `You are a source citation auditor for the ABISON investment database covering AST SpaceMobile (NASDAQ: ASTS). Your job is to verify that every material data entry across the database has proper source documentation in the Sources tab.
+Company context: {{DESCRIPTION}}. Specializes in {{SPECIALIST_DOMAIN}}.
+
+Research tabs for this ticker: {{TICKER_TABS}}
+
+Domain areas requiring source verification:
+{{DOMAIN_SECTIONS}}
 
 ════════════════════════════════════════
 PHASE 1: SEC FILING SOURCE COVERAGE
 ════════════════════════════════════════
 
-For EVERY filing in ASTS_SEC_FILINGS (sec-filings.ts):
+For EVERY filing in {{TICKER}}_SEC_FILINGS (sec-filings.ts):
 1. Check if the filing has a corresponding Sources tab entry (match by date + form type)
 2. For filings WITH source entries: verify the URL is present and points to SEC EDGAR
 3. For filings WITHOUT source entries: flag as MISSING
@@ -1829,16 +1653,14 @@ Metrics:
 PHASE 2: DATABASE ENTRY SOURCE TRACING
 ════════════════════════════════════════
 
-Scan ALL database tabs for entries that reference specific events, announcements, or data points:
-- Company/Core tab: press releases, earnings, leadership changes
-- Partners/Ecosystem tab: MNO announcements, deals, trials
-- Comps tab: competitor news with dates
-- Catalysts tab: milestone events with dates
+Scan ALL database tabs ({{TICKER_TABS}}) for entries that reference specific events, announcements, or data points. For each tab, check dated entries against the Sources tab.
 
 For each dated entry, check:
 1. Does the Sources tab have a corresponding source with matching date?
 2. If the entry references a URL or specific document — is it in Sources?
 3. Flag entries with NO traceable source as: "UNSOURCED: [tab] — [entry description] — [date]"
+
+Pay special attention to domain-critical data that must always be sourced (from the domain sections above).
 
 ════════════════════════════════════════
 PHASE 3: SOURCES TAB QUALITY CHECK
@@ -1870,82 +1692,6 @@ PRIORITY FIXES:
 3. [LOW] Quality issues to clean up: [count by type]
 
 Rules: Report facts only. Do not fabricate URLs or source entries.`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-
-        prompt: `You are a source citation auditor for the ABISON investment database covering Bitmine Immersion Technologies, Inc. (NYSE American: BMNR). Your job is to verify that every material data entry across the database has proper source documentation in the Sources tab.
-
-════════════════════════════════════════
-PHASE 1: SEC FILING SOURCE COVERAGE
-════════════════════════════════════════
-
-For EVERY filing in BMNR_SEC_FILINGS (sec-filings.ts):
-1. Check if the filing has a corresponding Sources tab entry (match by date + form type)
-2. For filings WITH source entries: verify the URL is present and points to SEC EDGAR
-3. For filings WITHOUT source entries: flag as MISSING
-
-Filing source coverage:
-| Filing Date | Type | In Sources Tab? | URL Present? | Status |
-|-------------|------|-----------------|--------------|--------|
-
-Metrics:
-- Total filings: X
-- With source entry: Y (XX%)
-- Missing source entry: Z
-
-════════════════════════════════════════
-PHASE 2: DATABASE ENTRY SOURCE TRACING
-════════════════════════════════════════
-
-Scan ALL database tabs for entries that reference specific events, announcements, or data points:
-- Company/Core tab: ETH treasury updates, leadership changes, earnings
-- Ethereum Ecosystem tab: protocol events, staking developments
-- Comps tab: competitor treasury/mining news with dates
-- Catalysts tab: milestone events with dates
-- Capital tab: offerings, insider transactions, shareholder filings
-
-For each dated entry, check:
-1. Does the Sources tab have a corresponding source with matching date?
-2. If the entry references a URL or specific document — is it in Sources?
-3. Flag entries with NO traceable source as: "UNSOURCED: [tab] — [entry description] — [date]"
-
-BMNR-specific: ETH treasury updates from 8-Ks are the most critical sourced entries. Every ETH holdings figure MUST trace back to a source.
-
-════════════════════════════════════════
-PHASE 3: SOURCES TAB QUALITY CHECK
-════════════════════════════════════════
-
-For each Sources tab entry:
-- Is the date format consistent (YYYY-MM-DD)?
-- Is the source type classified (PR / SEC / Analyst / News / Other)?
-- Is the URL present and well-formed?
-- Is the 1-line description meaningful (not just "filing" or "update")?
-
-Quality flags:
-- MISSING_URL: Source entry has no URL
-- MISSING_TYPE: Source type not classified
-- VAGUE_DESC: Description too generic to be useful
-- DATE_FORMAT: Inconsistent date format
-
-════════════════════════════════════════
-PHASE 4: COMPLETENESS REPORT
-════════════════════════════════════════
-
-FILING SOURCE COVERAGE: XX%
-UNSOURCED DATABASE ENTRIES: X
-SOURCE QUALITY ISSUES: X
-
-PRIORITY FIXES:
-1. [HIGH] ETH treasury entries with no source: [list]
-2. [HIGH] Material entries with no source: [list top 10]
-3. [MEDIUM] Filings missing from Sources tab: [list]
-4. [LOW] Quality issues to clean up: [count by type]
-
-Rules: Report facts only. Do not fabricate URLs or source entries.`,
-      },
-    ],
   },
   // =========================================================================
   // 18. DATA FRESHNESS AUDIT
@@ -1956,14 +1702,19 @@ Rules: Report facts only. Do not fabricate URLs or source entries.`,
     description: 'Scans every database tab for stale entries, missing quarterly data, timeline gaps, and metadata that has drifted past its expected update date. Outputs a staleness heatmap and prioritized refresh list. Run weekly or before earnings.',
     requiresUserData: false,
     category: 'audit',
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
+    variants: [],
+    promptTemplate: `You are a data freshness auditor for the ABISON investment database covering {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). Your job is to detect stale, outdated, or missing data across all tabs and flag what needs refreshing.
 
-        prompt: `You are a data freshness auditor for the ABISON investment database covering AST SpaceMobile (NASDAQ: ASTS). Your job is to detect stale, outdated, or missing data across all tabs and flag what needs refreshing.
+Company context: {{DESCRIPTION}}. Fiscal year ends {{FISCAL_YEAR_END}}.
+Sector: {{SECTOR}} — specializes in {{SPECIALIST_DOMAIN}}.
 
-Current date: February 16, 2026.
+Research tabs: {{TICKER_TABS}}
+
+Competitors to check for staleness:
+{{COMPETITORS}}
+
+Domain areas with freshness-critical data:
+{{DOMAIN_SECTIONS}}
 
 ════════════════════════════════════════
 PHASE 1: METADATA STALENESS SCAN
@@ -1985,113 +1736,16 @@ Status:
 - STALE: Past nextExpectedUpdate or > 30 days old
 - CRITICAL: Past nextExpectedUpdate by > 14 days (likely missed a filing)
 
+Apply domain-appropriate staleness thresholds based on the company's business (fast-moving sectors may need tighter windows).
+
 ════════════════════════════════════════
 PHASE 2: QUARTERLY DATA GAPS
 ════════════════════════════════════════
 
-Check for expected quarterly filings/data:
+Check for expected quarterly filings/data (FY ends {{FISCAL_YEAR_END}}):
 - 10-Q: Should have data for each quarter. Identify missing quarters.
 - 10-K: Annual report. Is the latest fiscal year covered?
 - Earnings: Are all recent earnings calls processed?
-
-Expected quarterly cadence for ASTS:
-| Period | 10-Q/10-K Filed? | In Database? | Financials Tab? | Gap? |
-|--------|-----------------|--------------|-----------------|------|
-
-Flag: "QUARTERLY GAP: [period] — [filing exists but not processed / filing not yet in DB / filing overdue]"
-
-════════════════════════════════════════
-PHASE 3: TAB-BY-TAB FRESHNESS AUDIT
-════════════════════════════════════════
-
-For each database tab, find the MOST RECENT entry date and assess:
-
-Company/Core:
-- Latest entry date: [date]
-- Days since last update: X
-- Expected refresh trigger: [next earnings / next 8-K / next launch]
-- Status: [CURRENT / STALE / CRITICAL]
-
-Partners/Ecosystem:
-- Latest entry date: [date]
-- Any partner with no updates in > 90 days? Flag stale partners.
-
-Comps:
-- Latest entry per competitor. Flag any competitor with no update in > 60 days.
-
-Catalysts:
-- Any catalyst with a past target date that hasn't been updated with actual results?
-- Forward catalysts: are they still valid or have dates shifted?
-
-Capital:
-- Share count: date of last update. Is it pre/post latest offering?
-- Cash position: last updated. Is it pre/post latest quarter?
-
-Sources:
-- Latest source entry date: [date]
-- Gap between latest source and latest database entry?
-
-════════════════════════════════════════
-PHASE 4: FRESHNESS REPORT
-════════════════════════════════════════
-
-FRESHNESS HEATMAP:
-| Tab | Last Updated | Staleness | Priority |
-|-----|-------------|-----------|----------|
-| ... | ...         | X days    | HIGH/MED/LOW |
-
-QUARTERLY GAPS: X missing periods
-STALE METADATA: X sections past expected update
-STALE COMPETITORS: X with no update > 60 days
-STALE PARTNERS: X with no update > 90 days
-PAST-DUE CATALYSTS: X not updated with results
-
-REFRESH PRIORITY LIST:
-1. [CRITICAL] [description — what to update and which filing/source to use]
-2. [HIGH] [description]
-3. [MEDIUM] [description]
-
-SUGGESTED AGENT RUNS:
-- "Run [agent name] to refresh [section] using [filing/source]"
-
-Rules: Report facts only. Use actual dates from the database. Do not estimate or infer dates not present in the data.`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-
-        prompt: `You are a data freshness auditor for the ABISON investment database covering Bitmine Immersion Technologies, Inc. (NYSE American: BMNR). Your job is to detect stale, outdated, or missing data across all tabs and flag what needs refreshing.
-
-Current date: February 16, 2026.
-
-════════════════════════════════════════
-PHASE 1: METADATA STALENESS SCAN
-════════════════════════════════════════
-
-Check lastUpdated and nextExpectedUpdate in EVERY metadata export:
-- CAPITAL_METADATA
-- BMNR_SEC_META
-- Any other *_METADATA exports
-
-For each:
-| Section | Last Updated | Days Ago | Next Expected | Status |
-|---------|-------------|----------|---------------|--------|
-
-Status:
-- CURRENT: Updated within expected window
-- STALE: Past nextExpectedUpdate or > 30 days old
-- CRITICAL: Past nextExpectedUpdate by > 14 days
-
-BMNR-specific: ETH treasury data moves fast. Flag if the latest ETH holdings update is > 7 days old.
-
-════════════════════════════════════════
-PHASE 2: QUARTERLY DATA GAPS
-════════════════════════════════════════
-
-Check for expected quarterly filings/data. BMNR has a Sep 30 fiscal year end:
-- 10-Q: Should have Q1 (Jan), Q2 (Apr), Q3 (Jul)
-- 10-K: Annual (Nov)
-- Earnings: Are all recent earnings processed?
 
 Expected quarterly cadence:
 | Period | 10-Q/10-K Filed? | In Database? | Financials Tab? | Gap? |
@@ -2103,33 +1757,17 @@ Flag: "QUARTERLY GAP: [period] — [filing exists but not processed / filing not
 PHASE 3: TAB-BY-TAB FRESHNESS AUDIT
 ════════════════════════════════════════
 
-For each database tab, find the MOST RECENT entry date and assess:
-
-Company/Core:
+For each database tab ({{TICKER_TABS}}), find the MOST RECENT entry date and assess:
 - Latest entry date: [date]
-- ETH holdings figure date: [date] — CRITICAL if > 7 days old
-- Staking APY date: [date]
+- Days since last update: X
+- Expected refresh trigger: [next earnings / next filing / next event]
 - Status: [CURRENT / STALE / CRITICAL]
 
-Ethereum Ecosystem:
-- Latest entry date: [date]
-- Any protocol/staking development > 30 days old without update?
-
-Comps:
-- Latest entry per competitor. Flag any competitor with no update in > 60 days.
-- Especially: Strategy Inc., ETHZilla, Marathon — core treasury comps.
-
-Catalysts:
-- Past-due catalysts not updated with results?
-- Forward catalysts still valid?
-
-Capital:
-- Share count date: pre or post latest ATM/offering?
-- ETH treasury valuation: uses current or stale ETH price?
-- MAJOR_SHAREHOLDERS: how many have null share counts? (known gap)
-
-Sources:
-- Latest source entry date vs. latest database entry date
+Pay special attention to:
+- Domain-specific data that moves fast (from domain sections above)
+- Competitor data — flag any competitor with no update in > 60 days
+- Catalysts — any with past target dates not updated with results?
+- Capital — share count pre/post latest offering? Cash position current?
 
 ════════════════════════════════════════
 PHASE 4: FRESHNESS REPORT
@@ -2140,11 +1778,9 @@ FRESHNESS HEATMAP:
 |-----|-------------|-----------|----------|
 | ... | ...         | X days    | HIGH/MED/LOW |
 
-ETH TREASURY FRESHNESS: [X days old — CURRENT/STALE/CRITICAL]
 QUARTERLY GAPS: X missing periods
 STALE METADATA: X sections past expected update
 STALE COMPETITORS: X with no update > 60 days
-NULL SHAREHOLDER COUNTS: X of Y holders missing data
 PAST-DUE CATALYSTS: X not updated with results
 
 REFRESH PRIORITY LIST:
@@ -2156,8 +1792,6 @@ SUGGESTED AGENT RUNS:
 - "Run [agent name] to refresh [section] using [filing/source]"
 
 Rules: Report facts only. Use actual dates from the database. Do not estimate or infer dates not present in the data.`,
-      },
-    ],
   },
   // =========================================================================
   // 19. COMPREHENSIVE CODE AUDIT
