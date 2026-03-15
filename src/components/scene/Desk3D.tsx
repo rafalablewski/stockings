@@ -149,10 +149,23 @@ export default function Desk3D({ position, color, isActive }: Desk3DProps) {
       </RoundedBox>
 
       {/* ══ MOUSE ══ */}
-      <mesh position={[0.65, deskZ + deskH / 2 + 0.015, -0.2]} castShadow>
-        <capsuleGeometry args={[0.03, 0.04, 4, 8]} />
-        <meshStandardMaterial color="#404048" roughness={0.8} />
-      </mesh>
+      <group position={[0.65, deskZ + deskH / 2, -0.2]}>
+        {/* Mouse body — elongated rounded shape */}
+        <RoundedBox args={[0.09, 0.035, 0.14]} radius={0.015}
+          position={[0, 0.018, 0]} castShadow>
+          <meshStandardMaterial color="#404048" roughness={0.8} />
+        </RoundedBox>
+        {/* Scroll wheel */}
+        <mesh position={[0, 0.037, 0.02]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.008, 0.008, 0.02, 8]} />
+          <meshStandardMaterial color="#2a2a2e" roughness={0.6} metalness={0.3} />
+        </mesh>
+        {/* Button seam (center line) */}
+        <mesh position={[0, 0.036, 0.025]}>
+          <boxGeometry args={[0.002, 0.002, 0.08]} />
+          <meshStandardMaterial color="#333" roughness={0.7} />
+        </mesh>
+      </group>
     </group>
   );
 }
