@@ -3285,46 +3285,6 @@
   padding: 24px 16px;
 }
 
-/* PM filter tabs */
-.dec-pm-tabs {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.dec-pm-tab {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.02);
-  color: rgba(255,255,255,0.5);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.dec-pm-tab:hover {
-  background: rgba(255,255,255,0.05);
-  color: rgba(255,255,255,0.8);
-}
-
-.dec-pm-tab-active {
-  background: rgba(255,255,255,0.08);
-  border-color: var(--pm-color, rgba(255,255,255,0.2));
-  color: rgba(255,255,255,0.9);
-}
-
-.dec-pm-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
 .dec-pm-count {
   background: rgba(251, 191, 36, 0.2);
   color: #fbbf24;

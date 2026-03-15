@@ -161,9 +161,9 @@ export default function DecisionDashboard() {
   return (
     <div className="dec-dashboard">
       {/* PM filter tabs */}
-      <div className="dec-pm-tabs">
+      <div className="eng-view-toggle-bar">
         <button
-          className={`dec-pm-tab ${!activePm ? 'dec-pm-tab-active' : ''}`}
+          className={`eng-view-toggle ${!activePm ? 'active' : ''}`}
           onClick={() => setActivePm(null)}
         >
           All PMs
@@ -174,11 +174,10 @@ export default function DecisionDashboard() {
           return (
             <button
               key={pm}
-              className={`dec-pm-tab ${activePm === pm ? 'dec-pm-tab-active' : ''}`}
+              className={`eng-view-toggle ${activePm === pm ? 'active' : ''}`}
               onClick={() => setActivePm(pm)}
-              style={{ '--pm-color': meta.color } as React.CSSProperties}
             >
-              <span className="dec-pm-dot" style={{ background: meta.color }} />
+              <span className="eng-section-dot" style={{ background: meta.color, boxShadow: `0 0 8px ${meta.color}66` }} />
               {meta.label}
               {count > 0 && <span className="dec-pm-count">{count}</span>}
             </button>
