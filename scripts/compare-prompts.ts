@@ -1,105 +1,160 @@
 import { workflows } from '../src/data/workflows';
 
-// Order matters: longer/more-specific patterns first to avoid partial matches.
+/**
+ * Normalize prompts by replacing company-specific terms with generic placeholders.
+ *
+ * Two-pass strategy to avoid placeholders being corrupted by later regexes:
+ *   Pass 1: Replace terms with unique sentinel tokens (e.g. \x00P01\x00)
+ *   Pass 2: Replace sentinels with readable placeholder names
+ */
 
-const astsReplacements: [RegExp, string][] = [
-  // Full company name variations (longest first)
-  [/AST SpaceMobile USA/g, '{{COMPANY_SUB}}'],
-  [/AST SpaceMobile/g, '{{COMPANY}}'],
-  [/SpaceMobile/g, '{{COMPANY_SHORT}}'],
-  // Ticker & exchange
-  [/NASDAQ/g, '{{EXCHANGE}}'],
-  [/ASTS/g, '{{TICKER}}'],
-  // Domain-specific phrases (longer first)
-  [/satellite-enabled direct-to-device \(D2D\) cellular broadband and LEO constellations/g, '{{SPECIALTY_DESC}}'],
-  [/satellite-enabled direct-to-device \(D2D\) cellular broadband/g, '{{SPECIALTY_SHORT}}'],
-  [/direct-to-device \(D2D\) cellular broadband/g, '{{CORE_TECH}}'],
-  [/direct-to-device/g, '{{CORE_TECH_SHORT}}'],
-  [/D2D/g, '{{CORE_TECH_ABBR}}'],
-  [/space-based cellular broadband network/g, '{{NETWORK_DESC}}'],
-  [/space-based cellular broadband/g, '{{NETWORK_DESC_SHORT}}'],
-  [/space-based/g, '{{TECH_PREFIX}}'],
-  [/cellular broadband/g, '{{BROADBAND_TYPE}}'],
-  // Industry terms
-  [/LEO constellations/g, '{{CONSTELLATION_TYPE}}'],
-  [/LEO constellation/g, '{{CONSTELLATION_SING}}'],
-  [/LEO/g, '{{ORBIT_TYPE}}'],
-  [/constellations/gi, '{{CONSTELLATIONS}}'],
-  [/constellation/gi, '{{CONSTELLATION}}'],
-  [/satellites/gi, '{{UNITS}}'],
-  [/satellite/gi, '{{UNIT}}'],
-  // Domain categories/tabs
-  [/Partners/g, '{{DOMAIN_TAB}}'],
-  [/partner/gi, '{{DOMAIN_ENTITY}}'],
-  // Regulatory bodies
-  [/FCC\/NTIA/g, '{{REGULATORS}}'],
-  [/FCC/g, '{{REGULATOR1}}'],
-  [/NTIA/g, '{{REGULATOR2}}'],
-  // Specific technical terms
-  [/spectrum/gi, '{{RESOURCE}}'],
-  [/MNO/g, '{{INDUSTRY_PARTNER_TYPE}}'],
-  [/mobile network operator/gi, '{{INDUSTRY_PARTNER_DESC}}'],
-  [/carrier/gi, '{{CARRIER}}'],
-  [/telco/gi, '{{TELCO}}'],
-  [/telecom/gi, '{{TELECOM}}'],
-  [/coverage gap/gi, '{{COVERAGE_GAP}}'],
-  [/BlueBird/g, '{{PRODUCT_GEN}}'],
-  [/Block \d+/g, '{{PRODUCT_BLOCK}}'],
-];
+type ReplacementDef = [RegExp, string]; // [pattern, placeholder_name]
 
-const bmnrReplacements: [RegExp, string][] = [
-  // Full company name variations (longest first)
-  [/Bitmine Immersion Technologies, Inc\.?/g, '{{COMPANY}}'],
-  [/Bitmine Immersion Technologies/g, '{{COMPANY}}'],
-  [/Bitmine/g, '{{COMPANY_SHORT}}'],
-  // Ticker & exchange
-  [/NYSE American/g, '{{EXCHANGE}}'],
-  [/BMNR/g, '{{TICKER}}'],
-  // Domain-specific phrases (longer first)
-  [/digital asset treasuries, blockchain infrastructure, and ETH\/BTC ecosystem plays/g, '{{SPECIALTY_DESC}}'],
-  [/digital asset treasuries/g, '{{SPECIALTY_SHORT}}'],
-  [/Ethereum treasury\/staking strategy/g, '{{CORE_TECH}}'],
-  [/Ethereum treasury/g, '{{CORE_TECH_SHORT}}'],
-  [/ETH\/BTC/g, '{{CORE_TECH_ABBR}}'],
-  [/Bitcoin mining to an Ethereum/g, '{{NETWORK_DESC}}'],
-  [/blockchain infrastructure/g, '{{NETWORK_DESC_SHORT}}'],
-  [/blockchain/gi, '{{TECH_PREFIX}}'],
-  [/cryptocurrency mining/gi, '{{BROADBAND_TYPE}}'],
-  // Industry terms
-  [/Ethereum ecosystem/gi, '{{CONSTELLATION_TYPE}}'],
-  [/Ethereum staking/gi, '{{CONSTELLATION_SING}}'],
-  [/ETH/g, '{{ORBIT_TYPE}}'],
-  [/Ethereum/gi, '{{CONSTELLATIONS}}'],
-  [/staking/gi, '{{CONSTELLATION}}'],
-  [/miners/gi, '{{UNITS}}'],
-  [/mining/gi, '{{UNIT}}'],
-  // Domain categories/tabs
-  [/Ethereum Ecosystem/g, '{{DOMAIN_TAB}}'],
-  [/Bitcoin/gi, '{{DOMAIN_ENTITY}}'],
-  // Regulatory bodies
-  [/SEC\/FinCEN/g, '{{REGULATORS}}'],
-  [/SEC/g, '{{REGULATOR1}}'],
-  [/FinCEN/g, '{{REGULATOR2}}'],
-  // Specific technical terms
-  [/hash rate/gi, '{{RESOURCE}}'],
-  [/hashrate/gi, '{{RESOURCE}}'],
-  [/validator/gi, '{{INDUSTRY_PARTNER_TYPE}}'],
-  [/node operator/gi, '{{INDUSTRY_PARTNER_DESC}}'],
-  [/exchange/gi, '{{CARRIER}}'],
-  [/crypto/gi, '{{TELCO}}'],
-  [/digital asset/gi, '{{TELECOM}}'],
-  [/energy cost/gi, '{{COVERAGE_GAP}}'],
-  [/immersion cooling/gi, '{{PRODUCT_GEN}}'],
-  [/Phase \d+/g, '{{PRODUCT_BLOCK}}'],
-];
-
-function normalize(text: string, replacements: [RegExp, string][]): string {
+function normalize(text: string, replacements: ReplacementDef[]): string {
   let result = text;
-  for (const [pattern, replacement] of replacements) {
-    result = result.replace(pattern, replacement);
+
+  // Pass 1: replace with sentinel tokens
+  for (let i = 0; i < replacements.length; i++) {
+    const [pattern] = replacements[i];
+    const sentinel = `\x00P${String(i).padStart(3, '0')}\x00`;
+    // Recreate the regex to reset lastIndex (in case of global flag)
+    const re = new RegExp(pattern.source, pattern.flags);
+    result = result.replace(re, sentinel);
   }
+
+  // Pass 2: replace sentinels with readable placeholders
+  for (let i = 0; i < replacements.length; i++) {
+    const sentinel = `\x00P${String(i).padStart(3, '0')}\x00`;
+    result = result.replaceAll(sentinel, `{{${replacements[i][1]}}}`);
+  }
+
   return result;
 }
+
+// ── ASTS replacements (order: longest/most-specific first) ──────────────────
+
+const astsReplacements: ReplacementDef[] = [
+  [/AST SpaceMobile USA LLC/g, 'COMPANY_LEGAL'],
+  [/AST SpaceMobile/g, 'COMPANY'],
+  [/SpaceMobile/g, 'COMPANY_PRODUCT'],
+  [/NASDAQ:\s*ASTS/g, 'EXCHANGE_TICKER'],
+  [/NASDAQ/g, 'EXCHANGE'],
+  [/\bASTS\b/g, 'TICKER'],
+  // Domain phrases
+  [/satellite-enabled direct-to-device \(D2D\) cellular broadband and LEO constellations/g, 'SPECIALTY'],
+  [/satellite-enabled direct-to-device \(D2D\) cellular broadband/g, 'SPECIALTY_SHORT'],
+  [/direct-to-device \(D2D\) cellular broadband/g, 'CORE_TECH_LONG'],
+  [/space-based cellular broadband network/g, 'NETWORK_TYPE'],
+  [/space-based cellular broadband/g, 'NETWORK_SHORT'],
+  [/cellular broadband/g, 'BROADBAND'],
+  [/direct-to-device/gi, 'CORE_TECH'],
+  [/\bD2D\b/g, 'CORE_TECH_ABBR'],
+  [/space-based/gi, 'TECH_PREFIX'],
+  // Hardware / infrastructure
+  [/LEO constellations/g, 'ASSET_NETWORK_PLURAL'],
+  [/LEO constellation/g, 'ASSET_NETWORK'],
+  [/\bLEO\b/g, 'ORBIT'],
+  [/ground gateway/gi, 'GROUND_INFRA'],
+  [/Block \d+/g, 'GENERATION'],
+  [/BlueBird/g, 'PRODUCT_LINE'],
+  [/constellations/gi, 'ASSET_NETWORKS'],
+  [/constellation/gi, 'ASSET_NETWORK_S'],
+  [/satellites/gi, 'ASSETS_PLURAL'],
+  [/satellite/gi, 'ASSET'],
+  [/unfurling/gi, 'DEPLOY_ACTION'],
+  [/throughput/gi, 'PERF_METRIC'],
+  [/launch cadence/gi, 'CADENCE'],
+  // People
+  [/Abel Avellan/g, 'EXEC_NAME'],
+  // Partners / industry
+  [/\bMNO\b/g, 'PARTNER_TYPE'],
+  [/\bMoU\b/g, 'AGREEMENT_TYPE'],
+  [/AT&T/g, 'PARTNER_A'],
+  [/Verizon/g, 'PARTNER_B'],
+  [/Vodafone/g, 'PARTNER_C'],
+  [/\bstc\b/g, 'PARTNER_D'],
+  [/Rakuten/g, 'PARTNER_E'],
+  [/mobile network operator/gi, 'PARTNER_TYPE_LONG'],
+  [/carrier/gi, 'CARRIER'],
+  [/telco/gi, 'INDUSTRY'],
+  [/telecom/gi, 'INDUSTRY2'],
+  // Regulatory
+  [/FCC\/NTIA/g, 'REGULATORS'],
+  [/\bFCC\b/g, 'REG1'],
+  [/\bNTIA\b/g, 'REG2'],
+  [/3GPP/g, 'STANDARDS_BODY'],
+  [/spectrum/gi, 'REG_RESOURCE'],
+  [/coverage gap/gi, 'COVERAGE_GAP'],
+  // Tabs
+  [/Partners tab/g, 'DOMAIN_TAB_REF'],
+  [/Partners/g, 'DOMAIN_TAB'],
+];
+
+// ── BMNR replacements ──────────────────────────────────────────────────────────
+
+const bmnrReplacements: ReplacementDef[] = [
+  [/Bitmine Immersion Technologies,? Inc\.?/g, 'COMPANY_LEGAL'],
+  [/Bitmine Immersion Technologies/g, 'COMPANY'],
+  [/BitMine Immersion Technologies/g, 'COMPANY'],
+  [/Bitmine/g, 'COMPANY_PRODUCT'],
+  [/BitMine/g, 'COMPANY_PRODUCT'],
+  [/NYSE American:\s*BMNR/g, 'EXCHANGE_TICKER'],
+  [/NYSE American/g, 'EXCHANGE'],
+  [/\bBMNR\b/g, 'TICKER'],
+  // Domain phrases
+  [/digital asset treasuries, blockchain infrastructure, and ETH\/BTC ecosystem plays/g, 'SPECIALTY'],
+  [/digital asset treasuries/g, 'SPECIALTY_SHORT'],
+  [/Ethereum treasury\/staking strategy/g, 'CORE_TECH_LONG'],
+  [/Ethereum-treasury company/g, 'NETWORK_TYPE'],
+  [/Ethereum treasury/gi, 'NETWORK_SHORT'],
+  [/cryptocurrency mining/gi, 'BROADBAND'],
+  [/blockchain infrastructure/gi, 'CORE_TECH'],
+  [/ETH\/BTC/g, 'CORE_TECH_ABBR'],
+  [/blockchain/gi, 'TECH_PREFIX'],
+  // Crypto assets
+  [/Ethereum ecosystem/gi, 'ASSET_NETWORK_PLURAL'],
+  [/Ethereum staking/gi, 'ASSET_NETWORK'],
+  [/\bETH\b/g, 'ORBIT'],
+  [/\bBTC\b/g, 'ALT_ASSET'],
+  [/Ethereum/gi, 'ASSET_NETWORKS'],
+  [/staking/gi, 'ASSET_NETWORK_S'],
+  [/miners/gi, 'ASSETS_PLURAL'],
+  [/mining/gi, 'ASSET'],
+  [/validator/gi, 'DEPLOY_ACTION'],
+  [/hash\s*rate/gi, 'PERF_METRIC'],
+  [/accumulation pace/gi, 'CADENCE'],
+  // Infrastructure
+  [/MAVAN/g, 'PRODUCT_LINE'],
+  [/immersion cooling/gi, 'GROUND_INFRA'],
+  [/Phase \d+/g, 'GENERATION'],
+  [/restaking/gi, 'RESTAKING'],
+  [/DeFi/g, 'DEFI'],
+  // People
+  [/Tom Lee/g, 'EXEC_NAME'],
+  // Tabs (before generic replacements)
+  [/Ethereum Ecosystem tab/g, 'DOMAIN_TAB_REF'],
+  [/Ethereum Ecosystem/g, 'DOMAIN_TAB'],
+  [/Ethereum tab/g, 'DOMAIN_TAB_REF'],
+  // Regulatory
+  [/SEC\/FinCEN/g, 'REGULATORS'],
+  [/\bSEC\b/g, 'REG1'],
+  [/FinCEN/g, 'REG2'],
+  [/\bIRS\b/g, 'STANDARDS_BODY'],
+  // Partners / industry
+  [/Strategy Inc\.?/g, 'PARTNER_A'],
+  [/ETHZilla/g, 'PARTNER_B'],
+  [/Marathon/g, 'PARTNER_C'],
+  [/node operator/gi, 'PARTNER_TYPE_LONG'],
+  [/exchange/gi, 'CARRIER'],
+  [/crypto/gi, 'INDUSTRY'],
+  [/digital asset/gi, 'INDUSTRY2'],
+  // Remaining
+  [/energy cost/gi, 'COVERAGE_GAP'],
+  [/Bitcoin/gi, 'DOMAIN_ENTITY'],
+  [/treasury/gi, 'TREASURY'],
+];
+
+// ─── Output ────────────────────────────────────────────────────────────────────
 
 console.log('');
 console.log('='.repeat(110));
@@ -139,7 +194,11 @@ for (const wf of workflows) {
   const normalizedBmnr = normalize(bmnrVariant.prompt, bmnrReplacements);
 
   const structMatch = normalizedAsts === normalizedBmnr;
-  if (structMatch) matchCount++; else { mismatchCount++; mismatches.push(wf.id); }
+  if (structMatch) matchCount++;
+  else {
+    mismatchCount++;
+    mismatches.push(wf.id);
+  }
 
   const matchStr = structMatch ? 'YES' : 'NO';
 
@@ -151,19 +210,18 @@ for (const wf of workflows) {
     matchStr.padStart(20),
   ].join(' | '));
 
-  // If not matching, show first diff
   if (!structMatch) {
-    const minLen = Math.min(normalizedAsts.length, normalizedBmnr.length);
+    const maxLen = Math.max(normalizedAsts.length, normalizedBmnr.length);
     let firstDiffIdx = -1;
-    for (let i = 0; i < minLen; i++) {
+    for (let i = 0; i < maxLen; i++) {
       if (normalizedAsts[i] !== normalizedBmnr[i]) {
         firstDiffIdx = i;
         break;
       }
     }
-    if (firstDiffIdx === -1) firstDiffIdx = minLen;
+    if (firstDiffIdx === -1) firstDiffIdx = Math.min(normalizedAsts.length, normalizedBmnr.length);
     const start = Math.max(0, firstDiffIdx - 40);
-    const end = Math.min(Math.max(normalizedAsts.length, normalizedBmnr.length), firstDiffIdx + 60);
+    const end = Math.min(maxLen, firstDiffIdx + 80);
     console.log(`  ^ First diff at char ${firstDiffIdx}:`);
     console.log(`    ASTS: ...${JSON.stringify(normalizedAsts.slice(start, end))}...`);
     console.log(`    BMNR: ...${JSON.stringify(normalizedBmnr.slice(start, end))}...`);
@@ -171,8 +229,8 @@ for (const wf of workflows) {
 }
 
 console.log('-'.repeat(110));
-console.log(`\nSummary: ${matchCount} structurally same, ${mismatchCount} different out of ${workflows.length} workflows.`);
+console.log(`\nSummary: ${matchCount} structurally same, ${mismatchCount} structurally different out of ${workflows.length} workflows.`);
 if (mismatches.length > 0) {
-  console.log(`\nMismatched workflows: ${mismatches.join(', ')}`);
+  console.log(`\nStructurally different workflows:\n  ${mismatches.join('\n  ')}`);
 }
 console.log('');
