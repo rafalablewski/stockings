@@ -1802,18 +1802,8 @@ Rules: Report facts only. Use actual dates from the database. Do not estimate or
     description: 'Performs a 35-category institutional-grade code audit covering security vulnerabilities, authentication, data privacy, performance bottlenecks, accessibility, compliance, and architecture. Outputs CVSS-scored findings with CWE/OWASP mapping and prioritized remediation.',
     requiresUserData: false,
     category: 'audit',
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
-        prompt: createCodeAuditPrompt('AST SpaceMobile', 'ASTS'),
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-        prompt: createCodeAuditPrompt('BitMine Immersion Technologies', 'BMNR'),
-      },
-    ],
+    variants: [],
+    promptTemplate: createCodeAuditPrompt('{{COMPANY_NAME}}', '{{TICKER}}'),
   },
   // =========================================================================
   // 20. DEPENDENCY VULNERABILITY AUDIT
@@ -1824,11 +1814,8 @@ Rules: Report facts only. Use actual dates from the database. Do not estimate or
     description: 'Scans package.json, lockfiles, and transitive dependency trees for known CVEs, outdated packages, unmaintained libraries, and supply-chain risk indicators. Outputs CVSS-scored findings with upgrade paths and a risk-ranked remediation plan.',
     requiresUserData: false,
     category: 'audit',
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
-        prompt: `You are a dependency security analyst auditing the ABISON investment research platform. Focus on the AST SpaceMobile (ASTS) module and shared infrastructure.
+    variants: [],
+    promptTemplate: `You are a dependency security analyst auditing the ABISON investment research platform. Focus on the {{COMPANY_NAME}} ({{TICKER}}) module and shared infrastructure.
 
 ════════════════════════════════════════
 PHASE 1: PACKAGE MANIFEST SCAN
@@ -1900,84 +1887,6 @@ RECOMMENDED ACTIONS:
 - Medium-term: [replacements for unmaintained packages]
 
 Rules: Be specific. Reference actual package.json entries. Do not fabricate CVE numbers.`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-        prompt: `You are a dependency security analyst auditing the ABISON investment research platform. Focus on the BitMine Immersion Technologies (BMNR) module and shared infrastructure.
-
-════════════════════════════════════════
-PHASE 1: PACKAGE MANIFEST SCAN
-════════════════════════════════════════
-
-Read package.json and catalog every dependency (dependencies + devDependencies):
-| Package | Declared Version | Type (prod/dev) | Purpose |
-|---------|-----------------|-----------------|---------|
-
-Flag:
-- Packages using overly broad ranges (e.g., "*", ">=")
-- Packages with no clear purpose or apparent duplication
-
-════════════════════════════════════════
-PHASE 2: KNOWN VULNERABILITY MATCHING
-════════════════════════════════════════
-
-For each dependency, check for known CVE patterns based on the declared version:
-- React / Next.js: known XSS vectors in older versions
-- AI/LLM client libraries: prompt injection, token leakage
-- Markdown/HTML parsers: XSS, ReDoS
-- HTTP clients: SSRF, header injection
-- Crypto libraries: weak algorithm defaults
-
-| Package | Version | CVE / Advisory | CVSS | Severity | Fix Version | Breaking? |
-|---------|---------|---------------|------|----------|-------------|-----------|
-
-════════════════════════════════════════
-PHASE 3: SUPPLY CHAIN RISK ASSESSMENT
-════════════════════════════════════════
-
-Evaluate supply chain risk indicators:
-- Packages with very few weekly downloads or single maintainer
-- Packages not updated in > 12 months
-- Packages with known typosquatting risks
-- Packages running postinstall scripts
-- Transitive deps pulling in unexpected large trees
-
-| Package | Risk Indicator | Details | Risk Level |
-|---------|---------------|---------|------------|
-
-════════════════════════════════════════
-PHASE 4: LOCKFILE & BUILD HYGIENE
-════════════════════════════════════════
-
-Check:
-- Is a lockfile present and committed?
-- Inconsistencies between package.json and lockfile?
-- Are node_modules or build artifacts in .gitignore?
-- Any .npmrc or .yarnrc with registry overrides?
-
-════════════════════════════════════════
-PHASE 5: REMEDIATION REPORT
-════════════════════════════════════════
-
-SUMMARY:
-- Total dependencies: X (prod: Y, dev: Z)
-- Known vulnerabilities: X (Critical/High/Medium/Low)
-- Supply chain risks: X packages flagged
-- Outdated packages: X (> 2 major versions behind)
-
-TOP PRIORITY UPGRADES:
-1. [CRITICAL] Package → version (fixes CVE-XXXX-XXXXX)
-2. [HIGH] Package → version (reason)
-
-RECOMMENDED ACTIONS:
-- Immediate: [critical fixes]
-- Short-term: [high-priority upgrades]
-- Medium-term: [replacements for unmaintained packages]
-
-Rules: Be specific. Reference actual package.json entries. Do not fabricate CVE numbers.`,
-      },
-    ],
   },
   // =========================================================================
   // 21. API ENDPOINT SECURITY AUDIT
@@ -1988,11 +1897,8 @@ Rules: Be specific. Reference actual package.json entries. Do not fabricate CVE 
     description: 'Enumerates all API routes and server actions, then audits each for authentication, authorization, input validation, rate limiting, CORS configuration, and error information leakage. Outputs a per-endpoint security scorecard.',
     requiresUserData: false,
     category: 'audit',
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
-        prompt: `You are an API security specialist auditing the ABISON investment research platform. Focus on the AST SpaceMobile (ASTS) module and all shared API infrastructure.
+    variants: [],
+    promptTemplate: `You are an API security specialist auditing the ABISON investment research platform. Focus on the {{COMPANY_NAME}} ({{TICKER}}) module and all shared API infrastructure.
 
 ════════════════════════════════════════
 PHASE 1: ROUTE ENUMERATION
@@ -2058,78 +1964,6 @@ SUMMARY:
 - Top 5 priority fixes with remediation
 
 Rules: Cite file paths and line numbers. Only flag issues verifiable in actual code.`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-        prompt: `You are an API security specialist auditing the ABISON investment research platform. Focus on the BitMine Immersion Technologies (BMNR) module and all shared API infrastructure.
-
-════════════════════════════════════════
-PHASE 1: ROUTE ENUMERATION
-════════════════════════════════════════
-
-Discover every API endpoint:
-- Next.js API routes (app/api/**/route.ts)
-- Server actions (files with "use server")
-- Middleware files (middleware.ts)
-
-| Route | Method(s) | Handler File | Auth Required? | Public? |
-|-------|-----------|-------------|----------------|---------|
-
-════════════════════════════════════════
-PHASE 2: AUTHENTICATION & AUTHORIZATION
-════════════════════════════════════════
-
-For each endpoint:
-- Is authentication enforced? How? (middleware, per-route, none)
-- Is authorization granular? (role-based, resource-based, none)
-- Any endpoints that SHOULD require auth but don't?
-- Session/token handling: secure cookies? httpOnly? SameSite?
-- API keys or tokens exposed in client-side code?
-
-Flag: "AUTH-[NNN]: [endpoint] — [issue]"
-
-════════════════════════════════════════
-PHASE 3: INPUT VALIDATION & INJECTION
-════════════════════════════════════════
-
-For each endpoint accepting input:
-- Request bodies validated? (zod, joi, manual, none)
-- Query/path parameters sanitized and typed?
-- SQL/NoSQL injection vectors?
-- Command injection via user-controlled values?
-- Header injection risks?
-
-Flag: "INPUT-[NNN]: [endpoint] — [issue]"
-
-════════════════════════════════════════
-PHASE 4: RATE LIMITING, CORS & HEADERS
-════════════════════════════════════════
-
-Platform-wide checks:
-- Rate limiting configured? Per-route or global?
-- CORS: origins allowed? Credentials mode?
-- Security headers: CSP, X-Frame-Options, HSTS
-- Error responses: stack traces or internal paths leaked?
-
-════════════════════════════════════════
-PHASE 5: SECURITY SCORECARD
-════════════════════════════════════════
-
-| Route | Auth | Input Val. | Rate Limit | CORS | Error Handling | Score |
-|-------|------|-----------|------------|------|----------------|-------|
-
-Score: A (secure) / B (minor) / C (moderate) / D (high risk) / F (critical)
-
-SUMMARY:
-- Total endpoints: X
-- Without auth: X | Without input validation: X
-- Critical findings: X
-- Top 5 priority fixes with remediation
-
-Rules: Cite file paths and line numbers. Only flag issues verifiable in actual code.`,
-      },
-    ],
   },
   // =========================================================================
   // 22. PERFORMANCE AUDIT
@@ -2140,11 +1974,8 @@ Rules: Cite file paths and line numbers. Only flag issues verifiable in actual c
     description: 'Analyzes bundle size, component render efficiency, data-loading patterns, caching strategy, and client-side performance bottlenecks. Outputs a weighted performance scorecard with estimated impact and actionable optimization steps.',
     requiresUserData: false,
     category: 'audit',
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
-        prompt: `You are a frontend performance engineer auditing the ABISON investment research platform. Focus on the AST SpaceMobile (ASTS) module and shared infrastructure.
+    variants: [],
+    promptTemplate: `You are a frontend performance engineer auditing the ABISON investment research platform. Focus on the {{COMPANY_NAME}} ({{TICKER}}) module and shared infrastructure.
 
 ════════════════════════════════════════
 PHASE 1: BUNDLE & BUILD ANALYSIS
@@ -2212,80 +2043,6 @@ OPTIMIZATION ROADMAP:
 3. [MEDIUM IMPACT / LOW EFFORT] — description
 
 Rules: Cite specific files and line numbers. Quantify impact where possible. Focus on measurable bottlenecks.`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-        prompt: `You are a frontend performance engineer auditing the ABISON investment research platform. Focus on the BitMine Immersion Technologies (BMNR) module and shared infrastructure.
-
-════════════════════════════════════════
-PHASE 1: BUNDLE & BUILD ANALYSIS
-════════════════════════════════════════
-
-Examine build configuration and dependency footprint:
-- next.config settings (output mode, image optimization)
-- Large dependencies bloating client bundles (check client component imports)
-- Dynamic imports vs static imports — are heavy modules lazy-loaded?
-- "use client" directives: used minimally and correctly?
-
-| File | Issue | Estimated Impact | Priority |
-|------|-------|-----------------|----------|
-
-════════════════════════════════════════
-PHASE 2: COMPONENT RENDER ANALYSIS
-════════════════════════════════════════
-
-Scan React components for render inefficiencies:
-- Missing React.memo where props are stable
-- Inline object/array/function creation in JSX
-- Missing or unstable keys in .map() iterations
-- useEffect with overly broad dependency arrays
-- State updates triggering unnecessary subtree re-renders
-
-Flag: "RENDER-[NNN]: [file:line] — [issue]"
-
-════════════════════════════════════════
-PHASE 3: DATA LOADING & CACHING
-════════════════════════════════════════
-
-Analyze data fetching patterns:
-- Data modules imported statically that could be on-demand?
-- Unnecessary data duplication across modules?
-- Database snapshot TypeScript files excessively large?
-- API route caching: Cache-Control headers? ISR/SSG usage?
-
-Flag: "DATA-[NNN]: [file] — [issue] — [estimated size impact]"
-
-════════════════════════════════════════
-PHASE 4: CLIENT-SIDE PATTERNS
-════════════════════════════════════════
-
-Check anti-patterns:
-- Synchronous heavy computation on main thread
-- Missing loading/skeleton states
-- Image optimization: next/image usage, format, sizing
-- Font loading strategy: preload, display swap
-- CSS: unused styles, animation performance
-
-════════════════════════════════════════
-PHASE 5: PERFORMANCE SCORECARD
-════════════════════════════════════════
-
-| Category | Score (A-F) | Key Issues | Est. Impact |
-|----------|------------|------------|-------------|
-| Bundle Size | | | |
-| Render Efficiency | | | |
-| Data Loading | | | |
-| Perceived Performance | | | |
-
-OPTIMIZATION ROADMAP:
-1. [HIGH IMPACT / LOW EFFORT] — description + files
-2. [HIGH IMPACT / MEDIUM EFFORT] — description
-3. [MEDIUM IMPACT / LOW EFFORT] — description
-
-Rules: Cite specific files and line numbers. Quantify impact where possible. Focus on measurable bottlenecks.`,
-      },
-    ],
   },
   // =========================================================================
   // 23. SECRETS EXPOSURE AUDIT
@@ -2296,11 +2053,8 @@ Rules: Cite specific files and line numbers. Quantify impact where possible. Foc
     description: 'Scans source code, configuration files, environment templates, and build outputs for hardcoded secrets, API keys, credentials, tokens, and sensitive URLs. Checks .gitignore coverage and client-bundle leakage. Outputs an exposure risk report with masked findings.',
     requiresUserData: false,
     category: 'audit',
-    variants: [
-      {
-        label: 'ASTS',
-        ticker: 'asts',
-        prompt: `You are a secrets detection specialist auditing the ABISON investment research platform for exposed credentials. Focus on the AST SpaceMobile (ASTS) module and all shared infrastructure.
+    variants: [],
+    promptTemplate: `You are a secrets detection specialist auditing the ABISON investment research platform for exposed credentials. Focus on the {{COMPANY_NAME}} ({{TICKER}}) module and all shared infrastructure.
 
 ════════════════════════════════════════
 PHASE 1: SOURCE CODE SECRET SCAN
@@ -2364,76 +2118,6 @@ PREVENTIVE RECOMMENDATIONS:
 - Environment management approach
 
 Rules: NEVER output actual secret values. Use [REDACTED]. Report file, line, and pattern only.`,
-      },
-      {
-        label: 'BMNR',
-        ticker: 'bmnr',
-        prompt: `You are a secrets detection specialist auditing the ABISON investment research platform for exposed credentials. Focus on the BitMine Immersion Technologies (BMNR) module and all shared infrastructure.
-
-════════════════════════════════════════
-PHASE 1: SOURCE CODE SECRET SCAN
-════════════════════════════════════════
-
-Scan ALL source files for patterns indicating secrets:
-- API keys: sk-, pk-, key-, AKIA, AIza, ghp_, npm_
-- Tokens: Bearer, JWT strings, OAuth tokens
-- Passwords: password=, passwd=, pwd=, secret=
-- Connection strings: mongodb://, postgres://, redis://
-- Private keys: BEGIN RSA, BEGIN EC, BEGIN OPENSSH
-- Webhook URLs: hooks.slack.com, discord webhooks
-
-| File:Line | Pattern Matched | Severity | Actual Secret? | Context |
-|-----------|----------------|----------|----------------|---------|
-
-Categories: CONFIRMED / SUSPICIOUS / FALSE POSITIVE
-
-════════════════════════════════════════
-PHASE 2: ENVIRONMENT & CONFIG ASSESSMENT
-════════════════════════════════════════
-
-- .env files: any committed? (.env, .env.local, .env.production)
-- .env.example: real values instead of placeholders?
-- .gitignore: covers all .env variants, .pem, .key files?
-- next.config: secrets inlined?
-- NEXT_PUBLIC_ vars: any actually secret?
-
-| Config File | Status | Issues |
-|------------|--------|--------|
-
-════════════════════════════════════════
-PHASE 3: CLIENT BUNDLE LEAKAGE
-════════════════════════════════════════
-
-- NEXT_PUBLIC_ vars containing sensitive data?
-- Server-only module imports in client components?
-- API keys passed as props to client components?
-- Hardcoded URLs with embedded credentials?
-- Source maps enabled in production?
-
-Flag: "LEAK-[NNN]: [description]"
-
-════════════════════════════════════════
-PHASE 4: EXPOSURE REPORT
-════════════════════════════════════════
-
-| Category | Confirmed | Suspicious | False Positives |
-|----------|-----------|------------|-----------------|
-| API Keys | | | |
-| Tokens | | | |
-| Credentials | | | |
-| Connection Strings | | | |
-
-IMMEDIATE ACTIONS:
-1. [CRITICAL] Rotate [type] found in [file:line]
-2. Add [pattern] to .gitignore
-
-PREVENTIVE RECOMMENDATIONS:
-- Secret scanning tools/hooks to install
-- Environment management approach
-
-Rules: NEVER output actual secret values. Use [REDACTED]. Report file, line, and pattern only.`,
-      },
-    ],
   },
   // =========================================================================
   // 24. EARNINGS QUALITY AUDIT
@@ -2834,17 +2518,14 @@ Rules: Compare actual values. Do not fill gaps with estimates. Flag every cross-
     description: 'Cross-references every workflow prompt, engineer definition, and division instruction against the live codebase. Detects drift — tabs, API routes, data files, or database tables that exist in code but are missing from prompts (or vice versa). Outputs a scored drift report with prioritized remediation.',
     requiresUserData: false,
     category: 'audit',
-    variants: [
-      {
-        label: 'Full Platform Audit',
-        ticker: 'platform',
-        prompt: `You are a senior prompt-infrastructure auditor at a multi-AI engineering organization operating the ABISON investment research platform. You report to Bobman (ML & AI Project Manager). Your job is to ensure that every prompt in the system accurately reflects the current state of the codebase — so that AI engineers never operate on stale, incomplete, or incorrect instructions.
+    variants: [],
+    promptTemplate: `You are a senior prompt-infrastructure auditor at a multi-AI engineering organization operating the ABISON investment research platform. You report to Bobman (ML & AI Project Manager). Your job is to ensure that every prompt in the system accurately reflects the current state of the codebase — so that AI engineers never operate on stale, incomplete, or incorrect instructions.
 
 CONTEXT: ABISON has two prompt layers:
-1. WORKFLOWS (src/data/workflows.ts) — manual, user-triggered analysis prompts (28 workflows)
-2. ENGINEERS (src/lib/engineers.ts) — autonomous, scheduled AI agents (15 engineers)
+1. WORKFLOWS (src/data/workflows.ts) — manual, user-triggered analysis prompts with dynamic {{PLACEHOLDER}} templates
+2. ENGINEERS (src/lib/engineers.ts) — autonomous, scheduled AI agents
 
-Each engineer references one or more workflow IDs. Each workflow contains ticker-specific prompt variants. When a developer adds a new tab, route, data file, or database table, the prompts must be updated to reference it — otherwise the AI engineer will never use that feature in its work.
+Each engineer references one or more workflow IDs. Each workflow uses a promptTemplate with placeholders resolved at runtime from stock-context.ts, tab-registry.ts, and codebase-inventory.ts. When a developer adds a new tab, route, data file, or database table, the prompts must be updated to reference it — otherwise the AI engineer will never use that feature in its work.
 
 ════════════════════════════════════════
 PHASE 1: CODEBASE FEATURE INVENTORY
@@ -2863,10 +2544,10 @@ PHASE 2: PROMPT REFERENCE EXTRACTION
 For each prompt source, extract every codebase reference it makes:
 
 1. WORKFLOW PROMPTS (src/data/workflows.ts)
-   For each of the 28 workflows, for each ticker variant:
+   For each workflow with a promptTemplate:
    ────────────────────────────────────────
    Workflow ID:           [id]
-   Variant:               [ticker]
+   Template placeholders: [list all {{PLACEHOLDER}} tokens used]
    Tabs referenced:       [list every tab name mentioned in prompt text]
    API routes referenced: [list every /api/ path mentioned or implied]
    Data files referenced: [list every src/data/ file mentioned or implied]
@@ -2875,7 +2556,7 @@ For each prompt source, extract every codebase reference it makes:
    ────────────────────────────────────────
 
 2. ENGINEER DEFINITIONS (src/lib/engineers.ts)
-   For each of the 15 engineers:
+   For each engineer:
    ────────────────────────────────────────
    Engineer ID:          [id]
    Workflow IDs:         [workflowIds array]
@@ -2927,16 +2608,13 @@ For each finding:
 PHASE 4: CROSS-CHECK MATRIX
 ════════════════════════════════════════
 
-Build a coverage matrix. For each research tab across all tickers, check which prompts reference it:
+Build a coverage matrix. For each research tab across all tickers in the stock context registry, check which workflow templates reference it (via {{TICKER_TABS}} or explicit mention):
 
-| Tab | ASTS Earnings | ASTS Thesis | BMNR Earnings | BMNR Thesis | CRCL Earnings | CRCL Thesis | Filing Delta | Weekly Digest | Capital | ... |
-|-----|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Overview | ✓ / ✗ | ✓ / ✗ | ... | ... | ... | ... | ... | ... | ... | ... |
-| Partners | ✓ / ✗ | ... | N/A | ... | N/A | ... | ... | ... | ... | ... |
-| Capital | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... |
-| ... | | | | | | | | | | |
-
-Mark N/A for tabs that don't exist for a given ticker (e.g., Partners is ASTS-only, Ethereum is BMNR-only, USDC is CRCL-only).
+| Tab | Earnings | Thesis | Filing Delta | Weekly Digest | Capital | ... |
+|-----|:---:|:---:|:---:|:---:|:---:|:---:|
+| Overview | ✓ / ✗ | ✓ / ✗ | ... | ... | ... | ... |
+| Capital | ... | ... | ... | ... | ... | ... |
+| ... | | | | | | |
 
 Flag every ✗ cell as a potential DRIFT finding. Not every ✗ is a bug — some workflows legitimately don't need certain tabs — but each must be evaluated.
 
@@ -2988,7 +2666,7 @@ PHASE 5: SUMMARY & REMEDIATION PLAN
    Short-term (1 day):
    - [list structural prompt changes needed]
    Medium-term (1 week):
-   - [list new workflow variants or engineer definitions needed]
+   - [list new workflow templates or engineer definitions needed]
 
 Rules — non-negotiable:
 - Reference real file paths and line numbers. Do not fabricate findings.
@@ -2997,7 +2675,5 @@ Rules — non-negotiable:
 - If a feature is intentionally excluded from a prompt, mark it INFO with justification.
 - Do not flag shared infrastructure tabs (Sources, EDGAR) as missing from stock-specific prompts unless the prompt claims to cover "all tabs" or "the full database."
 - Evaluate engineer workflowIds against the actual workflows.ts — flag any ID that doesn't resolve.`,
-      },
-    ],
   },
 ];
