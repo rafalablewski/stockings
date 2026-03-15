@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { checkAiGate } from '@/lib/ai-gate';
+import { resolvePromptPlaceholders } from '@/lib/prompt-placeholders';
 
 export const runtime = 'edge';
 
@@ -27,10 +28,13 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Resolve any {{PLACEHOLDER}} tokens in the prompt (e.g. {{CODEBASE_INVENTORY}})
+    const resolvedPrompt = resolvePromptPlaceholders(prompt);
+
     // Build the full message: prompt + optional user data
     const dataSeparator = '\n\n════════════════════════════════════════════════════════════\nUSER-PROVIDED DATA\n════════════════════════════════════════════════════════════\n\n';
 
-    let fullMessage = prompt;
+    let fullMessage = resolvedPrompt;
     if (data) {
       fullMessage += dataSeparator + data;
     }

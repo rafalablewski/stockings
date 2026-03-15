@@ -125,6 +125,7 @@ import { ASTS_INVESTMENT_CURRENT, ASTS_INVESTMENT_ARCHIVE } from '@/data/asts/in
 import { SharedSecFilingsSection } from '../shared/SharedSecFilingsSection';
 import StockNavigation, { TabPanel } from '../shared/StockNavigation';
 import { useHashTab } from '@/hooks/useHashTab';
+import { astsTabs } from '@/data/tab-registry';
 import { COMPS_TIMELINE } from '@/data/asts/competitor-news';
 import type { CompetitorNewsEntry } from '@/data/shared/competitor-schema';
 const COMPETITOR_NEWS: CompetitorNewsEntry[] = COMPS_TIMELINE;
@@ -499,33 +500,7 @@ const ASTSAnalysis = () => {
     return { marketCap: safe(marketCap), totalSats, constellationProgress: safe(constellationProgress), cashRunwayQuarters: safe(cashRunwayQuarters), enterpriseValue: safe(enterpriseValue), potentialSubs: safe(potentialSubs), grossAnnualRev: safe(grossAnnualRev), astsAnnualRev: safe(astsAnnualRev), evToRevFwd: safe(evToRevFwd), pricePerSub: safe(pricePerSub), totalPrepayments };
   }, [currentShares, currentStockPrice, cashOnHand, quarterlyBurn, totalDebt, block1Sats, block2Sats, targetSats2026, partnerReach, penetrationRate, blendedARPU, revenueShare, govRevenue, partners]);
 
-  // Tab types: 'tracking' = actual company data, 'projection' = user model inputs
-  // Order: Overview first, then stock-specific projections (Partners first like BMNR Ethereum), common projections, then tracking
-  // group: optional grouping for nested display (stock-specific tabs)
-  const tabs: { id: string; label: string; type: 'tracking' | 'projection'; group?: string }[] = [
-    { id: 'overview', label: 'Overview', type: 'tracking' },
-    // Stock-specific projections (grouped under "ASTS Analysis") - Partners FIRST like BMNR Ethereum
-    { id: 'partners', label: 'Partners', type: 'projection', group: 'ASTS Analysis' },
-    { id: 'catalysts', label: 'Catalysts', type: 'projection', group: 'ASTS Analysis' },
-    { id: 'constellation', label: 'Constellation', type: 'projection', group: 'ASTS Analysis' },
-    { id: 'subscribers', label: 'Subscribers', type: 'projection', group: 'ASTS Analysis' },
-    { id: 'revenue', label: 'Revenue', type: 'projection', group: 'ASTS Analysis' },
-    { id: 'dilution', label: 'Dilution', type: 'projection', group: 'ASTS Analysis' },
-    // Unified valuation model (combines Scenarios + DCF)
-    { id: 'model', label: 'Model', type: 'projection' },
-    // Other projections
-    { id: 'monte-carlo', label: 'Monte Carlo', type: 'projection' },
-    { id: 'comps', label: 'Comps', type: 'projection' },
-    // Tracking
-    { id: 'capital', label: 'Capital', type: 'tracking' },
-    { id: 'financials', label: 'Financials', type: 'tracking' },
-    { id: 'timeline', label: 'Timeline', type: 'tracking' },
-    { id: 'investment', label: 'Investment', type: 'tracking' },
-    { id: 'wall-street', label: 'Wall Street', type: 'tracking' },
-    // AI hub (grouped under "AI")
-    { id: 'sources', label: 'Sources', type: 'tracking', group: 'AI' },
-    { id: 'edgar', label: 'EDGAR', type: 'tracking', group: 'AI' },
-  ];
+  const tabs = astsTabs;
 
   const [activeTab, setActiveTab] = useHashTab(tabs.map(t => t.id));
 

@@ -4680,103 +4680,11 @@ Each engineer references one or more workflow IDs. Each workflow contains ticker
 PHASE 1: CODEBASE FEATURE INVENTORY
 ════════════════════════════════════════
 
-Build a complete inventory of all features in the codebase. For each feature, record its path and purpose. Use these canonical lists as your baseline:
+The following inventory was auto-generated at runtime from the live codebase. It reflects the CURRENT state of all tabs, pages, routes, tables, engineers, and workflows. Use this as your ground truth — do NOT assume anything beyond what is listed here.
 
-1. RESEARCH TABS (per-stock UI tabs defined in stock components)
-   Verify the current tab set for each stock component:
-   ────────────────────────────────────────
-   ASTS (src/components/stocks/ASTS.tsx):
-     Overview, Partners, Catalysts, Constellation, Subscribers, Revenue, Dilution,
-     Model, Monte Carlo, Comps, Capital, Financials, Timeline, Investment, Wall Street,
-     Sources, EDGAR
-   BMNR (src/components/stocks/BMNR.tsx):
-     Overview, Ethereum, Staking, Dilution, Debt, Sensitivity, Backtest,
-     Model, Monte Carlo, Comps, Purchases, Capital, Financials, Timeline, Investment,
-     Wall Street, Sources, EDGAR
-   CRCL (src/components/stocks/CRCL.tsx):
-     Overview, USDC, Model, Monte Carlo, Comps, Capital, Financials, Timeline,
-     Investment, Wall Street, Sources, EDGAR
-   ────────────────────────────────────────
-   Check if any tabs have been ADDED, REMOVED, or RENAMED since this list. Flag changes.
+{{CODEBASE_INVENTORY}}
 
-2. PAGES (src/app/**/page.tsx) — 14 known pages:
-   /                              Home — research universe overview
-   /research                      Research listing
-   /research/[ticker]             Per-ticker deep-dive (hosts all stock tabs)
-   /engineers                     Engineers dashboard — agent control center
-   /engineers/agents              Agent network graph (Palantir-style)
-   /engineers/prompts             Prompt database browser
-   /engineers/room                Multi-AI division chat (6 channels)
-   /press-intelligence            Unified press feed (news + filings + PRs)
-   /sec-intelligence              SEC filing intelligence
-   /audit/comprehensive-code-audit  35-category code audit runner
-   /docs                          Platform documentation
-   /docs/firecrawl                Firecrawl integration docs
-   /db-setup                      Database setup / seed utility
-   /hooks                         Agent hook configuration viewer
-
-3. API ROUTES (src/app/api/**/route.ts) — 28 known endpoints:
-   /api/analysis-cache            Analysis cache CRUD
-   /api/asts-story                ASTS narrative generation
-   /api/audit-checks              Audit check read/write
-   /api/auth/verify-pin           PIN authentication
-   /api/check-analyzed            Check if content is already analysed
-   /api/competitor-feed/[company] Competitor news feed
-   /api/db/setup                  Database setup / migration
-   /api/edgar/[ticker]            EDGAR filing fetch per ticker
-   /api/edgar/analyze             EDGAR filing analysis
-   /api/edgar/refresh-local       Refresh local EDGAR cache
-   /api/engineers/history         Engineer run history
-   /api/engineers/run             Manual engineer trigger
-   /api/engineers/schedule        Engineer schedule CRUD
-   /api/engineers/status          Engineer status query
-   /api/news/[symbol]             News feed per symbol
-   /api/notes                     Notes CRUD
-   /api/notes/generate            AI note generation
-   /api/press-releases/[symbol]   Press releases per symbol
-   /api/research/init             Research data initialization
-   /api/room                      Room chat messages
-   /api/room/gemini-bridge        Gemini AI response bridge
-   /api/sec-intelligence          SEC intelligence feed
-   /api/seen-articles             Article dedup tracking
-   /api/seen-filings              Filing dedup tracking
-   /api/sources/analyze           Multi-source analysis
-   /api/stock/[symbol]            Stock data endpoint
-   /api/workflow/apply            Workflow result application
-   /api/workflow/commit           Workflow result commit
-   /api/workflow/run              Workflow execution engine
-
-4. DATABASE TABLES (src/lib/schema.ts) — 14 tables:
-   analysis_cache, sec_filings, filing_cross_refs, timeline_events,
-   catalysts, partner_news, seen_filings, seen_articles, audit_checks,
-   press_releases, notes, agent_runs, engineer_schedules, room_messages
-
-5. DATA FILES (src/data/) — per-ticker data directories:
-   ASTS: company, financials, capital, catalysts, partners, investment, timeline,
-         historical, quarterly-metrics, analyst-coverage, competitor-news, press-releases, sec-filings
-   BMNR: company, financials, capital, catalysts, investment, timeline, historical,
-         quarterly-metrics, analyst-coverage, competitor-news, press-releases, sec-filings,
-         ethereum-adoption, purchase-history
-   CRCL: company, financials, capital, catalysts, investment, timeline, historical,
-         quarterly-metrics, analyst-coverage, competitor-news, press-releases, sec-filings, usdc
-   Shared: types.ts, competitor-schema.ts
-   Schemas: asts.ts, bmnr.ts, crcl.ts, filing-templates.ts
-
-6. ENGINEERS (src/lib/engineers.ts) — 15 engineers across 4 categories:
-   Research:      thesis-engineer, capital-engineer, earnings-engineer
-   Monitoring:    filing-engineer, insider-engineer
-   Intelligence:  press-engineer, catalyst-engineer, sentiment-engineer, regulatory-engineer, ask-agent-engineer
-   Audit:         data-quality-engineer, prompt-auditor, code-security-engineer, performance-engineer, disclosure-engineer
-
-7. WORKFLOWS (src/data/workflows.ts) — 28 workflows:
-   earnings-call, thesis-review, sec-filing-delta, weekly-digest, capital-structure,
-   insider-activity, ask-agent, analyst-report, intel-classifier, institutional-holdings,
-   patent-ip, conference-notes, regulatory-tracker, social-sentiment, capital-parity,
-   crossref-integrity, sources-completeness, data-freshness, code-audit,
-   dependency-vulnerability, api-endpoint-security, performance-audit, secrets-exposure,
-   earnings-quality, peer-comparables, disclosure-completeness, model-consistency, prompt-audit
-
-Check if any features have been ADDED, REMOVED, or RENAMED since these lists. Flag every change.
+Use this inventory as the baseline for all drift detection in subsequent phases.
 
 ════════════════════════════════════════
 PHASE 2: PROMPT REFERENCE EXTRACTION

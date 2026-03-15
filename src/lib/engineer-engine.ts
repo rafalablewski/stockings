@@ -14,6 +14,7 @@ import { agentRuns, engineerSchedules } from './schema';
 import { eq, and, lte, sql } from 'drizzle-orm';
 import { getEngineer, type EngineerTask } from './engineers';
 import { workflows } from '@/data/workflows';
+import { resolvePromptPlaceholders } from './prompt-placeholders';
 
 // Claude model used for engineer runs
 const CLAUDE_MODEL = 'claude-sonnet-4-5-20250929';
@@ -82,13 +83,16 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
       throw new Error(`No prompt found for engineer ${opts.engineerId} on ticker ${opts.ticker}`);
     }
 
+    // 3b. Resolve {{PLACEHOLDER}} tokens in the prompt
+    const resolvedPrompt = resolvePromptPlaceholders(prompt);
+
     // 4. Call Claude API
     const apiKey = process.env.ANTHROPIC_API_KEY || '';
     if (!apiKey) throw new Error('ANTHROPIC_API_KEY not configured');
 
     const fullMessage = opts.userData
-      ? `${prompt}\n\n════════════════════════════════════════════════════════════\nAUTO-FETCHED DATA\n════════════════════════════════════════════════════════════\n\n${opts.userData}`
-      : prompt;
+      ? `${resolvedPrompt}\n\n════════════════════════════════════════════════════════════\nAUTO-FETCHED DATA\n════════════════════════════════════════════════════════════\n\n${opts.userData}`
+      : resolvedPrompt;
 
     const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
