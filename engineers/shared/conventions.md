@@ -27,7 +27,7 @@ These conventions apply to all AI divisions equally. When in doubt, follow these
 
 ### Approval Chain — Documentation & Styling
 ```
-Doc-Reviewer (creates report) → Bobman (reviews & coordinates) → Maszka (approves/rejects & implements)
+Doc-Reviewer (creates report) → Bobman (coordinates) → UX/UI Engineer (implements/proposes) → Maszka (approves/rejects)
 ```
 
 ## Git & Workflow

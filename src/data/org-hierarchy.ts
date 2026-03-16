@@ -92,7 +92,7 @@ export const orgNodes: OrgNode[] = [
     label: 'Maszka',
     badge: 'ML',
     role: 'ML & AI Systems',
-    description: 'Builds and maintains the ML models, AI features, and data pipelines that power the autonomous engineers. Develops the execution engine, prompt templates, and workflow orchestration layer. Manages the Prompt Remediation Engineer that implements audit-driven fixes to workflow templates. Reviews remediation patches via the Decision Dashboard before Boss approval. Reports technical capabilities and pipeline health to the Boss in the Room.',
+    description: 'Builds and maintains the ML models, AI features, and data pipelines that power the autonomous engineers. Develops the execution engine, prompt templates, and workflow orchestration layer. Manages the Prompt Remediation Engineer (audit-driven prompt fixes) and the UX/UI Engineer (implements doc-reviewer styling proposals). Approves or rejects UX/UI and documentation changes via the Decision Dashboard. Reports technical capabilities and pipeline health to the Boss in the Room.',
     color: ORG_COLORS.maszka,
     parentId: 'boss',
   },
@@ -256,8 +256,18 @@ export const orgNodes: OrgNode[] = [
     engineerId: 'disclosure-engineer',
   },
 
-  // ── Engineers under Maszka (1) ────────────────────────────────────────
-  // Prompt template maintenance and remediation
+  // ── Engineers under Maszka (2) ────────────────────────────────────────
+  // Prompt template maintenance, remediation, and UX/UI implementation
+  {
+    id: 'eng-ux-ui',
+    type: 'engineer',
+    label: 'UX/UI Engineer',
+    badge: 'UXI',
+    role: 'UX/UI Implementation',
+    color: ORG_COLORS.maszka,
+    parentId: 'div-maszka',
+    engineerId: 'ux-ui-engineer',
+  },
   {
     id: 'eng-prompt-remediation',
     type: 'engineer',
@@ -361,8 +371,9 @@ export const dataFlowEdges: OrgEdge[] = [
   { from: 'div-claude', to: 'div-cursor', type: 'dataflow', label: 'data updated', color: 'rgba(34, 211, 238, 0.5)' },
   { from: 'eng-prompt-auditor', to: 'eng-prompt-remediation', type: 'dataflow', label: 'audit → remediate', color: 'rgba(244, 114, 182, 0.6)' },
   { from: 'eng-prompt-auditor', to: 'div-pm', type: 'dataflow', label: 'audit report', color: 'rgba(251, 146, 60, 0.5)' },
-  { from: 'eng-doc-reviewer', to: 'div-maszka', type: 'dataflow', label: 'doc proposals', color: 'rgba(249, 168, 212, 0.5)' },
+  { from: 'eng-doc-reviewer', to: 'eng-ux-ui', type: 'dataflow', label: 'doc audit → implement', color: 'rgba(249, 168, 212, 0.5)' },
   { from: 'eng-doc-reviewer', to: 'div-pm', type: 'dataflow', label: 'status report', color: 'rgba(251, 146, 60, 0.4)' },
+  { from: 'eng-ux-ui', to: 'div-maszka', type: 'dataflow', label: 'proposals → approve/reject', color: 'rgba(244, 114, 182, 0.6)' },
 ];
 
 // ── Layout computation ─────────────────────────────────────────────────────

@@ -361,6 +361,27 @@ export const engineers: EngineerTask[] = [
     requiresData: false,
     category: 'documentation',
     notifyPm: 'bobman',
+    chainsTo: 'ux-ui-engineer',
+  },
+
+  // ── MASZKA'S TEAM ──────────────────────────────────────────────────────
+  {
+    id: 'ux-ui-engineer',
+    name: 'UX/UI Engineer',
+    role: 'UX/UI Implementation Specialist',
+    description: 'Receives documentation and styling audit reports from the Doc Reviewer. Implements proposed changes or creates counter-proposals for theme, style, and UI guide updates. Reports to Maszka for final approval or rejection.',
+    capabilities: [
+      'Receive and parse doc-review audit reports',
+      'Implement approved style guide and theme changes',
+      'Propose alternative UX/UI approaches when audit suggestions need refinement',
+      'Update component styling and design token documentation',
+      'Submit implementation patches for Maszka approval via Decision Dashboard',
+    ],
+    workflowIds: ['ux-ui-implementation'],
+    defaultIntervalMinutes: 0, // triggered only via chain from doc-reviewer
+    triggerEvents: ['doc-review-completed'],
+    requiresData: false,
+    category: 'documentation',
     decisionsFor: 'maszka',
   },
 ];
