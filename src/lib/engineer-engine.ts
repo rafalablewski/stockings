@@ -11,8 +11,8 @@
 
 import { getDb } from './db';
 import { agentRuns, engineerSchedules, roomMessages, pmDecisions } from './schema';
-import { eq, and, lte, sql } from 'drizzle-orm';
-import { getEngineer, type EngineerTask } from './engineers';
+import { eq, and, lte, sql, desc } from 'drizzle-orm';
+import { getEngineer, engineers, type EngineerTask } from './engineers';
 import { workflows } from '@/data/workflows';
 import { resolvePromptPlaceholders } from './prompt-placeholders';
 import { asts, bmnr, crcl } from '@/data';
@@ -63,8 +63,35 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
 
   const startTime = Date.now();
 
+  // ── Fallback: if no chainContext provided, try to fetch latest upstream output ──
+  // This handles cases where the downstream engineer (e.g. db-ingestor) is triggered
+  // manually or via schedule without going through the normal chain path.
+  let effectiveChainContext = opts.chainContext;
+  if (!effectiveChainContext) {
+    const upstreamEngineer = engineers.find(e => e.chainsTo === opts.engineerId);
+    if (upstreamEngineer) {
+      const [latestRun] = await db
+        .select({ outputFull: agentRuns.outputFull })
+        .from(agentRuns)
+        .where(
+          and(
+            eq(agentRuns.engineerId, upstreamEngineer.id),
+            eq(agentRuns.ticker, opts.ticker),
+            eq(agentRuns.status, 'completed'),
+          ),
+        )
+        .orderBy(desc(agentRuns.completedAt))
+        .limit(1);
+
+      if (latestRun?.outputFull) {
+        console.log(`[engine] No chainContext for ${opts.engineerId} — using latest ${upstreamEngineer.id} output (ticker: ${opts.ticker})`);
+        effectiveChainContext = { LATEST_AUDIT_OUTPUT: latestRun.outputFull };
+      }
+    }
+  }
+
   // Resolve matching workflow prompts for this engineer + ticker
-  const allResolved = resolveAllEngineerPrompts(engineer, opts.ticker, opts.chainContext);
+  const allResolved = resolveAllEngineerPrompts(engineer, opts.ticker, effectiveChainContext);
   // If a specific workflowId was requested, filter to just that one
   const resolvedWorkflows = opts.workflowId
     ? allResolved.filter(w => w.workflowId === opts.workflowId)
