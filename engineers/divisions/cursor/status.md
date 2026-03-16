@@ -1,4 +1,4 @@
-# Cursor Division — Status Report
+# Cursor Division — Status Report (ML & AI Systems)
 
 ## Current Status: Idle
 _Awaiting directives from the Boss._

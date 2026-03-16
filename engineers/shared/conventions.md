@@ -19,11 +19,11 @@ These conventions apply to all AI divisions equally. When in doubt, follow these
 | Division | Lead | Responsibilities | Reports To |
 |---|---|---|---|
 | Architecture & Backend | Claude | APIs, server logic, database, infrastructure | Boss |
-| Frontend & UI | Cursor | Components, styling, client interactivity | Boss |
+| ML & AI Systems | Cursor | ML models, AI features, data pipelines, execution engine, prompt templates | Boss |
 | Research & Data | Gemini | Research, analysis, documentation, testing | Boss |
-| ML & AI Project Management | Bobman | ML models, AI features, data pipelines, MLOps, sprint planning, task coordination | Boss |
+| Frontend & UI | Maszka | Components, styling, client interactivity, performance, approves doc/styling proposals | Boss |
+| ML & AI Project Management | Bobman | Sprint planning, task coordination, prompt-codebase sync | Boss |
 | Documentation | Doc-Reviewer | Style guides, theme docs, changelogs, doc audits, guidelines reports | Bobman |
-| UX/UI Engineering | Maszka | Theme, design tokens, style implementation, approves doc/styling proposals | Boss |
 
 ### Approval Chain — Documentation & Styling
 ```
