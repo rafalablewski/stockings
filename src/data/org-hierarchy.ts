@@ -72,7 +72,7 @@ export const orgNodes: OrgNode[] = [
     label: 'Cursor',
     badge: 'ML',
     role: 'ML & AI Systems',
-    description: 'Builds and maintains the ML models, AI features, and data pipelines that power the autonomous engineers. Develops the execution engine, prompt templates, and workflow orchestration layer. Manages the Prompt Remediation Engineer that implements audit-driven fixes to workflow templates. Reviews remediation patches via the Decision Dashboard. Reports technical capabilities and pipeline health to the Boss in the Room.',
+    description: 'Builds and maintains the ML models, AI features, and data pipelines that power the autonomous engineers. Develops the execution engine, prompt templates, and workflow orchestration layer. Reports technical capabilities and pipeline health to the Boss in the Room.',
     color: ORG_COLORS.cursor,
     parentId: 'boss',
   },
@@ -92,7 +92,7 @@ export const orgNodes: OrgNode[] = [
     label: 'Maszka',
     badge: 'UI',
     role: 'Frontend & UI',
-    description: 'Owns all frontend components, styling, client interactivity, and responsive design across the platform. Manages the Performance Engineer (bundle audits, render profiling, caching) and the UX/UI Engineer (implements doc-reviewer styling proposals). Approves or rejects UX/UI and documentation changes via the Decision Dashboard. Reports frontend health and design decisions to the Boss in the Room.',
+    description: 'Owns all frontend components, styling, client interactivity, and responsive design across the platform. Manages the Performance Engineer (bundle audits, render profiling, caching), the UX/UI Engineer (implements doc-reviewer styling proposals), and the Prompt Remediation Engineer (implements audit-driven fixes to workflow templates). Approves or rejects UX/UI, documentation, and prompt remediation changes via the Decision Dashboard. Reports frontend health and design decisions to the Boss in the Room.',
     color: ORG_COLORS.maszka,
     parentId: 'boss',
   },
@@ -180,18 +180,8 @@ export const orgNodes: OrgNode[] = [
     engineerId: 'ask-agent-engineer',
   },
 
-  // ── Engineers under Cursor (1) ──────────────────────────────────────────
-  // ML/AI systems — prompt template maintenance and remediation
-  {
-    id: 'eng-prompt-remediation',
-    type: 'engineer',
-    label: 'Prompt Remediation',
-    badge: 'REM',
-    role: 'Prompt Template Maintenance',
-    color: ORG_COLORS.cursor,
-    parentId: 'div-cursor',
-    engineerId: 'prompt-remediation-engineer',
-  },
+  // ── Engineers under Cursor (0) ──────────────────────────────────────────
+  // ML/AI systems — (prompt remediation moved to Maszka)
 
   // ── Engineers under Gemini (6) ──────────────────────────────────────────
   // Google ecosystem access, massive context, external data analysis
@@ -256,8 +246,8 @@ export const orgNodes: OrgNode[] = [
     engineerId: 'disclosure-engineer',
   },
 
-  // ── Engineers under Maszka (3) ────────────────────────────────────────
-  // Frontend performance, UX/UI implementation, styling
+  // ── Engineers under Maszka (4) ────────────────────────────────────────
+  // Frontend performance, UX/UI implementation, styling, prompt remediation
   {
     id: 'eng-performance',
     type: 'engineer',
@@ -277,6 +267,16 @@ export const orgNodes: OrgNode[] = [
     color: ORG_COLORS.maszka,
     parentId: 'div-maszka',
     engineerId: 'ux-ui-engineer',
+  },
+  {
+    id: 'eng-prompt-remediation',
+    type: 'engineer',
+    label: 'Prompt Remediation',
+    badge: 'REM',
+    role: 'Prompt Template Maintenance',
+    color: ORG_COLORS.maszka,
+    parentId: 'div-maszka',
+    engineerId: 'prompt-remediation-engineer',
   },
 
   // ── Engineers under Project Mgmt / Bobman (1) ─────────────────────────
