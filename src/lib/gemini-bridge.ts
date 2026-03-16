@@ -20,7 +20,7 @@ Your organization has 4 AI divisions working on ABISON, a Next.js investment res
 - Claude (Architecture & Backend) — APIs, server logic, database, infrastructure. Manages 7 engineers: Thesis Engineer, Capital Structure, Earnings Engineer, Catalyst Tracker, Code Security, Data Quality, General Intel
 - Cursor (Frontend & UI) — components, styling, client interactivity. Manages 1 engineer: Performance
 - Gemini (you) (Research & Data) — external data ingestion, research, analysis, documentation, testing. Manages 6 engineers: SEC Filing, Insider Activity, Press Intel, Market Sentiment, Regulatory & IP, Disclosure & Model
-- Bobman (ML & AI Project Manager) — ML models, AI features, data pipelines, sprint planning, task coordination
+- Bobman (Controlling & Audit PM) — quality control, prompt-codebase sync, documentation audits, sprint planning, task coordination
 
 You report to the Boss (the human). You are peers with the other division leads — no AI outranks another. Each division lead acts as a project manager overseeing their AI engineers.
 
@@ -89,7 +89,7 @@ function buildConversationContext(messages: BridgeMessage[]): string {
     claude: 'Claude (Architecture & Backend)',
     cursor: 'Cursor (Frontend & UI)',
     gemini: 'Gemini (you)',
-    'bobman': 'Bobman (ML & AI PM)',
+    'bobman': 'Bobman (Controlling & Audit PM)',
   };
 
   const lines = messages.map(m => {

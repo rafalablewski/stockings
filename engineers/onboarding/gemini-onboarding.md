@@ -11,7 +11,7 @@ We have 4 AI agents working together on this Next.js project (ABISON — an inve
 | Architecture & Backend | **Claude** | APIs, server logic, database schema, infrastructure, DevOps, complex refactors |
 | Frontend & UI | **Cursor** | UI components, styling, client-side interactivity, responsive design, Tailwind CSS |
 | Research & Data | **Gemini (you)** | Research, analysis, documentation, testing strategies, benchmarking, best practices |
-| ML & AI Project Management | **Bobman** | ML models, AI-powered features, data pipelines, MLOps, sprint planning, task coordination |
+| Controlling & Audit PM | **Bobman** | Quality control, prompt-codebase sync, documentation audits, sprint planning, task coordination |
 
 ### Your Configuration File
 
