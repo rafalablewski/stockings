@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
+import { getDb, waitForTables } from '@/lib/db';
 import { pmDecisions } from '@/lib/schema';
 import { eq, desc } from 'drizzle-orm';
 
@@ -8,6 +8,7 @@ import { eq, desc } from 'drizzle-orm';
  * Returns decisions filtered by PM and/or status.
  */
 export async function GET(req: NextRequest) {
+  await waitForTables();
   const db = getDb();
   const pm = req.nextUrl.searchParams.get('pm');
   const status = req.nextUrl.searchParams.get('status');
@@ -31,6 +32,7 @@ export async function GET(req: NextRequest) {
  * Create a new decision item.
  */
 export async function POST(req: NextRequest) {
+  await waitForTables();
   const db = getDb();
   const body = await req.json();
   const { pm, engineerId, runId, ticker, title, category, payload } = body;
@@ -57,6 +59,7 @@ export async function POST(req: NextRequest) {
  * Update decision status (PM approval/rejection or Boss final ruling).
  */
 export async function PATCH(req: NextRequest) {
+  await waitForTables();
   const db = getDb();
   const body = await req.json();
   const { id, status, pmNotes, bossNotes } = body;
