@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node scripts/scan-routes.mjs && next dev",
-    "build": "next build",
+    "build": "npx drizzle-kit push && next build",
     "scan-routes": "node scripts/scan-routes.mjs",
     "start": "next start",
     "lint": "eslint",
