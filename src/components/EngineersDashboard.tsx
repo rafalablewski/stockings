@@ -863,6 +863,26 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                                 </div>
                               )}
 
+                              {/* Approval Chain */}
+                              {(eng.chainsTo || eng.decisionsFor) && (
+                                <div className="eng-swim-card-badges">
+                                  <span className="eng-swim-badge-label">Approval Chain</span>
+                                  {eng.chainsTo && (() => {
+                                    const downstream = engineers.find(e => e.id === eng.chainsTo);
+                                    return (
+                                      <span className="eng-swim-badge" data-type="chain">
+                                        {'\u2192'} {downstream?.name ?? eng.chainsTo}
+                                      </span>
+                                    );
+                                  })()}
+                                  {eng.decisionsFor && (
+                                    <span className="eng-swim-badge" data-type="chain">
+                                      {'\u2192'} {eng.decisionsFor} (approval)
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+
                               <div className="eng-swim-card-schedule">
                                 Every {formatInterval(eng.defaultIntervalMinutes)}
                               </div>

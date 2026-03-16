@@ -870,6 +870,12 @@
   border: 1px solid rgba(167,139,250,0.15);
 }
 
+.eng-swim-badge[data-type="chain"] {
+  background: rgba(244,114,182,0.08);
+  color: rgba(244,114,182,0.85);
+  border: 1px solid rgba(244,114,182,0.15);
+}
+
 .eng-swim-badge[data-type="datasource"] {
   background: rgba(121,192,255,0.06);
   color: rgba(121,192,255,0.75);
