@@ -17,8 +17,9 @@ import { workflows } from '@/data/workflows';
 import { resolvePromptPlaceholders } from './prompt-placeholders';
 import { asts, bmnr, crcl } from '@/data';
 
-// Claude model used for engineer runs
-const CLAUDE_MODEL = 'claude-sonnet-4-5-20250929';
+// Claude models for engineer runs
+const CLAUDE_MODEL_DEFAULT = 'claude-sonnet-4-5-20250929';
+const CLAUDE_MODEL_FAST = 'claude-haiku-4-5-20251001';
 
 // Status type for run records
 export type RunStatus = 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
@@ -106,6 +107,8 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
         : datedPrompt;
 
       // 4. Call Claude API
+      // Use Haiku for audit engineers (large context, need speed for Vercel timeouts)
+      const model = engineer.category === 'audit' ? CLAUDE_MODEL_FAST : CLAUDE_MODEL_DEFAULT;
       const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -114,7 +117,7 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
           'anthropic-version': '2023-06-01',
         },
         body: JSON.stringify({
-          model: CLAUDE_MODEL,
+          model,
           max_tokens: 16384,
           messages: [{ role: 'user', content: fullMessage }],
         }),
