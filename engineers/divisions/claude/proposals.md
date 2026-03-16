@@ -57,3 +57,9 @@ The agent would run on a schedule (or be triggered post-merge), read recent diff
 - All divisions benefit from having their output documented automatically
 
 **Boss Approval Needed**: Yes — new agent definition, workflow, and scheduling
+
+**Status**: APPROVED — Implemented 2026-03-16. Final structure:
+- Doc-Reviewer reports to Bobman (not directly to Boss)
+- Proposed changes are sent to Maszka (UX/UI Engineer) for approval/rejection
+- Approval chain: `Doc-Reviewer → Bobman → Maszka`
+- See `engineers/divisions/doc-reviewer/` and `engineers/divisions/maszka/`

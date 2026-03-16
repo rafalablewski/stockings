@@ -20,6 +20,12 @@ _Boss: Write your current sprint objective here. All divisions will read this be
 ### For Bobman (ML & AI Project Management)
 - [ ] _Add ML/AI and planning/coordination tasks here_
 
+### For Doc-Reviewer (Documentation Engineer)
+- [ ] _Add documentation review/audit tasks here_
+
+### For Maszka (UX/UI Engineering)
+- [ ] _Add UX/UI and styling tasks here_
+
 ## Priority Order
 1. _Highest priority task_
 2. _Next priority_
