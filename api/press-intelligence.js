@@ -136,7 +136,7 @@ async function loadFromDB(ticker) {
     return rows.map(r => ({
       newsid: r.newsid || '',
       headline: cleanHeadline(r.headline),
-      datetime: r.datetime,
+      datetime: normalizeDateTime(r.datetime),
       source: r.source || '',
       qmsummary: r.qmsummary || '',
       permalink: r.permalink || '',
@@ -214,6 +214,24 @@ function decode(str) {
 
 function strip(str) {
   return (str || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Normalize a datetime value to ISO 8601 format.
+ * The neon HTTP driver returns TIMESTAMPTZ in PostgreSQL text format
+ * (e.g. "2026-03-16 07:20:00+00") which some browsers can't parse with
+ * new Date(). Converting to ISO 8601 ("2026-03-16T07:20:00.000Z") on
+ * the server ensures consistent client-side Date parsing and sorting.
+ */
+function normalizeDateTime(dt) {
+  if (!dt) return '';
+  try {
+    const d = new Date(dt);
+    if (isNaN(d.getTime())) return typeof dt === 'string' ? dt : '';
+    return d.toISOString();
+  } catch {
+    return typeof dt === 'string' ? dt : '';
+  }
 }
 
 function normalizeHl(h) {
