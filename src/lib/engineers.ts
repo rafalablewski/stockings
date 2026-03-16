@@ -77,12 +77,14 @@ export const engineers: EngineerTask[] = [
       'Update database tables with new filing data',
       'Generate filing summary alerts',
     ],
-    workflowIds: ['sec-filing-delta'],
+    workflowIds: ['sec-filing-scan', 'sec-filing-delta'],
     defaultIntervalMinutes: 60, // every hour
     triggerEvents: ['edgar-poll'],
     requiresData: true,
     dataSource: 'EDGAR API (SEC)',
     category: 'monitoring',
+    decisionsFor: 'gemini',    // Routes scan reports to Gemini (Research & Data) for approval
+    notifyPm: 'gemini',        // Room notification to Gemini division
   },
   {
     id: 'press-engineer',

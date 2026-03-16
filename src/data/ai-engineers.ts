@@ -178,13 +178,29 @@ export const agents: AgentNode[] = [
     prompts: ['article-classification', 'sentiment-analysis', 'filing-extraction'],
     metrics: { runsPerDay: 48, avgLatencyMs: 3200, lastRun: '2026-03-13', findings: 12 },
   },
+  {
+    id: 'sec-scanner',
+    name: 'SEC Filing Scanner',
+    role: 'Autonomous EDGAR Monitor',
+    status: 'active',
+    phase: 'Continuous',
+    matchers: ['Scheduled', 'EDGAR API'],
+    description: 'Scans SEC EDGAR for new filings across all covered research stocks. Detects new filings not in database, AI-analyzes each one, and routes structured reports through PM decision queue for Gemini approval.',
+    category: 'pipeline',
+    color: 'sky',
+    connections: ['methodology-sync', 'press-intel', 'api-edgar', 'db-neon', 'api-sec-scanner'],
+    files: ['src/lib/sec-scanner.ts', 'src/app/api/engineers/sec-scanner/route.ts'],
+    prompts: ['filing-classification', 'filing-extraction', 'materiality-assessment'],
+    metrics: { runsPerDay: 24, avgLatencyMs: 15000, findings: 0 },
+  },
 
 ];
 
 // ── Resource nodes ──────────────────────────────────────────────────────────
 
 export const resources: ResourceNode[] = [
-  { id: 'api-edgar', name: 'EDGAR API', type: 'api', path: '/api/edgar', description: 'SEC EDGAR filing retrieval and analysis', color: 'sky', connectedAgents: ['methodology-sync', 'press-intel'] },
+  { id: 'api-edgar', name: 'EDGAR API', type: 'api', path: '/api/edgar', description: 'SEC EDGAR filing retrieval and analysis', color: 'sky', connectedAgents: ['methodology-sync', 'press-intel', 'sec-scanner'] },
+  { id: 'api-sec-scanner', name: 'SEC Scanner API', type: 'api', path: '/api/engineers/sec-scanner', description: 'Autonomous SEC filing scan endpoint', color: 'sky', connectedAgents: ['sec-scanner'] },
   { id: 'api-sources', name: 'Sources API', type: 'api', path: '/api/sources/analyze', description: 'Multi-source analysis pipeline', color: 'sky', connectedAgents: ['methodology-sync'] },
   { id: 'api-research', name: 'Research API', type: 'api', path: '/api/research/init', description: 'Research initialization and data loading', color: 'cyan', connectedAgents: ['earnings-call'] },
   { id: 'api-news', name: 'News API', type: 'api', path: '/api/news/[symbol]', description: 'Real-time news feed per ticker', color: 'mint', connectedAgents: ['press-intel'] },
@@ -192,7 +208,7 @@ export const resources: ResourceNode[] = [
   { id: 'api-workflow', name: 'Workflow Engine', type: 'api', path: '/api/workflow/run', description: 'Workflow execution and orchestration', color: 'gold', connectedAgents: ['earnings-call', 'code-audit'] },
   { id: 'config-claude-md', name: 'CLAUDE.md', type: 'config', path: '/CLAUDE.md', description: 'Project conventions and agent instructions', color: 'violet', connectedAgents: ['claude-md', 'agent-impact'] },
   { id: 'config-settings', name: 'Settings', type: 'config', path: '/.claude/settings.json', description: 'Agent hook activation and configuration', color: 'violet', connectedAgents: ['agent-impact'] },
-  { id: 'db-neon', name: 'Neon PostgreSQL', type: 'database', description: 'Serverless PostgreSQL — articles, filings, analysis cache', color: 'cyan', connectedAgents: ['press-intel', 'earnings-call'] },
+  { id: 'db-neon', name: 'Neon PostgreSQL', type: 'database', description: 'Serverless PostgreSQL — articles, filings, analysis cache', color: 'cyan', connectedAgents: ['press-intel', 'earnings-call', 'sec-scanner'] },
   { id: 'prompt-review', name: 'Review Prompts', type: 'prompt', description: 'Lint, type, security, and style enforcement rules', color: 'cyan', connectedAgents: ['code-review'] },
   { id: 'prompt-simplify', name: 'Simplify Prompts', type: 'prompt', description: 'Complexity analysis and refactoring suggestion templates', color: 'mint', connectedAgents: ['code-simplifier'] },
   { id: 'prompt-earnings', name: 'Earnings Prompts', type: 'prompt', description: '7-section extraction framework for earnings calls', color: 'gold', connectedAgents: ['earnings-call'] },
@@ -236,9 +252,15 @@ export const connections: Connection[] = [
   { from: 'prompt-auditor', to: 'prompt-audit-resource', type: 'reads', label: 'scan all prompts' },
   { from: 'prompt-auditor', to: 'api-workflow', type: 'uses-prompt' },
 
+  // SEC Scanner
+  { from: 'sec-scanner', to: 'api-edgar', type: 'reads', label: 'EDGAR filings' },
+  { from: 'sec-scanner', to: 'api-sec-scanner', type: 'uses-prompt', label: 'scan endpoint' },
+  { from: 'sec-scanner', to: 'db-neon', type: 'writes', label: 'new filings + decisions' },
+
   // Cross-feeds
   { from: 'press-intel', to: 'earnings-call', type: 'feeds', label: 'transcript links' },
   { from: 'methodology-sync', to: 'code-audit', type: 'feeds', label: 'drift alerts' },
+  { from: 'sec-scanner', to: 'press-intel', type: 'feeds', label: 'filing alerts' },
 ];
 
 // ── Stat summaries ──────────────────────────────────────────────────────────
