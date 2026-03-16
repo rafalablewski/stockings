@@ -1531,7 +1531,7 @@ export default function PressIntelligencePage() {
 
         {/* News cards */}
         {!loading && pagedItems.map((item) => {
-          const id = `${item._ticker}-${item.newsid || item.id}`;
+          const id = `${item._ticker}-${(item.headline || item.title || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 80)}`;
           const expanded = expandedId === id;
           const headline = item.headline || item.title || "";
           const summary = item.summary || (item as any).qmsummary || item.description || "";
