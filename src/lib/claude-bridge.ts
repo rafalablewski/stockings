@@ -83,6 +83,7 @@ function buildConversationContext(messages: BridgeMessage[]): string {
     cursor: 'Cursor (Frontend & UI)',
     gemini: 'Gemini (Research & Data)',
     bobman: 'Bobman (Controlling & Audit PM)',
+    nemoclaw: 'NemoClaw (Infrastructure & Security)',
   };
 
   const lines = messages.map(m => {

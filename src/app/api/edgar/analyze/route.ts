@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkAiGate } from '@/lib/ai-gate';
 import { classifyAnthropicError } from '@/lib/anthropic-error';
+import { analyzeWithNemoClaw } from '@/lib/nemoclaw-analyze';
 
 /**
  * POST /api/edgar/analyze
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
   const ANTHROPIC_API_KEY = (process.env as Record<string, string | undefined>)['ANTHROPIC_API_KEY'] || '';
 
   try {
-    const { url, form, description, filingDate, ticker } = await request.json();
+    const { url, form, description, filingDate, ticker, provider } = await request.json();
 
     if (!url) {
       return NextResponse.json({ error: 'Missing filing URL' }, { status: 400 });
@@ -87,6 +88,17 @@ Where <level> is one of:
 - Important: Contains useful data worth capturing at next review (insider transactions, routine filings with notable details)
 - Low: Routine filing with no material database changes needed (legal opinions, duplicate/amended filings, no new data)
 - Already Incorporated: Filing's key data points are likely already captured (e.g. periodic reports that were already tracked)`;
+
+    // Route to NemoClaw if requested
+    if (provider === 'nemoclaw') {
+      try {
+        const analysis = await analyzeWithNemoClaw(prompt);
+        return NextResponse.json({ analysis });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'NemoClaw error';
+        return NextResponse.json({ error: message, code: 'upstream_error' }, { status: 502 });
+      }
+    }
 
     const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkAiGate } from '@/lib/ai-gate';
 import { classifyAnthropicError } from '@/lib/anthropic-error';
+import { analyzeWithNemoClaw } from '@/lib/nemoclaw-analyze';
 
 /**
  * POST /api/sources/analyze
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
   const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || '';
 
   try {
-    const { url, headline, source, date, ticker } = await request.json();
+    const { url, headline, source, date, ticker, provider } = await request.json();
 
     if (!url) {
       return NextResponse.json({ error: 'Missing article URL' }, { status: 400 });
@@ -87,6 +88,17 @@ Where <level> is one of:
 - Important: Contains useful data worth noting (earnings context, sector news, competitor moves)
 - Low: Routine coverage with no material new information
 - Already Incorporated: Information likely already captured in the research database`;
+
+    // Route to NemoClaw if requested
+    if (provider === 'nemoclaw') {
+      try {
+        const analysis = await analyzeWithNemoClaw(prompt);
+        return NextResponse.json({ analysis });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'NemoClaw error';
+        return NextResponse.json({ error: message, code: 'upstream_error' }, { status: 502 });
+      }
+    }
 
     const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
