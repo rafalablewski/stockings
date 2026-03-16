@@ -190,26 +190,56 @@ function matchFilings(
     }
   }
 
-  return edgarFilings.map(ef => {
+  // ── Tier 1b: greedy closest-first 1-to-1 legacy matching ──────────────
+  // Build all candidate (EDGAR index, legacy index, distance) pairs for
+  // filings that don't have accession numbers, then greedily assign the
+  // closest pairs first. This prevents multiple EDGAR filings (e.g. weekly
+  // 8-K ETH updates) from all matching the same sec-filings.ts entry.
+  type Candidate = { ei: number; li: number; days: number };
+  const candidates: Candidate[] = [];
+  const accessionMatched = new Set<number>(); // EDGAR indices matched by accession
+
+  for (let ei = 0; ei < edgarFilings.length; ei++) {
+    const ef = edgarFilings[ei];
     const edgarAccNorm = normalizeAccession(ef.accessionNumber);
+    if (accessionMap.has(edgarAccNorm)) {
+      accessionMatched.add(ei);
+      continue;
+    }
     const edgarDate = normalizeDate(ef.filingDate);
     const edgarForm = normalizeFormForMatch(ef.form);
+    for (let li = 0; li < legacyFilings.length; li++) {
+      if (normalizeFormForMatch(legacyFilings[li].type) !== edgarForm) continue;
+      const days = daysBetween(edgarDate, normalizeDate(legacyFilings[li].date));
+      if (days <= MAX_LEGACY_MATCH_DAYS) {
+        candidates.push({ ei, li, days });
+      }
+    }
+  }
+
+  // Sort by distance ascending — closest pairs assigned first
+  candidates.sort((a, b) => a.days - b.days);
+
+  const legacyMatch = new Map<number, LocalFiling>(); // EDGAR index → matched legacy filing
+  const usedLegacy = new Set<number>(); // legacy indices already claimed
+
+  for (const { ei, li, } of candidates) {
+    if (legacyMatch.has(ei) || usedLegacy.has(li)) continue;
+    legacyMatch.set(ei, legacyFilings[li]);
+    usedLegacy.add(li);
+  }
+
+  // ── Assemble results ──────────────────────────────────────────────────
+  return edgarFilings.map((ef, ei) => {
+    const edgarAccNorm = normalizeAccession(ef.accessionNumber);
+    const edgarDate = normalizeDate(ef.filingDate);
 
     // Tier 1a: exact accession number match
     let match = accessionMap.get(edgarAccNorm);
 
-    // Tier 1b: closest-date match among legacy entries of the same form type
+    // Tier 1b: pre-computed 1-to-1 legacy match
     if (!match) {
-      let bestDays = Infinity;
-      for (const lf of legacyFilings) {
-        if (normalizeFormForMatch(lf.type) !== edgarForm) continue;
-        const days = daysBetween(edgarDate, normalizeDate(lf.date));
-        if (days < bestDays) {
-          bestDays = days;
-          match = lf;
-        }
-      }
-      if (bestDays > MAX_LEGACY_MATCH_DAYS) match = undefined;
+      match = legacyMatch.get(ei);
     }
 
     // Look up cross-refs regardless of match status

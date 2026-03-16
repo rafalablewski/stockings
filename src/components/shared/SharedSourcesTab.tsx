@@ -1263,7 +1263,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
                 if (!existingPrKeys.has(key)) {
                   newFromPI.push(pr);
                   prs.push(pr);
-                  const rec: DbRecord = { cacheKey: key, headline: pr.headline, date: pr.date || null, url: pr.url || null, source: pr.source || null, articleType: 'pr', dismissed: true, hidden: false };
+                  const rec: DbRecord = { cacheKey: key, headline: pr.headline, date: pr.date || null, url: pr.url || null, source: pr.source || null, articleType: 'pr', dismissed: false, hidden: false };
                   records.set(key, rec);
                   newKeys.add(key);
                 }
