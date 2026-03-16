@@ -122,11 +122,30 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
               `New filings found: ${tickerResult.newFilings.length}`,
               `Company: ${tickerResult.companyName}`,
               '',
+              // New filing analyses
               ...tickerResult.analyses.map(a =>
                 `## ${a.filing.form} — ${a.filing.filingDate}\n**Verdict:** ${a.verdict}\n**Accession:** ${a.filing.accessionNumber}\n\n${a.analysis}`
               ),
-              ...(tickerResult.newFilings.length === 0 ? ['No new filings detected — database is up to date.'] : []),
+              ...(tickerResult.newFilings.length === 0 ? ['No new filings detected since last scan.'] : []),
               ...(tickerResult.error ? [`\nError: ${tickerResult.error}`] : []),
+              // Database coverage report
+              ...(tickerResult.coverage ? [
+                '',
+                '---',
+                `## DATABASE COVERAGE (${tickerResult.coverage.total} filings checked)`,
+                `- **IN DB (tracked):** ${tickerResult.coverage.tracked}`,
+                `- **DATA ONLY:** ${tickerResult.coverage.dataOnly}`,
+                `- **UNTRACKED:** ${tickerResult.coverage.untracked}`,
+                `- **Coverage:** ${tickerResult.coverage.total > 0 ? Math.round(((tickerResult.coverage.tracked + tickerResult.coverage.dataOnly) / tickerResult.coverage.total) * 100) : 0}%`,
+                '',
+                // List untracked filings so they're actionable
+                ...(tickerResult.coverage.untracked > 0 ? [
+                  '### Untracked Filings (not in database)',
+                  ...tickerResult.coverage.entries
+                    .filter(e => e.status === 'untracked')
+                    .map(e => `- **${e.form}** ${e.filingDate} (${e.accessionNumber})`),
+                ] : ['All EDGAR filings are tracked or have cross-reference data in the database.']),
+              ] : []),
             ].join('\n')
           : `SEC scan completed for ${opts.ticker} — no results returned.`;
 

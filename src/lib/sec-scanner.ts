@@ -15,6 +15,16 @@ import { inArray } from 'drizzle-orm';
 import { researchStocks } from './stocks';
 import { resolveCik } from './cik-map';
 import { classifyAnthropicError } from './anthropic-error';
+import { normalizeAccession, normalizeDate, type LocalFiling } from '@/components/shared/edgarMergeHelpers';
+import {
+  ASTS_SEC_FILINGS, ASTS_FILING_CROSS_REFS,
+} from '@/data/asts/sec-filings';
+import {
+  BMNR_SEC_FILINGS, BMNR_FILING_CROSS_REFS,
+} from '@/data/bmnr/sec-filings';
+import {
+  CRCL_SEC_FILINGS, CRCL_FILING_CROSS_REFS,
+} from '@/data/crcl/sec-filings';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -63,12 +73,32 @@ export interface FilingAnalysis {
   verdict: 'CRITICAL' | 'IMPORTANT' | 'ROUTINE' | 'LOW' | 'UNKNOWN';
 }
 
+export type FilingDbStatus = 'tracked' | 'data_only' | 'untracked';
+
+export interface FilingCoverageEntry {
+  accessionNumber: string;
+  form: string;
+  filingDate: string;
+  status: FilingDbStatus;
+  matchedDescription?: string;   // description from local data file if tracked
+  crossRefSources?: string[];    // cross-ref sources if data_only
+}
+
+export interface CoverageSummary {
+  total: number;
+  tracked: number;
+  dataOnly: number;
+  untracked: number;
+  entries: FilingCoverageEntry[];
+}
+
 export interface TickerScanResult {
   ticker: string;
   companyName: string;
   totalFetched: number;
   newFilings: ScannedFiling[];
   analyses: FilingAnalysis[];
+  coverage?: CoverageSummary;
   error?: string;
 }
 
@@ -229,8 +259,11 @@ async function scanTicker(ticker: string, limit: number): Promise<TickerScanResu
   // 4. Identify new filings (not in DB)
   const newFilings = fetched.filter(f => !existingAccessions.has(f.accessionNumber));
 
+  // 4a. Always check database coverage (tracked/data_only/untracked)
+  const coverage = checkFilingCoverage(ticker, fetched);
+
   if (newFilings.length === 0) {
-    return { ticker, companyName, totalFetched: fetched.length, newFilings: [], analyses: [] };
+    return { ticker, companyName, totalFetched: fetched.length, newFilings: [], analyses: [], coverage };
   }
 
   // 5. Persist all new filings to seenFilings DB
@@ -252,7 +285,7 @@ async function scanTicker(ticker: string, limit: number): Promise<TickerScanResu
     }
   }
 
-  return { ticker, companyName, totalFetched: fetched.length, newFilings, analyses };
+  return { ticker, companyName, totalFetched: fetched.length, newFilings, analyses, coverage };
 }
 
 // ── Filing parsing (matches sec-intelligence pattern) ────────────────────────
@@ -462,4 +495,133 @@ function buildDecisionTitle(
   if (criticalCount > 0) parts.push(`${criticalCount} CRITICAL`);
   if (importantCount > 0) parts.push(`${importantCount} IMPORTANT`);
   return `SEC Scanner: ${ticker} — ${parts.join(', ')}`;
+}
+
+// ── Filing coverage check (database status) ─────────────────────────────────
+
+/** Registry of local data files per ticker for server-side coverage checks */
+const TICKER_SEC_DATA: Record<string, {
+  filings: LocalFiling[];
+  crossRefs: Record<string, { source: string; data: string }[]>;
+}> = {
+  ASTS: { filings: ASTS_SEC_FILINGS as LocalFiling[], crossRefs: ASTS_FILING_CROSS_REFS },
+  BMNR: { filings: BMNR_SEC_FILINGS as LocalFiling[], crossRefs: BMNR_FILING_CROSS_REFS },
+  CRCL: { filings: CRCL_SEC_FILINGS as LocalFiling[], crossRefs: CRCL_FILING_CROSS_REFS },
+};
+
+/** Max days for legacy form+date matching (same as SharedEdgarTab) */
+const MAX_LEGACY_MATCH_DAYS = 14;
+
+/** Normalize form type for comparison (mirrors SharedEdgarTab logic) */
+const normalizeFormForMatch = (f: string) => {
+  const norm = f.toUpperCase().trim().replace(/[/\s-]/g, '').replace(/^FORM/i, '').replace(/^SCHEDULE/i, 'SC');
+  const aliases: Record<string, string> = { PRNEWS: '8K' };
+  return aliases[norm] || norm;
+};
+
+/** Absolute day difference between two ISO date strings */
+function daysBetween(a: string, b: string): number {
+  const da = new Date(a + 'T12:00:00Z');
+  const db = new Date(b + 'T12:00:00Z');
+  return Math.round(Math.abs(da.getTime() - db.getTime()) / 86400000);
+}
+
+/**
+ * Check how well the local database covers the EDGAR filings.
+ * Uses the same matching logic as SharedEdgarTab's matchFilings():
+ * - Tier 1a: exact accession number match → "tracked"
+ * - Tier 1b: form+date legacy match (within 14 days) → "tracked"
+ * - Tier 2: cross-ref data exists → "data_only"
+ * - Tier 3: nothing → "untracked"
+ */
+function checkFilingCoverage(ticker: string, filings: ScannedFiling[]): CoverageSummary {
+  const data = TICKER_SEC_DATA[ticker.toUpperCase()];
+  if (!data) {
+    return { total: filings.length, tracked: 0, dataOnly: 0, untracked: filings.length, entries: filings.map(f => ({
+      accessionNumber: f.accessionNumber, form: f.form, filingDate: f.filingDate, status: 'untracked' as FilingDbStatus,
+    })) };
+  }
+
+  const { filings: localFilings, crossRefs } = data;
+
+  // Build accession → LocalFiling map (Tier 1a)
+  const accessionMap = new Map<string, LocalFiling>();
+  const legacyFilings: LocalFiling[] = [];
+  for (const lf of localFilings) {
+    if (lf.accessionNumber) {
+      accessionMap.set(normalizeAccession(lf.accessionNumber), lf);
+    } else {
+      legacyFilings.push(lf);
+    }
+  }
+
+  // Pre-compute legacy matches (Tier 1b) — greedy closest-first
+  type Candidate = { ei: number; li: number; days: number };
+  const candidates: Candidate[] = [];
+  const accessionMatched = new Set<number>();
+
+  for (let ei = 0; ei < filings.length; ei++) {
+    const ef = filings[ei];
+    if (accessionMap.has(normalizeAccession(ef.accessionNumber))) {
+      accessionMatched.add(ei);
+      continue;
+    }
+    const edgarDate = ef.filingDate; // already ISO
+    const edgarForm = normalizeFormForMatch(ef.form);
+    for (let li = 0; li < legacyFilings.length; li++) {
+      if (normalizeFormForMatch(legacyFilings[li].type) !== edgarForm) continue;
+      const days = daysBetween(edgarDate, normalizeDate(legacyFilings[li].date));
+      if (days <= MAX_LEGACY_MATCH_DAYS) {
+        candidates.push({ ei, li, days });
+      }
+    }
+  }
+
+  candidates.sort((a, b) => a.days - b.days);
+  const legacyMatch = new Map<number, LocalFiling>();
+  const usedLegacy = new Set<number>();
+  for (const { ei, li } of candidates) {
+    if (legacyMatch.has(ei) || usedLegacy.has(li)) continue;
+    legacyMatch.set(ei, legacyFilings[li]);
+    usedLegacy.add(li);
+  }
+
+  // Assemble results
+  let tracked = 0, dataOnly = 0, untracked = 0;
+  const entries: FilingCoverageEntry[] = filings.map((f, ei) => {
+    // Tier 1a: accession match
+    let match = accessionMap.get(normalizeAccession(f.accessionNumber));
+    // Tier 1b: legacy match
+    if (!match) match = legacyMatch.get(ei);
+
+    if (match) {
+      tracked++;
+      return {
+        accessionNumber: f.accessionNumber, form: f.form, filingDate: f.filingDate,
+        status: 'tracked' as FilingDbStatus, matchedDescription: match.description,
+      };
+    }
+
+    // Tier 2: cross-ref lookup (by accession, then by form|date)
+    const normAcc = normalizeAccession(f.accessionNumber);
+    const formDateKey = `${normalizeFormForMatch(f.form)}|${f.filingDate}`;
+    const refs = crossRefs[normAcc] || crossRefs[f.accessionNumber] || crossRefs[formDateKey]
+      || crossRefs[`${f.form}|${f.filingDate}`];
+    if (refs && refs.length > 0) {
+      dataOnly++;
+      return {
+        accessionNumber: f.accessionNumber, form: f.form, filingDate: f.filingDate,
+        status: 'data_only' as FilingDbStatus, crossRefSources: refs.map(r => r.source),
+      };
+    }
+
+    // Tier 3: untracked
+    untracked++;
+    return {
+      accessionNumber: f.accessionNumber, form: f.form, filingDate: f.filingDate,
+      status: 'untracked' as FilingDbStatus,
+    };
+  });
+
+  return { total: filings.length, tracked, dataOnly, untracked, entries };
 }
