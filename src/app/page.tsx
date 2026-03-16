@@ -128,22 +128,27 @@ export default function HomePage() {
             Our Strategies
           </h2>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 gap-6">
             {[
               {
-                label: "Space Technology",
-                title: "Orbital Infrastructure",
-                desc: "Direct-to-device satellite networks, LEO constellations, and space-based communications infrastructure poised to connect the next billion users.",
+                label: "Core",
+                title: "Long Equity",
+                desc: "Concentrated positions in high-conviction names with asymmetric upside. Typically 3–5 deep-research holdings sized by conviction and catalyst proximity.",
               },
               {
-                label: "Digital Assets",
-                title: "On-Chain Alpha",
-                desc: "Bitcoin mining economics, blockchain infrastructure plays, and digital asset custody — focused on picks-and-shovels over speculation.",
+                label: "Tactical",
+                title: "Long / Short",
+                desc: "Pair trades within sectors to isolate alpha. Long the structurally advantaged operator, short the legacy incumbent facing disruption or dilution risk.",
               },
               {
-                label: "Fintech",
-                title: "Embedded Finance",
-                desc: "Next-generation payments, lending rails, and compliance infrastructure enabling the shift from legacy banking to programmable money.",
+                label: "Opportunistic",
+                title: "Leverage & Options",
+                desc: "LEAPS and defined-risk options structures to express high-conviction catalysts — satellite launches, earnings inflections, regulatory approvals — with capped downside.",
+              },
+              {
+                label: "Income",
+                title: "Covered Calls & Cash-Secured Puts",
+                desc: "Yield generation on existing positions through covered calls, and opportunistic entry via cash-secured puts at target accumulation prices.",
               },
             ].map((strategy) => (
               <div
