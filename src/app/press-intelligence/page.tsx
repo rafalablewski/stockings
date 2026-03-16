@@ -35,6 +35,13 @@ function normalizeHeadline(h: string): string {
   return (h || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 80);
 }
 
+/* ─── Parse datetime to epoch ms (handles ISO, PG text, and mixed formats) ─── */
+function parseTs(dt: string | null | undefined): number {
+  if (!dt) return 0;
+  const t = new Date(dt).getTime();
+  return isNaN(t) ? 0 : t;
+}
+
 const PAYMENT_CATEGORIES: Record<string, (h: string) => boolean> = {
   Earnings: CAT_EARNINGS,
   Payments: (h) => /payment|transaction|card|contactless|tap|digital|tokeniz|wallet|network/i.test(h),
@@ -1083,6 +1090,7 @@ interface NewsItem {
   _ticker: string;      // injected after fetch
   _config: FeedConfig;   // injected after fetch
   _inDb?: boolean;       // true if item was already stored in database
+  _ts: number;           // parsed datetime as epoch ms (0 if unparseable)
 }
 
 const formatDate = (str: string) => {
@@ -1201,8 +1209,8 @@ export default function PressIntelligencePage() {
           const raw: any[] = parse(json);
           const filtered: NewsItem[] = raw
             .filter((item: any) => cfg.sourceFilter(item.source || "") && cfg.headlineFilter(item.headline || item.title || ""))
-            .sort((a: any, b: any) => { const da = a.datetime || ''; const db = b.datetime || ''; return db > da ? 1 : db < da ? -1 : 0; })
-            .map((item: any) => ({ ...item, _ticker: cfg.ticker, _config: cfg }));
+            .map((item: any) => ({ ...item, _ticker: cfg.ticker, _config: cfg, _ts: parseTs(item.datetime) }))
+            .sort((a, b) => b._ts - a._ts);
           results[cfg.ticker] = filtered;
           if (isRefresh) log(`${cfg.ticker}: ✓ ${filtered.length} items`);
         } catch (e: any) {
@@ -1257,17 +1265,11 @@ export default function PressIntelligencePage() {
     });
     /* Date filter */
     if (daysFilter > 0) {
-      const cutoff = new Date(Date.now() - daysFilter * 86400000).toISOString();
-      items = items.filter((i) => (i.datetime || '') >= cutoff);
+      const cutoffTs = Date.now() - daysFilter * 86400000;
+      items = items.filter((i) => i._ts >= cutoffTs);
     }
-    /* Sort chronologically (newest first) — string comparison works for both
-       ISO 8601 ("2026-03-16T09:00:00.000Z") and PostgreSQL text format
-       ("2026-03-16 09:00:00+00") since both start with YYYY-MM-DD */
-    items.sort((a, b) => {
-      const da = a.datetime || '';
-      const db = b.datetime || '';
-      return db > da ? 1 : db < da ? -1 : 0;
-    });
+    /* Sort chronologically (newest first) by numeric timestamp */
+    items.sort((a, b) => b._ts - a._ts);
     return items;
   }, [feedsByTicker, activeTicker, daysFilter]);
 
@@ -1538,7 +1540,7 @@ export default function PressIntelligencePage() {
 
         {/* News cards */}
         {!loading && pagedItems.map((item) => {
-          const id = `${item._ticker}-${normalizeHeadline(item.headline || item.title || "")}`;
+          const id = `${item._ticker}-${normalizeHeadline(item.headline || item.title || "")}-${item._ts}`;
           const expanded = expandedId === id;
           const headline = item.headline || item.title || "";
           const summary = item.summary || (item as any).qmsummary || item.description || "";
