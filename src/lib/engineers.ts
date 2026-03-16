@@ -84,8 +84,6 @@ export const engineers: EngineerTask[] = [
     requiresData: true,
     dataSource: 'EDGAR API (SEC)',
     category: 'monitoring',
-    decisionsFor: 'gemini',    // Routes scan reports to Gemini (Research & Data) for approval
-    notifyPm: 'gemini',        // Room notification to Gemini division
     chainsTo: 'db-ingestor-engineer',
   },
   {
