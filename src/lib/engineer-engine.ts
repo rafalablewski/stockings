@@ -207,14 +207,17 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
 
   // ── Create PM decision item if configured ────────────────────────────
   if (!hasFailure && engineer.decisionsFor) {
-    const patchCount = (combinedOutput.match(/"finding_id"/g) || []).length;
+    const decisionCategory = engineer.decisionCategory || 'prompt-patch';
+    const patchCountPattern = decisionCategory === 'data-patch' ? /"filing_ref"/g : /"finding_id"/g;
+    const patchCount = (combinedOutput.match(patchCountPattern) || []).length;
+    const itemLabel = decisionCategory === 'data-patch' ? 'data patches' : 'prompt patches';
     db.insert(pmDecisions).values({
       pm: engineer.decisionsFor,
       engineerId: engineer.id,
       runId: lastRunId,
       ticker: opts.ticker,
-      title: `${engineer.name}: ${patchCount} prompt patches for review`,
-      category: 'prompt-patch',
+      title: `${engineer.name}: ${patchCount} ${itemLabel} for review`,
+      category: decisionCategory,
       payload: combinedOutput,
     }).catch(err => {
       console.error(`[engine] Decision creation failed for ${engineer.decisionsFor}:`, err);

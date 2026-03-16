@@ -141,6 +141,63 @@ export default function DecisionDashboard() {
     }
   };
 
+  const applyDataPatches = async (decision: Decision) => {
+    setApplying(decision.id);
+    try {
+      // Parse the ingestor output to extract data patches
+      let patches: Array<{ file: string; action: string; anchor: string; content: string; oldValue?: string }> = [];
+      try {
+        const jsonMatch = decision.payload.match(/\{[\s\S]*"patches"[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          patches = (parsed.patches || []).map((p: Record<string, string>) => ({
+            file: p.file,
+            action: p.action,
+            anchor: p.anchor,
+            content: p.content,
+            ...(p.oldValue ? { oldValue: p.oldValue } : {}),
+          }));
+        }
+      } catch {
+        console.error('Failed to parse data patches from payload');
+        return;
+      }
+
+      if (patches.length === 0) return;
+
+      const ticker = decision.ticker;
+
+      // Dry-run validation first
+      const previewRes = await authFetch('/api/workflow/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker, agentId: decision.engineerId, patches, dryRun: true }),
+      });
+      const preview = await previewRes.json();
+
+      if (!preview.validCount || preview.validCount === 0) {
+        alert(`No valid data patches. ${preview.invalidCount || 0} invalid.`);
+        return;
+      }
+
+      // Apply for real with validated patches
+      const applyRes = await authFetch('/api/workflow/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker, agentId: decision.engineerId, patches: preview.patches, dryRun: false }),
+      });
+      const result = await applyRes.json();
+
+      if (result.applied > 0) {
+        await updateStatus(decision.id, 'applied', `Applied ${result.applied} data patches to ${ticker.toUpperCase()}`);
+      } else {
+        alert(`Apply failed: ${result.summary || 'Unknown error'}`);
+      }
+    } finally {
+      setApplying(null);
+    }
+  };
+
   const parsePatchCount = (payload: string): number => {
     try {
       const jsonMatch = payload.match(/\{[\s\S]*"patches"[\s\S]*\}/);
@@ -267,6 +324,16 @@ export default function DecisionDashboard() {
                           disabled={applying === d.id}
                         >
                           {applying === d.id ? 'Applying...' : 'Apply Patches to workflows.ts'}
+                        </button>
+                      )}
+                      {d.status === 'boss-approved' && d.category === 'data-patch' && (
+                        <button
+                          className="eng-btn"
+                          data-variant="active"
+                          onClick={() => applyDataPatches(d)}
+                          disabled={applying === d.id}
+                        >
+                          {applying === d.id ? 'Applying...' : 'Apply Data Patches to database'}
                         </button>
                       )}
                     </div>
