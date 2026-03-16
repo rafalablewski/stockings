@@ -30,6 +30,11 @@ const CAT_CORPORATE_DIV_BUYBACK = (h: string) => /acqui|merger|board|director|ap
 const CAT_CAPITAL_MARKETS = (h: string) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h);
 const CAT_PARTNERSHIPS = (h: string) => /partner|agreement|contract|deal|alliance|collaborat|launch|integrat/i.test(h);
 
+/* ─── Headline normalization (dedup key + React key) ─── */
+function normalizeHeadline(h: string): string {
+  return (h || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 80);
+}
+
 const PAYMENT_CATEGORIES: Record<string, (h: string) => boolean> = {
   Earnings: CAT_EARNINGS,
   Payments: (h) => /payment|transaction|card|contactless|tap|digital|tokeniz|wallet|network/i.test(h),
@@ -1196,7 +1201,7 @@ export default function PressIntelligencePage() {
           const raw: any[] = parse(json);
           const filtered: NewsItem[] = raw
             .filter((item: any) => cfg.sourceFilter(item.source || "") && cfg.headlineFilter(item.headline || item.title || ""))
-            .sort((a: any, b: any) => (new Date(b.datetime).getTime() || 0) - (new Date(a.datetime).getTime() || 0))
+            .sort((a: any, b: any) => { const da = a.datetime || ''; const db = b.datetime || ''; return db > da ? 1 : db < da ? -1 : 0; })
             .map((item: any) => ({ ...item, _ticker: cfg.ticker, _config: cfg }));
           results[cfg.ticker] = filtered;
           if (isRefresh) log(`${cfg.ticker}: ✓ ${filtered.length} items`);
@@ -1244,7 +1249,7 @@ export default function PressIntelligencePage() {
     /* Deduplicate across tickers — same headline from multiple sources/topics */
     const seenHl = new Set<string>();
     items = items.filter((item) => {
-      const key = (item.headline || item.title || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 80);
+      const key = normalizeHeadline(item.headline || item.title || "");
       if (!key || key.length < 4) return true; // keep items with no meaningful headline
       if (seenHl.has(key)) return false;
       seenHl.add(key);
@@ -1252,14 +1257,16 @@ export default function PressIntelligencePage() {
     });
     /* Date filter */
     if (daysFilter > 0) {
-      const cutoff = Date.now() - daysFilter * 86400000;
-      items = items.filter((i) => new Date(i.datetime).getTime() >= cutoff);
+      const cutoff = new Date(Date.now() - daysFilter * 86400000).toISOString();
+      items = items.filter((i) => (i.datetime || '') >= cutoff);
     }
-    /* Sort chronologically (newest first) — NaN-safe for unparseable datetimes */
+    /* Sort chronologically (newest first) — string comparison works for both
+       ISO 8601 ("2026-03-16T09:00:00.000Z") and PostgreSQL text format
+       ("2026-03-16 09:00:00+00") since both start with YYYY-MM-DD */
     items.sort((a, b) => {
-      const ta = new Date(b.datetime).getTime() || 0;
-      const tb = new Date(a.datetime).getTime() || 0;
-      return ta - tb;
+      const da = a.datetime || '';
+      const db = b.datetime || '';
+      return db > da ? 1 : db < da ? -1 : 0;
     });
     return items;
   }, [feedsByTicker, activeTicker, daysFilter]);
@@ -1531,7 +1538,7 @@ export default function PressIntelligencePage() {
 
         {/* News cards */}
         {!loading && pagedItems.map((item) => {
-          const id = `${item._ticker}-${item.newsid || item.id}`;
+          const id = `${item._ticker}-${normalizeHeadline(item.headline || item.title || "")}`;
           const expanded = expandedId === id;
           const headline = item.headline || item.title || "";
           const summary = item.summary || (item as any).qmsummary || item.description || "";
