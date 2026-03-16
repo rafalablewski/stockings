@@ -33,6 +33,7 @@ interface RunEngineerOptions {
   triggerReason?: string;
   userData?: string;          // optional user-provided data for data-requiring engineers
   chainContext?: Record<string, string>;  // placeholder values injected from upstream engineer
+  workflowId?: string;       // optional: run only this specific workflow (for multi-workflow engineers)
 }
 
 interface RunResult {
@@ -61,10 +62,18 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
 
   const startTime = Date.now();
 
-  // Resolve ALL matching workflow prompts for this engineer + ticker
-  const resolvedWorkflows = resolveAllEngineerPrompts(engineer, opts.ticker, opts.chainContext);
+  // Resolve matching workflow prompts for this engineer + ticker
+  const allResolved = resolveAllEngineerPrompts(engineer, opts.ticker, opts.chainContext);
+  // If a specific workflowId was requested, filter to just that one
+  const resolvedWorkflows = opts.workflowId
+    ? allResolved.filter(w => w.workflowId === opts.workflowId)
+    : allResolved;
   if (resolvedWorkflows.length === 0) {
-    throw new Error(`No prompts found for engineer ${opts.engineerId} on ticker ${opts.ticker}`);
+    throw new Error(
+      opts.workflowId
+        ? `Workflow "${opts.workflowId}" not found or has no prompt for engineer ${opts.engineerId} on ticker ${opts.ticker}`
+        : `No prompts found for engineer ${opts.engineerId} on ticker ${opts.ticker}`
+    );
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY || '';
