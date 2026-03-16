@@ -236,7 +236,10 @@ async function scanTicker(ticker: string, limit: number): Promise<TickerScanResu
   }
 
   // 2. Parse filings from SEC response
+  //    - Limited set: for new-filing detection and AI analysis (respects limit)
+  //    - Full set: for database coverage check (all EDGAR filings)
   const fetched = parseFilings(recent, cik, ticker, limit);
+  const allFilings = parseFilings(recent, cik, ticker, recent.accessionNumber?.length ?? 0);
 
   // 3. Load existing accession numbers from DB
   const db = getDb();
@@ -259,11 +262,11 @@ async function scanTicker(ticker: string, limit: number): Promise<TickerScanResu
   // 4. Identify new filings (not in DB)
   const newFilings = fetched.filter(f => !existingAccessions.has(f.accessionNumber));
 
-  // 4a. Always check database coverage (tracked/data_only/untracked)
-  const coverage = checkFilingCoverage(ticker, fetched);
+  // 4a. Always check database coverage against ALL EDGAR filings
+  const coverage = checkFilingCoverage(ticker, allFilings);
 
   if (newFilings.length === 0) {
-    return { ticker, companyName, totalFetched: fetched.length, newFilings: [], analyses: [], coverage };
+    return { ticker, companyName, totalFetched: allFilings.length, newFilings: [], analyses: [], coverage };
   }
 
   // 5. Persist all new filings to seenFilings DB
@@ -285,7 +288,7 @@ async function scanTicker(ticker: string, limit: number): Promise<TickerScanResu
     }
   }
 
-  return { ticker, companyName, totalFetched: fetched.length, newFilings, analyses, coverage };
+  return { ticker, companyName, totalFetched: allFilings.length, newFilings, analyses, coverage };
 }
 
 // ── Filing parsing (matches sec-intelligence pattern) ────────────────────────
@@ -527,6 +530,35 @@ function daysBetween(a: string, b: string): number {
 }
 
 /**
+ * Look up cross-refs by accession number first, then by form|date (legacy).
+ * Mirrors SharedEdgarTab.lookupCrossRefs: iterates all keys, normalizes forms,
+ * and uses tight date tolerance (<=1 day) to prevent bleeding between filings.
+ */
+function lookupCrossRefsServer(
+  accessionNumber: string,
+  form: string,
+  isoDate: string,
+  index: Record<string, { source: string; data: string }[]>,
+): { source: string; data: string }[] | undefined {
+  // Primary: exact accession number lookup
+  const accNorm = normalizeAccession(accessionNumber);
+  if (index[accessionNumber]) return index[accessionNumber];
+  if (index[accNorm]) return index[accNorm];
+
+  // Fallback: form|date key matching with normalization + 1-day tolerance
+  const lookupNorm = normalizeFormForMatch(form);
+  for (const [key, value] of Object.entries(index)) {
+    const pipeIdx = key.indexOf('|');
+    if (pipeIdx === -1) continue;
+    const keyForm = key.slice(0, pipeIdx);
+    const keyDate = key.slice(pipeIdx + 1);
+    if (normalizeFormForMatch(keyForm) !== lookupNorm) continue;
+    if (daysBetween(isoDate, keyDate) <= 1) return value;
+  }
+  return undefined;
+}
+
+/**
  * Check how well the local database covers the EDGAR filings.
  * Uses the same matching logic as SharedEdgarTab's matchFilings():
  * - Tier 1a: exact accession number match → "tracked"
@@ -602,11 +634,8 @@ function checkFilingCoverage(ticker: string, filings: ScannedFiling[]): Coverage
       };
     }
 
-    // Tier 2: cross-ref lookup (by accession, then by form|date)
-    const normAcc = normalizeAccession(f.accessionNumber);
-    const formDateKey = `${normalizeFormForMatch(f.form)}|${f.filingDate}`;
-    const refs = crossRefs[normAcc] || crossRefs[f.accessionNumber] || crossRefs[formDateKey]
-      || crossRefs[`${f.form}|${f.filingDate}`];
+    // Tier 2: cross-ref lookup (mirrors SharedEdgarTab.lookupCrossRefs)
+    const refs = lookupCrossRefsServer(f.accessionNumber, f.form, f.filingDate, crossRefs);
     if (refs && refs.length > 0) {
       dataOnly++;
       return {
