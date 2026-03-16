@@ -7,6 +7,7 @@ const RunBody = z.object({
   ticker: z.string().min(1),
   engineerId: z.string().min(1),
   triggerReason: z.string().optional(),
+  workflowId: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -22,13 +23,14 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    const { ticker, engineerId, triggerReason } = parsed.data;
+    const { ticker, engineerId, triggerReason, workflowId } = parsed.data;
 
     const result = await runEngineer({
       ticker,
       engineerId,
       triggerType: 'manual',
       triggerReason: triggerReason || 'Manual trigger from Engineers dashboard',
+      workflowId,
     });
 
     return NextResponse.json(result);

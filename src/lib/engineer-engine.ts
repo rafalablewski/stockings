@@ -11,11 +11,13 @@
 
 import { getDb } from './db';
 import { agentRuns, engineerSchedules, roomMessages, pmDecisions } from './schema';
-import { eq, and, lte, sql } from 'drizzle-orm';
-import { getEngineer, type EngineerTask } from './engineers';
+import { eq, and, lte, sql, desc } from 'drizzle-orm';
+import { getEngineer, engineers, type EngineerTask } from './engineers';
 import { workflows } from '@/data/workflows';
 import { resolvePromptPlaceholders } from './prompt-placeholders';
 import { asts, bmnr, crcl } from '@/data';
+import { scanForNewFilings } from './sec-scanner';
+import { autoReviewDecision } from './gemini-auto-review';
 
 // Claude models for engineer runs
 const CLAUDE_MODEL_DEFAULT = 'claude-sonnet-4-5-20250929';
@@ -32,6 +34,7 @@ interface RunEngineerOptions {
   triggerReason?: string;
   userData?: string;          // optional user-provided data for data-requiring engineers
   chainContext?: Record<string, string>;  // placeholder values injected from upstream engineer
+  workflowId?: string;       // optional: run only this specific workflow (for multi-workflow engineers)
 }
 
 interface RunResult {
@@ -41,6 +44,8 @@ interface RunResult {
   outputFull: string | null;
   durationMs: number;
   error?: string;
+  decisionId?: number | null;
+  warnings?: string[];
 }
 
 /**
@@ -60,10 +65,45 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
 
   const startTime = Date.now();
 
-  // Resolve ALL matching workflow prompts for this engineer + ticker
-  const resolvedWorkflows = resolveAllEngineerPrompts(engineer, opts.ticker, opts.chainContext);
+  // ── Fallback: if no chainContext provided, try to fetch latest upstream output ──
+  // This handles cases where the downstream engineer (e.g. db-ingestor) is triggered
+  // manually or via schedule without going through the normal chain path.
+  let effectiveChainContext = opts.chainContext;
+  if (!effectiveChainContext) {
+    const upstreamEngineer = engineers.find(e => e.chainsTo === opts.engineerId);
+    if (upstreamEngineer) {
+      const [latestRun] = await db
+        .select({ outputFull: agentRuns.outputFull })
+        .from(agentRuns)
+        .where(
+          and(
+            eq(agentRuns.engineerId, upstreamEngineer.id),
+            eq(agentRuns.ticker, opts.ticker),
+            eq(agentRuns.status, 'completed'),
+          ),
+        )
+        .orderBy(desc(agentRuns.completedAt))
+        .limit(1);
+
+      if (latestRun?.outputFull) {
+        console.log(`[engine] No chainContext for ${opts.engineerId} — using latest ${upstreamEngineer.id} output (ticker: ${opts.ticker})`);
+        effectiveChainContext = { LATEST_AUDIT_OUTPUT: latestRun.outputFull };
+      }
+    }
+  }
+
+  // Resolve matching workflow prompts for this engineer + ticker
+  const allResolved = resolveAllEngineerPrompts(engineer, opts.ticker, effectiveChainContext);
+  // If a specific workflowId was requested, filter to just that one
+  const resolvedWorkflows = opts.workflowId
+    ? allResolved.filter(w => w.workflowId === opts.workflowId)
+    : allResolved;
   if (resolvedWorkflows.length === 0) {
-    throw new Error(`No prompts found for engineer ${opts.engineerId} on ticker ${opts.ticker}`);
+    throw new Error(
+      opts.workflowId
+        ? `Workflow "${opts.workflowId}" not found or has no prompt for engineer ${opts.engineerId} on ticker ${opts.ticker}`
+        : `No prompts found for engineer ${opts.engineerId} on ticker ${opts.ticker}`
+    );
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY || '';
@@ -97,6 +137,61 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
       await db.update(agentRuns)
         .set({ status: 'running', startedAt: new Date() })
         .where(eq(agentRuns.id, runId));
+
+      // ── Custom execution: SEC Filing Scanner ────────────────────────────
+      // The sec-filing-scan workflow needs its own orchestration loop
+      // (fetch EDGAR → diff DB → analyze each filing) rather than a single
+      // prompt-to-Claude call. Delegate to the scanner engine directly.
+      if (resolved.workflowId === 'sec-filing-scan') {
+        const scanResult = await scanForNewFilings([opts.ticker]);
+        const tickerResult = scanResult.tickerResults[0];
+        const outputFull = tickerResult
+          ? [
+              `# SEC FILING SCAN: ${opts.ticker}`,
+              `Scanned at: ${scanResult.scannedAt}`,
+              `New filings found: ${tickerResult.newFilings.length}`,
+              `Company: ${tickerResult.companyName}`,
+              '',
+              // New filing analyses
+              ...tickerResult.analyses.map(a =>
+                `## ${a.filing.form} — ${a.filing.filingDate}\n**Verdict:** ${a.verdict}\n**Accession:** ${a.filing.accessionNumber}\n\n${a.analysis}`
+              ),
+              ...(tickerResult.newFilings.length === 0 ? ['No new filings detected since last scan.'] : []),
+              ...(tickerResult.error ? [`\nError: ${tickerResult.error}`] : []),
+              // Database coverage report
+              ...(tickerResult.coverage ? [
+                '',
+                '---',
+                `## DATABASE COVERAGE (${tickerResult.coverage.total} filings checked)`,
+                `- **IN DB (tracked):** ${tickerResult.coverage.tracked}`,
+                `- **DATA ONLY:** ${tickerResult.coverage.dataOnly}`,
+                `- **UNTRACKED:** ${tickerResult.coverage.untracked}`,
+                `- **Coverage:** ${tickerResult.coverage.total > 0 ? Math.round(((tickerResult.coverage.tracked + tickerResult.coverage.dataOnly) / tickerResult.coverage.total) * 100) : 0}%`,
+                '',
+                // List untracked filings so they're actionable
+                ...(tickerResult.coverage.untracked > 0 ? [
+                  '### Untracked Filings (not in database)',
+                  ...tickerResult.coverage.entries
+                    .filter(e => e.status === 'untracked')
+                    .map(e => `- **${e.form}** ${e.filingDate} (${e.accessionNumber})`),
+                ] : ['All EDGAR filings are tracked or have cross-reference data in the database.']),
+              ] : []),
+            ].join('\n')
+          : `SEC scan completed for ${opts.ticker} — no results returned.`;
+
+        const outputSummary = outputFull.slice(0, 500);
+        const durationMs = Date.now() - wfStartTime;
+
+        allOutputs.push(`═══ WORKFLOW: ${resolved.workflowId} ═══\n\n${outputFull}`);
+
+        await db.update(agentRuns)
+          .set({ status: 'completed', outputSummary, outputFull, durationMs, completedAt: new Date() })
+          .where(eq(agentRuns.id, runId));
+
+        continue; // Skip the standard Claude API path below
+      }
+
+      // ── Standard execution: resolve prompt → call Claude API ────────────
 
       // 3. Build the message with date + prompt + optional user data
       // Replace {{CURRENT_DATE}} placeholders in prompt with today's date
@@ -172,19 +267,23 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
     }
   }
 
-  // Update the schedule's lastRunAt
-  await db.update(engineerSchedules)
-    .set({
-      lastRunAt: new Date(),
-      nextRunAt: sql`NOW() + (interval_minutes || ' minutes')::interval`,
-      updatedAt: new Date(),
-    })
-    .where(
-      and(
-        eq(engineerSchedules.ticker, opts.ticker),
-        eq(engineerSchedules.engineerId, opts.engineerId),
-      )
-    );
+  // Update the schedule's lastRunAt (non-critical — don't abort if schedule row is missing)
+  try {
+    await db.update(engineerSchedules)
+      .set({
+        lastRunAt: new Date(),
+        nextRunAt: sql`NOW() + (interval_minutes || ' minutes')::interval`,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(engineerSchedules.ticker, opts.ticker),
+          eq(engineerSchedules.engineerId, opts.engineerId),
+        )
+      );
+  } catch (err) {
+    console.error(`[engine] Schedule update failed for ${opts.engineerId}/${opts.ticker}:`, err);
+  }
 
   const combinedOutput = allOutputs.join('\n\n');
   const totalDuration = Date.now() - startTime;
@@ -206,26 +305,63 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
   }
 
   // ── Create PM decision item if configured ────────────────────────────
+  let decisionId: number | null = null;
+  const warnings: string[] = [];
   if (!hasFailure && engineer.decisionsFor) {
     const decisionCategory = engineer.decisionCategory || 'prompt-patch';
     const patchCountPattern = decisionCategory === 'data-patch' ? /"filing_ref"/g : /"finding_id"/g;
     const patchCount = (combinedOutput.match(patchCountPattern) || []).length;
     const itemLabel = decisionCategory === 'data-patch' ? 'data patches' : 'prompt patches';
-    db.insert(pmDecisions).values({
-      pm: engineer.decisionsFor,
-      engineerId: engineer.id,
-      runId: lastRunId,
-      ticker: opts.ticker,
-      title: `${engineer.name}: ${patchCount} ${itemLabel} for review`,
-      category: decisionCategory,
-      payload: combinedOutput,
-    }).catch(err => {
+    try {
+      const [row] = await db.insert(pmDecisions).values({
+        pm: engineer.decisionsFor,
+        engineerId: engineer.id,
+        runId: lastRunId,
+        ticker: opts.ticker,
+        title: `${engineer.name}: ${patchCount} ${itemLabel} for review`,
+        category: decisionCategory,
+        payload: combinedOutput,
+      }).returning({ id: pmDecisions.id });
+      decisionId = row?.id ?? null;
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
       console.error(`[engine] Decision creation failed for ${engineer.decisionsFor}:`, err);
-    });
+      warnings.push(`Decision creation failed: ${errMsg}. Run 'npm run db:push' if the pm_decisions table doesn't exist.`);
+    }
   }
 
-  // ── Chaining: trigger downstream engineer if configured ──────────────
-  if (!hasFailure && engineer.chainsTo) {
+  // ── Auto-review gate: if configured, Gemini AI reviews before chaining ──
+  if (!hasFailure && engineer.autoReviewBy && decisionId) {
+    try {
+      const review = await autoReviewDecision(
+        decisionId,
+        engineer.autoReviewBy,
+        combinedOutput,
+        engineer,
+        opts.ticker,
+      );
+      if (review.approved && engineer.chainsTo) {
+        const chainPayload = review.enhancedPayload || combinedOutput;
+        const downstreamEngineer = getEngineer(engineer.chainsTo);
+        if (downstreamEngineer) {
+          runEngineer({
+            ticker: opts.ticker,
+            engineerId: engineer.chainsTo,
+            triggerType: 'event',
+            triggerReason: `Chained from ${engineer.id} (run #${lastRunId}) — Gemini approved`,
+            chainContext: { LATEST_AUDIT_OUTPUT: chainPayload },
+          }).catch(err => {
+            console.error(`[engine] Chain failed for ${engineer.chainsTo}:`, err);
+          });
+        }
+      }
+    } catch (err) {
+      console.error(`[engine] Auto-review failed for ${engineer.autoReviewBy}:`, err);
+    }
+  }
+
+  // ── Chaining: trigger downstream engineer if configured (non-reviewed) ──
+  if (!hasFailure && engineer.chainsTo && !engineer.autoReviewBy) {
     const downstreamEngineer = getEngineer(engineer.chainsTo);
     if (downstreamEngineer) {
       runEngineer({
@@ -247,6 +383,8 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
     outputFull: combinedOutput,
     durationMs: totalDuration,
     error: hasFailure ? 'One or more workflows failed — see output for details' : undefined,
+    decisionId,
+    warnings: warnings.length > 0 ? warnings : undefined,
   };
 }
 

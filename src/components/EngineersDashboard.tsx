@@ -176,7 +176,7 @@ function EngineerDetailPanel({
   status: EngineerStatus | undefined;
   isRunning: boolean;
   onClose: () => void;
-  onRun: (engineerId: string) => void;
+  onRun: (engineerId: string, workflowId?: string) => void;
   onSchedule: (engineerId: string, enabled: boolean, interval: number) => void;
   onEnableSchedule: (engineer: EngineerTask) => void;
   onPromptPreview: (wf: Workflow, ticker: string, label: string) => void;
@@ -230,15 +230,42 @@ function EngineerDetailPanel({
               Schedule
             </button>
           )}
-          <button
-            className="eng-btn"
-            data-variant="run"
-            data-state={isRunning ? 'running' : undefined}
-            onClick={() => onRun(engineer.id)}
-            disabled={isRunning}
-          >
-            {isRunning ? 'Running\u2026' : 'Run Now'}
-          </button>
+          {linkedWorkflows.length > 1 ? (
+            <div className="eng-run-group">
+              <button
+                className="eng-btn"
+                data-variant="run"
+                data-state={isRunning ? 'running' : undefined}
+                onClick={() => onRun(engineer.id)}
+                disabled={isRunning}
+              >
+                {isRunning ? 'Running\u2026' : 'Run All'}
+              </button>
+              {linkedWorkflows.map(wf => (
+                <button
+                  key={wf.id}
+                  className="eng-btn eng-btn-sm"
+                  data-variant="run-single"
+                  data-state={isRunning ? 'running' : undefined}
+                  onClick={() => onRun(engineer.id, wf.id)}
+                  disabled={isRunning}
+                  title={wf.description}
+                >
+                  {wf.name}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <button
+              className="eng-btn"
+              data-variant="run"
+              data-state={isRunning ? 'running' : undefined}
+              onClick={() => onRun(engineer.id)}
+              disabled={isRunning}
+            >
+              {isRunning ? 'Running\u2026' : 'Run Now'}
+            </button>
+          )}
           <button className="eng-detail-close" onClick={onClose}>{'\u2715'}</button>
         </div>
       </div>
@@ -587,13 +614,13 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
     setFullReportLoading(false);
   }, []);
 
-  const handleRun = async (engineerId: string) => {
+  const handleRun = async (engineerId: string, workflowId?: string) => {
     setRunningIds(prev => { const next = new Set(prev); next.add(engineerId); return next; });
     try {
       await authFetch('/api/engineers/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker: selectedTicker, engineerId }),
+        body: JSON.stringify({ ticker: selectedTicker, engineerId, workflowId }),
       });
       await fetchStatus();
     } catch (err) {

@@ -66,7 +66,7 @@ You are chatting in the Room — a real-time chat interface. Keep messages focus
 
 let aiClient: GoogleGenAI | null = null;
 
-function getClient(): GoogleGenAI {
+export function getClient(): GoogleGenAI {
   if (!aiClient) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {

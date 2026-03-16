@@ -62,7 +62,7 @@ export const orgNodes: OrgNode[] = [
     label: 'Claude',
     badge: 'ARCH',
     role: 'Architecture & Backend',
-    description: 'Manages 7 engineers focused on deep reasoning and complex analysis. Schedules and monitors thesis pressure-testing, capital structure analysis, earnings processing, catalyst evaluation, code security audits, data quality validation, and cross-domain intelligence queries. Reviews engineer outputs and reports findings to the Boss in the Room. Owns backend architecture, API routes, database schema, and infrastructure decisions.',
+    description: 'Manages 8 engineers focused on deep reasoning and complex analysis. Schedules and monitors thesis pressure-testing, capital structure analysis, earnings processing, catalyst evaluation, code security audits, data quality validation, cross-domain intelligence queries, and SEC filing-to-database ingestion. Reviews engineer outputs and reports findings to the Boss in the Room. Owns backend architecture, API routes, database schema, and infrastructure decisions.',
     color: ORG_COLORS.claude,
     parentId: 'boss',
   },
@@ -178,6 +178,16 @@ export const orgNodes: OrgNode[] = [
     color: ORG_COLORS.claude,
     parentId: 'div-claude',
     engineerId: 'ask-agent-engineer',
+  },
+  {
+    id: 'eng-db-ingestor',
+    type: 'engineer',
+    label: 'SEC DB Ingestor',
+    badge: 'ING',
+    role: 'Filing-to-Database Ingestion',
+    color: ORG_COLORS.claude,
+    parentId: 'div-claude',
+    engineerId: 'db-ingestor-engineer',
   },
 
   // ── Engineers under Cursor (0) ──────────────────────────────────────────
@@ -376,6 +386,9 @@ export const dataFlowEdges: OrgEdge[] = [
   { from: 'eng-doc-reviewer', to: 'div-pm', type: 'dataflow', label: 'audit report', color: 'rgba(251, 146, 60, 0.5)' },
   { from: 'eng-doc-reviewer', to: 'eng-ux-ui', type: 'dataflow', label: 'doc audit → implement', color: 'rgba(249, 168, 212, 0.5)' },
   { from: 'eng-ux-ui', to: 'div-maszka', type: 'dataflow', label: 'code changes → approve/reject', color: 'rgba(244, 114, 182, 0.6)' },
+  { from: 'eng-filing', to: 'div-gemini', type: 'dataflow', label: 'scan report → Gemini AI review', color: 'rgba(34, 211, 238, 0.5)' },
+  { from: 'div-gemini', to: 'eng-db-ingestor', type: 'dataflow', label: 'approved → ingest', color: 'rgba(34, 211, 238, 0.5)' },
+  { from: 'eng-db-ingestor', to: 'div-claude', type: 'dataflow', label: 'patches → approve/reject', color: 'rgba(34, 211, 238, 0.5)' },
 ];
 
 // ── Layout computation ─────────────────────────────────────────────────────
