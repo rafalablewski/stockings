@@ -30,6 +30,11 @@ const CAT_CORPORATE_DIV_BUYBACK = (h: string) => /acqui|merger|board|director|ap
 const CAT_CAPITAL_MARKETS = (h: string) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h);
 const CAT_PARTNERSHIPS = (h: string) => /partner|agreement|contract|deal|alliance|collaborat|launch|integrat/i.test(h);
 
+/* ─── Headline normalization (dedup key + React key) ─── */
+function normalizeHeadline(h: string): string {
+  return (h || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 80);
+}
+
 const PAYMENT_CATEGORIES: Record<string, (h: string) => boolean> = {
   Earnings: CAT_EARNINGS,
   Payments: (h) => /payment|transaction|card|contactless|tap|digital|tokeniz|wallet|network/i.test(h),
@@ -1244,7 +1249,7 @@ export default function PressIntelligencePage() {
     /* Deduplicate across tickers — same headline from multiple sources/topics */
     const seenHl = new Set<string>();
     items = items.filter((item) => {
-      const key = (item.headline || item.title || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 80);
+      const key = normalizeHeadline(item.headline || item.title || "");
       if (!key || key.length < 4) return true; // keep items with no meaningful headline
       if (seenHl.has(key)) return false;
       seenHl.add(key);
@@ -1533,7 +1538,7 @@ export default function PressIntelligencePage() {
 
         {/* News cards */}
         {!loading && pagedItems.map((item) => {
-          const id = `${item._ticker}-${(item.headline || item.title || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 80)}`;
+          const id = `${item._ticker}-${normalizeHeadline(item.headline || item.title || "")}`;
           const expanded = expandedId === id;
           const headline = item.headline || item.title || "";
           const summary = item.summary || (item as any).qmsummary || item.description || "";
