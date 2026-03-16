@@ -364,13 +364,14 @@ export function computeTriggerEdges(engineers: EngineerTask[]): OrgEdge[] {
 
 // ── Data flow edges ──────────────────────────────────────────────────────────
 // Gemini ingests external data → Claude reasons over it → Maszka handles frontend
-// Prompt Auditor findings → Remediation Engineer (under Cursor/ML) + Bobman (report)
+// Prompt Auditor → Prompt Remediation Engineer (under Maszka) → Maszka (approval)
 // Doc Reviewer → UX/UI Engineer (under Maszka/UI) → Maszka approves
 
 export const dataFlowEdges: OrgEdge[] = [
   { from: 'div-gemini', to: 'div-claude', type: 'dataflow', label: 'filings & signals', color: 'rgba(52, 211, 153, 0.5)' },
   { from: 'div-claude', to: 'div-maszka', type: 'dataflow', label: 'data updated', color: 'rgba(34, 211, 238, 0.5)' },
   { from: 'eng-prompt-auditor', to: 'eng-prompt-remediation', type: 'dataflow', label: 'audit → remediate', color: 'rgba(167, 139, 250, 0.6)' },
+  { from: 'eng-prompt-remediation', to: 'div-maszka', type: 'dataflow', label: 'patches → approve/reject', color: 'rgba(244, 114, 182, 0.6)' },
   { from: 'eng-prompt-auditor', to: 'div-pm', type: 'dataflow', label: 'audit report', color: 'rgba(251, 146, 60, 0.5)' },
   { from: 'eng-doc-reviewer', to: 'eng-ux-ui', type: 'dataflow', label: 'doc audit → implement', color: 'rgba(249, 168, 212, 0.5)' },
   { from: 'eng-ux-ui', to: 'div-maszka', type: 'dataflow', label: 'code changes → approve/reject', color: 'rgba(244, 114, 182, 0.6)' },
