@@ -44,6 +44,8 @@ interface RunResult {
   outputFull: string | null;
   durationMs: number;
   error?: string;
+  decisionId?: number | null;
+  warnings?: string[];
 }
 
 /**
@@ -265,19 +267,23 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
     }
   }
 
-  // Update the schedule's lastRunAt
-  await db.update(engineerSchedules)
-    .set({
-      lastRunAt: new Date(),
-      nextRunAt: sql`NOW() + (interval_minutes || ' minutes')::interval`,
-      updatedAt: new Date(),
-    })
-    .where(
-      and(
-        eq(engineerSchedules.ticker, opts.ticker),
-        eq(engineerSchedules.engineerId, opts.engineerId),
-      )
-    );
+  // Update the schedule's lastRunAt (non-critical — don't abort if schedule row is missing)
+  try {
+    await db.update(engineerSchedules)
+      .set({
+        lastRunAt: new Date(),
+        nextRunAt: sql`NOW() + (interval_minutes || ' minutes')::interval`,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(engineerSchedules.ticker, opts.ticker),
+          eq(engineerSchedules.engineerId, opts.engineerId),
+        )
+      );
+  } catch (err) {
+    console.error(`[engine] Schedule update failed for ${opts.engineerId}/${opts.ticker}:`, err);
+  }
 
   const combinedOutput = allOutputs.join('\n\n');
   const totalDuration = Date.now() - startTime;
@@ -300,6 +306,7 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
 
   // ── Create PM decision item if configured ────────────────────────────
   let decisionId: number | null = null;
+  const warnings: string[] = [];
   if (!hasFailure && engineer.decisionsFor) {
     const decisionCategory = engineer.decisionCategory || 'prompt-patch';
     const patchCountPattern = decisionCategory === 'data-patch' ? /"filing_ref"/g : /"finding_id"/g;
@@ -317,7 +324,9 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
       }).returning({ id: pmDecisions.id });
       decisionId = row?.id ?? null;
     } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err);
       console.error(`[engine] Decision creation failed for ${engineer.decisionsFor}:`, err);
+      warnings.push(`Decision creation failed: ${errMsg}. Run 'npm run db:push' if the pm_decisions table doesn't exist.`);
     }
   }
 
@@ -374,6 +383,8 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
     outputFull: combinedOutput,
     durationMs: totalDuration,
     error: hasFailure ? 'One or more workflows failed — see output for details' : undefined,
+    decisionId,
+    warnings: warnings.length > 0 ? warnings : undefined,
   };
 }
 
