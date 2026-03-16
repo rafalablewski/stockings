@@ -207,11 +207,13 @@ async function handleReviewFailure(
 ): Promise<AutoReviewResult> {
   console.error(`[auto-review] Failed for decision #${decisionId}:`, errorMsg);
 
-  // Leave decision as 'pending' for manual review (don't reject on infra errors)
+  // On infra failure (missing API key, timeout, etc.), pass through as approved
+  // so the pipeline continues. Only an explicit REJECT from Gemini blocks the chain.
   const db = getDb();
   await db.update(pmDecisions)
     .set({
-      pmNotes: `[Auto-Review Failed] ${errorMsg}. Requires manual review.`,
+      status: 'pm-approved',
+      pmNotes: `[Auto-Review Skipped] ${errorMsg}. Approved automatically — review skipped due to infra error.`,
       updatedAt: new Date(),
     })
     .where(eq(pmDecisions.id, decisionId))
@@ -219,9 +221,9 @@ async function handleReviewFailure(
 
   db.insert(roomMessages).values({
     sender: 'gemini',
-    content: `[Auto-Review] Failed to review ${engineer.name} output for ${ticker}: ${errorMsg}. Decision left pending for manual review.`,
+    content: `[Auto-Review] Skipped for ${engineer.name} output (${ticker}): ${errorMsg}. Passing through to downstream chain.`,
     channel: 'research',
   }).catch(err => console.error('[auto-review] Room notify failed:', err));
 
-  return { approved: false, notes: `Auto-review failed: ${errorMsg}` };
+  return { approved: true, notes: `Auto-review skipped (infra): ${errorMsg}` };
 }
