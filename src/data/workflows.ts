@@ -3051,13 +3051,13 @@ Assess the freshness and completeness of the documentation context used:
 2. MISSING CONTEXT: Specific codebase areas where documentation is absent and this audit could not fully evaluate accuracy.
 3. RECOMMENDED REFRESH: Suggest which code areas to review or which engineers to consult to bring documentation current before acting on this audit.
 
-Rules - non-negotiable:
+Rules — non-negotiable:
 - Reference real file paths and line numbers. Do not fabricate findings.
 - Quote exact tab names, component names, and route paths from the codebase.
 - Every CRITICAL and HIGH finding must include a specific, copy-pasteable remediation.
 - If a documentation gap is intentional (e.g., internal-only component), mark it INFO with justification.
-- Do not modify source code - your output is a report only. Implementation is the UX/UI Engineer's job.
-- Professional, precise tone - documentation auditing is accuracy work.
+- Do not modify source code — your output is a report only. Implementation is the UX/UI Engineer's job.
+- Professional, precise tone — documentation auditing is accuracy work.
 
 Analyze the auto-injected database context below:`,
   },
@@ -3223,7 +3223,7 @@ Assess the freshness and completeness of the context used for implementation:
 2. MISSING CONTEXT: Specific areas where you lacked sufficient information to implement a fix confidently.
 3. RECOMMENDED REFRESH: Suggest which code areas to review or agents to run to validate implementations before Maszka approval.
 
-Rules - non-negotiable:
+Rules — non-negotiable:
 - Process EVERY finding from the audit report. Nothing may be silently dropped.
 - Implementation patches must be specific enough for direct application — cite exact file paths and line numbers.
 - Counter-proposals must clearly explain why the alternative is better with concrete evidence.
