@@ -16,6 +16,7 @@ import { getEngineer, type EngineerTask } from './engineers';
 import { workflows } from '@/data/workflows';
 import { resolvePromptPlaceholders } from './prompt-placeholders';
 import { asts, bmnr, crcl } from '@/data';
+import { scanForNewFilings } from './sec-scanner';
 
 // Claude models for engineer runs
 const CLAUDE_MODEL_DEFAULT = 'claude-sonnet-4-5-20250929';
@@ -97,6 +98,42 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
       await db.update(agentRuns)
         .set({ status: 'running', startedAt: new Date() })
         .where(eq(agentRuns.id, runId));
+
+      // ── Custom execution: SEC Filing Scanner ────────────────────────────
+      // The sec-filing-scan workflow needs its own orchestration loop
+      // (fetch EDGAR → diff DB → analyze each filing) rather than a single
+      // prompt-to-Claude call. Delegate to the scanner engine directly.
+      if (resolved.workflowId === 'sec-filing-scan') {
+        const scanResult = await scanForNewFilings([opts.ticker]);
+        const tickerResult = scanResult.tickerResults[0];
+        const outputFull = tickerResult
+          ? [
+              `# SEC FILING SCAN: ${opts.ticker}`,
+              `Scanned at: ${scanResult.scannedAt}`,
+              `New filings found: ${tickerResult.newFilings.length}`,
+              `Company: ${tickerResult.companyName}`,
+              '',
+              ...tickerResult.analyses.map(a =>
+                `## ${a.filing.form} — ${a.filing.filingDate}\n**Verdict:** ${a.verdict}\n**Accession:** ${a.filing.accessionNumber}\n\n${a.analysis}`
+              ),
+              ...(tickerResult.newFilings.length === 0 ? ['No new filings detected — database is up to date.'] : []),
+              ...(tickerResult.error ? [`\nError: ${tickerResult.error}`] : []),
+            ].join('\n')
+          : `SEC scan completed for ${opts.ticker} — no results returned.`;
+
+        const outputSummary = outputFull.slice(0, 500);
+        const durationMs = Date.now() - wfStartTime;
+
+        allOutputs.push(`═══ WORKFLOW: ${resolved.workflowId} ═══\n\n${outputFull}`);
+
+        await db.update(agentRuns)
+          .set({ status: 'completed', outputSummary, outputFull, durationMs, completedAt: new Date() })
+          .where(eq(agentRuns.id, runId));
+
+        continue; // Skip the standard Claude API path below
+      }
+
+      // ── Standard execution: resolve prompt → call Claude API ────────────
 
       // 3. Build the message with date + prompt + optional user data
       // Replace {{CURRENT_DATE}} placeholders in prompt with today's date
