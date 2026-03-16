@@ -270,7 +270,7 @@ export const engineers: EngineerTask[] = [
     id: 'prompt-remediation-engineer',
     name: 'Prompt Remediation Engineer',
     role: 'Prompt Template Maintenance Specialist',
-    description: 'Receives drift findings from the Prompt Auditor and generates structured remediation patches for workflow prompt templates. Focuses on CRITICAL and HIGH severity drift, producing safe text edits that keep prompts aligned with the live codebase. Reports to Bobman.',
+    description: 'Receives drift findings from the Prompt Auditor and generates structured remediation patches for workflow prompt templates. Focuses on CRITICAL and HIGH severity drift, producing safe text edits that keep prompts aligned with the live codebase. Reports to Maszka.',
     capabilities: [
       'Parse prompt-audit drift reports and extract actionable findings',
       'Generate anchor-based patch operations for workflow promptTemplates',
