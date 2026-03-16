@@ -411,7 +411,14 @@ Respond with ONLY a JSON array, one object per article, in order:
 
       if (!claudeRes.ok) {
         const errText = await claudeRes.text();
-        console.error('Claude API error, falling back to local matching:', errText);
+        // Detect credit/billing errors to log a clear message
+        const lower = errText.toLowerCase();
+        const isBilling = lower.includes('credit balance') || lower.includes('billing') || lower.includes('purchase credits');
+        console.error(
+          isBilling
+            ? `[check-analyzed] Anthropic API credits exhausted — falling back to local matching. Add credits at console.anthropic.com`
+            : `Claude API error (${claudeRes.status}), falling back to local matching: ${errText}`
+        );
         throw new Error(`Claude API returned ${claudeRes.status}`);
       }
 

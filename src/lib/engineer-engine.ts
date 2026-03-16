@@ -122,6 +122,11 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
 
       if (!claudeRes.ok) {
         const errText = await claudeRes.text();
+        // Detect credit/billing errors for a clear message
+        const lower = errText.toLowerCase();
+        if (lower.includes('credit balance') || lower.includes('billing') || lower.includes('purchase credits')) {
+          throw new Error('Anthropic API credits exhausted. Add credits at console.anthropic.com → Plans & Billing.');
+        }
         let reason = `Claude API returned ${claudeRes.status}`;
         try {
           const parsed = JSON.parse(errText);
