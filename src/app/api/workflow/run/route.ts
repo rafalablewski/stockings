@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { checkAiGate } from '@/lib/ai-gate';
+import { classifyAnthropicError } from '@/lib/anthropic-error';
 import { resolvePromptPlaceholders } from '@/lib/prompt-placeholders';
 import { getDb } from '@/lib/db';
 import { agentRuns } from '@/lib/schema';
@@ -83,13 +84,9 @@ export async function POST(request: NextRequest) {
     if (!claudeRes.ok) {
       const errText = await claudeRes.text();
       console.error('Claude API error:', claudeRes.status, errText);
-      let reason = `Upstream API returned ${claudeRes.status}`;
-      try {
-        const parsed = JSON.parse(errText);
-        if (parsed?.error?.message) reason = parsed.error.message;
-      } catch { /* use default reason */ }
-      return new Response(JSON.stringify({ error: `AI analysis failed: ${reason}` }), {
-        status: 502,
+      const errInfo = classifyAnthropicError(claudeRes.status, errText);
+      return new Response(JSON.stringify({ error: errInfo.message, code: errInfo.code }), {
+        status: errInfo.status,
         headers: { 'Content-Type': 'application/json' },
       });
     }

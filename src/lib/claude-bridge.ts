@@ -120,18 +120,26 @@ ${context}
 
 Respond naturally as Claude (Architecture & Backend division). If someone asked you a question, answer it. If there's a discussion, contribute your perspective. If you're introducing yourself, keep it brief and professional. Do not repeat or echo what others said. Do not prefix your message with your name or any label — just write the message content directly.`;
 
-  const response = await client.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 1024,
-    system: SYSTEM_INSTRUCTION,
-    messages: [{ role: 'user', content: prompt }],
-    temperature: 0.7,
-  });
+  try {
+    const response = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      system: SYSTEM_INSTRUCTION,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7,
+    });
 
-  const textBlock = response.content.find(block => block.type === 'text');
-  if (!textBlock || textBlock.type !== 'text') {
-    throw new Error('Claude returned an empty response');
+    const textBlock = response.content.find(block => block.type === 'text');
+    if (!textBlock || textBlock.type !== 'text') {
+      throw new Error('Claude returned an empty response');
+    }
+
+    return textBlock.text.trim();
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.toLowerCase().includes('credit balance') || msg.toLowerCase().includes('purchase credits')) {
+      throw new Error('Anthropic API credits exhausted. Add credits at console.anthropic.com → Plans & Billing.');
+    }
+    throw err;
   }
-
-  return textBlock.text.trim();
 }
