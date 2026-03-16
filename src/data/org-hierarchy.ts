@@ -373,8 +373,7 @@ export const dataFlowEdges: OrgEdge[] = [
   { from: 'eng-prompt-auditor', to: 'eng-prompt-remediation', type: 'dataflow', label: 'audit → remediate', color: 'rgba(167, 139, 250, 0.6)' },
   { from: 'eng-prompt-auditor', to: 'div-pm', type: 'dataflow', label: 'audit report', color: 'rgba(251, 146, 60, 0.5)' },
   { from: 'eng-doc-reviewer', to: 'eng-ux-ui', type: 'dataflow', label: 'doc audit → implement', color: 'rgba(249, 168, 212, 0.5)' },
-  { from: 'eng-doc-reviewer', to: 'div-pm', type: 'dataflow', label: 'status report', color: 'rgba(251, 146, 60, 0.4)' },
-  { from: 'eng-ux-ui', to: 'div-maszka', type: 'dataflow', label: 'proposals → approve/reject', color: 'rgba(244, 114, 182, 0.6)' },
+  { from: 'eng-ux-ui', to: 'div-maszka', type: 'dataflow', label: 'code changes → approve/reject', color: 'rgba(244, 114, 182, 0.6)' },
 ];
 
 // ── Layout computation ─────────────────────────────────────────────────────

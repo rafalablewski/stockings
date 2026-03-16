@@ -346,7 +346,7 @@ export const engineers: EngineerTask[] = [
     id: 'doc-reviewer-engineer',
     name: 'Documentation Engineer',
     role: 'Documentation & Style Guide Reviewer',
-    description: 'Reviews recent code changes across all divisions and identifies documentation gaps. Creates styling guidelines reports, audits style guides and theme docs for accuracy, and maintains changelogs. Reports to Bobman; proposed changes are sent to Maszka for approval.',
+    description: 'Reviews recent code changes across all divisions and identifies documentation gaps. Creates styling guidelines reports, audits style guides and theme docs for accuracy, and maintains changelogs. Audit output goes straight to the UX/UI Engineer for implementation.',
     capabilities: [
       'Review code diffs and identify documentation gaps',
       'Create and update style guides and theme documentation',
