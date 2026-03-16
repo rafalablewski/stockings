@@ -44,6 +44,14 @@ const FORM_DISPLAY: Record<string, string> = {
   '5': 'Form 5', '5/A': 'Form 5/A',
   '144': 'Form 144', '144/A': 'Form 144/A',
   'D': 'Form D', 'D/A': 'Form D/A',
+  '10-K': 'Form 10-K', '10-K/A': 'Form 10-K/A',
+  '10-Q': 'Form 10-Q', '10-Q/A': 'Form 10-Q/A',
+  '8-K': 'Form 8-K', '8-K/A': 'Form 8-K/A',
+  'S-1': 'Form S-1', 'S-1/A': 'Form S-1/A',
+  'S-3': 'Form S-3', 'S-3/A': 'Form S-3/A',
+  'DEF 14A': 'DEF 14A Proxy Statement',
+  'SC 13D': 'Schedule 13D', 'SC 13D/A': 'Schedule 13D/A',
+  'SC 13G': 'Schedule 13G', 'SC 13G/A': 'Schedule 13G/A',
 };
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -71,6 +79,7 @@ export interface FilingAnalysis {
   filing: ScannedFiling;
   analysis: string;
   verdict: 'CRITICAL' | 'IMPORTANT' | 'ROUTINE' | 'LOW' | 'UNKNOWN';
+  verdictSummary: string;
 }
 
 export type FilingDbStatus = 'tracked' | 'data_only' | 'untracked';
@@ -167,8 +176,8 @@ export async function scanForNewFilings(
 
     try {
       await db.insert(pmDecisions).values({
-        pm: 'gemini',
-        engineerId: 'filing-engineer',
+        pm: 'claude',
+        engineerId: 'sec-scanner',
         ticker: result.ticker,
         title,
         category: 'sec-filing-report',
@@ -196,7 +205,7 @@ export async function scanForNewFilings(
 
     try {
       await db.insert(roomMessages).values({
-        sender: 'gemini',
+        sender: 'claude',
         content: `[SEC Scanner] ${summary}. Review pending in Decision Dashboard.`,
         channel: 'research',
       });
@@ -284,6 +293,7 @@ async function scanTicker(ticker: string, limit: number): Promise<TickerScanResu
         filing,
         analysis: `Analysis failed: ${err instanceof Error ? err.message : String(err)}`,
         verdict: 'UNKNOWN',
+        verdictSummary: '',
       });
     }
   }
@@ -363,6 +373,7 @@ async function analyzeNewFiling(filing: ScannedFiling): Promise<FilingAnalysis> 
       filing,
       analysis: 'AI analysis skipped — ANTHROPIC_API_KEY not configured.',
       verdict: 'UNKNOWN',
+      verdictSummary: '',
     };
   }
 
@@ -418,10 +429,10 @@ async function analyzeNewFiling(filing: ScannedFiling): Promise<FilingAnalysis> 
   const result = await claudeRes.json();
   const analysisText: string = result.content?.[0]?.text || 'No analysis generated.';
 
-  // Extract verdict from analysis text
-  const verdict = extractVerdict(analysisText);
+  // Extract verdict and summary from analysis text
+  const { verdict, verdictSummary } = extractVerdict(analysisText);
 
-  return { filing, analysis: analysisText, verdict };
+  return { filing, analysis: analysisText, verdict, verdictSummary };
 }
 
 function buildAnalysisPrompt(filing: ScannedFiling, docText: string): string {
@@ -462,10 +473,13 @@ Provide a structured analysis covering:
 Be direct, specific, and use numbers from the filing. No fluff.`;
 }
 
-function extractVerdict(analysis: string): FilingAnalysis['verdict'] {
-  const match = analysis.match(/\[VERDICT:\s*(CRITICAL|IMPORTANT|ROUTINE|LOW)\]/i);
-  if (!match) return 'UNKNOWN';
-  return match[1].toUpperCase() as FilingAnalysis['verdict'];
+function extractVerdict(analysis: string): { verdict: FilingAnalysis['verdict']; verdictSummary: string } {
+  const match = analysis.match(/\[VERDICT:\s*(CRITICAL|IMPORTANT|ROUTINE|LOW)\]\s*(?:—\s*)?(.*)$/im);
+  if (!match) return { verdict: 'UNKNOWN', verdictSummary: '' };
+  return {
+    verdict: match[1].toUpperCase() as FilingAnalysis['verdict'],
+    verdictSummary: match[2]?.trim() || '',
+  };
 }
 
 // ── Decision payload builders ────────────────────────────────────────────────
@@ -483,6 +497,7 @@ function buildDecisionPayload(result: TickerScanResult) {
       description: a.filing.primaryDocDescription,
       fileUrl: a.filing.fileUrl,
       verdict: a.verdict,
+      verdictSummary: a.verdictSummary,
       analysis: a.analysis,
     })),
   };

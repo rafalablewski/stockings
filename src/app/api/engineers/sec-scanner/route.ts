@@ -13,7 +13,7 @@ const ScanBody = z.object({
  *
  * Autonomous SEC EDGAR filing scanner. Scans all research stocks (or specified
  * tickers) for new filings, AI-analyzes each one, and creates PM decision
- * items for Gemini approval.
+ * items for Claude PM approval.
  *
  * Body (optional):
  *   - tickers: string[]  — filter to specific tickers (default: all researchStocks)
@@ -27,7 +27,25 @@ export async function POST(request: NextRequest) {
 
   try {
     const rawBody = await request.text();
-    const body = rawBody ? ScanBody.parse(JSON.parse(rawBody)) : undefined;
+    let body;
+    if (rawBody) {
+      try {
+        body = JSON.parse(rawBody);
+      } catch {
+        return NextResponse.json(
+          { error: 'Invalid JSON format in request body' },
+          { status: 400 },
+        );
+      }
+      const parsed = ScanBody.safeParse(body);
+      if (!parsed.success) {
+        return NextResponse.json(
+          { error: 'Invalid request body parameters', details: parsed.error.flatten() },
+          { status: 400 },
+        );
+      }
+      body = parsed.data;
+    }
 
     const result = await scanForNewFilings(body?.tickers, body?.limit);
 

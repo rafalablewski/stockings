@@ -185,7 +185,7 @@ export const agents: AgentNode[] = [
     status: 'active',
     phase: 'Continuous',
     matchers: ['Scheduled', 'EDGAR API'],
-    description: 'Scans SEC EDGAR for new filings across all covered research stocks. Detects new filings not in database, AI-analyzes each one, and routes structured reports through PM decision queue for Gemini approval.',
+    description: 'Scans SEC EDGAR for new filings across all covered research stocks. Detects new filings not in database, AI-analyzes each one, and routes structured reports through PM decision queue for Claude PM approval.',
     category: 'pipeline',
     color: 'sky',
     connections: ['methodology-sync', 'press-intel', 'api-edgar', 'db-neon', 'api-sec-scanner'],
@@ -256,6 +256,7 @@ export const connections: Connection[] = [
   { from: 'sec-scanner', to: 'api-edgar', type: 'reads', label: 'EDGAR filings' },
   { from: 'sec-scanner', to: 'api-sec-scanner', type: 'uses-prompt', label: 'scan endpoint' },
   { from: 'sec-scanner', to: 'db-neon', type: 'writes', label: 'new filings + decisions' },
+  { from: 'sec-scanner', to: 'methodology-sync', type: 'feeds', label: 'pipeline updates' },
 
   // Cross-feeds
   { from: 'press-intel', to: 'earnings-call', type: 'feeds', label: 'transcript links' },
