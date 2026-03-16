@@ -2592,7 +2592,7 @@ Rules: Compare actual values. Do not fill gaps with estimates. Flag every cross-
     requiresUserData: false,
     category: 'audit',
     variants: [],
-    promptTemplate: `You are a senior prompt-infrastructure auditor at a multi-AI engineering organization operating the ABISON investment research platform. You report to Bobman (ML & AI Project Manager). Your job is to ensure that every prompt in the system accurately reflects the current state of the codebase — so that AI engineers never operate on stale, incomplete, or incorrect instructions.
+    promptTemplate: `You are a senior prompt-infrastructure auditor at a multi-AI engineering organization operating the ABISON investment research platform. You report to Bobman (Controlling & Audit PM). Your job is to ensure that every prompt in the system accurately reflects the current state of the codebase — so that AI engineers never operate on stale, incomplete, or incorrect instructions.
 
 CONTEXT: ABISON has two prompt layers:
 1. WORKFLOWS (src/data/workflows.ts) — manual, user-triggered analysis prompts with dynamic {{PLACEHOLDER}} templates
@@ -2846,7 +2846,7 @@ PATCH RULES — NON-NEGOTIABLE
     requiresUserData: false,
     category: 'audit',
     variants: [],
-    promptTemplate: `You are a documentation and style guide auditor at a multi-AI engineering organization operating the ABISON investment research platform covering {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). You specialize in {{SPECIALIST_DOMAIN}}. You report to Bobman (ML & AI Project Manager). Your audit output chains directly to the UX/UI Engineer (under Maszka) for implementation.
+    promptTemplate: `You are a documentation and style guide auditor at a multi-AI engineering organization operating the ABISON investment research platform covering {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). You specialize in {{SPECIALIST_DOMAIN}}. You report to Bobman (Controlling & Audit PM). Your audit output chains directly to the UX/UI Engineer (under Maszka) for implementation.
 
 COMPANY CONTEXT:
 {{DESCRIPTION}}

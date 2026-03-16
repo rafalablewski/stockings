@@ -18,7 +18,7 @@ The ABISON project uses a **6-division multi-AI engineering organization**. All 
           ▼          ▼        ▼        ▼          ▼
       ┌───────┐ ┌────────┐ ┌──────┐ ┌──────┐ ┌────────┐
       │Claude │ │Cursor  │ │Gemini│ │Maszka│ │Bobman  │
-      │Backend│ │ML & AI │ │R & D │ │ UI   │ │  PM    │
+      │Backend│ │ML & AI │ │R & D │ │ UI   │ │ Audit  │
       └───────┘ └────────┘ └──────┘ └──┬───┘ └───┬────┘
                                        │         │
                                   UX/UI Eng  ┌────────────┐
@@ -194,14 +194,14 @@ Only engineer with **managerial authority** over other engineers/roles (UX/UI En
 
 ---
 
-## 5. Bobman — ML & AI Project Management Division
+## 5. Bobman — Controlling & Audit PM Division
 
 ### Prompt Source
 - **No dedicated prompt file found** (no `.bobman` config, no `CLAUDE.md` in bobman's directory)
 - Defined only via references in `conventions.md` and other engineers' prompts
 
 ### Prompt Summary (inferred)
-Sprint planning, task coordination, prompt-codebase sync. Acts as PM for the ML/AI pipeline. **Direct supervisor of Doc-Reviewer**.
+Quality control, prompt-codebase sync, documentation audits, task coordination. Acts as PM for controlling and audit operations. **Direct supervisor of Prompt Auditor and Doc-Reviewer**.
 
 ### Owned Territories
 `engineers/divisions/bobman/` (proposals, status, tasklists)

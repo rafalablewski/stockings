@@ -34,12 +34,12 @@ const DIVISIONS: Record<string, { label: string; color: string; badge: string; r
     label: 'Bobman',
     color: '#fb923c',
     badge: 'PM',
-    role: 'ML & AI Project Manager',
+    role: 'Controlling & Audit PM',
   },
   'maszka': {
     label: 'Maszka',
     color: '#f472b6',
-    badge: 'ML',
+    badge: 'UI',
     role: 'ML & AI Systems',
   },
 };

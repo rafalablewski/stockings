@@ -101,8 +101,8 @@ export const orgNodes: OrgNode[] = [
     type: 'division',
     label: 'Bobman',
     badge: 'PM',
-    role: 'ML & AI Project Manager',
-    description: 'Manages 1 engineer (Prompt Auditor) focused on prompt-codebase sync and drift detection. Coordinates across all divisions, breaks Boss specifications into actionable task lists, assigns work to the right division, tracks sprint progress, and ensures deadlines are met. Facilitates cross-division communication and flags blockers. Reports project status and timeline updates to the Boss in the Room.',
+    role: 'Controlling & Audit PM',
+    description: 'Manages 2 engineers (Prompt Auditor and Doc Reviewer) focused on quality control, prompt-codebase sync, drift detection, and documentation audits. Coordinates across all divisions, breaks Boss specifications into actionable task lists, assigns work to the right division, tracks sprint progress, and ensures deadlines are met. Facilitates cross-division communication and flags blockers. Reports project status and timeline updates to the Boss in the Room.',
     color: ORG_COLORS.pm,
     parentId: 'boss',
   },
@@ -373,6 +373,7 @@ export const dataFlowEdges: OrgEdge[] = [
   { from: 'eng-prompt-auditor', to: 'eng-prompt-remediation', type: 'dataflow', label: 'audit → remediate', color: 'rgba(167, 139, 250, 0.6)' },
   { from: 'eng-prompt-remediation', to: 'div-maszka', type: 'dataflow', label: 'patches → approve/reject', color: 'rgba(244, 114, 182, 0.6)' },
   { from: 'eng-prompt-auditor', to: 'div-pm', type: 'dataflow', label: 'audit report', color: 'rgba(251, 146, 60, 0.5)' },
+  { from: 'eng-doc-reviewer', to: 'div-pm', type: 'dataflow', label: 'audit report', color: 'rgba(251, 146, 60, 0.5)' },
   { from: 'eng-doc-reviewer', to: 'eng-ux-ui', type: 'dataflow', label: 'doc audit → implement', color: 'rgba(249, 168, 212, 0.5)' },
   { from: 'eng-ux-ui', to: 'div-maszka', type: 'dataflow', label: 'code changes → approve/reject', color: 'rgba(244, 114, 182, 0.6)' },
 ];

@@ -17,8 +17,8 @@ _Boss: Write your current sprint objective here. All divisions will read this be
 ### For Cursor (Frontend & UI)
 - [ ] _Add frontend/UI tasks here_
 
-### For Bobman (ML & AI Project Management)
-- [ ] _Add ML/AI and planning/coordination tasks here_
+### For Bobman (Controlling & Audit PM)
+- [ ] _Add quality control, audit, and coordination tasks here_
 
 ### For Doc-Reviewer (Documentation Engineer)
 - [ ] _Add documentation review/audit tasks here_

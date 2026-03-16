@@ -26,6 +26,7 @@ import { SEC_FILINGS as CRCL_SEC_FILINGS } from '@/data/crcl/financials';
 import { TIMELINE as CRCL_TIMELINE } from '@/data/crcl/timeline';
 import { UPCOMING_CATALYSTS as CRCL_CATALYSTS, COMPLETED_MILESTONES as CRCL_MILESTONES } from '@/data/crcl/catalysts';
 import { CRCL_COMPETITOR_NEWS } from '@/data/crcl/competitor-news';
+import { SEED_DECISIONS } from '@/data/seed-decisions';
 
 /**
  * POST /api/db/setup
@@ -263,6 +264,27 @@ CREATE INDEX IF NOT EXISTS room_messages_created_idx
   ON room_messages (created_at);
 CREATE INDEX IF NOT EXISTS room_messages_sender_idx
   ON room_messages (sender);
+
+CREATE TABLE IF NOT EXISTS pm_decisions (
+  id SERIAL PRIMARY KEY,
+  pm TEXT NOT NULL,
+  engineer_id TEXT NOT NULL,
+  run_id INTEGER,
+  ticker TEXT NOT NULL,
+  title TEXT NOT NULL,
+  category TEXT NOT NULL,
+  payload TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',
+  pm_notes TEXT,
+  boss_notes TEXT,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS pm_decisions_pm_idx
+  ON pm_decisions (pm);
+CREATE INDEX IF NOT EXISTS pm_decisions_status_idx
+  ON pm_decisions (status);
 `;
 
 // ── Main handler ─────────────────────────────────────────────────────────────
@@ -355,6 +377,26 @@ export async function POST() {
     counts['CRCL']['catalysts'] = await batchInsert(schema.catalysts, mapCatalysts('CRCL', CRCL_CATALYSTS, CRCL_MILESTONES));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     counts['CRCL']['competitor_news'] = await batchInsert(schema.partnerNews, mapCompetitorNews('CRCL', CRCL_COMPETITOR_NEWS as any));
+
+    // PM Decisions
+    log.push('Step 6: Seeding PM decisions...');
+    // Clear existing decisions before re-seeding
+    const clearDecisionsSql = 'DELETE FROM pm_decisions';
+    const clearDecisionsTsa = Object.assign([clearDecisionsSql], { raw: [clearDecisionsSql] }) as unknown as TemplateStringsArray;
+    await sql(clearDecisionsTsa).catch(() => { /* table may not exist yet on first run */ });
+    counts['decisions'] = {};
+    counts['decisions']['pm_decisions'] = await batchInsert(schema.pmDecisions, SEED_DECISIONS.map(d => ({
+      pm: d.pm,
+      engineerId: d.engineerId,
+      runId: d.runId,
+      ticker: d.ticker,
+      title: d.title,
+      category: d.category,
+      payload: d.payload,
+      status: d.status,
+      pmNotes: d.pmNotes ?? null,
+      bossNotes: d.bossNotes ?? null,
+    })));
 
     // Calculate totals
     let grandTotal = 0;
