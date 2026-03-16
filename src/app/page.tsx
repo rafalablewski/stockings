@@ -1,6 +1,29 @@
 import Link from "next/link";
 import { researchStocks } from "@/lib/stocks";
 
+const strategies = [
+  {
+    label: "Core",
+    title: "Growth Equity Investing",
+    desc: "Concentrated positions in high-growth companies at inflection points — revenue ramps, market expansions, and technology breakthroughs. Deep fundamental research to identify asymmetric risk/reward before the market reprices.",
+  },
+  {
+    label: "Tactical",
+    title: "Catalyst-Driven Trading",
+    desc: "Sized around discrete, identifiable catalysts — satellite launches, FDA approvals, earnings inflections, contract awards. Enter ahead of the event, manage risk around the binary outcome.",
+  },
+  {
+    label: "Yield",
+    title: "Carry Trade",
+    desc: "Exploiting yield differentials and funding rate dislocations across asset classes. Structured to generate steady income while maintaining exposure to underlying equity upside.",
+  },
+  {
+    label: "Amplification",
+    title: "Leverage Amplification",
+    desc: "LEAPS, margin, and defined-risk options structures to amplify conviction in highest-confidence positions. Strict position sizing and drawdown limits to cap downside exposure.",
+  },
+];
+
 export default function HomePage() {
   return (
     <div className="min-h-screen">
@@ -129,28 +152,7 @@ export default function HomePage() {
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {[
-              {
-                label: "Core",
-                title: "Growth Equity Investing",
-                desc: "Concentrated positions in high-growth companies at inflection points — revenue ramps, market expansions, and technology breakthroughs. Deep fundamental research to identify asymmetric risk/reward before the market reprices.",
-              },
-              {
-                label: "Tactical",
-                title: "Catalyst-Driven Trading",
-                desc: "Sized around discrete, identifiable catalysts — satellite launches, FDA approvals, earnings inflections, contract awards. Enter ahead of the event, manage risk around the binary outcome.",
-              },
-              {
-                label: "Yield",
-                title: "Carry Trade",
-                desc: "Exploiting yield differentials and funding rate dislocations across asset classes. Structured to generate steady income while maintaining exposure to underlying equity upside.",
-              },
-              {
-                label: "Amplification",
-                title: "Leverage Amplification",
-                desc: "LEAPS, margin, and defined-risk options structures to amplify conviction in highest-confidence positions. Strict position sizing and drawdown limits to cap downside exposure.",
-              },
-            ].map((strategy) => (
+            {strategies.map((strategy) => (
               <div
                 key={strategy.title}
                 className="p-6 rounded-xl bg-white/[0.02] border border-white/[0.06]"
