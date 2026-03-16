@@ -37,6 +37,7 @@ export const ORG_COLORS = {
   gemini:     '#34d399',
   maszka: '#f472b6',
   pm:         '#fb923c',
+  docReview:  '#f9a8d4',
 } as const;
 
 // ── Nodes ──────────────────────────────────────────────────────────────────
@@ -280,6 +281,16 @@ export const orgNodes: OrgNode[] = [
     parentId: 'div-pm',
     engineerId: 'prompt-auditor',
   },
+  {
+    id: 'eng-doc-reviewer',
+    type: 'engineer',
+    label: 'Doc Reviewer',
+    badge: 'DOC',
+    role: 'Documentation & Style Guide Reviewer',
+    color: ORG_COLORS.docReview,
+    parentId: 'div-pm',
+    engineerId: 'doc-reviewer-engineer',
+  },
 ];
 
 // ── Hierarchy edges (auto-computed from parentId) ──────────────────────────
@@ -350,6 +361,8 @@ export const dataFlowEdges: OrgEdge[] = [
   { from: 'div-claude', to: 'div-cursor', type: 'dataflow', label: 'data updated', color: 'rgba(34, 211, 238, 0.5)' },
   { from: 'eng-prompt-auditor', to: 'eng-prompt-remediation', type: 'dataflow', label: 'audit → remediate', color: 'rgba(244, 114, 182, 0.6)' },
   { from: 'eng-prompt-auditor', to: 'div-pm', type: 'dataflow', label: 'audit report', color: 'rgba(251, 146, 60, 0.5)' },
+  { from: 'eng-doc-reviewer', to: 'div-maszka', type: 'dataflow', label: 'doc proposals', color: 'rgba(249, 168, 212, 0.5)' },
+  { from: 'eng-doc-reviewer', to: 'div-pm', type: 'dataflow', label: 'status report', color: 'rgba(251, 146, 60, 0.4)' },
 ];
 
 // ── Layout computation ─────────────────────────────────────────────────────

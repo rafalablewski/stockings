@@ -18,7 +18,7 @@ export interface EngineerTask {
   triggerEvents: string[];            // events that can trigger this engineer
   requiresData: boolean;             // whether it needs external data (SEC, news, etc.)
   dataSource?: string;                // where it gets its data from autonomously
-  category: 'research' | 'monitoring' | 'audit' | 'intelligence';
+  category: 'research' | 'monitoring' | 'audit' | 'intelligence' | 'documentation';
   chainsTo?: string;              // engineer ID to auto-trigger after successful completion
   notifyPm?: string;              // PM sender name to notify in the Room on completion
   decisionsFor?: string;          // PM id to create decision items for on completion
@@ -339,6 +339,29 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['filing-ingested', 'data-updated'],
     requiresData: false,
     category: 'audit',
+  },
+
+  // ── DOCUMENTATION ENGINEERS ──────────────────────────────────────────────
+  {
+    id: 'doc-reviewer-engineer',
+    name: 'Documentation Engineer',
+    role: 'Documentation & Style Guide Reviewer',
+    description: 'Reviews recent code changes across all divisions and identifies documentation gaps. Creates styling guidelines reports, audits style guides and theme docs for accuracy, and maintains changelogs. Reports to Bobman; proposed changes are sent to Maszka for approval.',
+    capabilities: [
+      'Review code diffs and identify documentation gaps',
+      'Create and update style guides and theme documentation',
+      'Maintain changelogs and internal engineering logs',
+      'Audit documentation freshness and flag stale content',
+      'Generate styling guidelines reports for Maszka review',
+      'Cross-reference docs against live codebase for accuracy',
+    ],
+    workflowIds: ['doc-review'],
+    defaultIntervalMinutes: 1440, // daily
+    triggerEvents: ['code-deployed', 'workflow-updated', 'data-updated'],
+    requiresData: false,
+    category: 'documentation',
+    notifyPm: 'bobman',
+    decisionsFor: 'maszka',
   },
 ];
 

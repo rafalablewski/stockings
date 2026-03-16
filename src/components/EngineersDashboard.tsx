@@ -109,6 +109,7 @@ const categoryColors: Record<string, string> = {
   monitoring: 'sky',
   intelligence: 'gold',
   audit: 'violet',
+  documentation: 'rose',
 };
 
 const categoryLabels: Record<string, string> = {
@@ -116,6 +117,7 @@ const categoryLabels: Record<string, string> = {
   monitoring: 'Monitoring',
   intelligence: 'Intelligence',
   audit: 'Audit',
+  documentation: 'Documentation',
 };
 
 const categoryDescriptions: Record<string, string> = {
@@ -123,6 +125,7 @@ const categoryDescriptions: Record<string, string> = {
   monitoring: 'Watch SEC filings, insider trades, and regulatory changes in real-time',
   intelligence: 'Track catalysts, aggregate sentiment, monitor press and news signals',
   audit: 'Validate database integrity, flag stale data, cross-reference consistency',
+  documentation: 'Review code changes, maintain style guides, audit doc freshness',
 };
 
 // ── Shared trigger computation ────────────────────────────────────────────────
@@ -622,7 +625,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
     } catch (err) { console.error('Enable schedule error:', err); }
   };
 
-  const categories = ['research', 'monitoring', 'intelligence', 'audit'] as const;
+  const categories = ['research', 'monitoring', 'intelligence', 'audit', 'documentation'] as const;
 
   // Division leads data for the PM section
   const divisionLeads = useMemo(() => {

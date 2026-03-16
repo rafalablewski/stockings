@@ -28,6 +28,8 @@
   --gold-dim: rgba(210,153,34,0.15);
   --violet: #A78BFA;
   --violet-dim: rgba(167,139,250,0.15);
+  --rose: #F9A8D4;
+  --rose-dim: rgba(249,168,212,0.15);
   --accent: var(--mint);
   --accent-dim: var(--mint-dim);
 }
