@@ -128,11 +128,11 @@ export const OTHER_HOLDINGS = {
   btcPriceAsOf: '2026-03-14',
 
   // Strategic Investments
-  beastIndustriesEquity: 200,    // $200M — Beast Industries (MrBeast), closed Jan 17, 2026
+  beastIndustriesEquity: 200_000_000,    // $200M — Beast Industries (MrBeast), closed Jan 17, 2026
   beastIndustriesNote: 'MrBeast partnership — Step Banking App (7M+ users)',
 
   // Moonshot Investments
-  moonshotsValue: 19,            // $19M — Eightco ORBS stake
+  moonshotsValue: 19_000_000,            // $19M — Eightco ORBS stake
   moonshotsNote: 'Eightco ORBS stake',
 };
 

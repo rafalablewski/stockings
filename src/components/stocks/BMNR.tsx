@@ -500,8 +500,8 @@ const BMNRDilutionAnalysis = () => {
     const dividendPayoutRatio = annualYieldUSD > 0 ? (totalAnnualDividendPayout / annualYieldUSD) * 100 : 0;
     // Other holdings (BTC, MrBeast/Beast Industries, Moonshots)
     const btcWorth = OTHER_HOLDINGS.btcHoldings * OTHER_HOLDINGS.btcPrice;
-    const beastEquity = OTHER_HOLDINGS.beastIndustriesEquity * 1e6; // $M → $
-    const moonshotsWorth = OTHER_HOLDINGS.moonshotsValue * 1e6; // $M → $
+    const beastEquity = OTHER_HOLDINGS.beastIndustriesEquity;
+    const moonshotsWorth = OTHER_HOLDINGS.moonshotsValue;
     // Total NAV = ETH value + cash + BTC + Beast Industries + Moonshots
     const totalNAV = (currentETH * ethPrice) + (DEFAULTS.cashOnHand * 1e6) + btcWorth + beastEquity + moonshotsWorth;
     const totalNAVPerShare = totalShares > 0 ? totalNAV / totalShares : 0;
@@ -1502,7 +1502,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         { metric: 'Total ETH', value: currentETH.toLocaleString(), sub: 'Holdings', color: 'var(--text)' },
         { metric: 'ETH Price', value: `$${ethPrice.toLocaleString()}`, sub: 'Current', color: 'var(--text)' },
         { metric: 'Total Value', value: `$${((currentETH * ethPrice) / 1e9).toFixed(2)}B`, sub: 'ETH holdings', color: 'var(--accent)' },
-        { metric: 'ETH Staked', value: `${(calc.stakedETH / 1e6).toFixed(2)}M`, sub: `${stakingRatio.toFixed(1)}% of holdings`, color: 'var(--accent)' },
+        { metric: 'ETH Staked', value: `${(calc.stakedETH / 1e6).toFixed(2)}M`, sub: `${(STAKING_RATIO * 100).toFixed(1)}% of holdings`, color: 'var(--accent)' },
         { metric: 'Staking Revenue', value: `$${(calc.annualYieldUSD / 1e6).toFixed(0)}M`, sub: `${Math.round(calc.annualYieldETH).toLocaleString()} ETH/yr`, color: 'var(--mint)' },
         { metric: 'Shares', value: `${currentShares}M`, sub: 'Outstanding', color: 'var(--text)' },
         { metric: 'Market Cap', value: `$${(calc.marketCap / 1e9).toFixed(2)}B`, sub: 'Equity', color: 'var(--text)' },
@@ -1512,7 +1512,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         { metric: 'Annual Div', value: `$${calc.annualDividend.toFixed(2)}`, sub: 'Per share', color: 'var(--text)' },
         { metric: 'Div Yield', value: `${calc.dividendYield.toFixed(2)}%`, sub: 'Annualized', color: 'var(--accent)' },
         { metric: 'Payout', value: `$${(calc.totalAnnualDividendPayout / 1e6).toFixed(1)}M`, sub: 'Annual total', color: 'var(--text)' },
-        { metric: 'MrBeast Equity', value: `$${OTHER_HOLDINGS.beastIndustriesEquity}M`, sub: 'Beast Industries', color: 'var(--sky)' },
+        { metric: 'MrBeast Equity', value: `$${(OTHER_HOLDINGS.beastIndustriesEquity / 1e6).toFixed(0)}M`, sub: 'Beast Industries', color: 'var(--sky)' },
         { metric: 'BTC Worth', value: `$${(calc.btcWorth / 1e6).toFixed(1)}M`, sub: `${OTHER_HOLDINGS.btcHoldings} BTC`, color: 'var(--accent)' },
         { metric: 'Total NAV', value: `$${(calc.totalNAV / 1e9).toFixed(2)}B`, sub: `$${calc.totalNAVPerShare.toFixed(2)}/share`, color: 'var(--mint)' },
         { metric: 'Prem/(Disc) NAV', value: `${calc.premiumDiscountToNAV >= 0 ? '+' : ''}${calc.premiumDiscountToNAV.toFixed(1)}%`, sub: calc.premiumDiscountToNAV >= 0 ? 'Premium to NAV' : 'Discount to NAV', color: calc.premiumDiscountToNAV >= 0 ? 'var(--mint)' : 'var(--coral)' },
