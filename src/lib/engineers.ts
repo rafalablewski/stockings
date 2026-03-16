@@ -22,6 +22,7 @@ export interface EngineerTask {
   chainsTo?: string;              // engineer ID to auto-trigger after successful completion
   notifyPm?: string;              // PM sender name to notify in the Room on completion
   decisionsFor?: string;          // PM id to create decision items for on completion
+  decisionCategory?: string;      // PM decision category (default: 'prompt-patch')
 }
 
 export const engineers: EngineerTask[] = [
@@ -77,7 +78,7 @@ export const engineers: EngineerTask[] = [
       'Update database tables with new filing data',
       'Generate filing summary alerts',
     ],
-    workflowIds: ['sec-filing-scan', 'sec-filing-delta'],
+    workflowIds: ['sec-filing-delta', 'sec-filing-scan'],
     defaultIntervalMinutes: 60, // every hour
     triggerEvents: ['edgar-poll'],
     requiresData: true,
@@ -85,6 +86,27 @@ export const engineers: EngineerTask[] = [
     category: 'monitoring',
     decisionsFor: 'gemini',    // Routes scan reports to Gemini (Research & Data) for approval
     notifyPm: 'gemini',        // Room notification to Gemini division
+    chainsTo: 'db-ingestor-engineer',
+  },
+  {
+    id: 'db-ingestor-engineer',
+    name: 'SEC DB Ingestor',
+    role: 'Filing-to-Database Ingestion Specialist',
+    description: 'Receives SEC filing scanner output from the Filing Engineer, identifies up to 5 untracked filings, and generates structured database patch operations. Patches route to the PM Decision Dashboard for human approval before applying to data files.',
+    capabilities: [
+      'Parse filing scanner output for untracked filings',
+      'Generate PatchOp-compatible database update operations',
+      'Follow filing-templates.ts format for correct entry structure',
+      'Verify data staleness against current date and existing DB entries',
+      'Route patches through PM approval pipeline',
+    ],
+    workflowIds: ['sec-db-ingest'],
+    defaultIntervalMinutes: 0, // triggered only via chain from filing-engineer
+    triggerEvents: ['filing-scan-completed'],
+    requiresData: false,
+    category: 'monitoring',
+    decisionsFor: 'claude',
+    decisionCategory: 'data-patch',
   },
   {
     id: 'press-engineer',

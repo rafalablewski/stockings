@@ -450,45 +450,193 @@ Paste Filing A and Filing B below:`,
   },
 
   // =========================================================================
-  // 3b. SEC FILING SCANNER (Autonomous)
+  // 3b. SEC FILING SCANNER
   // =========================================================================
   {
     id: 'sec-filing-scan',
     name: 'SEC Filing Scanner',
-    description: 'Autonomous scanner that detects new SEC filings on EDGAR for all covered research stocks, AI-analyzes each filing for material changes, and produces structured reports for PM approval. Stock-agnostic — driven by researchStocks registry.',
+    description: 'Scans EDGAR filings against the local database to produce a structured status report. Categorizes each filing as TRACKED (in DB with cross-refs), DATA_ONLY (data captured but no filing entry), or UNTRACKED (not in database). Output feeds the SEC DB Ingestor.',
     requiresUserData: false,
     variants: [],
-    promptTemplate: `You are an autonomous SEC filing analyst for {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}). You specialize in {{SPECIALIST_DOMAIN}}.
+    promptTemplate: `You are a filing status auditor for the ABISON investment research platform. Your task is to compare the EDGAR filing list against the local database for {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}) and produce a structured status report.
 
-You have been given a newly detected SEC filing. Your job is to:
+════════════════════════════════════════
+INSTRUCTIONS
+════════════════════════════════════════
 
-1. **Classify** the filing by materiality:
-   - CRITICAL: Contains material new data (financial results, guidance changes, material agreements, capital events)
-   - IMPORTANT: Contains useful data worth capturing (insider transactions, capital changes, notable filing details)
-   - ROUTINE: Administrative filing with no material changes
-   - LOW: Procedural/boilerplate filing with no data relevance
+1. REVIEW the database context injected below. It contains the current SEC_FILINGS[] array and FILING_CROSS_REFS for {{TICKER}}.
 
-2. **Extract** key data points:
-   - Financial metrics (revenue, EPS, cash, debt, shares outstanding)
-   - Guidance changes (raised/lowered/maintained)
-   - Risk factor changes (new risks, removed risks, language changes)
-   - Capital structure changes (dilution, offerings, warrant exercises)
-   - Management commentary and forward-looking statements
-   - Domain-specific data:
-{{DOMAIN_SECTIONS}}
+2. COMPARE each filing in the EDGAR/seen_filings list against the local database:
+   - **TRACKED**: Filing has a matching entry in SEC_FILINGS[] (matched by form type + date within 14 days, or by accession number).
+   - **DATA_ONLY**: Filing has NO SEC_FILINGS[] entry, but cross-reference data exists in FILING_CROSS_REFS or data was captured in timeline/capital/financials files.
+   - **UNTRACKED**: Filing has NO entry in SEC_FILINGS[] AND no cross-reference data anywhere in the database.
 
-3. **Propose changes** to the research database:
-   - Which data files need updating (financials.ts, capital.ts, company.ts, timeline.ts, catalysts.ts)
-   - Specific field → value changes with source citations from the filing
-   - New timeline events to add
-   - Catalyst status updates
-   - Cross-reference entries for the EDGAR tab (format: { source: '[tab]', data: '[1-line data captured]' })
+3. OUTPUT a structured report in the following format. Output ONLY valid JSON — no markdown fences, no explanation.
 
-4. **Generate verdict** — on a new line in this exact format:
-   [VERDICT: CRITICAL|IMPORTANT|ROUTINE|LOW] — one-paragraph investment-relevant summary
+{
+  "ticker": "{{TICKER}}",
+  "scanDate": "{{CURRENT_DATE}}",
+  "totalFilingsInEdgar": <number>,
+  "tracked": <number>,
+  "dataOnly": <number>,
+  "untracked": <number>,
+  "filings": [
+    {
+      "form": "<form type e.g. 8-K, 10-Q>",
+      "date": "<filing date YYYY-MM-DD>",
+      "description": "<filing description from EDGAR>",
+      "accessionNumber": "<SEC accession number if available>",
+      "status": "tracked" | "data_only" | "untracked",
+      "matchedEntry": "<date+type of matching SEC_FILINGS entry, or null>",
+      "crossRefKey": "<FORM|YYYY-MM-DD key if cross-ref exists, or null>"
+    }
+  ]
+}
 
-Output as structured analysis with clear sections. Be direct, specific, and use numbers from the filing. No fluff.
-Professional, forensic tone — prioritize capital structure, dilution, domain-specific metrics, and going concern language.`,
+RULES:
+- List ALL filings, not just untracked ones.
+- Sort by date descending (newest first).
+- For the "matchedEntry" field, show which SEC_FILINGS[] entry matched (e.g., "Feb 23, 2026 8-K") or null.
+- Be conservative: if in doubt, mark as UNTRACKED — the downstream ingestor will verify.
+- Material filing types to pay special attention to: 10-K, 10-Q, 8-K, 424B5, S-3ASR, SC 13D, Form 4, DEF 14A.
+- Include the accession number when available — it helps with precise matching.`,
+  },
+
+  // =========================================================================
+  // 3c. SEC DB INGESTION
+  // =========================================================================
+  {
+    id: 'sec-db-ingest',
+    name: 'SEC Filing DB Ingestion',
+    description: 'Receives filing scanner output via chain context, identifies up to 5 untracked filings, extracts structured data, and generates database patch operations compatible with /api/workflow/apply. Patches go to PM Decision Dashboard for approval.',
+    requiresUserData: false,
+    variants: [],
+    promptTemplate: `You are a database ingestion specialist for the ABISON investment research platform. Your job is to convert untracked SEC filings into structured database patch operations for {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}).
+
+You are operating in a chain — the SEC Filing Engineer has already scanned EDGAR and produced a report. Your input is below.
+
+════════════════════════════════════════
+INPUT: FILING SCANNER REPORT
+════════════════════════════════════════
+
+{{LATEST_AUDIT_OUTPUT}}
+
+════════════════════════════════════════
+YOUR TASK
+════════════════════════════════════════
+
+1. IDENTIFY UNTRACKED FILINGS from the scanner report above.
+   - Look for filings with status "untracked" or "UNTRACKED" or "NOT IN DATABASE".
+   - Select AT MOST the first 5 untracked filings, in chronological order (newest first).
+   - If fewer than 5 are untracked, process all of them.
+   - If zero are untracked, output: { "filings_processed": 0, "patches": [], "skipped": [], "summary": "No untracked filings found." }
+
+2. STALENESS CHECK — for each selected filing:
+   - Compare the filing date against today's date ({{CURRENT_DATE}}).
+   - If the filing is more than 180 days old, flag it as POTENTIALLY STALE in staleness_note.
+   - Check if a newer filing of the SAME type already exists in the database (e.g., a newer 10-Q supersedes an older 10-Q for the same period).
+   - Check if the filing's data has been incorporated under a DIFFERENT form type (e.g., an 8-K's earnings data captured via a later 10-Q).
+   - If clearly superseded, skip the filing and add it to the "skipped" array with a reason.
+
+3. DATA EXTRACTION — for each non-skipped filing:
+   - Identify the filing type (8-K, 10-Q, 10-K, Form 4, SC 13G, 424B5, S-3, DEF 14A, etc.)
+   - Extract key data points appropriate to the form type:
+     * 8-K: material events, financial impacts, management changes
+     * 10-Q/10-K: revenue, cash, debt, opEx, net income, shares outstanding, plus stock-specific metrics
+     * Form 4: insider name, role, transaction type, shares, price
+     * SC 13G: owner, ownership percentage, share count
+     * 424B5: offering size, price, shares, settlement date
+     * S-3/S-3ASR: shelf capacity, purpose
+     * DEF 14A: key proposals, meeting date
+   - Use the description and any available data from the scanner report.
+
+4. GENERATE PATCHES — for each extracted filing, produce patch operations:
+
+   MANDATORY for ALL filings:
+   a) SEC_FILINGS array entry (insert before the first existing entry):
+      File: Use the ticker in lowercase for file paths (e.g., if ticker is ASTS, use asts/sec-filings.ts)
+      Action: insert
+      Format: { date: 'Mon DD, YYYY', type: 'FORM_TYPE', description: 'concise description', period: 'Qx YYYY' or '—', color: 'COLOR' }
+      Colors: 8-K=yellow, 10-Q=purple, 10-K=blue, Form 4/SC 13G/SC 13D=green, 424B5=orange, S-3/S-3ASR=green, DEF 14A=green, FWP=orange
+      Anchor: the FIRST entry in the SEC_FILINGS array (use the date+type of the newest existing entry to form a unique anchor)
+
+   b) FILING_CROSS_REFS entry (append after the cross-refs declaration):
+      File: <ticker_lowercase>/sec-filings.ts
+      Action: append
+      Format: 'FORM_TYPE|YYYY-MM-DD': [ { source: 'TARGET_FILE', data: "one-line data summary" } ]
+      Anchor: the FILING_CROSS_REFS export declaration line
+
+   CONDITIONAL patches (based on filing type and content):
+   c) timeline.ts — for 8-K, 10-Q, 10-K filings with material events
+   d) capital.ts — for offerings (424B5), insider transactions (Form 4), ownership changes (SC 13G), share count changes
+   e) financials.ts or quarterly-metrics.ts — for 10-Q, 10-K with financial data
+   f) catalysts.ts — for completed/updated catalysts
+   g) company.ts — for material metric changes
+
+STOCK-SPECIFIC CONTEXT:
+Share structure: {{SHARE_STRUCTURE}}
+Fiscal year end: {{FISCAL_YEAR_END}}
+Domain: {{SPECIALIST_DOMAIN}}
+Key metrics to track:
+{{STOCK_SPECIFIC_METRICS}}
+
+Key insiders (for Form 4 matching):
+{{KEY_INSIDERS}}
+
+════════════════════════════════════════
+OUTPUT FORMAT
+════════════════════════════════════════
+
+Output ONLY valid JSON. No markdown fences, no explanation text, no preamble.
+
+{
+  "filings_processed": <number of filings attempted>,
+  "patches": [
+    {
+      "file": "<relative path from src/data/ — e.g. asts/sec-filings.ts>",
+      "action": "insert" | "append" | "update",
+      "anchor": "<unique text in target file — must appear EXACTLY ONCE>",
+      "content": "<TypeScript code to insert/append — valid syntax matching file style>",
+      "filing_ref": "<FORM_TYPE|YYYY-MM-DD — which filing this patch is for>",
+      "staleness_note": null | "<string describing staleness concern>"
+    }
+  ],
+  "skipped": [
+    {
+      "filing": "<FORM_TYPE filed YYYY-MM-DD>",
+      "reason": "<why skipped — e.g. 'Superseded by 10-Q filed 2026-01-15'>"
+    }
+  ],
+  "summary": "<1-2 sentence summary of what was processed and any concerns>"
+}
+
+════════════════════════════════════════
+PATCH RULES — NON-NEGOTIABLE
+════════════════════════════════════════
+
+1. ANCHOR UNIQUENESS: The "anchor" string must appear exactly once in the target file. Use enough surrounding context (20+ characters) to guarantee uniqueness.
+
+2. ACTION SEMANTICS:
+   - "insert": Places "content" BEFORE the anchor line (for adding entries at top of arrays)
+   - "append": Places "content" AFTER the anchor line (for adding to cross-refs, adding fields)
+   - "update": Replaces "oldValue" with "content" — requires "oldValue" field
+
+3. ADDITIVE ONLY: Never delete or shrink existing data. Patches must only ADD or EXPAND.
+
+4. FILE PATHS: Must be relative to src/data/ and match pattern: <ticker_lowercase>/<filename>.ts
+   Allowed files: sec-filings.ts, timeline.ts, capital.ts, financials.ts, catalysts.ts, company.ts, quarterly-metrics.ts, partners.ts, ethereum-adoption.ts
+
+5. CONTENT SAFETY: Never include import, require, exec, eval, process, or Function in patch content.
+
+6. DATE FORMAT: Use 'Mon DD, YYYY' format for display dates in SEC_FILINGS entries. Use YYYY-MM-DD for cross-ref keys.
+
+7. IDEMPOTENCY: Before generating a patch, consider whether the data might already be present. If the scanner report indicates the filing is tracked or data_only, do NOT generate patches for it.
+
+8. STALENESS: For every patch from a filing older than 90 days, include a non-null staleness_note so the PM can make an informed approval decision.
+
+9. LIMIT: Maximum 5 filings, maximum 4 patches per filing = maximum 20 patches total.
+
+10. TEMPLATE LITERAL SAFETY: Never include unescaped backticks in content strings.`,
   },
 
   // =========================================================================
