@@ -132,23 +132,23 @@ export default function HomePage() {
             {[
               {
                 label: "Core",
-                title: "Long Equity",
-                desc: "Concentrated positions in high-conviction names with asymmetric upside. Typically 3–5 deep-research holdings sized by conviction and catalyst proximity.",
+                title: "Growth Equity Investing",
+                desc: "Concentrated positions in high-growth companies at inflection points — revenue ramps, market expansions, and technology breakthroughs. Deep fundamental research to identify asymmetric risk/reward before the market reprices.",
               },
               {
                 label: "Tactical",
-                title: "Long / Short",
-                desc: "Pair trades within sectors to isolate alpha. Long the structurally advantaged operator, short the legacy incumbent facing disruption or dilution risk.",
+                title: "Catalyst-Driven Trading",
+                desc: "Sized around discrete, identifiable catalysts — satellite launches, FDA approvals, earnings inflections, contract awards. Enter ahead of the event, manage risk around the binary outcome.",
               },
               {
-                label: "Opportunistic",
-                title: "Leverage & Options",
-                desc: "LEAPS and defined-risk options structures to express high-conviction catalysts — satellite launches, earnings inflections, regulatory approvals — with capped downside.",
+                label: "Yield",
+                title: "Carry Trade",
+                desc: "Exploiting yield differentials and funding rate dislocations across asset classes. Structured to generate steady income while maintaining exposure to underlying equity upside.",
               },
               {
-                label: "Income",
-                title: "Covered Calls & Cash-Secured Puts",
-                desc: "Yield generation on existing positions through covered calls, and opportunistic entry via cash-secured puts at target accumulation prices.",
+                label: "Amplification",
+                title: "Leverage Amplification",
+                desc: "LEAPS, margin, and defined-risk options structures to amplify conviction in highest-confidence positions. Strict position sizing and drawdown limits to cap downside exposure.",
               },
             ].map((strategy) => (
               <div
