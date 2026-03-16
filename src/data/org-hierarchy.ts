@@ -35,8 +35,9 @@ export const ORG_COLORS = {
   claude:     '#22d3ee',
   cursor:     '#a78bfa',
   gemini:     '#34d399',
-  aiEngineer: '#f472b6',
+  maszka: '#f472b6',
   pm:         '#fb923c',
+  docReview:  '#f9a8d4',
 } as const;
 
 // ── Nodes ──────────────────────────────────────────────────────────────────
@@ -69,9 +70,9 @@ export const orgNodes: OrgNode[] = [
     id: 'div-cursor',
     type: 'division',
     label: 'Cursor',
-    badge: 'UI',
-    role: 'Frontend & UI',
-    description: 'Manages 1 engineer focused on platform performance — bundle size auditing, component render profiling, tree-shaking analysis, and caching strategy evaluation. Schedules performance scans and reports bottlenecks to the Boss. Owns all frontend components, styling, client interactivity, and responsive design across the platform.',
+    badge: 'ML',
+    role: 'ML & AI Systems',
+    description: 'Builds and maintains the ML models, AI features, and data pipelines that power the autonomous engineers. Develops the execution engine, prompt templates, and workflow orchestration layer. Manages the Prompt Remediation Engineer that implements audit-driven fixes to workflow templates. Reviews remediation patches via the Decision Dashboard. Reports technical capabilities and pipeline health to the Boss in the Room.',
     color: ORG_COLORS.cursor,
     parentId: 'boss',
   },
@@ -86,22 +87,22 @@ export const orgNodes: OrgNode[] = [
     parentId: 'boss',
   },
   {
-    id: 'div-ai-engineer',
+    id: 'div-maszka',
     type: 'division',
-    label: 'AI Engineer',
-    badge: 'ML',
-    role: 'ML & AI Systems',
-    description: 'Builds and maintains the ML models, AI features, and data pipelines that power the autonomous engineers. Develops the execution engine, prompt templates, and workflow orchestration layer. Does not manage engineers — focuses on the infrastructure that makes them run. Reports technical capabilities and pipeline health to the Boss in the Room.',
-    color: ORG_COLORS.aiEngineer,
+    label: 'Maszka',
+    badge: 'UI',
+    role: 'Frontend & UI',
+    description: 'Owns all frontend components, styling, client interactivity, and responsive design across the platform. Manages the Performance Engineer (bundle audits, render profiling, caching) and the UX/UI Engineer (implements doc-reviewer styling proposals). Approves or rejects UX/UI and documentation changes via the Decision Dashboard. Reports frontend health and design decisions to the Boss in the Room.',
+    color: ORG_COLORS.maszka,
     parentId: 'boss',
   },
   {
     id: 'div-pm',
     type: 'division',
-    label: 'Project Mgmt',
+    label: 'Bobman',
     badge: 'PM',
-    role: 'Planning & Coordination',
-    description: 'Coordinates across all divisions without managing engineers directly. Breaks Boss specifications into actionable task lists, assigns work to the right division, tracks sprint progress, and ensures deadlines are met. Facilitates cross-division communication and flags blockers. Reports project status and timeline updates to the Boss in the Room.',
+    role: 'ML & AI Project Manager',
+    description: 'Manages 1 engineer (Prompt Auditor) focused on prompt-codebase sync and drift detection. Coordinates across all divisions, breaks Boss specifications into actionable task lists, assigns work to the right division, tracks sprint progress, and ensures deadlines are met. Facilitates cross-division communication and flags blockers. Reports project status and timeline updates to the Boss in the Room.',
     color: ORG_COLORS.pm,
     parentId: 'boss',
   },
@@ -180,16 +181,16 @@ export const orgNodes: OrgNode[] = [
   },
 
   // ── Engineers under Cursor (1) ──────────────────────────────────────────
-  // IDE-level codebase analysis, render profiling, bundle optimization
+  // ML/AI systems — prompt template maintenance and remediation
   {
-    id: 'eng-performance',
+    id: 'eng-prompt-remediation',
     type: 'engineer',
-    label: 'Performance',
-    badge: 'PRF',
-    role: 'Platform Performance',
+    label: 'Prompt Remediation',
+    badge: 'REM',
+    role: 'Prompt Template Maintenance',
     color: ORG_COLORS.cursor,
     parentId: 'div-cursor',
-    engineerId: 'performance-engineer',
+    engineerId: 'prompt-remediation-engineer',
   },
 
   // ── Engineers under Gemini (6) ──────────────────────────────────────────
@@ -254,6 +255,52 @@ export const orgNodes: OrgNode[] = [
     parentId: 'div-gemini',
     engineerId: 'disclosure-engineer',
   },
+
+  // ── Engineers under Maszka (3) ────────────────────────────────────────
+  // Frontend performance, UX/UI implementation, styling
+  {
+    id: 'eng-performance',
+    type: 'engineer',
+    label: 'Performance',
+    badge: 'PRF',
+    role: 'Platform Performance',
+    color: ORG_COLORS.maszka,
+    parentId: 'div-maszka',
+    engineerId: 'performance-engineer',
+  },
+  {
+    id: 'eng-ux-ui',
+    type: 'engineer',
+    label: 'UX/UI Engineer',
+    badge: 'UXI',
+    role: 'UX/UI Implementation',
+    color: ORG_COLORS.maszka,
+    parentId: 'div-maszka',
+    engineerId: 'ux-ui-engineer',
+  },
+
+  // ── Engineers under Project Mgmt / Bobman (1) ─────────────────────────
+  // Prompt-codebase sync auditing, drift detection
+  {
+    id: 'eng-prompt-auditor',
+    type: 'engineer',
+    label: 'Prompt Auditor',
+    badge: 'PRA',
+    role: 'Prompt-to-Codebase Sync',
+    color: ORG_COLORS.pm,
+    parentId: 'div-pm',
+    engineerId: 'prompt-auditor',
+  },
+  {
+    id: 'eng-doc-reviewer',
+    type: 'engineer',
+    label: 'Doc Reviewer',
+    badge: 'DOC',
+    role: 'Documentation & Style Guide Reviewer',
+    color: ORG_COLORS.docReview,
+    parentId: 'div-pm',
+    engineerId: 'doc-reviewer-engineer',
+  },
 ];
 
 // ── Hierarchy edges (auto-computed from parentId) ──────────────────────────
@@ -315,12 +362,18 @@ export function computeTriggerEdges(engineers: EngineerTask[]): OrgEdge[] {
   return edges;
 }
 
-// ── Data flow edges (Gemini → Claude → Cursor) ───────────────────────────
-// Gemini ingests external data → Claude reasons over it → Cursor profiles output
+// ── Data flow edges ──────────────────────────────────────────────────────────
+// Gemini ingests external data → Claude reasons over it → Maszka handles frontend
+// Prompt Auditor findings → Remediation Engineer (under Cursor/ML) + Bobman (report)
+// Doc Reviewer → UX/UI Engineer (under Maszka/UI) → Maszka approves
 
 export const dataFlowEdges: OrgEdge[] = [
   { from: 'div-gemini', to: 'div-claude', type: 'dataflow', label: 'filings & signals', color: 'rgba(52, 211, 153, 0.5)' },
-  { from: 'div-claude', to: 'div-cursor', type: 'dataflow', label: 'data updated', color: 'rgba(34, 211, 238, 0.5)' },
+  { from: 'div-claude', to: 'div-maszka', type: 'dataflow', label: 'data updated', color: 'rgba(34, 211, 238, 0.5)' },
+  { from: 'eng-prompt-auditor', to: 'eng-prompt-remediation', type: 'dataflow', label: 'audit → remediate', color: 'rgba(167, 139, 250, 0.6)' },
+  { from: 'eng-prompt-auditor', to: 'div-pm', type: 'dataflow', label: 'audit report', color: 'rgba(251, 146, 60, 0.5)' },
+  { from: 'eng-doc-reviewer', to: 'eng-ux-ui', type: 'dataflow', label: 'doc audit → implement', color: 'rgba(249, 168, 212, 0.5)' },
+  { from: 'eng-ux-ui', to: 'div-maszka', type: 'dataflow', label: 'code changes → approve/reject', color: 'rgba(244, 114, 182, 0.6)' },
 ];
 
 // ── Layout computation ─────────────────────────────────────────────────────

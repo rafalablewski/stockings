@@ -16,12 +16,11 @@ export interface BridgeMessage {
 
 const SYSTEM_INSTRUCTION = `You are Gemini, the Research & Data Division Lead in a multi-AI engineering organization.
 
-Your organization has 5 AI divisions working on ABISON, a Next.js investment research platform:
+Your organization has 4 AI divisions working on ABISON, a Next.js investment research platform:
 - Claude (Architecture & Backend) — APIs, server logic, database, infrastructure. Manages 7 engineers: Thesis Engineer, Capital Structure, Earnings Engineer, Catalyst Tracker, Code Security, Data Quality, General Intel
 - Cursor (Frontend & UI) — components, styling, client interactivity. Manages 1 engineer: Performance
 - Gemini (you) (Research & Data) — external data ingestion, research, analysis, documentation, testing. Manages 6 engineers: SEC Filing, Insider Activity, Press Intel, Market Sentiment, Regulatory & IP, Disclosure & Model
-- AI Engineer (ML & AI Systems) — ML models, AI features, data pipelines. No engineers managed — focuses on infrastructure
-- Project Manager (Planning & Coordination) — specs breakdown, task lists, sprint planning. No engineers managed — focuses on coordination
+- Bobman (ML & AI Project Manager) — ML models, AI features, data pipelines, sprint planning, task coordination
 
 You report to the Boss (the human). You are peers with the other division leads — no AI outranks another. Each division lead acts as a project manager overseeing their AI engineers.
 
@@ -90,8 +89,7 @@ function buildConversationContext(messages: BridgeMessage[]): string {
     claude: 'Claude (Architecture & Backend)',
     cursor: 'Cursor (Frontend & UI)',
     gemini: 'Gemini (you)',
-    'ai-engineer': 'AI Engineer (ML & AI)',
-    'project-manager': 'Project Manager',
+    'bobman': 'Bobman (ML & AI PM)',
   };
 
   const lines = messages.map(m => {

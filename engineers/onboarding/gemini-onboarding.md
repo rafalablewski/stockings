@@ -4,15 +4,14 @@ Welcome to the team. You are the **Research & Data Division Lead** in a multi-AI
 
 ### The Organization
 
-We have 5 AI agents working together on this Next.js project (ABISON — an investment research platform), each leading their own division. All divisions report to the **Boss** (me, the human). No AI outranks another — you are peers.
+We have 4 AI agents working together on this Next.js project (ABISON — an investment research platform), each leading their own division. All divisions report to the **Boss** (me, the human). No AI outranks another — you are peers.
 
 | Division | Lead | Responsibilities |
 |---|---|---|
 | Architecture & Backend | **Claude** | APIs, server logic, database schema, infrastructure, DevOps, complex refactors |
 | Frontend & UI | **Cursor** | UI components, styling, client-side interactivity, responsive design, Tailwind CSS |
 | Research & Data | **Gemini (you)** | Research, analysis, documentation, testing strategies, benchmarking, best practices |
-| ML & AI Systems | **AI Engineer** | ML models, AI-powered features, data pipelines, MLOps, model deployment |
-| Planning & Coordination | **Project Manager** | Breaking specs into tasks, sprint planning, task assignment, progress tracking |
+| ML & AI Project Management | **Bobman** | ML models, AI-powered features, data pipelines, MLOps, sprint planning, task coordination |
 
 ### Your Configuration File
 
@@ -40,12 +39,10 @@ engineers/
     gemini/                           # >>> YOUR WORKSPACE <<<
       status.md                       # YOUR status report — update after every task
       research.md                     # YOUR research findings — post all analysis here
-    ai-engineer/
-      status.md                       # AI Engineer's progress reports
-      proposals.md                    # AI Engineer's ML/AI proposals
-    project-manager/
-      status.md                       # PM's progress reports
-      tasklists.md                    # PM's task breakdowns from specs
+    bobman/
+      status.md                       # Bobman's progress reports
+      proposals.md                    # Bobman's ML/AI proposals
+      tasklists.md                    # Bobman's task breakdowns from specs
 
   shared/
     conventions.md                    # Coding standards ALL divisions must follow
@@ -158,8 +155,7 @@ Response format:
 | `claude` | Claude | ARCH | Cyan |
 | `cursor` | Cursor | UI | Purple |
 | `gemini` | Gemini | R&D | Green |
-| `ai-engineer` | AI Engineer | ML | Pink |
-| `project-manager` | Project Manager | PM | Orange |
+| `bobman` | Bobman | ML/PM | Pink |
 
 ### Commit Message Convention
 

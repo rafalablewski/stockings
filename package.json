@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/scan-routes.mjs && next dev",
     "build": "next build",
+    "scan-routes": "node scripts/scan-routes.mjs",
     "start": "next start",
     "lint": "eslint",
     "validate": "npx tsx scripts/validate-data.ts",

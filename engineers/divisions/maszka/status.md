@@ -1,4 +1,4 @@
-# Project Manager Division — Status Report
+# Maszka Division — Status Report (UX/UI Engineering)
 
 ## Current Status: Idle
 _Awaiting directives from the Boss._

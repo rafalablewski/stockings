@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { checkAiGate } from '@/lib/ai-gate';
+import { resolvePromptPlaceholders } from '@/lib/prompt-placeholders';
 import { getDb } from '@/lib/db';
 import { agentRuns } from '@/lib/schema';
 import { asts, bmnr, crcl } from '@/data';
@@ -41,7 +42,10 @@ export async function POST(request: NextRequest) {
 
     const startTime = Date.now();
 
-    // Build the full message: today's date + prompt + optional user data
+    // Resolve any {{PLACEHOLDER}} tokens in the prompt (stock context, tabs, etc.)
+    const resolvedPrompt = resolvePromptPlaceholders(prompt, ticker);
+
+    // Build the full message: today's date + company context + prompt + optional user data
     const dataSeparator = '\n\n════════════════════════════════════════════════════════════\nUSER-PROVIDED DATA\n════════════════════════════════════════════════════════════\n\n';
 
     const today = new Date().toISOString().split('T')[0];
@@ -54,9 +58,9 @@ export async function POST(request: NextRequest) {
         companyCtx = `\nCompany: ${c.name} (${c.exchange}: ${c.ticker})\nSector: ${c.sector}\nDescription: ${c.description}\n`;
       }
     }
-    // Replace {{CURRENT_DATE}} placeholders in prompt with today's date
-    const resolvedPrompt = prompt.replace(/\{\{CURRENT_DATE\}\}/g, today);
-    let fullMessage = `[Today's date: ${today}]${companyCtx}\n\n${resolvedPrompt}`;
+    // Replace any remaining {{CURRENT_DATE}} placeholders with today's date
+    const datedPrompt = resolvedPrompt.replace(/\{\{CURRENT_DATE\}\}/g, today);
+    let fullMessage = `[Today's date: ${today}]${companyCtx}\n\n${datedPrompt}`;
     if (data) {
       fullMessage += dataSeparator + data;
     }

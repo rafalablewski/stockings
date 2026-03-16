@@ -277,13 +277,13 @@ export const officeActivities = pgTable('office_activities', {
 
 // ============================================================================
 // ROOM MESSAGES — chat messages in the multi-AI division "Room" where all
-// divisions (Claude, Cursor, Gemini, AI Engineer, PM) and the Boss
+// divisions (Claude, Cursor, Gemini, Bobman) and the Boss
 // communicate in a shared conversation thread.
 // ============================================================================
 
 export const roomMessages = pgTable('room_messages', {
   id: serial('id').primaryKey(),
-  sender: text('sender').notNull(),           // 'boss' | 'claude' | 'cursor' | 'gemini' | 'ai-engineer' | 'project-manager'
+  sender: text('sender').notNull(),           // 'boss' | 'claude' | 'cursor' | 'gemini' | 'bobman'
   content: text('content').notNull(),
   channel: text('channel').default('general').notNull(), // 'general' | 'backend' | 'frontend' | 'research' | 'ml' | 'planning'
   replyTo: integer('reply_to'),               // id of message being replied to (nullable)
@@ -292,4 +292,27 @@ export const roomMessages = pgTable('room_messages', {
   index('room_messages_channel_idx').on(table.channel),
   index('room_messages_created_idx').on(table.createdAt),
   index('room_messages_sender_idx').on(table.sender),
+]);
+
+// ── PM Decision Queue ────────────────────────────────────────────────────────
+// Tracks items awaiting PM review/approval before Boss final sign-off.
+// Used by the Decision Dashboard at /engineers/decisions.
+export const pmDecisions = pgTable('pm_decisions', {
+  id: serial('id').primaryKey(),
+  pm: text('pm').notNull(),                   // PM who owns this decision: 'claude' | 'cursor' | 'gemini' | 'bobman' | 'maszka'
+  engineerId: text('engineer_id').notNull(),  // engineer that produced the item
+  runId: integer('run_id'),                   // agentRuns.id that generated the content
+  ticker: text('ticker').notNull(),
+  title: text('title').notNull(),             // short summary of what needs approval
+  category: text('category').notNull(),       // 'prompt-patch' | 'data-update' | 'config-change'
+  payload: text('payload').notNull(),         // JSON string with structured data (patches, diffs, etc.)
+  status: text('status').default('pending').notNull(), // 'pending' | 'pm-approved' | 'pm-rejected' | 'boss-approved' | 'boss-rejected' | 'applied'
+  pmNotes: text('pm_notes'),                  // PM's rationale for approval/rejection
+  bossNotes: text('boss_notes'),              // Boss's final ruling notes
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+}, (table) => [
+  index('pm_decisions_pm_idx').on(table.pm),
+  index('pm_decisions_status_idx').on(table.status),
+  index('pm_decisions_created_idx').on(table.createdAt),
 ]);

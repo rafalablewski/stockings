@@ -18,7 +18,10 @@ export interface EngineerTask {
   triggerEvents: string[];            // events that can trigger this engineer
   requiresData: boolean;             // whether it needs external data (SEC, news, etc.)
   dataSource?: string;                // where it gets its data from autonomously
-  category: 'research' | 'monitoring' | 'audit' | 'intelligence';
+  category: 'research' | 'monitoring' | 'audit' | 'intelligence' | 'documentation';
+  chainsTo?: string;              // engineer ID to auto-trigger after successful completion
+  notifyPm?: string;              // PM sender name to notify in the Room on completion
+  decisionsFor?: string;          // PM id to create decision items for on completion
 }
 
 export const engineers: EngineerTask[] = [
@@ -241,6 +244,47 @@ export const engineers: EngineerTask[] = [
     category: 'intelligence',
   },
 
+  // ── BOBMAN'S TEAM ─────────────────────────────────────────────────────
+  {
+    id: 'prompt-auditor',
+    name: 'Prompt Auditor',
+    role: 'Prompt-to-Codebase Sync Analyst',
+    description: 'Analyses every prompt in the workflow/prompt database and cross-references it against the live codebase to detect drift. When new features, tabs, data sources, API routes, or UI components are added but the corresponding AI engineer prompts are not updated, the Prompt Auditor flags the gap so engineers never operate on stale instructions. Reports to Bobman.',
+    capabilities: [
+      'Scan all workflow prompts and engineer prompt templates for referenced features',
+      'Inventory live codebase tabs, pages, API routes, data sources, and components',
+      'Diff prompt references against actual codebase to find missing or outdated entries',
+      'Flag prompts that reference removed or renamed features',
+      'Generate a prompt-drift report with specific remediation suggestions',
+      'Detect newly added tabs or routes that no prompt currently covers',
+    ],
+    workflowIds: ['prompt-audit'],
+    defaultIntervalMinutes: 1440, // daily
+    triggerEvents: ['code-deployed', 'workflow-updated', 'engineer-config-changed'],
+    requiresData: false,
+    category: 'audit',
+    chainsTo: 'prompt-remediation-engineer',
+    notifyPm: 'bobman',
+  },
+  {
+    id: 'prompt-remediation-engineer',
+    name: 'Prompt Remediation Engineer',
+    role: 'Prompt Template Maintenance Specialist',
+    description: 'Receives drift findings from the Prompt Auditor and generates structured remediation patches for workflow prompt templates. Focuses on CRITICAL and HIGH severity drift, producing safe text edits that keep prompts aligned with the live codebase. Reports to Bobman.',
+    capabilities: [
+      'Parse prompt-audit drift reports and extract actionable findings',
+      'Generate anchor-based patch operations for workflow promptTemplates',
+      'Prioritize CRITICAL and HIGH severity drift items',
+      'Flag findings requiring human intervention (new workflows, structural changes)',
+    ],
+    workflowIds: ['prompt-remediation'],
+    defaultIntervalMinutes: 0, // triggered only via chain, never scheduled
+    triggerEvents: ['prompt-audit-completed'],
+    requiresData: false,
+    category: 'audit',
+    decisionsFor: 'maszka',
+  },
+
   // ── ADDITIONAL AUDIT ENGINEERS ────────────────────────────────────────
   {
     id: 'code-security-engineer',
@@ -295,6 +339,50 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['filing-ingested', 'data-updated'],
     requiresData: false,
     category: 'audit',
+  },
+
+  // ── DOCUMENTATION ENGINEERS ──────────────────────────────────────────────
+  {
+    id: 'doc-reviewer-engineer',
+    name: 'Documentation Engineer',
+    role: 'Documentation & Style Guide Reviewer',
+    description: 'Reviews recent code changes across all divisions and identifies documentation gaps. Creates styling guidelines reports, audits style guides and theme docs for accuracy, and maintains changelogs. Audit output goes straight to the UX/UI Engineer for implementation.',
+    capabilities: [
+      'Review code diffs and identify documentation gaps',
+      'Create and update style guides and theme documentation',
+      'Maintain changelogs and internal engineering logs',
+      'Audit documentation freshness and flag stale content',
+      'Generate styling guidelines reports for Maszka review',
+      'Cross-reference docs against live codebase for accuracy',
+    ],
+    workflowIds: ['doc-review'],
+    defaultIntervalMinutes: 1440, // daily
+    triggerEvents: ['code-deployed', 'workflow-updated', 'data-updated'],
+    requiresData: false,
+    category: 'documentation',
+    notifyPm: 'bobman',
+    chainsTo: 'ux-ui-engineer',
+  },
+
+  // ── MASZKA'S TEAM ──────────────────────────────────────────────────────
+  {
+    id: 'ux-ui-engineer',
+    name: 'UX/UI Engineer',
+    role: 'UX/UI Implementation Specialist',
+    description: 'Receives documentation and styling audit reports from the Doc Reviewer. Implements proposed changes or creates counter-proposals for theme, style, and UI guide updates. Reports to Maszka for final approval or rejection.',
+    capabilities: [
+      'Receive and parse doc-review audit reports',
+      'Implement approved style guide and theme changes',
+      'Propose alternative UX/UI approaches when audit suggestions need refinement',
+      'Update component styling and design token documentation',
+      'Submit implementation patches for Maszka approval via Decision Dashboard',
+    ],
+    workflowIds: ['ux-ui-implementation'],
+    defaultIntervalMinutes: 0, // triggered only via chain from doc-reviewer
+    triggerEvents: ['doc-review-completed'],
+    requiresData: false,
+    category: 'documentation',
+    decisionsFor: 'maszka',
   },
 ];
 

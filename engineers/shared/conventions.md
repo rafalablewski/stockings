@@ -16,13 +16,19 @@ These conventions apply to all AI divisions equally. When in doubt, follow these
 - Pages: `page.tsx` inside route directories
 
 ## Organization Chart
-| Division | Lead | Responsibilities |
-|---|---|---|
-| Architecture & Backend | Claude | APIs, server logic, database, infrastructure |
-| Frontend & UI | Cursor | Components, styling, client interactivity |
-| Research & Data | Gemini | Research, analysis, documentation, testing |
-| ML & AI Systems | AI Engineer | ML models, AI features, data pipelines, MLOps |
-| Planning & Coordination | Project Manager | Spec breakdown, task lists, sprint planning |
+| Division | Lead | Responsibilities | Reports To |
+|---|---|---|---|
+| Architecture & Backend | Claude | APIs, server logic, database, infrastructure | Boss |
+| ML & AI Systems | Cursor | ML models, AI features, data pipelines, execution engine, prompt templates | Boss |
+| Research & Data | Gemini | Research, analysis, documentation, testing | Boss |
+| Frontend & UI | Maszka | Components, styling, client interactivity, performance, approves doc/styling proposals | Boss |
+| ML & AI Project Management | Bobman | Sprint planning, task coordination, prompt-codebase sync | Boss |
+| Documentation | Doc-Reviewer | Style guides, theme docs, changelogs, doc audits, guidelines reports | Bobman |
+
+### Approval Chain — Documentation & Styling
+```
+Doc-Reviewer (audit report) → UX/UI Engineer (implements/proposes) → Maszka (approves/rejects)
+```
 
 ## Git & Workflow
 - Each division works on its own tasks from `engineers/board/current-sprint.md`

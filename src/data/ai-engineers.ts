@@ -149,6 +149,21 @@ export const agents: AgentNode[] = [
     metrics: { runsPerDay: 1, avgLatencyMs: 120000, lastRun: '2026-03-11', findings: 47 },
   },
   {
+    id: 'prompt-auditor',
+    name: 'Prompt Auditor',
+    role: 'Prompt-to-Codebase Sync',
+    status: 'active',
+    phase: 'Daily',
+    matchers: ['Scheduled', 'Code deploy', 'Workflow update'],
+    description: 'Scans all workflow and engineer prompts against the live codebase to detect drift — new tabs, routes, or data sources not reflected in prompts, and stale references to removed features. Reports to Bobman.',
+    category: 'workflow',
+    color: 'violet',
+    connections: ['methodology-sync', 'agent-impact', 'prompt-audit-resource', 'api-workflow'],
+    files: ['src/data/workflows.ts', 'src/lib/engineers.ts', 'src/app/**/page.tsx', 'src/app/api/**/route.ts'],
+    prompts: ['codebase-inventory', 'prompt-inventory', 'drift-detection', 'coverage-scoring'],
+    metrics: { runsPerDay: 1, avgLatencyMs: 90000, findings: 0 },
+  },
+  {
     id: 'press-intel',
     name: 'Press Intelligence',
     role: 'News & Filing Monitor',
@@ -182,6 +197,7 @@ export const resources: ResourceNode[] = [
   { id: 'prompt-simplify', name: 'Simplify Prompts', type: 'prompt', description: 'Complexity analysis and refactoring suggestion templates', color: 'mint', connectedAgents: ['code-simplifier'] },
   { id: 'prompt-earnings', name: 'Earnings Prompts', type: 'prompt', description: '7-section extraction framework for earnings calls', color: 'gold', connectedAgents: ['earnings-call'] },
   { id: 'prompt-audit', name: 'Audit Prompts', type: 'prompt', description: '35-category CVSS-scored security audit templates', color: 'coral', connectedAgents: ['code-audit'] },
+  { id: 'prompt-audit-resource', name: 'Prompt Database', type: 'prompt', description: 'All workflow and engineer prompts — scanned for drift by Prompt Auditor', color: 'violet', connectedAgents: ['prompt-auditor'] },
 ];
 
 // ── Connections ──────────────────────────────────────────────────────────────
@@ -215,6 +231,10 @@ export const connections: Connection[] = [
   // Config
   { from: 'claude-md', to: 'config-claude-md', type: 'reads' },
   { from: 'agent-impact', to: 'config-settings', type: 'reads' },
+
+  // Prompt Auditor
+  { from: 'prompt-auditor', to: 'prompt-audit-resource', type: 'reads', label: 'scan all prompts' },
+  { from: 'prompt-auditor', to: 'api-workflow', type: 'uses-prompt' },
 
   // Cross-feeds
   { from: 'press-intel', to: 'earnings-call', type: 'feeds', label: 'transcript links' },
