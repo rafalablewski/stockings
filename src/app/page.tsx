@@ -1,6 +1,29 @@
 import Link from "next/link";
 import { researchStocks } from "@/lib/stocks";
 
+const strategies = [
+  {
+    label: "Core",
+    title: "Growth Equity Investing",
+    desc: "Concentrated positions in high-growth companies at inflection points — revenue ramps, market expansions, and technology breakthroughs. Deep fundamental research to identify asymmetric risk/reward before the market reprices.",
+  },
+  {
+    label: "Tactical",
+    title: "Catalyst-Driven Trading",
+    desc: "Sized around discrete, identifiable catalysts — satellite launches, FDA approvals, earnings inflections, contract awards. Enter ahead of the event, manage risk around the binary outcome.",
+  },
+  {
+    label: "Yield",
+    title: "Carry Trade",
+    desc: "Exploiting yield differentials and funding rate dislocations across asset classes. Structured to generate steady income while maintaining exposure to underlying equity upside.",
+  },
+  {
+    label: "Amplification",
+    title: "Leverage Amplification",
+    desc: "LEAPS, margin, and defined-risk options structures to amplify conviction in highest-confidence positions. Strict position sizing and drawdown limits to cap downside exposure.",
+  },
+];
+
 export default function HomePage() {
   return (
     <div className="min-h-screen">
@@ -116,6 +139,32 @@ export default function HomePage() {
                   {stock.sector}
                 </span>
               </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Strategies */}
+      <section className="py-20 px-6">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-[10px] uppercase tracking-[0.3em] text-white/20 mb-10 text-center">
+            Our Strategies
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {strategies.map((strategy) => (
+              <div
+                key={strategy.title}
+                className="p-6 rounded-xl bg-white/[0.02] border border-white/[0.06]"
+              >
+                <div className="text-[10px] uppercase tracking-[0.2em] text-white/20 mb-3">
+                  {strategy.label}
+                </div>
+                <h3 className="text-[14px] text-white/70 mb-3">{strategy.title}</h3>
+                <p className="text-[11px] text-white/25 leading-relaxed">
+                  {strategy.desc}
+                </p>
+              </div>
             ))}
           </div>
         </div>
