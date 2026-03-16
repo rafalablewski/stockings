@@ -121,6 +121,48 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Strategies */}
+      <section className="py-20 px-6">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-[10px] uppercase tracking-[0.3em] text-white/20 mb-10 text-center">
+            Our Strategies
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                label: "Space Technology",
+                title: "Orbital Infrastructure",
+                desc: "Direct-to-device satellite networks, LEO constellations, and space-based communications infrastructure poised to connect the next billion users.",
+              },
+              {
+                label: "Digital Assets",
+                title: "On-Chain Alpha",
+                desc: "Bitcoin mining economics, blockchain infrastructure plays, and digital asset custody — focused on picks-and-shovels over speculation.",
+              },
+              {
+                label: "Fintech",
+                title: "Embedded Finance",
+                desc: "Next-generation payments, lending rails, and compliance infrastructure enabling the shift from legacy banking to programmable money.",
+              },
+            ].map((strategy) => (
+              <div
+                key={strategy.title}
+                className="p-6 rounded-xl bg-white/[0.02] border border-white/[0.06]"
+              >
+                <div className="text-[10px] uppercase tracking-[0.2em] text-white/20 mb-3">
+                  {strategy.label}
+                </div>
+                <h3 className="text-[14px] text-white/70 mb-3">{strategy.title}</h3>
+                <p className="text-[11px] text-white/25 leading-relaxed">
+                  {strategy.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Philosophy */}
       <section className="py-20 px-6 border-t border-white/[0.04]">
         <div className="max-w-3xl mx-auto">
