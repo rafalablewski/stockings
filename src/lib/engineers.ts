@@ -107,6 +107,7 @@ export const engineers: EngineerTask[] = [
     category: 'monitoring',
     decisionsFor: 'claude',
     decisionCategory: 'data-patch',
+    notifyPm: 'claude',
   },
   {
     id: 'press-engineer',
