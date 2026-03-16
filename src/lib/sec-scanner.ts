@@ -10,7 +10,7 @@
 // ============================================================================
 
 import { getDb } from './db';
-import { seenFilings, pmDecisions, roomMessages } from './schema';
+import { seenFilings } from './schema';
 import { inArray } from 'drizzle-orm';
 import { researchStocks } from './stocks';
 import { resolveCik } from './cik-map';
@@ -139,7 +139,6 @@ export async function scanForNewFilings(
   const tickerResults: TickerScanResult[] = [];
   const errors: Record<string, string> = {};
   let totalNewFilings = 0;
-  let decisionsCreated = 0;
 
   // Scan all tickers in parallel
   await Promise.allSettled(
@@ -163,61 +162,14 @@ export async function scanForNewFilings(
     }),
   );
 
-  // Create PM decisions for tickers with new filings that have analyses
-  const db = getDb();
-  for (const result of tickerResults) {
-    if (result.analyses.length === 0) continue;
-
-    const payload = buildDecisionPayload(result);
-    const criticalCount = result.analyses.filter(a => a.verdict === 'CRITICAL').length;
-    const importantCount = result.analyses.filter(a => a.verdict === 'IMPORTANT').length;
-
-    const title = buildDecisionTitle(result.ticker, result.analyses.length, criticalCount, importantCount);
-
-    try {
-      await db.insert(pmDecisions).values({
-        pm: 'claude',
-        engineerId: 'sec-scanner',
-        ticker: result.ticker,
-        title,
-        category: 'sec-filing-report',
-        payload: JSON.stringify(payload),
-      });
-      decisionsCreated++;
-    } catch (err) {
-      console.error(`[sec-scanner] Failed to create decision for ${result.ticker}:`, err);
-    }
-  }
-
-  // Post Room notification if any new filings found
-  if (totalNewFilings > 0) {
-    const criticalTotal = tickerResults.reduce(
-      (sum, r) => sum + r.analyses.filter(a => a.verdict === 'CRITICAL').length, 0,
-    );
-    const tickers = tickerResults
-      .filter(r => r.newFilings.length > 0)
-      .map(r => r.ticker)
-      .join(', ');
-
-    const summary = criticalTotal > 0
-      ? `${totalNewFilings} new filing(s) detected across ${tickers} — ${criticalTotal} CRITICAL`
-      : `${totalNewFilings} new filing(s) detected across ${tickers}`;
-
-    try {
-      await db.insert(roomMessages).values({
-        sender: 'claude',
-        content: `[SEC Scanner] ${summary}. Review pending in Decision Dashboard.`,
-        channel: 'research',
-      });
-    } catch (err) {
-      console.error('[sec-scanner] Room notification failed:', err);
-    }
-  }
+  // Note: PM decisions and Room notifications are handled by the engineer engine
+  // via filing-engineer's decisionsFor/notifyPm/autoReviewBy config.
+  // The scanner is a pure data-fetching function.
 
   return {
     tickersScanned: targetTickers.length,
     totalNewFilings,
-    decisionsCreated,
+    decisionsCreated: 0, // decisions now created by engine, not scanner
     tickerResults,
     errors: Object.keys(errors).length > 0 ? errors : {},
     scannedAt: new Date().toISOString(),
@@ -482,38 +434,8 @@ function extractVerdict(analysis: string): { verdict: FilingAnalysis['verdict'];
   };
 }
 
-// ── Decision payload builders ────────────────────────────────────────────────
-
-function buildDecisionPayload(result: TickerScanResult) {
-  return {
-    ticker: result.ticker,
-    companyName: result.companyName,
-    scannedAt: new Date().toISOString(),
-    newFilingsCount: result.newFilings.length,
-    analyses: result.analyses.map(a => ({
-      form: a.filing.form,
-      filingDate: a.filing.filingDate,
-      accessionNumber: a.filing.accessionNumber,
-      description: a.filing.primaryDocDescription,
-      fileUrl: a.filing.fileUrl,
-      verdict: a.verdict,
-      verdictSummary: a.verdictSummary,
-      analysis: a.analysis,
-    })),
-  };
-}
-
-function buildDecisionTitle(
-  ticker: string,
-  count: number,
-  criticalCount: number,
-  importantCount: number,
-): string {
-  const parts = [`${count} new filing(s)`];
-  if (criticalCount > 0) parts.push(`${criticalCount} CRITICAL`);
-  if (importantCount > 0) parts.push(`${importantCount} IMPORTANT`);
-  return `SEC Scanner: ${ticker} — ${parts.join(', ')}`;
-}
+// Decision payload builders removed — decisions now created by engineer engine
+// via filing-engineer's decisionsFor config + Gemini auto-review gate.
 
 // ── Filing coverage check (database status) ─────────────────────────────────
 

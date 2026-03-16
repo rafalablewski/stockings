@@ -23,6 +23,7 @@ export interface EngineerTask {
   notifyPm?: string;              // PM sender name to notify in the Room on completion
   decisionsFor?: string;          // PM id to create decision items for on completion
   decisionCategory?: string;      // PM decision category (default: 'prompt-patch')
+  autoReviewBy?: string;          // PM id whose AI model auto-reviews decisions before chainsTo fires
 }
 
 export const engineers: EngineerTask[] = [
@@ -85,6 +86,10 @@ export const engineers: EngineerTask[] = [
     dataSource: 'EDGAR API (SEC)',
     category: 'monitoring',
     chainsTo: 'db-ingestor-engineer',
+    decisionsFor: 'gemini',
+    decisionCategory: 'sec-filing-review',
+    notifyPm: 'gemini',
+    autoReviewBy: 'gemini',
   },
   {
     id: 'db-ingestor-engineer',

@@ -17,6 +17,7 @@ import { workflows } from '@/data/workflows';
 import { resolvePromptPlaceholders } from './prompt-placeholders';
 import { asts, bmnr, crcl } from '@/data';
 import { scanForNewFilings } from './sec-scanner';
+import { autoReviewDecision } from './gemini-auto-review';
 
 // Claude models for engineer runs
 const CLAUDE_MODEL_DEFAULT = 'claude-sonnet-4-5-20250929';
@@ -271,26 +272,60 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
   }
 
   // ── Create PM decision item if configured ────────────────────────────
+  let decisionId: number | null = null;
   if (!hasFailure && engineer.decisionsFor) {
     const decisionCategory = engineer.decisionCategory || 'prompt-patch';
     const patchCountPattern = decisionCategory === 'data-patch' ? /"filing_ref"/g : /"finding_id"/g;
     const patchCount = (combinedOutput.match(patchCountPattern) || []).length;
     const itemLabel = decisionCategory === 'data-patch' ? 'data patches' : 'prompt patches';
-    db.insert(pmDecisions).values({
-      pm: engineer.decisionsFor,
-      engineerId: engineer.id,
-      runId: lastRunId,
-      ticker: opts.ticker,
-      title: `${engineer.name}: ${patchCount} ${itemLabel} for review`,
-      category: decisionCategory,
-      payload: combinedOutput,
-    }).catch(err => {
+    try {
+      const [row] = await db.insert(pmDecisions).values({
+        pm: engineer.decisionsFor,
+        engineerId: engineer.id,
+        runId: lastRunId,
+        ticker: opts.ticker,
+        title: `${engineer.name}: ${patchCount} ${itemLabel} for review`,
+        category: decisionCategory,
+        payload: combinedOutput,
+      }).returning({ id: pmDecisions.id });
+      decisionId = row?.id ?? null;
+    } catch (err) {
       console.error(`[engine] Decision creation failed for ${engineer.decisionsFor}:`, err);
-    });
+    }
   }
 
-  // ── Chaining: trigger downstream engineer if configured ──────────────
-  if (!hasFailure && engineer.chainsTo) {
+  // ── Auto-review gate: if configured, Gemini AI reviews before chaining ──
+  if (!hasFailure && engineer.autoReviewBy && decisionId) {
+    try {
+      const review = await autoReviewDecision(
+        decisionId,
+        engineer.autoReviewBy,
+        combinedOutput,
+        engineer,
+        opts.ticker,
+      );
+      if (review.approved && engineer.chainsTo) {
+        const chainPayload = review.enhancedPayload || combinedOutput;
+        const downstreamEngineer = getEngineer(engineer.chainsTo);
+        if (downstreamEngineer) {
+          runEngineer({
+            ticker: opts.ticker,
+            engineerId: engineer.chainsTo,
+            triggerType: 'event',
+            triggerReason: `Chained from ${engineer.id} (run #${lastRunId}) — Gemini approved`,
+            chainContext: { LATEST_AUDIT_OUTPUT: chainPayload },
+          }).catch(err => {
+            console.error(`[engine] Chain failed for ${engineer.chainsTo}:`, err);
+          });
+        }
+      }
+    } catch (err) {
+      console.error(`[engine] Auto-review failed for ${engineer.autoReviewBy}:`, err);
+    }
+  }
+
+  // ── Chaining: trigger downstream engineer if configured (non-reviewed) ──
+  if (!hasFailure && engineer.chainsTo && !engineer.autoReviewBy) {
     const downstreamEngineer = getEngineer(engineer.chainsTo);
     if (downstreamEngineer) {
       runEngineer({

@@ -386,7 +386,8 @@ export const dataFlowEdges: OrgEdge[] = [
   { from: 'eng-doc-reviewer', to: 'div-pm', type: 'dataflow', label: 'audit report', color: 'rgba(251, 146, 60, 0.5)' },
   { from: 'eng-doc-reviewer', to: 'eng-ux-ui', type: 'dataflow', label: 'doc audit → implement', color: 'rgba(249, 168, 212, 0.5)' },
   { from: 'eng-ux-ui', to: 'div-maszka', type: 'dataflow', label: 'code changes → approve/reject', color: 'rgba(244, 114, 182, 0.6)' },
-  { from: 'eng-filing', to: 'eng-db-ingestor', type: 'dataflow', label: 'scan → ingest', color: 'rgba(34, 211, 238, 0.5)' },
+  { from: 'eng-filing', to: 'div-gemini', type: 'dataflow', label: 'scan report → Gemini AI review', color: 'rgba(34, 211, 238, 0.5)' },
+  { from: 'div-gemini', to: 'eng-db-ingestor', type: 'dataflow', label: 'approved → ingest', color: 'rgba(34, 211, 238, 0.5)' },
   { from: 'eng-db-ingestor', to: 'div-claude', type: 'dataflow', label: 'patches → approve/reject', color: 'rgba(34, 211, 238, 0.5)' },
 ];
 
