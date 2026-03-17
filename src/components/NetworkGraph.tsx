@@ -329,6 +329,23 @@ function GraphTooltip({ tooltip, engineers }: { tooltip: TooltipState; engineers
               {eng.triggerEvents.map(e => e.replace(/-/g, ' ')).join(', ')}
             </span>
           </div>
+          {eng.decisionsFor && (
+            <div className="eng-graph-tooltip-row">
+              <span className="eng-graph-tooltip-key">Decisions →</span>
+              <span className="eng-graph-tooltip-val">
+                {eng.decisionsFor.charAt(0).toUpperCase() + eng.decisionsFor.slice(1)} PM
+                {eng.decisionCategory ? ` (${eng.decisionCategory})` : ''}
+              </span>
+            </div>
+          )}
+          {eng.chainsTo && (
+            <div className="eng-graph-tooltip-row">
+              <span className="eng-graph-tooltip-key">Chains to</span>
+              <span className="eng-graph-tooltip-val">
+                {engineers.find(e => e.id === eng.chainsTo)?.name ?? eng.chainsTo}
+              </span>
+            </div>
+          )}
         </>
       )}
     </div>

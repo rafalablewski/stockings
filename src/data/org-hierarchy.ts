@@ -389,6 +389,8 @@ export const dataFlowEdges: OrgEdge[] = [
   { from: 'eng-filing', to: 'div-gemini', type: 'dataflow', label: 'scan report → Gemini AI review', color: 'rgba(34, 211, 238, 0.5)' },
   { from: 'div-gemini', to: 'eng-db-ingestor', type: 'dataflow', label: 'approved → ingest', color: 'rgba(34, 211, 238, 0.5)' },
   { from: 'eng-db-ingestor', to: 'div-claude', type: 'dataflow', label: 'patches → approve/reject', color: 'rgba(34, 211, 238, 0.5)' },
+  // Thesis Engineer → Claude PM Decision Dashboard (thesis-review decisions)
+  { from: 'eng-thesis', to: 'div-claude', type: 'dataflow', label: 'thesis review → approve/reject', color: 'rgba(34, 211, 238, 0.5)' },
 ];
 
 // ── Layout computation ─────────────────────────────────────────────────────
