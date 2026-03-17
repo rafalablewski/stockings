@@ -3641,79 +3641,52 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .ops-container {
-  max-width: 1000px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 0 16px;
 }
 
-.ops-empty {
-  text-align: center;
-  padding: 60px 20px;
-  color: rgba(255,255,255,0.3);
-  font-size: 14px;
+/* Header */
+.ops-header {
+  margin-bottom: 24px;
+}
+.ops-header-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 6px;
+}
+.ops-header-sub {
+  font-size: 13px;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.5;
 }
 
-/* ── KPI strip ── */
-.ops-kpi-strip {
-  display: flex;
-  gap: 2px;
-  margin-bottom: 20px;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 12px;
-  overflow: hidden;
-}
-.ops-kpi {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 16px 12px;
-  gap: 4px;
-}
-.ops-kpi-value {
-  font-size: 22px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.85);
-  font-variant-numeric: tabular-nums;
-}
-.ops-kpi-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(255,255,255,0.35);
-  font-weight: 500;
-}
-
-.ops-pipeline-steps {
-  font-size: 10px;
-  color: rgba(255,255,255,0.3);
-  margin-left: 6px;
-}
-
-/* ── Operation cards ── */
+/* Pipeline cards */
 .ops-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .ops-card {
   border: 1px solid rgba(255,255,255,0.06);
+  border-left: 3px solid var(--ops-accent, rgba(255,255,255,0.1));
   border-radius: 12px;
   background: rgba(255,255,255,0.015);
   overflow: hidden;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
-.ops-card-live {
-  border-color: rgba(251, 191, 36, 0.2);
+.ops-card-open {
+  border-color: rgba(255,255,255,0.1);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
 }
 
 .ops-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 16px;
+  padding: 16px 18px;
   cursor: pointer;
   transition: background 0.15s;
 }
@@ -3724,212 +3697,140 @@
 .ops-card-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
-.ops-status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.ops-pulse {
-  animation: ops-pulse-anim 2s ease-in-out infinite;
-}
-@keyframes ops-pulse-anim {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 currentColor; }
-  50% { opacity: 0.6; box-shadow: 0 0 12px 2px currentColor; }
+.ops-card-icon {
+  font-size: 22px;
+  line-height: 1;
 }
 
 .ops-card-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.85);
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
 }
 
 .ops-card-meta {
   font-size: 12px;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.35);
   margin-top: 2px;
 }
 
-.ops-card-right {
+/* ── Mini track (collapsed preview) ── */
+.ops-mini-track {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.ops-status-badge {
-  padding: 3px 10px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-/* ── Pipeline track (horizontal step visualization) ── */
-.ops-pipeline-track {
-  display: flex;
-  align-items: center;
-  padding: 12px 20px 16px;
+  padding: 0 20px 14px;
   gap: 0;
 }
+.ops-mini-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: transform 0.2s ease;
+}
+.ops-mini-dot:hover {
+  transform: scale(1.4);
+  opacity: 1;
+}
+.ops-mini-connector {
+  flex: 1;
+  height: 2px;
+  min-width: 12px;
+  border-radius: 1px;
+  opacity: 0.25;
+}
 
-.ops-step {
+/* ── Expanded step list (vertical timeline) ── */
+.ops-steps {
+  padding: 16px 18px 20px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  min-height: 0;
+}
+
+.ops-step-row {
+  display: flex;
+  gap: 16px;
+  min-height: 56px;
+}
+
+/* Vertical rail with numbered node + connecting line */
+.ops-step-rail {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
   flex-shrink: 0;
+  width: 28px;
 }
-
-.ops-step-dot {
+.ops-step-node {
   width: 28px;
   height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid transparent;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+  z-index: 1;
 }
-.ops-step:hover .ops-step-dot {
-  transform: scale(1.15);
-}
-
-.ops-step-icon {
-  font-size: 12px;
+.ops-step-node-num {
+  font-size: 11px;
   font-weight: 700;
   color: #000;
   line-height: 1;
 }
+.ops-step-line {
+  width: 2px;
+  flex: 1;
+  min-height: 12px;
+  opacity: 0.25;
+  border-radius: 1px;
+}
+
+/* Step content card */
+.ops-step-content {
+  flex: 1;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.15s ease;
+}
+.ops-step-content:hover {
+  background: rgba(255,255,255,0.03) !important;
+}
+
+.ops-step-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.ops-step-type-icon {
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+}
 
 .ops-step-label {
-  font-size: 10px;
-  color: rgba(255,255,255,0.5);
-  text-align: center;
-  max-width: 80px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ops-connector {
-  flex: 1;
-  height: 2px;
-  min-width: 24px;
-  border-radius: 1px;
-  margin-bottom: 20px; /* align with dot center, above label */
-  transition: background 0.3s ease;
-}
-
-/* ── Expanded detail ── */
-.ops-detail {
-  padding: 0 16px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  border-top: 1px solid rgba(255,255,255,0.04);
-  min-height: 0;
-}
-
-.ops-step-detail {
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.04);
-  border-radius: 8px;
-  padding: 12px;
-}
-
-.ops-step-detail-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.ops-step-detail-num {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  background: rgba(255,255,255,0.06);
-  flex-shrink: 0;
-}
-
-.ops-step-detail-name {
   font-size: 13px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.8);
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
 }
 
-.ops-step-detail-status {
+.ops-step-actor {
   margin-left: auto;
   font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-/* ── Step info rows ── */
-.ops-step-info,
-.ops-step-decision {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.ops-step-decision {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px dashed rgba(255,255,255,0.06);
-}
-
-.ops-step-info-row {
-  display: flex;
-  gap: 10px;
-  font-size: 12px;
-  line-height: 1.4;
-}
-
-.ops-info-label {
-  color: rgba(255,255,255,0.35);
-  min-width: 70px;
-  flex-shrink: 0;
   font-weight: 500;
+  white-space: nowrap;
 }
 
-.ops-info-value {
-  color: rgba(255,255,255,0.6);
-  word-break: break-word;
-}
-
-.ops-info-mono {
-  font-family: monospace;
-  font-size: 11px;
-}
-
-.ops-decision-status {
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 11px;
-  letter-spacing: 0.03em;
-}
-.ops-decision-status[data-status="pm-approved"] { color: #34d399; }
-.ops-decision-status[data-status="boss-approved"] { color: #22d3ee; }
-.ops-decision-status[data-status="applied"] { color: #7ee787; }
-.ops-decision-status[data-status="pending"] { color: #fbbf24; }
-.ops-decision-status[data-status="pm-rejected"],
-.ops-decision-status[data-status="boss-rejected"] { color: #f87171; }
-
-.ops-step-waiting {
+.ops-step-desc {
   font-size: 12px;
-  color: rgba(255,255,255,0.25);
-  font-style: italic;
-  padding-top: 4px;
+  color: rgba(255,255,255,0.4);
+  line-height: 1.5;
 }
 

@@ -1,370 +1,272 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
-import { authFetch } from '@/lib/auth-fetch';
+import React, { useState } from 'react';
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+// ── Static pipeline definitions ──────────────────────────────────────────────
 
-interface RunInfo {
-  id: number;
-  status: string;
-  triggerType: string;
-  triggerReason: string | null;
-  outputSummary: string | null;
-  durationMs: number | null;
-  startedAt: string | null;
-  completedAt: string | null;
-  createdAt: string;
-  patchesApplied: number;
-}
-
-interface DecisionInfo {
-  id: number;
-  status: string;
-  category: string;
-  title: string;
-  pm: string;
-  pmNotes: string | null;
-  bossNotes: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface StepInstance {
-  engineerId: string;
+interface PipelineStep {
   label: string;
-  run: RunInfo | null;
-  decision: DecisionInfo | null;
-  status: 'completed' | 'running' | 'failed' | 'waiting' | 'blocked' | 'skipped';
+  actor: string;
+  actorColor: string;
+  description: string;
+  type: 'trigger' | 'engineer' | 'review' | 'decision' | 'output';
 }
 
-interface Operation {
-  pipelineId: string;
-  pipelineName: string;
-  pipelineStepCount: number;
-  startedAt: string | null;
-  completedAt: string | null;
-  status: 'completed' | 'in-progress' | 'failed' | 'blocked';
-  steps: StepInstance[];
-}
-
-interface PipelineDef {
+interface Pipeline {
   id: string;
   name: string;
-  steps: Array<{ engineerId: string; label: string }>;
+  icon: string;
+  accent: string;
+  steps: PipelineStep[];
 }
 
-// ── Status config ─────────────────────────────────────────────────────────────
+const PIPELINES: Pipeline[] = [
+  {
+    id: 'sec-filing',
+    name: 'SEC Filing Pipeline',
+    icon: '\u{1F4C4}',
+    accent: '#34d399',
+    steps: [
+      {
+        label: 'EDGAR Poll',
+        actor: 'Schedule',
+        actorColor: '#94a3b8',
+        description: 'Cron triggers every 60 min — checks SEC EDGAR for new filings',
+        type: 'trigger',
+      },
+      {
+        label: 'Filing Scanner',
+        actor: 'Gemini Division',
+        actorColor: '#34d399',
+        description: 'Scans EDGAR API, identifies new/untracked filings, produces coverage report',
+        type: 'engineer',
+      },
+      {
+        label: 'Gemini Auto-Review',
+        actor: 'Gemini AI',
+        actorColor: '#34d399',
+        description: 'Gemini AI validates scan output — approves or rejects before chaining',
+        type: 'review',
+      },
+      {
+        label: 'PM Decision Gate',
+        actor: 'Gemini PM',
+        actorColor: '#34d399',
+        description: 'Decision created in PM tab (sec-filing-review). Auto-approved → chains forward',
+        type: 'decision',
+      },
+      {
+        label: 'DB Ingestor',
+        actor: 'Claude Division',
+        actorColor: '#22d3ee',
+        description: '7-phase deep analysis: materiality triage, form extraction, cross-filing correlation, conflict detection, patch generation, pre-write gate, executive summary',
+        type: 'engineer',
+      },
+      {
+        label: 'Boss Decision Gate',
+        actor: 'Claude PM → Boss',
+        actorColor: '#22d3ee',
+        description: 'Data patches created in PM tab (data-patch). Requires Boss approval to apply',
+        type: 'decision',
+      },
+      {
+        label: 'Apply Data Patches',
+        actor: 'System',
+        actorColor: '#7ee787',
+        description: 'Validated patches written to database files (capital, financials, timeline, catalysts, etc.)',
+        type: 'output',
+      },
+    ],
+  },
+  {
+    id: 'prompt-audit',
+    name: 'Prompt Audit Pipeline',
+    icon: '\u{1F50D}',
+    accent: '#fb923c',
+    steps: [
+      {
+        label: 'Scheduled Trigger',
+        actor: 'Schedule',
+        actorColor: '#94a3b8',
+        description: 'Daily cron — checks all workflow prompts against live codebase',
+        type: 'trigger',
+      },
+      {
+        label: 'Prompt Auditor',
+        actor: 'Bobman Division',
+        actorColor: '#fb923c',
+        description: 'Scans every workflow prompt, inventories codebase features, diffs for drift',
+        type: 'engineer',
+      },
+      {
+        label: 'Prompt Remediation',
+        actor: 'Maszka Division',
+        actorColor: '#f472b6',
+        description: 'Receives drift findings, generates anchor-based text patches for prompt templates',
+        type: 'engineer',
+      },
+      {
+        label: 'PM Decision Gate',
+        actor: 'Maszka PM → Boss',
+        actorColor: '#f472b6',
+        description: 'Prompt patches in PM tab (prompt-patch). Requires approval to apply',
+        type: 'decision',
+      },
+      {
+        label: 'Apply Prompt Patches',
+        actor: 'System',
+        actorColor: '#7ee787',
+        description: 'Patches applied to workflows.ts prompt templates',
+        type: 'output',
+      },
+    ],
+  },
+  {
+    id: 'doc-review',
+    name: 'Doc Review Pipeline',
+    icon: '\u{1F4DD}',
+    accent: '#a78bfa',
+    steps: [
+      {
+        label: 'Scheduled Trigger',
+        actor: 'Schedule',
+        actorColor: '#94a3b8',
+        description: 'Daily cron — reviews recent code changes for documentation gaps',
+        type: 'trigger',
+      },
+      {
+        label: 'Documentation Engineer',
+        actor: 'Bobman Division',
+        actorColor: '#fb923c',
+        description: 'Reviews diffs, identifies doc gaps, audits style guides, maintains changelogs',
+        type: 'engineer',
+      },
+      {
+        label: 'UX/UI Engineer',
+        actor: 'Maszka Division',
+        actorColor: '#f472b6',
+        description: 'Receives audit report, implements style/theme changes or creates counter-proposals',
+        type: 'engineer',
+      },
+      {
+        label: 'PM Decision Gate',
+        actor: 'Maszka PM → Boss',
+        actorColor: '#f472b6',
+        description: 'UI changes routed through PM tab for approval',
+        type: 'decision',
+      },
+      {
+        label: 'Changes Applied',
+        actor: 'System',
+        actorColor: '#7ee787',
+        description: 'Approved style guide and documentation updates merged',
+        type: 'output',
+      },
+    ],
+  },
+];
 
-const OP_STATUS: Record<string, { color: string; bg: string; label: string; pulse?: boolean }> = {
-  'completed':   { color: '#7ee787', bg: 'rgba(126, 231, 135, 0.12)', label: 'Completed' },
-  'in-progress': { color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.12)', label: 'In Progress', pulse: true },
-  'failed':      { color: '#f87171', bg: 'rgba(248, 113, 113, 0.12)', label: 'Failed' },
-  'blocked':     { color: '#fb923c', bg: 'rgba(251, 146, 60, 0.12)', label: 'Awaiting Approval', pulse: true },
+const STEP_TYPE_STYLES: Record<string, { icon: string; bg: string }> = {
+  trigger:  { icon: '\u26A1', bg: 'rgba(148, 163, 184, 0.12)' },
+  engineer: { icon: '\u2699',  bg: 'rgba(255, 255, 255, 0.04)' },
+  review:   { icon: '\u{1F916}', bg: 'rgba(52, 211, 153, 0.08)' },
+  decision: { icon: '\u2714',  bg: 'rgba(251, 191, 36, 0.08)' },
+  output:   { icon: '\u{1F4BE}', bg: 'rgba(126, 231, 135, 0.08)' },
 };
-
-const STEP_STATUS: Record<string, { color: string; icon: string }> = {
-  'completed': { color: '#7ee787', icon: '\u2713' },
-  'running':   { color: '#fbbf24', icon: '\u25B6' },
-  'failed':    { color: '#f87171', icon: '\u2717' },
-  'waiting':   { color: 'rgba(255,255,255,0.2)', icon: '\u2022' },
-  'blocked':   { color: '#fb923c', icon: '\u23F8' },
-  'skipped':   { color: 'rgba(255,255,255,0.1)', icon: '\u2014' },
-};
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-function formatDuration(ms: number | null): string {
-  if (!ms) return '-';
-  if (ms < 1000) return `${ms}ms`;
-  if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
-  return `${(ms / 60_000).toFixed(1)}m`;
-}
-
-function formatTimeAgo(date: string | null): string {
-  if (!date) return '-';
-  const diff = Date.now() - new Date(date).getTime();
-  if (diff < 60_000) return 'just now';
-  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
-  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
-  return `${Math.floor(diff / 86_400_000)}d ago`;
-}
-
-function pipelineShortName(name: string, stepCount: number): string {
-  if (stepCount === 1) {
-    // Single-step: just use the engineer name, clean up
-    return name.replace(/ Engineer$/, '');
-  }
-  const first = name.split(' → ')[0];
-  if (first.includes('Filing')) return 'SEC Filing Pipeline';
-  if (first.includes('Prompt')) return 'Prompt Audit Pipeline';
-  if (first.includes('Doc')) return 'Doc Review Pipeline';
-  return first.replace(/ Engineer$/, '') + ' Pipeline';
-}
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-interface Props {
-  ticker: string;
-}
-
-export default function OperationsPipeline({ ticker }: Props) {
-  const [operations, setOperations] = useState<Operation[]>([]);
-  const [pipelines, setPipelines] = useState<PipelineDef[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [expandedOp, setExpandedOp] = useState<number | null>(null);
-  const [filterPipeline, setFilterPipeline] = useState<string | null>(null);
-
-  const fetchOps = useCallback(async () => {
-    try {
-      const res = await authFetch(`/api/operations?ticker=${ticker}&limit=20`);
-      const data = await res.json();
-      setOperations(data.operations || []);
-      setPipelines(data.pipelines || []);
-    } catch {
-      console.error('Failed to fetch operations');
-    } finally {
-      setLoading(false);
-    }
-  }, [ticker]);
-
-  useEffect(() => { fetchOps(); }, [fetchOps]);
-
-  // Auto-refresh every 30s for live operations
-  useEffect(() => {
-    const interval = setInterval(fetchOps, 30_000);
-    return () => clearInterval(interval);
-  }, [fetchOps]);
-
-  const filtered = filterPipeline
-    ? operations.filter(op => op.pipelineId === filterPipeline)
-    : operations;
-
-  const counts = {
-    total: operations.length,
-    completed: operations.filter(o => o.status === 'completed').length,
-    active: operations.filter(o => o.status === 'in-progress').length,
-    blocked: operations.filter(o => o.status === 'blocked').length,
-    failed: operations.filter(o => o.status === 'failed').length,
-  };
-
-  if (loading) {
-    return <div className="ops-empty">Loading operations...</div>;
-  }
+export default function OperationsPipeline() {
+  const [expandedPipeline, setExpandedPipeline] = useState<string | null>('sec-filing');
 
   return (
     <div className="ops-container">
-      {/* KPI strip */}
-      <div className="ops-kpi-strip">
-        <div className="ops-kpi">
-          <span className="ops-kpi-value">{counts.total}</span>
-          <span className="ops-kpi-label">Total Ops</span>
-        </div>
-        <div className="ops-kpi">
-          <span className="ops-kpi-value" style={{ color: '#7ee787' }}>{counts.completed}</span>
-          <span className="ops-kpi-label">Completed</span>
-        </div>
-        <div className="ops-kpi">
-          <span className="ops-kpi-value" style={{ color: '#fbbf24' }}>{counts.active}</span>
-          <span className="ops-kpi-label">Active</span>
-        </div>
-        <div className="ops-kpi">
-          <span className="ops-kpi-value" style={{ color: '#fb923c' }}>{counts.blocked}</span>
-          <span className="ops-kpi-label">Blocked</span>
-        </div>
-        <div className="ops-kpi">
-          <span className="ops-kpi-value" style={{ color: '#f87171' }}>{counts.failed}</span>
-          <span className="ops-kpi-label">Failed</span>
+      <div className="ops-header">
+        <div className="ops-header-title">Operation Pipelines</div>
+        <div className="ops-header-sub">
+          How data flows from trigger to database — each pipeline is a multi-step chain of engineers, reviews, and approvals.
         </div>
       </div>
 
-      {/* Pipeline filter */}
-      {pipelines.length > 1 && (
-        <div className="eng-view-toggle-bar">
-          <button
-            className={`eng-view-toggle ${!filterPipeline ? 'active' : ''}`}
-            onClick={() => setFilterPipeline(null)}
-          >
-            All Pipelines
-          </button>
-          {pipelines.map(p => (
-            <button
-              key={p.id}
-              className={`eng-view-toggle ${filterPipeline === p.id ? 'active' : ''}`}
-              onClick={() => setFilterPipeline(p.id)}
+      <div className="ops-list">
+        {PIPELINES.map(pipeline => {
+          const isOpen = expandedPipeline === pipeline.id;
+
+          return (
+            <div
+              key={pipeline.id}
+              className={`ops-card ${isOpen ? 'ops-card-open' : ''}`}
+              style={{ '--ops-accent': pipeline.accent } as React.CSSProperties}
             >
-              {pipelineShortName(p.name, p.steps.length)}
-              <span className="ops-pipeline-steps">{p.steps.length} steps</span>
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* Operation cards */}
-      {filtered.length === 0 ? (
-        <div className="ops-empty">
-          No operations recorded yet. Run an engineer pipeline to see it here.
-        </div>
-      ) : (
-        <div className="ops-list">
-          {filtered.map((op, idx) => {
-            const opSt = OP_STATUS[op.status] || OP_STATUS['completed'];
-            const isExpanded = expandedOp === idx;
-
-            return (
+              {/* Pipeline header */}
               <div
-                key={idx}
-                className={`ops-card ${op.status === 'in-progress' || op.status === 'blocked' ? 'ops-card-live' : ''}`}
+                className="ops-card-header"
+                onClick={() => setExpandedPipeline(isOpen ? null : pipeline.id)}
               >
-                {/* Card header */}
-                <div className="ops-card-header" onClick={() => setExpandedOp(isExpanded ? null : idx)}>
-                  <div className="ops-card-left">
-                    <div
-                      className={`ops-status-dot ${opSt.pulse ? 'ops-pulse' : ''}`}
-                      style={{ background: opSt.color }}
-                    />
-                    <div>
-                      <div className="ops-card-title">{pipelineShortName(op.pipelineName, op.pipelineStepCount)}</div>
-                      <div className="ops-card-meta">
-                        {formatTimeAgo(op.startedAt)}
-                        {op.completedAt && <> &middot; took {formatDuration(
-                          new Date(op.completedAt).getTime() - new Date(op.startedAt || op.completedAt).getTime()
-                        )}</>}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="ops-card-right">
-                    <span className="ops-status-badge" style={{ background: opSt.bg, color: opSt.color }}>
-                      {opSt.label}
-                    </span>
-                    <span className="dec-expand-icon">{isExpanded ? '\u25B2' : '\u25BC'}</span>
+                <div className="ops-card-left">
+                  <span className="ops-card-icon">{pipeline.icon}</span>
+                  <div>
+                    <div className="ops-card-title">{pipeline.name}</div>
+                    <div className="ops-card-meta">{pipeline.steps.length} steps</div>
                   </div>
                 </div>
+                <span className="dec-expand-icon">{isOpen ? '\u25B2' : '\u25BC'}</span>
+              </div>
 
-                {/* Pipeline visualization (multi-step only) */}
-                {op.pipelineStepCount > 1 && <div className="ops-pipeline-track">
-                  {op.steps.map((step, si) => {
-                    const ss = STEP_STATUS[step.status];
+              {/* Miniature pipeline dots (always visible) */}
+              <div className="ops-mini-track">
+                {pipeline.steps.map((step, i) => (
+                  <React.Fragment key={i}>
+                    {i > 0 && <div className="ops-mini-connector" style={{ background: pipeline.accent }} />}
+                    <div
+                      className="ops-mini-dot"
+                      style={{ background: step.actorColor }}
+                      title={step.label}
+                    />
+                  </React.Fragment>
+                ))}
+              </div>
+
+              {/* Expanded: full step-by-step breakdown */}
+              <div className={`dec-card-body-anim ${isOpen ? 'dec-body-open' : ''}`}>
+                <div className="ops-steps">
+                  {pipeline.steps.map((step, i) => {
+                    const typeStyle = STEP_TYPE_STYLES[step.type];
                     return (
-                      <React.Fragment key={si}>
-                        {si > 0 && (
+                      <div key={i} className="ops-step-row">
+                        {/* Vertical connector */}
+                        <div className="ops-step-rail">
                           <div
-                            className="ops-connector"
-                            style={{
-                              background: step.status === 'waiting' || step.status === 'skipped'
-                                ? 'rgba(255,255,255,0.06)'
-                                : ss.color,
-                            }}
-                          />
-                        )}
-                        <div className="ops-step" title={`${step.label}: ${step.status}`}>
-                          <div
-                            className={`ops-step-dot ${step.status === 'running' ? 'ops-pulse' : ''}`}
-                            style={{ background: ss.color, borderColor: ss.color }}
+                            className="ops-step-node"
+                            style={{ background: step.actorColor }}
                           >
-                            <span className="ops-step-icon">{ss.icon}</span>
+                            <span className="ops-step-node-num">{i + 1}</span>
                           </div>
-                          <span className="ops-step-label">{step.label.replace(/ Engineer$/, '').replace(/^SEC /, '')}</span>
+                          {i < pipeline.steps.length - 1 && (
+                            <div className="ops-step-line" style={{ background: pipeline.accent }} />
+                          )}
                         </div>
-                      </React.Fragment>
+
+                        {/* Step content */}
+                        <div className="ops-step-content" style={{ background: typeStyle.bg }}>
+                          <div className="ops-step-top">
+                            <span className="ops-step-type-icon">{typeStyle.icon}</span>
+                            <span className="ops-step-label">{step.label}</span>
+                            <span className="ops-step-actor" style={{ color: step.actorColor }}>
+                              {step.actor}
+                            </span>
+                          </div>
+                          <div className="ops-step-desc">{step.description}</div>
+                        </div>
+                      </div>
                     );
                   })}
-                </div>}
-
-                {/* Expanded detail */}
-                <div className={`dec-card-body-anim ${isExpanded ? 'dec-body-open' : ''}`}>
-                  <div className="ops-detail">
-                    {op.steps.map((step, si) => {
-                      const ss = STEP_STATUS[step.status];
-                      return (
-                        <div key={si} className="ops-step-detail">
-                          <div className="ops-step-detail-header">
-                            <span className="ops-step-detail-num" style={{ color: ss.color }}>
-                              {si + 1}
-                            </span>
-                            <span className="ops-step-detail-name">{step.label}</span>
-                            <span className="ops-step-detail-status" style={{ color: ss.color }}>
-                              {step.status}
-                            </span>
-                          </div>
-
-                          {/* Run info */}
-                          {step.run && (
-                            <div className="ops-step-info">
-                              <div className="ops-step-info-row">
-                                <span className="ops-info-label">Run #{step.run.id}</span>
-                                <span className="ops-info-value">
-                                  {step.run.triggerType}
-                                  {step.run.durationMs != null && <> &middot; {formatDuration(step.run.durationMs)}</>}
-                                </span>
-                              </div>
-                              {step.run.triggerReason && (
-                                <div className="ops-step-info-row">
-                                  <span className="ops-info-label">Trigger</span>
-                                  <span className="ops-info-value ops-info-mono">{step.run.triggerReason}</span>
-                                </div>
-                              )}
-                              {step.run.outputSummary && (
-                                <div className="ops-step-info-row">
-                                  <span className="ops-info-label">Output</span>
-                                  <span className="ops-info-value">{step.run.outputSummary}</span>
-                                </div>
-                              )}
-                              {step.run.patchesApplied > 0 && (
-                                <div className="ops-step-info-row">
-                                  <span className="ops-info-label">Patches</span>
-                                  <span className="ops-info-value" style={{ color: '#7ee787' }}>
-                                    {step.run.patchesApplied} applied
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                          {/* Decision info */}
-                          {step.decision && (
-                            <div className="ops-step-decision">
-                              <div className="ops-step-info-row">
-                                <span className="ops-info-label">Decision</span>
-                                <span className="ops-info-value">
-                                  <span className="ops-decision-status" data-status={step.decision.status}>
-                                    {step.decision.status}
-                                  </span>
-                                  &nbsp;by {step.decision.pm}
-                                </span>
-                              </div>
-                              {step.decision.pmNotes && (
-                                <div className="ops-step-info-row">
-                                  <span className="ops-info-label">PM Notes</span>
-                                  <span className="ops-info-value">{step.decision.pmNotes.slice(0, 200)}</span>
-                                </div>
-                              )}
-                              {step.decision.category && (
-                                <div className="ops-step-info-row">
-                                  <span className="ops-info-label">Category</span>
-                                  <span className="ops-info-value ops-info-mono">{step.decision.category}</span>
-                                </div>
-                              )}
-                            </div>
-                          )}
-
-                          {/* No run yet */}
-                          {!step.run && step.status === 'waiting' && (
-                            <div className="ops-step-waiting">Waiting for previous step to complete</div>
-                          )}
-                          {!step.run && step.status === 'skipped' && (
-                            <div className="ops-step-waiting">Skipped — previous step failed</div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

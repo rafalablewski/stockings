@@ -1342,7 +1342,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
 
         {/* ══ OPERATIONS TAB ══ */}
         {activeTab === 'operations' && (
-          <OperationsPipeline ticker={selectedTicker.toLowerCase()} />
+          <OperationsPipeline />
         )}
 
         {loading && (
