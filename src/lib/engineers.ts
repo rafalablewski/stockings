@@ -49,6 +49,10 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['filing-ingested', 'press-release-added', 'price-alert'],
     requiresData: false,
     category: 'research',
+    chainsTo: 'data-quality-engineer',
+    decisionsFor: 'claude',
+    decisionCategory: 'thesis-review',
+    pipelineDescription: 'Every 6 hours (or when new filings/press releases land), the Thesis Engineer pressure-tests our bull/bear/base investment thesis against the latest database. Its scorecard updates and conviction changes go to the Claude PM Decision Dashboard for human approval. Once approved, the Data Quality Engineer automatically runs to validate the data the thesis was built on — checking for stale numbers, cross-reference mismatches, and missing fields.',
     humanDescription: 'This engineer is like the person who constantly asks "do we still believe in this company?" It takes our investment thesis — the reasons we think a stock is a good bet — and checks it against the latest data. If a new filing contradicts our assumptions, or if good news strengthens them, it updates the confidence scores and flags anything that changed. It reads from our own research database, not the internet.',
   },
   {
