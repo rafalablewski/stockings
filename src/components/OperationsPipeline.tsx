@@ -41,6 +41,7 @@ interface StepInstance {
 interface Operation {
   pipelineId: string;
   pipelineName: string;
+  pipelineStepCount: number;
   startedAt: string | null;
   completedAt: string | null;
   status: 'completed' | 'in-progress' | 'failed' | 'blocked';
@@ -89,13 +90,16 @@ function formatTimeAgo(date: string | null): string {
   return `${Math.floor(diff / 86_400_000)}d ago`;
 }
 
-function pipelineShortName(name: string): string {
-  // "SEC Filing Engineer → SEC DB Ingestor" → "SEC Filing Pipeline"
+function pipelineShortName(name: string, stepCount: number): string {
+  if (stepCount === 1) {
+    // Single-step: just use the engineer name, clean up
+    return name.replace(/ Engineer$/, '');
+  }
   const first = name.split(' → ')[0];
   if (first.includes('Filing')) return 'SEC Filing Pipeline';
   if (first.includes('Prompt')) return 'Prompt Audit Pipeline';
   if (first.includes('Doc')) return 'Doc Review Pipeline';
-  return first + ' Pipeline';
+  return first.replace(/ Engineer$/, '') + ' Pipeline';
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -189,7 +193,7 @@ export default function OperationsPipeline({ ticker }: Props) {
               className={`eng-view-toggle ${filterPipeline === p.id ? 'active' : ''}`}
               onClick={() => setFilterPipeline(p.id)}
             >
-              {pipelineShortName(p.name)}
+              {pipelineShortName(p.name, p.steps.length)}
               <span className="ops-pipeline-steps">{p.steps.length} steps</span>
             </button>
           ))}
@@ -220,7 +224,7 @@ export default function OperationsPipeline({ ticker }: Props) {
                       style={{ background: opSt.color }}
                     />
                     <div>
-                      <div className="ops-card-title">{pipelineShortName(op.pipelineName)}</div>
+                      <div className="ops-card-title">{pipelineShortName(op.pipelineName, op.pipelineStepCount)}</div>
                       <div className="ops-card-meta">
                         {formatTimeAgo(op.startedAt)}
                         {op.completedAt && <> &middot; took {formatDuration(
@@ -237,8 +241,8 @@ export default function OperationsPipeline({ ticker }: Props) {
                   </div>
                 </div>
 
-                {/* Pipeline visualization (always visible) */}
-                <div className="ops-pipeline-track">
+                {/* Pipeline visualization (multi-step only) */}
+                {op.pipelineStepCount > 1 && <div className="ops-pipeline-track">
                   {op.steps.map((step, si) => {
                     const ss = STEP_STATUS[step.status];
                     return (
@@ -265,7 +269,7 @@ export default function OperationsPipeline({ ticker }: Props) {
                       </React.Fragment>
                     );
                   })}
-                </div>
+                </div>}
 
                 {/* Expanded detail */}
                 <div className={`dec-card-body-anim ${isExpanded ? 'dec-body-open' : ''}`}>
