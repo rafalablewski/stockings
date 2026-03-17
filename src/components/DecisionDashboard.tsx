@@ -53,91 +53,127 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }>
   'applied':        { bg: 'rgba(126, 231, 135, 0.15)', text: '#7ee787', label: 'Applied' },
 };
 
-const SWIPE_THRESHOLD = 120;  // px to trigger rejection
+const SWIPE_THRESHOLD = 120;
 const REJECT_STATUSES = ['pm-rejected', 'boss-rejected'];
+const EXECUTION_CATEGORIES = ['data-patch', 'prompt-patch'];
 
-// ── Swipe hook ────────────────────────────────────────────────────────────────
+// ── Gmail-style swipe hook ───────────────────────────────────────────────────
 
-function useSwipeLeft(onSwipe: () => void, enabled: boolean) {
+function useSwipeLeft(
+  onSwipe: () => void,
+  enabled: boolean,
+  indicatorRef: React.RefObject<HTMLDivElement | null>,
+) {
   const ref = useRef<HTMLDivElement>(null);
   const startX = useRef(0);
   const currentX = useRef(0);
   const swiping = useRef(false);
+  const didSwipe = useRef(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el || !enabled) return;
 
+    function applySwipeVisuals(dx: number) {
+      const el = ref.current;
+      if (!el) return;
+      const absDx = Math.abs(dx);
+      const progress = Math.min(1, absDx / SWIPE_THRESHOLD);
+
+      el.style.transform = `translateX(${dx}px)`;
+
+      // Update indicator
+      const ind = indicatorRef.current;
+      if (ind) {
+        ind.style.opacity = String(Math.min(1, progress * 1.5));
+        // Scale the icon like Gmail
+        const iconEl = ind.querySelector('.dec-swipe-icon') as HTMLElement | null;
+        if (iconEl) {
+          const scale = 0.6 + progress * 0.4;
+          iconEl.style.transform = `scale(${scale})`;
+          iconEl.style.opacity = String(progress);
+        }
+        // Red bg intensifies
+        const bgAlpha = Math.min(0.95, progress * 0.95);
+        ind.style.background = `rgba(220, 38, 38, ${bgAlpha})`;
+      }
+    }
+
+    function finishSwipe() {
+      const el = ref.current;
+      if (!el) return;
+      swiping.current = false;
+      const absDx = Math.abs(currentX.current);
+
+      if (absDx >= SWIPE_THRESHOLD) {
+        didSwipe.current = true;
+        // Slide off-screen like Gmail
+        el.style.transition = 'transform 0.25s cubic-bezier(0.4, 0, 1, 1)';
+        el.style.transform = `translateX(-${el.offsetWidth + 20}px)`;
+        setTimeout(onSwipe, 260);
+      } else {
+        // Snap back with spring
+        el.style.transition = 'transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        el.style.transform = 'translateX(0)';
+        // Fade indicator
+        const ind = indicatorRef.current;
+        if (ind) {
+          ind.style.transition = 'opacity 0.3s ease, background 0.3s ease';
+          ind.style.opacity = '0';
+          ind.style.background = 'rgba(220, 38, 38, 0)';
+          setTimeout(() => { ind.style.transition = ''; }, 300);
+        }
+        setTimeout(() => { didSwipe.current = false; }, 100);
+      }
+    }
+
+    // ── Touch ──
     const onTouchStart = (e: TouchEvent) => {
       startX.current = e.touches[0].clientX;
       currentX.current = 0;
       swiping.current = true;
+      didSwipe.current = false;
       el.style.transition = 'none';
+      const ind = indicatorRef.current;
+      if (ind) ind.style.transition = 'none';
     };
 
     const onTouchMove = (e: TouchEvent) => {
       if (!swiping.current) return;
       const dx = e.touches[0].clientX - startX.current;
-      // Only allow left swipe (negative)
       currentX.current = Math.min(0, dx);
-      el.style.transform = `translateX(${currentX.current}px)`;
-
-      // Show rejection indicator intensity
-      const progress = Math.min(1, Math.abs(currentX.current) / SWIPE_THRESHOLD);
-      el.style.setProperty('--swipe-progress', String(progress));
+      applySwipeVisuals(currentX.current);
     };
 
     const onTouchEnd = () => {
       if (!swiping.current) return;
-      swiping.current = false;
-
-      if (Math.abs(currentX.current) >= SWIPE_THRESHOLD) {
-        // Animate off-screen then trigger reject
-        el.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease';
-        el.style.transform = 'translateX(-100%)';
-        el.style.opacity = '0';
-        setTimeout(onSwipe, 300);
-      } else {
-        // Snap back
-        el.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-        el.style.transform = 'translateX(0)';
-        el.style.setProperty('--swipe-progress', '0');
-      }
+      finishSwipe();
     };
 
-    // Also support mouse drag for desktop
+    // ── Mouse (desktop) ──
     const onMouseDown = (e: MouseEvent) => {
+      // Only left button
+      if (e.button !== 0) return;
       startX.current = e.clientX;
       currentX.current = 0;
       swiping.current = true;
+      didSwipe.current = false;
       el.style.transition = 'none';
+      const ind = indicatorRef.current;
+      if (ind) ind.style.transition = 'none';
 
       const onMouseMove = (e: MouseEvent) => {
         if (!swiping.current) return;
         const dx = e.clientX - startX.current;
         currentX.current = Math.min(0, dx);
-        el.style.transform = `translateX(${currentX.current}px)`;
-        const progress = Math.min(1, Math.abs(currentX.current) / SWIPE_THRESHOLD);
-        el.style.setProperty('--swipe-progress', String(progress));
+        applySwipeVisuals(currentX.current);
       };
 
       const onMouseUp = () => {
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
-
         if (!swiping.current) return;
-        swiping.current = false;
-
-        if (Math.abs(currentX.current) >= SWIPE_THRESHOLD) {
-          el.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease';
-          el.style.transform = 'translateX(-100%)';
-          el.style.opacity = '0';
-          setTimeout(onSwipe, 300);
-        } else {
-          el.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-          el.style.transform = 'translateX(0)';
-          el.style.setProperty('--swipe-progress', '0');
-        }
+        finishSwipe();
       };
 
       document.addEventListener('mousemove', onMouseMove);
@@ -155,9 +191,9 @@ function useSwipeLeft(onSwipe: () => void, enabled: boolean) {
       el.removeEventListener('touchend', onTouchEnd);
       el.removeEventListener('mousedown', onMouseDown);
     };
-  }, [onSwipe, enabled]);
+  }, [onSwipe, enabled, indicatorRef]);
 
-  return ref;
+  return { ref, didSwipe };
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -169,7 +205,6 @@ export default function DecisionDashboard() {
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState<number | null>(null);
   const [showRejected, setShowRejected] = useState(false);
-  // Track recently rejected IDs for exit animation
   const [dismissingIds, setDismissingIds] = useState<Set<number>>(new Set());
 
   const fetchDecisions = useCallback(async () => {
@@ -202,12 +237,10 @@ export default function DecisionDashboard() {
   };
 
   const handleSwipeReject = useCallback((decision: Decision) => {
-    // Determine which rejection status based on current status
     const rejectStatus = decision.status === 'pm-approved' ? 'boss-rejected' : 'pm-rejected';
     const notes = decision.status === 'pm-approved' ? 'Swiped to reject by Boss' : 'Swiped to reject by PM';
 
     setDismissingIds(prev => new Set(prev).add(decision.id));
-    // Wait for animation then update
     setTimeout(() => {
       updateStatus(decision.id, rejectStatus, notes);
       setDismissingIds(prev => {
@@ -409,7 +442,20 @@ export default function DecisionDashboard() {
   );
 }
 
-// ── Decision Card (extracted for swipe ref) ──────────────────────────────────
+// ── Trash icon SVG ───────────────────────────────────────────────────────────
+
+function TrashIcon() {
+  return (
+    <svg className="dec-swipe-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+      <line x1="10" y1="11" x2="10" y2="17" />
+      <line x1="14" y1="11" x2="14" y2="17" />
+    </svg>
+  );
+}
+
+// ── Decision Card ────────────────────────────────────────────────────────────
 
 interface DecisionCardProps {
   decision: Decision;
@@ -440,19 +486,30 @@ function DecisionCard({
   const st = STATUS_STYLES[d.status] || STATUS_STYLES['pending'];
   const patchCount = parsePatchCount(d.payload);
   const rejected = REJECT_STATUSES.includes(d.status);
+  const isExecution = EXECUTION_CATEGORIES.includes(d.category);
+  const isNonExecApproved = d.status === 'pm-approved' && !isExecution;
 
-  // Swipe is enabled for pending or pm-approved decisions
   const canSwipeReject = d.status === 'pending' || d.status === 'pm-approved';
-  const swipeRef = useSwipeLeft(() => onSwipeReject(d), canSwipeReject);
+  const indicatorRef = useRef<HTMLDivElement>(null);
+  const { ref: swipeRef, didSwipe } = useSwipeLeft(() => onSwipeReject(d), canSwipeReject, indicatorRef);
+
+  const handleHeaderClick = useCallback(() => {
+    // Skip click if it was triggered by a completed swipe
+    if (didSwipe.current) return;
+    onToggleExpand();
+  }, [onToggleExpand, didSwipe]);
 
   return (
     <div
       className={`dec-card-wrapper ${isDismissing ? 'dec-dismissing' : ''} ${rejected ? 'dec-rejected-card' : ''}`}
     >
-      {/* Rejection indicator (red background revealed on swipe) */}
+      {/* Gmail-style red rejection backdrop */}
       {canSwipeReject && (
-        <div className="dec-swipe-indicator">
-          <span className="dec-swipe-indicator-text">Reject</span>
+        <div className="dec-swipe-backdrop" ref={indicatorRef}>
+          <div className="dec-swipe-backdrop-content">
+            <TrashIcon />
+            <span className="dec-swipe-backdrop-label">Reject</span>
+          </div>
         </div>
       )}
 
@@ -461,14 +518,7 @@ function DecisionCard({
         className={`dec-card ${canSwipeReject ? 'dec-card-swipeable' : ''}`}
         style={{ '--pm-color': pm.color } as React.CSSProperties}
       >
-        <div
-          className="dec-card-header"
-          onClick={(e) => {
-            // Don't toggle if user was swiping
-            if (Math.abs((e.currentTarget.parentElement?.style.transform || '').includes('translate') ? 1 : 0) > 0) return;
-            onToggleExpand();
-          }}
-        >
+        <div className="dec-card-header" onClick={handleHeaderClick}>
           <div className="dec-card-left">
             <span className="dec-card-badge" style={{ background: pm.color }}>{pm.badge}</span>
             <div>
@@ -480,20 +530,35 @@ function DecisionCard({
             </div>
           </div>
           <div className="dec-card-right">
+            {/* Non-execution clarification badge */}
+            {isNonExecApproved && (
+              <span className="dec-review-only-badge">Review Only</span>
+            )}
+            {/* Execution badge for clarity */}
+            {d.status === 'pm-approved' && isExecution && (
+              <span className="dec-execution-badge">
+                {d.category === 'data-patch' ? 'DB Write' : 'Code Write'}
+              </span>
+            )}
             <span className="dec-status-badge" style={{ background: st.bg, color: st.text }}>{st.label}</span>
             <span className="dec-expand-icon">{isExpanded ? '\u25B2' : '\u25BC'}</span>
           </div>
         </div>
 
+        {/* Non-execution info banner (when expanded) */}
+        {isExpanded && isNonExecApproved && (
+          <div className="dec-nonexec-banner">
+            This approval triggers the next workflow step — it does not write to the database or modify code.
+          </div>
+        )}
+
         <div className={`dec-card-body-anim ${isExpanded ? 'dec-body-open' : ''}`}>
           <div className="dec-card-body">
-            {/* Payload preview */}
             <div className="dec-payload-section">
               <div className="dec-payload-label">Payload</div>
               <pre className="dec-payload-pre">{d.payload.slice(0, 3000)}{d.payload.length > 3000 ? '\n...(truncated)' : ''}</pre>
             </div>
 
-            {/* Notes */}
             {d.pmNotes && (
               <div className="dec-notes">
                 <strong>PM Notes:</strong> {d.pmNotes}
@@ -505,7 +570,6 @@ function DecisionCard({
               </div>
             )}
 
-            {/* Action buttons */}
             <div className="dec-actions">
               {d.status === 'pending' && (
                 <>

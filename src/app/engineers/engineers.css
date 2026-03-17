@@ -3531,26 +3531,41 @@
   overflow: hidden;
 }
 
-/* ── Swipe indicator (red background) ── */
-.dec-swipe-indicator {
+/* ── Gmail-style swipe backdrop ── */
+.dec-swipe-backdrop {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding-right: 32px;
-  background: linear-gradient(90deg, transparent 40%, rgba(248, 113, 113, 0.25) 100%);
   border-radius: 10px;
-  pointer-events: none;
+  background: rgba(220, 38, 38, 0);
+  opacity: 0;
   z-index: 0;
+  pointer-events: none;
 }
-.dec-swipe-indicator-text {
-  font-size: 14px;
+.dec-swipe-backdrop-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 28px;
+  color: #fff;
+}
+.dec-swipe-icon {
+  width: 28px;
+  height: 28px;
+  color: #fff;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: none;
+  flex-shrink: 0;
+}
+.dec-swipe-backdrop-label {
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #f87171;
-  opacity: 0.8;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* Swipeable card sits above the indicator */
@@ -3576,6 +3591,41 @@
 }
 .dec-card-body-anim > .dec-card-body {
   overflow: hidden;
+}
+
+/* ── Non-execution / execution badges ── */
+.dec-review-only-badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  background: rgba(148, 163, 184, 0.15);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  white-space: nowrap;
+}
+.dec-execution-badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  background: rgba(251, 146, 60, 0.15);
+  color: #fb923c;
+  border: 1px solid rgba(251, 146, 60, 0.25);
+  white-space: nowrap;
+}
+
+/* ── Non-execution info banner ── */
+.dec-nonexec-banner {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: #94a3b8;
+  background: rgba(148, 163, 184, 0.06);
+  border-top: 1px solid rgba(148, 163, 184, 0.08);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+  line-height: 1.4;
 }
 
 .dec-empty {
