@@ -3681,6 +3681,8 @@
 .ops-card[data-color="mint"]   { border-left: 3px solid rgba(126,231,135,0.4); }
 .ops-card[data-color="gold"]   { border-left: 3px solid rgba(210,153,34,0.4); }
 .ops-card[data-color="violet"] { border-left: 3px solid rgba(167,139,250,0.4); }
+.ops-card[data-color="cyan"]   { border-left: 3px solid rgba(34,211,238,0.4); }
+.ops-card[data-color="rose"]   { border-left: 3px solid rgba(249,168,212,0.4); }
 
 .ops-card[data-expanded="true"] {
   border-color: rgba(240,246,252,0.15);
@@ -3723,6 +3725,8 @@
 .ops-card-badge[data-color="mint"]   { background: var(--mint); }
 .ops-card-badge[data-color="gold"]   { background: var(--gold); }
 .ops-card-badge[data-color="violet"] { background: var(--violet); }
+.ops-card-badge[data-color="cyan"]   { background: var(--cyan); }
+.ops-card-badge[data-color="rose"]   { background: var(--rose); }
 
 .ops-card-title {
   font-size: 14px;
@@ -3754,6 +3758,8 @@
 .ops-interval-badge[data-color="mint"]   { background: rgba(126,231,135,0.08); color: rgba(126,231,135,0.85); }
 .ops-interval-badge[data-color="gold"]   { background: rgba(210,153,34,0.08);  color: rgba(210,153,34,0.85); }
 .ops-interval-badge[data-color="violet"] { background: rgba(167,139,250,0.08); color: rgba(167,139,250,0.85); }
+.ops-interval-badge[data-color="cyan"]   { background: rgba(34,211,238,0.08);  color: rgba(34,211,238,0.85); }
+.ops-interval-badge[data-color="rose"]   { background: rgba(249,168,212,0.08); color: rgba(249,168,212,0.85); }
 
 /* ── Mini dot track (collapsed preview) ── */
 .ops-mini-track {
@@ -3784,6 +3790,8 @@
 .ops-mini-line[data-color="mint"]   { background: var(--mint); }
 .ops-mini-line[data-color="gold"]   { background: var(--gold); }
 .ops-mini-line[data-color="violet"] { background: var(--violet); }
+.ops-mini-line[data-color="cyan"]   { background: var(--cyan); }
+.ops-mini-line[data-color="rose"]   { background: var(--rose); }
 
 /* ── Expanded vertical timeline ── */
 .ops-steps {
@@ -3845,6 +3853,8 @@
 .ops-rail-line[data-color="mint"]   { background: var(--mint); }
 .ops-rail-line[data-color="gold"]   { background: var(--gold); }
 .ops-rail-line[data-color="violet"] { background: var(--violet); }
+.ops-rail-line[data-color="cyan"]   { background: var(--cyan); }
+.ops-rail-line[data-color="rose"]   { background: var(--rose); }
 
 /* ── Step card — matches eng-swim-card pattern ── */
 .ops-step-card {
@@ -3948,6 +3958,8 @@
 .ops-chain-arrow[data-color="mint"]   { background: var(--mint); }
 .ops-chain-arrow[data-color="gold"]   { background: var(--gold); }
 .ops-chain-arrow[data-color="violet"] { background: var(--violet); }
+.ops-chain-arrow[data-color="cyan"]   { background: var(--cyan); }
+.ops-chain-arrow[data-color="rose"]   { background: var(--rose); }
 
 /* ── Prompt viewer ─────────────────────────────────────────────────────────── */
 .ops-prompt-toggle {
