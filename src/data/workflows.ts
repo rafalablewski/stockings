@@ -467,8 +467,15 @@ INSTRUCTIONS
 1. REVIEW the database context injected below. It contains the current SEC_FILINGS[] array and FILING_CROSS_REFS for {{TICKER}}.
 
 2. COMPARE each filing in the EDGAR/seen_filings list against the local database:
-   - **TRACKED**: Filing has a matching entry in SEC_FILINGS[] (matched by form type + date within 14 days, or by accession number).
-   - **DATA_ONLY**: Filing has NO SEC_FILINGS[] entry, but cross-reference data exists in FILING_CROSS_REFS or data was captured in timeline/capital/financials files.
+
+   What makes a filing "tracked" in the DB? A filing is considered fully tracked when it has ALL THREE of these:
+   a) An entry in [TICKER]_SEC_FILINGS[] (in src/data/[ticker]/sec-filings.ts)
+   b) A cross-ref entry in [TICKER]_FILING_CROSS_REFS keyed as "FORM|YYYY-MM-DD"
+   c) Data extracted into the relevant target files (including stock-specific data files)
+
+   Use these categories:
+   - **TRACKED**: Filing has all three: a SEC_FILINGS[] entry (matched by form type + date within 14 days, or by accession number), a FILING_CROSS_REFS entry, AND extracted data in target files.
+   - **DATA_ONLY**: Filing is missing the SEC_FILINGS[] entry, but cross-reference data exists in FILING_CROSS_REFS or data was captured in timeline/capital/financials files.
    - **UNTRACKED**: Filing has NO entry in SEC_FILINGS[] AND no cross-reference data anywhere in the database.
 
 3. OUTPUT a structured report in the following format. Output ONLY valid JSON — no markdown fences, no explanation.
