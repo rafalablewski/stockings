@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { workflows } from '@/data/workflows';
 
 // ── Static pipeline definitions ──────────────────────────────────────────────
 
@@ -10,6 +11,8 @@ interface PipelineStep {
   division: string;
   description: string;
   type: 'trigger' | 'engineer' | 'review' | 'decision' | 'output';
+  /** Workflow ID(s) whose prompt template is shown in the "View Prompt" panel */
+  workflowIds?: string[];
 }
 
 interface Pipeline {
@@ -42,6 +45,7 @@ const PIPELINES: Pipeline[] = [
         division: 'gemini',
         description: 'Scans EDGAR API, identifies new/untracked filings, produces filing coverage report',
         type: 'engineer',
+        workflowIds: ['sec-filing-delta', 'sec-filing-scan'],
       },
       {
         label: 'AI Auto-Review',
@@ -63,6 +67,7 @@ const PIPELINES: Pipeline[] = [
         division: 'claude',
         description: '7-phase deep analysis: materiality triage, form-type extraction, cross-filing correlation, conflict detection, patch generation, pre-write gate, executive summary',
         type: 'engineer',
+        workflowIds: ['sec-db-ingest'],
       },
       {
         label: 'Boss Decision Gate',
@@ -100,6 +105,7 @@ const PIPELINES: Pipeline[] = [
         division: 'bobman',
         description: 'Scans every workflow prompt template, inventories codebase features, diffs for drift',
         type: 'engineer',
+        workflowIds: ['prompt-audit'],
       },
       {
         label: 'Prompt Remediation',
@@ -107,6 +113,7 @@ const PIPELINES: Pipeline[] = [
         division: 'maszka',
         description: 'Receives drift findings, generates anchor-based text patches for prompt templates',
         type: 'engineer',
+        workflowIds: ['prompt-remediation'],
       },
       {
         label: 'PM Decision Gate',
@@ -144,6 +151,7 @@ const PIPELINES: Pipeline[] = [
         division: 'bobman',
         description: 'Reviews diffs, identifies doc gaps, audits style guides, maintains changelogs',
         type: 'engineer',
+        workflowIds: ['doc-review'],
       },
       {
         label: 'UX/UI Implementation',
@@ -151,6 +159,7 @@ const PIPELINES: Pipeline[] = [
         division: 'maszka',
         description: 'Receives audit report, implements style/theme changes or creates counter-proposals',
         type: 'engineer',
+        workflowIds: ['ux-ui-implementation'],
       },
       {
         label: 'PM Decision Gate',
@@ -188,8 +197,19 @@ const DIVISION_COLOR: Record<string, string> = {
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
+/** Build a map from workflow id → resolved prompt text (template or first variant). */
+const workflowPromptMap: Record<string, { name: string; prompt: string }> = {};
+for (const wf of workflows) {
+  const prompt = wf.promptTemplate ?? wf.variants?.[0]?.prompt;
+  if (prompt) {
+    workflowPromptMap[wf.id] = { name: wf.name, prompt };
+  }
+}
+
 export default function OperationsPipeline() {
   const [expandedId, setExpandedId] = useState<string | null>('sec-filing');
+  // Track which step is showing its prompt, keyed as "pipelineId-stepIndex"
+  const [promptOpen, setPromptOpen] = useState<string | null>(null);
 
   return (
     <div className="ops-wrap">
@@ -279,6 +299,40 @@ export default function OperationsPipeline() {
                               <span className="ops-step-div-tag" data-color={divColor}>{step.division}</span>
                             </div>
                             <div className="ops-step-desc">{step.description}</div>
+
+                            {/* Prompt viewer toggle — only for steps with workflow IDs */}
+                            {step.workflowIds && step.workflowIds.length > 0 && (() => {
+                              const stepKey = `${pipeline.id}-${i}`;
+                              const isPromptOpen = promptOpen === stepKey;
+                              return (
+                                <>
+                                  <button
+                                    className="ops-prompt-toggle"
+                                    data-color={divColor}
+                                    onClick={() => setPromptOpen(isPromptOpen ? null : stepKey)}
+                                  >
+                                    <span className="ops-prompt-toggle-icon">{isPromptOpen ? '\u25B4' : '\u25BE'}</span>
+                                    {isPromptOpen ? 'Hide Prompt' : 'View Prompt'}
+                                    <span className="ops-prompt-count">{step.workflowIds!.length}</span>
+                                  </button>
+                                  <div className={`ops-prompt-panel ${isPromptOpen ? 'ops-prompt-open' : ''}`}>
+                                    {step.workflowIds!.map(wfId => {
+                                      const entry = workflowPromptMap[wfId];
+                                      if (!entry) return null;
+                                      return (
+                                        <div key={wfId} className="ops-prompt-block">
+                                          <div className="ops-prompt-wf-header">
+                                            <span className="ops-prompt-wf-id">{wfId}</span>
+                                            <span className="ops-prompt-wf-name">{entry.name}</span>
+                                          </div>
+                                          <pre className="ops-prompt-text">{entry.prompt}</pre>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </>
+                              );
+                            })()}
 
                             {/* Chain arrow for non-last steps */}
                             {i < pipeline.steps.length - 1 && (

@@ -3949,3 +3949,110 @@
 .ops-chain-arrow[data-color="gold"]   { background: var(--gold); }
 .ops-chain-arrow[data-color="violet"] { background: var(--violet); }
 
+/* ── Prompt viewer ─────────────────────────────────────────────────────────── */
+.ops-prompt-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 4px 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ops-prompt-toggle:hover {
+  color: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.12);
+}
+.ops-prompt-toggle[data-color="sky"]:hover  { color: var(--sky); }
+.ops-prompt-toggle[data-color="mint"]:hover { color: var(--mint); }
+.ops-prompt-toggle[data-color="cyan"]:hover { color: var(--cyan); }
+.ops-prompt-toggle[data-color="gold"]:hover { color: var(--gold); }
+.ops-prompt-toggle[data-color="rose"]:hover { color: var(--rose); }
+
+.ops-prompt-toggle-icon {
+  font-size: 0.65rem;
+}
+
+.ops-prompt-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.4);
+}
+
+/* Expandable prompt panel */
+.ops-prompt-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.25s ease;
+  opacity: 0;
+}
+.ops-prompt-panel.ops-prompt-open {
+  max-height: 600px;
+  overflow-y: auto;
+  opacity: 1;
+  margin-top: 8px;
+}
+
+.ops-prompt-block {
+  margin-bottom: 10px;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 6px;
+  background: rgba(0,0,0,0.25);
+}
+
+.ops-prompt-wf-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.ops-prompt-wf-id {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(34,211,238,0.7);
+  letter-spacing: 0.02em;
+}
+.ops-prompt-wf-name {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.45);
+}
+
+.ops-prompt-text {
+  margin: 0;
+  padding: 10px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.65rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.55);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.ops-prompt-text::-webkit-scrollbar {
+  width: 4px;
+}
+.ops-prompt-text::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+}
+
