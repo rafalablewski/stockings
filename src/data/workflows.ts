@@ -197,6 +197,10 @@ Cross-reference your analysis against the auto-injected database context:
 2. NEW TO DATABASE: Data points NOT yet in the database — these are the actionable updates. List each with the target tab and field.
 3. CONFLICTS: Cases where the analyzed content contradicts current database values (e.g., revised guidance vs. stored figures, updated share counts).
 4. OVERALL RELEVANCE: [Critical — immediate update needed / Important — update at next review / Low — no material database changes / Already Incorporated — no action needed]
+5. HISTORICAL DATA CHECK: If the analyzed content is older than 90 days, flag each "NEW TO DATABASE" item with:
+   - Is there NEWER data of the same type already in the database? If yes, the old data should be added as a historical record only — do NOT recommend updating current-state fields (e.g., current guidance, current share count, latest quarter metrics).
+   - Mark historical items with "[Historical]" prefix so the PM knows they are backdated entries.
+   - Old earnings data goes to the correct quarter slot, NOT "latest quarter." Old insider data adds a transaction record but does NOT update current holdings summaries if newer transactions exist.
 
 Rules — non-negotiable:
 - Quote exact numbers from the transcript. Never round or estimate unless clearly labeled.
@@ -332,6 +336,7 @@ Assess the freshness and completeness of the database context used:
 1. STALE DATA: Flag any data points that appear outdated based on date references or internal inconsistencies.
 2. MISSING DATA: Specific fields or metrics that are absent and would strengthen this analysis.
 3. RECOMMENDED REFRESH: Suggest which filings to check or paste agents to run to bring the database current before acting on this review.
+4. HISTORICAL DATA WARNING: If the database contains recently-ingested historical entries (marked with "[Historical]" prefix), note that these are backdated records — do NOT treat historical data as current signals. Distinguish between "data as of filing date" vs "data as of today" in your thesis assessment.
 
 Rules — non-negotiable:
 - Be adversarial. Actively look for reasons the thesis is wrong.
@@ -438,6 +443,7 @@ Cross-reference your analysis against the database:
 2. NEW TO DATABASE: Data points NOT yet in database — actionable updates with target tab and field.
 3. CONFLICTS: Filing data contradicts current database values.
 4. OVERALL RELEVANCE: [Critical — immediate update needed / Important — update at next review / Low — no material changes / Already Incorporated — no action needed]
+5. HISTORICAL DATA CHECK: If the filing being analyzed is older than 90 days, flag each "NEW TO DATABASE" item with whether newer data of the same type already exists. Old filing data should be added as a dated historical record — never update current-state fields (current guidance, current share count, latest metrics) with old values. Mark historical items with "[Historical]" prefix.
 
 Rules — non-negotiable:
 - Quote exact filing language. Do not paraphrase risk factors.
@@ -1394,12 +1400,18 @@ Cross-reference against the database:
 2. NEW TO DATABASE: New share counts, ownership changes, or insiders not tracked. List with target field.
 3. CONFLICTS: Filing data contradicts stored values (share count, ownership % changed).
 4. OVERALL RELEVANCE: [Critical — immediate update / Important — next review / Low — no material changes / Already Incorporated]
+5. HISTORICAL DATA CHECK: If the Form 4 or insider filing is older than 90 days:
+   - Add the transaction as a historical record with its actual date
+   - Do NOT update current holdings summaries (MAJOR_SHAREHOLDERS current share counts) if newer Form 4s or 13D/Gs exist for the same insider
+   - Do NOT update "latest insider sentiment" signals with old transaction data
+   - Old transactions still provide pattern context (accumulation/distribution trends) but should be labeled "[Historical]"
+   - If the filing provides a post-transaction share count, only update the database if no newer filing for that insider exists
 
 Rules — non-negotiable:
 - Distinguish between discretionary and non-discretionary transactions. 10b5-1 sales are not bearish signals on their own.
 - Never infer intent beyond what the filing discloses. "Exercise + sell" may be tax planning, not bearish conviction.
 - Track cumulative insider ownership trends, not just individual transactions.
-- Fill database gaps: if a filing gives us a shareholder's actual share count, that's a high-priority Capital tab update.
+- Fill database gaps: if a filing gives us a shareholder's actual share count, that's a high-priority Capital tab update — but only if no newer filing supersedes it.
 - Professional, forensic tone — Form 4 analysis is evidence-based, not speculative.
 
 Paste Form 4 filings, 13D/A, or insider data below:`,
@@ -1484,6 +1496,7 @@ OUTPUT FORMAT:
   2. NEW TO DATABASE: Data points NOT yet in the database — actionable updates with target tab and field.
   3. CONFLICTS: Where pasted content contradicts current database values.
   4. OVERALL RELEVANCE: [Critical / Important / Low / Already Incorporated]
+  5. HISTORICAL DATA CHECK: If the pasted content is older than 90 days, flag "NEW TO DATABASE" items with whether newer data exists. Old data should be recommended as historical records only — never recommend updating current-state fields with old values. Mark with "[Historical]".
 
 TONE:
 - Professional, dispassionate, analytical
@@ -1566,6 +1579,8 @@ DATABASE UPDATES:
 - Capital Structure: Any dilution/PT implications
 - Sources tab: Flag if missing
 - Commit message: git commit -m "..."
+
+HISTORICAL DATA CHECK: If the analyst report is older than 90 days, price targets and estimates may be stale. Add as historical record with date. Do NOT update current consensus PT/rating fields if newer analyst reports exist. Mark with "[Historical]".
 
 Rules: Conservative only; no speculation.
 
@@ -1701,6 +1716,12 @@ For each proposed Add/Update, check:
 1. ALREADY INCORPORATED: Is this data already in the database? (cite specific entry if so)
 2. CONFLICTS: Does this contradict any existing database value? (flag with old → new)
 3. STALE DATA: Does this reveal any database entry that's now outdated?
+4. HISTORICAL DATA CHECK: If the pasted content is older than 90 days:
+   - Add as a dated historical record, NOT as current state
+   - Do NOT recommend updating "current" fields (current guidance, current share counts, latest metrics) with old values
+   - If newer data of the same type already exists in the database, the old content provides historical context only
+   - Mark historical items with "[Historical]" prefix in proposed placement
+   - Old earnings → correct quarter slot. Old insider data → transaction record only, not current holdings. Old guidance → historical note, not current guidance field.
 
 ════════════════════════════════════════
 PHASE 5: EXECUTIVE SUMMARY
@@ -1809,6 +1830,8 @@ DATABASE UPDATES:
 - Sources tab: Flag if missing
 - Commit message: git commit -m "..."
 
+HISTORICAL DATA CHECK: If the 13F/13G/13D filing is older than 90 days, add as historical record with filing date. Do NOT update current MAJOR_SHAREHOLDERS share counts or ownership percentages if newer filings for the same institution exist. Mark with "[Historical]".
+
 Rules: Conservative; flag threshold crossings; no speculation.
 
 Now analyze the following pasted content:`,
@@ -1862,6 +1885,8 @@ DATABASE UPDATES:
 - Comps tab: Positioning implications
 - Sources tab: Flag if missing
 - Commit message: git commit -m "..."
+
+HISTORICAL DATA CHECK: If the patent/IP filing is older than 90 days, add as dated historical record. Do NOT update current patent portfolio summaries if newer filings exist. Mark with "[Historical]".
 
 Rules: Conservative; no speculation on validity.
 
@@ -1930,6 +1955,8 @@ DATABASE UPDATES:
 - Sources tab: Flag if missing
 - Commit message: git commit -m "..."
 
+HISTORICAL DATA CHECK: If the conference/investor day is older than 90 days, add as dated historical record. Do NOT update current strategy or guidance fields if newer disclosures exist. Mark with "[Historical]".
+
 Rules: Conservative; focus on verifiable disclosures.
 
 Now analyze the following pasted content:`,
@@ -1991,6 +2018,8 @@ DATABASE UPDATES:
 - Sources tab: Flag if missing
 - Commit message: git commit -m "..."
 
+HISTORICAL DATA CHECK: If the regulatory action is older than 90 days, add as dated historical record. Do NOT update current catalyst deadlines or regulatory status if newer rulings/decisions exist. Mark with "[Historical]".
+
 Rules: Conservative; prioritize timeline/risk impacts.
 
 Now analyze the following pasted content:`,
@@ -2051,6 +2080,8 @@ DATABASE CROSS-CHECK (mandatory):
 DATABASE UPDATES:
 - {{TICKER}} Core: Sentiment indicators
 - Commit message: git commit -m "..."
+
+HISTORICAL DATA CHECK: If the sentiment data is older than 90 days, social sentiment is likely stale. Add as dated historical record only. Do NOT update current sentiment indicators with old data. Mark with "[Historical]".
 
 Rules: Never treat unverified as fact; flag coordination.
 
