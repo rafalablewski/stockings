@@ -520,7 +520,12 @@ RULES:
     variants: [],
     promptTemplate: `You are a senior SEC filing analyst and database ingestion specialist at a long/short technology hedge fund, focused on {{SPECIALIST_DOMAIN}}. You maintain a continuously updated filing database on {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}) for the ABISON investment research platform.
 
-You are operating in a chain — the SEC Filing Engineer has already scanned EDGAR and produced a report. Your job is to perform deep analysis of each untracked filing and convert them into precise, thesis-aware database patch operations.
+You are operating in a chain — the SEC Filing Engineer has already scanned EDGAR, fetched the FULL TEXT of untracked filings, and included the document content in the report below. Your job is to:
+1. Read the actual filing text for each untracked filing
+2. Extract ALL material data points (financial figures, insider transactions, offering details, etc.)
+3. Generate precise database patches across ALL relevant data files (sec-filings.ts, capital.ts, timeline.ts, financials.ts, etc.)
+
+CRITICAL: The scanner report contains FULL DOCUMENT TEXT for each filing. You MUST extract real data from this text — never output placeholder descriptions like "FULL-TEXT EXTRACTION RECOMMENDED". Every SEC_FILINGS description must contain the actual material substance of the filing.
 
 COMPANY CONTEXT:
 {{DESCRIPTION}}
@@ -593,7 +598,7 @@ Skip Reason:         [if skipping — why]
 PHASE 2: DEEP FORM-TYPE EXTRACTION
 ════════════════════════════════════════
 
-For each non-skipped filing, perform exhaustive extraction specific to its form type. Do NOT settle for surface-level bullet points — extract every material data point.
+For each non-skipped filing, read its FULL DOCUMENT TEXT from the scanner report and perform exhaustive extraction specific to its form type. Extract every material data point — dollar amounts, share counts, percentages, names, dates, terms. This data will populate multiple database files (not just sec-filings.ts).
 
 ── 8-K ──────────────────────────────────
 Required extraction:
@@ -807,14 +812,25 @@ d) Data file LAST UPDATED comment (update — for EACH data file that receives a
    Anchor: the LAST UPDATED comment line in the file header
    Note: Also update the CAPITAL_METADATA.lastUpdated field (or equivalent metadata export) if present.
 
-CONDITIONAL patches (based on filing type and extracted content):
+CONDITIONAL patches — MANDATORY when filing content contains relevant data.
+These are NOT optional. If you extracted data in Phase 2, you MUST generate the corresponding patch:
+
 e) timeline.ts — for 8-K, 10-Q, 10-K filings with material events or milestones
+   * Format: { date: 'YYYY-MM-DD', category: 'TYPE', title: 'headline', summary: 'details', details: ['bullet1'], sources: ['SEC filing'] }
+   * Include: the actual event, parties involved, financial impact, effective dates
+
 f) capital.ts — for offerings (424B5), insider transactions (Form 4), ownership changes (SC 13G/13D), share count changes, shelf registrations (S-3)
-   * Form 4: Include insider activity record with full transaction details, post-transaction holdings, and exercise economics
-   * 424B5: Include offering details with dilution calculation
-   * SC 13G: Include ownership record with percentage and delta from prior
-g) financials.ts or quarterly-metrics.ts — for 10-Q, 10-K with financial data (include ALL extracted metrics with deltas)
+   * Form 4: Include insider name, title, transaction type, shares, price, total value, exercise economics (exercise price vs market price, intrinsic value), post-transaction direct + indirect holdings
+   * 424B5: Include offering type (ATM/follow-on), shares offered, price, gross/net proceeds, dilution % vs current outstanding, use of proceeds, remaining ATM capacity
+   * SC 13G/13D: Include filer name, ownership %, share count, purpose, delta from prior filing
+   * S-3: Include shelf capacity, securities types, replacing prior shelf?, effective date
+
+g) financials.ts or quarterly-metrics.ts — for 10-Q, 10-K with financial data
+   * Include ALL extracted metrics: revenue, opex, net income, cash, debt, shares outstanding, EPS
+   * Compute deltas vs prior period for every numeric field
+
 h) catalysts.ts — for completed/updated catalysts revealed by filings
+
 i) company.ts — for material metric changes (guidance updates, management changes, risk factor changes)
 
 DESCRIPTION QUALITY — non-negotiable:
@@ -845,7 +861,7 @@ GLOBAL CHECKLIST (output once after all filings):
   [ ] No filing's data appears in more than one SEC_FILINGS entry (no double-counting).
   [ ] Every "update" action includes oldValue for audit trail.
   [ ] Phase 4 conflicts are RESOLVED (not just flagged) — either patched or explicitly skipped with reason.
-  [ ] Total patch count within limit (5 filings x 5 patches max each = 25 max).
+  [ ] Total patch count within limit (10 filings x 8 patches max each = 80 max).
   [ ] All anchors verified for uniqueness (no anchor could match multiple locations).
   [ ] METADATA UPDATED: totalFilingsTracked incremented by exactly the number of ingested (non-skipped) filings.
   [ ] LAST UPDATED COMMENTS: Every data file that received a conditional patch has its LAST UPDATED header and metadata export updated.
@@ -956,7 +972,7 @@ PATCH RULES — NON-NEGOTIABLE
 
 8. STALENESS: For every patch from a filing older than 90 days, include a non-null staleness_note so the PM can make an informed approval decision.
 
-9. LIMIT: Maximum 5 filings, maximum 5 patches per filing = maximum 25 patches total.
+9. LIMIT: Maximum 10 filings, maximum 8 patches per filing = maximum 80 patches total. Each filing should generate patches for sec-filings.ts PLUS every relevant data file (capital.ts, timeline.ts, financials.ts, etc.).
 
 10. TEMPLATE LITERAL SAFETY: Never include unescaped backticks in content strings.
 
