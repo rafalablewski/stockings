@@ -90,6 +90,7 @@ export interface FilingCoverageEntry {
   filingDate: string;
   status: FilingDbStatus;
   matchedDescription?: string;   // description from local data file if tracked
+  edgarDescription?: string;     // original EDGAR primaryDocDescription (for untracked filings)
   crossRefSources?: string[];    // cross-ref sources if data_only
 }
 
@@ -508,6 +509,7 @@ function checkFilingCoverage(ticker: string, filings: ScannedFiling[]): Coverage
   if (!data) {
     return { total: filings.length, tracked: 0, dataOnly: 0, untracked: filings.length, entries: filings.map(f => ({
       accessionNumber: f.accessionNumber, form: f.form, filingDate: f.filingDate, status: 'untracked' as FilingDbStatus,
+      edgarDescription: f.primaryDocDescription || undefined,
     })) };
   }
 
@@ -586,6 +588,7 @@ function checkFilingCoverage(ticker: string, filings: ScannedFiling[]): Coverage
     return {
       accessionNumber: f.accessionNumber, form: f.form, filingDate: f.filingDate,
       status: 'untracked' as FilingDbStatus,
+      edgarDescription: f.primaryDocDescription || undefined,
     };
   });
 

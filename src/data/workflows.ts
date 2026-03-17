@@ -553,16 +553,20 @@ PHASE 1: FILING TRIAGE & MATERIALITY ASSESSMENT
 For EACH filing in the scanner report, perform independent triage:
 
 1a. STATUS FILTER:
-   - Identify filings with status "untracked" or "UNTRACKED" or "NOT IN DATABASE".
-   - Select AT MOST the 5 newest untracked filings (newest first).
+   - Identify ALL filings with status "untracked" or "UNTRACKED" or "NOT IN DATABASE".
+   - This includes filings from the "UNTRACKED FILINGS — ACTION REQUIRED" section AND any new filings with untracked status.
+   - Select AT MOST the 10 newest untracked filings (newest first).
    - If zero are untracked, skip all remaining phases and output the empty result (see Output Format).
 
-1b. STALENESS & SUPERSESSION:
-   - Compare filing date against today ({{CURRENT_DATE}}).
-   - Flag as POTENTIALLY STALE if >180 days old.
-   - Check if a newer filing of the SAME type already exists in the database (e.g., newer 10-Q supersedes older 10-Q for same period).
-   - Check if the filing's data has been incorporated under a DIFFERENT form type (e.g., an 8-K's earnings data captured via a later 10-Q).
-   - If clearly superseded, skip the filing with a reason.
+1b. SUPERSESSION CHECK (not staleness):
+   - Filing age alone is NOT a reason to skip. Old filings contain historical data the database needs.
+   - A filing is ONLY superseded if ALL of these are true:
+     (a) A newer filing of the EXACT same form type AND same reporting period exists in the database (e.g., an amended 10-K/A supersedes the original 10-K for the same fiscal year).
+     (b) The newer filing fully incorporates the older filing's data (not just same form type — same data coverage).
+   - Do NOT treat an 8-K as superseded by a later 10-Q — each 8-K captures a unique event.
+   - Do NOT treat Form 4s as superseded by later Form 4s — each is a separate transaction.
+   - Do NOT skip filings simply because they are old. The database needs complete coverage.
+   - If truly superseded, skip with a specific reason citing the superseding filing's date and form.
 
 1c. MATERIALITY SCORING — for each non-skipped filing:
    - Materiality: [Critical / High / Medium / Low]
@@ -578,7 +582,7 @@ OUTPUT PER FILING (Phase 1):
 ────────────────────────────────────────
 Filing:              [FORM_TYPE filed YYYY-MM-DD]
 Status:              [untracked / data_only / tracked]
-Staleness:           [Fresh / Stale (N days) / Superseded]
+Supersession:        [Active / Superseded (cite replacement filing)]
 Materiality:         [Critical / High / Medium / Low]
 Thesis Impact:       [1-2 sentences]
 Action:              [Ingest / Skip]

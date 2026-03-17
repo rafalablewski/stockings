@@ -149,33 +149,45 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
           ? [
               `# SEC FILING SCAN: ${opts.ticker}`,
               `Scanned at: ${scanResult.scannedAt}`,
-              `New filings found: ${tickerResult.newFilings.length}`,
               `Company: ${tickerResult.companyName}`,
               '',
-              // New filing analyses
-              ...tickerResult.analyses.map(a =>
-                `## ${a.filing.form} — ${a.filing.filingDate}\n**Verdict:** ${a.verdict}\n**Accession:** ${a.filing.accessionNumber}\n\n${a.analysis}`
-              ),
-              ...(tickerResult.newFilings.length === 0 ? ['No new filings detected since last scan.'] : []),
-              ...(tickerResult.error ? [`\nError: ${tickerResult.error}`] : []),
-              // Database coverage report
+              // Database coverage report — placed FIRST so the ingestor sees actionable data immediately
               ...(tickerResult.coverage ? [
-                '',
-                '---',
                 `## DATABASE COVERAGE (${tickerResult.coverage.total} filings checked)`,
                 `- **IN DB (tracked):** ${tickerResult.coverage.tracked}`,
                 `- **DATA ONLY:** ${tickerResult.coverage.dataOnly}`,
                 `- **UNTRACKED:** ${tickerResult.coverage.untracked}`,
                 `- **Coverage:** ${tickerResult.coverage.total > 0 ? Math.round(((tickerResult.coverage.tracked + tickerResult.coverage.dataOnly) / tickerResult.coverage.total) * 100) : 0}%`,
                 '',
-                // List untracked filings so they're actionable
+                // Structured untracked filings for ingestor consumption
                 ...(tickerResult.coverage.untracked > 0 ? [
-                  '### Untracked Filings (not in database)',
+                  `## UNTRACKED FILINGS — ACTION REQUIRED (${tickerResult.coverage.untracked} filings)`,
+                  '',
+                  'The following filings exist on EDGAR but have NO entry in the local database.',
+                  'Each must be triaged for ingestion regardless of filing age.',
+                  '',
                   ...tickerResult.coverage.entries
                     .filter(e => e.status === 'untracked')
-                    .map(e => `- **${e.form}** ${e.filingDate} (${e.accessionNumber})`),
+                    .map(e => [
+                      `- form: ${e.form}`,
+                      `  date: ${e.filingDate}`,
+                      `  accession: ${e.accessionNumber}`,
+                      `  description: ${e.edgarDescription || e.matchedDescription || 'N/A'}`,
+                      `  status: UNTRACKED`,
+                    ].join('\n')),
                 ] : ['All EDGAR filings are tracked or have cross-reference data in the database.']),
               ] : []),
+              '',
+              '---',
+              '',
+              // New filing analyses (newly seen since last scan)
+              `## NEW FILINGS SINCE LAST SCAN: ${tickerResult.newFilings.length}`,
+              ...(tickerResult.newFilings.length > 0
+                ? tickerResult.analyses.map(a =>
+                    `### ${a.filing.form} — ${a.filing.filingDate}\n**Verdict:** ${a.verdict}\n**Accession:** ${a.filing.accessionNumber}\n\n${a.analysis}`
+                  )
+                : ['No new filings detected since last scan (all recent filings already seen).']),
+              ...(tickerResult.error ? [`\nError: ${tickerResult.error}`] : []),
             ].join('\n')
           : `SEC scan completed for ${opts.ticker} — no results returned.`;
 
