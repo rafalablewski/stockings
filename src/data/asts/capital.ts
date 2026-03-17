@@ -10,7 +10,7 @@
  * - Equity offerings: 8-K filings, press releases
  * - SBC: 10-Q/10-K compensation disclosures
  *
- * LAST UPDATED: 2026-02-23 (25 filings: Feb offerings/greenshoe/settlements + Dec insider + 13G/13D/A + Form 4s)
+ * LAST UPDATED: 2026-03-12 (26 filings: Mar Yao Form 4 + Feb offerings/greenshoe/settlements + Dec insider + 13G/13D/A + Form 4s)
  * NEXT UPDATE: After Q4 2025 10-K (~March 2, 2026) or new proxy filing.
  *
  * AI AGENT INSTRUCTIONS:
@@ -666,6 +666,23 @@ export const DEC_2025_INSIDER_PURCHASES = [
  */
 export const FEB_2026_RSU_VESTINGS = [
   { name: 'Maya Bernal', role: 'CAO', date: '2026-02-15', unitsVested: 3000, taxWithheld: 833, netAcquired: 2167, taxPrice: 82.51, taxValue: 68731, postTransactionHoldings: 121653 },
+];
+
+// ============================================================================
+// MARCH 2026 INSIDER ACTIVITY
+// ============================================================================
+
+/**
+ * Yao (CTO) exercised 40K AST LLC Incentive Equity Options at $0.0641 on Mar 11, 2026.
+ * Same structure as May 2025 exercise: LLC Option → LLC Incentive Equity Unit → LLC Common Unit → Class A.
+ * Options vested Oct 1, 2023; expire Apr 17, 2029.
+ * No accompanying sale — pure exercise/conversion.
+ *
+ * Post-transaction: 4,144,750 Class A (direct) + 299,912 options remaining (indirect).
+ * The 4.14M direct figure reflects accumulated LLC Unit → Class A conversions since prior filings.
+ */
+export const MAR_2026_INSIDER_ACTIVITY = [
+  { name: 'Huiwen Yao', role: 'CTO', date: '2026-03-11', type: 'Option Exercise', units: 40000, exercisePrice: 0.0641, exerciseValue: 2564, postDirectClassA: 4144750, postDerivativeOptions: 299912, optionExpiry: '2029-04-17', note: 'AST LLC Incentive Equity Options → LLC Units → Class A. No sale. Filed Mar 12.' },
 ];
 
 // ============================================================================
