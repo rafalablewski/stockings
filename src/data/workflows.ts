@@ -588,10 +588,13 @@ OUTPUT PER FILING (Phase 1):
 Filing:              [FORM_TYPE filed YYYY-MM-DD]
 Status:              [untracked / data_only / tracked]
 Supersession:        [Active / Superseded (cite replacement filing)]
+Age:                 [N days old — Fresh (<90d) / Historical (90-365d) / Archive (>365d)]
+Data Currency:       [Current — no newer data exists / Historical — newer data of same type exists in DB (cite which entry)]
 Materiality:         [Critical / High / Medium / Low]
 Thesis Impact:       [1-2 sentences]
 Action:              [Ingest / Skip]
 Skip Reason:         [if skipping — why]
+Patch Mode:          [Full (add to all relevant files) / Historical-only (add dated record, do NOT update current-state fields)]
 ────────────────────────────────────────
 
 ════════════════════════════════════════
@@ -782,12 +785,17 @@ PHASE 5: PATCH GENERATION
 For each extracted filing that passes Phase 4, produce patch operations:
 
 MANDATORY for ALL filings:
-a) SEC_FILINGS array entry (insert before the first existing entry):
+a) SEC_FILINGS array entry — insert at CORRECT CHRONOLOGICAL POSITION:
    File: <ticker_lowercase>/sec-filings.ts
    Action: insert
    Format: { date: 'Mon DD, YYYY', type: 'FORM_TYPE', description: 'concise description', period: 'Qx YYYY' or '—', color: 'COLOR' }
    Colors: 8-K=yellow, 10-Q=purple, 10-K=blue, Form 4/SC 13G/SC 13D=green, 424B5=orange, S-3/S-3ASR=green, DEF 14A=green, FWP=orange
-   Anchor: the FIRST entry in the SEC_FILINGS array (use the date+type of the newest existing entry to form a unique anchor)
+   ORDERING: Arrays are NEWEST-FIRST (reverse chronological). The anchor must place the entry at the correct date position:
+   - If the filing is newer than all existing entries → anchor on the FIRST entry (insert before it)
+   - If the filing is older → find the existing entry whose date is the closest NEWER date, and anchor on THAT entry (insert before it)
+   - If the filing is older than ALL existing entries → use "append" action with the LAST entry as anchor (insert after it)
+   Example: inserting a Jan 2025 filing into an array with [Mar 2026, Feb 2026, Dec 2025, Nov 2025, Mar 2024]:
+     → Anchor on "{ date: 'Nov ... 2025'" because Nov 2025 is the closest newer-than-Jan-2025 entry? No — Nov 2025 is newer. Find the entry just newer: Nov 2025. Insert before it? No — Jan 2025 goes AFTER Nov 2025 and BEFORE Mar 2024. So anchor on the Mar 2024 entry and use "insert" action.
 
 b) FILING_CROSS_REFS entry (append after the cross-refs declaration):
    File: <ticker_lowercase>/sec-filings.ts
@@ -815,23 +823,66 @@ d) Data file LAST UPDATED comment (update — for EACH data file that receives a
 CONDITIONAL patches — MANDATORY when filing content contains relevant data.
 These are NOT optional. If you extracted data in Phase 2, you MUST generate the corresponding patch:
 
+═══ HISTORICAL DATA AWARENESS (critical for old filings) ═══
+When ingesting filings older than 90 days, the database likely already contains NEWER data.
+You MUST follow these rules for ALL conditional patches (e-i below):
+
+RULE 1 — NEVER OVERWRITE CURRENT STATE WITH OLD DATA:
+   Old filings contain data that was accurate at the time but may be superseded.
+   - Do NOT update "current" fields (e.g., current shares outstanding, current cash position, current ownership %) with old values
+   - Do NOT replace existing guidance with older guidance
+   - Do NOT update "latest" or "current" fields in metadata exports
+
+RULE 2 — ADD AS HISTORICAL RECORD, NOT CURRENT FACT:
+   Old data should be added as a dated historical entry, clearly timestamped:
+   - capital.ts: Add as a historical event entry with date. Do NOT update summary/header fields that reflect current state
+   - financials.ts: Add to the correct quarter's data (e.g., Q2 2024). Do NOT touch the most recent quarter's data
+   - timeline.ts: Insert at the correct chronological position (newest-first arrays). Use the filing's event date, not today
+   - company.ts: Add historical fact only if not superseded by newer data already present
+
+RULE 3 — CHECK FOR SUPERSEDING DATA:
+   Before generating ANY conditional patch for an old filing, check:
+   - Is there a NEWER entry of the same type already in the target file?
+   - Example: If adding a Form 4 from Jun 2024 with "post-transaction holdings: 500K shares", but the database
+     already has a Form 4 from Dec 2025 with "post-transaction holdings: 750K shares" — the Dec 2025 data is
+     authoritative for current state. Your Jun 2024 patch should add the historical transaction but must NOT
+     update any "current holdings" summary field.
+   - Example: If adding 10-Q from Q2 2024, but Q4 2025 10-Q data already exists — add the Q2 2024 quarter's
+     data to its correct slot, but do NOT update any "latest quarter" or "most recent" fields.
+
+RULE 4 — CHRONOLOGICAL INSERTION (applies to ALL arrays):
+   All data arrays in the codebase are NEWEST-FIRST. Insert old entries at the correct date position:
+   - Find the existing entry whose date is closest-newer to the filing date
+   - Anchor on the entry just AFTER the correct position (i.e., the next-older entry)
+   - For the oldest entry in the array, use append after the last entry
+
+RULE 5 — LABEL HISTORICAL ENTRIES:
+   For filings older than 180 days, prefix the description or summary with "[Historical]" so the PM
+   reviewing patches can immediately see these are backdated entries, not recent events.
+═══ END HISTORICAL DATA RULES ═══
+
 e) timeline.ts — for 8-K, 10-Q, 10-K filings with material events or milestones
    * Format: { date: 'YYYY-MM-DD', category: 'TYPE', title: 'headline', summary: 'details', details: ['bullet1'], sources: ['SEC filing'] }
    * Include: the actual event, parties involved, financial impact, effective dates
+   * Insert at correct chronological position (see Rule 4)
 
 f) capital.ts — for offerings (424B5), insider transactions (Form 4), ownership changes (SC 13G/13D), share count changes, shelf registrations (S-3)
-   * Form 4: Include insider name, title, transaction type, shares, price, total value, exercise economics (exercise price vs market price, intrinsic value), post-transaction direct + indirect holdings
-   * 424B5: Include offering type (ATM/follow-on), shares offered, price, gross/net proceeds, dilution % vs current outstanding, use of proceeds, remaining ATM capacity
-   * SC 13G/13D: Include filer name, ownership %, share count, purpose, delta from prior filing
+   * Form 4: Include insider name, title, transaction type, shares, price, total value, exercise economics (exercise price vs market price, intrinsic value), post-transaction direct + indirect holdings. For old Form 4s: add the transaction record but do NOT update current ownership summaries if newer Form 4s exist (see Rule 3)
+   * 424B5: Include offering type (ATM/follow-on), shares offered, price, gross/net proceeds, dilution % vs shares outstanding AT THE TIME (not current), use of proceeds, remaining ATM capacity at the time
+   * SC 13G/13D: Include filer name, ownership %, share count, purpose, delta from prior filing. For old 13G/13Ds: add historical record but do NOT update current institutional ownership summaries if newer filings exist
    * S-3: Include shelf capacity, securities types, replacing prior shelf?, effective date
 
 g) financials.ts or quarterly-metrics.ts — for 10-Q, 10-K with financial data
    * Include ALL extracted metrics: revenue, opex, net income, cash, debt, shares outstanding, EPS
+   * Add data to the CORRECT QUARTER SLOT (e.g., Q2 2024 data goes in the Q2 2024 section, not the latest quarter)
    * Compute deltas vs prior period for every numeric field
+   * Do NOT update "latest quarter" summary fields with old quarter data (see Rule 1)
 
 h) catalysts.ts — for completed/updated catalysts revealed by filings
+   * For old filings: mark catalysts as "completed" if the filing confirms completion, but only if not already marked
 
 i) company.ts — for material metric changes (guidance updates, management changes, risk factor changes)
+   * For old filings: add historical record ONLY if the data is not already superseded by newer entries
 
 DESCRIPTION QUALITY — non-negotiable:
 The SEC_FILINGS description field must be a concise but COMPLETE summary capturing the filing's material substance. Examples:
@@ -853,9 +904,11 @@ PER-FILING CHECKLIST (output for each filing being ingested):
   [ ] DESCRIPTION QUALITY: The SEC_FILINGS description captures material substance (not just "Form 4 by [name]").
   [ ] INSIDER MATCH (Form 4 only): Insider was matched against KEY_INSIDERS list or flagged as new.
   [ ] HOLDINGS UPDATED (Form 4 only): Post-transaction holdings are included in capital.ts patch.
-  [ ] DILUTION MATH (424B5/S-3 only): Dilution percentage calculated against current shares outstanding.
+  [ ] DILUTION MATH (424B5/S-3 only): Dilution percentage calculated against shares outstanding AT THE TIME of the offering (not current if filing is old).
   [ ] FINANCIAL DELTAS (10-Q/10-K only): Period-over-period deltas computed for all material metrics.
   [ ] CORRELATION NOTED: Phase 3 cross-filing correlations are reflected in cross-refs or patch content.
+  [ ] HISTORICAL DATA CHECK (filings >90 days old): Confirmed no conditional patch overwrites current-state fields with old data. Patch Mode from Phase 1 is respected.
+  [ ] CHRONOLOGICAL POSITION: Anchor places entry at correct date position in array (not blindly at top).
 
 GLOBAL CHECKLIST (output once after all filings):
   [ ] No filing's data appears in more than one SEC_FILINGS entry (no double-counting).
@@ -865,6 +918,7 @@ GLOBAL CHECKLIST (output once after all filings):
   [ ] All anchors verified for uniqueness (no anchor could match multiple locations).
   [ ] METADATA UPDATED: totalFilingsTracked incremented by exactly the number of ingested (non-skipped) filings.
   [ ] LAST UPDATED COMMENTS: Every data file that received a conditional patch has its LAST UPDATED header and metadata export updated.
+  [ ] NO CURRENT-STATE CORRUPTION: For all old filings, no "current" or "latest" summary fields were overwritten with historical values.
 
 If any box FAILS: fix the proposed patch before including it. If unfixable, move the filing to "skipped" with reason "Pre-write gate failure: [which check failed]".
 
@@ -970,7 +1024,7 @@ PATCH RULES — NON-NEGOTIABLE
 
 7. IDEMPOTENCY: Phase 4 handles this — but as a final guard, if the scanner report indicates the filing is tracked, do NOT generate patches for it.
 
-8. STALENESS: For every patch from a filing older than 90 days, include a non-null staleness_note so the PM can make an informed approval decision.
+8. STALENESS & HISTORICAL DATA: For every patch from a filing older than 90 days, include a non-null staleness_note so the PM can make an informed approval decision. The staleness_note MUST specify: (a) whether newer data of the same type already exists in the database, (b) whether this patch adds historical context or updates current state, and (c) whether any "current" field in the target file should remain unchanged. Follow all Historical Data Awareness rules from Phase 5.
 
 9. LIMIT: Maximum 10 filings, maximum 8 patches per filing = maximum 80 patches total. Each filing should generate patches for sec-filings.ts PLUS every relevant data file (capital.ts, timeline.ts, financials.ts, etc.).
 
