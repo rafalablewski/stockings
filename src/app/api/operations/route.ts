@@ -114,11 +114,36 @@ export async function GET(req: NextRequest) {
 
   // ── Reconstruct operations ──────────────────────────────────────────────
 
+  interface RunSlim {
+    id: number;
+    status: string;
+    triggerType: string;
+    triggerReason: string | null;
+    outputSummary: string | null;
+    durationMs: number | null;
+    startedAt: Date | null;
+    completedAt: Date | null;
+    createdAt: Date;
+    patchesApplied: number;
+  }
+
+  interface DecisionSlim {
+    id: number;
+    status: string;
+    category: string;
+    title: string;
+    pm: string;
+    pmNotes: string | null;
+    bossNotes: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }
+
   interface StepInstance {
     engineerId: string;
     label: string;
-    run: typeof runs[0] | null;
-    decision: typeof allDecisions[0] | null;
+    run: RunSlim | null;
+    decision: DecisionSlim | null;
     status: 'completed' | 'running' | 'failed' | 'waiting' | 'blocked' | 'skipped';
   }
 
