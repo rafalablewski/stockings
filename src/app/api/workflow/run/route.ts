@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { checkAiGate } from '@/lib/ai-gate';
 import { classifyAnthropicError } from '@/lib/anthropic-error';
 import { resolvePromptPlaceholders } from '@/lib/prompt-placeholders';
+import { workflows } from '@/data/workflows';
 import { getDb } from '@/lib/db';
 import { agentRuns } from '@/lib/schema';
 import { asts, bmnr, crcl } from '@/data';
@@ -43,8 +44,9 @@ export async function POST(request: NextRequest) {
 
     const startTime = Date.now();
 
-    // Resolve any {{PLACEHOLDER}} tokens in the prompt (stock context, tabs, etc.)
-    const resolvedPrompt = resolvePromptPlaceholders(prompt, ticker);
+    // Resolve any {{PLACEHOLDER}} tokens in the prompt (stock context, tabs, workflow tab guidance)
+    const workflow = workflowId ? workflows.find(w => w.id === workflowId) : undefined;
+    const resolvedPrompt = resolvePromptPlaceholders(prompt, ticker, undefined, workflow?.tabGuidance);
 
     // Build the full message: today's date + company context + prompt + optional user data
     const dataSeparator = '\n\n════════════════════════════════════════════════════════════\nUSER-PROVIDED DATA\n════════════════════════════════════════════════════════════\n\n';

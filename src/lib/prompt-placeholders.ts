@@ -19,7 +19,7 @@
 //   {{CEO_NAME}}              — CEO name for management tone analysis
 //   {{DOMAIN_SECTIONS}}       — Formatted domain-specific analysis sections
 //   {{TICKER_TABS}}           — Current research tabs for the ticker
-//   {{TICKER_TAB_DEEP_DIVE}} — Auto-generated per-tab thesis analysis instructions
+//   {{TICKER_TAB_DEEP_DIVE}} — Per-tab analysis instructions (from workflow tabGuidance)
 //   {{CODEBASE_INVENTORY}}    — Full platform inventory (prompt-audit only)
 //   {{LATEST_AUDIT_OUTPUT}}   — Latest prompt-audit run output (chain-injected)
 // ============================================================================
@@ -36,11 +36,15 @@ import { tabRegistry } from '@/data/tab-registry';
  *                If omitted, stock-specific placeholders are left as-is.
  * @param context Optional key-value map for chain-injected placeholders
  *                (e.g. { LATEST_AUDIT_OUTPUT: '...' } from upstream engineer).
+ * @param tabGuidance Optional per-tab analysis guidance keyed by tab ID.
+ *                     Used by {{TICKER_TAB_DEEP_DIVE}} — cross-referenced against
+ *                     the ticker's tabs so only matching tabs are included.
  */
 export function resolvePromptPlaceholders(
   prompt: string,
   ticker?: string,
   context?: Record<string, string>,
+  tabGuidance?: Record<string, string>,
 ): string {
   if (!prompt.includes('{{')) return prompt;
 
@@ -107,12 +111,12 @@ export function resolvePromptPlaceholders(
       prompt = prompt.replace(/\{\{TICKER_TABS\}\}/g, tabText);
     }
 
-    // Ticker tab deep dive — auto-generated thesis analysis instructions per tab
+    // Ticker tab deep dive — cross-reference ticker's tabs with workflow's tabGuidance
     if (prompt.includes('{{TICKER_TAB_DEEP_DIVE}}')) {
       const tabs = tabRegistry[ticker.toUpperCase()];
-      const scopedTabs = tabs?.filter(t => t.thesisScope) ?? [];
-      const deepDiveText = scopedTabs.length > 0
-        ? scopedTabs.map(t => `   - **${t.label} tab**: ${t.thesisScope}`).join('\n')
+      const guidedTabs = tabs?.filter(t => tabGuidance?.[t.id]) ?? [];
+      const deepDiveText = guidedTabs.length > 0
+        ? guidedTabs.map(t => `   - **${t.label} tab**: ${tabGuidance![t.id]}`).join('\n')
         : '   No ticker-specific tab analysis instructions defined yet. Review all available tabs for material changes.';
       prompt = prompt.replace(/\{\{TICKER_TAB_DEEP_DIVE\}\}/g, deepDiveText);
     }
