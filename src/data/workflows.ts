@@ -21,6 +21,13 @@ export interface Workflow {
    * without needing per-ticker variants.
    */
   promptTemplate?: string;
+  /**
+   * Per-tab analysis guidance keyed by tab ID.
+   * Used by {{TICKER_TAB_DEEP_DIVE}} — the resolver cross-references these keys
+   * against the ticker's actual tabs in tab-registry, so only matching tabs are included.
+   * Different workflows can define different guidance for the same tab ID.
+   */
+  tabGuidance?: Record<string, string>;
 }
 
 // ── Code Audit prompt template ──────────────────────────────────────────────
@@ -220,6 +227,28 @@ Paste the transcript below:`,
     description: 'Stress-tests each scenario against the database, identifies thesis drift, scores conviction changes, and outputs an updated Investment tab block with specific rating adjustments.',
     requiresUserData: false,
     variants: [],
+    tabGuidance: {
+      // ── ASTS-specific tabs ──
+      'partners': 'MNO partner pipeline — MoU-to-definitive conversion progress, revenue share terms, subscriber reach per partner, new partner announcements.',
+      'catalysts': 'Upcoming catalyst events — launch dates, regulatory milestones, partnership announcements. Ensure scenario timelines align with tracked catalyst dates.',
+      'constellation': 'Satellite deployment status — in-orbit vs. planned count, Block 2/3 launch schedule, unfurling success rate, coverage footprint progress. Primary execution risk indicator.',
+      'subscribers': 'Subscriber projection models — TAM assumptions, penetration rates, ARPU estimates, MNO partner committed vs. projected subscribers. Primary revenue driver.',
+      'revenue': 'Revenue projections — per-partner revenue share, prepayment schedules, revenue ramp assumptions tied to constellation deployment.',
+      // ── BMNR-specific tabs ──
+      'ethereum': 'ETH treasury exposure — total holdings, market value, staked vs. unstaked split, protocol positioning, correlation risk to crypto markets.',
+      'staking': 'Staking economics — yield rates, locked capital duration, validator economics (MAVAN), staking revenue as % of total revenue. Assess if staked capital creates liquidity constraints.',
+      'debt': 'Debt obligations and convertible instruments — maturity schedules, conversion terms, covenant compliance. Assess refinancing risk.',
+      'sensitivity': 'ETH price sensitivity — NAV impact per $100 ETH move, break-even ETH price, downside scenario floor prices.',
+      'backtest': 'Historical strategy backtesting — how would the accumulation strategy have performed under various crypto market regimes.',
+      'purchases': 'ETH purchase history — timing, price, quantities, pacing. Assess if management is buying at favorable prices relative to thesis assumptions.',
+      // ── CRCL-specific tabs ──
+      'usdc': 'Reserve composition — Treasury/repo vs. cash split, redemption mechanisms, reserve attestation freshness, regulatory risk exposure. Assess reserve adequacy and confidence. USDC circulation growth and market share trends.',
+      // ── Shared tabs (apply to any ticker that has them) ──
+      'dilution': 'Dilution waterfall — share issuance mechanisms, ATM utilization, warrants, convertible instruments. Assess if share count growth outpaces asset value growth.',
+      'monte-carlo': 'Review probabilistic outcome distributions. Compare base/bear/bull case probabilities with your scenario analysis in Section B. Flag any divergence between Monte Carlo outputs and your qualitative assessment.',
+      'comps': 'Cross-reference peer valuation multiples and relative positioning against your price/NAV targets.',
+      'timeline': 'Review upcoming catalysts, product launches, regulatory dates, and earnings. Ensure your scenario timelines align with tracked catalyst dates.',
+    },
     promptTemplate: `You are the lead portfolio manager at a concentrated long/short technology hedge fund. You are conducting a formal quarterly thesis review on {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}) — {{DESCRIPTION}}.
 
 You specialize in {{SPECIALIST_DOMAIN}}.
@@ -302,23 +331,9 @@ D. RISK MATRIX UPDATE
    Flag any NEW risks not currently tracked.
 
 E. TICKER-SPECIFIC TAB DEEP DIVE
-   Review the following tabs if they exist for {{TICKER}} (check {{TICKER_TABS}}):
+   Review the following tabs for {{TICKER}} (available: {{TICKER_TABS}}):
 
-   ASTS-specific:
-   - **Constellation tab**: Satellite deployment status — in-orbit vs. planned count, Block 2/3 launch schedule, unfurling success rate, coverage footprint progress. This is the primary execution risk indicator.
-   - **Subscribers tab**: Subscriber projection models — TAM assumptions, penetration rates, ARPU estimates, MNO partner committed vs. projected subscribers. This is the primary revenue driver.
-
-   BMNR-specific:
-   - **Ethereum tab**: ETH treasury exposure — total holdings, market value, staked vs. unstaked split, protocol positioning, correlation risk to crypto markets.
-   - **Staking tab**: Staking economics — yield rates, locked capital duration, validator economics, staking revenue as % of total revenue. Assess if staked capital creates liquidity constraints.
-
-   CRCL-specific:
-   - **USDC tab**: Reserve composition — Treasury/repo vs. cash split, redemption mechanisms, reserve attestation freshness, regulatory risk exposure. Assess reserve adequacy and confidence.
-
-   All tickers:
-   - **Monte Carlo tab**: Review probabilistic outcome distributions. Compare base/bear/bull case probabilities with your scenario analysis in Section B. Flag any divergence between Monte Carlo outputs and your qualitative assessment.
-   - **Comps tab**: Cross-reference peer valuation multiples and relative positioning against your price/NAV targets.
-   - **Timeline tab**: Review upcoming catalysts, product launches, regulatory dates, and earnings. Ensure your scenario timelines align with tracked catalyst dates.
+{{TICKER_TAB_DEEP_DIVE}}
 
 F. PERSPECTIVE REFRESH
    Update each of the 4 analyst perspectives (CFA, Hedge Fund PM, Family Office CIO, Technical Analyst) with current market conditions and recent developments.

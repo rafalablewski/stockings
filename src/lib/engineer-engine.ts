@@ -509,8 +509,8 @@ function resolveAllEngineerPrompts(engineer: EngineerTask, ticker: string, chain
     // Prefer promptTemplate (works for any ticker) over per-ticker variants
     const promptText = workflow.promptTemplate ?? workflow.variants.find(v => v.ticker === tickerLower)?.prompt;
     if (promptText) {
-      // Resolve {{PLACEHOLDER}} tokens in the prompt (including chain-injected context)
-      const resolvedPrompt = resolvePromptPlaceholders(promptText, ticker, chainContext);
+      // Resolve {{PLACEHOLDER}} tokens in the prompt (including chain-injected context + workflow tab guidance)
+      const resolvedPrompt = resolvePromptPlaceholders(promptText, ticker, chainContext, workflow.tabGuidance);
       const companyCtx = getCompanyContext(ticker);
       results.push({
         workflowId: wfId,
