@@ -19,6 +19,7 @@
 //   {{CEO_NAME}}              — CEO name for management tone analysis
 //   {{DOMAIN_SECTIONS}}       — Formatted domain-specific analysis sections
 //   {{TICKER_TABS}}           — Current research tabs for the ticker
+//   {{TICKER_TAB_DEEP_DIVE}} — Auto-generated per-tab thesis analysis instructions
 //   {{CODEBASE_INVENTORY}}    — Full platform inventory (prompt-audit only)
 //   {{LATEST_AUDIT_OUTPUT}}   — Latest prompt-audit run output (chain-injected)
 // ============================================================================
@@ -104,6 +105,16 @@ export function resolvePromptPlaceholders(
         ? tabs.map(t => t.label).join(', ')
         : 'Overview, Model, Monte Carlo, Comps, Capital, Financials, Timeline, Investment, Wall Street, Sources, EDGAR';
       prompt = prompt.replace(/\{\{TICKER_TABS\}\}/g, tabText);
+    }
+
+    // Ticker tab deep dive — auto-generated thesis analysis instructions per tab
+    if (prompt.includes('{{TICKER_TAB_DEEP_DIVE}}')) {
+      const tabs = tabRegistry[ticker.toUpperCase()];
+      const scopedTabs = tabs?.filter(t => t.thesisScope) ?? [];
+      const deepDiveText = scopedTabs.length > 0
+        ? scopedTabs.map(t => `   - **${t.label} tab**: ${t.thesisScope}`).join('\n')
+        : '   No ticker-specific tab analysis instructions defined yet. Review all available tabs for material changes.';
+      prompt = prompt.replace(/\{\{TICKER_TAB_DEEP_DIVE\}\}/g, deepDiveText);
     }
   }
 

@@ -302,23 +302,9 @@ D. RISK MATRIX UPDATE
    Flag any NEW risks not currently tracked.
 
 E. TICKER-SPECIFIC TAB DEEP DIVE
-   Review the following tabs if they exist for {{TICKER}} (check {{TICKER_TABS}}):
+   Review the following tabs for {{TICKER}} (available: {{TICKER_TABS}}):
 
-   ASTS-specific:
-   - **Constellation tab**: Satellite deployment status — in-orbit vs. planned count, Block 2/3 launch schedule, unfurling success rate, coverage footprint progress. This is the primary execution risk indicator.
-   - **Subscribers tab**: Subscriber projection models — TAM assumptions, penetration rates, ARPU estimates, MNO partner committed vs. projected subscribers. This is the primary revenue driver.
-
-   BMNR-specific:
-   - **Ethereum tab**: ETH treasury exposure — total holdings, market value, staked vs. unstaked split, protocol positioning, correlation risk to crypto markets.
-   - **Staking tab**: Staking economics — yield rates, locked capital duration, validator economics, staking revenue as % of total revenue. Assess if staked capital creates liquidity constraints.
-
-   CRCL-specific:
-   - **USDC tab**: Reserve composition — Treasury/repo vs. cash split, redemption mechanisms, reserve attestation freshness, regulatory risk exposure. Assess reserve adequacy and confidence.
-
-   All tickers:
-   - **Monte Carlo tab**: Review probabilistic outcome distributions. Compare base/bear/bull case probabilities with your scenario analysis in Section B. Flag any divergence between Monte Carlo outputs and your qualitative assessment.
-   - **Comps tab**: Cross-reference peer valuation multiples and relative positioning against your price/NAV targets.
-   - **Timeline tab**: Review upcoming catalysts, product launches, regulatory dates, and earnings. Ensure your scenario timelines align with tracked catalyst dates.
+{{TICKER_TAB_DEEP_DIVE}}
 
 F. PERSPECTIVE REFRESH
    Update each of the 4 analyst perspectives (CFA, Hedge Fund PM, Family Office CIO, Technical Analyst) with current market conditions and recent developments.
