@@ -26,6 +26,8 @@ export interface EngineerTask {
   autoReviewBy?: string;          // PM id whose AI model auto-reviews decisions before chainsTo fires
   /** Plain-English summary of the full pipeline this engineer starts (shown in Operations tab). */
   pipelineDescription?: string;
+  /** Plain-English "explain like I'm 10" description of what this individual engineer does (shown in PMs tab). */
+  humanDescription?: string;
 }
 
 export const engineers: EngineerTask[] = [
@@ -47,6 +49,7 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['filing-ingested', 'press-release-added', 'price-alert'],
     requiresData: false,
     category: 'research',
+    humanDescription: 'This engineer is like the person who constantly asks "do we still believe in this company?" It takes our investment thesis — the reasons we think a stock is a good bet — and checks it against the latest data. If a new filing contradicts our assumptions, or if good news strengthens them, it updates the confidence scores and flags anything that changed. It reads from our own research database, not the internet.',
   },
   {
     id: 'capital-engineer',
@@ -65,6 +68,7 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['filing-ingested', 'form-4-detected'],
     requiresData: false,
     category: 'research',
+    humanDescription: 'This engineer keeps track of how many shares a company has and how that number changes over time. When companies issue new shares, exercise warrants, or take on debt, it affects how much each share is worth. This engineer reads SEC filings from our database, recalculates the math, and flags big changes — like "they just diluted shareholders by 15%." Think of it as the accountant who tracks every slice of the company pie.',
   },
 
   // ── MONITORING ENGINEERS ────────────────────────────────────────────────
@@ -87,6 +91,7 @@ export const engineers: EngineerTask[] = [
     requiresData: true,
     dataSource: 'EDGAR API (SEC)',
     category: 'monitoring',
+    humanDescription: 'This engineer goes to the SEC\'s EDGAR website — the public filing system where every public company must post official documents — and checks if any of our tracked companies filed something new. It looks for financial reports (10-K, 10-Q), big announcements (8-K), insider trades (Form 4), and more. When it finds something, it downloads the document, compares it to what we already have, and pulls out the key changes. The results get passed down the pipeline for deeper analysis.',
     chainsTo: 'db-ingestor-engineer',
     decisionsFor: 'gemini',
     decisionCategory: 'sec-filing-review',
@@ -113,6 +118,7 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['filing-scan-completed'],
     requiresData: false,
     category: 'monitoring',
+    humanDescription: 'This is the heavy lifter of the SEC pipeline. After the Filing Engineer finds a new document, this engineer does the deep read. It goes through the filing in 7 phases — deciding how important it is, extracting every relevant number and fact based on the form type, checking if it conflicts with what we already have in the database, and building a structured update. Nothing gets saved automatically — it packages everything into a neat "patch" and sends it to a manager who has to approve it first. Think of it as the analyst who reads the full 200-page report and writes a summary with specific database changes.',
     decisionsFor: 'claude',
     decisionCategory: 'data-patch',
     notifyPm: 'claude',
@@ -136,6 +142,7 @@ export const engineers: EngineerTask[] = [
     requiresData: true,
     dataSource: 'Press release APIs, RSS feeds',
     category: 'intelligence',
+    humanDescription: 'This engineer reads the news. It pulls press releases and articles from news APIs and RSS feeds, then sorts them — is this about our company? A competitor? A partner? How important is it? If something big comes in (like a major contract win or a lawsuit), it saves it to our intelligence database and can trigger other engineers to re-evaluate the thesis. Think of it as the person who reads every headline and highlights the ones that actually matter to our investments.',
   },
   {
     id: 'insider-engineer',
@@ -155,6 +162,7 @@ export const engineers: EngineerTask[] = [
     requiresData: true,
     dataSource: 'EDGAR API (Form 4, 13F)',
     category: 'monitoring',
+    humanDescription: 'This engineer watches what company insiders — CEOs, board members, big investors — are doing with their own shares. It checks EDGAR for Form 4 filings (insider buys and sells) and 13F filings (what big funds are holding). If the CEO suddenly buys a lot of stock, or a major fund quietly sells its entire position, this engineer spots it and flags the pattern. It\'s like keeping an eye on what the people who know the company best are actually doing with their money.',
   },
 
   // ── INTELLIGENCE ENGINEERS ──────────────────────────────────────────────
@@ -175,6 +183,7 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['filing-ingested', 'press-release-added'],
     requiresData: false,
     category: 'intelligence',
+    humanDescription: 'This engineer keeps a calendar of important upcoming events — FDA decisions, earnings dates, contract deadlines, product launches. It reads our database and news to check if any of these events got confirmed, delayed, or completed. When a big date is approaching, it sends alerts. If something got pushed back, it updates the timeline. Think of it as the person with the whiteboard full of sticky notes who moves them around as plans change.',
   },
   {
     id: 'sentiment-engineer',
@@ -194,6 +203,7 @@ export const engineers: EngineerTask[] = [
     requiresData: true,
     dataSource: 'Analyst reports, market data',
     category: 'intelligence',
+    humanDescription: 'This engineer measures "the mood" around a stock. It reads analyst reports and price target changes and tracks whether the general feeling is getting more positive or negative. Most importantly, it looks for disagreements — if everyone is bullish but the actual financials are weak (or vice versa), it flags that gap. It gets its data from analyst reports and market data feeds. Think of it as the person who takes the room\'s temperature and says "everyone\'s excited, but the numbers don\'t support it."',
   },
 
   // ── AUDIT ENGINEERS ─────────────────────────────────────────────────────
@@ -214,6 +224,7 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['data-updated', 'filing-ingested'],
     requiresData: false,
     category: 'audit',
+    humanDescription: 'This engineer is the quality inspector. It looks at our entire research database and checks: is anything out of date? Do the numbers in one table match the numbers in another? Are there empty fields that should be filled? It runs checks like "the shares outstanding in the capital table should match the latest 10-Q" and flags anything that doesn\'t add up. It only reads our own database — no external sources. Think of it as the librarian who checks every shelf to make sure no book is misplaced or missing pages.',
   },
 
   // ── ADDITIONAL RESEARCH ENGINEERS ─────────────────────────────────────
@@ -235,6 +246,7 @@ export const engineers: EngineerTask[] = [
     requiresData: true,
     dataSource: 'Earnings call transcripts, SEC filings',
     category: 'research',
+    humanDescription: 'This engineer listens to earnings calls — the quarterly phone calls where company management discusses financial results and answers analyst questions. It reads the transcript, pulls out guidance changes ("we expect revenue of $X next quarter"), picks up on management tone, and compares the numbers to previous quarters and peer companies. It gets its data from earnings transcripts and SEC filings. Think of it as the person who sits through every earnings call, takes detailed notes, and highlights what\'s different from last time.',
   },
 
   // ── ADDITIONAL INTELLIGENCE ENGINEERS ─────────────────────────────────
@@ -256,6 +268,7 @@ export const engineers: EngineerTask[] = [
     requiresData: true,
     dataSource: 'Patent databases, FCC/NTIA filings, conference transcripts',
     category: 'intelligence',
+    humanDescription: 'This engineer tracks the legal and regulatory side of things — patent filings, government agency decisions (FCC, SEC, NTIA), and what companies say at industry conferences. If a company gets a new patent approved, or a regulator delays a key decision, this engineer catches it and updates the catalyst timeline. It pulls from patent databases, government filings, and conference transcripts. Think of it as the person who reads the government gazette and patent office bulletins so you don\'t have to.',
   },
   {
     id: 'ask-agent-engineer',
@@ -275,6 +288,7 @@ export const engineers: EngineerTask[] = [
     requiresData: true,
     dataSource: 'User input, research database',
     category: 'intelligence',
+    humanDescription: 'This is the "ask me anything" engineer. When you have a question that doesn\'t fit neatly into one of the other engineers\' specialties — like "explain this filing in plain English" or "how does Company X\'s capital structure compare to Y?" — this is the one that handles it. It reads from our research database and your input, connects the dots across different data sources, and gives you a straight answer. Think of it as the generalist on the team who can pull from everyone else\'s work to answer your specific question.',
   },
 
   // ── BOBMAN'S TEAM ─────────────────────────────────────────────────────
@@ -296,6 +310,7 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['code-deployed', 'workflow-updated', 'engineer-config-changed'],
     requiresData: false,
     category: 'audit',
+    humanDescription: 'This engineer reads every set of instructions our AI engineers follow and compares them to the actual app. If a developer added a new page or renamed a tab but nobody updated the AI\'s instructions, this engineer catches the mismatch and writes a report of everything that\'s out of sync. It reads from the prompt database and the live codebase — no external data needed. Think of it as the proofreader who checks if the recipe book still matches what\'s actually in the kitchen.',
     chainsTo: 'prompt-remediation-engineer',
     notifyPm: 'bobman',
     pipelineDescription: 'Where do we look? Two places — the prompt database (all the instructions our AI engineers follow) and the live codebase (the actual app with its tabs, pages, API routes, and components). What happens? The pipeline reads every AI prompt and compares it against what the app really has. If someone added a new page or renamed a feature but forgot to update the AI\'s instructions, it catches the mismatch. Then it writes specific text fixes for each outdated instruction. What\'s the result? A list of patches — small targeted edits to the prompt templates — that get sent to a manager for approval. No instructions change until a human signs off. Think of it like a teacher checking if the textbook still matches what\'s actually being taught in class, then writing correction slips for each outdated page.',
@@ -316,6 +331,7 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['prompt-audit-completed'],
     requiresData: false,
     category: 'audit',
+    humanDescription: 'This engineer is the fixer that works after the Prompt Auditor. Once the auditor finds mismatches between AI instructions and the actual codebase, this engineer writes the specific text edits to bring them back in sync. It focuses on the most critical problems first and packages each fix as a small, safe edit. The fixes go to a manager for approval — nothing changes automatically. Think of it as the copy editor who takes the proofreader\'s notes and writes the actual corrections.',
     decisionsFor: 'maszka',
   },
 
@@ -337,6 +353,7 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['code-deployed', 'dependency-updated'],
     requiresData: false,
     category: 'audit',
+    humanDescription: 'This engineer is the security guard. It scans our entire codebase looking for vulnerabilities — things like exposed passwords, unsafe API endpoints, risky third-party packages, and common attack vectors (the OWASP top 10). It scores each finding by severity and maps it to known vulnerability categories. Everything it checks comes from our own code and dependency list — no external data needed. Think of it as the locksmith who tests every door and window in the building and reports which ones don\'t lock properly.',
   },
   {
     id: 'performance-engineer',
@@ -355,6 +372,7 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['code-deployed'],
     requiresData: false,
     category: 'audit',
+    humanDescription: 'This engineer checks how fast the app runs. It looks at how big the code bundle is (what gets downloaded to your browser), how efficiently components render on screen, and whether data is being loaded and cached smartly. It reads from our codebase only — no external sources. It produces a scorecard that ranks each issue by impact so we fix the biggest slowdowns first. Think of it as the mechanic who puts the car on the dyno and tells you exactly where you\'re losing horsepower.',
   },
   {
     id: 'disclosure-engineer',
@@ -373,6 +391,7 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['filing-ingested', 'data-updated'],
     requiresData: false,
     category: 'audit',
+    humanDescription: 'This engineer makes sure we haven\'t missed anything from SEC filings and that our financial models use the right numbers. It checks: did we capture all the risk factors from the latest 10-K? Do the inputs in our model actually match what the filing says? Are our assumptions consistent across different calculations? It reads from our database and SEC filing data — no external APIs. Think of it as the auditor who double-checks every number in the spreadsheet against the original source documents.',
   },
 
   // ── DOCUMENTATION ENGINEERS ──────────────────────────────────────────────
@@ -394,6 +413,7 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['code-deployed', 'workflow-updated', 'data-updated'],
     requiresData: false,
     category: 'documentation',
+    humanDescription: 'This engineer reads through recent code changes (git diffs) and checks if the documentation, style guides, and theme files still match what the code actually does. If someone built a new component but didn\'t document it, or the style guide says one thing but the code does another, it writes up a report of everything that needs fixing. It reads from the codebase and existing docs — no external data. Think of it as the editor who re-reads the whole manual after every update and marks up what\'s outdated.',
     notifyPm: 'bobman',
     chainsTo: 'ux-ui-engineer',
     pipelineDescription: 'Where do we look? The recent code changes (git diffs) across all divisions, plus the existing documentation, style guides, and theme files in the codebase. What happens? The pipeline reviews what changed in the code and checks if the docs still match. If someone built a new component but didn\'t document it, or if the style guide says "use blue buttons" but the code now uses green, it flags the gap. Then it hands those findings to a UI specialist who either implements the fixes or proposes an alternative. What\'s the result? Updated documentation, changelogs, and style guide corrections — but nothing changes until a manager reviews and approves. Think of it like an editor who re-reads the instruction manual after every product update and says "page 12 still shows the old button layout."',
@@ -417,6 +437,7 @@ export const engineers: EngineerTask[] = [
     triggerEvents: ['doc-review-completed'],
     requiresData: false,
     category: 'documentation',
+    humanDescription: 'This engineer takes the documentation findings from the Doc Reviewer and actually implements the fixes — updating style guides, adjusting theme documentation, and fixing component styling docs. If it disagrees with a suggested change, it proposes an alternative approach instead. All changes go to a manager for final approval. It reads from doc-review reports and the codebase. Think of it as the designer who receives the editor\'s notes and either makes the changes or says "actually, here\'s a better way to handle this."',
     decisionsFor: 'maszka',
   },
 ];

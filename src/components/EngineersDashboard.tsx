@@ -1318,12 +1318,17 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                               className="eng-pm-engineer-row"
                               onClick={() => setSelectedNode(eng.id)}
                             >
-                              <span className="eng-status-dot" data-status={dotStatus} />
-                              <span className="eng-pm-engineer-name">{eng.name}</span>
-                              <span className="eng-pm-engineer-role">{eng.role}</span>
-                              <span className="eng-pm-engineer-interval">
-                                {formatInterval(eng.defaultIntervalMinutes)}
-                              </span>
+                              <div className="eng-pm-engineer-row-header">
+                                <span className="eng-status-dot" data-status={dotStatus} />
+                                <span className="eng-pm-engineer-name">{eng.name}</span>
+                                <span className="eng-pm-engineer-role">{eng.role}</span>
+                                <span className="eng-pm-engineer-interval">
+                                  {formatInterval(eng.defaultIntervalMinutes)}
+                                </span>
+                              </div>
+                              {eng.humanDescription && (
+                                <div className="eng-pm-engineer-desc">{eng.humanDescription}</div>
+                              )}
                             </div>
                           );
                         })}
