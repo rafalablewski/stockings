@@ -92,7 +92,7 @@ export const engineers: EngineerTask[] = [
     decisionCategory: 'sec-filing-review',
     notifyPm: 'gemini',
     autoReviewBy: 'gemini',
-    pipelineDescription: 'Every hour, we check the SEC website for any new documents that our companies have filed — things like financial reports, insider stock purchases, or big announcements. When we find something new, we read through it, pull out the important numbers and changes, and compare it to what we already know. If anything meaningful changed, we prepare an update for the database, but a human has to approve it before it actually gets saved. Think of it like a news assistant that constantly watches for new reports, highlights what matters, and asks "should I file this?" before doing anything.',
+    pipelineDescription: 'Where do we look? The SEC\'s EDGAR website — that\'s where every public company is required to post official documents like financial reports (10-K, 10-Q), big announcements (8-K), and insider stock trades (Form 4). What happens? When you start this pipeline, it goes to EDGAR and checks if any of our tracked companies posted something new. If it finds a new filing, it downloads it, reads through it, and compares it to what we already have — pulling out the important numbers, changes in guidance, and risk factors. What\'s the result? The pipeline builds a database update with all the new information, scores how important each finding is, and sends it to a manager for approval. Nothing gets saved until a human says "yes, this looks right." Think of it like a research assistant who goes to the library, finds new reports about your companies, highlights the important parts, and asks you before filing anything away.',
   },
   {
     id: 'db-ingestor-engineer',
@@ -298,7 +298,7 @@ export const engineers: EngineerTask[] = [
     category: 'audit',
     chainsTo: 'prompt-remediation-engineer',
     notifyPm: 'bobman',
-    pipelineDescription: 'Once a day, we check whether the instructions we give to our AI engineers still match what the app actually looks like. If someone added a new page, renamed a tab, or changed how data is stored, but forgot to update the AI\'s instructions, this pipeline catches it. First it finds the mismatches, then it writes specific fixes for each outdated instruction. Those fixes go to a manager for approval before anything changes. It\'s like a spell-checker, but instead of typos it catches "the AI thinks feature X exists, but we renamed it to Y last week."',
+    pipelineDescription: 'Where do we look? Two places — the prompt database (all the instructions our AI engineers follow) and the live codebase (the actual app with its tabs, pages, API routes, and components). What happens? The pipeline reads every AI prompt and compares it against what the app really has. If someone added a new page or renamed a feature but forgot to update the AI\'s instructions, it catches the mismatch. Then it writes specific text fixes for each outdated instruction. What\'s the result? A list of patches — small targeted edits to the prompt templates — that get sent to a manager for approval. No instructions change until a human signs off. Think of it like a teacher checking if the textbook still matches what\'s actually being taught in class, then writing correction slips for each outdated page.',
   },
   {
     id: 'prompt-remediation-engineer',
@@ -396,7 +396,7 @@ export const engineers: EngineerTask[] = [
     category: 'documentation',
     notifyPm: 'bobman',
     chainsTo: 'ux-ui-engineer',
-    pipelineDescription: 'Every day, we look at what code changed recently and check if the documentation and style guides still match. If someone built a new component but didn\'t document it, or if the design rules say one thing but the code does another, this pipeline flags it. The first step finds the problems, then passes them to a UI specialist who either fixes them directly or suggests an alternative approach. Nothing gets changed without a manager signing off. It\'s like having an editor who reads every page of a book after each revision and says "chapter 3 still references the old character name."',
+    pipelineDescription: 'Where do we look? The recent code changes (git diffs) across all divisions, plus the existing documentation, style guides, and theme files in the codebase. What happens? The pipeline reviews what changed in the code and checks if the docs still match. If someone built a new component but didn\'t document it, or if the style guide says "use blue buttons" but the code now uses green, it flags the gap. Then it hands those findings to a UI specialist who either implements the fixes or proposes an alternative. What\'s the result? Updated documentation, changelogs, and style guide corrections — but nothing changes until a manager reviews and approves. Think of it like an editor who re-reads the instruction manual after every product update and says "page 12 still shows the old button layout."',
   },
 
   // ── MASZKA'S TEAM ──────────────────────────────────────────────────────
