@@ -107,7 +107,7 @@ export const orgNodes: OrgNode[] = [
     parentId: 'boss',
   },
 
-  // ── Engineers under Claude (7) ──────────────────────────────────────────
+  // ── Engineers under Claude (8) ──────────────────────────────────────────
   // Deep reasoning, complex analysis, code audits, agentic workflows
   {
     id: 'eng-thesis',
@@ -256,7 +256,7 @@ export const orgNodes: OrgNode[] = [
     engineerId: 'disclosure-engineer',
   },
 
-  // ── Engineers under Maszka (4) ────────────────────────────────────────
+  // ── Engineers under Maszka (3) ────────────────────────────────────────
   // Frontend performance, UX/UI implementation, styling, prompt remediation
   {
     id: 'eng-performance',
@@ -289,7 +289,7 @@ export const orgNodes: OrgNode[] = [
     engineerId: 'prompt-remediation-engineer',
   },
 
-  // ── Engineers under Project Mgmt / Bobman (1) ─────────────────────────
+  // ── Engineers under Project Mgmt / Bobman (2) ─────────────────────────
   // Prompt-codebase sync auditing, drift detection
   {
     id: 'eng-prompt-auditor',
