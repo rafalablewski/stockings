@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { authFetch } from '@/lib/auth-fetch';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -53,6 +53,149 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }>
   'applied':        { bg: 'rgba(126, 231, 135, 0.15)', text: '#7ee787', label: 'Applied' },
 };
 
+const SWIPE_THRESHOLD = 120;
+const REJECT_STATUSES = ['pm-rejected', 'boss-rejected'];
+const EXECUTION_CATEGORIES = ['data-patch', 'prompt-patch'];
+
+// ── Gmail-style swipe hook ───────────────────────────────────────────────────
+
+function useSwipeLeft(
+  onSwipe: () => void,
+  enabled: boolean,
+  indicatorRef: React.RefObject<HTMLDivElement | null>,
+) {
+  const ref = useRef<HTMLDivElement>(null);
+  const startX = useRef(0);
+  const currentX = useRef(0);
+  const swiping = useRef(false);
+  const didSwipe = useRef(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !enabled) return;
+
+    function applySwipeVisuals(dx: number) {
+      const el = ref.current;
+      if (!el) return;
+      const absDx = Math.abs(dx);
+      const progress = Math.min(1, absDx / SWIPE_THRESHOLD);
+
+      el.style.transform = `translateX(${dx}px)`;
+
+      // Update indicator
+      const ind = indicatorRef.current;
+      if (ind) {
+        ind.style.opacity = String(Math.min(1, progress * 1.5));
+        // Scale the icon like Gmail
+        const iconEl = ind.querySelector('.dec-swipe-icon') as HTMLElement | null;
+        if (iconEl) {
+          const scale = 0.6 + progress * 0.4;
+          iconEl.style.transform = `scale(${scale})`;
+          iconEl.style.opacity = String(progress);
+        }
+        // Red bg intensifies
+        const bgAlpha = Math.min(0.95, progress * 0.95);
+        ind.style.background = `rgba(220, 38, 38, ${bgAlpha})`;
+      }
+    }
+
+    function finishSwipe() {
+      const el = ref.current;
+      if (!el) return;
+      swiping.current = false;
+      const absDx = Math.abs(currentX.current);
+
+      if (absDx >= SWIPE_THRESHOLD) {
+        didSwipe.current = true;
+        // Slide off-screen like Gmail
+        el.style.transition = 'transform 0.25s cubic-bezier(0.4, 0, 1, 1)';
+        el.style.transform = `translateX(-${el.offsetWidth + 20}px)`;
+        setTimeout(onSwipe, 260);
+      } else {
+        // Snap back with spring
+        el.style.transition = 'transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        el.style.transform = 'translateX(0)';
+        // Fade indicator
+        const ind = indicatorRef.current;
+        if (ind) {
+          ind.style.transition = 'opacity 0.3s ease, background 0.3s ease';
+          ind.style.opacity = '0';
+          ind.style.background = 'rgba(220, 38, 38, 0)';
+          setTimeout(() => { ind.style.transition = ''; }, 300);
+        }
+        setTimeout(() => { didSwipe.current = false; }, 100);
+      }
+    }
+
+    // ── Touch ──
+    const onTouchStart = (e: TouchEvent) => {
+      startX.current = e.touches[0].clientX;
+      currentX.current = 0;
+      swiping.current = true;
+      didSwipe.current = false;
+      el.style.transition = 'none';
+      const ind = indicatorRef.current;
+      if (ind) ind.style.transition = 'none';
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!swiping.current) return;
+      const dx = e.touches[0].clientX - startX.current;
+      currentX.current = Math.min(0, dx);
+      applySwipeVisuals(currentX.current);
+    };
+
+    const onTouchEnd = () => {
+      if (!swiping.current) return;
+      finishSwipe();
+    };
+
+    // ── Mouse (desktop) ──
+    const onMouseDown = (e: MouseEvent) => {
+      // Only left button
+      if (e.button !== 0) return;
+      startX.current = e.clientX;
+      currentX.current = 0;
+      swiping.current = true;
+      didSwipe.current = false;
+      el.style.transition = 'none';
+      const ind = indicatorRef.current;
+      if (ind) ind.style.transition = 'none';
+
+      const onMouseMove = (e: MouseEvent) => {
+        if (!swiping.current) return;
+        const dx = e.clientX - startX.current;
+        currentX.current = Math.min(0, dx);
+        applySwipeVisuals(currentX.current);
+      };
+
+      const onMouseUp = () => {
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+        if (!swiping.current) return;
+        finishSwipe();
+      };
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    };
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: true });
+    el.addEventListener('touchend', onTouchEnd);
+    el.addEventListener('mousedown', onMouseDown);
+
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener('mousedown', onMouseDown);
+    };
+  }, [onSwipe, enabled, indicatorRef]);
+
+  return { ref, didSwipe };
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function DecisionDashboard() {
@@ -61,6 +204,8 @@ export default function DecisionDashboard() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [applying, setApplying] = useState<number | null>(null);
+  const [showRejected, setShowRejected] = useState(false);
+  const [dismissingIds, setDismissingIds] = useState<Set<number>>(new Set());
 
   const fetchDecisions = useCallback(async () => {
     try {
@@ -91,13 +236,26 @@ export default function DecisionDashboard() {
     fetchDecisions();
   };
 
+  const handleSwipeReject = useCallback((decision: Decision) => {
+    const rejectStatus = decision.status === 'pm-approved' ? 'boss-rejected' : 'pm-rejected';
+    const notes = decision.status === 'pm-approved' ? 'Swiped to reject by Boss' : 'Swiped to reject by PM';
+
+    setDismissingIds(prev => new Set(prev).add(decision.id));
+    setTimeout(() => {
+      updateStatus(decision.id, rejectStatus, notes);
+      setDismissingIds(prev => {
+        const next = new Set(prev);
+        next.delete(decision.id);
+        return next;
+      });
+    }, 50);
+  }, []);  // eslint-disable-line react-hooks/exhaustive-deps
+
   const applyPatches = async (decision: Decision) => {
     setApplying(decision.id);
     try {
-      // Parse the remediation output to extract patches
       let patches: PatchItem[] = [];
       try {
-        // The payload might be the raw engineer output containing JSON
         const jsonMatch = decision.payload.match(/\{[\s\S]*"patches"[\s\S]*\}/);
         if (jsonMatch) {
           const parsed: RemediationOutput = JSON.parse(jsonMatch[0]);
@@ -110,7 +268,6 @@ export default function DecisionDashboard() {
 
       if (patches.length === 0) return;
 
-      // Call the apply endpoint in dry-run first
       const previewRes = await authFetch('/api/workflow/apply-prompt-patch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -123,7 +280,6 @@ export default function DecisionDashboard() {
         return;
       }
 
-      // Apply for real
       const applyRes = await authFetch('/api/workflow/apply-prompt-patch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -144,7 +300,6 @@ export default function DecisionDashboard() {
   const applyDataPatches = async (decision: Decision) => {
     setApplying(decision.id);
     try {
-      // Parse the ingestor output to extract data patches
       let patches: Array<{ file: string; action: string; anchor: string; content: string; oldValue?: string }> = [];
       try {
         const jsonMatch = decision.payload.match(/\{[\s\S]*"patches"[\s\S]*\}/);
@@ -167,7 +322,6 @@ export default function DecisionDashboard() {
 
       const ticker = decision.ticker;
 
-      // Dry-run validation first
       const previewRes = await authFetch('/api/workflow/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -180,7 +334,6 @@ export default function DecisionDashboard() {
         return;
       }
 
-      // Apply for real with validated patches
       const applyRes = await authFetch('/api/workflow/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -215,6 +368,10 @@ export default function DecisionDashboard() {
     return acc;
   }, {});
 
+  const isRejected = (d: Decision) => REJECT_STATUSES.includes(d.status);
+  const rejectedCount = decisions.filter(isRejected).length;
+  const visibleDecisions = showRejected ? decisions : decisions.filter(d => !isRejected(d));
+
   return (
     <div className="dec-dashboard">
       {/* PM filter tabs */}
@@ -242,108 +399,222 @@ export default function DecisionDashboard() {
         })}
       </div>
 
+      {/* Rejected toggle */}
+      {rejectedCount > 0 && (
+        <button
+          className="dec-rejected-toggle"
+          onClick={() => setShowRejected(v => !v)}
+        >
+          <span className="dec-rejected-toggle-icon">{showRejected ? '\u25BC' : '\u25B6'}</span>
+          {showRejected ? 'Hide' : 'Show'} rejected ({rejectedCount})
+        </button>
+      )}
+
       {/* Decision cards */}
       {loading ? (
         <div className="dec-empty">Loading decisions...</div>
-      ) : decisions.length === 0 ? (
-        <div className="dec-empty">No decisions pending. The pipeline is clear.</div>
+      ) : visibleDecisions.length === 0 ? (
+        <div className="dec-empty">
+          {decisions.length > 0 && rejectedCount === decisions.length
+            ? `All ${rejectedCount} decisions rejected. Click "Show rejected" to review.`
+            : 'No decisions pending. The pipeline is clear.'}
+        </div>
       ) : (
         <div className="dec-list">
-          {decisions.map(d => {
-            const pm = PM_META[d.pm] || { label: d.pm, color: '#888', badge: '?' };
-            const st = STATUS_STYLES[d.status] || STATUS_STYLES['pending'];
-            const isExpanded = expandedId === d.id;
-            const patchCount = parsePatchCount(d.payload);
-
-            return (
-              <div key={d.id} className="dec-card" style={{ '--pm-color': pm.color } as React.CSSProperties}>
-                <div className="dec-card-header" onClick={() => setExpandedId(isExpanded ? null : d.id)}>
-                  <div className="dec-card-left">
-                    <span className="dec-card-badge" style={{ background: pm.color }}>{pm.badge}</span>
-                    <div>
-                      <div className="dec-card-title">{d.title}</div>
-                      <div className="dec-card-meta">
-                        {d.ticker} &middot; {d.engineerId} &middot; {new Date(d.createdAt).toLocaleString()}
-                        {patchCount > 0 && <> &middot; {patchCount} patches</>}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="dec-card-right">
-                    <span className="dec-status-badge" style={{ background: st.bg, color: st.text }}>{st.label}</span>
-                    <span className="dec-expand-icon">{isExpanded ? '\u25B2' : '\u25BC'}</span>
-                  </div>
-                </div>
-
-                {isExpanded && (
-                  <div className="dec-card-body">
-                    {/* Payload preview */}
-                    <div className="dec-payload-section">
-                      <div className="dec-payload-label">Payload</div>
-                      <pre className="dec-payload-pre">{d.payload.slice(0, 3000)}{d.payload.length > 3000 ? '\n...(truncated)' : ''}</pre>
-                    </div>
-
-                    {/* Notes */}
-                    {d.pmNotes && (
-                      <div className="dec-notes">
-                        <strong>PM Notes:</strong> {d.pmNotes}
-                      </div>
-                    )}
-                    {d.bossNotes && (
-                      <div className="dec-notes">
-                        <strong>Boss Notes:</strong> {d.bossNotes}
-                      </div>
-                    )}
-
-                    {/* Action buttons */}
-                    <div className="dec-actions">
-                      {d.status === 'pending' && (
-                        <>
-                          <button className="eng-btn" data-variant="active" onClick={() => updateStatus(d.id, 'pm-approved', 'Approved by PM')}>
-                            PM Approve
-                          </button>
-                          <button className="eng-btn eng-btn-danger" onClick={() => updateStatus(d.id, 'pm-rejected', 'Rejected by PM')}>
-                            PM Reject
-                          </button>
-                        </>
-                      )}
-                      {d.status === 'pm-approved' && (
-                        <>
-                          <button className="eng-btn" data-variant="run" onClick={() => updateStatus(d.id, 'boss-approved', 'Final approval by Boss')}>
-                            Boss Approve
-                          </button>
-                          <button className="eng-btn eng-btn-danger" onClick={() => updateStatus(d.id, 'boss-rejected', 'Rejected by Boss')}>
-                            Boss Reject
-                          </button>
-                        </>
-                      )}
-                      {d.status === 'boss-approved' && d.category === 'prompt-patch' && (
-                        <button
-                          className="eng-btn"
-                          data-variant="active"
-                          onClick={() => applyPatches(d)}
-                          disabled={applying === d.id}
-                        >
-                          {applying === d.id ? 'Applying...' : 'Apply Patches to workflows.ts'}
-                        </button>
-                      )}
-                      {d.status === 'boss-approved' && d.category === 'data-patch' && (
-                        <button
-                          className="eng-btn"
-                          data-variant="active"
-                          onClick={() => applyDataPatches(d)}
-                          disabled={applying === d.id}
-                        >
-                          {applying === d.id ? 'Applying...' : 'Apply Data Patches to database'}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {visibleDecisions.map(d => (
+            <DecisionCard
+              key={d.id}
+              decision={d}
+              isExpanded={expandedId === d.id}
+              isDismissing={dismissingIds.has(d.id)}
+              applying={applying}
+              onToggleExpand={() => setExpandedId(expandedId === d.id ? null : d.id)}
+              onSwipeReject={handleSwipeReject}
+              onUpdateStatus={updateStatus}
+              onApplyPatches={applyPatches}
+              onApplyDataPatches={applyDataPatches}
+              parsePatchCount={parsePatchCount}
+            />
+          ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Trash icon SVG ───────────────────────────────────────────────────────────
+
+function TrashIcon() {
+  return (
+    <svg className="dec-swipe-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+      <line x1="10" y1="11" x2="10" y2="17" />
+      <line x1="14" y1="11" x2="14" y2="17" />
+    </svg>
+  );
+}
+
+// ── Decision Card ────────────────────────────────────────────────────────────
+
+interface DecisionCardProps {
+  decision: Decision;
+  isExpanded: boolean;
+  isDismissing: boolean;
+  applying: number | null;
+  onToggleExpand: () => void;
+  onSwipeReject: (d: Decision) => void;
+  onUpdateStatus: (id: number, status: string, notes?: string) => void;
+  onApplyPatches: (d: Decision) => void;
+  onApplyDataPatches: (d: Decision) => void;
+  parsePatchCount: (payload: string) => number;
+}
+
+function DecisionCard({
+  decision: d,
+  isExpanded,
+  isDismissing,
+  applying,
+  onToggleExpand,
+  onSwipeReject,
+  onUpdateStatus,
+  onApplyPatches,
+  onApplyDataPatches,
+  parsePatchCount,
+}: DecisionCardProps) {
+  const pm = PM_META[d.pm] || { label: d.pm, color: '#888', badge: '?' };
+  const st = STATUS_STYLES[d.status] || STATUS_STYLES['pending'];
+  const patchCount = parsePatchCount(d.payload);
+  const rejected = REJECT_STATUSES.includes(d.status);
+  const isExecution = EXECUTION_CATEGORIES.includes(d.category);
+  const isNonExecApproved = d.status === 'pm-approved' && !isExecution;
+
+  const canSwipeReject = d.status === 'pending' || d.status === 'pm-approved';
+  const indicatorRef = useRef<HTMLDivElement>(null);
+  const { ref: swipeRef, didSwipe } = useSwipeLeft(() => onSwipeReject(d), canSwipeReject, indicatorRef);
+
+  const handleHeaderClick = useCallback(() => {
+    // Skip click if it was triggered by a completed swipe
+    if (didSwipe.current) return;
+    onToggleExpand();
+  }, [onToggleExpand, didSwipe]);
+
+  return (
+    <div
+      className={`dec-card-wrapper ${isDismissing ? 'dec-dismissing' : ''} ${rejected ? 'dec-rejected-card' : ''}`}
+    >
+      {/* Gmail-style red rejection backdrop */}
+      {canSwipeReject && (
+        <div className="dec-swipe-backdrop" ref={indicatorRef}>
+          <div className="dec-swipe-backdrop-content">
+            <TrashIcon />
+            <span className="dec-swipe-backdrop-label">Reject</span>
+          </div>
+        </div>
+      )}
+
+      <div
+        ref={swipeRef}
+        className={`dec-card ${canSwipeReject ? 'dec-card-swipeable' : ''}`}
+        style={{ '--pm-color': pm.color } as React.CSSProperties}
+      >
+        <div className="dec-card-header" onClick={handleHeaderClick}>
+          <div className="dec-card-left">
+            <span className="dec-card-badge" style={{ background: pm.color }}>{pm.badge}</span>
+            <div>
+              <div className="dec-card-title">{d.title}</div>
+              <div className="dec-card-meta">
+                {d.ticker} &middot; {d.engineerId} &middot; {new Date(d.createdAt).toLocaleString()}
+                {patchCount > 0 && <> &middot; {patchCount} patches</>}
+              </div>
+            </div>
+          </div>
+          <div className="dec-card-right">
+            {/* Non-execution clarification badge */}
+            {isNonExecApproved && (
+              <span className="dec-review-only-badge">Review Only</span>
+            )}
+            {/* Execution badge for clarity */}
+            {d.status === 'pm-approved' && isExecution && (
+              <span className="dec-execution-badge">
+                {d.category === 'data-patch' ? 'DB Write' : 'Code Write'}
+              </span>
+            )}
+            <span className="dec-status-badge" style={{ background: st.bg, color: st.text }}>{st.label}</span>
+            <span className="dec-expand-icon">{isExpanded ? '\u25B2' : '\u25BC'}</span>
+          </div>
+        </div>
+
+        {/* Non-execution info banner (when expanded) */}
+        {isExpanded && isNonExecApproved && (
+          <div className="dec-nonexec-banner">
+            This approval triggers the next workflow step — it does not write to the database or modify code.
+          </div>
+        )}
+
+        <div className={`dec-card-body-anim ${isExpanded ? 'dec-body-open' : ''}`}>
+          <div className="dec-card-body">
+            <div className="dec-payload-section">
+              <div className="dec-payload-label">Payload</div>
+              <pre className="dec-payload-pre">{d.payload.slice(0, 3000)}{d.payload.length > 3000 ? '\n...(truncated)' : ''}</pre>
+            </div>
+
+            {d.pmNotes && (
+              <div className="dec-notes">
+                <strong>PM Notes:</strong> {d.pmNotes}
+              </div>
+            )}
+            {d.bossNotes && (
+              <div className="dec-notes">
+                <strong>Boss Notes:</strong> {d.bossNotes}
+              </div>
+            )}
+
+            <div className="dec-actions">
+              {d.status === 'pending' && (
+                <>
+                  <button className="eng-btn" data-variant="active" onClick={() => onUpdateStatus(d.id, 'pm-approved', 'Approved by PM')}>
+                    PM Approve
+                  </button>
+                  <button className="eng-btn eng-btn-danger" onClick={() => onUpdateStatus(d.id, 'pm-rejected', 'Rejected by PM')}>
+                    PM Reject
+                  </button>
+                </>
+              )}
+              {d.status === 'pm-approved' && (
+                <>
+                  <button className="eng-btn" data-variant="run" onClick={() => onUpdateStatus(d.id, 'boss-approved', 'Final approval by Boss')}>
+                    Boss Approve
+                  </button>
+                  <button className="eng-btn eng-btn-danger" onClick={() => onUpdateStatus(d.id, 'boss-rejected', 'Rejected by Boss')}>
+                    Boss Reject
+                  </button>
+                </>
+              )}
+              {d.status === 'boss-approved' && d.category === 'prompt-patch' && (
+                <button
+                  className="eng-btn"
+                  data-variant="active"
+                  onClick={() => onApplyPatches(d)}
+                  disabled={applying === d.id}
+                >
+                  {applying === d.id ? 'Applying...' : 'Apply Patches to workflows.ts'}
+                </button>
+              )}
+              {d.status === 'boss-approved' && d.category === 'data-patch' && (
+                <button
+                  className="eng-btn"
+                  data-variant="active"
+                  onClick={() => onApplyDataPatches(d)}
+                  disabled={applying === d.id}
+                >
+                  {applying === d.id ? 'Applying...' : 'Apply Data Patches to database'}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

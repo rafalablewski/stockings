@@ -7,6 +7,7 @@ import type { Workflow } from '@/data/workflows';
 import type { RunStatus } from '@/lib/engineer-engine';
 import NetworkGraph from '@/components/NetworkGraph';
 import DecisionDashboard from '@/components/DecisionDashboard';
+import OperationsPipeline from '@/components/OperationsPipeline';
 import { orgNodes } from '@/data/org-hierarchy';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -473,7 +474,7 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
   const [statuses, setStatuses] = useState<EngineerStatus[]>([]);
   const [loading, setLoading] = useState(true);
   const [runningIds, setRunningIds] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState<'network' | 'history' | 'pms'>('network');
+  const [activeTab, setActiveTab] = useState<'network' | 'history' | 'pms' | 'operations'>('network');
   const [graphView, setGraphView] = useState<'default' | 'interactive'>('default');
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
 
@@ -784,6 +785,9 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
             </button>
             <button className="eng-tab" data-active={activeTab === 'pms'} onClick={() => setActiveTab('pms')}>
               PMs<span className="eng-tab-count">{divisionLeads.length}</span>
+            </button>
+            <button className="eng-tab" data-active={activeTab === 'operations'} onClick={() => setActiveTab('operations')}>
+              Operations
             </button>
           </div>
         </div>
@@ -1314,12 +1318,17 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
                               className="eng-pm-engineer-row"
                               onClick={() => setSelectedNode(eng.id)}
                             >
-                              <span className="eng-status-dot" data-status={dotStatus} />
-                              <span className="eng-pm-engineer-name">{eng.name}</span>
-                              <span className="eng-pm-engineer-role">{eng.role}</span>
-                              <span className="eng-pm-engineer-interval">
-                                {formatInterval(eng.defaultIntervalMinutes)}
-                              </span>
+                              <div className="eng-pm-engineer-row-header">
+                                <span className="eng-status-dot" data-status={dotStatus} />
+                                <span className="eng-pm-engineer-name">{eng.name}</span>
+                                <span className="eng-pm-engineer-role">{eng.role}</span>
+                                <span className="eng-pm-engineer-interval">
+                                  {formatInterval(eng.defaultIntervalMinutes)}
+                                </span>
+                              </div>
+                              {eng.humanDescription && (
+                                <div className="eng-pm-engineer-desc">{eng.humanDescription}</div>
+                              )}
                             </div>
                           );
                         })}
@@ -1334,6 +1343,11 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
               })}
             </div>
           </div>
+        )}
+
+        {/* ══ OPERATIONS TAB ══ */}
+        {activeTab === 'operations' && (
+          <OperationsPipeline />
         )}
 
         {loading && (

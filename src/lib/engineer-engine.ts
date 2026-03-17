@@ -16,7 +16,7 @@ import { getEngineer, engineers, type EngineerTask } from './engineers';
 import { workflows } from '@/data/workflows';
 import { resolvePromptPlaceholders } from './prompt-placeholders';
 import { asts, bmnr, crcl } from '@/data';
-import { scanForNewFilings } from './sec-scanner';
+import { scanForNewFilings, fetchFilingText, type FilingCoverageEntry } from './sec-scanner';
 import { autoReviewDecision } from './gemini-auto-review';
 
 // Claude models for engineer runs
@@ -139,43 +139,94 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
         .where(eq(agentRuns.id, runId));
 
       // ── Custom execution: SEC Filing Scanner ────────────────────────────
-      // The sec-filing-scan workflow needs its own orchestration loop
-      // (fetch EDGAR → diff DB → analyze each filing) rather than a single
-      // prompt-to-Claude call. Delegate to the scanner engine directly.
+      // The sec-filing-scan workflow needs its own orchestration loop:
+      //   1. Fetch EDGAR → diff DB → identify untracked filings
+      //   2. Fetch full text of top 10 untracked filings from EDGAR
+      //   3. Include content in output so downstream ingestor can extract real data
       if (resolved.workflowId === 'sec-filing-scan') {
         const scanResult = await scanForNewFilings([opts.ticker]);
         const tickerResult = scanResult.tickerResults[0];
+
+        // Identify top 10 newest untracked filings and fetch their full text
+        const MAX_UNTRACKED_TO_FETCH = 10;
+        const FILING_TEXT_LIMIT = 12_000; // per filing (10 × 12K = ~120K chars max)
+        let untrackedWithContent: Array<FilingCoverageEntry & { filingText?: string }> = [];
+
+        if (tickerResult?.coverage) {
+          const untrackedEntries = tickerResult.coverage.entries
+            .filter(e => e.status === 'untracked')
+            .slice(0, MAX_UNTRACKED_TO_FETCH);
+
+          // Fetch filing content in parallel for all untracked filings
+          untrackedWithContent = await Promise.all(
+            untrackedEntries.map(async (entry) => {
+              if (!entry.fileUrl) return { ...entry, filingText: '[No EDGAR URL available]' };
+              const text = await fetchFilingText(entry.fileUrl, FILING_TEXT_LIMIT);
+              return { ...entry, filingText: text };
+            })
+          );
+        }
+
         const outputFull = tickerResult
           ? [
               `# SEC FILING SCAN: ${opts.ticker}`,
               `Scanned at: ${scanResult.scannedAt}`,
-              `New filings found: ${tickerResult.newFilings.length}`,
               `Company: ${tickerResult.companyName}`,
               '',
-              // New filing analyses
-              ...tickerResult.analyses.map(a =>
-                `## ${a.filing.form} — ${a.filing.filingDate}\n**Verdict:** ${a.verdict}\n**Accession:** ${a.filing.accessionNumber}\n\n${a.analysis}`
-              ),
-              ...(tickerResult.newFilings.length === 0 ? ['No new filings detected since last scan.'] : []),
-              ...(tickerResult.error ? [`\nError: ${tickerResult.error}`] : []),
-              // Database coverage report
+              // Database coverage summary
               ...(tickerResult.coverage ? [
-                '',
-                '---',
                 `## DATABASE COVERAGE (${tickerResult.coverage.total} filings checked)`,
                 `- **IN DB (tracked):** ${tickerResult.coverage.tracked}`,
                 `- **DATA ONLY:** ${tickerResult.coverage.dataOnly}`,
                 `- **UNTRACKED:** ${tickerResult.coverage.untracked}`,
                 `- **Coverage:** ${tickerResult.coverage.total > 0 ? Math.round(((tickerResult.coverage.tracked + tickerResult.coverage.dataOnly) / tickerResult.coverage.total) * 100) : 0}%`,
-                '',
-                // List untracked filings so they're actionable
-                ...(tickerResult.coverage.untracked > 0 ? [
-                  '### Untracked Filings (not in database)',
-                  ...tickerResult.coverage.entries
-                    .filter(e => e.status === 'untracked')
-                    .map(e => `- **${e.form}** ${e.filingDate} (${e.accessionNumber})`),
-                ] : ['All EDGAR filings are tracked or have cross-reference data in the database.']),
               ] : []),
+              '',
+              // Untracked filings with FULL TEXT for extraction
+              ...(untrackedWithContent.length > 0 ? [
+                `## UNTRACKED FILINGS WITH FULL TEXT — ${untrackedWithContent.length} FILINGS FOR INGESTION`,
+                '',
+                'Each filing below includes the full EDGAR document text.',
+                'Extract ALL material data points and generate database patches for every relevant data file.',
+                '',
+                ...untrackedWithContent.flatMap((e, i) => [
+                  `════════════════════════════════════════`,
+                  `FILING ${i + 1} of ${untrackedWithContent.length}`,
+                  `════════════════════════════════════════`,
+                  `Form: ${e.form}`,
+                  `Date: ${e.filingDate}`,
+                  `Accession: ${e.accessionNumber}`,
+                  `Description: ${e.edgarDescription || 'N/A'}`,
+                  `Status: UNTRACKED`,
+                  '',
+                  `── FULL DOCUMENT TEXT ──`,
+                  e.filingText || '[No content available]',
+                  `── END OF FILING ${i + 1} ──`,
+                  '',
+                ]),
+              ] : tickerResult?.coverage?.untracked === 0
+                ? ['All EDGAR filings are tracked or have cross-reference data in the database.']
+                : []),
+              // Remaining untracked filings not fetched this run
+              ...(tickerResult?.coverage && tickerResult.coverage.untracked > MAX_UNTRACKED_TO_FETCH ? [
+                '',
+                `## REMAINING UNTRACKED (${tickerResult.coverage.untracked - MAX_UNTRACKED_TO_FETCH} more — not fetched this run)`,
+                ...tickerResult.coverage.entries
+                  .filter(e => e.status === 'untracked')
+                  .slice(MAX_UNTRACKED_TO_FETCH)
+                  .map(e => `- ${e.form} ${e.filingDate} (${e.accessionNumber})`),
+              ] : []),
+              '',
+              '---',
+              '',
+              // New filing analyses (newly seen since last scan)
+              `## NEW FILINGS SINCE LAST SCAN: ${tickerResult.newFilings.length}`,
+              ...(tickerResult.newFilings.length > 0
+                ? tickerResult.analyses.map(a =>
+                    `### ${a.filing.form} — ${a.filing.filingDate}\n**Verdict:** ${a.verdict}\n**Accession:** ${a.filing.accessionNumber}\n\n${a.analysis}`
+                  )
+                : ['No new filings detected since last scan (all recent filings already seen).']),
+              ...(tickerResult.error ? [`\nError: ${tickerResult.error}`] : []),
             ].join('\n')
           : `SEC scan completed for ${opts.ticker} — no results returned.`;
 

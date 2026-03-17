@@ -89,7 +89,9 @@ export interface FilingCoverageEntry {
   form: string;
   filingDate: string;
   status: FilingDbStatus;
+  fileUrl?: string;              // EDGAR filing URL (for content fetching)
   matchedDescription?: string;   // description from local data file if tracked
+  edgarDescription?: string;     // original EDGAR primaryDocDescription (for untracked filings)
   crossRefSources?: string[];    // cross-ref sources if data_only
 }
 
@@ -316,6 +318,41 @@ async function persistNewFilings(filings: ScannedFiling[], tickerLower: string):
   }
 }
 
+// ── Filing Content Fetcher (reusable) ────────────────────────────────────────
+
+/**
+ * Fetch and parse the full text of an SEC filing from EDGAR.
+ * Strips HTML, normalizes whitespace, and truncates to maxLength.
+ */
+export async function fetchFilingText(fileUrl: string, maxLength = MAX_FILING_TEXT_LENGTH): Promise<string> {
+  try {
+    const res = await fetch(fileUrl, { headers: SEC_HEADERS });
+    if (!res.ok) throw new Error(`SEC returned ${res.status}`);
+    const html = await res.text();
+
+    let text = html
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#?\w+;/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    if (text.length > maxLength) {
+      text = text.slice(0, maxLength) + '\n\n[... document truncated ...]';
+    }
+
+    return text;
+  } catch (err) {
+    return `[Could not fetch document: ${(err as Error).message}]`;
+  }
+}
+
 // ── AI Filing Analysis ───────────────────────────────────────────────────────
 
 async function analyzeNewFiling(filing: ScannedFiling): Promise<FilingAnalysis> {
@@ -330,31 +367,7 @@ async function analyzeNewFiling(filing: ScannedFiling): Promise<FilingAnalysis> 
   }
 
   // Fetch the filing document text from SEC
-  let docText = '';
-  try {
-    const res = await fetch(filing.fileUrl, { headers: SEC_HEADERS });
-    if (!res.ok) throw new Error(`SEC returned ${res.status}`);
-    const html = await res.text();
-
-    docText = html
-      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/&amp;/g, '&')
-      .replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>')
-      .replace(/&quot;/g, '"')
-      .replace(/&#?\w+;/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    if (docText.length > MAX_FILING_TEXT_LENGTH) {
-      docText = docText.slice(0, MAX_FILING_TEXT_LENGTH) + '\n\n[... document truncated ...]';
-    }
-  } catch (err) {
-    docText = `[Could not fetch document: ${(err as Error).message}]`;
-  }
+  const docText = await fetchFilingText(filing.fileUrl);
 
   const prompt = buildAnalysisPrompt(filing, docText);
 
@@ -508,6 +521,7 @@ function checkFilingCoverage(ticker: string, filings: ScannedFiling[]): Coverage
   if (!data) {
     return { total: filings.length, tracked: 0, dataOnly: 0, untracked: filings.length, entries: filings.map(f => ({
       accessionNumber: f.accessionNumber, form: f.form, filingDate: f.filingDate, status: 'untracked' as FilingDbStatus,
+      fileUrl: f.fileUrl, edgarDescription: f.primaryDocDescription || undefined,
     })) };
   }
 
@@ -586,6 +600,7 @@ function checkFilingCoverage(ticker: string, filings: ScannedFiling[]): Coverage
     return {
       accessionNumber: f.accessionNumber, form: f.form, filingDate: f.filingDate,
       status: 'untracked' as FilingDbStatus,
+      fileUrl: f.fileUrl, edgarDescription: f.primaryDocDescription || undefined,
     };
   });
 

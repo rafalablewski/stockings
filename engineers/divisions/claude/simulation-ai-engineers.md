@@ -12,24 +12,27 @@ This document simulates one full cycle of every AI engineer — what fires, in w
 
 ```
 T+0m    SEC Filing Engineer      polling EDGAR… new 8-K detected for ASTS
-T+2m    SEC Filing Engineer      → filing parsed, DB updated, emits "filing-ingested"
-T+3m    Insider Activity Eng.    triggered by "form-4-detected" (bundled in 8-K)
-T+3m    Thesis Engineer          triggered by "filing-ingested"
-T+3m    Capital Structure Eng.   triggered by "filing-ingested"
-T+3m    Catalyst Tracker Eng.    triggered by "filing-ingested"
-T+3m    Regulatory & IP Eng.     triggered by "filing-ingested"
-T+3m    Data Quality Engineer    triggered by "filing-ingested"
-T+3m    Disclosure Engineer      triggered by "filing-ingested"
-T+3m    Earnings Engineer        triggered by "filing-ingested"
-T+5m    Press Intelligence Eng.  scheduled poll (every 30m) — picks up ASTS press release
-T+8m    Market Sentiment Eng.    scheduled poll (every 3h)
-T+10m   Prompt Auditor           daily schedule fires
-T+12m   Prompt Remediation Eng.  chained from Prompt Auditor completion
-T+14m   Doc Reviewer             daily schedule fires
-T+16m   UX/UI Engineer           chained from Doc Reviewer completion
-T+20m   Code Security Engineer   daily schedule fires
-T+22m   Performance Engineer     bi-daily schedule fires
-T+25m   General Intelligence     on-demand (idle — waits for user query)
+T+2m    SEC Filing Engineer      → filing parsed, emits "filing-scan-completed"
+T+2m    Gemini Auto-Review       reviews Filing Engineer output (approve/reject/enhance)
+T+3m    SEC DB Ingestor          chained from Filing Engineer → 7-phase deep analysis
+T+5m    SEC DB Ingestor          → patches generated, routes to PM Decision Dashboard
+T+5m    Insider Activity Eng.    triggered by "form-4-detected" (bundled in 8-K)
+T+5m    Thesis Engineer          triggered by "filing-ingested"
+T+5m    Capital Structure Eng.   triggered by "filing-ingested"
+T+5m    Catalyst Tracker Eng.    triggered by "filing-ingested"
+T+5m    Regulatory & IP Eng.     triggered by "filing-ingested"
+T+5m    Data Quality Engineer    triggered by "filing-ingested"
+T+5m    Disclosure Engineer      triggered by "filing-ingested"
+T+5m    Earnings Engineer        triggered by "filing-ingested"
+T+8m    Press Intelligence Eng.  scheduled poll (every 30m) — picks up ASTS press release
+T+10m   Market Sentiment Eng.    scheduled poll (every 3h)
+T+12m   Prompt Auditor           daily schedule fires
+T+14m   Prompt Remediation Eng.  chained from Prompt Auditor completion
+T+16m   Doc Reviewer             daily schedule fires
+T+18m   UX/UI Engineer           chained from Doc Reviewer completion
+T+22m   Code Security Engineer   daily schedule fires
+T+24m   Performance Engineer     bi-daily schedule fires
+T+27m   General Intelligence     on-demand (idle — waits for user query)
 ```
 
 ---
@@ -65,16 +68,32 @@ Polls the EDGAR FULL-TEXT search API for new filings on all covered tickers. Whe
   + New carrier partner (AT&T) added to commercial agreements
   + Satellite count: 3 → 5 operational
 [filing-engineer] Writing to database: filings table (1 row), filing_deltas table (3 rows)
-[filing-engineer] Emitting events: filing-ingested, form-4-detected
-[filing-engineer] ✅ COMPLETED — 3 material changes extracted, DB updated
+[filing-engineer] Emitting events: filing-scan-completed, form-4-detected
+[filing-engineer] ✅ COMPLETED — 3 material changes extracted
+[filing-engineer] → Gemini auto-review: APPROVED (accurate classifications, no hallucinations)
+[filing-engineer] → Chaining to SEC DB Ingestor...
+
+[db-ingestor-engineer] Run #31 for ASTS — chained from filing-engineer (run #247)
+[db-ingestor-engineer] Running sec-db-ingest workflow (7-phase analysis)...
+[db-ingestor-engineer] Phase 1: Triage — 1 filing, materiality: CRITICAL (guidance revision + new contract)
+[db-ingestor-engineer] Phase 2: Deep extraction — 8-K Items 2.02/7.01: revenue guidance $12M-18M, AT&T 5-year deal, constellation 5 operational
+[db-ingestor-engineer] Phase 3: Cross-filing correlation — correlates with prior 8-K (2026-01-28): guidance +140% at midpoint
+[db-ingestor-engineer] Phase 4: Conflict detection — no conflicts, no duplicates, 0 stale entries
+[db-ingestor-engineer] Phase 5: Generating patches — 4 patches (sec-filings.ts insert + cross-ref, timeline.ts, company.ts)
+[db-ingestor-engineer] Phase 6: Pre-write gate — all checks PASS
+[db-ingestor-engineer] Phase 7: Summary — thesis STRENGTHENING, capital NEUTRAL, commit msg ready
+[db-ingestor-engineer] Routing 4 patches to PM Decision Dashboard (Claude PM)
+[db-ingestor-engineer] ✅ COMPLETED — 1 filing ingested (Critical), 4 patches generated
 ```
 
 ### Deliverable
 | Output | Destination |
 |--------|-------------|
-| Parsed filing record | `filings` DB table |
-| 3 delta change records | `filing_deltas` DB table |
-| Events emitted | `filing-ingested`, `form-4-detected` → triggers 8 downstream engineers |
+| Parsed filing record | `filings` DB table (Filing Engineer) |
+| 3 delta change records | `filing_deltas` DB table (Filing Engineer) |
+| Events emitted | `filing-scan-completed`, `form-4-detected` → triggers Gemini review + DB Ingestor chain |
+| 4 database patches | PM Decision Dashboard → awaits Claude PM approval |
+| Thesis impact assessment | Included in patch summary (STRENGTHENING) |
 
 ---
 
@@ -1114,12 +1133,12 @@ Handles freeform questions that don't fit structured workflows. Cross-references
 ### By the Numbers
 | Metric | Value |
 |--------|-------|
-| Engineers that fired | 17 (General Intel on standby) |
+| Engineers that fired | 18 (General Intel on standby) |
 | Total DB writes | ~45 rows across 20+ tables |
-| Events emitted | 4 (filing-ingested, form-4-detected, press-release-added, prompt-audit-completed) |
-| Chain triggers | 2 (Prompt Auditor → Remediation, Doc Reviewer → UX/UI) |
-| PM notifications | 2 (Bobman notified by Prompt Auditor + Doc Reviewer) |
-| Decision items created | 2 (Maszka: prompt patches + doc updates) |
+| Events emitted | 5 (filing-scan-completed, filing-ingested, form-4-detected, press-release-added, prompt-audit-completed) |
+| Chain triggers | 3 (Filing Engineer → DB Ingestor, Prompt Auditor → Remediation, Doc Reviewer → UX/UI) |
+| PM notifications | 3 (Gemini: filing review, Bobman: Prompt Auditor + Doc Reviewer) |
+| Decision items created | 3 (Claude: SEC patches, Maszka: prompt patches + doc updates) |
 | Findings total | 9 drift + 5 security + 3 doc gaps + 3 data quality = **20 actionable findings** |
 | Catalysts updated | 2 resolved, 3 alerts set |
 | Scores updated | Thesis 8.5, Sentiment 8.4, Quality 99.3%, Security 87, Performance 7.5 |
@@ -1130,7 +1149,26 @@ Handles freeform questions that don't fit structured workflows. Cross-references
 EDGAR API
   │
   ▼
-SEC Filing Engineer (Gemini) ──filing-ingested──→ 8 engineers triggered
+SEC Filing Engineer (Gemini) ──filing-scan-completed──→ Gemini Auto-Review
+  │                                                        │
+  │                                                   APPROVED
+  │                                                        │
+  │                                                        ▼
+  │                                          SEC DB Ingestor (Claude)
+  │                                          7-phase deep analysis
+  │                                          ├─ Materiality triage
+  │                                          ├─ Form-type extraction
+  │                                          ├─ Cross-filing correlation
+  │                                          ├─ Conflict detection
+  │                                          ├─ Patch generation
+  │                                          ├─ Pre-write gate
+  │                                          └─ Executive summary
+  │                                                        │
+  │                                                        ▼
+  │                                          PM Decision Dashboard
+  │                                          (patches await Claude PM approval)
+  │
+  ├──filing-ingested──→ 8 engineers triggered
   │
   ├──→ Thesis Engineer (Claude) ──→ conviction 7.2 → 8.5
   ├──→ Capital Structure (Claude) ──→ shares updated, warrant alert
@@ -1164,17 +1202,32 @@ Daily Schedule
   ├──→ Code Security (Claude) ──→ 87/100, 1 high finding
   └──→ Performance (Maszka) ──→ 7.5/10, 3 optimizations
 
+Filing Engineer Chain (detailed):
+  EDGAR API → Filing Engineer (Gemini) → Gemini Auto-Review → SEC DB Ingestor (Claude)
+  │                                                              │
+  │   filing-scan-completed                              7-phase analysis
+  │   form-4-detected                                    4 patches generated
+  │                                                              │
+  └──→ 8 downstream engineers                         PM Decision Dashboard
+       (thesis, capital, catalyst, etc.)               (Claude PM approve/reject)
+
 User Query
   │
   ▼
 General Intelligence (Claude) ──→ on-demand comparison table
 ```
 
-### Pending Decisions (Maszka's Queue)
+### Pending Decisions
 
+**Claude PM's Queue:**
+| # | Item | Source | Patches | Status |
+|---|------|--------|---------|--------|
+| 44 | SEC Filing Ingestion — 1 8-K (Critical) for ASTS | Filing Engineer → DB Ingestor | 4 | pending |
+
+**Maszka's Queue:**
 | # | Item | Source | Patches | Status |
 |---|------|--------|---------|--------|
 | 42 | Prompt Remediation — 7 patches for ASTS | Prompt Auditor → Remediation | 7 | pending |
 | 43 | UX/UI Doc Updates — 3 changes + 1 fix | Doc Reviewer → UX/UI | 4 | pending |
 
-Both await Maszka's approve/reject on the Decision Dashboard at `/engineers/decisions`.
+All await approve/reject on the Decision Dashboard at `/engineers/decisions`.

@@ -184,7 +184,7 @@ export const orgNodes: OrgNode[] = [
     type: 'engineer',
     label: 'SEC DB Ingestor',
     badge: 'ING',
-    role: 'Filing-to-Database Ingestion',
+    role: 'SEC Filing Analysis & Ingestion',
     color: ORG_COLORS.claude,
     parentId: 'div-claude',
     engineerId: 'db-ingestor-engineer',

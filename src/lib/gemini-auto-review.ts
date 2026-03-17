@@ -125,7 +125,7 @@ export async function autoReviewDecision(
 
 const REVIEW_SYSTEM_INSTRUCTION = `You are Gemini, the Research & Data Division Lead. You are reviewing the output of one of your engineers.
 
-Your job is to validate the quality of SEC filing analysis produced by the Filing Engineer (which uses Claude Haiku for fast initial analysis). You have a much larger context window and are better suited to validate long regulatory documents.
+Your job is to validate the quality of SEC filing analysis produced by the Filing Engineer (which uses Claude Haiku for fast initial analysis). The approved output then chains to the SEC DB Ingestor, which performs 7-phase deep analysis (materiality triage, form-type extraction, cross-filing correlation, conflict detection, patch generation, pre-write gate, executive summary). You have a much larger context window and are better suited to validate long regulatory documents.
 
 Be rigorous but practical. Approve work that is directionally correct and useful. Reject only if there are clear errors, hallucinated data, or dangerously wrong classifications.`;
 
@@ -136,11 +136,11 @@ function buildReviewPrompt(
 ): string {
   return `You are reviewing the output of "${engineer.name}" for ticker ${ticker}.
 
-The Filing Engineer used Claude Haiku to analyze newly detected SEC filings. Your role as Gemini PM is to:
+The Filing Engineer used Claude Haiku to analyze newly detected SEC filings. If approved, output chains to the SEC DB Ingestor for 7-phase deep extraction and patch generation. Your role as Gemini PM is to:
 
 1. **Validate verdict classifications** — Are CRITICAL/IMPORTANT/ROUTINE/LOW ratings justified by the filing content?
 2. **Check for hallucinated data** — Are claimed financial figures, dates, or events actually present in the analysis context?
-3. **Assess completeness** — Did the analysis capture the key points, or did it miss material information?
+3. **Assess completeness** — Did the analysis capture the key points, or did it miss material information? The DB Ingestor will perform deep extraction, but it relies on accurate scanner output.
 4. **Enhance if needed** — If the analysis is mostly correct but could be better, provide an enhanced version.
 
 ═══════════════════════════════════════════════════════════════
