@@ -1,0 +1,647 @@
+{
+  "auditMetadata": {
+    "auditDate": "2026-03-17",
+    "auditType": "EDGAR Filing Status Audit",
+    "auditor": "Claude (Architecture & Backend Division)",
+    "methodology": "Web search cross-reference (SEC EDGAR API blocked by proxy; used web search + third-party filing aggregators)",
+    "limitations": [
+      "Direct SEC EDGAR API (data.sec.gov) blocked by network proxy — filing list sourced from web search results",
+      "Accession numbers available only for filings discovered via web search summaries, not exhaustive",
+      "Some Form 4, Form 3, Form 144 filings may be missing from this scan — insider filings are high-frequency and often omitted from search summaries",
+      "CRCL has zero filings in local DB — all EDGAR filings for CRCL are untracked"
+    ],
+    "recommendation": "Re-run this audit with direct SEC EDGAR API access for complete accession number matching"
+  },
+  "tickers": [
+    {
+      "ticker": "ASTS",
+      "companyName": "AST SpaceMobile, Inc.",
+      "exchange": "NASDAQ",
+      "cik": "0001780312",
+      "scanDate": "2026-03-17",
+      "localDbStats": {
+        "totalFilingsInSecFilings": 81,
+        "totalFilingsTrackedMeta": 79,
+        "crossRefEntries": 62,
+        "latestFilingDate": "2026-03-02",
+        "oldestFilingDate": "2024-03-28"
+      },
+      "edgarDiscoveries": {
+        "totalDiscoveredViaSearch": 7,
+        "newFilingsNotInDb": 3,
+        "possiblyMissing": 2
+      },
+      "filings": [
+        {
+          "form": "SC 13D/A",
+          "date": "2026-03-02",
+          "description": "Avellan Amendment No. 17: 20.8% Class A on as-converted basis (78.16M shares), 71.7% voting interest via Class C. No sales — dilution from ATM/offerings.",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "HIGH",
+          "notes": "Material 13D/A filing — Avellan ownership update NOT in local DB. DB has last Avellan 13D/A at Jan 27, 2025 (Amendment 12). Amendments 13-17 appear missing."
+        },
+        {
+          "form": "8-K",
+          "date": "2026-03-02",
+          "description": "Q4 2025 Earnings Press Release + Business Update (Rev $70.9M, $2.8B cash, 45-60 sats by end-2026)",
+          "accessionNumber": null,
+          "status": "data_only",
+          "matchedEntry": "Mar 2, 2026 10-K",
+          "crossRefKey": "10-K|2026-03-02",
+          "notes": "8-K filed same day as 10-K. Data captured in 10-K cross-ref but no separate 8-K entry in SEC_FILINGS[]. Consider adding."
+        },
+        {
+          "form": "10-K",
+          "date": "2026-03-02",
+          "description": "Annual Report — FY2025 Audited. Rev $70.9M, OpEx $358.6M, Net Loss -$461M.",
+          "accessionNumber": "0001780312-26-000006",
+          "status": "tracked",
+          "matchedEntry": "Mar 2, 2026 10-K",
+          "crossRefKey": "10-K|2026-03-02"
+        },
+        {
+          "form": "8-K",
+          "date": "2026-02-23",
+          "description": "RD Settlements + Notes Repurchases Completed",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Feb 23, 2026 8-K",
+          "crossRefKey": "8-K|2026-02-23"
+        },
+        {
+          "form": "8-K",
+          "date": "2026-02-20",
+          "description": "$75M Greenshoe Exercise",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Feb 20, 2026 8-K",
+          "crossRefKey": "8-K|2026-02-20"
+        },
+        {
+          "form": "SC 13D/A",
+          "date": "2026-02-17",
+          "description": "Vodafone 13D/A (Amend. No. 3): 14.5M shares (5%)",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Feb 17, 2026 SC 13D/A",
+          "crossRefKey": "SC 13D/A|2026-02-17"
+        },
+        {
+          "form": "8-K",
+          "date": "2026-02-17",
+          "description": "Convertible Notes Indenture Completion ($1B 2.25% due 2036)",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Feb 17, 2026 8-K",
+          "crossRefKey": "8-K|2026-02-17"
+        },
+        {
+          "form": "Form 4",
+          "date": "2026-02-17",
+          "description": "Bernal (CAO) RSU vesting: 3K shares",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Feb 17, 2026 Form 4",
+          "crossRefKey": "Form 4|2026-02-17"
+        },
+        {
+          "form": "424B5",
+          "date": "2026-02-13",
+          "description": "Registered Direct Offering #1 + #2",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Feb 13, 2026 424B5",
+          "crossRefKey": "424B5|2026-02-13"
+        },
+        {
+          "form": "8-K",
+          "date": "2026-02-11",
+          "description": "Preliminary FY 2025 Results + Convertible Notes Offering + Registered Directs",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Feb 11, 2026 8-K",
+          "crossRefKey": "8-K|2026-02-11"
+        },
+        {
+          "form": "SC 13G",
+          "date": "2026-01-30",
+          "description": "Vanguard Group 7.68% Ownership (21.5M shares)",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Jan 30, 2026 SC 13G",
+          "crossRefKey": "SC 13G|2026-01-30"
+        },
+        {
+          "form": "Form 4",
+          "date": "2026-01-26",
+          "description": "Gupta (COO) RSU Vesting Tax Withholding Amendment",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Jan 26, 2026 Form 4",
+          "crossRefKey": "Form 4|2026-01-26"
+        },
+        {
+          "form": "8-K",
+          "date": "2026-01-16",
+          "description": "Mikitani Board Resignation (Rakuten Designee)",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Jan 16, 2026 8-K",
+          "crossRefKey": "8-K|2026-01-16"
+        },
+        {
+          "form": "Form 4",
+          "date": "2025-12-24",
+          "description": "Larson (Dir) purchase 625 shares at $80 (IRA, Rule 10b5-1 plan adopted Sep 8, 2025)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "LOW",
+          "notes": "DB has 'Dec 10, 2025 Form 4 Multiple: Gupta sale 10K + Larson purchase 675' — different date and amount. This Dec 24 Larson purchase appears to be a separate filing."
+        },
+        {
+          "form": "8-K",
+          "date": "2025-12-24",
+          "description": "BlueBird 6 Launch (First Block 2)",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Dec 24, 2025 8-K",
+          "crossRefKey": "8-K|2025-12-24"
+        },
+        {
+          "form": "SC 13D/A",
+          "date": "2025-12-11",
+          "description": "American Tower 13D/A: Sold 2.29M shares",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Dec 11, 2025 SC 13D/A",
+          "crossRefKey": "SC 13D/A|2025-12-11"
+        },
+        {
+          "form": "10-Q",
+          "date": "2025-11-10",
+          "description": "Quarterly Report Q3 2025",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Nov 10, 2025 10-Q",
+          "crossRefKey": "10-Q|2025-11-10"
+        },
+        {
+          "form": "8-K",
+          "date": "2025-11-03",
+          "description": "UBS $420M term loan",
+          "accessionNumber": null,
+          "status": "data_only",
+          "matchedEntry": null,
+          "crossRefKey": "8-K|2025-11-03",
+          "notes": "Cross-ref exists but no entry in SEC_FILINGS[] array. The filing is referenced in cross-refs only."
+        }
+      ],
+      "summary": {
+        "tracked": 14,
+        "dataOnly": 2,
+        "untracked": 2,
+        "gaps": [
+          "Avellan SC 13D/A Amendments 13-17 (Jun 2025 through Mar 2026) — only Amendment 12 (Jan 2025) and Amendment 14 (Jul 2025) in DB. Amendments 13, 15, 16, 17 likely missing.",
+          "8-K filed Mar 2, 2026 alongside 10-K for earnings PR — no separate SEC_FILINGS entry",
+          "Form 4 for Larson Dec 24, 2025 purchase — not in DB (separate from Dec 10 batch)",
+          "8-K Nov 3, 2025 (UBS loan) — has cross-ref but no SEC_FILINGS entry",
+          "ASTS_SEC_META.totalFilingsTracked (79) does not match ASTS_SEC_FILINGS.length (81) — off by 2"
+        ]
+      }
+    },
+    {
+      "ticker": "BMNR",
+      "companyName": "Bitmine Immersion Technologies, Inc.",
+      "exchange": "NYSE American",
+      "cik": "0001829311",
+      "scanDate": "2026-03-17",
+      "localDbStats": {
+        "totalFilingsInSecFilings": 131,
+        "totalFilingsTrackedMeta": 114,
+        "crossRefEntries": 78,
+        "latestFilingDate": "2026-02-25",
+        "oldestFilingDate": "2020-10-27"
+      },
+      "edgarDiscoveries": {
+        "totalDiscoveredViaSearch": 10,
+        "newFilingsNotInDb": 7,
+        "possiblyMissing": 3
+      },
+      "filings": [
+        {
+          "form": "8-K",
+          "date": "2026-03-16",
+          "description": "4.596M ETH Holdings Update ($11.5B Total, ETH @ $2,185, Staking 3.04M, Annualized Staking Rev $180M)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "HIGH",
+          "notes": "Weekly ETH treasury update — not in local DB. 3 consecutive weekly 8-Ks missing (Mar 2, 9, 16)."
+        },
+        {
+          "form": "8-K",
+          "date": "2026-03-09",
+          "description": "4.535M ETH Holdings Update ($10.3B Total, ETH @ $1,965, Staking 3.04M, Annualized Staking Rev $174M)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "HIGH"
+        },
+        {
+          "form": "8-K",
+          "date": "2026-03-02",
+          "description": "4.474M ETH Holdings Update ($9.9B Total, ETH @ $1,976, 195 BTC, Annualized Staking Rev $172M)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "HIGH"
+        },
+        {
+          "form": "Form 4",
+          "date": "2026-02-25",
+          "description": "Love: 13,582 Board Comp Shares + 17,496 RSUs",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Feb 25, 2026 Form 4",
+          "crossRefKey": "Form 4|2026-02-25"
+        },
+        {
+          "form": "8-K",
+          "date": "2026-02-23",
+          "description": "4.423M ETH Holdings Update",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Feb 23, 2026 8-K",
+          "crossRefKey": "8-K|2026-02-23"
+        },
+        {
+          "form": "Form 4/A",
+          "date": "2026-02-17",
+          "description": "Tom Lee: 1.5M RSU Grant, 500K Vested",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Feb 17, 2026 Form 4/A",
+          "crossRefKey": "Form 4/A|2026-02-17"
+        },
+        {
+          "form": "8-K",
+          "date": "2026-02-17",
+          "description": "4.371M ETH Holdings Update",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Feb 17, 2026 8-K",
+          "crossRefKey": "8-K|2026-02-17"
+        },
+        {
+          "form": "8-K",
+          "date": "2026-02-11",
+          "description": "CoinDesk Consensus 2026 Presentation",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Feb 11, 2026 8-K",
+          "crossRefKey": "8-K|2026-02-11"
+        },
+        {
+          "form": "S-8",
+          "date": "2026-02-09",
+          "description": "2025 Omnibus Incentive Plan Registration",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Feb 9, 2026 S-8",
+          "crossRefKey": "S-8|2026-02-09"
+        },
+        {
+          "form": "8-K",
+          "date": "2026-02-09",
+          "description": "4.326M ETH Holdings Update ($10.0B Total)",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Feb 9, 2026 8-K",
+          "crossRefKey": "8-K|2026-02-09"
+        },
+        {
+          "form": "8-K",
+          "date": "2026-02-02",
+          "description": "Operations Update Press Release (Reg FD)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "MEDIUM",
+          "notes": "Operations update 8-K — not in local DB. Filed between Feb 9 and Jan 28 entries."
+        },
+        {
+          "form": "Form 4",
+          "date": "2026-01-23",
+          "description": "Maloney (Dir): 11,582 shares board comp + 15,996 RSUs for 2026 service (quarterly vest). Post: 226,582 shares.",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "MEDIUM"
+        },
+        {
+          "form": "Form 4",
+          "date": "2026-01-23",
+          "description": "Sharbutt (Dir): 7,082 shares board comp + 26,000 alignment award + 57,000 options @ $29.80. Post: 43,082 shares.",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "MEDIUM"
+        },
+        {
+          "form": "Form 3",
+          "date": "2026-01-06",
+          "description": "Kim Young Kyu (Dir/CFO/COO) Initial Ownership: Zero shares.",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "MEDIUM",
+          "notes": "Initial ownership filing for new CFO/COO — not in DB."
+        },
+        {
+          "form": "8-K",
+          "date": "2026-01-28",
+          "description": "Nelson Separation Agreement",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Jan 28, 2026 8-K",
+          "crossRefKey": "8-K|2026-01-28"
+        },
+        {
+          "form": "8-K",
+          "date": "2026-01-15",
+          "description": "2026 Annual Stockholder Meeting + Investor Presentation",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Jan 15, 2026 8-K",
+          "crossRefKey": "8-K|2026-01-15"
+        },
+        {
+          "form": "10-Q",
+          "date": "2026-01-13",
+          "description": "Quarterly Report (Q1 FY2026) - First Staking Revenue",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Jan 13, 2026 10-Q",
+          "crossRefKey": "10-Q|2026-01-13"
+        }
+      ],
+      "summary": {
+        "tracked": 10,
+        "dataOnly": 0,
+        "untracked": 7,
+        "gaps": [
+          "3 weekly ETH treasury 8-K updates missing (Mar 2, 9, 16, 2026) — BMNR files these every week",
+          "8-K Feb 2, 2026 operations update — not in local DB",
+          "Form 4 Jan 23, 2026 for Maloney (board comp) — not in local DB",
+          "Form 4 Jan 23, 2026 for Sharbutt (board comp + alignment award + options) — not in local DB",
+          "Form 3 Jan 6, 2026 for Kim Young Kyu (new CFO/COO) — not in local DB",
+          "BMNR_SEC_META.totalFilingsTracked (114) does not match BMNR_SEC_FILINGS.length (131) — off by 17"
+        ]
+      }
+    },
+    {
+      "ticker": "CRCL",
+      "companyName": "Circle Internet Group, Inc.",
+      "exchange": "NYSE",
+      "cik": "0001876042",
+      "scanDate": "2026-03-17",
+      "localDbStats": {
+        "totalFilingsInSecFilings": 0,
+        "totalFilingsTrackedMeta": 0,
+        "crossRefEntries": 0,
+        "latestFilingDate": null,
+        "oldestFilingDate": null
+      },
+      "edgarDiscoveries": {
+        "totalDiscoveredViaSearch": 15,
+        "newFilingsNotInDb": 15,
+        "possiblyMissing": "many more — insider filings (Form 4, Form 144) not fully enumerated"
+      },
+      "filings": [
+        {
+          "form": "Form 4",
+          "date": "2026-03-10",
+          "description": "Tarbert (President) option exercise 43,694 shares @ $25.09, sold up to $121.48 (Rule 10b5-1)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "MEDIUM"
+        },
+        {
+          "form": "Form 4",
+          "date": "2026-03-09",
+          "description": "Burns (Dir) gift of 22 shares to grantmaking org. Post: 355,208 Class A shares.",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "LOW"
+        },
+        {
+          "form": "Form 4",
+          "date": "2026-03-04",
+          "description": "Burns (Dir) option exercise 25,000 shares, sold at $105/share.",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "MEDIUM"
+        },
+        {
+          "form": "Form 144",
+          "date": "2026-03-02",
+          "description": "Tarbert (President) proposed sale 122,007 shares ($11.5M)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "MEDIUM"
+        },
+        {
+          "form": "10-K",
+          "date": "2026-03-07",
+          "description": "Annual Report FY2025 — USDC $75.3B in circulation, Q4 rev $770M (+77%), Net Income $133M, Adj EBITDA $167M (+412%)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "CRITICAL",
+          "notes": "First annual report as public company. Filed ~March 7-10, 2026. Must be ingested."
+        },
+        {
+          "form": "8-K",
+          "date": "2026-02-25",
+          "description": "Q4 & Full Year FY2025 Earnings Release (Rev $770M Q4, NI $133M, EPS $0.43 vs $0.25 est.)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "CRITICAL",
+          "notes": "Material earnings 8-K. Must be ingested."
+        },
+        {
+          "form": "Form 144",
+          "date": "2026-02-26",
+          "description": "Tarbert proposed sale 10,753 shares ($969K)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "LOW"
+        },
+        {
+          "form": "Form 144",
+          "date": "2025-12-22",
+          "description": "Tarbert proposed sale 3,048 shares ($274K)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "LOW"
+        },
+        {
+          "form": "Form 144",
+          "date": "2025-12-12",
+          "description": "Tarbert proposed sale 1,300 shares ($117K)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "LOW"
+        },
+        {
+          "form": "10-Q",
+          "date": "2025-11-12",
+          "description": "Quarterly Report Q3 2025 (period ending Sep 30, 2025)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "HIGH",
+          "notes": "Material quarterly report — must be ingested."
+        },
+        {
+          "form": "8-K",
+          "date": "2025-11-12",
+          "description": "Q3 2025 Earnings Press Release",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "HIGH"
+        },
+        {
+          "form": "424B5",
+          "date": "2025-08-01",
+          "description": "Follow-on Public Offering — 3.5M shares @ $130/share (net proceeds $444.8M)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "HIGH",
+          "notes": "Material capital raise. Must be ingested into capital.ts."
+        },
+        {
+          "form": "10-Q",
+          "date": "2025-08-14",
+          "description": "Quarterly Report Q2 2025 (period ending Jun 30, 2025)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "HIGH",
+          "notes": "First 10-Q as public company."
+        },
+        {
+          "form": "8-K",
+          "date": "2025-06-06",
+          "description": "IPO Closing + Bylaw Change + Security Holders Change",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "CRITICAL",
+          "notes": "IPO event — foundational filing."
+        },
+        {
+          "form": "424B4",
+          "date": "2025-06-04",
+          "description": "IPO Final Prospectus — 19.9M shares @ $31.00 (net proceeds $583M)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "CRITICAL",
+          "notes": "IPO prospectus — foundational filing."
+        },
+        {
+          "form": "S-1/A",
+          "date": "2025-05-27",
+          "description": "S-1 Amendment No. 3 — IPO Registration (9.6M company + 14.4M selling stockholders, $24-26 range)",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "HIGH"
+        },
+        {
+          "form": "S-1",
+          "date": "2025-04-01",
+          "description": "Initial Registration Statement — Circle Internet Group IPO",
+          "accessionNumber": null,
+          "status": "untracked",
+          "matchedEntry": null,
+          "crossRefKey": null,
+          "priority": "HIGH",
+          "notes": "Original S-1 filing."
+        }
+      ],
+      "summary": {
+        "tracked": 0,
+        "dataOnly": 0,
+        "untracked": 17,
+        "gaps": [
+          "CRCL has ZERO filings tracked — entire filing history needs to be ingested",
+          "CRITICAL: 10-K FY2025 (Mar ~7, 2026), 8-K Q4 earnings (Feb 25, 2026), IPO 424B4 (Jun 4, 2025), IPO 8-K (Jun 6, 2025) need immediate ingestion",
+          "HIGH: Both 10-Qs (Q2 Aug 2025, Q3 Nov 2025), follow-on 424B5 (Aug 2025), S-1 filings need ingestion",
+          "Additional Form 4, Form 144, 8-K filings likely exist but not enumerated by web search",
+          "228.1M Class A shares outstanding as of Mar 5, 2026 — capital.ts needs population"
+        ]
+      }
+    }
+  ],
+  "overallSummary": {
+    "totalTickersAudited": 3,
+    "totalFilingsDiscovered": 32,
+    "totalTracked": 24,
+    "totalDataOnly": 2,
+    "totalUntracked": 26,
+    "criticalGaps": [
+      "CRCL: Entire filing history (17+ filings) untracked — IPO, earnings, quarterly reports all missing from DB",
+      "BMNR: 3 weekly ETH treasury 8-Ks missing (Mar 2, 9, 16) + 4 insider filings (Jan 2026)",
+      "ASTS: Avellan SC 13D/A Amendment 17 (Mar 2, 2026) missing — material ownership update",
+      "Meta count mismatches: ASTS totalFilingsTracked (79) vs array length (81); BMNR totalFilingsTracked (114) vs array length (131)"
+    ],
+    "recommendations": [
+      "IMMEDIATE: Ingest CRCL critical filings (10-K, 8-K earnings, IPO prospectus, 10-Qs)",
+      "IMMEDIATE: Ingest BMNR weekly 8-K treasury updates (Mar 2, 9, 16, 2026)",
+      "SOON: Add missing ASTS Avellan SC 13D/A and earnings 8-K entries",
+      "HOUSEKEEPING: Fix totalFilingsTracked meta counts for ASTS and BMNR",
+      "INFRASTRUCTURE: Resolve SEC EDGAR API proxy issue to enable automated filing scans",
+      "PROCESS: Set up weekly automated EDGAR scan to catch new filings within 24-48 hours"
+    ]
+  }
+}
