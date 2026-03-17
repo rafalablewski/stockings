@@ -84,10 +84,11 @@ export function derivePipelines(): DerivedPipeline[] {
     if (eng.chainsTo) chainedTo.add(eng.chainsTo);
   }
 
-  // Chain heads: engineers that are not chained to AND either have a schedule
-  // (defaultIntervalMinutes > 0) or have chainsTo (start of a multi-step pipeline)
+  // Chain heads: engineers that start a multi-step chain (have chainsTo)
+  // and are not themselves chained to by another engineer.
+  // Standalone engineers (no chainsTo) are excluded — they don't form pipelines yet.
   const chainHeads = engineers.filter(
-    eng => !chainedTo.has(eng.id) && (eng.defaultIntervalMinutes > 0 || eng.chainsTo)
+    eng => !chainedTo.has(eng.id) && eng.chainsTo
   );
 
   return chainHeads.map(head => buildPipeline(head));
