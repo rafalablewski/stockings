@@ -787,15 +787,31 @@ b) FILING_CROSS_REFS entry (append after the cross-refs declaration):
    Anchor: the FILING_CROSS_REFS export declaration line
    Cross-ref MUST include one entry per target file that receives a patch from this filing.
 
+MANDATORY METADATA PATCHES (for every ingestion run with ≥1 filing ingested):
+c) SEC_META.totalFilingsTracked counter (update):
+   File: <ticker_lowercase>/sec-filings.ts
+   Action: update
+   oldValue: the current totalFilingsTracked value (e.g., "totalFilingsTracked: 80")
+   content: incremented value (e.g., "totalFilingsTracked: 81") — increment by the number of filings ingested (not skipped)
+   Anchor: the totalFilingsTracked line in the SEC_META export
+
+d) Data file LAST UPDATED comment (update — for EACH data file that receives a conditional patch):
+   File: the data file being patched (e.g., <ticker_lowercase>/capital.ts)
+   Action: update
+   oldValue: the current LAST UPDATED comment line
+   content: updated comment with today's date and brief note of what was added
+   Anchor: the LAST UPDATED comment line in the file header
+   Note: Also update the CAPITAL_METADATA.lastUpdated field (or equivalent metadata export) if present.
+
 CONDITIONAL patches (based on filing type and extracted content):
-c) timeline.ts — for 8-K, 10-Q, 10-K filings with material events or milestones
-d) capital.ts — for offerings (424B5), insider transactions (Form 4), ownership changes (SC 13G/13D), share count changes, shelf registrations (S-3)
+e) timeline.ts — for 8-K, 10-Q, 10-K filings with material events or milestones
+f) capital.ts — for offerings (424B5), insider transactions (Form 4), ownership changes (SC 13G/13D), share count changes, shelf registrations (S-3)
    * Form 4: Include insider activity record with full transaction details, post-transaction holdings, and exercise economics
    * 424B5: Include offering details with dilution calculation
    * SC 13G: Include ownership record with percentage and delta from prior
-e) financials.ts or quarterly-metrics.ts — for 10-Q, 10-K with financial data (include ALL extracted metrics with deltas)
-f) catalysts.ts — for completed/updated catalysts revealed by filings
-g) company.ts — for material metric changes (guidance updates, management changes, risk factor changes)
+g) financials.ts or quarterly-metrics.ts — for 10-Q, 10-K with financial data (include ALL extracted metrics with deltas)
+h) catalysts.ts — for completed/updated catalysts revealed by filings
+i) company.ts — for material metric changes (guidance updates, management changes, risk factor changes)
 
 DESCRIPTION QUALITY — non-negotiable:
 The SEC_FILINGS description field must be a concise but COMPLETE summary capturing the filing's material substance. Examples:
@@ -827,6 +843,8 @@ GLOBAL CHECKLIST (output once after all filings):
   [ ] Phase 4 conflicts are RESOLVED (not just flagged) — either patched or explicitly skipped with reason.
   [ ] Total patch count within limit (5 filings x 5 patches max each = 25 max).
   [ ] All anchors verified for uniqueness (no anchor could match multiple locations).
+  [ ] METADATA UPDATED: totalFilingsTracked incremented by exactly the number of ingested (non-skipped) filings.
+  [ ] LAST UPDATED COMMENTS: Every data file that received a conditional patch has its LAST UPDATED header and metadata export updated.
 
 If any box FAILS: fix the proposed patch before including it. If unfixable, move the filing to "skipped" with reason "Pre-write gate failure: [which check failed]".
 
@@ -941,6 +959,8 @@ PATCH RULES — NON-NEGOTIABLE
 11. DESCRIPTION SUBSTANCE: SEC_FILINGS description must capture WHAT HAPPENED, not just WHO FILED. Include transaction details, dollar amounts, share counts, and material outcomes. See Phase 5 examples.
 
 12. CROSS-REF COMPLETENESS: Every target file that receives a conditional patch MUST have a corresponding entry in the filing's FILING_CROSS_REFS. Orphan patches are rejected.
+
+13. METADATA CONSISTENCY: Every ingestion run MUST include patches for (a) SEC_META.totalFilingsTracked (increment by count of ingested filings) and (b) LAST UPDATED comments + metadata exports in every data file that received a conditional patch. Missing metadata patches = pre-write gate failure.
 
 Rules — non-negotiable:
 - Conservative: generate patches only for clearly material, non-duplicative, non-superseded data.
