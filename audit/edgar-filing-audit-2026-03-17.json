@@ -20,18 +20,28 @@
       "cik": "0001780312",
       "scanDate": "2026-03-17",
       "localDbStats": {
-        "totalFilingsInSecFilings": 81,
-        "totalFilingsTrackedMeta": 79,
-        "crossRefEntries": 62,
-        "latestFilingDate": "2026-03-02",
+        "totalFilingsInSecFilings": 82,
+        "totalFilingsTrackedMeta": 80,
+        "crossRefEntries": 63,
+        "latestFilingDate": "2026-03-12",
         "oldestFilingDate": "2024-03-28"
       },
       "edgarDiscoveries": {
-        "totalDiscoveredViaSearch": 7,
+        "totalDiscoveredViaSearch": 8,
         "newFilingsNotInDb": 3,
         "possiblyMissing": 2
       },
       "filings": [
+        {
+          "form": "Form 4",
+          "date": "2026-03-12",
+          "description": "Yao (CTO) option exercise: 40K AST LLC Incentive Equity Options at $0.064. Post: 4,144,750 Class A direct + 299,912 options remaining. No sale.",
+          "accessionNumber": null,
+          "status": "tracked",
+          "matchedEntry": "Mar 12, 2026 Form 4",
+          "crossRefKey": "Form 4|2026-03-12",
+          "notes": "Ingested into SEC_FILINGS[], FILING_CROSS_REFS, and capital.ts MAR_2026_INSIDER_ACTIVITY."
+        },
         {
           "form": "SC 13D/A",
           "date": "2026-03-02",
@@ -202,7 +212,7 @@
         }
       ],
       "summary": {
-        "tracked": 14,
+        "tracked": 15,
         "dataOnly": 2,
         "untracked": 2,
         "gaps": [
@@ -210,7 +220,7 @@
           "8-K filed Mar 2, 2026 alongside 10-K for earnings PR — no separate SEC_FILINGS entry",
           "Form 4 for Larson Dec 24, 2025 purchase — not in DB (separate from Dec 10 batch)",
           "8-K Nov 3, 2025 (UBS loan) — has cross-ref but no SEC_FILINGS entry",
-          "ASTS_SEC_META.totalFilingsTracked (79) does not match ASTS_SEC_FILINGS.length (81) — off by 2"
+          "ASTS_SEC_META.totalFilingsTracked (80) does not match ASTS_SEC_FILINGS.length (82) — off by 2"
         ]
       }
     },
@@ -625,15 +635,15 @@
   ],
   "overallSummary": {
     "totalTickersAudited": 3,
-    "totalFilingsDiscovered": 32,
-    "totalTracked": 24,
+    "totalFilingsDiscovered": 33,
+    "totalTracked": 25,
     "totalDataOnly": 2,
     "totalUntracked": 26,
     "criticalGaps": [
       "CRCL: Entire filing history (17+ filings) untracked — IPO, earnings, quarterly reports all missing from DB",
       "BMNR: 3 weekly ETH treasury 8-Ks missing (Mar 2, 9, 16) + 4 insider filings (Jan 2026)",
       "ASTS: Avellan SC 13D/A Amendment 17 (Mar 2, 2026) missing — material ownership update",
-      "Meta count mismatches: ASTS totalFilingsTracked (79) vs array length (81); BMNR totalFilingsTracked (114) vs array length (131)"
+      "Meta count mismatches: ASTS totalFilingsTracked (80) vs array length (82); BMNR totalFilingsTracked (114) vs array length (131)"
     ],
     "recommendations": [
       "IMMEDIATE: Ingest CRCL critical filings (10-K, 8-K earnings, IPO prospectus, 10-Qs)",
