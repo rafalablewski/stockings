@@ -99,6 +99,11 @@ export default function OperationsPipeline() {
                 ))}
               </div>
 
+              {/* Human-readable description — always visible below mini track */}
+              {pipeline.humanDescription && (
+                <div className="ops-human-desc">{pipeline.humanDescription}</div>
+              )}
+
               {/* Expanded body */}
               <div className={`dec-card-body-anim ${isOpen ? 'dec-body-open' : ''}`}>
                 <div className="dec-card-body">

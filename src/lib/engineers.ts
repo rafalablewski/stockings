@@ -24,6 +24,8 @@ export interface EngineerTask {
   decisionsFor?: string;          // PM id to create decision items for on completion
   decisionCategory?: string;      // PM decision category (default: 'prompt-patch')
   autoReviewBy?: string;          // PM id whose AI model auto-reviews decisions before chainsTo fires
+  /** Plain-English summary of the full pipeline this engineer starts (shown in Operations tab). */
+  pipelineDescription?: string;
 }
 
 export const engineers: EngineerTask[] = [
@@ -90,6 +92,7 @@ export const engineers: EngineerTask[] = [
     decisionCategory: 'sec-filing-review',
     notifyPm: 'gemini',
     autoReviewBy: 'gemini',
+    pipelineDescription: 'Every hour, we check the SEC website for any new documents that our companies have filed — things like financial reports, insider stock purchases, or big announcements. When we find something new, we read through it, pull out the important numbers and changes, and compare it to what we already know. If anything meaningful changed, we prepare an update for the database, but a human has to approve it before it actually gets saved. Think of it like a news assistant that constantly watches for new reports, highlights what matters, and asks "should I file this?" before doing anything.',
   },
   {
     id: 'db-ingestor-engineer',
@@ -295,6 +298,7 @@ export const engineers: EngineerTask[] = [
     category: 'audit',
     chainsTo: 'prompt-remediation-engineer',
     notifyPm: 'bobman',
+    pipelineDescription: 'Once a day, we check whether the instructions we give to our AI engineers still match what the app actually looks like. If someone added a new page, renamed a tab, or changed how data is stored, but forgot to update the AI\'s instructions, this pipeline catches it. First it finds the mismatches, then it writes specific fixes for each outdated instruction. Those fixes go to a manager for approval before anything changes. It\'s like a spell-checker, but instead of typos it catches "the AI thinks feature X exists, but we renamed it to Y last week."',
   },
   {
     id: 'prompt-remediation-engineer',
@@ -392,6 +396,7 @@ export const engineers: EngineerTask[] = [
     category: 'documentation',
     notifyPm: 'bobman',
     chainsTo: 'ux-ui-engineer',
+    pipelineDescription: 'Every day, we look at what code changed recently and check if the documentation and style guides still match. If someone built a new component but didn\'t document it, or if the design rules say one thing but the code does another, this pipeline flags it. The first step finds the problems, then passes them to a UI specialist who either fixes them directly or suggests an alternative approach. Nothing gets changed without a manager signing off. It\'s like having an editor who reads every page of a book after each revision and says "chapter 3 still references the old character name."',
   },
 
   // ── MASZKA'S TEAM ──────────────────────────────────────────────────────

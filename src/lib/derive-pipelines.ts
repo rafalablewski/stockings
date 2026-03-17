@@ -30,6 +30,8 @@ export interface DerivedPipeline {
   id: string;
   name: string;
   description: string;
+  /** Plain-English "explain like I'm 10" summary of what this pipeline does */
+  humanDescription?: string;
   color: 'mint' | 'gold' | 'violet' | 'cyan' | 'rose';
   interval: string;
   steps: PipelineStep[];
@@ -187,8 +189,9 @@ function buildPipeline(head: EngineerTask): DerivedPipeline {
       ? `${chainNames[0]} Pipeline`
       : `${head.name} Pipeline`,
     description: chain.length > 1
-      ? chainNames.join(' → ')
+      ? chainNames.join(' \u2192 ')
       : `${categoryName}: ${head.description.split('.')[0]}`,
+    humanDescription: head.pipelineDescription,
     color: CATEGORY_COLOR[head.category] ?? 'cyan',
     interval: formatInterval(head.defaultIntervalMinutes),
     steps,

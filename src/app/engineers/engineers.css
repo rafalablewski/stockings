@@ -3793,6 +3793,16 @@
 .ops-mini-line[data-color="cyan"]   { background: var(--cyan); }
 .ops-mini-line[data-color="rose"]   { background: var(--rose); }
 
+/* ── Human-readable pipeline description ── */
+.ops-human-desc {
+  padding: 10px 20px 14px;
+  font-size: 0.78rem;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.5);
+  font-style: italic;
+  border-top: 1px solid rgba(255,255,255,0.03);
+}
+
 /* ── Expanded vertical timeline ── */
 .ops-steps {
   display: flex;
