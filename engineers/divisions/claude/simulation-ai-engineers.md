@@ -148,13 +148,28 @@ Loads the current investment thesis from the research database, runs bull/bear/b
 [thesis-engineer] ✅ COMPLETED — conviction raised to 8.5, positive drift on 3/4 pillars
 ```
 
+### Pipeline Flow
+```
+Trigger (filing-ingested / press-release-added / price-alert)
+  │
+  ▼
+Thesis Engineer — pressure-tests thesis pillars against new data
+  │
+  ▼
+PM Decision Gate — thesis review sent to Claude PM Decision Dashboard
+  │                 (category: thesis-review)
+  │                 Human approves or rejects conviction changes
+  ▼
+Apply Patches — approved thesis updates written to database
+```
+
 ### Deliverable
 | Output | Destination |
 |--------|-------------|
-| Updated conviction score (7.2 → 8.5) | `thesis_scores` DB table |
-| Pillar-by-pillar delta analysis | `thesis_reviews` DB table |
-| Bull/base/bear scenario update | `scenario_models` DB table |
-| Thesis drift flag: POSITIVE | Visible on ASTS research tab |
+| Updated conviction score (7.2 → 8.5) | `thesis_scores` DB table → Claude PM approval |
+| Pillar-by-pillar delta analysis | `thesis_reviews` DB table → Claude PM approval |
+| Bull/base/bear scenario update | `scenario_models` DB table → Claude PM approval |
+| Thesis drift flag: POSITIVE | Visible on ASTS research tab (after PM approval) |
 
 ---
 

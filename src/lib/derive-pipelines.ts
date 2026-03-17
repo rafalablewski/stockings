@@ -78,6 +78,9 @@ const CATEGORY_COLOR: Record<string, DerivedPipeline['color']> = {
  * Walk the `chainsTo` graph and build a pipeline for every chain.
  * A "chain head" is an engineer that is NOT the target of any other
  * engineer's `chainsTo` (i.e. a root of a chain).
+ *
+ * Standalone engineers with `decisionsFor` also form valid pipelines
+ * (trigger → engineer → PM gate → output) even without chainsTo.
  */
 export function derivePipelines(): DerivedPipeline[] {
   // Build set of engineers that are chained TO (they're not chain heads)
@@ -88,12 +91,21 @@ export function derivePipelines(): DerivedPipeline[] {
 
   // Chain heads: engineers that start a multi-step chain (have chainsTo)
   // and are not themselves chained to by another engineer.
-  // Standalone engineers (no chainsTo) are excluded — they don't form pipelines yet.
   const chainHeads = engineers.filter(
     eng => !chainedTo.has(eng.id) && eng.chainsTo
   );
 
-  return chainHeads.map(head => buildPipeline(head));
+  // Standalone pipeline heads: engineers with a PM decision gate but no chain
+  // (not chained-to by anyone, and don't chain-to anyone). These form
+  // single-engineer pipelines: trigger → engineer → PM gate → output.
+  const standaloneHeads = engineers.filter(
+    eng => !chainedTo.has(eng.id) && !eng.chainsTo && eng.decisionsFor
+  );
+
+  return [
+    ...chainHeads.map(head => buildPipeline(head)),
+    ...standaloneHeads.map(head => buildPipeline(head)),
+  ];
 }
 
 /** Walk from a head engineer through its chainsTo links and build the full pipeline. */
