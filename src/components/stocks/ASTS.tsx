@@ -161,19 +161,14 @@ import {
   FEB_2026_GREENSHOE,
   FEB_2026_RSU_VESTINGS,
   DEC_2025_RSU_GRANTS,
-  DEC_2025_INSIDER_SALES,
-  DEC_2025_INSIDER_PURCHASES,
   AUG_2025_CEO_RSU_GRANT,
   AUG_SEP_2025_RSU_VESTINGS,
-  AUG_SEP_2025_INSIDER_SALES,
-  APR_MAY_2025_INSIDER_PURCHASES,
-  MAR_2025_INSIDER_SALES,
+  INSIDER_TRANSACTIONS,
   MAR_2025_LIGADO_DEAL,
   MAR_2025_SHELF_REGISTRATION,
   JAN_FEB_2025_GOVERNANCE,
   JUN_2025_CERTIFICATE_AMENDMENT,
   MAY_JUN_2025_RSU_ACTIVITY,
-  JUN_2025_INSIDER_PURCHASES,
   JUL_2025_CREDIT_FACILITY,
 } from '@/data/asts';
 
@@ -2349,7 +2344,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           { id: 'incentives', value: `${sbcHistory.length}`, label: 'SBC Quarters', sub: 'Compensation data' },
           { id: 'dilution', value: `${((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(0)}%`, label: 'Total Dilution', sub: `${fullyDiluted}M FD shares` },
           { id: 'liquidity', value: `$${(LIQUIDITY_POSITION.cashAndEquiv / 1000).toFixed(1)}B`, label: 'Liquidity', sub: `~${(LIQUIDITY_POSITION.cashAndEquiv / 300).toFixed(0)}Q runway` },
-          { id: 'insiders', value: `${FEB_2026_RSU_VESTINGS.length + DEC_2025_INSIDER_SALES.length + AUG_SEP_2025_INSIDER_SALES.length}`, label: 'Insider Activity', sub: 'Form 4 filings' },
+          { id: 'insiders', value: `${INSIDER_TRANSACTIONS.length}`, label: 'Insider Activity', sub: 'Form 4 filings' },
         ].map(nav => (
           <div
             key={nav.id}
@@ -3019,136 +3014,107 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
         </div>
       </div>
 
-      {/* Insider Sales */}
-      <div className="sm-card sm-mt-8">
-        <div className="sm-card-header">
-          <span className="sm-param-label">Insider Sales (Form 4)</span>
-          <UpdateIndicators sources="SEC" />
-        </div>
-        {(() => {
-          const totalSales = DEC_2025_INSIDER_SALES.reduce((sum, s) => sum + s.proceeds, 0);
-          const amtSale = DEC_2025_INSIDER_SALES.find(s => s.name === 'American Tower Corp')?.proceeds || 0;
-          const individualSales = totalSales - amtSale;
-          return (
-            <div className="sm-callout" style={{ '--callout-color': 'var(--coral)' } as React.CSSProperties}>
-              <strong className="sm-coral">Dec 2025:</strong> Total sales ~${(totalSales / 1e6).toFixed(1)}M (American Tower ${(amtSale / 1e6).toFixed(1)}M block trade + individual sales ${(individualSales / 1e6).toFixed(1)}M). Most under Rule 10b5-1 plans.
-            </div>
-          );
-        })()}
-        <div>
-          <div className="sm-grid-header sm-gtc-1-100-80x2-100-80">
-            {['Insider', 'Date', 'Shares', 'Price', 'Proceeds', '10b5-1'].map(h => (
-              <span key={h} className="sm-th" data-align={['Shares', 'Price', 'Proceeds'].includes(h) ? 'right' : 'left'}>{h}</span>
-            ))}
-          </div>
-          {/* Dec 2025 Sales */}
-          <div className="sm-section-divider" style={{ '--divider-color': 'var(--coral)' } as React.CSSProperties}>December 2025</div>
-          {DEC_2025_INSIDER_SALES.map((s, i) => (
-            <div key={`dec-${i}`} className="hover-row sm-grid-row sm-gtc-1-100-80x2-100-80">
-              <span className="sm-text-13t">{s.name} <span className="sm-text-11">({s.role})</span></span>
-              <span className="sm-text-12">{s.date.slice(5)}</span>
-              <span className="sm-mono-right">{(s.shares / 1000).toFixed(0)}K</span>
-              <span className="sm-mono-right">${s.price.toFixed(2)}</span>
-              <span className="sm-mono-right sm-coral">${(s.proceeds / 1e6).toFixed(1)}M</span>
-              <span className="sm-plan-status" data-plan={s.plan10b5_1 ? "true" : "false"}>{s.plan10b5_1 ? 'Yes' : 'No'}</span>
-            </div>
-          ))}
-          {/* Aug-Sep 2025 Sales */}
-          <div className="sm-section-divider" style={{ '--divider-color': 'var(--coral)' } as React.CSSProperties}>August-September 2025</div>
-          {AUG_SEP_2025_INSIDER_SALES.map((s, i) => (
-            <div key={`aug-${i}`} className="hover-row sm-grid-row sm-gtc-1-100-80x2-100-80">
-              <span className="sm-text-13t">{s.name} <span className="sm-text-11">({s.role})</span></span>
-              <span className="sm-text-12">{s.date.slice(5)}</span>
-              <span className="sm-mono-right">{(s.shares / 1000).toFixed(0)}K</span>
-              <span className="sm-mono-right">${s.avgPrice.toFixed(2)}</span>
-              <span className="sm-mono-right sm-coral">${(s.proceeds / 1e6).toFixed(1)}M</span>
-              <span className="sm-plan-status" data-plan={s.plan10b5_1 ? "true" : "false"}>{s.plan10b5_1 ? 'Yes' : 'No'}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Insider Sales & Dispositions — driven from INSIDER_TRANSACTIONS */}
+      {(() => {
+        const SALE_TYPES = new Set(['sale', 'form-144', 'withholding']);
+        const saleTxns = INSIDER_TRANSACTIONS.filter(t => SALE_TYPES.has(t.type));
+        const purchaseTxns = INSIDER_TRANSACTIONS.filter(t => t.type === 'purchase');
 
-      {/* Insider Purchases */}
-      <div className="sm-card sm-mt-8">
-        <div className="sm-card-header">
-          <span className="sm-param-label">Insider Purchases (Form 4)</span>
-          <UpdateIndicators sources="SEC" />
-        </div>
-        <div>
-          <div className="sm-grid-header sm-gtc-1-100-80x2-100">
-            {['Insider', 'Date', 'Shares', 'Price', 'Account'].map(h => (
-              <span key={h} className="sm-th" data-align={['Shares', 'Price'].includes(h) ? 'right' : 'left'}>{h}</span>
-            ))}
-          </div>
-          {DEC_2025_INSIDER_PURCHASES.map((p, i) => (
-            <div key={i} className="hover-row sm-grid-row sm-gtc-1-100-80x2-100">
-              <span className="sm-text-13t">{p.name} <span className="sm-text-11">({p.role})</span></span>
-              <span className="sm-text-12">{p.date.slice(5)}</span>
-              <span className="sm-mono-right sm-mint">{p.shares}</span>
-              <span className="sm-mono-right">${p.price.toFixed(2)}</span>
-              <span className="sm-text-12">{p.account}</span>
-            </div>
-          ))}
-        </div>
-        <div className="sm-card-footer">
-          Director Larson accumulated {DEC_2025_INSIDER_PURCHASES.reduce((s, p) => s + p.shares, 0).toLocaleString()} shares via IRA under 10b5-1 plan (adopted Sep 8, 2025). Post-purchase holdings: {DEC_2025_INSIDER_PURCHASES[DEC_2025_INSIDER_PURCHASES.length - 1].postPurchaseHoldings.toLocaleString()} shares.
-        </div>
-        {/* June 2025 Insider Purchases */}
-        <div className="sm-section-divider" data-border-top="true" style={{ '--divider-color': 'var(--mint)' } as React.CSSProperties}>June 2025 — Insider Buys at $25 Dip</div>
-        <div>
-          {JUN_2025_INSIDER_PURCHASES.map((p, i) => (
-            <div key={`jun-${i}`} className="hover-row sm-grid-row sm-gtc-1-100-80x2-100">
-              <span className="sm-text-13t">{p.name} <span className="sm-text-11">({p.role})</span></span>
-              <span className="sm-text-12">{p.date.slice(5)}</span>
-              <span className="sm-mono-right sm-mint">{p.shares.toLocaleString()}</span>
-              <span className="sm-mono-right">${p.price.toFixed(2)}</span>
-              <span className="sm-text-12">{p.account}</span>
-            </div>
-          ))}
-        </div>
-        {/* April-May 2025 Insider Purchases */}
-        <div className="sm-section-divider" data-border-top="true" style={{ '--divider-color': 'var(--mint)' } as React.CSSProperties}>Apr–May 2025 — Insider Buys at $25 Dip</div>
-        <div>
-          {APR_MAY_2025_INSIDER_PURCHASES.map((p, i) => (
-            <div key={`apr-${i}`} className="hover-row sm-grid-row sm-gtc-1-100-80x2-100">
-              <span className="sm-text-13t">{p.name} <span className="sm-text-11">({p.role})</span></span>
-              <span className="sm-text-12">{p.date.slice(5)}</span>
-              <span className="sm-mono-right sm-mint">{p.shares.toLocaleString()}</span>
-              <span className="sm-mono-right">${p.price.toFixed(2)}</span>
-              <span className="sm-text-12">{p.account}</span>
-            </div>
-          ))}
-        </div>
-        <div className="sm-card-footer">
-          Cisneros (1K each) + Johnson (500) at $25 dip. Multiple duplicate Form 4 filings corrected via amendments.
-        </div>
-      </div>
+        // Group transactions by YYYY-MM, preserving reverse-chronological order
+        const groupByMonth = (txns: typeof INSIDER_TRANSACTIONS) => {
+          const groups: { label: string; key: string; items: typeof txns }[] = [];
+          const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+          for (const t of txns) {
+            const key = t.date.slice(0, 7); // YYYY-MM
+            const last = groups[groups.length - 1];
+            if (last && last.key === key) {
+              last.items.push(t);
+            } else {
+              const [y, m] = key.split('-');
+              groups.push({ label: `${MONTHS[parseInt(m, 10) - 1]} ${y}`, key, items: [t] });
+            }
+          }
+          return groups;
+        };
 
-      {/* March 2025 Insider Sales */}
-      <div className="sm-card sm-mt-8">
-        <div className="sm-inline-header">
-          <span className="sm-param-label">March 2025 — RSU Vesting Sales & Withholdings</span>
-          <span className="sm-mono-sm sm-color-rose">~111K shares / $3.4M</span>
-        </div>
-        <div className="sm-grid-header sm-th sm-gtc-1-90-80x2-90-70 sm-p-8-24">
-          <span>Name</span><span>Date</span><span className="sm-text-right">Shares</span><span className="sm-text-right">Price</span><span className="sm-text-right">Proceeds</span><span>Type</span>
-        </div>
-        <div>
-          {MAR_2025_INSIDER_SALES.map((s, i) => (
-            <div key={`mar-sale-${i}`} className="hover-row sm-grid-row sm-gtc-1-90-80x2-90-70">
-              <span className="sm-text-13t">{s.name} <span className="sm-text-11">({s.role})</span></span>
-              <span className="sm-text-12">{s.date.slice(5)}</span>
-              <span className="sm-mono-right sm-color-rose">{s.shares.toLocaleString()}</span>
-              <span className="sm-mono-right">${s.price.toFixed(2)}</span>
-              <span style={{ fontFamily: "'Space Mono', monospace", fontSize: 12, color: s.proceeds > 0 ? 'var(--rose)' : 'var(--text3)', textAlign: 'right' }}>{s.proceeds > 0 ? `$${(s.proceeds / 1000).toFixed(0)}K` : '—'}</span>
-              <span className="sm-sale-type-badge" data-type={s.type === 'sale' ? 'sale' : 'withholding'}>{s.type === 'withholding' ? 'W/H' : 'Sale'}</span>
+        const saleGroups = groupByMonth(saleTxns);
+        const purchaseGroups = groupByMonth(purchaseTxns);
+
+        const formatPrice = (t: typeof INSIDER_TRANSACTIONS[number]) =>
+          t.price ? `$${t.price.toFixed(2)}` : t.aggregateMarketValue ? `$${(t.aggregateMarketValue / t.units).toFixed(2)}` : '—';
+
+        const formatProceeds = (t: typeof INSIDER_TRANSACTIONS[number]) =>
+          t.proceeds ? `$${t.proceeds >= 1e6 ? (t.proceeds / 1e6).toFixed(1) + 'M' : (t.proceeds / 1e3).toFixed(0) + 'K'}`
+          : t.aggregateMarketValue ? `$${(t.aggregateMarketValue / 1e6).toFixed(1)}M`
+          : '—';
+
+        const typeLabel = (t: typeof INSIDER_TRANSACTIONS[number]) =>
+          t.type === 'form-144' ? 'Form 144' : t.type === 'withholding' ? 'W/H' : 'Sale';
+
+        return (
+          <>
+            {/* Insider Sales */}
+            <div className="sm-card sm-mt-8">
+              <div className="sm-card-header">
+                <span className="sm-param-label">Insider Sales & Dispositions</span>
+                <UpdateIndicators sources="SEC" />
+              </div>
+              <div>
+                <div className="sm-grid-header sm-gtc-1-100-80x2-100-80">
+                  {['Insider', 'Date', 'Shares', 'Price', 'Proceeds', 'Type'].map(h => (
+                    <span key={h} className="sm-th" data-align={['Shares', 'Price', 'Proceeds'].includes(h) ? 'right' : 'left'}>{h}</span>
+                  ))}
+                </div>
+                {saleGroups.map(group => (
+                  <div key={group.key}>
+                    <div className="sm-section-divider" style={{ '--divider-color': 'var(--coral)' } as React.CSSProperties}>{group.label}</div>
+                    {group.items.map((t, i) => (
+                      <div key={`${group.key}-${i}`} className="hover-row sm-grid-row sm-gtc-1-100-80x2-100-80">
+                        <span className="sm-text-13t">{t.name} <span className="sm-text-11">({t.role})</span></span>
+                        <span className="sm-text-12">{t.date.slice(5)}</span>
+                        <span className="sm-mono-right">{t.units >= 1000 ? `${(t.units / 1000).toFixed(0)}K` : t.units.toLocaleString()}</span>
+                        <span className="sm-mono-right">{formatPrice(t)}</span>
+                        <span className="sm-mono-right sm-coral">{formatProceeds(t)}</span>
+                        <span className="sm-sale-type-badge" data-type={t.type === 'sale' ? 'sale' : 'withholding'}>{typeLabel(t)}</span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
-        <div className="sm-card-footer">
-          All RSU vesting-related. Stock peaked $35.49 (Mar 6) after +18% Q4 pop, fell to $22.74 EOM. Routine compensation liquidity.
-        </div>
-      </div>
+
+            {/* Insider Purchases */}
+            <div className="sm-card sm-mt-8">
+              <div className="sm-card-header">
+                <span className="sm-param-label">Insider Purchases</span>
+                <UpdateIndicators sources="SEC" />
+              </div>
+              <div>
+                <div className="sm-grid-header sm-gtc-1-100-80x2-100-80">
+                  {['Insider', 'Date', 'Shares', 'Price', 'Holdings', '10b5-1'].map(h => (
+                    <span key={h} className="sm-th" data-align={['Shares', 'Price', 'Holdings'].includes(h) ? 'right' : 'left'}>{h}</span>
+                  ))}
+                </div>
+                {purchaseGroups.map(group => (
+                  <div key={group.key}>
+                    <div className="sm-section-divider" style={{ '--divider-color': 'var(--mint)' } as React.CSSProperties}>{group.label}</div>
+                    {group.items.map((t, i) => (
+                      <div key={`${group.key}-${i}`} className="hover-row sm-grid-row sm-gtc-1-100-80x2-100-80">
+                        <span className="sm-text-13t">{t.name} <span className="sm-text-11">({t.role})</span></span>
+                        <span className="sm-text-12">{t.date.slice(5)}</span>
+                        <span className="sm-mono-right sm-mint">{t.units.toLocaleString()}</span>
+                        <span className="sm-mono-right">${t.price?.toFixed(2) ?? '—'}</span>
+                        <span className="sm-mono-right">{t.postHoldings?.toLocaleString() ?? '—'}</span>
+                        <span className="sm-plan-status" data-plan={t.plan10b5_1 ? "true" : "false"}>{t.plan10b5_1 ? 'Yes' : 'No'}</span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        );
+      })()}
 
       {/* Ligado Deal */}
       <div className="sm-card sm-mt-8">
