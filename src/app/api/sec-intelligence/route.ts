@@ -121,7 +121,7 @@ async function persistFilings(filings: SecFiling[]): Promise<Set<string>> {
       fileUrl: f.fileUrl || null,
       status: null,       // SEC Intelligence doesn't set status — Edgar tab does that
       crossRefs: null,    // Cross-refs are managed by Edgar tab workflow
-      dismissed: !existingAccessions.has(`${ticker}:${f.accessionNumber}`), // false = NEW if not in DB
+      dismissed: false, // New filings always start as NEW; existing filings preserve their DB state via onConflictDoUpdate
     }));
 
     try {
@@ -291,13 +291,20 @@ export async function GET(request: NextRequest) {
 
     // Persist ALL fetched filings to seen_filings DB
     // This uses upsert: metadata updated, dismissed/hidden/status/crossRefs PRESERVED
-    const existingAccessions = await persistFilings(freshFilings);
+    await persistFilings(freshFilings);
 
-    // Mark dismissed state on the response so the frontend can show NEW badges
-    allFilings = freshFilings.map(f => ({
-      ...f,
-      dismissed: existingAccessions.has(`${f.ticker.toLowerCase()}:${f.accessionNumber}`),
-    }));
+    // Re-read from DB after persist — single source of truth, same as db mode.
+    // This ensures refresh returns the full filing set (not just the limited
+    // batch fetched from SEC), matching what the next page load would show.
+    const dbResult = await loadFromDb(tickers);
+    allFilings = dbResult.filings;
+    // Merge tickerStats: use DB counts (complete), but keep companyName from SEC fetch
+    for (const [ticker, dbStat] of Object.entries(dbResult.tickerStats)) {
+      tickerStats[ticker] = {
+        count: dbStat.count,
+        companyName: tickerStats[ticker]?.companyName || dbStat.companyName,
+      };
+    }
   }
 
   // Apply form filter
