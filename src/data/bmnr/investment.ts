@@ -1,4 +1,4 @@
-import type { InvestmentCurrent, ArchiveEntry } from '@/components/shared/investmentTypes';
+import type { InvestmentCurrent, ArchiveEntry } from '@/lib/investmentTypes';
 
 export const BMNR_INVESTMENT_CURRENT: InvestmentCurrent = {
     date: '2026-02-23',

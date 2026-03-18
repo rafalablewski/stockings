@@ -1,11 +1,6 @@
 /**
  * Shared pure helpers for EDGAR filing merge logic.
- *
- * Extracted from SharedEdgarTab.tsx so tests can import the real
- * implementations instead of duplicating them.
  */
-
-// ── Types ────────────────────────────────────────────────────────────────────
 
 export interface LocalFiling {
   date: string;
@@ -16,12 +11,9 @@ export interface LocalFiling {
   accessionNumber?: string;
 }
 
-// ── Date helpers ─────────────────────────────────────────────────────────────
-
 /** Convert human dates ("Mar 2, 2026", "Sep 3-15, 2025") to ISO YYYY-MM-DD. */
 export function normalizeDate(dateStr: string): string {
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-  // Handle date ranges like "Sep 3-15, 2025" — use start date
   const rangeMatch = dateStr.match(/^(\w+ \d+)-\d+, (\d{4})$/);
   if (rangeMatch) {
     const d = new Date(`${rangeMatch[1]}, ${rangeMatch[2]}`);
@@ -32,19 +24,11 @@ export function normalizeDate(dateStr: string): string {
   return dateStr;
 }
 
-// ── Accession helpers ────────────────────────────────────────────────────────
-
 /** Normalize accession number by stripping dashes for comparison */
 export const normalizeAccession = (a: string) => a.replace(/-/g, '');
 
-// ── Merge helpers ────────────────────────────────────────────────────────────
-
 /**
  * Merge static props (primary) with database results (supplementary).
- * Props are the baseline truth (always up-to-date with code).
- * Database may contain additional entries added by AI agents at runtime.
- * A DB entry is "already in props" if it matches on (type + normalizedDate + period)
- * or accessionNumber.
  */
 export function mergeLocalFilings(
   propsFilings: LocalFiling[],
@@ -71,7 +55,6 @@ export function mergeLocalFilings(
 
 /**
  * Merge static cross-ref index (primary) with database cross-refs (supplementary).
- * For each filing key, props entries take precedence. DB-only keys are added.
  */
 export function mergeCrossRefs(
   propsRefs: Record<string, { source: string; data: string }[]> | undefined,

@@ -1,4 +1,4 @@
-import type { InvestmentCurrent, ArchiveEntry } from '@/components/shared/investmentTypes';
+import type { InvestmentCurrent, ArchiveEntry } from '@/lib/investmentTypes';
 
 export const ASTS_INVESTMENT_CURRENT: InvestmentCurrent = {
     date: '2026-03-03',

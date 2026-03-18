@@ -1,11 +1,6 @@
 /**
  * Shared Investment Tab Types
  * Unified schema for ASTS, BMNR, CRCL Investment Tab data.
- *
- * Extensibility: Add optional stock-specific fields to InvestmentCurrent (e.g. priceTargets,
- * catalysts, ecosystemHealth). Use render props (renderHeaderMetrics, renderEcosystemHealth,
- * renderCatalysts, renderAccumulation) for custom sections. For new stocks, extend this interface
- * with optional fields and add corresponding render props to SharedInvestmentTabProps.
  */
 
 export interface ScorecardItem {
@@ -127,7 +122,6 @@ export interface InvestmentCurrent {
     balanced: PositionSize;
     conservative: PositionSize;
   };
-  // Optional company-specific fields (extend with more as needed per stock)
   priceTargets?: PriceTarget[];
   catalysts?: Catalyst[];
   accumulation?: AccumulationZone[];
@@ -153,30 +147,4 @@ export interface ArchiveEntry {
     risks: string;
     strategy: string;
   };
-}
-
-export interface SharedInvestmentTabProps {
-  current: InvestmentCurrent;
-  archive: ArchiveEntry[];
-  ticker: string;
-  /** KPI columns in the rating header (right side) */
-  renderHeaderMetrics?: () => React.ReactNode;
-  /** After scorecard (BMNR: Ecosystem Health rating) */
-  renderAfterScorecard?: () => React.ReactNode;
-  /** Before Growth Drivers (CRCL: Financial Health, Unit Economics) */
-  renderBeforeGrowthDrivers?: () => React.ReactNode;
-  /** Extra content at bottom of Growth Drivers section */
-  renderGrowthDriversExtra?: () => React.ReactNode;
-  /** After Growth Drivers (CRCL: Valuation Framework) */
-  renderAfterGrowthDrivers?: () => React.ReactNode;
-  /** After moat section — durability note */
-  moatDurabilityNote?: string;
-  /** After Risk Matrix (CRCL: Rate Sensitivity Calculator) */
-  renderAfterRiskMatrix?: () => React.ReactNode;
-  /** Full body of Risks & Strategic Assessment (perspectives + strategic questions + timeframes) */
-  renderStrategicAssessment?: () => React.ReactNode;
-  /** Extra content in Position Sizing (BMNR: Accumulation zones) */
-  renderAccumulation?: () => React.ReactNode;
-  /** CFA Notes items — if not provided, defaults will be used */
-  cfaNotes?: { term: string; def: string }[];
 }

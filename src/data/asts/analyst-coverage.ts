@@ -6,7 +6,7 @@
  * NEVER delete historical reports — this is an audit trail.
  */
 
-import type { AnalystCoverage } from '@/components/shared/wallStreetTypes';
+import type { AnalystCoverage } from '@/lib/wallStreetTypes';
 
 export const ASTS_ANALYST_COVERAGE: AnalystCoverage[] = [
   // ═══════════════════════════════════════════════════════════════════════════

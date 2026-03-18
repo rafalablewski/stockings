@@ -50,8 +50,3 @@ export interface AnalystCoverage {
   reports: AnalystReport[];
   notes?: string;
 }
-
-export interface SharedWallStreetTabProps {
-  coverage: AnalystCoverage[];
-  ticker: string;
-}

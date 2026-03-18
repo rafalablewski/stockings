@@ -18,7 +18,7 @@
  * 3. NEVER delete archive entries — they are the permanent historical record
  */
 
-import type { InvestmentCurrent, ArchiveEntry } from '@/components/shared/investmentTypes';
+import type { InvestmentCurrent, ArchiveEntry } from '@/lib/investmentTypes';
 
 export const CRCL_INVESTMENT_CURRENT: InvestmentCurrent = {
   date: '2025-12-31',

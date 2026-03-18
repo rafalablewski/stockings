@@ -15,7 +15,7 @@ import { inArray } from 'drizzle-orm';
 import { researchStocks } from './stocks';
 import { resolveCik } from './cik-map';
 import { classifyAnthropicError } from './anthropic-error';
-import { normalizeAccession, normalizeDate, type LocalFiling } from '@/components/shared/edgarMergeHelpers';
+import { normalizeAccession, normalizeDate, type LocalFiling } from '@/lib/edgarMergeHelpers';
 import {
   ASTS_SEC_FILINGS, ASTS_FILING_CROSS_REFS,
 } from '@/data/asts/sec-filings';

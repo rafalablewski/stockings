@@ -98,7 +98,7 @@ function investmentTemplate(ticker: string, name: string): string {
  * LAST UPDATED: ${today}
  */
 
-import type { InvestmentCurrent, ArchiveEntry } from '@/components/shared/investmentTypes';
+import type { InvestmentCurrent, ArchiveEntry } from '@/lib/investmentTypes';
 
 export const ${ticker}_INVESTMENT_CURRENT: InvestmentCurrent = {
   date: '${today}',
