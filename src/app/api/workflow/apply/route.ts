@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
+import { execFileSync } from 'child_process';
 import path from 'path';
 import { renderSchemaContext, renderFilingTemplateContext } from '@/data/schemas';
 import { checkAiGate } from '@/lib/ai-gate';
@@ -490,141 +491,144 @@ async function applyPatch(patch: PatchOp): Promise<PatchResult> {
     return { ...base, success: false, detail: `File would shrink: ${originalLines} → ${newLines}` };
   }
 
-  // Backup original
-  const backupPath = pathCheck.fullPath + '.bak.' + Date.now();
-  await fs.copyFile(pathCheck.fullPath, backupPath);
+  // Backup original — best-effort (skipped on read-only filesystems like Vercel/Lambda)
+  try {
+    const backupPath = pathCheck.fullPath + '.bak.' + Date.now();
+    await fs.copyFile(pathCheck.fullPath, backupPath);
+    await cleanupBackups(pathCheck.fullPath);
+  } catch (backupErr) {
+    const code = (backupErr as { code?: string }).code;
+    if (code === 'EROFS' || code === 'EACCES') {
+      console.warn(`[apply] Backup skipped (${code}) — filesystem is read-only, using git history as fallback`);
+    } else {
+      throw backupErr; // unexpected error, don't swallow
+    }
+  }
 
-  // Atomic write: tmp file + rename
-  const tmpPath = pathCheck.fullPath + '.tmp.' + Date.now();
-  await fs.writeFile(tmpPath, newContent, 'utf-8');
-  await fs.rename(tmpPath, pathCheck.fullPath);
-
-  // Clean up old backups — keep last MAX_BACKUPS_PER_FILE
-  await cleanupBackups(pathCheck.fullPath);
+  // Write patched file — try atomic (tmp+rename), fall back to direct write on EROFS
+  try {
+    const tmpPath = pathCheck.fullPath + '.tmp.' + Date.now();
+    await fs.writeFile(tmpPath, newContent, 'utf-8');
+    await fs.rename(tmpPath, pathCheck.fullPath);
+  } catch (writeErr) {
+    const code = (writeErr as { code?: string }).code;
+    if (code === 'EROFS' || code === 'EACCES') {
+      // Atomic write failed — try direct write (works on some overlay filesystems)
+      await fs.writeFile(pathCheck.fullPath, newContent, 'utf-8');
+    } else {
+      throw writeErr;
+    }
+  }
 
   return { ...base, success: true, detail: `+${newLines - originalLines} lines` };
 }
 
-// ─── Revert from backup ──────────────────────────────────────────────────────
+// ─── Revert via git ──────────────────────────────────────────────────────────
+
+const ROOT = process.cwd();
+
+function gitExec(...args: string[]): string {
+  return execFileSync('git', args, { cwd: ROOT, encoding: 'utf-8', timeout: 10000 }).trim();
+}
 
 interface RevertFileResult {
   file: string;
   success: boolean;
   detail: string;
-  backupTimestamp?: number;
 }
 
 /**
- * Find the most recent .bak file for a given source file.
- * Returns the full backup path and its timestamp, or null if none found.
- */
-async function findNewestBackup(filePath: string): Promise<{ backupPath: string; timestamp: number } | null> {
-  try {
-    const dir = path.dirname(filePath);
-    const base = path.basename(filePath);
-    const entries = await fs.readdir(dir);
-    const backups = entries
-      .filter(e => e.startsWith(base + '.bak.'))
-      .map(e => {
-        const ts = parseInt(e.slice((base + '.bak.').length), 10);
-        return { name: e, timestamp: ts };
-      })
-      .filter(b => !isNaN(b.timestamp))
-      .sort((a, b) => b.timestamp - a.timestamp); // newest first
-
-    if (backups.length === 0) return null;
-    return { backupPath: path.join(dir, backups[0].name), timestamp: backups[0].timestamp };
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Revert all data files for a ticker to their most recent backups.
- * Only reverts files that have .bak files (i.e. files that were patched).
+ * Revert modified data files for a ticker using git.
  *
- * dryRun=true: list which files would be reverted (no writes)
- * dryRun=false: restore from backups (atomic write)
+ * Strategy:
+ * 1. `git diff --name-only HEAD -- src/data/{ticker}/` finds uncommitted changes
+ * 2. `git diff --name-only HEAD~1 -- src/data/{ticker}/` finds files changed in last commit
+ * 3. For uncommitted changes: `git checkout HEAD -- <file>`
+ * 4. For committed changes: `git checkout HEAD~1 -- <file>`
+ *
+ * Works on read-only deployed environments (Vercel/Lambda) where .bak files
+ * can't be created, since git restore operates on the git object store.
  */
 async function revertTicker(ticker: string, dryRun: boolean): Promise<{
   files: RevertFileResult[];
   revertedCount: number;
   skippedCount: number;
+  method: 'git-uncommitted' | 'git-committed' | 'none';
 }> {
   const tickerLower = ticker.toLowerCase();
-  const tickerDir = path.resolve(DATA_DIR, tickerLower);
-
-  let entries: string[];
-  try {
-    entries = await fs.readdir(tickerDir);
-  } catch {
-    return { files: [], revertedCount: 0, skippedCount: 0 };
-  }
-
-  // Find all .ts source files that have backup files
-  const tsFiles = entries.filter(e => e.endsWith('.ts') && !e.includes('.bak.'));
+  const dataPrefix = `src/data/${tickerLower}/`;
   const results: RevertFileResult[] = [];
   let revertedCount = 0;
   let skippedCount = 0;
 
-  for (const tsFile of tsFiles) {
-    const fullPath = path.resolve(tickerDir, tsFile);
-    const relPath = `${tickerLower}/${tsFile}`;
-    const backup = await findNewestBackup(fullPath);
-
-    if (!backup) {
-      // No backup = file was never patched, skip silently
-      continue;
+  // Strategy 1: Check for uncommitted changes (working tree vs HEAD)
+  let uncommittedFiles: string[] = [];
+  try {
+    const diffOutput = gitExec('diff', '--name-only', 'HEAD', '--', dataPrefix);
+    if (diffOutput) {
+      uncommittedFiles = diffOutput.split('\n').filter(f => f.startsWith(dataPrefix) && f.endsWith('.ts'));
     }
-
-    const backupAge = Date.now() - backup.timestamp;
-    const backupAgeMinutes = Math.round(backupAge / 60000);
-
-    if (dryRun) {
-      results.push({
-        file: relPath,
-        success: true,
-        detail: `Backup available (${backupAgeMinutes}m ago)`,
-        backupTimestamp: backup.timestamp,
-      });
-      revertedCount++;
-    } else {
-      try {
-        // Read backup content
-        const backupContent = await fs.readFile(backup.backupPath, 'utf-8');
-        const currentContent = await fs.readFile(fullPath, 'utf-8');
-
-        // Skip if backup content is identical to current (already reverted)
-        if (backupContent === currentContent) {
-          results.push({ file: relPath, success: false, detail: 'Already matches backup (no change needed)' });
-          skippedCount++;
-          continue;
-        }
-
-        // Atomic write: tmp + rename
-        const tmpPath = fullPath + '.tmp.' + Date.now();
-        await fs.writeFile(tmpPath, backupContent, 'utf-8');
-        await fs.rename(tmpPath, fullPath);
-
-        results.push({
-          file: relPath,
-          success: true,
-          detail: `Reverted from backup (${backupAgeMinutes}m ago)`,
-          backupTimestamp: backup.timestamp,
-        });
-        revertedCount++;
-      } catch (err) {
-        results.push({
-          file: relPath,
-          success: false,
-          detail: `Revert failed: ${err instanceof Error ? err.message : String(err)}`,
-        });
-        skippedCount++;
-      }
-    }
+  } catch {
+    // git diff failed — might not be a git repo
   }
 
-  return { files: results, revertedCount, skippedCount };
+  if (uncommittedFiles.length > 0) {
+    for (const file of uncommittedFiles) {
+      if (dryRun) {
+        results.push({ file, success: true, detail: 'Uncommitted change — will restore from HEAD' });
+        revertedCount++;
+      } else {
+        try {
+          gitExec('checkout', 'HEAD', '--', file);
+          results.push({ file, success: true, detail: 'Restored from HEAD (uncommitted change reverted)' });
+          revertedCount++;
+        } catch (err) {
+          results.push({ file, success: false, detail: `git checkout failed: ${err instanceof Error ? err.message : String(err)}` });
+          skippedCount++;
+        }
+      }
+    }
+    return { files: results, revertedCount, skippedCount, method: 'git-uncommitted' };
+  }
+
+  // Strategy 2: Check last commit for changes to this ticker's data
+  let committedFiles: string[] = [];
+  try {
+    const diffOutput = gitExec('diff', '--name-only', 'HEAD~1', 'HEAD', '--', dataPrefix);
+    if (diffOutput) {
+      committedFiles = diffOutput.split('\n').filter(f => f.startsWith(dataPrefix) && f.endsWith('.ts'));
+    }
+  } catch {
+    // HEAD~1 might not exist (first commit)
+  }
+
+  if (committedFiles.length > 0) {
+    for (const file of committedFiles) {
+      if (dryRun) {
+        // Show what the last commit changed
+        let linesChanged = '';
+        try {
+          const stat = gitExec('diff', '--stat', 'HEAD~1', 'HEAD', '--', file);
+          const match = stat.match(/(\d+) insertion|(\d+) deletion/);
+          if (match) linesChanged = ` (${stat.split('|')[1]?.trim() || 'modified'})`;
+        } catch { /* ignore */ }
+        results.push({ file, success: true, detail: `Changed in last commit${linesChanged} — will restore from HEAD~1` });
+        revertedCount++;
+      } else {
+        try {
+          gitExec('checkout', 'HEAD~1', '--', file);
+          results.push({ file, success: true, detail: 'Restored from HEAD~1 (last commit reverted)' });
+          revertedCount++;
+        } catch (err) {
+          results.push({ file, success: false, detail: `git checkout failed: ${err instanceof Error ? err.message : String(err)}` });
+          skippedCount++;
+        }
+      }
+    }
+    return { files: results, revertedCount, skippedCount, method: 'git-committed' };
+  }
+
+  return { files: results, revertedCount: 0, skippedCount: 0, method: 'none' };
 }
 
 // ─── Route handler ──────────────────────────────────────────────────────────
@@ -658,11 +662,11 @@ export async function POST(request: NextRequest) {
     if (body.revert) {
       const result = await revertTicker(ticker, dryRun);
 
-      if (result.files.length === 0) {
+      if (result.files.length === 0 || result.method === 'none') {
         return NextResponse.json({
           revert: true,
           dryRun,
-          error: `No backup files found for ${ticker.toUpperCase()}. Nothing to revert.`,
+          error: `No changes found to revert for ${ticker.toUpperCase()} — no uncommitted changes or recent commits to data files.`,
         }, { status: 404 });
       }
 
@@ -691,12 +695,13 @@ export async function POST(request: NextRequest) {
         revert: true,
         dryRun,
         ticker: ticker.toUpperCase(),
+        method: result.method,
         files: result.files,
         revertedCount: result.revertedCount,
         skippedCount: result.skippedCount,
         ...(dryRun ? {} : { reseed }),
         summary: dryRun
-          ? `${result.revertedCount} file(s) can be reverted for ${ticker.toUpperCase()}`
+          ? `${result.revertedCount} file(s) can be reverted for ${ticker.toUpperCase()} (via ${result.method})`
           : `Reverted ${result.revertedCount} file(s) for ${ticker.toUpperCase()}${result.skippedCount > 0 ? ` (${result.skippedCount} skipped)` : ''}`,
       });
     }

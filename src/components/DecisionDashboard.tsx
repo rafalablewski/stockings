@@ -364,7 +364,7 @@ export default function DecisionDashboard() {
 
   const revertDataPatches = async (decision: Decision) => {
     const ticker = decision.ticker;
-    if (!confirm(`Revert all data patches for ${ticker.toUpperCase()}? This restores files from the most recent backups.`)) return;
+    if (!confirm(`Revert all data patches for ${ticker.toUpperCase()}? This restores files using git history.`)) return;
 
     setApplying(decision.id);
     try {
@@ -382,7 +382,7 @@ export default function DecisionDashboard() {
       }
 
       if (!preview.revertedCount || preview.revertedCount === 0) {
-        alert('No backup files found to revert.');
+        alert('No changes found to revert.');
         return;
       }
 
