@@ -7,7 +7,7 @@
  *
  * ⚠️ DISCLAIMER — READ BEFORE USING mNAV / prevDayClose / prevDayMarketCap:
  * ──────────────────────────────────────────────────────────────────────────
- * 1. STOCK PRICES: Only 4 of 32 entries have confirmed closing prices (see below).
+ * 1. STOCK PRICES: Only 4 of 35 entries have confirmed closing prices (see below).
  *    The remaining 28 are ESTIMATES interpolated from sparse data points, news
  *    articles, and SEC filings. Jul–Aug 2025 prices are especially unreliable —
  *    the stock was extremely volatile ($8 IPO → $161 peak → ~$38, all in 8 weeks)
@@ -102,7 +102,7 @@
  *     and the "discount" periods (Oct 13, Dec 8, Dec 15) may actually have been
  *     even deeper discounts to true NAV.
  *
- * LAST UPDATED: 2026-03-10
+ * LAST UPDATED: 2026-03-18
  * NEXT UPDATE: After next weekly holdings PR
  *
  * AI AGENT INSTRUCTIONS:
@@ -146,7 +146,7 @@ export const PURCHASE_HISTORY_METADATA: DataMetadata = {
   lastUpdated: '2026-03-18',
   source: 'Weekly Holdings PRs (PRNewswire) + 8-K filings + market data',
   nextExpectedUpdate: 'After next weekly holdings PR',
-  notes: 'ethBought/ethPrice/totalEthAfter are from PRs (high reliability). prevDayClose: only 4 of 35 confirmed from SEC filings; 31 are interpolated estimates (marked ≈). Shares outstanding: 7 anchor points from 10-K/10-Q/PRs, linearly interpolated between — crude for Jul-Sep when shares grew 5M→235M. navPerShare is SIMPLIFIED (ETH value only, excludes $400M-$1.2B cash, BTC, moonshots). This overstates mNAV by ~0.03-0.15x. Jul-Aug mNAV (2-7x) is directionally correct but may be ±50% off. See file header for full methodology and disclaimers.',
+  notes: 'ethBought/ethPrice/totalEthAfter are from PRs (high reliability). prevDayClose: only 4 of 35 confirmed from SEC filings; 31 are interpolated estimates (marked ≈). Mar 13 close $20.54 semi-confirmed (StockAnalysis). Shares outstanding: 7 anchor points from 10-K/10-Q/PRs, linearly interpolated between — crude for Jul-Sep when shares grew 5M→235M. navPerShare is SIMPLIFIED (ETH value only, excludes $400M-$1.2B cash, BTC, moonshots). This overstates mNAV by ~0.03-0.15x. Jul-Aug mNAV (2-7x) is directionally correct but may be ±50% off. See file header for full methodology and disclaimers.',
 };
 
 // ============================================================================
@@ -186,12 +186,12 @@ export const BMNR_PURCHASE_HISTORY: PurchaseRecord[] = [
     ethPrice: 2185,
     totalEthAfter: 4595562,
     cashDeployed: 133282815,
-    prevDayClose: null,
-    prevDayMarketCap: null,
-    navPerShare: null,
-    mnavAtTime: null,
+    prevDayClose: 20.54,
+    prevDayMarketCap: 9_654_000_000,
+    navPerShare: 21.36,
+    mnavAtTime: 0.96,
     source: 'Mar 16, 2026 PR',
-    notes: '≈ ~470M shares est. 3.81% of supply, 76% to Alchemy of 5%. ORBS +$80M. 5K ETH from Ethereum Foundation. Crypto outperformed S&P by 2,450bp since Iran war.',
+    notes: '≈ ~470M shares est. 3.81% of supply, 76% to Alchemy of 5%. ORBS +$80M. 5K ETH from Ethereum Foundation. Crypto outperformed S&P by 2,450bp since Iran war. Mar 13 close $20.54 (StockAnalysis). Stock jumped +15% Mon on PR to $23.84.',
   },
   {
     date: '2026-03-09',
@@ -199,12 +199,12 @@ export const BMNR_PURCHASE_HISTORY: PurchaseRecord[] = [
     ethPrice: 1965,
     totalEthAfter: 4534563,
     cashDeployed: 119817840,
-    prevDayClose: null,
-    prevDayMarketCap: null,
-    navPerShare: null,
-    mnavAtTime: null,
+    prevDayClose: 21.00,
+    prevDayMarketCap: 9_828_000_000,
+    navPerShare: 19.04,
+    mnavAtTime: 1.10,
     source: 'Mar 9, 2026 PR',
-    notes: '≈ ~468M shares est. 3.76% of supply, 75% to 5%. DeMark: ETH tracking S&P 2011/1987 (89%/93% corr). Increased pace to 61K ETH (from 45-50K).',
+    notes: '≈ ~468M shares est. 3.76% of supply, 75% to 5%. DeMark: ETH tracking S&P 2011/1987 (89%/93% corr). Increased pace to 61K ETH (from 45-50K). Mar 6 close ≈$21 (interpolated from Mar 4 $21.12, StockAnalysis).',
   },
   {
     date: '2026-03-02',
@@ -212,12 +212,12 @@ export const BMNR_PURCHASE_HISTORY: PurchaseRecord[] = [
     ethPrice: 1976,
     totalEthAfter: 4473587,
     cashDeployed: 100633728,
-    prevDayClose: null,
-    prevDayMarketCap: null,
-    navPerShare: null,
-    mnavAtTime: null,
+    prevDayClose: 22.00,
+    prevDayMarketCap: 10_252_000_000,
+    navPerShare: 18.97,
+    mnavAtTime: 1.16,
     source: 'Mar 2, 2026 PR',
-    notes: '≈ ~466M shares est. 3.71% of supply, 74% to 5%. US-Iran combat ops began. Tom Lee: pullback attractive. Cash $868M (+$177M).',
+    notes: '≈ ~466M shares est. 3.71% of supply, 74% to 5%. US-Iran combat ops began. Tom Lee: pullback attractive. Cash $868M (+$177M). Feb 27 close ≈$22 (est. post-crash from $25.50; Feb 26 down -4.93%, Mar 4 close $21.12).',
   },
   // === FEBRUARY 2026 ===
   {

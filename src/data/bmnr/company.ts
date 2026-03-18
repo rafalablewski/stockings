@@ -93,11 +93,11 @@ export const DEFAULTS: StockDefaults & {
   ethPriceAsOf: '2026-03-15', // Date of ETH price above
 
   // === MARKET DATA ===
-  currentStockPrice: 27.15,   // UPDATE REGULARLY - Last: Feb 9, 2026
-  priceAsOf: '2026-02-09',    // Date of stock price above
+  currentStockPrice: 23.84,   // UPDATE REGULARLY - Last: Mar 17, 2026 (Mon close, +15% on ETH PR)
+  priceAsOf: '2026-03-17',    // Date of stock price above
 
   // === SHARE COUNT ===
-  currentShares: 434,         // Shares outstanding (M)
+  currentShares: 470,         // Shares outstanding (M) — est. ~470M via ATM (455M reported Jan 15 + continued issuance)
 
   // === BALANCE SHEET ===
   cashOnHand: 1200,           // $1.2B cash (Mar 16, 2026 PR)
