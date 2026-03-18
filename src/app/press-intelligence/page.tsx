@@ -1060,6 +1060,9 @@ const FEED_CONFIGS: FeedConfig[] = [
   },
 ];
 
+/** FEED_CONFIGS sorted alphabetically by ticker — for consistent display order */
+const FEED_CONFIGS_SORTED = [...FEED_CONFIGS].sort((a, b) => a.ticker.localeCompare(b.ticker));
+
 /* Build merged category set from all configs */
 const ALL_CATEGORIES = (() => {
   const set = new Set<string>();
@@ -1327,7 +1330,7 @@ export default function PressIntelligencePage() {
     const latest = allItems[0] ? formatDate(allItems[0].datetime) : "\u2014";
 
     const perStock: Record<string, number> = {};
-    for (const cfg of FEED_CONFIGS) {
+    for (const cfg of FEED_CONFIGS_SORTED) {
       perStock[cfg.ticker] = (feedsByTicker[cfg.ticker] || []).length;
     }
 
@@ -1434,7 +1437,7 @@ export default function PressIntelligencePage() {
             {/* Per-stock counts — click to open methodology */}
             <div className="pi-stock-summary-wrap">
               <div className="pi-stock-summary">
-                {FEED_CONFIGS.map((cfg) => (
+                {FEED_CONFIGS_SORTED.map((cfg) => (
                   <div
                     key={cfg.ticker}
                     className="pi-stock-stat pi-stock-stat-clickable"
@@ -1465,7 +1468,7 @@ export default function PressIntelligencePage() {
             >
               ALL
             </button>
-            {FEED_CONFIGS.map((cfg) => (
+            {FEED_CONFIGS_SORTED.map((cfg) => (
               <button
                 key={cfg.ticker}
                 className="pi-stock-pill"

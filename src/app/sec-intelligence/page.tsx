@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { stocks } from "@/lib/stocks";
+import { stocks, INTELLIGENCE_TICKERS } from "@/lib/stocks";
 import "./sec-intelligence.css";
+
+/** Sorted ticker list — single source of truth for display order in both pages */
+const SORTED_TICKERS = [...INTELLIGENCE_TICKERS].sort((a, b) => a.localeCompare(b));
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SEC INTELLIGENCE — Unified SEC EDGAR filings feed
@@ -92,6 +95,23 @@ const isRecent = (dateStr: string, days: number) => {
   return d >= cutoff;
 };
 
+const isFilingToday = (dateStr: string) => {
+  if (!dateStr) return false;
+  return dateStr === new Date().toISOString().slice(0, 10);
+};
+
+const isThisMonth = (dateStr: string) => {
+  if (!dateStr) return false;
+  const d = new Date(dateStr + "T00:00:00");
+  const n = new Date();
+  return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth();
+};
+
+const isThisYear = (dateStr: string) => {
+  if (!dateStr) return false;
+  return new Date(dateStr + "T00:00:00").getFullYear() === new Date().getFullYear();
+};
+
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
 export default function SecIntelligencePage() {
@@ -173,14 +193,8 @@ export default function SecIntelligencePage() {
     }
   }, []);
 
-  /* ── Tickers with data (for filter pills) ── */
-  const activeTickers = useMemo(() => {
-    if (!data?.tickerStats) return [];
-    return Object.entries(data.tickerStats)
-      .filter(([, s]) => s.count > 0)
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([ticker]) => ticker);
-  }, [data]);
+  /* ── All intelligence tickers, sorted alphabetically ── */
+  const allTickers = SORTED_TICKERS;
 
   /* ── Build dynamic form filter options from actual data ── */
   const activeFormFilters = useMemo(() => {
@@ -267,28 +281,38 @@ export default function SecIntelligencePage() {
   const totalPages = Math.max(1, Math.ceil(filteredFilings.length / PAGE_SIZE));
   const pagedFilings = filteredFilings.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  /* ── Stats ── */
+  /* ── Stats (matching Press Intelligence layout) ── */
   const stats = useMemo(() => {
-    if (!data?.filings) return { total: 0, tickers: 0, today: 0, thisWeek: 0, newFilings: 0 };
+    if (!data?.filings) return { total: 0, today: 0, thisMonth: 0, thisYear: 0, latest: "\u2014", newFilings: 0, perStock: {} as Record<string, number> };
     const filings = data.filings;
-    const todayStr = new Date().toISOString().slice(0, 10);
 
     let today = 0;
-    let thisWeek = 0;
+    let thisMonth = 0;
+    let thisYear = 0;
 
     for (const f of filings) {
-      if (f.filingDate === todayStr) today++;
-      if (isRecent(f.filingDate, 7)) thisWeek++;
+      if (isFilingToday(f.filingDate)) today++;
+      if (isThisMonth(f.filingDate)) thisMonth++;
+      if (isThisYear(f.filingDate)) thisYear++;
+    }
+
+    const latest = filings[0] ? formatDate(filings[0].filingDate) : "\u2014";
+
+    const perStock: Record<string, number> = {};
+    for (const ticker of allTickers) {
+      perStock[ticker] = data.tickerStats[ticker]?.count || 0;
     }
 
     return {
       total: filings.length,
-      tickers: Object.keys(data.tickerStats).filter(t => (data.tickerStats[t]?.count ?? 0) > 0).length,
       today,
-      thisWeek,
+      thisMonth,
+      thisYear,
+      latest,
       newFilings: newCount,
+      perStock,
     };
-  }, [data, newCount]);
+  }, [data, newCount, allTickers]);
 
   const hasErrors = data?.errors && Object.keys(data.errors).length > 0;
   const isEmpty = !loading && data?.filings?.length === 0 && !hasErrors;
@@ -340,24 +364,28 @@ export default function SecIntelligencePage() {
           </div>
         </div>
 
-        {/* ── KPI Strip ── */}
+        {/* ── KPI Strip (matches Press Intelligence layout) ── */}
         {!loading && (
           <div className="si-kpi-strip">
             <div className="si-kpi">
               <span className="si-kpi-value">{stats.total}</span>
-              <span className="si-kpi-label">Total Filings</span>
-            </div>
-            <div className="si-kpi">
-              <span className="si-kpi-value">{stats.tickers}</span>
-              <span className="si-kpi-label">Companies</span>
+              <span className="si-kpi-label">Total</span>
             </div>
             <div className="si-kpi">
               <span className="si-kpi-value">{stats.today}</span>
               <span className="si-kpi-label">Today</span>
             </div>
             <div className="si-kpi">
-              <span className="si-kpi-value">{stats.thisWeek}</span>
-              <span className="si-kpi-label">This Week</span>
+              <span className="si-kpi-value">{stats.thisMonth}</span>
+              <span className="si-kpi-label">This Month</span>
+            </div>
+            <div className="si-kpi">
+              <span className="si-kpi-value">{stats.thisYear}</span>
+              <span className="si-kpi-label">This Year</span>
+            </div>
+            <div className="si-kpi">
+              <span className="si-kpi-value si-kpi-value-sm">{stats.latest}</span>
+              <span className="si-kpi-label">Latest</span>
             </div>
             {stats.newFilings > 0 && (
               <div className="si-kpi">
@@ -366,10 +394,10 @@ export default function SecIntelligencePage() {
               </div>
             )}
 
-            {/* Per-stock counts */}
+            {/* Per-stock counts (same layout as Press Intelligence) */}
             <div className="si-stock-summary-wrap">
               <div className="si-stock-summary">
-                {activeTickers.slice(0, 20).map((ticker) => (
+                {allTickers.map((ticker) => (
                   <div
                     key={ticker}
                     className="si-stock-stat"
@@ -377,7 +405,7 @@ export default function SecIntelligencePage() {
                     onClick={() => setActiveTicker(activeTicker === ticker ? "ALL" : ticker)}
                   >
                     <span className="si-stock-stat-count">
-                      {data?.tickerStats[ticker]?.count || 0}
+                      {stats.perStock[ticker] || 0}
                     </span>
                     <span className="si-stock-stat-label">{ticker}</span>
                   </div>
@@ -398,7 +426,7 @@ export default function SecIntelligencePage() {
             >
               ALL
             </button>
-            {activeTickers.map((ticker) => (
+            {allTickers.map((ticker) => (
               <button
                 key={ticker}
                 className="si-stock-pill"
