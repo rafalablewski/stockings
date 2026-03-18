@@ -28,8 +28,8 @@ import type { PressRelease, DataMetadata } from '../shared/types';
 // ============================================================================
 
 export const PRESS_RELEASES_METADATA: DataMetadata = {
-  lastUpdated: '2026-03-10',
-  source: 'Initial scaffold — populate from IR page',
+  lastUpdated: '2026-03-18',
+  source: 'PRNewswire + SEC EDGAR 8-K filings',
   nextExpectedUpdate: 'After new press releases',
 };
 
@@ -37,4 +37,11 @@ export const PRESS_RELEASES_METADATA: DataMetadata = {
 // PRESS RELEASES (newest first)
 // ============================================================================
 
-export const PRESS_RELEASES: PressRelease[] = [];
+export const PRESS_RELEASES: PressRelease[] = [
+  { date: '2026-03-17', headline: 'Tom Lee Investor Presentation (Hong Kong) — 8-K Reg FD', url: '', tracked: true },
+  { date: '2026-03-16', headline: 'ETH Holdings Reach 4,595,562 — $11.5B Total, 3.81% Supply, 76% to Alchemy of 5%', url: '', tracked: true },
+  { date: '2026-03-12', headline: 'Eightco (ORBS) Secures $125M: BMNR $75M Lead + ARK $25M + Payward $25M', url: '', tracked: true },
+  { date: '2026-03-09', headline: 'ETH Holdings Reach 4,534,563 — $10.3B Total, 3.76% Supply, 75% to Alchemy of 5%', url: '', tracked: true },
+  { date: '2026-03-02', headline: 'ETH Holdings Reach 4,473,587 — $9.9B Total, 3.71% Supply, 74% to Alchemy of 5%', url: '', tracked: true },
+  { date: '2026-02-26', headline: 'Tom Lee Presentation — 8-K Reg FD (Ex. 99.1)', url: '', tracked: true },
+];

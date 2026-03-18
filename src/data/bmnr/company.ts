@@ -44,8 +44,8 @@ import type { DataMetadata, StockDefaults } from '../shared/types';
 // ============================================================================
 
 export const BMNR_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-23',
-  source: 'Feb 23, 2026 Weekly Holdings PR (4.423M ETH)',
+  lastUpdated: '2026-03-16',
+  source: 'Mar 16, 2026 Weekly Holdings PR (4.596M ETH)',
   nextExpectedUpdate: 'Next weekly holdings update (8-K)',
   notes: 'ETH holdings updated weekly via 8-K filings',
 };
@@ -63,7 +63,7 @@ export const COMPANY_INFO = {
   ein: '84-3986354',
   sic: '6199',
   stateOfIncorporation: 'Delaware',
-  stateOfLocation: 'Nevada',
+  stateOfLocation: 'Connecticut',
   fiscalYearEnd: 'August 31',
   website: 'https://bitmine.com',
   description: 'Institutional-grade ETH exposure through a publicly traded vehicle.',
@@ -87,10 +87,10 @@ export const DEFAULTS: StockDefaults & {
   ethPrice: number;
   ethPriceAsOf: string;
 } = {
-  // === ETH HOLDINGS (Feb 23, 2026 PR) ===
-  currentETH: 4422659,        // 4.423M ETH (3.66% of supply)
-  ethPrice: 1958,             // UPDATE REGULARLY - Last: Feb 22, 2026 (Coinbase)
-  ethPriceAsOf: '2026-02-22', // Date of ETH price above
+  // === ETH HOLDINGS (Mar 16, 2026 PR) ===
+  currentETH: 4595562,        // 4.596M ETH (3.81% of supply)
+  ethPrice: 2185,             // UPDATE REGULARLY - Last: Mar 15, 2026 (Coinbase)
+  ethPriceAsOf: '2026-03-15', // Date of ETH price above
 
   // === MARKET DATA ===
   currentStockPrice: 27.15,   // UPDATE REGULARLY - Last: Feb 9, 2026
@@ -100,7 +100,7 @@ export const DEFAULTS: StockDefaults & {
   currentShares: 434,         // Shares outstanding (M)
 
   // === BALANCE SHEET ===
-  cashOnHand: 691,            // $691M cash (Feb 23, 2026 PR)
+  cashOnHand: 1200,           // $1.2B cash (Mar 16, 2026 PR)
   totalDebt: 0,               // No debt
 
   // Not used for BMNR but required by interface
@@ -122,8 +122,8 @@ export const DEFAULTS: StockDefaults & {
  * - Update moonshotsValue from quarterly filings
  */
 export const OTHER_HOLDINGS = {
-  // BTC Holdings (193 BTC — legacy from mining era, unchanged since Jan 2026)
-  btcHoldings: 193,
+  // BTC Holdings (196 BTC — legacy from mining era, +3 since Mar 16 PR)
+  btcHoldings: 196,
   btcPrice: 84000,               // UPDATE REGULARLY — Last: Mar 14, 2026
   btcPriceAsOf: '2026-03-14',
 
@@ -132,8 +132,8 @@ export const OTHER_HOLDINGS = {
   beastIndustriesNote: 'MrBeast partnership — Step Banking App (7M+ users)',
 
   // Moonshot Investments
-  moonshotsValue: 19_000_000,            // $19M — Eightco ORBS stake
-  moonshotsNote: 'Eightco ORBS stake',
+  moonshotsValue: 83_000_000,            // $83M — Eightco ORBS stake (was $14M; +$80M Mar 12 commitment; ORBS holds OpenAI + Beast equity)
+  moonshotsNote: 'Eightco ORBS stake ($50M OpenAI + $25M Beast Industries equity via ORBS)',
 };
 
 // ============================================================================
@@ -149,12 +149,12 @@ export const OTHER_HOLDINGS = {
  * - Update ethSupplyPercent from PR (or calculate from 120.7M supply)
  */
 export const ETH_HOLDINGS = {
-  totalETH: 4422659,          // Total ETH holdings (4.423M Feb 23)
-  stakedETH: 3040483,         // ETH staked with validators (3.04M — largest staker globally)
-  stakingRatio: 68.7,         // % of holdings staked (3,040,483 / 4,422,659) — down from 69.6% as new ETH not yet staked
-  ethSupplyPercent: 3.66,     // % of total ETH supply (~120.7M)
+  totalETH: 4595562,          // Total ETH holdings (4.596M Mar 16)
+  stakedETH: 3040515,         // ETH staked with validators (3.04M — largest staker globally, +32 from prior week)
+  stakingRatio: 66.2,         // % of holdings staked (3,040,515 / 4,595,562) — declining mechanically as new ETH not yet staked
+  ethSupplyPercent: 3.81,     // % of total ETH supply (~120.7M)
   targetSupplyPercent: 5.0,   // "Alchemy of 5%" target = 6,035K ETH
-  progressToTarget: 73,       // % progress to 5% (73% — "over 73% of the way")
+  progressToTarget: 76,       // % progress to 5% (76% — "over 76% of the way")
 };
 
 // ============================================================================
@@ -169,7 +169,7 @@ export const ETH_HOLDINGS = {
  * - Update restakingBonus if company announces EigenLayer use
  */
 export const STAKING_PARAMS = {
-  baseStakingAPY: 2.81,       // CESR rate (Quatrefoil) - updated Feb 23, 2026 PR
+  baseStakingAPY: 2.79,       // CESR rate (Quatrefoil) - updated Mar 16, 2026 PR
   restakingBonus: 2.0,        // Additional yield from restaking (EigenLayer)
   slashingRisk: 0.5,          // Annual slashing risk %
   liquidityDiscount: 2,       // Discount for LST liquidity
@@ -204,8 +204,8 @@ export const DIVIDEND_DATA = {
  * For display in the UI data freshness badge
  */
 export const DATA_FRESHNESS = {
-  dataAsOf: 'Feb 23, 2026',
-  lastFiling: '8-K (Feb 23, 2026) 4.423M ETH Holdings Update',
+  dataAsOf: 'Mar 16, 2026',
+  lastFiling: '8-K (Mar 16, 2026) 4.596M ETH Holdings Update',
   nextFiling: 'Weekly 8-K Holdings Update',
   priceNote: 'Update prices regularly',
 };

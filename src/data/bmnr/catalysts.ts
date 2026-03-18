@@ -30,8 +30,8 @@ import type { Catalyst, CompletedMilestone, DataMetadata } from '../shared/types
 // ============================================================================
 
 export const CATALYSTS_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-17',
-  source: 'Press releases, 8-K filings, Kraken blog, CoinDesk',
+  lastUpdated: '2026-03-18',
+  source: 'Press releases, 8-K filings, PRNewswire, SEC EDGAR',
   nextExpectedUpdate: 'After next 8-K or earnings release',
   notes: 'Includes ETH ecosystem catalysts relevant to BMNR treasury thesis',
 };
@@ -149,6 +149,13 @@ export const UPCOMING_CATALYSTS: Catalyst[] = [
  */
 export const COMPLETED_MILESTONES: CompletedMilestone[] = [
   // === 2026 ===
+  { event: 'ETH holdings reach 4.596M (3.81% of supply, 76% to Alchemy of 5%); total holdings $11.5B; cash $1.2B', date: 'Mar 16, 2026', category: 'Treasury' },
+  { event: 'Tom Lee investor presentation in Hong Kong filed as 8-K Reg FD (Ex. 99.1); HQ address changed to Norwalk, CT', date: 'Mar 14, 2026', category: 'Corporate' },
+  { event: 'Eightco (ORBS) secures $125M: BMNR leads $75M, ARK Invest $25M, Payward/Kraken $25M; Tom Lee joins ORBS board; ORBS closes $50M OpenAI + $25M Beast equity', date: 'Mar 12, 2026', category: 'Corporate' },
+  { event: 'ETH accumulation pace increased to ~61K/week (from 45-50K); DeMark Analytics calls ETH bottom Mar 8-14 per S&P 2011/1987 analogs (89%/93% correlation)', date: 'Mar 9, 2026', category: 'Treasury' },
+  { event: 'Acquired 5,000 ETH from Ethereum Foundation to support EF operations without open-market selling', date: 'Mar 16, 2026', category: 'Treasury' },
+  { event: 'US-Iran combat operations commence; Tom Lee frames geopolitical uncertainty as ETH buying opportunity', date: 'Mar 2, 2026', category: 'Corporate' },
+  { event: 'Cash position nearly doubles: $691M → $1.2B over 2-week period (ATM execution)', date: 'Mar 9, 2026', category: 'Treasury' },
   { event: 'Staking ratio crosses 67% threshold — now 69.5% (3,040,483 of 4,371,497 ETH staked); largest staker globally', date: 'Feb 17, 2026', category: 'Treasury' },
   { event: 'Tom Lee presented at CoinDesk Consensus 2026 in Hong Kong; 8-K filed with presentation as Exhibit 99.1', date: 'Feb 11, 2026', category: 'Corporate' },
   { event: 'Polygon Labs, Ethena ($10B TVL USDe), and Nethermind join Enterprise Ethereum Alliance as institutional coordination body', date: 'Feb 11, 2026', category: 'Ecosystem' },

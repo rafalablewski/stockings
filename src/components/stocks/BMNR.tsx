@@ -393,9 +393,9 @@ const safeNumber = (value: number, fallback: number = 0): number =>
  * - Base Staking APY: 3.11% (CESR rate)
  * - Total Cash: $595M
  * - BTC Holdings: 193 BTC
- * - Moonshots: $19M (Eightco ORBS stake)
+ * - Moonshots: $83M (Eightco ORBS stake — holds $50M OpenAI + $25M Beast equity)
  * - Strategic Investments: $200M (Beast Industries - MrBeast, CLOSED Jan 17)
- * - Total Holdings: $10.0B (crypto + cash + moonshots + strategic investments)
+ * - Total Holdings: $11.5B (crypto + cash + moonshots + strategic investments)
  *
  * COMPANY INFO (SEC EDGAR):
  * - CIK: 0001829311
@@ -1487,6 +1487,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         { metric: 'Div Yield', value: `${calc.dividendYield.toFixed(2)}%`, sub: 'Annualized', color: 'var(--accent)' },
         { metric: 'Payout', value: `$${(calc.totalAnnualDividendPayout / 1e6).toFixed(1)}M`, sub: 'Annual total', color: 'var(--text)' },
         { metric: 'MrBeast Equity', value: `$${(OTHER_HOLDINGS.beastIndustriesEquity / 1e6).toFixed(0)}M`, sub: 'Beast Industries', color: 'var(--sky)' },
+        { metric: 'ORBS Stake', value: `$${(OTHER_HOLDINGS.moonshotsValue / 1e6).toFixed(0)}M`, sub: 'Eightco (OpenAI + Beast)', color: 'var(--violet)' },
         { metric: 'BTC Worth', value: `$${(calc.btcWorth / 1e6).toFixed(1)}M`, sub: `${OTHER_HOLDINGS.btcHoldings} BTC`, color: 'var(--accent)' },
         { metric: 'Total NAV', value: `$${(calc.totalNAV / 1e9).toFixed(2)}B`, sub: `$${calc.totalNAVPerShare.toFixed(2)}/share`, color: 'var(--mint)' },
         { metric: 'Prem/(Disc) NAV', value: `${calc.premiumDiscountToNAV >= 0 ? '+' : ''}${calc.premiumDiscountToNAV.toFixed(1)}%`, sub: calc.premiumDiscountToNAV >= 0 ? 'Premium to NAV' : 'Discount to NAV', color: calc.premiumDiscountToNAV >= 0 ? 'var(--mint)' : 'var(--coral)' },
@@ -4964,18 +4965,18 @@ const SECFilingTracker = () => {
     // Key dates
     firstFiling: 'October 27, 2020',
     firstFilingNote: 'As Sandy Springs Holdings (renamed Jul 2021)',
-    latestEvent: '4.423M ETH Holdings — $9.6B Total, 3.66% Supply, 73% to 5%',
-    latestEventDate: 'Feb 23, 2026',
+    latestEvent: '4.596M ETH Holdings — $11.5B Total, 3.81% Supply, 76% to 5%',
+    latestEventDate: 'Mar 16, 2026',
 
     // Last press release processed (for tracking)
-    lastPressRelease: 'February 23, 2026',
-    lastPressReleaseTitle: '4,422,659 ETH Holdings Update — $9.6B Total, 3.66% Supply, 73% to Alchemy of 5%',
+    lastPressRelease: 'March 16, 2026',
+    lastPressReleaseTitle: '4,595,562 ETH Holdings Update — $11.5B Total, 3.81% Supply, 76% to Alchemy of 5%',
 
     // Latest filings by type
     filings: {
       '10-K': { date: 'Nov 21, 2025', description: 'FY 2025', color: 'blue' },
       '10-Q': { date: 'Jan 13, 2026', description: 'Q1 FY2026', color: 'purple' },
-      '8-K': { date: 'Feb 23, 2026', description: '4.423M ETH Holdings', color: 'yellow' },
+      '8-K': { date: 'Mar 17, 2026', description: '4.596M ETH Holdings + HK Presentation', color: 'yellow' },
       'S-3ASR': { date: 'Jul 9, 2025', description: '$2B ATM Shelf', color: 'green' },
       '424B5': { date: 'Sep 22, 2025', description: '$365M @ $70 + Warrants', color: 'orange' },
       'DEF 14A': { date: '—', description: 'Proxy (Annual)', color: 'cyan' },
@@ -5088,18 +5089,18 @@ const InvestmentTab = () => {
         <div className="sm-flex sm-gap-24 sm-flex-wrap">
           <div className="sm-text-center">
             <div className="sm-text-11">NAV/Share</div>
-            <div className="sm-mono-lg sm-fw-700 sm-mint">$19.72</div>
-            <div className="sm-micro-text sm-micro-text-normal">@ $1,958 ETH</div>
+            <div className="sm-mono-lg sm-fw-700 sm-mint">$23.14</div>
+            <div className="sm-micro-text sm-micro-text-normal">@ $2,185 ETH</div>
           </div>
           <div className="sm-text-center">
             <div className="sm-text-11">Total Holdings</div>
-            <div className="sm-mono-lg sm-fw-700 sm-sky">$9.6B</div>
-            <div className="sm-text-11 sm-mint">4.423M ETH + $691M Cash</div>
+            <div className="sm-mono-lg sm-fw-700 sm-sky">$11.5B</div>
+            <div className="sm-text-11 sm-mint">4.596M ETH + $1.2B Cash</div>
           </div>
           <div className="sm-text-center">
             <div className="sm-text-11">Staked ETH</div>
             <div className="sm-mono-lg sm-fw-700 sm-violet">3.04M</div>
-            <div className="sm-micro-text sm-micro-text-normal">$6.0B Value (68.7%)</div>
+            <div className="sm-micro-text sm-micro-text-normal">$6.6B Value (66.2%)</div>
           </div>
         </div>
         </>
@@ -6485,6 +6486,12 @@ const TimelineTab = () => {
   const [showAllPR, setShowAllPR] = useState(false);
 
   const pressReleases = [
+    { date: 'Mar 17, 2026', category: 'Conference', color: 'var(--violet)', title: 'Tom Lee Investor Presentation (Hong Kong) — 8-K Reg FD' },
+    { date: 'Mar 16, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,595,562 — 3.81% of Supply, $11.5B, 76% to Alchemy of 5%' },
+    { date: 'Mar 12, 2026', category: 'Strategic', color: 'var(--sky)', title: 'Eightco (ORBS) $125M: BMNR $75M Lead + ARK $25M + Payward $25M; Tom Lee Joins Board' },
+    { date: 'Mar 9, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,534,563 — 3.76% of Supply, $10.3B, 75% to Alchemy of 5%' },
+    { date: 'Mar 2, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,473,587 — 3.71% of Supply, $9.9B, 74% to Alchemy of 5%' },
+    { date: 'Feb 26, 2026', category: 'Conference', color: 'var(--violet)', title: 'Tom Lee Presentation — 8-K Reg FD (Ex. 99.1)' },
     { date: 'Feb 23, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,422,659 — 3.66% of Supply, $9.6B, 73% to Alchemy of 5%' },
     { date: 'Feb 17, 2026', category: 'Holdings', color: 'var(--mint)', title: 'ETH Holdings Reach 4,371,497 — 3.62% of Supply, $9.6B, Staking 3.04M (69.5%)' },
     { date: 'Feb 11, 2026', category: 'Conference', color: 'var(--violet)', title: 'Tom Lee Presents at CoinDesk Consensus 2026 (Hong Kong)' },
