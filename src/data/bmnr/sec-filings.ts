@@ -37,6 +37,11 @@
 
 export const BMNR_SEC_FILINGS = [
   // === 2026 ===
+  { date: 'Mar 17, 2026', type: '8-K', description: 'Tom Lee Investor Presentation (Hong Kong, Reg FD Ex. 99.1)', period: '—', color: 'yellow' },
+  { date: 'Mar 16, 2026', type: '8-K', description: '4.596M ETH Holdings Update ($11.5B Total, 3.81% Supply, 76% to 5%)', period: '—', color: 'yellow' },
+  { date: 'Mar 9, 2026', type: '8-K', description: '4.535M ETH Holdings Update ($10.3B Total, 3.76% Supply, 75% to 5%)', period: '—', color: 'yellow' },
+  { date: 'Mar 2, 2026', type: '8-K', description: '4.474M ETH Holdings Update ($9.9B Total, 3.71% Supply, 74% to 5%)', period: '—', color: 'yellow' },
+  { date: 'Feb 26, 2026', type: '8-K', description: 'Tom Lee Presentation (Reg FD, Ex. 99.1)', period: '—', color: 'yellow' },
   { date: 'Feb 25, 2026', type: 'Form 4', description: 'Love: 13,582 Board Comp Shares + 17,496 RSUs (2026 Service, Quarterly Vest)', period: '—', color: 'green' },
   { date: 'Feb 23, 2026', type: '8-K', description: '4.423M ETH Holdings Update ($9.6B Total, 3.66% Supply, 73% to 5%)', period: '—', color: 'yellow' },
   { date: 'Feb 17, 2026', type: 'Form 4/A', description: 'Tom Lee: 1.5M RSU Grant, 500K Vested, ~232K Tax-Withheld ($6.7M @ $28.84)', period: '—', color: 'green' },
@@ -175,8 +180,8 @@ export const BMNR_SEC_META = {
   ticker: 'BMNR',
   exchange: 'NYSE American',
   emergingGrowthCompany: false,
-  lastPR: { date: 'February 23, 2026', title: '4,422,659 ETH Holdings Update — $9.6B Total, 3.66% Supply, 73% to Alchemy of 5%' },
-  totalFilingsTracked: 114
+  lastPR: { date: 'March 16, 2026', title: '4,595,562 ETH Holdings Update — $11.5B Total, 3.81% Supply, 76% to Alchemy of 5%' },
+  totalFilingsTracked: 119
 };
 
 // Color palette constants (reduce duplication per Gemini review)
@@ -218,6 +223,27 @@ export const BMNR_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '
  * Key format: "FORM_TYPE|YYYY-MM-DD" using the filing date from sec-filings.ts.
  */
 export const BMNR_FILING_CROSS_REFS: Record<string, { source: string; data: string }[]> = {
+
+  // ── Mar 2026 ──────────────────────────────────────────────────────────────
+  '8-K|2026-03-17': [
+    { source: 'timeline', data: 'Tom Lee investor presentation in Hong Kong, filed as 8-K Reg FD (Ex. 99.1)' },
+  ],
+  '8-K|2026-03-16': [
+    { source: 'company', data: 'ethHoldings: 4,595,562 ETH; ethPrice: $2,185; stakedETH: 3,040,515; CESR: 2.79%; cash: $1.2B; BTC: 196; ORBS: $83M' },
+    { source: 'timeline', data: 'ETH Holdings 4.596M ($11.5B total); 3.81% supply; 76% to 5%; +60,999 ETH; ORBS +$80M; 5K ETH from EF' },
+    { source: 'capital', data: 'ORBS investment: $14M→$83M (+$80M). Tom Lee joins ORBS board. 196 BTC (was 195).' },
+  ],
+  '8-K|2026-03-09': [
+    { source: 'company', data: 'ethHoldings: 4,534,563 ETH; ethPrice: $1,965; stakedETH: 3,040,483; CESR: 2.84%; cash: $1.2B; BTC: 195' },
+    { source: 'timeline', data: 'ETH Holdings 4.535M ($10.3B total); 3.76% supply; 75% to 5%; +60,976 ETH WoW; DeMark bottom call' },
+  ],
+  '8-K|2026-03-02': [
+    { source: 'company', data: 'ethHoldings: 4,473,587 ETH; ethPrice: $1,976; stakedETH: 3,040,483; CESR: 2.83%; cash: $868M; BTC: 195' },
+    { source: 'timeline', data: 'ETH Holdings 4.474M ($9.9B total); 3.71% supply; 74% to 5%; +50,928 ETH WoW' },
+  ],
+  '8-K|2026-02-26': [
+    { source: 'timeline', data: 'Tom Lee presentation filed as 8-K Reg FD (Ex. 99.1)' },
+  ],
 
   // ── Feb 2026 ──────────────────────────────────────────────────────────────
   'Form 4|2026-02-25': [

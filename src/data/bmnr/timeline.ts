@@ -7,6 +7,129 @@
 
 export const BMNR_TIMELINE_EVENTS = [
   // [PR_CHECKLIST_EVENT_TIMELINE] - Add new PR entry here at top!
+  // === MARCH 17, 2026 - TOM LEE INVESTOR PRESENTATION (HONG KONG) ===
+  {
+    date: '2026-03-17',
+    source: 'SEC Filing (8-K)',
+    category: 'Corporate',
+    title: '🎤 Tom Lee Investor Presentation Filed — Hong Kong (Reg FD, Ex. 99.1)',
+    changes: [
+      { metric: 'Event', previous: '—', new: 'Investor Presentation', change: 'Hong Kong' },
+      { metric: 'Presenter', previous: '—', new: 'Tom Lee', change: 'Executive Chairman' },
+      { metric: 'Filing', previous: '—', new: '8-K (Reg FD)', change: 'Presentation as Ex. 99.1' },
+      { metric: 'Address', previous: '10845 Griffith Peak Dr #2, Las Vegas, NV', new: '800 Connecticut Avenue, Norwalk, CT 06854', change: 'HQ relocated' },
+    ],
+    notes: 'Tom Lee, Executive Chairman, presented in Hong Kong. Filed Mar 17, event date Mar 14. Notable: 8-K header shows new HQ address at 800 Connecticut Avenue, Norwalk, CT 06854 (previously Las Vegas, NV).',
+    impact: 'positive'
+  },
+  // === MARCH 16, 2026 - ETH HOLDINGS REACH 4.596M (76% TO ALCHEMY OF 5%) ===
+  {
+    date: '2026-03-16',
+    source: 'PRNewswire',
+    category: 'Holdings',
+    title: '📊 ETH Holdings Reach 4.596M — $11.5B Total, 3.81% of Supply, 76% to Alchemy of 5%',
+    changes: [
+      { metric: 'ETH Holdings', previous: '4,534,563', new: '4,595,562', change: '+60,999 (+1.3%)' },
+      { metric: 'ETH Price', previous: '$1,965', new: '$2,185', change: '+11.2% (Coinbase)' },
+      { metric: 'ETH Supply %', previous: '3.76%', new: '3.81%', change: '+0.05pp (76% to 5%)' },
+      { metric: 'Staked ETH', previous: '3,040,483', new: '3,040,515', change: '+32 (minimal new staking)' },
+      { metric: 'Staking Ratio', previous: '67.1%', new: '66.2%', change: '-0.9pp (mechanical — denominator grew)' },
+      { metric: 'CESR Rate', previous: '2.84%', new: '2.79%', change: '-5bp (Quatrefoil)' },
+      { metric: 'BMNR 7-day Yield', previous: '2.91%', new: '2.81%', change: '-10bp annualized' },
+      { metric: 'Annualized Staking Rev', previous: '$174M/yr', new: '$180M/yr', change: '+3% (higher ETH price)' },
+      { metric: 'Full MAVAN Staking Rev', previous: '$259M/yr', new: '$272M/yr', change: 'Projected at full deployment' },
+      { metric: 'Total Cash', previous: '$1.2B', new: '$1.2B', change: 'Stable' },
+      { metric: 'Eightco (ORBS)', previous: '$14M', new: '$83M', change: '+$80M investment increase' },
+      { metric: 'Beast Industries', previous: '$200M', new: '$200M', change: 'Unchanged' },
+      { metric: 'BTC Holdings', previous: '195', new: '196', change: '+1 BTC' },
+      { metric: 'Trading Rank', previous: '#125 ($1.0B/day)', new: '#105 ($1.0B/day)', change: '+20 ranks' },
+      { metric: 'Total Holdings', previous: '$10.3B', new: '$11.5B', change: '+$1.2B (+11.7%)' },
+    ],
+    notes: 'Tom Lee: crypto outperformed S&P 500 by 2,450bp since Iran war start. Higher oil → growth concerns → investors buy growth stocks including crypto. Accelerated accumulation pace: 60,999 ETH (continued at elevated 60K+/week). Two strategic moves: (1) Increased ORBS investment by $80M — ORBS acquired $50M OpenAI equity + $25M Beast Industries; ORBS = "only publicly listed equity with direct OpenAI exposure." (2) Acquired 5,000 ETH from Ethereum Foundation (EF) to enable EF to fund operations without open-market selling. Strategy Inc (MSTR) now 738,731 BTC ($53B). MAVAN on track Q1 2026 (3 staking providers). Institutional: ARK/Cathie Wood, MOZAYYX, Founders Fund, Bill Miller III, Pantera, Kraken, DCG, Galaxy Digital, Tom Lee.',
+    impact: 'positive'
+  },
+  // === MARCH 12, 2026 - EIGHTCO (ORBS) $125M INSTITUTIONAL COMMITMENTS ===
+  {
+    date: '2026-03-12',
+    source: 'PRNewswire (Eightco Holdings)',
+    category: 'Corporate',
+    title: '🚀 Eightco (ORBS) Secures $125M: BMNR $75M Lead + ARK $25M + Payward $25M; Tom Lee Joins Board',
+    changes: [
+      { metric: 'BMNR→ORBS Investment', previous: '$14M', new: '$83M (cumulative)', change: '+$75M commitment (lead investor)' },
+      { metric: 'Total ORBS Raise', previous: '—', new: '$125M', change: 'BMNR $75M + ARK $25M + Payward $25M' },
+      { metric: 'Tom Lee', previous: 'BMNR Chairman only', new: 'BMNR Chairman + ORBS Board Director', change: 'Appointed independent director' },
+      { metric: 'ORBS → OpenAI', previous: '—', new: '$50M equity stake', change: 'Only public equity with direct OpenAI exposure' },
+      { metric: 'ORBS → Beast Industries', previous: '—', new: '$25M equity stake', change: 'MrBeast portfolio company' },
+      { metric: 'ARK Invest Role', previous: 'BMNR shareholder', new: 'BMNR shareholder + ORBS partner ($25M)', change: 'Brett Winton (Chief Futurist) as advisor' },
+      { metric: 'Payward/Kraken', previous: 'BMNR supporter', new: 'BMNR supporter + ORBS investor ($25M)', change: 'Arjun Sethi (co-CEO Kraken) quoted' },
+    ],
+    notes: 'Major strategic expansion of BMNR moonshot portfolio. ORBS sits at intersection of AI (OpenAI), blockchain (Worldcoin/World), and creator economy (MrBeast/Beast Industries). Dan Ives steps down as ORBS Chairman. Other ORBS investors: MOZAYYX, World Foundation, Coinfund, Discovery Capital Management, FalconX, Pantera, GSR. ORBS holds Worldcoin + Ethereum as long-term holdings. OpenAI IPO anticipated in 2026 — ORBS gives public market exposure.',
+    impact: 'positive'
+  },
+  // === MARCH 9, 2026 - ETH HOLDINGS REACH 4.535M (75% TO ALCHEMY OF 5%) ===
+  {
+    date: '2026-03-09',
+    source: 'PRNewswire',
+    category: 'Holdings',
+    title: '📊 ETH Holdings Reach 4.535M — $10.3B Total, 3.76% of Supply, 75% to Alchemy of 5%',
+    changes: [
+      { metric: 'ETH Holdings', previous: '4,473,587', new: '4,534,563', change: '+60,976 (+1.4%)' },
+      { metric: 'ETH Price', previous: '$1,976', new: '$1,965', change: '-0.6% (Coinbase)' },
+      { metric: 'ETH Supply %', previous: '3.71%', new: '3.76%', change: '+0.05pp (75% to 5%)' },
+      { metric: 'Staked ETH', previous: '3,040,483', new: '3,040,483', change: 'Unchanged' },
+      { metric: 'Staking Ratio', previous: '67.9%', new: '67.1%', change: '-0.8pp (mechanical)' },
+      { metric: 'CESR Rate', previous: '2.83%', new: '2.84%', change: '+1bp (Quatrefoil)' },
+      { metric: 'BMNR 7-day Yield', previous: '2.86%', new: '2.91%', change: '+5bp annualized' },
+      { metric: 'Annualized Staking Rev', previous: '$172M/yr', new: '$174M/yr', change: '+1%' },
+      { metric: 'Full MAVAN Staking Rev', previous: '$253M/yr', new: '$259M/yr', change: 'Projected at full deployment' },
+      { metric: 'Total Cash', previous: '$868M', new: '$1.2B', change: '+$332M' },
+      { metric: 'Eightco (ORBS)', previous: '$14M', new: '$14M', change: 'Unchanged' },
+      { metric: 'BTC Holdings', previous: '195', new: '195', change: 'Unchanged' },
+      { metric: 'Trading Rank', previous: '#145 ($0.8B/day)', new: '#125 ($1.0B/day)', change: '+20 ranks' },
+      { metric: 'Total Holdings', previous: '$9.9B', new: '$10.3B', change: '+$0.4B (+4.0%)' },
+    ],
+    notes: 'Tom Lee: ETH showed resilience amid war concerns and surging oil. Tracking DeMark Analytics (Symbolik.com) base case — ETH 2026 correlates to S&P 500 fall 2011 (89%) and fall 1987 (93%). If analogs hold, ETH bottoms Mar 8-14 just below recent $1,740 low. "Nobody rings the bell at the bottom" — BMNR slightly increased accumulation pace: 60,976 ETH vs 45-50K typical. Cash surged to $1.2B (from $868M). Strategy Inc (MSTR) 720,737 BTC ($48B). MAVAN on track Q1 2026.',
+    impact: 'positive'
+  },
+  // === MARCH 2, 2026 - ETH HOLDINGS REACH 4.474M (74% TO ALCHEMY OF 5%) ===
+  {
+    date: '2026-03-02',
+    source: 'PRNewswire',
+    category: 'Holdings',
+    title: '📊 ETH Holdings Reach 4.474M — $9.9B Total, 3.71% of Supply, 74% to Alchemy of 5%',
+    changes: [
+      { metric: 'ETH Holdings', previous: '4,422,659', new: '4,473,587', change: '+50,928 (+1.2%)' },
+      { metric: 'ETH Price', previous: '$1,958', new: '$1,976', change: '+0.9% (Coinbase)' },
+      { metric: 'ETH Supply %', previous: '3.66%', new: '3.71%', change: '+0.05pp (74% to 5%)' },
+      { metric: 'Staked ETH', previous: '3,040,483', new: '3,040,483', change: 'Unchanged' },
+      { metric: 'Staking Ratio', previous: '68.7%', new: '67.9%', change: '-0.8pp (mechanical)' },
+      { metric: 'CESR Rate', previous: '2.81%', new: '2.83%', change: '+2bp (Quatrefoil)' },
+      { metric: 'BMNR 7-day Yield', previous: '2.89%', new: '2.86%', change: '-3bp annualized' },
+      { metric: 'Annualized Staking Rev', previous: '$171M/yr', new: '$172M/yr', change: '+$1M' },
+      { metric: 'Full MAVAN Staking Rev', previous: '$249M/yr', new: '$253M/yr', change: 'Projected at full deployment' },
+      { metric: 'Total Cash', previous: '$691M', new: '$868M', change: '+$177M' },
+      { metric: 'Eightco (ORBS)', previous: '$17M', new: '$14M', change: '-$3M' },
+      { metric: 'Beast Industries', previous: '$200M', new: '$200M', change: 'Unchanged (initial investment closed)' },
+      { metric: 'BTC Holdings', previous: '193', new: '195', change: '+2 BTC' },
+      { metric: 'Trading Rank', previous: '#165 ($0.7B/day)', new: '#145 ($0.8B/day)', change: '+20 ranks' },
+      { metric: 'Total Holdings', previous: '$9.6B', new: '$9.9B', change: '+$0.3B (+3.1%)' },
+    ],
+    notes: 'Tom Lee: "methodically executing Ethereum treasury strategy" through "later stages of mini crypto winter." Geopolitical: US commenced combat operations against Iran — impact on markets in coming weeks. ETH pullback viewed as attractive given strengthening fundamentals. "Price of ETH not reflective of high utility and role as future of finance." Bought 50,928 ETH. MAVAN on track Q1 2026. GENIUS Act + SEC Project Crypto = transformational. Institutional: ARK/Cathie Wood, MOZAYYX, Founders Fund, Bill Miller III, Pantera, Kraken, DCG, Galaxy Digital, Tom Lee.',
+    impact: 'neutral'
+  },
+  // === FEBRUARY 26, 2026 - TOM LEE PRESENTATION (REG FD) ===
+  {
+    date: '2026-02-26',
+    source: 'SEC Filing (8-K)',
+    category: 'Corporate',
+    title: '🎤 Tom Lee Presentation Filed as 8-K (Reg FD, Ex. 99.1)',
+    changes: [
+      { metric: 'Event', previous: '—', new: 'Investor Presentation', change: 'Tom Lee, Executive Chairman' },
+      { metric: 'Filing', previous: '—', new: '8-K (Reg FD)', change: 'Presentation as Ex. 99.1' },
+    ],
+    notes: 'Tom Lee, Executive Chairman, presentation filed via 8-K Item 7.01 Regulation FD Disclosure. Filed Feb 26, event date Feb 24. Presentation content not available (exhibit only).',
+    impact: 'neutral'
+  },
   // === FEBRUARY 23, 2026 - ETH HOLDINGS REACH 4.423M (73% TO ALCHEMY OF 5%) ===
   {
     date: '2026-02-23',

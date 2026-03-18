@@ -26,10 +26,10 @@ import type { DataMetadata, CashRunwayScenario } from '../shared/types';
 // ============================================================================
 
 export const CAPITAL_METADATA: DataMetadata = {
-  lastUpdated: '2026-02-19',
-  source: 'Jan 27, 2026 Form 4/A (Tom Lee RSU Grant + Tax Withholding)',
+  lastUpdated: '2026-03-18',
+  source: 'Mar 16, 2026 Weekly PR + Mar 12 ORBS $125M PR',
   nextExpectedUpdate: 'Q2 FY26 10-Q or DEF 14A proxy',
-  notes: 'Simple single-class structure supports rapid ATM execution. S-8 filed Feb 9 for 2025 Omnibus Incentive Plan. Tom Lee Form 4/A: 1.5M RSU grant, 231,700 tax-withheld shares.',
+  notes: 'Tom Lee joins ORBS board (Mar 12). ORBS investment increased $14M→$83M (+$80M). BTC holdings: 193→196. HQ relocated: Las Vegas, NV → Norwalk, CT (per Mar 16/17 8-K headers).',
 };
 
 // ============================================================================

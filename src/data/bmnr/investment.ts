@@ -152,6 +152,40 @@ The MSTR playbook worked. BMNR is running the same play on a yield-bearing asset
 
 export const BMNR_INVESTMENT_ARCHIVE: ArchiveEntry[] = [
     {
+      date: '2026-03-16',
+      source: 'PR: 4.596M ETH Holdings + $11.5B Total + 3.81% Supply + 76% to Alchemy of 5% + ORBS $125M + EF ETH Purchase',
+      verdict: 'STRONG BUY',
+      verdictColor: 'mint',
+      summary: '4.596M ETH ($11.5B @ $2,185). 3.04M ETH staked (66.2%). +172,903 ETH over 3 weeks (accelerated pace ~61K/week). 3.81% of supply (76% to 5%). Cash $1.2B. ORBS +$80M ($83M total — OpenAI + Beast exposure). 5K ETH from Ethereum Foundation. Tom Lee: crypto outperformed S&P by 2,450bp since Iran war.',
+      fullAnalysis: {
+        context: 'Mar 2–16, 2026: Three weekly holdings PRs + ORBS $125M commitment + Tom Lee HK presentation + Ethereum Foundation ETH purchase.',
+        keyHighlights: [
+          'ETH holdings: 4,595,562 ETH @ $2,185 = $10.04B (3.81% of 120.7M supply)',
+          'Total holdings: $11.5B (ETH + cash + BTC + moonshots + Beast Industries)',
+          'Cash position: $1.2B (nearly doubled from $691M in 3 weeks — ATM execution)',
+          'Staked ETH: 3,040,515 ($6.6B) — 66.2% of holdings (declining as new ETH unstaked)',
+          'Annualized staking revenue: $180M/yr (up from $171M — ETH price recovery)',
+          'Full MAVAN staking revenue: $272M/yr projected at full deployment',
+          'CESR rate: 2.79% (Quatrefoil), BMNR 7-day yield: 2.81% annualized',
+          'Acquired 172,903 ETH over 3 weeks — accelerated from 50K to 61K/week',
+          'Over 76% of the way to Alchemy of 5% target (was 73%)',
+          'Trading rank: #105 ($1.0B/day avg) — improved from #165',
+          'ORBS investment increased $14M→$83M (+$80M); ORBS holds $50M OpenAI + $25M Beast equity',
+          'Tom Lee joins ORBS board; ARK Invest $25M + Payward/Kraken $25M to ORBS',
+          'Acquired 5,000 ETH from Ethereum Foundation — supporting EF operations',
+          'BTC holdings: 196 (up from 193)',
+          'HQ relocated: Las Vegas, NV → Norwalk, CT (800 Connecticut Avenue)',
+          'Tom Lee investor presentation in Hong Kong (Mar 14) filed as 8-K Reg FD',
+          'DeMark Analytics: ETH tracking S&P 2011/1987 analogs (89%/93% corr), bottom Mar 8-14',
+          'US-Iran combat operations: Tom Lee frames as ETH buying opportunity',
+        ],
+        verdict: 'Accelerated execution across all vectors. ETH price recovering ($1,958→$2,185). Cash nearly doubled via ATM. ORBS moonshot expanded with OpenAI + Beast exposure. Ethereum Foundation relationship. 76% to 5% target. MAVAN imminent.',
+        scorecard: 9.5,
+        risks: 'Staking ratio declining mechanically (68.7→66.2% — new ETH not yet staked). CESR rate continuing to fall (2.81→2.79%). Iran war geopolitical risk. ORBS concentration risk ($83M in single moonshot). OpenAI IPO timing uncertainty.',
+        strategy: 'STRONG BUY. Accumulation pace accelerated to 61K/week. Cash firepower at $1.2B. ETH price V-recovery underway. ORBS gives unique OpenAI public exposure. EF relationship signals ecosystem leadership. DeMark bottom call aligns with BMNR buying acceleration. 76% to Alchemy of 5%.'
+      }
+    },
+    {
       date: '2026-02-23',
       source: 'PR: 4.423M ETH Holdings + $9.6B Total + 3.66% Supply + 73% to Alchemy of 5%',
       verdict: 'STRONG BUY',

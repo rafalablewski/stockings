@@ -143,10 +143,10 @@ export interface PurchaseRecord {
 // ============================================================================
 
 export const PURCHASE_HISTORY_METADATA: DataMetadata = {
-  lastUpdated: '2026-03-10',
+  lastUpdated: '2026-03-18',
   source: 'Weekly Holdings PRs (PRNewswire) + 8-K filings + market data',
   nextExpectedUpdate: 'After next weekly holdings PR',
-  notes: 'ethBought/ethPrice/totalEthAfter are from PRs (high reliability). prevDayClose: only 4 of 32 confirmed from SEC filings; 28 are interpolated estimates (marked ≈). Shares outstanding: 7 anchor points from 10-K/10-Q/PRs, linearly interpolated between — crude for Jul-Sep when shares grew 5M→235M. navPerShare is SIMPLIFIED (ETH value only, excludes $400M-$988M cash, BTC, moonshots). This overstates mNAV by ~0.03-0.15x. Jul-Aug mNAV (2-7x) is directionally correct but may be ±50% off. See file header for full methodology and disclaimers.',
+  notes: 'ethBought/ethPrice/totalEthAfter are from PRs (high reliability). prevDayClose: only 4 of 35 confirmed from SEC filings; 31 are interpolated estimates (marked ≈). Shares outstanding: 7 anchor points from 10-K/10-Q/PRs, linearly interpolated between — crude for Jul-Sep when shares grew 5M→235M. navPerShare is SIMPLIFIED (ETH value only, excludes $400M-$1.2B cash, BTC, moonshots). This overstates mNAV by ~0.03-0.15x. Jul-Aug mNAV (2-7x) is directionally correct but may be ±50% off. See file header for full methodology and disclaimers.',
 };
 
 // ============================================================================
@@ -179,6 +179,46 @@ export const PURCHASE_HISTORY_METADATA: DataMetadata = {
  */
 export const BMNR_PURCHASE_HISTORY: PurchaseRecord[] = [
   // [PR_CHECKLIST_PURCHASE_HISTORY] - Add new purchase entry here at top!
+  // === MARCH 2026 ===
+  {
+    date: '2026-03-16',
+    ethBought: 60999,
+    ethPrice: 2185,
+    totalEthAfter: 4595562,
+    cashDeployed: 133282815,
+    prevDayClose: null,
+    prevDayMarketCap: null,
+    navPerShare: null,
+    mnavAtTime: null,
+    source: 'Mar 16, 2026 PR',
+    notes: '≈ ~470M shares est. 3.81% of supply, 76% to Alchemy of 5%. ORBS +$80M. 5K ETH from Ethereum Foundation. Crypto outperformed S&P by 2,450bp since Iran war.',
+  },
+  {
+    date: '2026-03-09',
+    ethBought: 60976,
+    ethPrice: 1965,
+    totalEthAfter: 4534563,
+    cashDeployed: 119817840,
+    prevDayClose: null,
+    prevDayMarketCap: null,
+    navPerShare: null,
+    mnavAtTime: null,
+    source: 'Mar 9, 2026 PR',
+    notes: '≈ ~468M shares est. 3.76% of supply, 75% to 5%. DeMark: ETH tracking S&P 2011/1987 (89%/93% corr). Increased pace to 61K ETH (from 45-50K).',
+  },
+  {
+    date: '2026-03-02',
+    ethBought: 50928,
+    ethPrice: 1976,
+    totalEthAfter: 4473587,
+    cashDeployed: 100633728,
+    prevDayClose: null,
+    prevDayMarketCap: null,
+    navPerShare: null,
+    mnavAtTime: null,
+    source: 'Mar 2, 2026 PR',
+    notes: '≈ ~466M shares est. 3.71% of supply, 74% to 5%. US-Iran combat ops began. Tom Lee: pullback attractive. Cash $868M (+$177M).',
+  },
   // === FEBRUARY 2026 ===
   {
     date: '2026-02-23',
