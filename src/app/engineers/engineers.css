@@ -4074,6 +4074,9 @@
   padding: 6px 10px;
   border-bottom: 1px solid rgba(255,255,255,0.04);
 }
+.ops-prompt-wf-header .ops-run-btn-inline {
+  margin-left: auto;
+}
 .ops-prompt-wf-id {
   font-family: var(--font-mono, monospace);
   font-size: 0.65rem;
@@ -4104,5 +4107,58 @@
 .ops-prompt-text::-webkit-scrollbar-thumb {
   background: rgba(255,255,255,0.08);
   border-radius: 2px;
+}
+
+/* ── Run buttons in operations pipeline ───────────────────────────────────── */
+.ops-run-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(126,231,135,0.85);
+  background: rgba(126,231,135,0.08);
+  border: 1px solid rgba(126,231,135,0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ops-run-btn:hover {
+  background: rgba(126,231,135,0.14);
+  border-color: rgba(126,231,135,0.4);
+  color: rgba(126,231,135,1);
+}
+.ops-run-btn[data-state="running"] {
+  color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.08);
+  cursor: not-allowed;
+  animation: ops-run-pulse 1.5s ease-in-out infinite;
+}
+@keyframes ops-run-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.ops-run-btn:disabled {
+  pointer-events: none;
+}
+.ops-run-btn-single {
+  font-size: 0.62rem;
+  padding: 3px 8px;
+  color: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.08);
+}
+.ops-run-btn-single:hover {
+  color: rgba(126,231,135,0.85);
+  background: rgba(126,231,135,0.06);
+  border-color: rgba(126,231,135,0.2);
+}
+.ops-run-btn-inline {
+  font-size: 0.6rem;
+  padding: 2px 8px;
 }
 

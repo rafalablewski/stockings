@@ -4,6 +4,14 @@ import React, { useState } from 'react';
 import { workflows } from '@/data/workflows';
 import { PIPELINES } from '@/lib/derive-pipelines';
 
+// ── Props ────────────────────────────────────────────────────────────────────
+
+interface OperationsPipelineProps {
+  onRun: (engineerId: string, workflowId?: string) => void;
+  runningIds: Set<string>;
+  selectedTicker: string;
+}
+
 // ── Prompt lookup ────────────────────────────────────────────────────────────
 
 /** Build a map from workflow id → resolved prompt text (template or first variant). */
@@ -35,7 +43,7 @@ const DIVISION_COLOR: Record<string, string> = {
 
 // ── Component ────────────────────────────────────────────────────────────────
 
-export default function OperationsPipeline() {
+export default function OperationsPipeline({ onRun, runningIds, selectedTicker }: OperationsPipelineProps) {
   const [expandedId, setExpandedId] = useState<string | null>(
     PIPELINES[0]?.id ?? null,
   );
@@ -113,6 +121,7 @@ export default function OperationsPipeline() {
                     {pipeline.steps.map((step, i) => {
                       const meta = STEP_TYPE_META[step.type];
                       const divColor = DIVISION_COLOR[step.division] ?? 'sky';
+                      const isRunning = step.engineerId ? runningIds.has(step.engineerId) : false;
 
                       return (
                         <div key={i} className="ops-step">
@@ -139,7 +148,7 @@ export default function OperationsPipeline() {
                             </div>
                             <div className="ops-step-desc">{step.description}</div>
 
-                            {/* Prompt viewer toggle — only for steps with workflow IDs */}
+                            {/* Prompt viewer + run buttons — only for steps with workflow IDs */}
                             {step.workflowIds && step.workflowIds.length > 0 && (() => {
                               const stepKey = `${pipeline.id}-${i}`;
                               const isPromptOpen = promptOpen === stepKey;
@@ -174,6 +183,46 @@ export default function OperationsPipeline() {
                                     >
                                       {isCopied ? 'Copied' : 'Copy Prompt'}
                                     </button>
+                                    {/* Run buttons — per-workflow when multiple, single "Run" otherwise */}
+                                    {step.engineerId && step.workflowIds!.length > 1 ? (
+                                      <>
+                                        <button
+                                          className="ops-run-btn"
+                                          data-color={divColor}
+                                          data-state={isRunning ? 'running' : undefined}
+                                          onClick={() => onRun(step.engineerId!)}
+                                          disabled={isRunning}
+                                        >
+                                          {isRunning ? 'Running\u2026' : 'Run All'}
+                                        </button>
+                                        {step.workflowIds!.map(wfId => {
+                                          const wfName = workflowPromptMap[wfId]?.name ?? wfId;
+                                          return (
+                                            <button
+                                              key={wfId}
+                                              className="ops-run-btn ops-run-btn-single"
+                                              data-color={divColor}
+                                              data-state={isRunning ? 'running' : undefined}
+                                              onClick={() => onRun(step.engineerId!, wfId)}
+                                              disabled={isRunning}
+                                              title={`Run ${wfName} for ${selectedTicker.toUpperCase()}`}
+                                            >
+                                              {wfId}
+                                            </button>
+                                          );
+                                        })}
+                                      </>
+                                    ) : step.engineerId ? (
+                                      <button
+                                        className="ops-run-btn"
+                                        data-color={divColor}
+                                        data-state={isRunning ? 'running' : undefined}
+                                        onClick={() => onRun(step.engineerId!)}
+                                        disabled={isRunning}
+                                      >
+                                        {isRunning ? 'Running\u2026' : 'Run'}
+                                      </button>
+                                    ) : null}
                                   </div>
                                   <div className={`ops-prompt-panel ${isPromptOpen ? 'ops-prompt-open' : ''}`}>
                                     {step.workflowIds!.map(wfId => {
@@ -184,6 +233,19 @@ export default function OperationsPipeline() {
                                           <div className="ops-prompt-wf-header">
                                             <span className="ops-prompt-wf-id">{wfId}</span>
                                             <span className="ops-prompt-wf-name">{entry.name}</span>
+                                            {/* Per-workflow run button inside the prompt panel */}
+                                            {step.engineerId && (
+                                              <button
+                                                className="ops-run-btn ops-run-btn-inline"
+                                                data-color={divColor}
+                                                data-state={isRunning ? 'running' : undefined}
+                                                onClick={() => onRun(step.engineerId!, wfId)}
+                                                disabled={isRunning}
+                                                title={`Run ${entry.name} for ${selectedTicker.toUpperCase()}`}
+                                              >
+                                                {isRunning ? 'Running\u2026' : 'Run'}
+                                              </button>
+                                            )}
                                           </div>
                                           <pre className="ops-prompt-text">{entry.prompt}</pre>
                                         </div>
