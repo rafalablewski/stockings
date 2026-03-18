@@ -505,28 +505,145 @@ async function applyPatch(patch: PatchOp): Promise<PatchResult> {
   return { ...base, success: true, detail: `+${newLines - originalLines} lines` };
 }
 
+// ─── Revert from backup ──────────────────────────────────────────────────────
+
+interface RevertFileResult {
+  file: string;
+  success: boolean;
+  detail: string;
+  backupTimestamp?: number;
+}
+
+/**
+ * Find the most recent .bak file for a given source file.
+ * Returns the full backup path and its timestamp, or null if none found.
+ */
+async function findNewestBackup(filePath: string): Promise<{ backupPath: string; timestamp: number } | null> {
+  try {
+    const dir = path.dirname(filePath);
+    const base = path.basename(filePath);
+    const entries = await fs.readdir(dir);
+    const backups = entries
+      .filter(e => e.startsWith(base + '.bak.'))
+      .map(e => {
+        const ts = parseInt(e.slice((base + '.bak.').length), 10);
+        return { name: e, timestamp: ts };
+      })
+      .filter(b => !isNaN(b.timestamp))
+      .sort((a, b) => b.timestamp - a.timestamp); // newest first
+
+    if (backups.length === 0) return null;
+    return { backupPath: path.join(dir, backups[0].name), timestamp: backups[0].timestamp };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Revert all data files for a ticker to their most recent backups.
+ * Only reverts files that have .bak files (i.e. files that were patched).
+ *
+ * dryRun=true: list which files would be reverted (no writes)
+ * dryRun=false: restore from backups (atomic write)
+ */
+async function revertTicker(ticker: string, dryRun: boolean): Promise<{
+  files: RevertFileResult[];
+  revertedCount: number;
+  skippedCount: number;
+}> {
+  const tickerLower = ticker.toLowerCase();
+  const tickerDir = path.resolve(DATA_DIR, tickerLower);
+
+  let entries: string[];
+  try {
+    entries = await fs.readdir(tickerDir);
+  } catch {
+    return { files: [], revertedCount: 0, skippedCount: 0 };
+  }
+
+  // Find all .ts source files that have backup files
+  const tsFiles = entries.filter(e => e.endsWith('.ts') && !e.includes('.bak.'));
+  const results: RevertFileResult[] = [];
+  let revertedCount = 0;
+  let skippedCount = 0;
+
+  for (const tsFile of tsFiles) {
+    const fullPath = path.resolve(tickerDir, tsFile);
+    const relPath = `${tickerLower}/${tsFile}`;
+    const backup = await findNewestBackup(fullPath);
+
+    if (!backup) {
+      // No backup = file was never patched, skip silently
+      continue;
+    }
+
+    const backupAge = Date.now() - backup.timestamp;
+    const backupAgeMinutes = Math.round(backupAge / 60000);
+
+    if (dryRun) {
+      results.push({
+        file: relPath,
+        success: true,
+        detail: `Backup available (${backupAgeMinutes}m ago)`,
+        backupTimestamp: backup.timestamp,
+      });
+      revertedCount++;
+    } else {
+      try {
+        // Read backup content
+        const backupContent = await fs.readFile(backup.backupPath, 'utf-8');
+        const currentContent = await fs.readFile(fullPath, 'utf-8');
+
+        // Skip if backup content is identical to current (already reverted)
+        if (backupContent === currentContent) {
+          results.push({ file: relPath, success: false, detail: 'Already matches backup (no change needed)' });
+          skippedCount++;
+          continue;
+        }
+
+        // Atomic write: tmp + rename
+        const tmpPath = fullPath + '.tmp.' + Date.now();
+        await fs.writeFile(tmpPath, backupContent, 'utf-8');
+        await fs.rename(tmpPath, fullPath);
+
+        results.push({
+          file: relPath,
+          success: true,
+          detail: `Reverted from backup (${backupAgeMinutes}m ago)`,
+          backupTimestamp: backup.timestamp,
+        });
+        revertedCount++;
+      } catch (err) {
+        results.push({
+          file: relPath,
+          success: false,
+          detail: `Revert failed: ${err instanceof Error ? err.message : String(err)}`,
+        });
+        skippedCount++;
+      }
+    }
+  }
+
+  return { files: results, revertedCount, skippedCount };
+}
+
 // ─── Route handler ──────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
   const gateError = checkAiGate(request);
   if (gateError) return gateError;
 
-  const ANTHROPIC_API_KEY = (process.env as Record<string, string | undefined>)['ANTHROPIC_API_KEY'] || '';
-
-  if (!ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: 'ANTHROPIC_API_KEY not configured' }, { status: 500 });
-  }
-
   try {
     const body = await request.json() as {
       ticker: string;
-      agentId: string;
+      agentId?: string;
       analysis?: string;
       dryRun?: boolean;
+      revert?: boolean;
       patches?: PatchOp[];
     };
 
-    const { ticker, agentId, dryRun = true } = body;
+    const { ticker, dryRun = true } = body;
 
     if (!ticker) {
       return NextResponse.json({ error: 'Missing ticker' }, { status: 400 });
@@ -537,6 +654,54 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid ticker format' }, { status: 400 });
     }
 
+    // ── REVERT MODE: restore files from .bak backups ──
+    if (body.revert) {
+      const result = await revertTicker(ticker, dryRun);
+
+      if (result.files.length === 0) {
+        return NextResponse.json({
+          revert: true,
+          dryRun,
+          error: `No backup files found for ${ticker.toUpperCase()}. Nothing to revert.`,
+        }, { status: 404 });
+      }
+
+      // Auto re-seed DB after successful revert (same as apply mode)
+      let reseed: { triggered: boolean; success?: boolean; message?: string } = { triggered: false };
+      if (!dryRun && result.revertedCount > 0) {
+        try {
+          const origin = new URL(request.url).origin;
+          const reseedRes = await fetch(`${origin}/api/db/setup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          });
+          if (reseedRes.ok) {
+            const reseedData = await reseedRes.json();
+            reseed = { triggered: true, success: true, message: reseedData.message };
+            console.log(`[apply/revert] Auto re-seeded database after revert: ${reseedData.message}`);
+          } else {
+            reseed = { triggered: true, success: false, message: `HTTP ${reseedRes.status}` };
+          }
+        } catch (e) {
+          reseed = { triggered: true, success: false, message: (e as Error).message };
+        }
+      }
+
+      return NextResponse.json({
+        revert: true,
+        dryRun,
+        ticker: ticker.toUpperCase(),
+        files: result.files,
+        revertedCount: result.revertedCount,
+        skippedCount: result.skippedCount,
+        ...(dryRun ? {} : { reseed }),
+        summary: dryRun
+          ? `${result.revertedCount} file(s) can be reverted for ${ticker.toUpperCase()}`
+          : `Reverted ${result.revertedCount} file(s) for ${ticker.toUpperCase()}${result.skippedCount > 0 ? ` (${result.skippedCount} skipped)` : ''}`,
+      });
+    }
+
+    const agentId = body.agentId || '';
     let patches: PatchOp[];
 
     if (dryRun) {
@@ -591,6 +756,11 @@ export async function POST(request: NextRequest) {
       }
 
       // ── PREVIEW MODE: extract patches from analysis via AI ──
+      const ANTHROPIC_API_KEY = (process.env as Record<string, string | undefined>)['ANTHROPIC_API_KEY'] || '';
+      if (!ANTHROPIC_API_KEY) {
+        return NextResponse.json({ error: 'ANTHROPIC_API_KEY not configured' }, { status: 500 });
+      }
+
       const analysis = (body.analysis || '').slice(0, MAX_ANALYSIS_LENGTH);
       if (!analysis) {
         return NextResponse.json({ error: 'Missing analysis for preview' }, { status: 400 });

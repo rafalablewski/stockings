@@ -51,6 +51,7 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }>
   'boss-approved':  { bg: 'rgba(34, 211, 238, 0.15)', text: '#22d3ee', label: 'Boss Approved' },
   'boss-rejected':  { bg: 'rgba(248, 113, 113, 0.2)', text: '#ef4444', label: 'Boss Rejected' },
   'applied':        { bg: 'rgba(126, 231, 135, 0.15)', text: '#7ee787', label: 'Applied' },
+  'reverted':       { bg: 'rgba(251, 146, 60, 0.15)',  text: '#fb923c', label: 'Reverted' },
 };
 
 const SWIPE_THRESHOLD = 120;
@@ -361,6 +362,56 @@ export default function DecisionDashboard() {
     }
   };
 
+  const revertDataPatches = async (decision: Decision) => {
+    const ticker = decision.ticker;
+    if (!confirm(`Revert all data patches for ${ticker.toUpperCase()}? This restores files from the most recent backups.`)) return;
+
+    setApplying(decision.id);
+    try {
+      // Preview first
+      const previewRes = await authFetch('/api/workflow/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker, revert: true, dryRun: true }),
+      });
+      const preview = await previewRes.json();
+
+      if (preview.error) {
+        alert(`Revert failed: ${preview.error}`);
+        return;
+      }
+
+      if (!preview.revertedCount || preview.revertedCount === 0) {
+        alert('No backup files found to revert.');
+        return;
+      }
+
+      const fileList = (preview.files || []).map((f: { file: string; detail: string }) => `  ${f.file} — ${f.detail}`).join('\n');
+      if (!confirm(`Will revert ${preview.revertedCount} file(s):\n\n${fileList}\n\nProceed?`)) return;
+
+      // Apply revert
+      const revertRes = await authFetch('/api/workflow/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker, revert: true, dryRun: false }),
+      });
+      const result = await revertRes.json();
+
+      if (result.error) {
+        alert(`Revert failed: ${result.error}`);
+        return;
+      }
+
+      if (result.revertedCount > 0) {
+        await updateStatus(decision.id, 'reverted', `Reverted ${result.revertedCount} file(s) for ${ticker.toUpperCase()}`);
+      } else {
+        alert(`Revert failed: ${result.summary || 'No files reverted'}`);
+      }
+    } finally {
+      setApplying(null);
+    }
+  };
+
   const parsePatchCount = (payload: string): number => {
     try {
       const jsonMatch = payload.match(/\{[\s\S]*"patches"[\s\S]*\}/);
@@ -443,6 +494,7 @@ export default function DecisionDashboard() {
               onUpdateStatus={updateStatus}
               onApplyPatches={applyPatches}
               onApplyDataPatches={applyDataPatches}
+              onRevertDataPatches={revertDataPatches}
               parsePatchCount={parsePatchCount}
             />
           ))}
@@ -477,6 +529,7 @@ interface DecisionCardProps {
   onUpdateStatus: (id: number, status: string, notes?: string) => void;
   onApplyPatches: (d: Decision) => void;
   onApplyDataPatches: (d: Decision) => void;
+  onRevertDataPatches: (d: Decision) => void;
   parsePatchCount: (payload: string) => number;
 }
 
@@ -490,6 +543,7 @@ function DecisionCard({
   onUpdateStatus,
   onApplyPatches,
   onApplyDataPatches,
+  onRevertDataPatches,
   parsePatchCount,
 }: DecisionCardProps) {
   const pm = PM_META[d.pm] || { label: d.pm, color: '#888', badge: '?' };
@@ -619,6 +673,15 @@ function DecisionCard({
                   disabled={applying === d.id}
                 >
                   {applying === d.id ? 'Applying...' : 'Apply Data Patches to database'}
+                </button>
+              )}
+              {d.status === 'applied' && d.category === 'data-patch' && (
+                <button
+                  className="eng-btn eng-btn-danger"
+                  onClick={() => onRevertDataPatches(d)}
+                  disabled={applying === d.id}
+                >
+                  {applying === d.id ? 'Reverting...' : 'Revert Data Patches'}
                 </button>
               )}
             </div>
