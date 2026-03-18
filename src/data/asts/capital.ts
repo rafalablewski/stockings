@@ -10,7 +10,7 @@
  * - Equity offerings: 8-K filings, press releases
  * - SBC: 10-Q/10-K compensation disclosures
  *
- * LAST UPDATED: 2026-03-12 (26 filings: Mar Yao Form 4 + Feb offerings/greenshoe/settlements + Dec insider + 13G/13D/A + Form 4s)
+ * LAST UPDATED: 2026-03-17 (27 filings: Mar Wisniewski Form 144 + Yao Form 4 + Feb offerings/greenshoe/settlements + Dec insider + 13G/13D/A + Form 4s)
  * NEXT UPDATE: After Q4 2025 10-K (~March 2, 2026) or new proxy filing.
  *
  * AI AGENT INSTRUCTIONS:
@@ -680,9 +680,14 @@ export const FEB_2026_RSU_VESTINGS = [
  *
  * Post-transaction: 4,144,750 Class A (direct) + 299,912 options remaining (indirect).
  * The 4.14M direct figure reflects accumulated LLC Unit → Class A conversions since prior filings.
+ *
+ * Wisniewski (President): Form 144 proposed sale of 47,000 Class A shares via Fidelity (Mar 17).
+ * Source: 2,950 shares from Sep 26, 2025 RSU vest + 44,050 shares from Sep 26, 2024 RSU vest.
+ * No sales in prior 3 months. Aggregate market value ~$4.45M. Approx sale date Mar 17, 2026.
  */
 export const MAR_2026_INSIDER_ACTIVITY = [
   { name: 'Huiwen Yao', role: 'CTO', date: '2026-03-11', type: 'Option Exercise', units: 40000, exercisePrice: 0.0641, exerciseValue: 2564, postDirectClassA: 4144750, postDerivativeOptions: 299912, optionExpiry: '2029-04-17', note: 'AST LLC Incentive Equity Options → LLC Units → Class A. No sale. Filed Mar 12.' },
+  { name: 'Scott Wisniewski', role: 'President', date: '2026-03-17', type: 'Form 144 Proposed Sale', units: 47000, aggregateMarketValue: 4453327.06, broker: 'Fidelity Brokerage Services LLC', sharesOutstanding: 292637039, note: 'Proposed sale of 47K Class A shares. Source: 2,950 (Sep 26, 2025 RSU vest) + 44,050 (Sep 26, 2024 RSU vest). No sales in past 3 months. Signed by Fidelity as attorney-in-fact. Post: ~666,681 est. (713,681 - 47,000).' },
 ];
 
 // ============================================================================
