@@ -911,7 +911,7 @@ ${analysis}`;
   } catch (error) {
     console.error('[apply] Error:', error);
     return NextResponse.json(
-      { error: `Apply failed: ${(error as Error).message}` },
+      { error: `Apply failed: ${error instanceof Error ? error.message : String(error)}` },
       { status: 500 }
     );
   }

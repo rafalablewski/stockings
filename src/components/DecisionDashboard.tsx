@@ -329,6 +329,11 @@ export default function DecisionDashboard() {
       });
       const preview = await previewRes.json();
 
+      if (preview.error) {
+        alert(`Preview failed: ${preview.error}`);
+        return;
+      }
+
       if (!preview.validCount || preview.validCount === 0) {
         alert(`No valid data patches. ${preview.invalidCount || 0} invalid.`);
         return;
@@ -341,10 +346,15 @@ export default function DecisionDashboard() {
       });
       const result = await applyRes.json();
 
+      if (result.error) {
+        alert(`Apply failed: ${result.error}`);
+        return;
+      }
+
       if (result.applied > 0) {
         await updateStatus(decision.id, 'applied', `Applied ${result.applied} data patches to ${ticker.toUpperCase()}`);
       } else {
-        alert(`Apply failed: ${result.summary || 'Unknown error'}`);
+        alert(`Apply failed: ${result.summary || 'No patches applied (all failed validation)'}`);
       }
     } finally {
       setApplying(null);
