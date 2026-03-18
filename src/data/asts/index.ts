@@ -10,6 +10,12 @@
  *
  * Or import specific modules:
  * import { PARTNERS } from '@/data/asts/partners';
+ *
+ * AI AGENT INSTRUCTIONS — BARREL EXPORT RULE:
+ * When you add a NEW exported constant, array, function, or type to ANY
+ * data file in this directory, you MUST also add it to this barrel file.
+ * Exports not listed here are INVISIBLE to the UI. This is a mandatory
+ * step — not optional. Run: bash scripts/check-barrel-exports.sh
  */
 
 // Company & Defaults

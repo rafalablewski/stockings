@@ -239,7 +239,75 @@ async function main() {
     console.log('');
   }
 
-  // ── 3. Final summary ────────────────────────────────────────────────────
+  // ── 3. Barrel export completeness ────────────────────────────────────────
+  console.log('Validating barrel export completeness...\n');
+
+  const fs = await import('fs');
+  const path = await import('path');
+
+  for (const ticker of tickers) {
+    const t = ticker.toLowerCase();
+    const tickerDir = path.default.join(dir, t);
+    const barrelPath = path.default.join(tickerDir, 'index.ts');
+
+    console.log(`--- ${ticker} ---`);
+    if (!fs.default.existsSync(barrelPath)) {
+      hasErrors = true;
+      console.error(`  ✗ No barrel file: ${barrelPath}`);
+      continue;
+    }
+
+    const barrelContent = fs.default.readFileSync(barrelPath, 'utf-8');
+    const dataFiles = fs.default.readdirSync(tickerDir)
+      .filter((f: string) => f.endsWith('.ts') && f !== 'index.ts');
+
+    let tickerOrphans = 0;
+
+    for (const file of dataFiles) {
+      const filePath = path.default.join(tickerDir, file);
+      const fileContent = fs.default.readFileSync(filePath, 'utf-8');
+      const stem = file.replace('.ts', '');
+
+      // Check 1: Is the file imported in the barrel at all?
+      const fileImported = barrelContent.includes(`'./${stem}'`) || barrelContent.includes(`"./${stem}"`);
+      if (!fileImported) {
+        hasErrors = true;
+        tickerOrphans++;
+        console.error(`  ✗ ORPHAN FILE: ${file} — not imported in barrel index.ts`);
+        continue;
+      }
+
+      // Check 2: Are all named exports from the file re-exported in the barrel?
+      const exportPattern = /^export\s+(?:const|function|class|enum|let|var)\s+(\w+)/gm;
+      const typeExportPattern = /^export\s+(?:interface|type)\s+(\w+)/gm;
+      let match;
+
+      while ((match = exportPattern.exec(fileContent)) !== null) {
+        const name = match[1];
+        if (!barrelContent.includes(name)) {
+          hasErrors = true;
+          tickerOrphans++;
+          console.error(`  ✗ ORPHAN EXPORT: ${name} (in ${file}) — not re-exported from barrel`);
+        }
+      }
+
+      while ((match = typeExportPattern.exec(fileContent)) !== null) {
+        const name = match[1];
+        if (!barrelContent.includes(name)) {
+          warningCount++;
+          tickerOrphans++;
+          console.warn(`  ⚠ ORPHAN TYPE: ${name} (in ${file}) — not re-exported from barrel`);
+        }
+      }
+    }
+
+    if (tickerOrphans === 0) {
+      console.log(`  ✓ ${ticker}: All ${dataFiles.length} data files and exports wired to barrel`);
+    }
+    console.log('');
+  }
+
+  // ── 4. Final summary ────────────────────────────────────────────────────
   if (hasErrors) {
     console.error('Validation FAILED — fix the errors above.');
     process.exit(1);

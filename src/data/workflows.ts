@@ -940,6 +940,7 @@ GLOBAL CHECKLIST (output once after all filings):
   [ ] METADATA UPDATED: totalFilingsTracked incremented by exactly the number of ingested (non-skipped) filings.
   [ ] LAST UPDATED COMMENTS: Every data file that received a conditional patch has its LAST UPDATED header and metadata export updated.
   [ ] NO CURRENT-STATE CORRUPTION: For all old filings, no "current" or "latest" summary fields were overwritten with historical values.
+  [ ] BARREL EXPORT COMPLETENESS: If any patch introduces a NEW exported constant/array/type in a data file, a corresponding patch MUST add it to the ticker's barrel (src/data/<ticker>/index.ts). New data files MUST be imported in the barrel. Run check-barrel-exports.sh to verify.
 
 If any box FAILS: fix the proposed patch before including it. If unfixable, move the filing to "skipped" with reason "Pre-write gate failure: [which check failed]".
 
@@ -1056,6 +1057,8 @@ PATCH RULES — NON-NEGOTIABLE
 12. CROSS-REF COMPLETENESS: Every target file that receives a conditional patch MUST have a corresponding entry in the filing's FILING_CROSS_REFS. Orphan patches are rejected.
 
 13. METADATA CONSISTENCY: Every ingestion run MUST include patches for (a) SEC_META.totalFilingsTracked (increment by count of ingested filings) and (b) LAST UPDATED comments + metadata exports in every data file that received a conditional patch. Missing metadata patches = pre-write gate failure.
+
+14. BARREL EXPORT COMPLETENESS: When adding a NEW exported constant, array, or type to any data file, you MUST also patch the ticker's barrel file (src/data/<ticker>/index.ts) to re-export it. Every exported symbol in a data file MUST appear in the barrel. Orphaned exports (defined but not in barrel) are invisible to the UI and will be caught by the validate-data script. Run \`bash scripts/check-barrel-exports.sh\` to verify. This rule also applies when creating entirely new data files — the barrel must import from the new file.
 
 Rules — non-negotiable:
 - Conservative: generate patches only for clearly material, non-duplicative, non-superseded data.
@@ -1816,6 +1819,7 @@ GLOBAL CHECKLIST (output once after all items):
   [ ] No item appears in more than one tab.
   [ ] Every "Update existing" action names the specific field and old → new value.
   [ ] Phase 4 conflicts are resolved (not just flagged).
+  [ ] BARREL EXPORT COMPLETENESS: If any new exported constant/array/type was added to a data file, the ticker's barrel (src/data/<ticker>/index.ts) must re-export it. New data files must be imported in the barrel. Orphaned exports are invisible to the UI.
 
 If any box fails, fix the proposed action before proceeding to database writes.
 

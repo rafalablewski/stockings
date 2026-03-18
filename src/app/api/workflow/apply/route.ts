@@ -27,6 +27,12 @@ import { checkAiGate } from '@/lib/ai-gate';
  * - Code injection blocked (import/require/exec/eval)
  * - Idempotency: skip if content already present
  * - File line-count can never decrease
+ *
+ * BARREL EXPORT RULE (enforced by pre-write gate, not this route):
+ * When patches introduce new exported symbols in data files, the caller
+ * must also include a patch to the ticker's barrel (index.ts) to re-export
+ * the new symbol. Orphaned exports are invisible to the UI.
+ * Validation: bash scripts/check-barrel-exports.sh
  */
 
 interface PatchOp {

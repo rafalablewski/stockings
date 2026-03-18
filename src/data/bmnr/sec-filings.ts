@@ -28,6 +28,8 @@
  * 11. pressReleases[] array                — Add new entry at TOP
  * 12. archive[] (Analysis Archive)        — Add NEW full analysis at TOP
  *     ⚠️ MANDATORY with EVERY press release! Search: [PR_CHECKLIST_ARCHIVE]
+ * 13. BARREL EXPORT: If you added a NEW exported constant to ANY data file,
+ *     add it to src/data/bmnr/index.ts. Run: bash scripts/check-barrel-exports.sh
  *
  * Search markers: [PR_CHECKLIST_SECMETA], [PR_CHECKLIST_FILING_DATA],
  *   [PR_CHECKLIST_RECENT_PRESS_RELEASES], [PR_CHECKLIST_EVENT_TIMELINE],

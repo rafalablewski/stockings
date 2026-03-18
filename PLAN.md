@@ -97,11 +97,17 @@ When user clicks "Initiate New Research":
 
 ```
 Step 1: Create 13 data files in src/data/{ticker}/     ← already works
-Step 2: Register stock in stocks.ts                     ← already works
-Step 3: Add default tabs to tab-registry.ts             ← NEW
-Step 4: Add stock context entry to stock-context.ts     ← NEW
-Step 5: All 25 workflows instantly available             ← automatic via templates
+Step 2: Create barrel index.ts re-exporting all files   ← CRITICAL (see below)
+Step 3: Register stock in stocks.ts                     ← already works
+Step 4: Add default tabs to tab-registry.ts             ← NEW
+Step 5: Add stock context entry to stock-context.ts     ← NEW
+Step 6: All 25 workflows instantly available             ← automatic via templates
 ```
+
+**BARREL EXPORT RULE (Step 2):** Every exported symbol in every data file
+MUST be re-exported from `src/data/{ticker}/index.ts`. Exports not in the
+barrel are invisible to the UI. This applies to initial creation AND ongoing
+data additions. Run `bash scripts/check-barrel-exports.sh` to validate.
 
 Default tabs for new stocks:
 ```ts
