@@ -10,6 +10,12 @@
  *
  * Or import specific modules:
  * import { HISTORICAL_ETH } from '@/data/bmnr/historical';
+ *
+ * AI AGENT INSTRUCTIONS — BARREL EXPORT RULE:
+ * When you add a NEW exported constant, array, function, or type to ANY
+ * data file in this directory, you MUST also add it to this barrel file.
+ * Exports not listed here are INVISIBLE to the UI. This is a mandatory
+ * step — not optional. Run: bash scripts/check-barrel-exports.sh
  */
 
 // Company & Defaults
@@ -34,6 +40,7 @@ export {
   INSIDER_SALES,
   INSIDER_SALES_SUMMARY,
   INSIDER_GRANTS,
+  INSIDER_TRANSACTIONS,
   EARLY_SHAREHOLDERS_2021,
   EARLY_OFFERINGS,
   SHARE_COUNT_HISTORY,
@@ -117,6 +124,9 @@ export {
   BMNR_PURCHASE_HISTORY,
   PURCHASE_HISTORY_METADATA,
 } from './purchase-history';
+
+// Ethereum Adoption
+export { BMNR_ADOPTION_TIMELINE } from './ethereum-adoption';
 
 // Re-export types for convenience
 export type {

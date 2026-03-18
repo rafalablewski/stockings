@@ -10,6 +10,12 @@
  *
  * Or import specific modules:
  * import { TIMELINE } from '@/data/crcl/timeline';
+ *
+ * AI AGENT INSTRUCTIONS — BARREL EXPORT RULE:
+ * When you add a NEW exported constant, array, function, or type to ANY
+ * data file in this directory, you MUST also add it to this barrel file.
+ * Exports not listed here are INVISIBLE to the UI. This is a mandatory
+ * step — not optional. Run: bash scripts/check-barrel-exports.sh
  */
 
 // Company & Market Data
@@ -61,6 +67,7 @@ export {
   SHARE_CLASSES,
   MAJOR_SHAREHOLDERS,
   EQUITY_OFFERINGS,
+  INSIDER_TRANSACTIONS,
 } from './capital';
 
 // Historical
@@ -87,6 +94,8 @@ export {
   SEC_METADATA,
   CRCL_SEC_META,
   CRCL_SEC_FILINGS,
+  CRCL_SEC_TYPE_COLORS,
+  CRCL_SEC_FILTER_TYPES,
   CRCL_FILING_CROSS_REFS,
 } from './sec-filings';
 
@@ -106,6 +115,8 @@ export {
   CRCL_COMPETITOR_PROFILES,
   CRCL_COMPETITOR_NEWS,
 } from './competitor-news';
+
+export type { CRCLCompetitorProfile } from './competitor-news';
 
 // Investment
 export {

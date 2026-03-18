@@ -45,9 +45,15 @@ Doc-Reviewer (audit report) → UX/UI Engineer (implements/proposes) → Maszka 
 - Use Unsplash or picsum.photos for placeholder images
 - Do NOT use Pexels (403 errors)
 
+## Data File Rules
+- **Barrel Export Rule**: Every exported constant, function, array, or type in `src/data/{ticker}/*.ts` MUST be re-exported from that ticker's `src/data/{ticker}/index.ts` barrel file. Exports not in the barrel are invisible to the UI. This is the #1 cause of "data exists but doesn't show" bugs.
+- **Validation**: Run `bash scripts/check-barrel-exports.sh` after ANY data file changes. Also covered by `npx tsx scripts/validate-data.ts`.
+- **New data files**: When creating a new `.ts` file in a ticker's data directory, add a corresponding import/export block to that ticker's `index.ts`.
+
 ## Quality Checklist
 - [ ] `npm run lint` passes
 - [ ] `npx tsc --noEmit` passes
+- [ ] `bash scripts/check-barrel-exports.sh` passes (if data files changed)
 - [ ] Changes are responsive (mobile + desktop)
 - [ ] No hardcoded secrets or credentials
 - [ ] Status report updated

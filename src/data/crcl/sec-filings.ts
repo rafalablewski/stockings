@@ -21,6 +21,8 @@
  *  4. timeline.ts                        — Add new timeline entry at top
  *  5. catalysts.ts                       — Move completed catalysts, update metadata
  *  6. company.ts / financials.ts         — Update holdings, prices, cash
+ *  7. BARREL EXPORT: If you added a NEW exported constant to ANY data file,
+ *     add it to src/data/crcl/index.ts. Run: bash scripts/check-barrel-exports.sh
  */
 
 import type { DataMetadata } from '../shared/types';

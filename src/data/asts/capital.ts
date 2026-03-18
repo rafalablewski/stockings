@@ -21,7 +21,7 @@
  * 4. Add new EQUITY_OFFERINGS entries for any capital raises
  */
 
-import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata, ConvertibleNoteDetail, CashRunwayScenario, DilutionScenario } from '../shared/types';
+import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata, ConvertibleNoteDetail, CashRunwayScenario, DilutionScenario, InsiderTransaction } from '../shared/types';
 
 // ============================================================================
 // METADATA
@@ -622,6 +622,73 @@ export const DILUTION_SCENARIOS: DilutionScenario[] = [
     type: 'stress',
   },
 ];
+
+// ============================================================================
+// UNIFIED INSIDER TRANSACTIONS (all tickers use this pattern)
+// ============================================================================
+
+/**
+ * Single consolidated array for ALL insider activity. Reverse-chronological.
+ * New entries go at the TOP — no need to create new monthly arrays.
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - Add new insider transactions HERE, not in new monthly arrays.
+ * - This array is ALREADY exported from index.ts — no barrel update needed.
+ * - Type: InsiderTransaction (from shared/types.ts).
+ * - Keep reverse-chronological order (newest first).
+ */
+export const INSIDER_TRANSACTIONS: InsiderTransaction[] = [
+  // ── March 2026 ──────────────────────────────────────────────────────────
+  { date: '2026-03-17', name: 'Scott Wisniewski', role: 'President', type: 'form-144', units: 47000, aggregateMarketValue: 4453327.06, broker: 'Fidelity Brokerage Services LLC', note: 'Proposed sale of 47K shares. Source: 2,950 (Sep 2025 RSU) + 44,050 (Sep 2024 RSU). No sales in past 3 months.', filingType: 'Form 144', filingDate: '2026-03-17' },
+  { date: '2026-03-11', name: 'Huiwen Yao', role: 'CTO', type: 'option-exercise', units: 40000, exercisePrice: 0.0641, postHoldings: 4144750, note: 'AST LLC Incentive Equity Options → LLC Units → Class A. No sale. 299,912 options remaining.', filingType: 'Form 4', filingDate: '2026-03-12' },
+  // ── February 2026 ───────────────────────────────────────────────────────
+  { date: '2026-02-15', name: 'Maya Bernal', role: 'CAO', type: 'rsu-vesting', units: 3000, taxWithheld: 833, netAcquired: 2167, price: 82.51, postHoldings: 121653, note: '50K RSU grant (Feb 27, 2025) cliff vesting. 833 shares withheld for tax.', filingType: 'Form 4', filingDate: '2026-02-17' },
+  // ── December 2025 ──────────────────────────────────────────────────────
+  { date: '2025-12-02', name: 'Abel Avellan', role: 'CEO & Chairman', type: 'rsu-grant', units: 250000, note: 'Vest 1/3 annually from May 30, 2026. Also holds 500K RSUs from Aug 2025. Total: 750K RSUs.', filingType: 'Form 4', filingDate: '2025-12-02' },
+  { date: '2025-12-02', name: 'Andrew M. Johnson', role: 'CFO & CLO', type: 'rsu-grant', units: 125000, note: 'Vest 1/3 annually from May 30, 2026.', filingType: 'Form 4', filingDate: '2025-12-02' },
+  { date: '2025-12-02', name: 'Scott Wisniewski', role: 'President', type: 'rsu-grant', units: 125000, note: 'Vest 1/3 annually from May 30, 2026. Separate from Jun 2025 grant of 125K. Total: 250K RSUs.', filingType: 'Form 4', filingDate: '2025-12-02' },
+  { date: '2025-12-09', name: 'American Tower Corp', role: '10% Holder', type: 'sale', units: 2288621, price: 69.75, proceeds: 159757414, plan10b5_1: true, broker: 'Barclays Capital', postHoldings: 211379, note: 'Block trade. Retains 2,170,657 LLC Units (redeemable 1:1 for Class A).', filingType: 'Form 4' },
+  { date: '2025-12-05', name: 'Huiwen Yao', role: 'CTO', type: 'sale', units: 40000, price: 73.52, proceeds: 2940752, plan10b5_1: true, planAdopted: '2025-06-12', broker: 'B. Riley Securities', note: 'Matches Form 144 filed Dec 5.', filingType: 'Form 4' },
+  { date: '2025-12-10', name: 'Shanti B. Gupta', role: 'COO', type: 'sale', units: 10000, price: 77.34, proceeds: 773400, plan10b5_1: true, broker: 'Fidelity Brokerage', postHoldings: 382375, filingType: 'Form 4' },
+  { date: '2025-12-05', name: 'Maya Bernal', role: 'CAO', type: 'sale', units: 6000, price: 73.76, proceeds: 442560, plan10b5_1: true, broker: 'Fidelity Brokerage', postHoldings: 122486, filingType: 'Form 4' },
+  { date: '2025-12-10', name: 'Keith R. Larson', role: 'Director', type: 'purchase', units: 675, price: 72.71, plan10b5_1: true, planAdopted: '2025-09-08', postHoldings: 675, note: 'IRA account.', filingType: 'Form 4' },
+  { date: '2025-12-17', name: 'Keith R. Larson', role: 'Director', type: 'purchase', units: 715, price: 70.02, plan10b5_1: true, planAdopted: '2025-09-08', postHoldings: 1390, note: 'IRA account.', filingType: 'Form 4' },
+  { date: '2025-12-24', name: 'Keith R. Larson', role: 'Director', type: 'purchase', units: 625, price: 80.00, plan10b5_1: true, planAdopted: '2025-09-08', postHoldings: 2015, note: 'IRA account.', filingType: 'Form 4' },
+  // ── August–September 2025 ──────────────────────────────────────────────
+  { date: '2025-09-03', name: 'Huiwen Yao', role: 'CTO', type: 'sale', units: 40000, price: 41.58, proceeds: 1663200, plan10b5_1: true, planAdopted: '2025-06-12', broker: 'B. Riley Securities', postHoldings: 160000, note: 'Matches Form 144 filed Sep 3. Price range $40-$42.', filingType: 'Form 4' },
+  { date: '2025-08-26', name: 'Andrew M. Johnson', role: 'CFO & CLO', type: 'sale', units: 20000, price: 52.48, proceeds: 1049634, broker: 'Fidelity Brokerage', note: 'Post-vesting (Aug 15 RSU vest).', filingType: 'Form 144' },
+  { date: '2025-08-15', name: 'Huiwen Yao', role: 'CTO', type: 'rsu-vesting', units: 50000, taxWithheld: 20000, netAcquired: 30000, price: 34.50, postHoldings: 200000, filingType: 'Form 4' },
+  { date: '2025-08-15', name: 'Andrew M. Johnson', role: 'CFO & CLO', type: 'rsu-vesting', units: 80000, taxWithheld: 35000, netAcquired: 45000, price: 34.50, postHoldings: 522485, filingType: 'Form 4' },
+  { date: '2025-08-15', name: 'Shanti B. Gupta', role: 'COO', type: 'rsu-vesting', units: 50000, taxWithheld: 21000, netAcquired: 29000, price: 34.50, postHoldings: 392375, filingType: 'Form 4' },
+  { date: '2025-09-15', name: 'Shanti B. Gupta', role: 'COO', type: 'rsu-vesting', units: 50000, taxWithheld: 25575, netAcquired: 24425, price: 29.83, postHoldings: 348232, note: 'Corrected via Form 4/A Jan 2026.', filingType: 'Form 4' },
+  { date: '2025-08-15', name: 'Abel Avellan', role: 'CEO & Chairman', type: 'rsu-grant', units: 500000, note: 'Vest 1/3 annually from Aug 15, 2026. Separate from Dec 2025 grant of 250K.', filingType: 'Form 4' },
+  // ── June 2025 ──────────────────────────────────────────────────────────
+  { date: '2025-06-24', name: 'Adriana Cisneros', role: 'Director', type: 'purchase', units: 1000, price: 25.00, postHoldings: 783327, note: 'Trust (indirect).', filingType: 'Form 4' },
+  { date: '2025-06-24', name: 'Andrew M. Johnson', role: 'CFO & CLO', type: 'purchase', units: 500, price: 25.00, postHoldings: 500, note: 'IRA account.', filingType: 'Form 4' },
+  { date: '2025-06-09', name: 'Adriana Cisneros', role: 'Director', type: 'purchase', units: 1000, price: 25.00, postHoldings: 784077, note: 'Trust (indirect). Multiple duplicate Form 4 filings.', filingType: 'Form 4' },
+  { date: '2025-06-02', name: 'Scott Wisniewski', role: 'President', type: 'rsu-grant', units: 125000, note: 'Vest 1/3 annually from May 30, 2026. Separate from Dec 2025 grant.', filingType: 'Form 4', filingDate: '2025-06-03' },
+  { date: '2025-06-02', name: 'Shanti B. Gupta', role: 'COO', type: 'rsu-vesting', units: 50000, taxWithheld: 20000, netAcquired: 30000, price: 22.50, postHoldings: 392375, note: 'Proposed 10K sale Jun 9 (Form 144).', filingType: 'Form 4' },
+  // ── May 2025 ───────────────────────────────────────────────────────────
+  { date: '2025-05-17', name: 'Huiwen Yao', role: 'CTO', type: 'option-exercise', units: 40000, exercisePrice: 0.06, postHoldings: 240000, note: 'LLC Option → LLC Unit. Prep for proposed 40K sale (Form 144 May 16). Executed Sep 3 at $41.58.', filingType: 'Form 4', filingDate: '2025-05-19' },
+  { date: '2025-05-07', name: 'Adriana Cisneros', role: 'Director', type: 'purchase', units: 1000, price: 25.00, postHoldings: 783327, note: 'Trust (indirect). Multiple duplicate filings + Form 4/A.', filingType: 'Form 4' },
+  // ── April 2025 ─────────────────────────────────────────────────────────
+  { date: '2025-04-04', name: 'Adriana Cisneros', role: 'Director', type: 'purchase', units: 1000, price: 25.00, postHoldings: 782327, note: 'Trust (indirect). Duplicate Form 4 filing.', filingType: 'Form 4' },
+  { date: '2025-04-04', name: 'Andrew M. Johnson', role: 'CFO & CLO', type: 'purchase', units: 500, price: 25.00, postHoldings: 500, note: 'IRA. Form 4/A amendment Apr 9.', filingType: 'Form 4' },
+  // ── March 2025 ─────────────────────────────────────────────────────────
+  { date: '2025-03-21', name: 'Maya Bernal', role: 'CAO', type: 'withholding', units: 3244, price: 25.71, postHoldings: 120335, note: 'Tax withholding on 12,500 RSU vesting (net 9,256 shares).', filingType: 'Form 4' },
+  { date: '2025-03-17', name: 'Scott Wisniewski', role: 'President', type: 'sale', units: 35871, price: 28.35, proceeds: 1017143, postHoldings: 653146, note: 'Form 144/A amended acquisition date. Weighted $28.25-$28.50.', filingType: 'Form 4' },
+  { date: '2025-03-15', name: 'Scott Wisniewski', role: 'President', type: 'withholding', units: 23643, price: 28.15, postHoldings: 653146, note: 'Tax withholding on 72,500 RSU vesting (net 48,857 shares).', filingType: 'Form 4' },
+  { date: '2025-03-17', name: 'Shanti B. Gupta', role: 'COO', type: 'sale', units: 24425, price: 28.00, proceeds: 683900, postHoldings: 368807, note: 'Executing Form 144 proposal. Selling amid price dip from $35 peak.', filingType: 'Form 4' },
+  { date: '2025-03-10', name: 'Julio A. Torres', role: 'Director', type: 'sale', units: 20000, price: 30.73, proceeds: 614600, postHoldings: 52628, note: 'Tax on RSU vesting. Weighted avg $30.62-$30.94.', filingType: 'Form 4' },
+  { date: '2025-03-10', name: 'Ronald L. Rubin', role: 'Director', type: 'sale', units: 7000, price: 32.46, proceeds: 227220, postHoldings: 65628, note: 'Tax withholding on 2024 RSU vesting.', filingType: 'Form 4' },
+];
+
+// ============================================================================
+// LEGACY MONTHLY ARRAYS (kept for backwards compatibility with ASTS.tsx)
+// New entries should go in INSIDER_TRANSACTIONS above.
+// TODO(Maszka): Migrate ASTS.tsx Capital tab to use INSIDER_TRANSACTIONS,
+// then remove these legacy arrays.
+// ============================================================================
 
 // ============================================================================
 // DECEMBER 2025 INSIDER ACTIVITY

@@ -14,6 +14,8 @@
  *  7. Timeline / catalysts files as applicable
  *  8. ASTS.tsx: archive[] (Analysis Archive) — Add NEW full analysis at TOP
  *     ⚠️ MANDATORY for 10-Q and 10-K filings! Search: [PR_CHECKLIST_ARCHIVE]
+ *  9. BARREL EXPORT: If you added a NEW exported constant to ANY data file,
+ *     add it to src/data/asts/index.ts. Run: bash scripts/check-barrel-exports.sh
  */
 
 export const ASTS_SEC_FILINGS = [

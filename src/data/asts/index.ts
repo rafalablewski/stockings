@@ -10,6 +10,12 @@
  *
  * Or import specific modules:
  * import { PARTNERS } from '@/data/asts/partners';
+ *
+ * AI AGENT INSTRUCTIONS — BARREL EXPORT RULE:
+ * When you add a NEW exported constant, array, function, or type to ANY
+ * data file in this directory, you MUST also add it to this barrel file.
+ * Exports not listed here are INVISIBLE to the UI. This is a mandatory
+ * step — not optional. Run: bash scripts/check-barrel-exports.sh
  */
 
 // Company & Defaults
@@ -62,6 +68,8 @@ export {
   FEB_2026_RD_NET_DILUTION,
   FEB_2026_GREENSHOE,
   FEB_2026_RSU_VESTINGS,
+  INSIDER_TRANSACTIONS,
+  MAR_2026_INSIDER_ACTIVITY,
   DEC_2025_RSU_GRANTS,
   DEC_2025_INSIDER_SALES,
   DEC_2025_INSIDER_PURCHASES,
@@ -149,4 +157,5 @@ export type {
   ConvertibleNoteDetail,
   CashRunwayScenario,
   DilutionScenario,
+  InsiderTransaction,
 } from '../shared/types';
