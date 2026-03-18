@@ -255,9 +255,15 @@ export interface Comparable {
 /**
  * Company press release entry for tracking in Sources tab
  * AI AGENT: Add from company IR page / PR Newswire / Business Wire
- * - Set tracked: true when the content has been integrated into relevant tabs
+ *
+ * ⚠️ IMPORTANT: The Sources tab UI does NOT read the `tracked` field below.
+ * The UI determines TRACKED/UNTRACKED status via /api/check-analyzed (database).
+ * This field is an advisory annotation for developers/AI agents only.
+ *
+ * - ALWAYS set tracked: false when adding new press releases
+ * - Only set tracked: true AFTER verifying the content is in the database
  *   (partner news, competitor news, timeline, catalysts, financials, etc.)
- * - Set tracked: false for new releases not yet reflected in the database
+ * - When in doubt, use tracked: false — it's safer and matches the DB state
  */
 export interface PressRelease {
   /** ISO date string (YYYY-MM-DD) */
@@ -266,7 +272,11 @@ export interface PressRelease {
   headline: string;
   /** URL to the original press release */
   url: string;
-  /** Whether this PR's content has been added to the database (partner news, competitor news, timeline, etc.) */
+  /**
+   * Whether this PR's content has been added to the database.
+   * ⚠️ Advisory only — the Sources tab UI reads from /api/check-analyzed, not this field.
+   * Default to false for new entries. Only set true after confirmed DB integration.
+   */
   tracked: boolean;
 }
 
