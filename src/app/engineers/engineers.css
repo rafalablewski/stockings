@@ -4106,6 +4106,129 @@
   border-radius: 2px;
 }
 
+/* ── Data Sources panel ──────────────────────────────────────────────────── */
+.ops-ds-toggle {
+  border-style: dashed;
+}
+
+.ops-ds-content {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ops-ds-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ops-ds-section-title {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+
+.ops-ds-auto {
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: none;
+  color: rgba(255,255,255,0.2);
+  margin-left: 4px;
+}
+
+.ops-ds-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 8px;
+  border-left: 2px solid rgba(255,255,255,0.04);
+}
+
+.ops-ds-file-label {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6rem;
+  color: rgba(34,211,238,0.5);
+  letter-spacing: 0.02em;
+}
+
+.ops-ds-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ops-ds-tag {
+  display: inline-block;
+  padding: 2px 7px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 3px;
+  cursor: default;
+}
+.ops-ds-tag:hover {
+  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.07);
+}
+
+.ops-ds-db-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 4px;
+}
+
+.ops-ds-db-item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 3px 0;
+}
+
+.ops-ds-db-label {
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.45);
+}
+
+.ops-ds-db-file {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.2);
+}
+
+.ops-ds-external {
+  font-size: 0.65rem;
+  color: rgba(251,191,36,0.7);
+  padding: 4px 8px;
+  background: rgba(251,191,36,0.06);
+  border: 1px solid rgba(251,191,36,0.12);
+  border-radius: 4px;
+}
+
+.ops-ds-user-input {
+  font-size: 0.65rem;
+  color: rgba(244,114,182,0.7);
+  padding: 4px 8px;
+  background: rgba(244,114,182,0.06);
+  border: 1px solid rgba(244,114,182,0.12);
+  border-radius: 4px;
+}
+
+.ops-ds-chain {
+  font-size: 0.65rem;
+  color: rgba(134,239,172,0.7);
+  padding: 4px 8px;
+  background: rgba(134,239,172,0.06);
+  border: 1px solid rgba(134,239,172,0.12);
+  border-radius: 4px;
+}
+
 /* ── Run Pipeline button ──────────────────────────────────────────────────── */
 .ops-run-pipeline-btn {
   display: inline-flex;

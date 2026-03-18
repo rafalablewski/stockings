@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { authFetch } from '@/lib/auth-fetch';
 import { workflows } from '@/data/workflows';
 import { PIPELINES } from '@/lib/derive-pipelines';
+import { getEngineerDataSources, groupPlaceholdersByFile, type WorkflowDataSource } from '@/lib/workflow-data-sources';
 
 // ── Props ────────────────────────────────────────────────────────────────────
 
@@ -68,6 +69,7 @@ export default function OperationsPipeline({ selectedTicker }: OperationsPipelin
     PIPELINES[0]?.id ?? null,
   );
   const [promptOpen, setPromptOpen] = useState<string | null>(null);
+  const [dataSourcesOpen, setDataSourcesOpen] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
   // Pipeline run states keyed by pipelineId
@@ -501,6 +503,89 @@ export default function OperationsPipeline({ selectedTicker }: OperationsPipelin
                                         </div>
                                       );
                                     })}
+                                  </div>
+                                </>
+                              );
+                            })()}
+
+                            {/* Data sources panel — shows what data this step imports */}
+                            {step.engineerId && (() => {
+                              const dsKey = `${pipeline.id}-${i}-ds`;
+                              const isDsOpen = dataSourcesOpen === dsKey;
+                              const ds: WorkflowDataSource = getEngineerDataSources(step.engineerId!, step.workflowIds);
+                              const placeholderGroups = groupPlaceholdersByFile(ds.placeholders);
+                              const groupKeys = Object.keys(placeholderGroups);
+
+                              return (
+                                <>
+                                  <div className="ops-prompt-actions">
+                                    <button
+                                      className="ops-prompt-toggle ops-ds-toggle"
+                                      data-color={divColor}
+                                      onClick={() => setDataSourcesOpen(isDsOpen ? null : dsKey)}
+                                    >
+                                      <span className="ops-prompt-toggle-icon">{isDsOpen ? '\u25B4' : '\u25BE'}</span>
+                                      {isDsOpen ? 'Hide Data Sources' : 'Data Sources'}
+                                    </button>
+                                  </div>
+                                  <div className={`ops-prompt-panel ops-ds-panel ${isDsOpen ? 'ops-prompt-open' : ''}`}>
+                                    <div className="ops-ds-content">
+                                      {/* Prompt placeholders grouped by source file */}
+                                      {groupKeys.length > 0 && (
+                                        <div className="ops-ds-section">
+                                          <div className="ops-ds-section-title">PROMPT PLACEHOLDERS</div>
+                                          {groupKeys.map(fileKey => (
+                                            <div key={fileKey} className="ops-ds-group">
+                                              <div className="ops-ds-file-label">{fileKey}</div>
+                                              <div className="ops-ds-tags">
+                                                {placeholderGroups[fileKey].map(p => (
+                                                  <span key={p.placeholder} className="ops-ds-tag" title={`{{${p.placeholder}}}`}>
+                                                    {p.label}
+                                                  </span>
+                                                ))}
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+
+                                      {/* Database context (always injected) */}
+                                      <div className="ops-ds-section">
+                                        <div className="ops-ds-section-title">DATABASE CONTEXT <span className="ops-ds-auto">(auto-injected)</span></div>
+                                        <div className="ops-ds-db-grid">
+                                          {ds.dbSections.map(sec => (
+                                            <div key={sec.id} className="ops-ds-db-item">
+                                              <span className="ops-ds-db-label">{sec.label}</span>
+                                              <span className="ops-ds-db-file">{sec.file}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+
+                                      {/* External data source */}
+                                      {ds.externalSource && (
+                                        <div className="ops-ds-section">
+                                          <div className="ops-ds-section-title">EXTERNAL SOURCE</div>
+                                          <div className="ops-ds-external">{ds.externalSource}</div>
+                                        </div>
+                                      )}
+
+                                      {/* User input required */}
+                                      {ds.requiresUserData && (
+                                        <div className="ops-ds-section">
+                                          <div className="ops-ds-section-title">USER INPUT</div>
+                                          <div className="ops-ds-user-input">Requires pasted data (transcript, filing, report)</div>
+                                        </div>
+                                      )}
+
+                                      {/* Chain-injected context */}
+                                      {ds.chainInput && (
+                                        <div className="ops-ds-section">
+                                          <div className="ops-ds-section-title">CHAIN INPUT</div>
+                                          <div className="ops-ds-chain">{ds.chainInput}</div>
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
                                 </>
                               );
