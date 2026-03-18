@@ -23,8 +23,9 @@ import { autoReviewDecision } from './gemini-auto-review';
 const CLAUDE_MODEL_DEFAULT = 'claude-sonnet-4-5-20250929';
 const CLAUDE_MODEL_FAST = 'claude-haiku-4-5-20251001';
 
-// Per-workflow timeout for Claude API calls (2 minutes)
-const CLAUDE_API_TIMEOUT_MS = 120_000;
+// Per-workflow timeout for Claude API calls
+const CLAUDE_API_TIMEOUT_MS = 180_000;       // default: 3 minutes (Sonnet + large context)
+const CLAUDE_API_TIMEOUT_FAST_MS = 120_000;  // fast model (Haiku): 2 minutes
 
 // Status type for run records
 export type RunStatus = 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
@@ -259,7 +260,8 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
       // Use Haiku for audit engineers (large context, need speed for Vercel timeouts)
       const model = engineer.category === 'audit' ? CLAUDE_MODEL_FAST : CLAUDE_MODEL_DEFAULT;
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), CLAUDE_API_TIMEOUT_MS);
+      const apiTimeout = engineer.category === 'audit' ? CLAUDE_API_TIMEOUT_FAST_MS : CLAUDE_API_TIMEOUT_MS;
+      const timeoutId = setTimeout(() => controller.abort(), apiTimeout);
       let claudeRes: Response;
       try {
         claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -278,7 +280,7 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
         });
       } catch (fetchErr) {
         if (fetchErr instanceof DOMException && fetchErr.name === 'AbortError') {
-          throw new Error(`Claude API timed out after ${CLAUDE_API_TIMEOUT_MS / 1000}s for workflow ${resolved.workflowId} on ticker ${opts.ticker}`, { cause: fetchErr });
+          throw new Error(`Claude API timed out after ${apiTimeout / 1000}s for workflow ${resolved.workflowId} on ticker ${opts.ticker}`, { cause: fetchErr });
         }
         throw fetchErr;
       } finally {
