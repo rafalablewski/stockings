@@ -16,8 +16,9 @@
  *
  * AI AGENT INSTRUCTIONS:
  * 1. Add new entries at the BEGINNING of the array (newest first)
- * 2. Set tracked: false for new releases not yet reflected in the database
- * 3. After integrating content into relevant tabs, set tracked: true
+ * 2. ALWAYS set tracked: false for new releases (the Sources tab UI reads
+ *    tracking status from /api/check-analyzed, NOT from this field)
+ * 3. Only set tracked: true AFTER verifying content is in the database
  * 4. Include URL to original press release when available
  * 5. Only track official AST SpaceMobile press releases (not partner/competitor PRs)
  */
