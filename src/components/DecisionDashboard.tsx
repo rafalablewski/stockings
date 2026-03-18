@@ -21,20 +21,6 @@ interface Decision {
   updatedAt: string;
 }
 
-interface PatchItem {
-  workflowId: string;
-  action: string;
-  anchor: string;
-  content: string;
-  finding_id: string;
-  rationale: string;
-}
-
-interface RemediationOutput {
-  findings_processed: number;
-  patches: PatchItem[];
-  skipped: Array<{ finding_id: string; reason: string }>;
-}
 
 const PM_META: Record<string, { label: string; color: string; badge: string }> = {
   'claude':       { label: 'Claude',      color: '#22d3ee', badge: 'ARCH' },
@@ -50,13 +36,10 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }>
   'pm-rejected':    { bg: 'rgba(248, 113, 113, 0.15)', text: '#f87171', label: 'PM Rejected' },
   'boss-approved':  { bg: 'rgba(34, 211, 238, 0.15)', text: '#22d3ee', label: 'Boss Approved' },
   'boss-rejected':  { bg: 'rgba(248, 113, 113, 0.2)', text: '#ef4444', label: 'Boss Rejected' },
-  'applied':        { bg: 'rgba(126, 231, 135, 0.15)', text: '#7ee787', label: 'Applied' },
-  'reverted':       { bg: 'rgba(251, 146, 60, 0.15)',  text: '#fb923c', label: 'Reverted' },
 };
 
 const SWIPE_THRESHOLD = 120;
 const REJECT_STATUSES = ['pm-rejected', 'boss-rejected'];
-const EXECUTION_CATEGORIES = ['data-patch', 'prompt-patch'];
 
 // ── Gmail-style swipe hook ───────────────────────────────────────────────────
 
@@ -204,7 +187,6 @@ export default function DecisionDashboard() {
   const [activePm, setActivePm] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
-  const [applying, setApplying] = useState<number | null>(null);
   const [showRejected, setShowRejected] = useState(false);
   const [dismissingIds, setDismissingIds] = useState<Set<number>>(new Set());
 
@@ -251,193 +233,6 @@ export default function DecisionDashboard() {
       });
     }, 50);
   }, []);  // eslint-disable-line react-hooks/exhaustive-deps
-
-  const applyPatches = async (decision: Decision) => {
-    setApplying(decision.id);
-    try {
-      let patches: PatchItem[] = [];
-      try {
-        const jsonMatch = decision.payload.match(/\{[\s\S]*"patches"[\s\S]*\}/);
-        if (jsonMatch) {
-          const parsed: RemediationOutput = JSON.parse(jsonMatch[0]);
-          patches = parsed.patches;
-        }
-      } catch {
-        console.error('Failed to parse patches from payload');
-        return;
-      }
-
-      if (patches.length === 0) return;
-
-      const previewRes = await authFetch('/api/workflow/apply-prompt-patch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ patches, dryRun: true }),
-      });
-      const preview = await previewRes.json();
-
-      if (!preview.valid || preview.valid === 0) {
-        alert(`No valid patches. ${preview.invalid || 0} invalid.`);
-        return;
-      }
-
-      const applyRes = await authFetch('/api/workflow/apply-prompt-patch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ patches, dryRun: false }),
-      });
-      const result = await applyRes.json();
-
-      if (result.success) {
-        await updateStatus(decision.id, 'applied', `Applied ${result.applied?.length || 0} patches, +${result.linesAdded || 0} lines`);
-      } else {
-        alert(`Apply failed: ${result.error}`);
-      }
-    } finally {
-      setApplying(null);
-    }
-  };
-
-  const applyDataPatches = async (decision: Decision) => {
-    setApplying(decision.id);
-    try {
-      let patches: Array<{ file: string; action: string; anchor: string; content: string; oldValue?: string }> = [];
-      try {
-        const jsonMatch = decision.payload.match(/\{[\s\S]*"patches"[\s\S]*\}/);
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]);
-          patches = (parsed.patches || []).map((p: Record<string, string>) => ({
-            file: p.file,
-            action: p.action,
-            anchor: p.anchor,
-            content: p.content,
-            ...(p.oldValue ? { oldValue: p.oldValue } : {}),
-          }));
-        }
-      } catch {
-        console.error('Failed to parse data patches from payload');
-        return;
-      }
-
-      if (patches.length === 0) return;
-
-      const ticker = decision.ticker;
-
-      const previewRes = await authFetch('/api/workflow/apply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker, agentId: decision.engineerId, patches, dryRun: true }),
-      });
-      const preview = await previewRes.json();
-
-      if (preview.error) {
-        alert(`Preview failed: ${preview.error}`);
-        return;
-      }
-
-      if (!preview.validCount || preview.validCount === 0) {
-        alert(`No valid data patches. ${preview.invalidCount || 0} invalid.`);
-        return;
-      }
-
-      const applyRes = await authFetch('/api/workflow/apply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker, agentId: decision.engineerId, patches: preview.patches, dryRun: false }),
-      });
-      const result = await applyRes.json();
-
-      if (result.error) {
-        alert(`Apply failed: ${result.error}`);
-        return;
-      }
-
-      // Read-only filesystem (Vercel/Lambda) — patches validated but can't write to disk.
-      // Download the unified diff so the user can apply locally.
-      if (result.readOnly) {
-        const patchedFiles = result.patchedFiles || {};
-        const fileNames = Object.keys(patchedFiles);
-        const allDiffs = fileNames
-          .map((f: string) => patchedFiles[f].diff)
-          .filter(Boolean)
-          .join('\n\n');
-
-        if (allDiffs) {
-          const blob = new Blob([allDiffs], { type: 'text/plain' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `${ticker.toLowerCase()}-data-patches.diff`;
-          a.click();
-          URL.revokeObjectURL(url);
-        }
-
-        await updateStatus(decision.id, 'applied',
-          `${result.applied} patches validated (read-only FS). Diff downloaded for local apply.`
-        );
-        alert(`Filesystem is read-only (deployed environment). ${result.applied} patches exported as .diff file.\n\nApply locally with:\n  git apply ${ticker.toLowerCase()}-data-patches.diff`);
-        return;
-      }
-
-      if (result.applied > 0) {
-        await updateStatus(decision.id, 'applied', `Applied ${result.applied} data patches to ${ticker.toUpperCase()}`);
-      } else {
-        alert(`Apply failed: ${result.summary || 'No patches applied (all failed validation)'}`);
-      }
-    } finally {
-      setApplying(null);
-    }
-  };
-
-  const revertDataPatches = async (decision: Decision) => {
-    const ticker = decision.ticker;
-    if (!confirm(`Revert all data patches for ${ticker.toUpperCase()}? This restores files using git history.`)) return;
-
-    setApplying(decision.id);
-    try {
-      // Preview first
-      const previewRes = await authFetch('/api/workflow/apply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker, revert: true, dryRun: true }),
-      });
-      const preview = await previewRes.json();
-
-      if (preview.error) {
-        alert(`Revert failed: ${preview.error}`);
-        return;
-      }
-
-      if (!preview.revertedCount || preview.revertedCount === 0) {
-        alert('No changes found to revert.');
-        return;
-      }
-
-      const fileList = (preview.files || []).map((f: { file: string; detail: string }) => `  ${f.file} — ${f.detail}`).join('\n');
-      if (!confirm(`Will revert ${preview.revertedCount} file(s):\n\n${fileList}\n\nProceed?`)) return;
-
-      // Apply revert
-      const revertRes = await authFetch('/api/workflow/apply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticker, revert: true, dryRun: false }),
-      });
-      const result = await revertRes.json();
-
-      if (result.error) {
-        alert(`Revert failed: ${result.error}`);
-        return;
-      }
-
-      if (result.revertedCount > 0) {
-        await updateStatus(decision.id, 'reverted', `Reverted ${result.revertedCount} file(s) for ${ticker.toUpperCase()}`);
-      } else {
-        alert(`Revert failed: ${result.summary || 'No files reverted'}`);
-      }
-    } finally {
-      setApplying(null);
-    }
-  };
 
   const parsePatchCount = (payload: string): number => {
     try {
@@ -515,13 +310,11 @@ export default function DecisionDashboard() {
               decision={d}
               isExpanded={expandedId === d.id}
               isDismissing={dismissingIds.has(d.id)}
-              applying={applying}
+
               onToggleExpand={() => setExpandedId(expandedId === d.id ? null : d.id)}
               onSwipeReject={handleSwipeReject}
               onUpdateStatus={updateStatus}
-              onApplyPatches={applyPatches}
-              onApplyDataPatches={applyDataPatches}
-              onRevertDataPatches={revertDataPatches}
+
               parsePatchCount={parsePatchCount}
             />
           ))}
@@ -550,13 +343,11 @@ interface DecisionCardProps {
   decision: Decision;
   isExpanded: boolean;
   isDismissing: boolean;
-  applying: number | null;
+
   onToggleExpand: () => void;
   onSwipeReject: (d: Decision) => void;
   onUpdateStatus: (id: number, status: string, notes?: string) => void;
-  onApplyPatches: (d: Decision) => void;
-  onApplyDataPatches: (d: Decision) => void;
-  onRevertDataPatches: (d: Decision) => void;
+
   parsePatchCount: (payload: string) => number;
 }
 
@@ -564,21 +355,17 @@ function DecisionCard({
   decision: d,
   isExpanded,
   isDismissing,
-  applying,
+
   onToggleExpand,
   onSwipeReject,
   onUpdateStatus,
-  onApplyPatches,
-  onApplyDataPatches,
-  onRevertDataPatches,
+
   parsePatchCount,
 }: DecisionCardProps) {
   const pm = PM_META[d.pm] || { label: d.pm, color: '#888', badge: '?' };
   const st = STATUS_STYLES[d.status] || STATUS_STYLES['pending'];
   const patchCount = parsePatchCount(d.payload);
   const rejected = REJECT_STATUSES.includes(d.status);
-  const isExecution = EXECUTION_CATEGORIES.includes(d.category);
-  const isNonExecApproved = d.status === 'pm-approved' && !isExecution;
 
   const canSwipeReject = d.status === 'pending' || d.status === 'pm-approved';
   const indicatorRef = useRef<HTMLDivElement>(null);
@@ -621,27 +408,11 @@ function DecisionCard({
             </div>
           </div>
           <div className="dec-card-right">
-            {/* Non-execution clarification badge */}
-            {isNonExecApproved && (
-              <span className="dec-review-only-badge">Review Only</span>
-            )}
-            {/* Execution badge for clarity */}
-            {d.status === 'pm-approved' && isExecution && (
-              <span className="dec-execution-badge">
-                {d.category === 'data-patch' ? 'DB Write' : 'Code Write'}
-              </span>
-            )}
             <span className="dec-status-badge" style={{ background: st.bg, color: st.text }}>{st.label}</span>
             <span className="dec-expand-icon">{isExpanded ? '\u25B2' : '\u25BC'}</span>
           </div>
         </div>
 
-        {/* Non-execution info banner (when expanded) */}
-        {isExpanded && isNonExecApproved && (
-          <div className="dec-nonexec-banner">
-            This approval triggers the next workflow step — it does not write to the database or modify code.
-          </div>
-        )}
 
         <div className={`dec-card-body-anim ${isExpanded ? 'dec-body-open' : ''}`}>
           <div className="dec-card-body">
@@ -681,35 +452,6 @@ function DecisionCard({
                     Boss Reject
                   </button>
                 </>
-              )}
-              {d.status === 'boss-approved' && d.category === 'prompt-patch' && (
-                <button
-                  className="eng-btn"
-                  data-variant="active"
-                  onClick={() => onApplyPatches(d)}
-                  disabled={applying === d.id}
-                >
-                  {applying === d.id ? 'Applying...' : 'Apply Patches to workflows.ts'}
-                </button>
-              )}
-              {d.status === 'boss-approved' && d.category === 'data-patch' && (
-                <button
-                  className="eng-btn"
-                  data-variant="active"
-                  onClick={() => onApplyDataPatches(d)}
-                  disabled={applying === d.id}
-                >
-                  {applying === d.id ? 'Applying...' : 'Apply Data Patches to database'}
-                </button>
-              )}
-              {d.status === 'applied' && d.category === 'data-patch' && (
-                <button
-                  className="eng-btn eng-btn-danger"
-                  onClick={() => onRevertDataPatches(d)}
-                  disabled={applying === d.id}
-                >
-                  {applying === d.id ? 'Reverting...' : 'Revert Data Patches'}
-                </button>
               )}
             </div>
           </div>
