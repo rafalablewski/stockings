@@ -65,7 +65,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'Missing id or status' }, { status: 400 });
   }
 
-  const validStatuses = ['pending', 'pm-approved', 'pm-rejected', 'boss-approved', 'boss-rejected', 'applied'];
+  const validStatuses = ['pending', 'pm-approved', 'pm-rejected', 'boss-approved', 'boss-rejected'];
   if (!validStatuses.includes(status)) {
     return NextResponse.json({ error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` }, { status: 400 });
   }

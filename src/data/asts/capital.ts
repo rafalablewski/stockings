@@ -10,7 +10,7 @@
  * - Equity offerings: 8-K filings, press releases
  * - SBC: 10-Q/10-K compensation disclosures
  *
- * LAST UPDATED: 2026-03-17 (27 filings: Mar Wisniewski Form 144 + Yao Form 4 + Feb offerings/greenshoe/settlements + Dec insider + 13G/13D/A + Form 4s)
+ * LAST UPDATED: 2026-03-18 (29 filings: Added Nov 2025 insider transactions — Johnson sale + Cisneros purchase)
  * NEXT UPDATE: After Q4 2025 10-K (~March 2, 2026) or new proxy filing.
  *
  * AI AGENT INSTRUCTIONS:
@@ -626,6 +626,38 @@ export const DILUTION_SCENARIOS: DilutionScenario[] = [
 // ============================================================================
 // UNIFIED INSIDER TRANSACTIONS (all tickers use this pattern)
 // ============================================================================
+//
+// Mar 3, 2026 SC 13D/A Amendment 17: Avellan ownership diluted by Feb 2026 capital raises
+// 78,163,078 Class A equivalent (via AST LLC Units) + 78,163,078 Class C (10x voting)
+// Ownership: 20.8% economic (down from 21.9% in Nov 2025 13D/A#16)
+// Voting: 71.7% via Class C super-voting shares
+// Forward contract amended: Floor $56.06→Cap $79.66, $10.7M cash proceeds
+// Dilution drivers: Feb RD offerings (6.3M shares), Ligado penny warrants (4.7M), ATM (~6.5M)
+// No Class C→A conversions; no AST LLC Unit redemptions as of Feb 27, 2026
+//
+// [Historical] Nov 21, 2025 SC 13D/A Amendment 16: Avellan ownership 21.9% (superseded by Amendment 17)
+// 78,163,078 Class A equivalent (via AST LLC Units) + 78,163,078 Class C (10x voting)
+// Ownership: 21.9% economic (as of Nov 19, 2025 — prior to Feb 2026 dilution events)
+// Voting: 72.9% via Class C super-voting shares
+// Forward contract: 2.5M shares, Floor $56.06, Cap $79.66, settlement dates March 2027
+// Filing triggered by increase in total outstanding Class A (not Avellan transactions)
+// NOTE: This data is superseded by Amendment 17 (Mar 3, 2026) which reports 20.8% post-Feb 2026 dilution.
+//
+// Dec 9, 2025 Form 144: American Tower Corp (10% owner group) filed notice of proposed sale
+// 2,288,621 shares via Barclays, aggregate market value $169.4M (~$74/share implied)
+// Acquired Apr 6, 2021 via private placement (cash payment). No prior sales in past 3 months.
+// NOTE: Form 144 is a NOTICE of proposed sale, not confirmation of execution. Verify if sale completed.
+//
+// Dec 5, 2025 Form 144: Officer Huiwen Yao notice of proposed sale 40K shares via B. Riley
+// Aggregate market value $2.94M (~$73.50/share implied)
+// Acquired Nov 14, 2025 via stock option exercise (cash payment)
+// Rule 10b5-1 plan adopted Jun 12, 2025. Prior sale: Sep 16, 2025 (40K shares @ $1.62M gross proceeds)
+// Exercise-and-sell pattern. Form 144 is NOTICE — verify if sale executed.
+//
+// Dec 5, 2025 Form 144: Officer Maya Bernal notice of proposed sale 6K shares via Fidelity
+// Aggregate market value $442,543.69 (~$73.76/share implied)
+// Acquired Oct 17, 2025 via restricted stock vesting (compensation)
+// No prior sales in past 3 months. RSU vest-and-sell pattern. Form 144 is NOTICE — verify if sale executed.
 
 /**
  * Single consolidated array for ALL insider activity. Reverse-chronological.
@@ -654,6 +686,9 @@ export const INSIDER_TRANSACTIONS: InsiderTransaction[] = [
   { date: '2025-12-10', name: 'Keith R. Larson', role: 'Director', type: 'purchase', units: 675, price: 72.71, plan10b5_1: true, planAdopted: '2025-09-08', postHoldings: 675, note: 'IRA account.', filingType: 'Form 4' },
   { date: '2025-12-17', name: 'Keith R. Larson', role: 'Director', type: 'purchase', units: 715, price: 70.02, plan10b5_1: true, planAdopted: '2025-09-08', postHoldings: 1390, note: 'IRA account.', filingType: 'Form 4' },
   { date: '2025-12-24', name: 'Keith R. Larson', role: 'Director', type: 'purchase', units: 625, price: 80.00, plan10b5_1: true, planAdopted: '2025-09-08', postHoldings: 2015, note: 'IRA account.', filingType: 'Form 4' },
+  // ── November 2025 ──────────────────────────────────────────────────────
+  { date: '2025-11-26', name: 'Andrew M. Johnson', role: 'CFO & CLO', type: 'sale', units: 10000, price: 56.00, proceeds: 560000, postHoldings: 387485, note: 'Open market sale. No 10b5-1 plan indicated. Sold near post-BB1-6 launch lows before Q4 revenue ramp became visible.', filingType: 'Form 4', filingDate: '2025-11-28' },
+  { date: '2025-11-20', name: 'Adriana Cisneros', role: 'Director', type: 'purchase', units: 750, price: 50.79, proceeds: 38092.5, postHoldings: 784077, note: 'Two purchases of 375 shares each at $50.79. All shares held indirectly by trusts for benefit of reporting person\'s children. Director buy near post-launch lows.', filingType: 'Form 4', filingDate: '2025-11-24' },
   // ── August–September 2025 ──────────────────────────────────────────────
   { date: '2025-09-03', name: 'Huiwen Yao', role: 'CTO', type: 'sale', units: 40000, price: 41.58, proceeds: 1663200, plan10b5_1: true, planAdopted: '2025-06-12', broker: 'B. Riley Securities', postHoldings: 160000, note: 'Matches Form 144 filed Sep 3. Price range $40-$42.', filingType: 'Form 4' },
   { date: '2025-08-26', name: 'Andrew M. Johnson', role: 'CFO & CLO', type: 'sale', units: 20000, price: 52.48, proceeds: 1049634, broker: 'Fidelity Brokerage', note: 'Post-vesting (Aug 15 RSU vest).', filingType: 'Form 144' },

@@ -429,12 +429,7 @@ const FilingRow: React.FC<{
   };
 
   const [copied, setCopied] = useState(false);
-  const [applyStep, setApplyStep] = useState<"idle" | "previewing" | "previewed" | "applying" | "applied" | "error">("idle");
-  const [applyError, setApplyError] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [patchPreview, setPatchPreview] = useState<any>(null);
-  const [commitStatus, setCommitStatus] = useState<"idle" | "committing" | "done" | "error">("idle");
-  const [commitMessage, setCommitMessage] = useState("");
   const [expanded, setExpanded] = useState(false);
 
   const formDisplay = displayFormName(r.filing.form);
@@ -480,11 +475,6 @@ const FilingRow: React.FC<{
 
   const resetWorkflowState = () => {
     setCopied(false);
-    setApplyStep("idle");
-    setApplyError("");
-    setPatchPreview(null);
-    setCommitStatus("idle");
-    setCommitMessage("");
   };
 
   const isErrorAnalysis = (text: string | null) => !!text && (text.startsWith('Error:') || text === 'No analysis returned.' || text.includes('AI analysis failed') || text.includes('AI features are disabled'));
@@ -557,87 +547,6 @@ const FilingRow: React.FC<{
     setTimeout(() => { printWindow.print(); }, 250);
   };
 
-  const handlePreview = async () => {
-    if (!analysis) return;
-    setApplyStep("previewing");
-    setApplyError("");
-    setPatchPreview(null);
-    try {
-      const res = await fetch("/api/workflow/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticker, agentId: "edgar-filing-analyzer", analysis, dryRun: true }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setApplyStep("error");
-        setApplyError(data.error || "Preview failed");
-        return;
-      }
-      setPatchPreview(data);
-      setApplyStep(data.patchCount === 0 ? "idle" : "previewed");
-      if (data.patchCount === 0) setApplyError(data.summary || "No changes to apply");
-    } catch (err) {
-      setApplyStep("error");
-      setApplyError((err as Error).message);
-    }
-  };
-
-  const handleConfirmApply = async () => {
-    if (!patchPreview?.patches?.length) return;
-    setApplyStep("applying");
-    setApplyError("");
-    try {
-      const res = await fetch("/api/workflow/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticker, agentId: "edgar-filing-analyzer", dryRun: false, patches: patchPreview.patches }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setApplyStep("error");
-        setApplyError(data.error || "Apply failed");
-        return;
-      }
-      setApplyStep("applied");
-      setPatchPreview((prev: typeof patchPreview) => ({ ...prev, applySummary: data.summary }));
-      // Auto re-check DB so cross-refs + filing status update immediately
-      if (onRecheck) onRecheck();
-    } catch (err) {
-      setApplyStep("error");
-      setApplyError((err as Error).message);
-    }
-  };
-
-  const handleCancelPreview = () => {
-    setApplyStep("idle");
-    setPatchPreview(null);
-    setApplyError("");
-  };
-
-  const handleCommit = async () => {
-    if (!analysis) return;
-    setCommitStatus("committing");
-    setCommitMessage("");
-    try {
-      const res = await fetch("/api/workflow/commit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticker, agentId: "edgar-filing-analyzer", analysis }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setCommitStatus("error");
-        setCommitMessage(data.error || "Commit failed");
-        return;
-      }
-      setCommitStatus("done");
-      setCommitMessage(data.message || "Committed");
-    } catch (err) {
-      setCommitStatus("error");
-      setCommitMessage((err as Error).message);
-    }
-  };
 
   return (
     <div>
@@ -873,168 +782,8 @@ const FilingRow: React.FC<{
                   {copied ? 'Copied' : 'Copy Markdown'}
                 </button>
 
-                {/* 3. Preview Changes / Applied indicator */}
-                {applyStep === 'applied' ? (
-                  <span className="sm-ed-action-btn" data-state="done">
-                    <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                    Applied
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handlePreview}
-                    disabled={applyStep === 'previewing' || applyStep === 'previewed' || applyStep === 'applying'}
-                    className="sm-ed-action-btn"
-                    data-preview={applyStep === 'previewing' ? 'previewing' : applyStep === 'error' ? 'error' : 'default'}
-                  >
-                    <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                      <circle cx={12} cy={12} r={3} />
-                    </svg>
-                    {applyStep === 'previewing'
-                      ? 'Extracting patches...'
-                      : applyStep === 'error'
-                        ? 'Retry Preview'
-                        : 'Preview Changes'}
-                  </button>
-                )}
-
-                {/* 4. Create Commit */}
-                <button
-                  type="button"
-                  onClick={handleCommit}
-                  disabled={commitStatus === 'committing' || commitStatus === 'done' || applyStep !== 'applied'}
-                  className="sm-ed-action-btn"
-                  data-commit={commitStatus === 'done' ? 'done' : commitStatus === 'error' ? 'error' : applyStep !== 'applied' ? 'disabled' : commitStatus === 'committing' ? 'committing' : 'ready'}
-                >
-                  <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx={12} cy={12} r={4} />
-                    <line x1={1.05} y1={12} x2={7} y2={12} />
-                    <line x1={17.01} y1={12} x2={22.96} y2={12} />
-                  </svg>
-                  {commitStatus === 'committing'
-                    ? 'Committing...'
-                    : commitStatus === 'done'
-                      ? 'Committed'
-                      : 'Create Commit'}
-                </button>
-
-                {/* Status messages */}
-                {applyError && (
-                  <span className="sm-ed-status-msg" style={{ '--msg-color': applyStep === 'error' ? 'var(--coral)' : 'var(--text3)' } as React.CSSProperties}>
-                    {applyError}
-                  </span>
-                )}
-                {patchPreview?.applySummary && applyStep === 'applied' && (
-                  <span className="sm-text3 sm-ed-status-msg">
-                    {patchPreview.applySummary}
-                  </span>
-                )}
-                {commitMessage && (
-                  <span className="sm-ed-status-msg" style={{ '--msg-color': commitStatus === 'error' ? 'var(--coral)' : 'var(--text3)' } as React.CSSProperties}>
-                    {commitMessage}
-                  </span>
-                )}
               </div>
 
-              {/* ── Diff Preview Panel ── */}
-              {applyStep === 'previewed' && patchPreview && (
-                <div className="sm-ed-diff-panel">
-
-                  {/* Header */}
-                  <div className="sm-flex-between sm-ed-diff-header">
-                    <div>
-                      <span className="sm-fw-600 sm-ed-diff-title">
-                        Patch Preview
-                      </span>
-                      <span className="sm-text3 sm-text-10 sm-ml-12">
-                        {patchPreview.summary}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Per-file diffs */}
-                  <div className="sm-scrollbox-med">
-                    {patchPreview.previews?.map((p: { file: string; action: string; valid: boolean; detail: string; diff: string; linesAdded: number }, i: number) => (
-                      <div key={i} className="sm-ed-diff-file">
-                        <div className="sm-flex sm-mb-6">
-                          <span className="sm-ed-diff-filepath" data-invalid={p.valid ? undefined : 'true'}>
-                            {p.file}
-                          </span>
-                          <span
-                            className="sm-ed-diff-action-badge"
-                            data-valid={p.valid ? 'true' : 'false'}
-                          >
-                            {p.action} {p.valid ? `+${p.linesAdded}` : 'rejected'}
-                          </span>
-                        </div>
-                        {p.valid && p.diff ? (
-                          <pre className="sm-ed-diff-pre">
-                            {p.diff.split('\n').map((line: string, li: number) => (
-                              <span
-                                key={li}
-                                className={
-                                  line.startsWith('+') && !line.startsWith('+++')
-                                    ? 'sm-ed-diff-add'
-                                    : line.startsWith('-') && !line.startsWith('---')
-                                      ? 'sm-ed-diff-del'
-                                      : line.startsWith('@@')
-                                        ? 'sm-ed-diff-hunk'
-                                        : undefined
-                                }
-                              >
-                                {line}
-                              </span>
-                            ))}
-                          </pre>
-                        ) : !p.valid ? (
-                          <span className="sm-coral sm-ed-diff-rejected">{p.detail}</span>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Warning + action buttons */}
-                  <div className="sm-flex-between sm-ed-diff-footer">
-                    <span className="sm-fw-500 sm-ed-diff-warning">
-                      Review carefully — these changes will be written to the database
-                    </span>
-                    <div className="sm-flex sm-gap-8">
-                      <button
-                        type="button"
-                        onClick={handleCancelPreview}
-                        className="sm-ed-action-btn"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleConfirmApply}
-                        disabled={!patchPreview.validCount}
-                        className="sm-ed-action-btn sm-fw-600"
-                        data-confirm={patchPreview.validCount ? 'active' : 'disabled'}
-                      >
-                        <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M12 5v14M5 12h14" />
-                        </svg>
-                        Confirm &amp; Apply
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Applying spinner */}
-              {applyStep === 'applying' && (
-                <div className="sm-flex sm-mt-12">
-                  <div className="sm-ed-pulse-dot" />
-                  <span className="sm-text3 sm-fw-500 sm-ed-spinner-text">
-                    Writing patches to database...
-                  </span>
-                </div>
-              )}
             </div>
           </div>
           )}

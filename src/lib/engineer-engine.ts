@@ -23,8 +23,11 @@ import { autoReviewDecision } from './gemini-auto-review';
 const CLAUDE_MODEL_DEFAULT = 'claude-sonnet-4-5-20250929';
 const CLAUDE_MODEL_FAST = 'claude-haiku-4-5-20251001';
 
-// Per-workflow timeout for Claude API calls (2 minutes)
-const CLAUDE_API_TIMEOUT_MS = 120_000;
+// Per-workflow timeout for Claude API calls (must stay under Vercel maxDuration=300s)
+// Streaming keeps the connection alive with SSE chunks, so we can safely use
+// a longer timeout — the 300s Vercel limit applies to idle time, not total duration.
+const CLAUDE_API_TIMEOUT_MS = 270_000;       // default: 4.5 minutes (Sonnet — streaming)
+const CLAUDE_API_TIMEOUT_FAST_MS = 180_000;  // fast model (Haiku): 3 minutes
 
 // Status type for run records
 export type RunStatus = 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
@@ -255,11 +258,15 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
         ? `${datedPrompt}\n\n════════════════════════════════════════════════════════════\nAUTO-FETCHED DATA\n════════════════════════════════════════════════════════════\n\n${opts.userData}`
         : datedPrompt;
 
-      // 4. Call Claude API
+      // 4. Call Claude API (streaming)
       // Use Haiku for audit engineers (large context, need speed for Vercel timeouts)
       const model = engineer.category === 'audit' ? CLAUDE_MODEL_FAST : CLAUDE_MODEL_DEFAULT;
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), CLAUDE_API_TIMEOUT_MS);
+      const apiTimeout = engineer.category === 'audit' ? CLAUDE_API_TIMEOUT_FAST_MS : CLAUDE_API_TIMEOUT_MS;
+      // Timeout covers the ENTIRE operation: connection + streaming read.
+      // Previously it was cleared after headers arrived, leaving readStreamingResponse
+      // with no timeout — causing infinite hangs on stalled streams.
+      const timeoutId = setTimeout(() => controller.abort(), apiTimeout);
       let claudeRes: Response;
       try {
         claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -272,20 +279,21 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
           body: JSON.stringify({
             model,
             max_tokens: 16384,
+            stream: true,
             messages: [{ role: 'user', content: fullMessage }],
           }),
           signal: controller.signal,
         });
       } catch (fetchErr) {
+        clearTimeout(timeoutId);
         if (fetchErr instanceof DOMException && fetchErr.name === 'AbortError') {
-          throw new Error(`Claude API timed out after ${CLAUDE_API_TIMEOUT_MS / 1000}s for workflow ${resolved.workflowId} on ticker ${opts.ticker}`, { cause: fetchErr });
+          throw new Error(`Claude API timed out after ${apiTimeout / 1000}s for workflow ${resolved.workflowId} on ticker ${opts.ticker}`, { cause: fetchErr });
         }
         throw fetchErr;
-      } finally {
-        clearTimeout(timeoutId);
       }
 
       if (!claudeRes.ok) {
+        clearTimeout(timeoutId);
         const errText = await claudeRes.text();
         // Detect credit/billing errors for a clear message
         const lower = errText.toLowerCase();
@@ -303,8 +311,20 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
         throw new Error(reason);
       }
 
-      const result = await claudeRes.json();
-      const outputFull = result.content?.[0]?.text || '';
+      // Read streaming SSE response and accumulate text deltas.
+      // The AbortController timeout is still active — it will abort the stream
+      // reader if the total operation exceeds the timeout.
+      let outputFull: string;
+      try {
+        outputFull = await readStreamingResponse(claudeRes);
+      } catch (streamErr) {
+        clearTimeout(timeoutId);
+        if (streamErr instanceof DOMException && streamErr.name === 'AbortError') {
+          throw new Error(`Claude API stream timed out after ${apiTimeout / 1000}s for workflow ${resolved.workflowId} on ticker ${opts.ticker}`, { cause: streamErr });
+        }
+        throw streamErr;
+      }
+      clearTimeout(timeoutId);
       const outputSummary = outputFull.slice(0, 500);
       const durationMs = Date.now() - wfStartTime;
 
@@ -400,34 +420,36 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
     }
   }
 
-  // ── Auto-review gate: if configured, Gemini AI reviews before chaining ──
+  // ── Auto-review + chaining: fire-and-forget so the API response returns immediately ──
+  // The review and downstream chain run in the background; the parent engineer's
+  // output is already saved to the DB and the decision created above.
   if (!hasFailure && engineer.autoReviewBy && decisionId) {
-    try {
-      const review = await autoReviewDecision(
-        decisionId,
-        engineer.autoReviewBy,
-        combinedOutput,
-        engineer,
-        opts.ticker,
-      );
-      if (review.approved && engineer.chainsTo) {
-        const chainPayload = review.enhancedPayload || combinedOutput;
-        const downstreamEngineer = getEngineer(engineer.chainsTo);
-        if (downstreamEngineer) {
-          runEngineer({
-            ticker: opts.ticker,
-            engineerId: engineer.chainsTo,
-            triggerType: 'event',
-            triggerReason: `Chained from ${engineer.id} (run #${lastRunId}) — Gemini approved`,
-            chainContext: { LATEST_AUDIT_OUTPUT: chainPayload },
-          }).catch(err => {
-            console.error(`[engine] Chain failed for ${engineer.chainsTo}:`, err);
-          });
+    (async () => {
+      try {
+        const review = await autoReviewDecision(
+          decisionId,
+          engineer.autoReviewBy!,
+          combinedOutput,
+          engineer,
+          opts.ticker,
+        );
+        if (review.approved && engineer.chainsTo) {
+          const chainPayload = review.enhancedPayload || combinedOutput;
+          const downstreamEngineer = getEngineer(engineer.chainsTo);
+          if (downstreamEngineer) {
+            await runEngineer({
+              ticker: opts.ticker,
+              engineerId: engineer.chainsTo,
+              triggerType: 'event',
+              triggerReason: `Chained from ${engineer.id} (run #${lastRunId}) — Gemini approved`,
+              chainContext: { LATEST_AUDIT_OUTPUT: chainPayload },
+            });
+          }
         }
+      } catch (err) {
+        console.error(`[engine] Auto-review/chain failed for ${engineer.id}:`, err);
       }
-    } catch (err) {
-      console.error(`[engine] Auto-review failed for ${engineer.autoReviewBy}:`, err);
-    }
+    })();
   }
 
   // ── Chaining: trigger downstream engineer if configured (non-reviewed) ──
@@ -468,6 +490,60 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
 export async function checkAndRunDueEngineers(): Promise<RunResult[]> {
   // All engineers are manual-only — no automatic scheduling
   return [];
+}
+
+/**
+ * Read a streaming SSE response from the Claude Messages API and return
+ * the accumulated text output. Handles `content_block_delta` events with
+ * `text_delta` payloads, ignoring all other event types.
+ */
+async function readStreamingResponse(res: Response): Promise<string> {
+  const body = res.body;
+  if (!body) throw new Error('Streaming response has no body');
+
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  const chunks: string[] = [];
+  let buffer = '';
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+
+      // Process complete SSE lines (delimited by double newlines)
+      const lines = buffer.split('\n');
+      // Keep the last potentially-incomplete line in the buffer
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const payload = line.slice(6).trim();
+        if (payload === '[DONE]') continue;
+
+        try {
+          const event = JSON.parse(payload);
+          if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
+            chunks.push(event.delta.text);
+          }
+          // Check for error events in the stream
+          if (event.type === 'error') {
+            throw new Error(`Claude streaming error: ${event.error?.message || JSON.stringify(event.error)}`);
+          }
+        } catch (parseErr) {
+          // Skip non-JSON lines (e.g. event: labels)
+          if (parseErr instanceof SyntaxError) continue;
+          throw parseErr;
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  return chunks.join('');
 }
 
 // Map ticker -> company data module for dynamic context injection
@@ -577,48 +653,42 @@ function getDatabaseContext(ticker: string): string {
       }
     }
 
-    // Growth drivers
+    // Growth drivers (condensed: name + impact only)
     if (investment.growthDrivers?.length > 0) {
       lines.push('', '### Growth Drivers');
       for (const g of investment.growthDrivers) {
-        lines.push(`- [${g.impact}] ${g.driver}: ${g.description}`);
+        lines.push(`- [${g.impact}] ${g.driver}`);
       }
     }
 
-    // Competitive moat
+    // Competitive moat (condensed: name + strength/risk only)
     if (investment.moatSources?.length > 0) {
       lines.push('', '### Competitive Moat — Sources');
       for (const m of investment.moatSources) {
-        lines.push(`- [${m.strength}] ${m.source}: ${m.detail}`);
+        lines.push(`- [${m.strength}] ${m.source}`);
       }
     }
     if (investment.moatThreats?.length > 0) {
       lines.push('', '### Competitive Moat — Threats');
       for (const m of investment.moatThreats) {
-        lines.push(`- [${m.risk}] ${m.threat}: ${m.detail}`);
+        lines.push(`- [${m.risk}] ${m.threat}`);
       }
     }
 
-    // Risks
+    // Risks (condensed: skip detail/mitigation to reduce context size)
     if (investment.risks?.length > 0) {
       lines.push('', '### Risk Matrix');
       for (const r of investment.risks) {
         lines.push(`- ${r.risk} [Severity: ${r.severity}, Likelihood: ${r.likelihood}, Impact: ${r.impact}]`);
-        lines.push(`  Detail: ${r.detail}`);
-        lines.push(`  Mitigation: ${r.mitigation}`);
       }
     }
 
-    // Perspectives
+    // Perspectives (condensed: assessment + recommendation only)
     if (investment.perspectives) {
       lines.push('', '### Analyst Perspectives');
       for (const [key, p] of Object.entries(investment.perspectives)) {
         const perspective = p as { title: string; assessment: string; summary: string; ecosystemView: string; recommendation: string };
-        lines.push(`\n${perspective.title} (${key}):`);
-        lines.push(`Assessment: ${perspective.assessment}`);
-        lines.push(`Summary: ${perspective.summary}`);
-        lines.push(`Ecosystem View: ${perspective.ecosystemView}`);
-        lines.push(`Recommendation: ${perspective.recommendation}`);
+        lines.push(`- ${perspective.title} (${key}): ${perspective.assessment} — ${perspective.recommendation}`);
       }
     }
 
@@ -642,9 +712,9 @@ function getDatabaseContext(ticker: string): string {
     sections.push(lines.join('\n'));
   }
 
-  // ── Latest Quarterly Financials (most recent 4 quarters) ──
+  // ── Latest Quarterly Financials (most recent 2 quarters to reduce context) ──
   if (data.QUARTERLY_DATA) {
-    const quarters = Object.entries(data.QUARTERLY_DATA).slice(0, 4);
+    const quarters = Object.entries(data.QUARTERLY_DATA).slice(0, 2);
     if (quarters.length > 0) {
       const lines = ['## QUARTERLY FINANCIALS (Last 4 Quarters)'];
       for (const [label, q] of quarters) {
@@ -702,7 +772,7 @@ function getDatabaseContext(ticker: string): string {
   // ── Upcoming Catalysts ──
   if (data.UPCOMING_CATALYSTS?.length > 0) {
     const lines = ['## UPCOMING CATALYSTS'];
-    for (const c of data.UPCOMING_CATALYSTS.slice(0, 15)) {
+    for (const c of data.UPCOMING_CATALYSTS.slice(0, 8)) {
       lines.push(`- [${c.impact}] ${c.event} — ${c.timeline}${c.category ? ` (${c.category})` : ''}`);
     }
     sections.push(lines.join('\n'));

@@ -204,14 +204,16 @@ async function scanTicker(ticker: string, limit: number): Promise<TickerScanResu
   const fetched = parseFilings(recent, cik, ticker, limit);
   const allFilings = parseFilings(recent, cik, ticker, recent.accessionNumber?.length ?? 0);
 
-  // 3. Load existing accession numbers from DB
+  // 3. Load existing filing records from DB (accession numbers + enrichment status)
   const db = getDb();
   const tickerLower = ticker.toLowerCase();
   const existingAccessions = new Set<string>();
 
   try {
     const rows = await db
-      .select({ accessionNumber: seenFilings.accessionNumber })
+      .select({
+        accessionNumber: seenFilings.accessionNumber,
+      })
       .from(seenFilings)
       .where(inArray(seenFilings.ticker, [tickerLower]));
 
@@ -226,6 +228,7 @@ async function scanTicker(ticker: string, limit: number): Promise<TickerScanResu
   const newFilings = fetched.filter(f => !existingAccessions.has(f.accessionNumber));
 
   // 4a. Always check database coverage against ALL EDGAR filings
+  //     Pass DB status map so filings enriched by the EDGAR tab are recognized
   const coverage = checkFilingCoverage(ticker, allFilings);
 
   if (newFilings.length === 0) {
@@ -516,7 +519,10 @@ function lookupCrossRefsServer(
  * - Tier 2: cross-ref data exists → "data_only"
  * - Tier 3: nothing → "untracked"
  */
-function checkFilingCoverage(ticker: string, filings: ScannedFiling[]): CoverageSummary {
+function checkFilingCoverage(
+  ticker: string,
+  filings: ScannedFiling[],
+): CoverageSummary {
   const data = TICKER_SEC_DATA[ticker.toUpperCase()];
   if (!data) {
     return { total: filings.length, tracked: 0, dataOnly: 0, untracked: filings.length, entries: filings.map(f => ({
