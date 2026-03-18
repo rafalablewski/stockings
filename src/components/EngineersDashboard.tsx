@@ -1313,8 +1313,6 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
         {/* ══ OPERATIONS TAB ══ */}
         {activeTab === 'operations' && (
           <OperationsPipeline
-            onRun={handleRun}
-            runningIds={runningIds}
             selectedTicker={selectedTicker}
           />
         )}
