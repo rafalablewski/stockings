@@ -204,19 +204,26 @@ async function scanTicker(ticker: string, limit: number): Promise<TickerScanResu
   const fetched = parseFilings(recent, cik, ticker, limit);
   const allFilings = parseFilings(recent, cik, ticker, recent.accessionNumber?.length ?? 0);
 
-  // 3. Load existing accession numbers from DB
+  // 3. Load existing filing records from DB (accession numbers + enrichment status)
   const db = getDb();
   const tickerLower = ticker.toLowerCase();
   const existingAccessions = new Set<string>();
+  const dbStatusMap = new Map<string, string>();  // accession → status from EDGAR tab enrichment
 
   try {
     const rows = await db
-      .select({ accessionNumber: seenFilings.accessionNumber })
+      .select({
+        accessionNumber: seenFilings.accessionNumber,
+        status: seenFilings.status,
+      })
       .from(seenFilings)
       .where(inArray(seenFilings.ticker, [tickerLower]));
 
     for (const row of rows) {
       existingAccessions.add(row.accessionNumber);
+      if (row.status) {
+        dbStatusMap.set(normalizeAccession(row.accessionNumber), row.status);
+      }
     }
   } catch (err) {
     console.error(`[sec-scanner] DB query failed for ${ticker}:`, err);
@@ -226,7 +233,8 @@ async function scanTicker(ticker: string, limit: number): Promise<TickerScanResu
   const newFilings = fetched.filter(f => !existingAccessions.has(f.accessionNumber));
 
   // 4a. Always check database coverage against ALL EDGAR filings
-  const coverage = checkFilingCoverage(ticker, allFilings);
+  //     Pass DB status map so filings enriched by the EDGAR tab are recognized
+  const coverage = checkFilingCoverage(ticker, allFilings, dbStatusMap);
 
   if (newFilings.length === 0) {
     return { ticker, companyName, totalFetched: allFilings.length, newFilings: [], analyses: [], coverage };
@@ -513,10 +521,19 @@ function lookupCrossRefsServer(
  * Uses the same matching logic as SharedEdgarTab's matchFilings():
  * - Tier 1a: exact accession number match → "tracked"
  * - Tier 1b: form+date legacy match (within 14 days) → "tracked"
+ * - Tier 1c: DB enrichment status from seenFilings table → "tracked" / "data_only"
  * - Tier 2: cross-ref data exists → "data_only"
  * - Tier 3: nothing → "untracked"
+ *
+ * @param dbStatusMap Optional map of normalized accession → status from the
+ *                    seenFilings DB (populated by EDGAR tab enrichment).
+ *                    Ensures scanner counts stay in sync with the EDGAR tab.
  */
-function checkFilingCoverage(ticker: string, filings: ScannedFiling[]): CoverageSummary {
+function checkFilingCoverage(
+  ticker: string,
+  filings: ScannedFiling[],
+  dbStatusMap?: Map<string, string>,
+): CoverageSummary {
   const data = TICKER_SEC_DATA[ticker.toUpperCase()];
   if (!data) {
     return { total: filings.length, tracked: 0, dataOnly: 0, untracked: filings.length, entries: filings.map(f => ({
@@ -582,6 +599,23 @@ function checkFilingCoverage(ticker: string, filings: ScannedFiling[]): Coverage
       return {
         accessionNumber: f.accessionNumber, form: f.form, filingDate: f.filingDate,
         status: 'tracked' as FilingDbStatus, matchedDescription: match.description,
+      };
+    }
+
+    // Tier 1c: DB enrichment status from seenFilings (set by EDGAR tab matchFilings)
+    const dbStatus = dbStatusMap?.get(normalizeAccession(f.accessionNumber));
+    if (dbStatus === 'tracked') {
+      tracked++;
+      return {
+        accessionNumber: f.accessionNumber, form: f.form, filingDate: f.filingDate,
+        status: 'tracked' as FilingDbStatus, matchedDescription: '(tracked via EDGAR tab)',
+      };
+    }
+    if (dbStatus === 'data_only') {
+      dataOnly++;
+      return {
+        accessionNumber: f.accessionNumber, form: f.form, filingDate: f.filingDate,
+        status: 'data_only' as FilingDbStatus,
       };
     }
 
