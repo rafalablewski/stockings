@@ -301,8 +301,9 @@ export default function SecIntelligencePage() {
     const latest = filings[0] ? formatDate(filings[0].filingDate) : "\u2014";
 
     const perStock: Record<string, number> = {};
-    for (const ticker of allTickers) {
-      perStock[ticker] = data.tickerStats[ticker]?.count || 0;
+    for (const ticker of allTickers) perStock[ticker] = 0;
+    for (const f of filings) {
+      if (perStock[f.ticker] !== undefined) perStock[f.ticker]++;
     }
 
     return {
