@@ -393,9 +393,9 @@ const safeNumber = (value: number, fallback: number = 0): number =>
  * - Base Staking APY: 3.11% (CESR rate)
  * - Total Cash: $595M
  * - BTC Holdings: 193 BTC
- * - Moonshots: $19M (Eightco ORBS stake)
+ * - Moonshots: $83M (Eightco ORBS stake — holds $50M OpenAI + $25M Beast equity)
  * - Strategic Investments: $200M (Beast Industries - MrBeast, CLOSED Jan 17)
- * - Total Holdings: $10.0B (crypto + cash + moonshots + strategic investments)
+ * - Total Holdings: $11.5B (crypto + cash + moonshots + strategic investments)
  *
  * COMPANY INFO (SEC EDGAR):
  * - CIK: 0001829311
@@ -1487,6 +1487,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
         { metric: 'Div Yield', value: `${calc.dividendYield.toFixed(2)}%`, sub: 'Annualized', color: 'var(--accent)' },
         { metric: 'Payout', value: `$${(calc.totalAnnualDividendPayout / 1e6).toFixed(1)}M`, sub: 'Annual total', color: 'var(--text)' },
         { metric: 'MrBeast Equity', value: `$${(OTHER_HOLDINGS.beastIndustriesEquity / 1e6).toFixed(0)}M`, sub: 'Beast Industries', color: 'var(--sky)' },
+        { metric: 'ORBS Stake', value: `$${(OTHER_HOLDINGS.moonshotsValue / 1e6).toFixed(0)}M`, sub: 'Eightco (OpenAI + Beast)', color: 'var(--violet)' },
         { metric: 'BTC Worth', value: `$${(calc.btcWorth / 1e6).toFixed(1)}M`, sub: `${OTHER_HOLDINGS.btcHoldings} BTC`, color: 'var(--accent)' },
         { metric: 'Total NAV', value: `$${(calc.totalNAV / 1e9).toFixed(2)}B`, sub: `$${calc.totalNAVPerShare.toFixed(2)}/share`, color: 'var(--mint)' },
         { metric: 'Prem/(Disc) NAV', value: `${calc.premiumDiscountToNAV >= 0 ? '+' : ''}${calc.premiumDiscountToNAV.toFixed(1)}%`, sub: calc.premiumDiscountToNAV >= 0 ? 'Premium to NAV' : 'Discount to NAV', color: calc.premiumDiscountToNAV >= 0 ? 'var(--mint)' : 'var(--coral)' },
