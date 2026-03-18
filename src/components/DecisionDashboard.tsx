@@ -352,6 +352,33 @@ export default function DecisionDashboard() {
         return;
       }
 
+      // Read-only filesystem (Vercel/Lambda) — patches validated but can't write to disk.
+      // Download the unified diff so the user can apply locally.
+      if (result.readOnly) {
+        const patchedFiles = result.patchedFiles || {};
+        const fileNames = Object.keys(patchedFiles);
+        const allDiffs = fileNames
+          .map((f: string) => patchedFiles[f].diff)
+          .filter(Boolean)
+          .join('\n\n');
+
+        if (allDiffs) {
+          const blob = new Blob([allDiffs], { type: 'text/plain' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${ticker.toLowerCase()}-data-patches.diff`;
+          a.click();
+          URL.revokeObjectURL(url);
+        }
+
+        await updateStatus(decision.id, 'applied',
+          `${result.applied} patches validated (read-only FS). Diff downloaded for local apply.`
+        );
+        alert(`Filesystem is read-only (deployed environment). ${result.applied} patches exported as .diff file.\n\nApply locally with:\n  git apply ${ticker.toLowerCase()}-data-patches.diff`);
+        return;
+      }
+
       if (result.applied > 0) {
         await updateStatus(decision.id, 'applied', `Applied ${result.applied} data patches to ${ticker.toUpperCase()}`);
       } else {

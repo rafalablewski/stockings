@@ -59,6 +59,9 @@ interface PatchResult {
   action: string;
   success: boolean;
   detail: string;
+  readOnly?: boolean;          // true if patch succeeded in memory but FS is read-only
+  patchedContent?: string;     // full patched file content (only set when readOnly=true)
+  diff?: string;               // unified diff (only set when readOnly=true)
 }
 
 const DATA_DIR = path.resolve(process.cwd(), 'src', 'data');
@@ -491,36 +494,37 @@ async function applyPatch(patch: PatchOp): Promise<PatchResult> {
     return { ...base, success: false, detail: `File would shrink: ${originalLines} → ${newLines}` };
   }
 
-  // Backup original — best-effort (skipped on read-only filesystems like Vercel/Lambda)
+  // Try to write the patched file to disk
   try {
-    const backupPath = pathCheck.fullPath + '.bak.' + Date.now();
-    await fs.copyFile(pathCheck.fullPath, backupPath);
-    await cleanupBackups(pathCheck.fullPath);
-  } catch (backupErr) {
-    const code = (backupErr as { code?: string }).code;
-    if (code === 'EROFS' || code === 'EACCES') {
-      console.warn(`[apply] Backup skipped (${code}) — filesystem is read-only, using git history as fallback`);
-    } else {
-      throw backupErr; // unexpected error, don't swallow
-    }
-  }
+    // Backup original — best-effort
+    try {
+      const backupPath = pathCheck.fullPath + '.bak.' + Date.now();
+      await fs.copyFile(pathCheck.fullPath, backupPath);
+      await cleanupBackups(pathCheck.fullPath);
+    } catch { /* backup failure is non-fatal */ }
 
-  // Write patched file — try atomic (tmp+rename), fall back to direct write on EROFS
-  try {
+    // Atomic write: tmp + rename
     const tmpPath = pathCheck.fullPath + '.tmp.' + Date.now();
     await fs.writeFile(tmpPath, newContent, 'utf-8');
     await fs.rename(tmpPath, pathCheck.fullPath);
+    return { ...base, success: true, detail: `+${newLines - originalLines} lines` };
   } catch (writeErr) {
     const code = (writeErr as { code?: string }).code;
     if (code === 'EROFS' || code === 'EACCES') {
-      // Atomic write failed — try direct write (works on some overlay filesystems)
-      await fs.writeFile(pathCheck.fullPath, newContent, 'utf-8');
-    } else {
-      throw writeErr;
+      // Read-only filesystem (Vercel/Lambda) — patch is valid but can't be written.
+      // Return the patched content + diff so the caller can persist it another way.
+      const diff = generateDiff(content, newContent, patch.file);
+      return {
+        ...base,
+        success: true,
+        readOnly: true,
+        detail: `+${newLines - originalLines} lines (read-only FS — content returned)`,
+        patchedContent: newContent,
+        diff,
+      };
     }
+    throw writeErr;
   }
-
-  return { ...base, success: true, detail: `+${newLines - originalLines} lines` };
 }
 
 // ─── Revert via git ──────────────────────────────────────────────────────────
@@ -1044,12 +1048,36 @@ ${analysis}`;
 
       const successCount = results.filter(r => r.success).length;
       const failCount = results.filter(r => !r.success).length;
+      const readOnlyCount = results.filter(r => r.readOnly).length;
+
+      // If ALL successful patches hit read-only FS, return them with diffs
+      // so the client can display them and the user can apply locally.
+      if (readOnlyCount > 0 && readOnlyCount === successCount) {
+        // Collect patched files grouped by file path (multiple patches may target same file)
+        const patchedFiles: Record<string, { diff: string; content: string }> = {};
+        for (const r of results) {
+          if (r.readOnly && r.patchedContent) {
+            patchedFiles[r.file] = { diff: r.diff || '', content: r.patchedContent };
+          }
+        }
+
+        return NextResponse.json({
+          dryRun: false,
+          readOnly: true,
+          patchCount: patches.length,
+          applied: successCount,
+          failed: failCount,
+          results: results.map(r => ({ file: r.file, action: r.action, success: r.success, detail: r.detail, readOnly: r.readOnly })),
+          patchedFiles,
+          summary: `${successCount} patches validated but filesystem is read-only. Diffs returned for local apply.`,
+        });
+      }
 
       // Auto re-seed the Postgres database so check-analyzed reflects newly written data.
       // The workflow writes to .ts source files, but check-analyzed queries Postgres.
       // Without this step, articles remain UNTRACKED until a manual db/setup is run.
       let reseed: { triggered: boolean; success?: boolean; message?: string } = { triggered: false };
-      if (successCount > 0) {
+      if (successCount > 0 && readOnlyCount === 0) {
         try {
           const origin = new URL(request.url).origin;
           const reseedRes = await fetch(`${origin}/api/db/setup`, {
@@ -1076,7 +1104,7 @@ ${analysis}`;
         patchCount: patches.length,
         applied: successCount,
         failed: failCount,
-        results,
+        results: results.map(r => ({ file: r.file, action: r.action, success: r.success, detail: r.detail })),
         reseed,
         summary: failCount === 0
           ? `Applied ${successCount} patches to ${ticker.toUpperCase()} database`
