@@ -244,7 +244,7 @@ export default function NotificationBell() {
                 <button
                   onClick={(e) => { e.stopPropagation(); triggerRefresh(); }}
                   disabled={refreshing}
-                  className="text-[9px] font-semibold uppercase tracking-[0.06em] text-white/30 hover:text-white/60 transition-colors disabled:opacity-30"
+                  className="bg-transparent border-none text-[9px] font-semibold uppercase tracking-[0.06em] text-white/30 hover:text-white/60 transition-colors disabled:opacity-30 cursor-pointer"
                 >
                   Sync
                 </button>
