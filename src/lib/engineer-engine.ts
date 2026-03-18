@@ -405,34 +405,36 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
     }
   }
 
-  // ── Auto-review gate: if configured, Gemini AI reviews before chaining ──
+  // ── Auto-review + chaining: fire-and-forget so the API response returns immediately ──
+  // The review and downstream chain run in the background; the parent engineer's
+  // output is already saved to the DB and the decision created above.
   if (!hasFailure && engineer.autoReviewBy && decisionId) {
-    try {
-      const review = await autoReviewDecision(
-        decisionId,
-        engineer.autoReviewBy,
-        combinedOutput,
-        engineer,
-        opts.ticker,
-      );
-      if (review.approved && engineer.chainsTo) {
-        const chainPayload = review.enhancedPayload || combinedOutput;
-        const downstreamEngineer = getEngineer(engineer.chainsTo);
-        if (downstreamEngineer) {
-          runEngineer({
-            ticker: opts.ticker,
-            engineerId: engineer.chainsTo,
-            triggerType: 'event',
-            triggerReason: `Chained from ${engineer.id} (run #${lastRunId}) — Gemini approved`,
-            chainContext: { LATEST_AUDIT_OUTPUT: chainPayload },
-          }).catch(err => {
-            console.error(`[engine] Chain failed for ${engineer.chainsTo}:`, err);
-          });
+    (async () => {
+      try {
+        const review = await autoReviewDecision(
+          decisionId,
+          engineer.autoReviewBy!,
+          combinedOutput,
+          engineer,
+          opts.ticker,
+        );
+        if (review.approved && engineer.chainsTo) {
+          const chainPayload = review.enhancedPayload || combinedOutput;
+          const downstreamEngineer = getEngineer(engineer.chainsTo);
+          if (downstreamEngineer) {
+            await runEngineer({
+              ticker: opts.ticker,
+              engineerId: engineer.chainsTo,
+              triggerType: 'event',
+              triggerReason: `Chained from ${engineer.id} (run #${lastRunId}) — Gemini approved`,
+              chainContext: { LATEST_AUDIT_OUTPUT: chainPayload },
+            });
+          }
         }
+      } catch (err) {
+        console.error(`[engine] Auto-review/chain failed for ${engineer.id}:`, err);
       }
-    } catch (err) {
-      console.error(`[engine] Auto-review failed for ${engineer.autoReviewBy}:`, err);
-    }
+    })();
   }
 
   // ── Chaining: trigger downstream engineer if configured (non-reviewed) ──
