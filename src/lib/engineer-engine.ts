@@ -452,7 +452,8 @@ export async function checkAndRunDueEngineers(): Promise<RunResult[]> {
 }
 
 // Map ticker -> company data module for dynamic context injection
-const TICKER_DATA: Record<string, { COMPANY_INFO: { name: string; ticker: string; exchange: string; sector: string; description: string } }> = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const TICKER_DATA: Record<string, Record<string, any>> = {
   asts,
   bmnr,
   crcl,
@@ -467,6 +468,250 @@ function getCompanyContext(ticker: string): string {
   if (!data?.COMPANY_INFO) return '';
   const c = data.COMPANY_INFO;
   return `\n\n════════════════════════════════════════════════════════════\nCOMPANY CONTEXT (auto-injected from database)\n════════════════════════════════════════════════════════════\nCompany: ${c.name}\nTicker: ${c.ticker}\nExchange: ${c.exchange}\nSector: ${c.sector}\nDescription: ${c.description}\n`;
+}
+
+/**
+ * Build a comprehensive database context block from all data files for a ticker.
+ * This is the "auto-injected database context" that workflow prompts reference.
+ * Includes: defaults, investment scorecard, financials, capital structure,
+ * partners, catalysts, and operational metrics.
+ */
+function getDatabaseContext(ticker: string): string {
+  const data = TICKER_DATA[ticker.toLowerCase()];
+  if (!data) return '';
+
+  const sections: string[] = [];
+
+  // ── Market Data & Defaults ──
+  if (data.DEFAULTS) {
+    const d = data.DEFAULTS;
+    sections.push([
+      '## MARKET DATA & DEFAULTS',
+      `Stock Price: $${d.currentStockPrice} (as of ${d.priceAsOf})`,
+      `Shares Outstanding: ${d.currentShares}M`,
+      `Cash on Hand: $${d.cashOnHand}M`,
+      `Total Debt: $${d.totalDebt}M`,
+      ...(d.quarterlyBurn != null ? [`Quarterly Burn Rate: $${d.quarterlyBurn}M`] : []),
+      ...(d.debtRate != null ? [`Weighted Avg Debt Rate: ${d.debtRate}%`] : []),
+    ].join('\n'));
+  }
+
+  // ── Operational Metrics (ASTS-specific) ──
+  if (data.OPERATIONAL_METRICS) {
+    const m = data.OPERATIONAL_METRICS;
+    sections.push([
+      '## OPERATIONAL METRICS',
+      ...(m.block1Sats != null ? [`Block 1 Satellites: ${m.block1Sats}`] : []),
+      ...(m.block2Sats != null ? [`Block 2 Satellites: ${m.block2Sats}`] : []),
+      ...(m.targetSats2026 != null ? [`Target Sats 2026: ${m.targetSats2026}`] : []),
+      ...(m.partnerReach != null ? [`Partner Reach: ~${m.partnerReach}M subscribers`] : []),
+      ...(m.definitiveAgreements != null ? [`Definitive Agreements: ${m.definitiveAgreements}`] : []),
+      ...(m.mouCount != null ? [`MOU Count: ${m.mouCount}`] : []),
+      ...(m.contractedRevenue != null ? [`Contracted Revenue: $${m.contractedRevenue}M`] : []),
+      ...(m.spectrumOwned != null ? [`Spectrum Owned: ${m.spectrumOwned} MHz`] : []),
+    ].join('\n'));
+  }
+
+  // ── ETH Holdings (BMNR-specific) ──
+  if (data.ETH_HOLDINGS) {
+    const e = data.ETH_HOLDINGS;
+    sections.push([
+      '## ETH HOLDINGS',
+      ...(e.totalETH != null ? [`Total ETH: ${e.totalETH}`] : []),
+      ...(e.stakedETH != null ? [`Staked ETH: ${e.stakedETH}`] : []),
+      ...(e.unstakedETH != null ? [`Unstaked ETH: ${e.unstakedETH}`] : []),
+    ].join('\n'));
+  }
+
+  // ── Investment Scorecard & Executive Summary ──
+  const investmentKey = `${ticker.toUpperCase()}_INVESTMENT_CURRENT`;
+  const investment = data[investmentKey] || data.ASTS_INVESTMENT_CURRENT || data.BMNR_INVESTMENT_CURRENT || data.CRCL_INVESTMENT_CURRENT;
+  if (investment) {
+    const lines = [
+      '## INVESTMENT TAB (Current Thesis)',
+      `Date: ${investment.date}`,
+      `Source: ${investment.source}`,
+      `Verdict: ${investment.verdict}`,
+      `Tagline: ${investment.tagline}`,
+    ];
+
+    // Scorecard
+    if (investment.scorecard?.length > 0) {
+      lines.push('', '### Scorecard');
+      for (const s of investment.scorecard) {
+        lines.push(`- ${s.category}: ${s.rating} — ${s.detail}`);
+      }
+    }
+
+    // Executive summary
+    if (investment.executiveSummary) {
+      const es = investment.executiveSummary;
+      lines.push('', '### Executive Summary');
+      lines.push(`Headline: ${es.headline}`);
+      lines.push(`Thesis: ${es.thesis}`);
+      lines.push(`Bottom Line: ${es.bottomLine}`);
+      if (es.whatsNew?.length > 0) {
+        lines.push('', "What's New (Last 90 Days):");
+        for (const item of es.whatsNew) {
+          lines.push(`- ${item}`);
+        }
+      }
+    }
+
+    // Growth drivers
+    if (investment.growthDrivers?.length > 0) {
+      lines.push('', '### Growth Drivers');
+      for (const g of investment.growthDrivers) {
+        lines.push(`- [${g.impact}] ${g.driver}: ${g.description}`);
+      }
+    }
+
+    // Competitive moat
+    if (investment.moatSources?.length > 0) {
+      lines.push('', '### Competitive Moat — Sources');
+      for (const m of investment.moatSources) {
+        lines.push(`- [${m.strength}] ${m.source}: ${m.detail}`);
+      }
+    }
+    if (investment.moatThreats?.length > 0) {
+      lines.push('', '### Competitive Moat — Threats');
+      for (const m of investment.moatThreats) {
+        lines.push(`- [${m.risk}] ${m.threat}: ${m.detail}`);
+      }
+    }
+
+    // Risks
+    if (investment.risks?.length > 0) {
+      lines.push('', '### Risk Matrix');
+      for (const r of investment.risks) {
+        lines.push(`- ${r.risk} [Severity: ${r.severity}, Likelihood: ${r.likelihood}, Impact: ${r.impact}]`);
+        lines.push(`  Detail: ${r.detail}`);
+        lines.push(`  Mitigation: ${r.mitigation}`);
+      }
+    }
+
+    // Perspectives
+    if (investment.perspectives) {
+      lines.push('', '### Analyst Perspectives');
+      for (const [key, p] of Object.entries(investment.perspectives)) {
+        const perspective = p as { title: string; assessment: string; summary: string; ecosystemView: string; recommendation: string };
+        lines.push(`\n${perspective.title} (${key}):`);
+        lines.push(`Assessment: ${perspective.assessment}`);
+        lines.push(`Summary: ${perspective.summary}`);
+        lines.push(`Ecosystem View: ${perspective.ecosystemView}`);
+        lines.push(`Recommendation: ${perspective.recommendation}`);
+      }
+    }
+
+    // Position sizing
+    if (investment.positionSizing) {
+      lines.push('', '### Position Sizing');
+      for (const [key, ps] of Object.entries(investment.positionSizing)) {
+        const size = ps as { range: string; description: string };
+        lines.push(`- ${key}: ${size.range} — ${size.description}`);
+      }
+    }
+
+    // Price targets
+    if (investment.priceTargets?.length > 0) {
+      lines.push('', '### Price Targets');
+      for (const pt of investment.priceTargets) {
+        lines.push(`- ${pt.period}: ${pt.range} (${pt.outlook}) — ${pt.detail}`);
+      }
+    }
+
+    sections.push(lines.join('\n'));
+  }
+
+  // ── Latest Quarterly Financials (most recent 4 quarters) ──
+  if (data.QUARTERLY_DATA) {
+    const quarters = Object.entries(data.QUARTERLY_DATA).slice(0, 4);
+    if (quarters.length > 0) {
+      const lines = ['## QUARTERLY FINANCIALS (Last 4 Quarters)'];
+      for (const [label, q] of quarters) {
+        const qd = q as Record<string, unknown>;
+        lines.push(`\n### ${label}`);
+        if (qd.filing) lines.push(`Filing: ${qd.filing}`);
+        if (qd.cashAndEquiv != null) lines.push(`Cash: $${qd.cashAndEquiv}M`);
+        if (qd.totalDebt != null) lines.push(`Debt: $${qd.totalDebt}M`);
+        if (qd.revenue != null) lines.push(`Revenue: $${qd.revenue}M`);
+        if (qd.opEx != null) lines.push(`OpEx: $${qd.opEx}M`);
+        if (qd.netIncome != null) lines.push(`Net Income: $${qd.netIncome}M`);
+        if (qd.sharesOutstanding != null) lines.push(`Shares (basic): ${qd.sharesOutstanding}M`);
+        if (qd.fullyDiluted != null) lines.push(`Shares (fully diluted): ${qd.fullyDiluted}M`);
+        if (qd.stockPrice != null) lines.push(`Stock Price: $${qd.stockPrice}`);
+      }
+      sections.push(lines.join('\n'));
+    }
+  }
+
+  // ── Capital Structure ──
+  if (data.SHARE_CLASSES) {
+    const lines = ['## CAPITAL STRUCTURE'];
+    lines.push('', '### Share Classes');
+    for (const sc of data.SHARE_CLASSES) {
+      lines.push(`- ${sc.classType}: ${sc.shares}M shares — ${sc.description} (${sc.votingRights})`);
+    }
+    if (data.FULLY_DILUTED_SHARES != null) {
+      lines.push(`\nFully Diluted Shares: ${data.FULLY_DILUTED_SHARES}M`);
+    }
+    if (data.CONVERTIBLE_NOTES?.length > 0) {
+      lines.push('', '### Convertible Notes');
+      for (const cn of data.CONVERTIBLE_NOTES) {
+        lines.push(`- ${cn.name || cn.description}: $${cn.principal || cn.amount}M at ${cn.rate || cn.coupon}% — ${cn.maturity || cn.details || ''}`);
+      }
+    }
+    if (data.DILUTION_HISTORY?.length > 0) {
+      lines.push('', '### Recent Dilution Events');
+      for (const d of data.DILUTION_HISTORY.slice(0, 5)) {
+        lines.push(`- ${d.date || d.quarter}: ${d.event || d.description} (${d.shares || d.amount}M shares)`);
+      }
+    }
+    sections.push(lines.join('\n'));
+  }
+
+  // ── Partners (ASTS-specific) ──
+  if (data.PARTNERS?.length > 0) {
+    const lines = ['## MNO PARTNERS'];
+    for (const p of data.PARTNERS) {
+      const prepay = p.prepay > 0 ? `, Prepaid $${p.prepay}M` : '';
+      lines.push(`- ${p.name} (${p.region}): ${p.status} — ${p.subs}M subs${prepay}${p.notes ? `. ${p.notes}` : ''}`);
+    }
+    sections.push(lines.join('\n'));
+  }
+
+  // ── Upcoming Catalysts ──
+  if (data.UPCOMING_CATALYSTS?.length > 0) {
+    const lines = ['## UPCOMING CATALYSTS'];
+    for (const c of data.UPCOMING_CATALYSTS.slice(0, 15)) {
+      lines.push(`- [${c.impact}] ${c.event} — ${c.timeline}${c.category ? ` (${c.category})` : ''}`);
+    }
+    sections.push(lines.join('\n'));
+  }
+
+  // ── Data Freshness / Metadata ──
+  const metadataKeys = Object.keys(data).filter(k => k.endsWith('_METADATA') || k === 'DATA_FRESHNESS');
+  if (metadataKeys.length > 0) {
+    const lines = ['## DATA FRESHNESS'];
+    for (const key of metadataKeys) {
+      const md = data[key];
+      if (md?.lastUpdated) {
+        const label = key.replace(/_METADATA$/, '').replace(/^[A-Z]+_/, '');
+        lines.push(`- ${label || key}: Updated ${md.lastUpdated}${md.source ? ` (${md.source})` : ''}`);
+      }
+    }
+    sections.push(lines.join('\n'));
+  }
+
+  if (sections.length === 0) return '';
+
+  return '\n\n' + [
+    '════════════════════════════════════════════════════════════',
+    'DATABASE CONTEXT (auto-injected from ABISON database)',
+    '════════════════════════════════════════════════════════════',
+    '',
+    ...sections,
+  ].join('\n');
 }
 
 interface ResolvedWorkflow {
@@ -492,9 +737,11 @@ function resolveAllEngineerPrompts(engineer: EngineerTask, ticker: string, chain
       // Resolve {{PLACEHOLDER}} tokens in the prompt (including chain-injected context + workflow tab guidance)
       const resolvedPrompt = resolvePromptPlaceholders(promptText, ticker, chainContext, workflow.tabGuidance);
       const companyCtx = getCompanyContext(ticker);
+      // Inject full database context for workflows that need it (e.g. thesis-review)
+      const dbCtx = getDatabaseContext(ticker);
       results.push({
         workflowId: wfId,
-        prompt: `[AUTONOMOUS AI ENGINEER MODE]\nYou are operating as the "${engineer.name}" — ${engineer.role}.\n${engineer.description}\n\nThis is an autonomous run. Provide actionable analysis and flag any items that require human review.${companyCtx}\n\n---\n\n${resolvedPrompt}`,
+        prompt: `[AUTONOMOUS AI ENGINEER MODE]\nYou are operating as the "${engineer.name}" — ${engineer.role}.\n${engineer.description}\n\nThis is an autonomous run. Provide actionable analysis and flag any items that require human review.${companyCtx}\n\n---\n\n${resolvedPrompt}${dbCtx}`,
       });
     }
   }
