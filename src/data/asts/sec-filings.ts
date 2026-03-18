@@ -17,6 +17,7 @@
  */
 
 export const ASTS_SEC_FILINGS = [
+  { date: 'Mar 17, 2026', type: 'Form 144', description: 'Wisniewski (Pres) proposed sale: 47K shares (~$4.45M) via Fidelity. Source: 2,950 (Sep 2025 RSU) + 44,050 (Sep 2024 RSU). No sales in prior 3 months.', period: '—', color: 'green' },
   { date: 'Mar 12, 2026', type: 'Form 4', description: 'Yao (CTO) option exercise: 40K AST LLC Incentive Equity Options at $0.064 → Class A (Mar 11 txn). Post: 4,144,750 direct + 299,912 options remaining. No sale.', period: '—', color: 'green' },
   { date: 'Mar 2, 2026', type: '10-K', description: 'Annual Report — FY2025 Audited. Rev $70.9M, OpEx $358.6M, Net Loss -$461M. Cash $2,780M. Debt $2,264M. PPE $1,399M. Intangibles $245M. RPO $1.2B. NCI 23.9%. Fully funded ~90 sats.', period: 'FY 2025', color: 'blue' },
   { date: 'Feb 23, 2026', type: '8-K', description: 'RD Settlements + Notes Repurchases Completed (RD#1 Feb 20: $46.5M 4.25%; RD#2 Feb 23: $250M 2.375%; Item 8.01)', period: '—', color: 'yellow' },
@@ -27,6 +28,8 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Feb 11, 2026', type: '8-K', description: 'Preliminary FY 2025 Results + Convertible Notes Offering + Registered Directs', period: '—', color: 'yellow' },
   { date: 'Feb 13, 2026', type: '424B5', description: 'Registered Direct Offering #1 (1.86M shares @ $96.92; settles Feb 20)', period: '—', color: 'orange' },
   { date: 'Feb 13, 2026', type: '424B5', description: 'Registered Direct Offering #2 (4.48M shares @ $96.92; settles Feb 20)', period: '—', color: 'orange' },
+  { date: 'Feb 11, 2026', type: 'FWP', description: 'Pricing Term Sheet: 1,862,741 shares @ $96.92 (RD#1 for 4.25% Notes Repurchase; settle Feb 20; UBS placement)', period: '—', color: 'orange' },
+  { date: 'Feb 11, 2026', type: 'FWP', description: 'Pricing Term Sheet: 4,475,223 shares @ $96.92 (RD#2 for 2.375% Notes Repurchase; settle Feb 20; UBS placement)', period: '—', color: 'orange' },
   { date: 'Jan 30, 2026', type: 'SC 13G', description: 'Vanguard Group 7.68% Ownership (21.5M shares)', period: '—', color: 'green' },
   { date: 'Jan 26, 2026', type: 'Form 4', description: 'Shanti Gupta (COO) RSU Vesting Tax Withholding Amendment', period: '—', color: 'green' },
   { date: 'Jan 16, 2026', type: '8-K', description: 'Mikitani Board Resignation (Rakuten Designee)', period: '—', color: 'yellow' },
@@ -108,7 +111,7 @@ export const ASTS_SEC_META = {
   exchange: 'NASDAQ',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 23, 2026', title: 'SDA $30M HALO Europa Track 2 Prime Contract' },
-  totalFilingsTracked: 80
+  totalFilingsTracked: 83
 };
 
 // Color palette constants (reduce duplication per Gemini review)
@@ -144,6 +147,9 @@ export const ASTS_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '
 export const ASTS_FILING_CROSS_REFS: Record<string, { source: string; data: string }[]> = {
 
   // ── Mar 2026 ──────────────────────────────────────────────────────────────
+  'Form 144|2026-03-17': [
+    { source: 'capital', data: "Wisniewski (Pres): proposed sale 47K Class A (~$4.45M) via Fidelity. Source: 2,950 Sep 2025 RSU + 44,050 Sep 2024 RSU. No sales past 3 months." },
+  ],
   'Form 4|2026-03-12': [
     { source: 'capital', data: "Yao (CTO): exercised 40K AST LLC options at $0.064 (Mar 11). Post: 4,144,750 Class A direct + 299,912 options remaining. No sale." },
   ],
