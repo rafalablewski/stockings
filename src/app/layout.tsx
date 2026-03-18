@@ -113,6 +113,7 @@ function Navigation() {
             <div className="hidden md:flex items-center gap-3">
               <PinStatus />
               <AiToggle />
+              <NotificationBell />
               <NotesPanel />
             </div>
           </div>
@@ -265,8 +266,6 @@ function Navigation() {
               </div>
             </div>
 
-            {/* Notification bell — far right */}
-            <NotificationBell />
           </div>
 
           {/* Mobile navigation — hamburger drawer, hidden on desktop */}
