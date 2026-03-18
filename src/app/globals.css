@@ -827,28 +827,27 @@ a, a:visited {
 /* ═══ NAV BELL (notification badge — same system as AI/PIN badges) ═══ */
 
 .nav-bell-badge {
-  --badge-rgb: 255,255,255;
-  display: inline-flex; align-items: center; gap: 4px;
+  --badge-rgb: 245,158,11;
+  display: inline-flex; align-items: center; gap: 5px;
   font-size: 9px; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.1em; padding: 4px 8px; border-radius: 6px;
+  letter-spacing: 0.1em; padding: 4px 10px; border-radius: 6px;
   height: 24px; line-height: 1; cursor: pointer;
-  background: rgba(var(--badge-rgb), 0.06);
-  color: rgba(var(--badge-rgb), 0.45);
-  border: 1px solid rgba(var(--badge-rgb), 0.10);
+  background: rgba(var(--badge-rgb), 0.08);
+  color: rgba(var(--badge-rgb), 0.7);
+  border: 1px solid rgba(var(--badge-rgb), 0.18);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   animation: navBadgeFadeIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
   animation-delay: 0.08s;
-  position: relative;
 }
 .nav-bell-badge[data-has-unread="true"] {
   --badge-rgb: 99,179,237;
-  color: rgba(var(--badge-rgb), 0.85);
-  background: rgba(var(--badge-rgb), 0.10);
-  border-color: rgba(var(--badge-rgb), 0.22);
+  color: rgba(var(--badge-rgb), 0.9);
+  background: rgba(var(--badge-rgb), 0.12);
+  border-color: rgba(var(--badge-rgb), 0.25);
 }
 .nav-bell-badge[data-open="true"] {
-  background: rgba(var(--badge-rgb), 0.14);
-  border-color: rgba(var(--badge-rgb), 0.28);
+  background: rgba(var(--badge-rgb), 0.16);
+  border-color: rgba(var(--badge-rgb), 0.30);
 }
 .nav-bell-badge:hover {
   background: rgba(var(--badge-rgb), 0.16) !important;

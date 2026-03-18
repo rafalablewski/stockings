@@ -221,7 +221,7 @@ export default function NotificationBell() {
         </svg>
         {unreadCount > 0
           ? <span className="nav-bell-count">{unreadCount > 99 ? '99+' : unreadCount}</span>
-          : null
+          : 'INTEL'
         }
       </button>
 
