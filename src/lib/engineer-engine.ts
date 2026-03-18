@@ -23,6 +23,9 @@ import { autoReviewDecision } from './gemini-auto-review';
 const CLAUDE_MODEL_DEFAULT = 'claude-sonnet-4-5-20250929';
 const CLAUDE_MODEL_FAST = 'claude-haiku-4-5-20251001';
 
+// Per-workflow timeout for Claude API calls (2 minutes)
+const CLAUDE_API_TIMEOUT_MS = 120_000;
+
 // Status type for run records
 export type RunStatus = 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
 export type TriggerType = 'scheduled' | 'event' | 'manual';
@@ -255,19 +258,32 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
       // 4. Call Claude API
       // Use Haiku for audit engineers (large context, need speed for Vercel timeouts)
       const model = engineer.category === 'audit' ? CLAUDE_MODEL_FAST : CLAUDE_MODEL_DEFAULT;
-      const claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-        },
-        body: JSON.stringify({
-          model,
-          max_tokens: 16384,
-          messages: [{ role: 'user', content: fullMessage }],
-        }),
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), CLAUDE_API_TIMEOUT_MS);
+      let claudeRes: Response;
+      try {
+        claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+          },
+          body: JSON.stringify({
+            model,
+            max_tokens: 16384,
+            messages: [{ role: 'user', content: fullMessage }],
+          }),
+          signal: controller.signal,
+        });
+      } catch (fetchErr) {
+        if (fetchErr instanceof DOMException && fetchErr.name === 'AbortError') {
+          throw new Error(`Claude API timed out after ${CLAUDE_API_TIMEOUT_MS / 1000}s for workflow ${resolved.workflowId}`);
+        }
+        throw fetchErr;
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       if (!claudeRes.ok) {
         const errText = await claudeRes.text();
