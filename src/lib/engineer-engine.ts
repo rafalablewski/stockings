@@ -263,6 +263,9 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
       const model = engineer.category === 'audit' ? CLAUDE_MODEL_FAST : CLAUDE_MODEL_DEFAULT;
       const controller = new AbortController();
       const apiTimeout = engineer.category === 'audit' ? CLAUDE_API_TIMEOUT_FAST_MS : CLAUDE_API_TIMEOUT_MS;
+      // Timeout covers the ENTIRE operation: connection + streaming read.
+      // Previously it was cleared after headers arrived, leaving readStreamingResponse
+      // with no timeout — causing infinite hangs on stalled streams.
       const timeoutId = setTimeout(() => controller.abort(), apiTimeout);
       let claudeRes: Response;
       try {
@@ -282,15 +285,15 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
           signal: controller.signal,
         });
       } catch (fetchErr) {
+        clearTimeout(timeoutId);
         if (fetchErr instanceof DOMException && fetchErr.name === 'AbortError') {
           throw new Error(`Claude API timed out after ${apiTimeout / 1000}s for workflow ${resolved.workflowId} on ticker ${opts.ticker}`, { cause: fetchErr });
         }
         throw fetchErr;
-      } finally {
-        clearTimeout(timeoutId);
       }
 
       if (!claudeRes.ok) {
+        clearTimeout(timeoutId);
         const errText = await claudeRes.text();
         // Detect credit/billing errors for a clear message
         const lower = errText.toLowerCase();
@@ -308,8 +311,20 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
         throw new Error(reason);
       }
 
-      // Read streaming SSE response and accumulate text deltas
-      const outputFull = await readStreamingResponse(claudeRes);
+      // Read streaming SSE response and accumulate text deltas.
+      // The AbortController timeout is still active — it will abort the stream
+      // reader if the total operation exceeds the timeout.
+      let outputFull: string;
+      try {
+        outputFull = await readStreamingResponse(claudeRes);
+      } catch (streamErr) {
+        clearTimeout(timeoutId);
+        if (streamErr instanceof DOMException && streamErr.name === 'AbortError') {
+          throw new Error(`Claude API stream timed out after ${apiTimeout / 1000}s for workflow ${resolved.workflowId} on ticker ${opts.ticker}`, { cause: streamErr });
+        }
+        throw streamErr;
+      }
+      clearTimeout(timeoutId);
       const outputSummary = outputFull.slice(0, 500);
       const durationMs = Date.now() - wfStartTime;
 
