@@ -278,7 +278,7 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
         });
       } catch (fetchErr) {
         if (fetchErr instanceof DOMException && fetchErr.name === 'AbortError') {
-          throw new Error(`Claude API timed out after ${CLAUDE_API_TIMEOUT_MS / 1000}s for workflow ${resolved.workflowId}`);
+          throw new Error(`Claude API timed out after ${CLAUDE_API_TIMEOUT_MS / 1000}s for workflow ${resolved.workflowId} on ticker ${opts.ticker}`, { cause: fetchErr });
         }
         throw fetchErr;
       } finally {
