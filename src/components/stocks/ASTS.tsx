@@ -167,6 +167,7 @@ import {
   AUG_SEP_2025_RSU_VESTINGS,
   AUG_SEP_2025_INSIDER_SALES,
   APR_MAY_2025_INSIDER_PURCHASES,
+  MAR_2026_INSIDER_ACTIVITY,
   MAR_2025_INSIDER_SALES,
   MAR_2025_LIGADO_DEAL,
   MAR_2025_SHELF_REGISTRATION,
@@ -2349,7 +2350,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           { id: 'incentives', value: `${sbcHistory.length}`, label: 'SBC Quarters', sub: 'Compensation data' },
           { id: 'dilution', value: `${((fullyDiluted - totalBasic) / totalBasic * 100).toFixed(0)}%`, label: 'Total Dilution', sub: `${fullyDiluted}M FD shares` },
           { id: 'liquidity', value: `$${(LIQUIDITY_POSITION.cashAndEquiv / 1000).toFixed(1)}B`, label: 'Liquidity', sub: `~${(LIQUIDITY_POSITION.cashAndEquiv / 300).toFixed(0)}Q runway` },
-          { id: 'insiders', value: `${FEB_2026_RSU_VESTINGS.length + DEC_2025_INSIDER_SALES.length + AUG_SEP_2025_INSIDER_SALES.length}`, label: 'Insider Activity', sub: 'Form 4 filings' },
+          { id: 'insiders', value: `${MAR_2026_INSIDER_ACTIVITY.length + FEB_2026_RSU_VESTINGS.length + DEC_2025_INSIDER_SALES.length + AUG_SEP_2025_INSIDER_SALES.length}`, label: 'Insider Activity', sub: 'Form 4 filings' },
         ].map(nav => (
           <div
             key={nav.id}
@@ -3041,6 +3042,18 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
               <span key={h} className="sm-th" data-align={['Shares', 'Price', 'Proceeds'].includes(h) ? 'right' : 'left'}>{h}</span>
             ))}
           </div>
+          {/* Mar 2026 Insider Activity */}
+          <div className="sm-section-divider" style={{ '--divider-color': 'var(--coral)' } as React.CSSProperties}>March 2026</div>
+          {MAR_2026_INSIDER_ACTIVITY.filter(s => s.type === 'Form 144 Proposed Sale').map((s, i) => (
+            <div key={`mar26-${i}`} className="hover-row sm-grid-row sm-gtc-1-100-80x2-100-80">
+              <span className="sm-text-13t">{s.name} <span className="sm-text-11">({s.role})</span></span>
+              <span className="sm-text-12">{s.date.slice(5)}</span>
+              <span className="sm-mono-right">{(s.units / 1000).toFixed(0)}K</span>
+              <span className="sm-mono-right">${(s.aggregateMarketValue! / s.units).toFixed(2)}</span>
+              <span className="sm-mono-right sm-coral">${(s.aggregateMarketValue! / 1e6).toFixed(1)}M</span>
+              <span className="sm-sale-type-badge" data-type="sale">Form 144</span>
+            </div>
+          ))}
           {/* Dec 2025 Sales */}
           <div className="sm-section-divider" style={{ '--divider-color': 'var(--coral)' } as React.CSSProperties}>December 2025</div>
           {DEC_2025_INSIDER_SALES.map((s, i) => (
