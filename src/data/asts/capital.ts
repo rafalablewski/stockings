@@ -626,6 +626,38 @@ export const DILUTION_SCENARIOS: DilutionScenario[] = [
 // ============================================================================
 // UNIFIED INSIDER TRANSACTIONS (all tickers use this pattern)
 // ============================================================================
+//
+// Mar 3, 2026 SC 13D/A Amendment 17: Avellan ownership diluted by Feb 2026 capital raises
+// 78,163,078 Class A equivalent (via AST LLC Units) + 78,163,078 Class C (10x voting)
+// Ownership: 20.8% economic (down from 21.9% in Nov 2025 13D/A#16)
+// Voting: 71.7% via Class C super-voting shares
+// Forward contract amended: Floor $56.06→Cap $79.66, $10.7M cash proceeds
+// Dilution drivers: Feb RD offerings (6.3M shares), Ligado penny warrants (4.7M), ATM (~6.5M)
+// No Class C→A conversions; no AST LLC Unit redemptions as of Feb 27, 2026
+//
+// [Historical] Nov 21, 2025 SC 13D/A Amendment 16: Avellan ownership 21.9% (superseded by Amendment 17)
+// 78,163,078 Class A equivalent (via AST LLC Units) + 78,163,078 Class C (10x voting)
+// Ownership: 21.9% economic (as of Nov 19, 2025 — prior to Feb 2026 dilution events)
+// Voting: 72.9% via Class C super-voting shares
+// Forward contract: 2.5M shares, Floor $56.06, Cap $79.66, settlement dates March 2027
+// Filing triggered by increase in total outstanding Class A (not Avellan transactions)
+// NOTE: This data is superseded by Amendment 17 (Mar 3, 2026) which reports 20.8% post-Feb 2026 dilution.
+//
+// Dec 9, 2025 Form 144: American Tower Corp (10% owner group) filed notice of proposed sale
+// 2,288,621 shares via Barclays, aggregate market value $169.4M (~$74/share implied)
+// Acquired Apr 6, 2021 via private placement (cash payment). No prior sales in past 3 months.
+// NOTE: Form 144 is a NOTICE of proposed sale, not confirmation of execution. Verify if sale completed.
+//
+// Dec 5, 2025 Form 144: Officer Huiwen Yao notice of proposed sale 40K shares via B. Riley
+// Aggregate market value $2.94M (~$73.50/share implied)
+// Acquired Nov 14, 2025 via stock option exercise (cash payment)
+// Rule 10b5-1 plan adopted Jun 12, 2025. Prior sale: Sep 16, 2025 (40K shares @ $1.62M gross proceeds)
+// Exercise-and-sell pattern. Form 144 is NOTICE — verify if sale executed.
+//
+// Dec 5, 2025 Form 144: Officer Maya Bernal notice of proposed sale 6K shares via Fidelity
+// Aggregate market value $442,543.69 (~$73.76/share implied)
+// Acquired Oct 17, 2025 via restricted stock vesting (compensation)
+// No prior sales in past 3 months. RSU vest-and-sell pattern. Form 144 is NOTICE — verify if sale executed.
 
 /**
  * Single consolidated array for ALL insider activity. Reverse-chronological.

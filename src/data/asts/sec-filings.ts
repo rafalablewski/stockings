@@ -21,6 +21,7 @@
 export const ASTS_SEC_FILINGS = [
   { date: 'Mar 17, 2026', type: 'Form 144', description: 'Wisniewski (Pres) proposed sale: 47K shares (~$4.45M) via Fidelity. Source: 2,950 (Sep 2025 RSU) + 44,050 (Sep 2024 RSU). No sales in prior 3 months.', period: '—', color: 'green' },
   { date: 'Mar 12, 2026', type: 'Form 4', description: 'Yao (CTO) option exercise: 40K AST LLC Incentive Equity Options at $0.064 → Class A (Mar 11 txn). Post: 4,144,750 direct + 299,912 options remaining. No sale.', period: '—', color: 'green' },
+  { date: 'Mar 03, 2026', type: 'SC 13D/A', description: 'Avellan Amendment 17: ownership diluted to 20.8% (78.2M Class A equivalent) from 21.9% due to Feb 2026 RD offerings (4.5M + 1.9M shares), Ligado penny warrant exercise (4.7M shares), and ATM sales (~6.5M shares). No transactions by Avellan. Forward contract amended: Floor $56.06→Cap $79.66, received $10.7M cash. Voting power 71.7% via Class C shares', period: '—', color: 'green' },
   { date: 'Mar 2, 2026', type: '10-K', description: 'Annual Report — FY2025 Audited. Rev $70.9M, OpEx $358.6M, Net Loss -$461M. Cash $2,780M. Debt $2,264M. PPE $1,399M. Intangibles $245M. RPO $1.2B. NCI 23.9%. Fully funded ~90 sats.', period: 'FY 2025', color: 'blue' },
   { date: 'Feb 23, 2026', type: '8-K', description: 'RD Settlements + Notes Repurchases Completed (RD#1 Feb 20: $46.5M 4.25%; RD#2 Feb 23: $250M 2.375%; Item 8.01)', period: '—', color: 'yellow' },
   { date: 'Feb 20, 2026', type: '8-K', description: '$75M Greenshoe Exercise — Total 2.25% Notes $1,075M (Option Notes; Item 2.03/3.02/8.01; Freshfields opinions)', period: '—', color: 'yellow' },
@@ -32,14 +33,21 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Feb 11, 2026', type: '8-K', description: 'Preliminary FY 2025 Results + Convertible Notes Offering + Registered Directs', period: '—', color: 'yellow' },
   { date: 'Feb 11, 2026', type: 'FWP', description: 'Pricing Term Sheet: 1,862,741 shares @ $96.92 (RD#1 for 4.25% Notes Repurchase; settle Feb 20; UBS placement)', period: '—', color: 'orange' },
   { date: 'Feb 11, 2026', type: 'FWP', description: 'Pricing Term Sheet: 4,475,223 shares @ $96.92 (RD#2 for 2.375% Notes Repurchase; settle Feb 20; UBS placement)', period: '—', color: 'orange' },
+  { date: 'Jan 30, 2026', type: 'SC 13G/A', description: 'Vanguard Amendment 2: 7.68% ownership (21.5M shares), +1.8M shares from prior filing. Shared voting: 1.8M, Shared dispositive: 21.5M. Internal realignment Jan 12, 2026: Vanguard Group Inc no longer performs portfolio mgmt or proxy voting', period: '—', color: 'green' },
   { date: 'Jan 30, 2026', type: 'SC 13G', description: 'Vanguard Group 7.68% Ownership (21.5M shares)', period: '—', color: 'green' },
+  { date: 'Jan 26, 2026', type: 'Form 4/A', description: '[Historical] COO Shanti Gupta corrects Sep 15, 2025 Form 4: RSU vest (50K shares) with tax withholding (25,575 shares @ $29.83), net vested 24,425. Post-transaction 348,232 shares direct. Prior Form 4 overstated holdings by 50K shares due to admin error', period: '—', color: 'green' },
   { date: 'Jan 26, 2026', type: 'Form 4', description: 'Shanti Gupta (COO) RSU Vesting Tax Withholding Amendment', period: '—', color: 'green' },
   { date: 'Jan 16, 2026', type: '8-K', description: 'Mikitani Board Resignation (Rakuten Designee)', period: '—', color: 'yellow' },
+  { date: 'Dec 29, 2025', type: 'Form 4', description: 'Director Keith Larson: open-market purchase 625 shares @ $80.00 in IRA. Rule 10b5-1 plan (adopted Sep 8, 2025). Post-transaction 2,015 shares indirect (IRA)', period: '—', color: 'green' },
   { date: 'Dec 24, 2025', type: '8-K', description: 'BlueBird 6 Launch (First Block 2)', period: '—', color: 'yellow' },
   { date: 'Dec 11, 2025', type: 'SC 13D/A', description: 'American Tower 13D/A: Sold 2.29M shares at $69.75 ($159.8M); 211K Class A remain + 2.17M LLC Units', period: '—', color: 'green' },
   { date: 'Dec 10, 2025', type: 'Form 4', description: 'Multiple: Gupta (COO) sale 10K shares; Larson (Dir) purchase 675 shares', period: '—', color: 'green' },
+  { date: 'Dec 09, 2025', type: 'Form 144', description: 'American Tower Corp: notice of proposed sale 2.29M shares (10% owner group member) via Barclays. Aggregate market value $169.4M. Acquired Apr 6, 2021 via private placement. No prior sales in past 3 months', period: '—', color: 'green' },
+  { date: 'Dec 05, 2025', type: 'Form 144', description: 'Officer Huiwen Yao: notice of proposed sale 40K shares via B. Riley Securities, aggregate mkt value $2.94M. Acquired Nov 14, 2025 via option exercise (cash payment). Rule 10b5-1 plan (adopted Jun 12, 2025). Prior sale: Sep 16, 2025 (40K @ $1.62M)', period: '—', color: 'green' },
+  { date: 'Dec 05, 2025', type: 'Form 144', description: 'Officer Maya Bernal: notice of proposed sale 6K shares via Fidelity Brokerage, aggregate mkt value $442.5K. Acquired Oct 17, 2025 via restricted stock vesting (compensation). No prior sales in past 3 months', period: '—', color: 'green' },
   { date: 'Dec 5, 2025', type: 'Form 4', description: 'Multiple: Bernal (CAO) sale 6K shares; Yao (CTO) Form 144 40K shares', period: '—', color: 'green' },
   { date: 'Dec 2, 2025', type: 'Form 4', description: 'RSU Grants: Avellan (CEO) 250K, Johnson (CFO) 125K, Wisniewski (Pres) 125K — vest 1/3 annually from May 2026', period: '—', color: 'green' },
+  { date: 'Nov 21, 2025', type: 'SC 13D/A', description: '[Historical] Avellan Amendment 16: ownership 21.9% (78.2M Class A equivalent, 78.2M Class C 10x voting). Filing triggered by increase in total Class A outstanding (not Avellan transactions). Forward contract covering 2.5M shares: Floor $56.06, Cap $79.66, settlement Mar 2027. Voting power 72.9% via Class C', period: '—', color: 'green' },
   { date: 'Nov 10, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q3 2025', color: 'purple' },
   { date: 'Oct 29, 2025', type: '8-K', description: 'Block 2 Contract (~$100M initial) + ATM Legal Opinion (Freshfields)', period: '—', color: 'yellow' },
   { date: 'Oct 28, 2025', type: 'DEF 14A', description: '2024 Plan Amendment (+10M shares, term extension) — Special Meeting Nov 21', period: '—', color: 'green' },
@@ -113,7 +121,7 @@ export const ASTS_SEC_META = {
   exchange: 'NASDAQ',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 23, 2026', title: 'SDA $30M HALO Europa Track 2 Prime Contract' },
-  totalFilingsTracked: 83
+  totalFilingsTracked: 92
 };
 
 // Color palette constants (reduce duplication per Gemini review)
@@ -147,6 +155,37 @@ export const ASTS_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '
  * Key format: "FORM_TYPE|YYYY-MM-DD" using the filing date from sec-filings.ts.
  */
 export const ASTS_FILING_CROSS_REFS: Record<string, { source: string; data: string }[]> = {
+
+  // ── Mar 2026 (SC 13D/A) ────────────────────────────────────────────────────
+  'SC 13D/A|2026-03-03': [
+    { source: 'capital.ts', data: 'Avellan ownership diluted to 20.8% (78.2M Class A equivalent, 78.2M Class C 10x voting). Forward contract amended: Floor $56.06, Cap $79.66, $10.7M cash proceeds' },
+    { source: 'company.ts', data: 'Avellan voting control 71.7% via Class C shares (no change to share count, only dilution %)' }
+  ],
+
+  // ── Jan 2026 ────────────────────────────────────────────────────────────────
+  'SC 13G/A|2026-01-30': [
+    { source: 'capital.ts', data: 'Vanguard 7.68% ownership (21.5M shares). Internal realignment Jan 12, 2026' }
+  ],
+  'Form 4/A|2026-01-26': [
+    { source: 'capital.ts', data: '[Historical] Gupta Sep 2025 RSU vest corrected: 24,425 net shares, post-transaction 348,232 direct' }
+  ],
+
+  // ── Dec 2025 (Form 4 + Form 144s) ──────────────────────────────────────────
+  'Form 4|2025-12-29': [
+    { source: 'capital.ts', data: 'Director Larson open-market purchase 625 shares @ $80 (IRA). Rule 10b5-1 plan. Post-transaction 2,015 shares indirect' }
+  ],
+  'Form 144|2025-12-09': [
+    { source: 'capital.ts', data: 'American Tower (10% group): notice of proposed sale 2.29M shares @ $169.4M mkt value via Barclays. Acquired Apr 2021 private placement' }
+  ],
+  'Form 144|2025-12-05': [
+    { source: 'capital.ts', data: 'Officer Yao: notice of proposed sale 40K shares @ $2.94M via B. Riley. Option exercise Nov 14. Rule 10b5-1. Prior sale Sep 16 (40K @ $1.62M)' },
+    { source: 'capital.ts', data: 'Officer Bernal: notice of proposed sale 6K shares @ $442.5K via Fidelity. RSU vest Oct 17. No prior 3mo sales' }
+  ],
+
+  // ── Nov 2025 (SC 13D/A) ────────────────────────────────────────────────────
+  'SC 13D/A|2025-11-21': [
+    { source: 'capital.ts', data: '[Historical] Avellan Amendment 16: 21.9% ownership (78.2M Class A equiv, 78.2M Class C). Forward contract: Floor $56.06, Cap $79.66. Superseded by Amendment 17 (Mar 3, 2026)' }
+  ],
 
   // ── Mar 2026 ──────────────────────────────────────────────────────────────
   'Form 144|2026-03-17': [
