@@ -682,6 +682,7 @@ export const FEB_2026_RSU_VESTINGS = [
  * The 4.14M direct figure reflects accumulated LLC Unit → Class A conversions since prior filings.
  */
 export const MAR_2026_INSIDER_ACTIVITY = [
+  { name: 'Scott Wisniewski', role: 'President', date: '2026-03-17', type: 'Form 144 Proposed Sale', units: 47000, impliedPrice: 94.75, aggregateValue: 4453327, broker: 'Fidelity Brokerage Services LLC', plan10b5_1: false, acquisitionSource: 'RSU Vesting (44,050 on 09/26/2024 + 2,950 on 09/26/2025)', noSalesPast3Months: true, postDirectClassA: null, note: 'Proposed sale of 47K Class A shares (~$4.45M). No sales in prior 3 months. Not a 10b5-1 plan. Shares outstanding: 292,637,039. Attorney-in-fact: Daniel Tucci (Fidelity). Filed Mar 17.' },
   { name: 'Huiwen Yao', role: 'CTO', date: '2026-03-11', type: 'Option Exercise', units: 40000, exercisePrice: 0.0641, exerciseValue: 2564, postDirectClassA: 4144750, postDerivativeOptions: 299912, optionExpiry: '2029-04-17', note: 'AST LLC Incentive Equity Options → LLC Units → Class A. No sale. Filed Mar 12.' },
 ];
 

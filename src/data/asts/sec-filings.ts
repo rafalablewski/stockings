@@ -17,6 +17,7 @@
  */
 
 export const ASTS_SEC_FILINGS = [
+  { date: 'Mar 17, 2026', type: 'Form 144', description: 'Wisniewski (President) proposed sale: 47K shares at ~$94.75 (~$4.45M) via Fidelity. RSU-sourced (Sep 2024 + Sep 2025 vestings). No sales in prior 3 months. No 10b5-1 plan.', period: '—', color: 'green' },
   { date: 'Mar 12, 2026', type: 'Form 4', description: 'Yao (CTO) option exercise: 40K AST LLC Incentive Equity Options at $0.064 → Class A (Mar 11 txn). Post: 4,144,750 direct + 299,912 options remaining. No sale.', period: '—', color: 'green' },
   { date: 'Mar 2, 2026', type: '10-K', description: 'Annual Report — FY2025 Audited. Rev $70.9M, OpEx $358.6M, Net Loss -$461M. Cash $2,780M. Debt $2,264M. PPE $1,399M. Intangibles $245M. RPO $1.2B. NCI 23.9%. Fully funded ~90 sats.', period: 'FY 2025', color: 'blue' },
   { date: 'Feb 23, 2026', type: '8-K', description: 'RD Settlements + Notes Repurchases Completed (RD#1 Feb 20: $46.5M 4.25%; RD#2 Feb 23: $250M 2.375%; Item 8.01)', period: '—', color: 'yellow' },
@@ -108,7 +109,7 @@ export const ASTS_SEC_META = {
   exchange: 'NASDAQ',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 23, 2026', title: 'SDA $30M HALO Europa Track 2 Prime Contract' },
-  totalFilingsTracked: 80
+  totalFilingsTracked: 81
 };
 
 // Color palette constants (reduce duplication per Gemini review)
@@ -144,6 +145,9 @@ export const ASTS_SEC_FILTER_TYPES = ['All', '10-K', '10-Q', '8-K', 'S-1/S-3', '
 export const ASTS_FILING_CROSS_REFS: Record<string, { source: string; data: string }[]> = {
 
   // ── Mar 2026 ──────────────────────────────────────────────────────────────
+  'Form 144|2026-03-17': [
+    { source: 'capital', data: "Wisniewski (President): proposed sale 47K shares at ~$94.75 via Fidelity. RSU-sourced (Sep 2024 + Sep 2025 vestings). No 10b5-1 plan. No sales in prior 3 months." },
+  ],
   'Form 4|2026-03-12': [
     { source: 'capital', data: "Yao (CTO): exercised 40K AST LLC options at $0.064 (Mar 11). Post: 4,144,750 Class A direct + 299,912 options remaining. No sale." },
   ],
