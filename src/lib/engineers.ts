@@ -46,8 +46,7 @@ export const engineers: EngineerTask[] = [
       'Generate weekly thesis health reports',
       'Auto-update scorecard categories when new data lands',
     ],
-    workflowIds: ['thesis-review', 'weekly-digest'],
-    pipelineWorkflowIds: ['thesis-review'],
+    workflowIds: ['thesis-review'],
     defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['filing-ingested', 'press-release-added', 'price-alert'],
     requiresData: false,

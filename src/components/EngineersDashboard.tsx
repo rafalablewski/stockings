@@ -231,42 +231,7 @@ function EngineerDetailPanel({
               Schedule
             </button>
           )}
-          {linkedWorkflows.length > 1 ? (
-            <div className="eng-run-group">
-              <button
-                className="eng-btn"
-                data-variant="run"
-                data-state={isRunning ? 'running' : undefined}
-                onClick={() => onRun(engineer.id)}
-                disabled={isRunning}
-              >
-                {isRunning ? 'Running\u2026' : 'Run All'}
-              </button>
-              {linkedWorkflows.map(wf => (
-                <button
-                  key={wf.id}
-                  className="eng-btn eng-btn-sm"
-                  data-variant="run-single"
-                  data-state={isRunning ? 'running' : undefined}
-                  onClick={() => onRun(engineer.id, wf.id)}
-                  disabled={isRunning}
-                  title={wf.description}
-                >
-                  {wf.name}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <button
-              className="eng-btn"
-              data-variant="run"
-              data-state={isRunning ? 'running' : undefined}
-              onClick={() => onRun(engineer.id)}
-              disabled={isRunning}
-            >
-              {isRunning ? 'Running\u2026' : 'Run Now'}
-            </button>
-          )}
+          {/* Run buttons moved to Operations Pipeline tab */}
           <button className="eng-detail-close" onClick={onClose}>{'\u2715'}</button>
         </div>
       </div>
@@ -1347,7 +1312,9 @@ export default function EngineersDashboard({ engineers, workflows, tickers }: Pr
 
         {/* ══ OPERATIONS TAB ══ */}
         {activeTab === 'operations' && (
-          <OperationsPipeline />
+          <OperationsPipeline
+            selectedTicker={selectedTicker}
+          />
         )}
 
         {loading && (

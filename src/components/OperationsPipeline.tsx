@@ -1,18 +1,42 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { authFetch } from '@/lib/auth-fetch';
 import { workflows } from '@/data/workflows';
 import { PIPELINES } from '@/lib/derive-pipelines';
 
+// ── Props ────────────────────────────────────────────────────────────────────
+
+interface OperationsPipelineProps {
+  selectedTicker: string;
+}
+
 // ── Prompt lookup ────────────────────────────────────────────────────────────
 
-/** Build a map from workflow id → resolved prompt text (template or first variant). */
 const workflowPromptMap: Record<string, { name: string; prompt: string }> = {};
 for (const wf of workflows) {
   const prompt = wf.promptTemplate ?? wf.variants?.[0]?.prompt;
   if (prompt) {
     workflowPromptMap[wf.id] = { name: wf.name, prompt };
   }
+}
+
+// ── Terminal log types ───────────────────────────────────────────────────────
+
+interface TerminalLine {
+  time: string;
+  type: 'info' | 'success' | 'error' | 'warn' | 'step' | 'system';
+  message: string;
+}
+
+interface PipelineRunState {
+  pipelineId: string;
+  running: boolean;
+  activeStepIndex: number;   // which engineer step is executing (-1 = none)
+  completedSteps: number[];  // step indices that completed
+  failedSteps: number[];     // step indices that failed
+  logs: TerminalLine[];
+  durationMs?: number;
 }
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -33,16 +57,197 @@ const DIVISION_COLOR: Record<string, string> = {
   maszka: 'rose',
 };
 
+function timestamp(): string {
+  return new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
 // ── Component ────────────────────────────────────────────────────────────────
 
-export default function OperationsPipeline() {
+export default function OperationsPipeline({ selectedTicker }: OperationsPipelineProps) {
   const [expandedId, setExpandedId] = useState<string | null>(
     PIPELINES[0]?.id ?? null,
   );
-  // Track which step is showing its prompt, keyed as "pipelineId-stepIndex"
   const [promptOpen, setPromptOpen] = useState<string | null>(null);
-  // Track copy feedback, keyed as "pipelineId-stepIndex"
   const [copied, setCopied] = useState<string | null>(null);
+
+  // Pipeline run states keyed by pipelineId
+  const [runStates, setRunStates] = useState<Record<string, PipelineRunState>>({});
+  const terminalRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll terminal to bottom
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
+  });
+
+  const addLog = useCallback((pipelineId: string, type: TerminalLine['type'], message: string) => {
+    setRunStates(prev => {
+      const state = prev[pipelineId];
+      if (!state) return prev;
+      return {
+        ...prev,
+        [pipelineId]: {
+          ...state,
+          logs: [...state.logs, { time: timestamp(), type, message }],
+        },
+      };
+    });
+  }, []);
+
+  const runPipeline = useCallback(async (pipelineId: string) => {
+    const pipeline = PIPELINES.find(p => p.id === pipelineId);
+    if (!pipeline) return;
+
+    // Initialize run state
+    setRunStates(prev => ({
+      ...prev,
+      [pipelineId]: {
+        pipelineId,
+        running: true,
+        activeStepIndex: -1,
+        completedSteps: [],
+        failedSteps: [],
+        logs: [{ time: timestamp(), type: 'system', message: `Starting pipeline: ${pipeline.name} for ${selectedTicker.toUpperCase()}` }],
+      },
+    }));
+
+    // Auto-expand this pipeline
+    setExpandedId(pipelineId);
+
+    try {
+      const res = await authFetch('/api/engineers/run-pipeline', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ticker: selectedTicker, pipelineId }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Request failed' }));
+        addLog(pipelineId, 'error', `Pipeline request failed: ${err.error || res.statusText}`);
+        setRunStates(prev => ({
+          ...prev,
+          [pipelineId]: { ...prev[pipelineId], running: false },
+        }));
+        return;
+      }
+
+      // Parse SSE stream
+      const reader = res.body?.getReader();
+      if (!reader) {
+        addLog(pipelineId, 'error', 'No response stream available');
+        setRunStates(prev => ({
+          ...prev,
+          [pipelineId]: { ...prev[pipelineId], running: false },
+        }));
+        return;
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === '[DONE]') continue;
+
+          try {
+            const event = JSON.parse(jsonStr);
+
+            switch (event.type) {
+              case 'pipeline:start':
+                addLog(pipelineId, 'system', `Pipeline "${event.name}" — ${event.stepCount} engineer step${event.stepCount !== 1 ? 's' : ''}`);
+                break;
+
+              case 'step:start':
+                setRunStates(prev => ({
+                  ...prev,
+                  [pipelineId]: { ...prev[pipelineId], activeStepIndex: event.stepIndex },
+                }));
+                addLog(pipelineId, 'step', `[Step ${event.stepIndex + 1}/${event.totalSteps}] ${event.label}`);
+                break;
+
+              case 'step:log':
+                addLog(pipelineId, 'info', `  ${event.message}`);
+                break;
+
+              case 'step:complete':
+                setRunStates(prev => {
+                  const s = prev[pipelineId];
+                  return {
+                    ...prev,
+                    [pipelineId]: {
+                      ...s,
+                      activeStepIndex: -1,
+                      completedSteps: [...s.completedSteps, event.stepIndex],
+                    },
+                  };
+                });
+                addLog(pipelineId, 'success', `  Done (${(event.durationMs / 1000).toFixed(1)}s) — run #${event.runId}`);
+                break;
+
+              case 'step:error':
+                setRunStates(prev => {
+                  const s = prev[pipelineId];
+                  return {
+                    ...prev,
+                    [pipelineId]: {
+                      ...s,
+                      activeStepIndex: -1,
+                      failedSteps: [...s.failedSteps, event.stepIndex],
+                    },
+                  };
+                });
+                addLog(pipelineId, 'error', `  FAILED: ${event.error}`);
+                break;
+
+              case 'step:skip':
+                addLog(pipelineId, 'warn', `  Skipped: ${event.label} — ${event.reason}`);
+                break;
+
+              case 'pipeline:complete':
+                setRunStates(prev => ({
+                  ...prev,
+                  [pipelineId]: {
+                    ...prev[pipelineId],
+                    running: false,
+                    activeStepIndex: -1,
+                    durationMs: event.durationMs,
+                  },
+                }));
+                if (event.stepsFailed > 0) {
+                  addLog(pipelineId, 'error', `Pipeline finished — ${event.stepsCompleted} completed, ${event.stepsFailed} failed (${(event.durationMs / 1000).toFixed(1)}s)`);
+                } else {
+                  addLog(pipelineId, 'success', `Pipeline complete — ${event.stepsCompleted} steps in ${(event.durationMs / 1000).toFixed(1)}s`);
+                }
+                break;
+
+              case 'pipeline:error':
+                addLog(pipelineId, 'error', `Pipeline error: ${event.error}`);
+                break;
+            }
+          } catch {
+            // skip unparseable SSE lines
+          }
+        }
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      addLog(pipelineId, 'error', `Connection error: ${msg}`);
+      setRunStates(prev => ({
+        ...prev,
+        [pipelineId]: { ...prev[pipelineId], running: false },
+      }));
+    }
+  }, [selectedTicker, addLog]);
 
   return (
     <div className="ops-wrap">
@@ -57,6 +262,12 @@ export default function OperationsPipeline() {
       <div className="ops-list">
         {PIPELINES.map(pipeline => {
           const isOpen = expandedId === pipeline.id;
+          const runState = runStates[pipeline.id];
+          const isRunning = runState?.running ?? false;
+          // Map stepIndex from SSE (engineer-only index) to full pipeline step index
+          const engineerStepIndices = pipeline.steps
+            .map((s, i) => s.type === 'engineer' && s.engineerId ? i : -1)
+            .filter(i => i >= 0);
 
           return (
             <div
@@ -83,27 +294,112 @@ export default function OperationsPipeline() {
                   <span className="ops-interval-badge" data-color={pipeline.color}>
                     {pipeline.interval}
                   </span>
+                  {/* Run Pipeline button */}
+                  <button
+                    className="ops-run-pipeline-btn"
+                    data-color={pipeline.color}
+                    data-state={isRunning ? 'running' : undefined}
+                    disabled={isRunning}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      runPipeline(pipeline.id);
+                    }}
+                  >
+                    {isRunning ? (
+                      <>
+                        <span className="ops-run-pipeline-spinner" />
+                        Running{'\u2026'}
+                      </>
+                    ) : (
+                      <>
+                        <svg width={12} height={12} viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+                        Run Pipeline
+                      </>
+                    )}
+                  </button>
                   <span className="dec-expand-icon">{isOpen ? '\u25B2' : '\u25BC'}</span>
                 </div>
               </div>
 
-              {/* Mini dot track — always visible */}
+              {/* Mini dot track — always visible, with active step highlighting */}
               <div className="ops-mini-track">
-                {pipeline.steps.map((step, i) => (
-                  <React.Fragment key={i}>
-                    {i > 0 && <div className="ops-mini-line" data-color={pipeline.color} />}
-                    <div
-                      className="ops-mini-node"
-                      data-color={DIVISION_COLOR[step.division] ?? 'sky'}
-                      title={step.label}
-                    />
-                  </React.Fragment>
-                ))}
+                {pipeline.steps.map((step, i) => {
+                  // Determine status of this step node in the mini-track
+                  const engIdx = engineerStepIndices.indexOf(i);
+                  let nodeStatus: string | undefined;
+                  if (runState) {
+                    if (runState.activeStepIndex >= 0 && engineerStepIndices[runState.activeStepIndex] === i) {
+                      nodeStatus = 'running';
+                    } else if (runState.completedSteps.some(si => engineerStepIndices[si] === i)) {
+                      nodeStatus = 'completed';
+                    } else if (runState.failedSteps.some(si => engineerStepIndices[si] === i)) {
+                      nodeStatus = 'failed';
+                    }
+                  }
+
+                  return (
+                    <React.Fragment key={i}>
+                      {i > 0 && <div className="ops-mini-line" data-color={pipeline.color} />}
+                      <div
+                        className="ops-mini-node"
+                        data-color={DIVISION_COLOR[step.division] ?? 'sky'}
+                        data-status={nodeStatus}
+                        title={step.label}
+                      />
+                    </React.Fragment>
+                  );
+                })}
               </div>
 
               {/* Human-readable description — always visible below mini track */}
               {pipeline.humanDescription && (
                 <div className="ops-human-desc">{pipeline.humanDescription}</div>
+              )}
+
+              {/* Terminal — shows when pipeline has run state */}
+              {runState && runState.logs.length > 0 && (
+                <div className="ops-terminal" data-color={pipeline.color}>
+                  <div className="ops-terminal-header">
+                    <span className="ops-terminal-title">
+                      {isRunning && <span className="ops-terminal-live-dot" />}
+                      Pipeline Log
+                    </span>
+                    {runState.durationMs != null && (
+                      <span className="ops-terminal-duration">
+                        {(runState.durationMs / 1000).toFixed(1)}s
+                      </span>
+                    )}
+                    {!isRunning && (
+                      <button
+                        className="ops-terminal-clear"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setRunStates(prev => {
+                            const next = { ...prev };
+                            delete next[pipeline.id];
+                            return next;
+                          });
+                        }}
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  <div className="ops-terminal-body" ref={isOpen ? terminalRef : undefined}>
+                    {runState.logs.map((log, li) => (
+                      <div key={li} className="ops-terminal-line" data-type={log.type}>
+                        <span className="ops-terminal-time">{log.time}</span>
+                        <span className="ops-terminal-msg">{log.message}</span>
+                      </div>
+                    ))}
+                    {isRunning && (
+                      <div className="ops-terminal-line ops-terminal-cursor" data-type="info">
+                        <span className="ops-terminal-time">{timestamp()}</span>
+                        <span className="ops-terminal-msg">{'\u2588'}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
 
               {/* Expanded body */}
@@ -114,11 +410,24 @@ export default function OperationsPipeline() {
                       const meta = STEP_TYPE_META[step.type];
                       const divColor = DIVISION_COLOR[step.division] ?? 'sky';
 
+                      // Step status from pipeline run
+                      const engIdx = engineerStepIndices.indexOf(i);
+                      let stepStatus: string | undefined;
+                      if (runState) {
+                        if (runState.activeStepIndex >= 0 && engineerStepIndices[runState.activeStepIndex] === i) {
+                          stepStatus = 'running';
+                        } else if (runState.completedSteps.some(si => engineerStepIndices[si] === i)) {
+                          stepStatus = 'completed';
+                        } else if (runState.failedSteps.some(si => engineerStepIndices[si] === i)) {
+                          stepStatus = 'failed';
+                        }
+                      }
+
                       return (
-                        <div key={i} className="ops-step">
+                        <div key={i} className="ops-step" data-step-status={stepStatus}>
                           {/* Vertical rail */}
                           <div className="ops-rail">
-                            <div className="ops-node" data-color={divColor}>
+                            <div className="ops-node" data-color={divColor} data-status={stepStatus}>
                               <span className="ops-node-num">{i + 1}</span>
                             </div>
                             {i < pipeline.steps.length - 1 && (
@@ -127,10 +436,13 @@ export default function OperationsPipeline() {
                           </div>
 
                           {/* Step card */}
-                          <div className="ops-step-card">
+                          <div className="ops-step-card" data-status={stepStatus}>
                             <div className="ops-step-header">
                               <span className="ops-step-name">{step.label}</span>
                               <span className={`ops-step-badge ${meta.badgeClass}`}>{meta.badge}</span>
+                              {stepStatus === 'running' && <span className="ops-step-running-indicator" />}
+                              {stepStatus === 'completed' && <span className="ops-step-check">{'\u2713'}</span>}
+                              {stepStatus === 'failed' && <span className="ops-step-x">{'\u2717'}</span>}
                             </div>
                             <div className="ops-step-actor">
                               <span className="ops-step-actor-label">ACTOR</span>
@@ -139,7 +451,7 @@ export default function OperationsPipeline() {
                             </div>
                             <div className="ops-step-desc">{step.description}</div>
 
-                            {/* Prompt viewer toggle — only for steps with workflow IDs */}
+                            {/* Prompt viewer — only for steps with workflow IDs */}
                             {step.workflowIds && step.workflowIds.length > 0 && (() => {
                               const stepKey = `${pipeline.id}-${i}`;
                               const isPromptOpen = promptOpen === stepKey;

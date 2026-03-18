@@ -3,6 +3,9 @@ import { checkAiGate } from '@/lib/ai-gate';
 import { runEngineer } from '@/lib/engineer-engine';
 import { z } from 'zod';
 
+// Allow up to 5 minutes for multi-workflow engineer runs (requires Vercel Pro)
+export const maxDuration = 300;
+
 const RunBody = z.object({
   ticker: z.string().min(1),
   engineerId: z.string().min(1),

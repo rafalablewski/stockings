@@ -24,6 +24,8 @@ export interface PipelineStep {
   type: 'trigger' | 'engineer' | 'review' | 'decision' | 'output';
   /** Workflow IDs whose prompt is viewable in the "View Prompt" panel */
   workflowIds?: string[];
+  /** Engineer ID for this step (used by run buttons in operations view) */
+  engineerId?: string;
 }
 
 export interface DerivedPipeline {
@@ -150,6 +152,7 @@ function buildPipeline(head: EngineerTask): DerivedPipeline {
       description: eng.description,
       type: 'engineer',
       workflowIds: displayWorkflowIds.length > 0 ? displayWorkflowIds : undefined,
+      engineerId: eng.id,
     });
 
     // Auto-review step (if configured)
