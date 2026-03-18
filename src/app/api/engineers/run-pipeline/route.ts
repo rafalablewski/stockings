@@ -5,8 +5,8 @@ import { getEngineer } from '@/lib/engineers';
 import { PIPELINES } from '@/lib/derive-pipelines';
 import { z } from 'zod';
 
-// Allow up to 10 minutes for full pipeline runs
-export const maxDuration = 600;
+// Allow up to 5 minutes for full pipeline runs (Vercel Hobby max: 300)
+export const maxDuration = 300;
 
 const RunPipelineBody = z.object({
   ticker: z.string().min(1),
