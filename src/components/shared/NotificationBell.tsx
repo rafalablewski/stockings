@@ -86,15 +86,13 @@ function groupNotifications(items: Notification[]): GroupedNotifications[] {
 const REFRESH_INTERVAL_MS = 30 * 60 * 1000;
 const POLL_INTERVAL_MS = 60 * 1000;
 
-// ── Component ────────────────────────────────────────────────────────────────
+// ── Hook: useNotifications ───────────────────────────────────────────────────
 
-export default function NotificationBell() {
+function useNotifications() {
   const [items, setItems] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [open, setOpen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [lastRefresh, setLastRefresh] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const lastAutoRefresh = useRef<number>(0);
 
   const fetchNotifications = useCallback(async () => {
@@ -139,8 +137,13 @@ export default function NotificationBell() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'dismiss', ids: [id] }),
       });
-      setItems(prev => prev.filter(n => n.id !== id));
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      setItems(prev => {
+        const item = prev.find(n => n.id === id);
+        if (item && !item.read) {
+          setUnreadCount(c => Math.max(0, c - 1));
+        }
+        return prev.filter(n => n.id !== id);
+      });
     } catch { /* silent */ }
   }, []);
 
@@ -164,6 +167,16 @@ export default function NotificationBell() {
     }
     return () => { clearInterval(pollId); clearInterval(schedulerId); };
   }, [fetchNotifications, triggerRefresh]);
+
+  return { items, unreadCount, refreshing, lastRefresh, triggerRefresh, markAllRead, dismissNotification };
+}
+
+// ── Component ────────────────────────────────────────────────────────────────
+
+export default function NotificationBell() {
+  const { items, unreadCount, refreshing, lastRefresh, triggerRefresh, markAllRead, dismissNotification } = useNotifications();
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close on outside click
   useEffect(() => {
@@ -192,7 +205,6 @@ export default function NotificationBell() {
         className="relative flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 hover:bg-white/[0.04]"
         aria-label="Notifications"
       >
-        {/* Minimal circle outline — the "bell" is just a dot/ring */}
         <div className={`
           w-[7px] h-[7px] rounded-full transition-all duration-500
           ${unreadCount > 0
@@ -204,7 +216,6 @@ export default function NotificationBell() {
           ${refreshing ? 'animate-pulse' : ''}
         `} />
 
-        {/* Count — appears as a tiny number to the right */}
         {unreadCount > 0 && (
           <span className="absolute -top-px -right-px text-[8px] font-mono font-medium text-white/90 leading-none tabular-nums">
             {unreadCount > 9 ? '9+' : unreadCount}
@@ -248,7 +259,6 @@ export default function NotificationBell() {
             </div>
           </div>
 
-          {/* Divider */}
           <div className="mx-5 h-px bg-white/[0.04]" />
 
           {/* Body */}
@@ -263,7 +273,6 @@ export default function NotificationBell() {
             ) : (
               groups.map((group) => (
                 <div key={group.label}>
-                  {/* Group label */}
                   <div className="px-5 pt-3 pb-1.5">
                     <span className={`text-[9px] font-medium tracking-[0.12em] uppercase ${
                       group.label === 'TODAY' ? 'text-white/50' : 'text-white/20'
@@ -277,7 +286,6 @@ export default function NotificationBell() {
                       key={n.id}
                       className="group/n flex items-start gap-3 px-5 py-2.5 transition-colors duration-200 hover:bg-white/[0.02] cursor-default"
                     >
-                      {/* Type indicator — minimal vertical line */}
                       <div className={`mt-1.5 w-px h-3 rounded-full shrink-0 ${
                         n.type === 'sec' ? 'bg-amber-500/50' : 'bg-white/20'
                       }`} />
@@ -300,7 +308,6 @@ export default function NotificationBell() {
                         )}
                       </div>
 
-                      {/* Dismiss — appears on hover */}
                       <button
                         onClick={(e) => { e.stopPropagation(); dismissNotification(n.id); }}
                         className="opacity-0 group-hover/n:opacity-100 transition-opacity duration-200 mt-0.5"

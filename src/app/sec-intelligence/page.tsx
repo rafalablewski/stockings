@@ -95,21 +95,23 @@ const isRecent = (dateStr: string, days: number) => {
   return d >= cutoff;
 };
 
+/** Get current NYC date as YYYY-MM-DD ('en-ca' locale reliably gives this format) */
+const getNYCDateString = () =>
+  new Date().toLocaleDateString('en-ca', { timeZone: 'America/New_York' });
+
 const isFilingToday = (dateStr: string) => {
   if (!dateStr) return false;
-  return dateStr === new Date().toISOString().slice(0, 10);
+  return dateStr === getNYCDateString();
 };
 
 const isThisMonth = (dateStr: string) => {
   if (!dateStr) return false;
-  const d = new Date(dateStr + "T00:00:00");
-  const n = new Date();
-  return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth();
+  return dateStr.slice(0, 7) === getNYCDateString().slice(0, 7);
 };
 
 const isThisYear = (dateStr: string) => {
   if (!dateStr) return false;
-  return new Date(dateStr + "T00:00:00").getFullYear() === new Date().getFullYear();
+  return dateStr.slice(0, 4) === getNYCDateString().slice(0, 4);
 };
 
 /* ═══════════════════════════════════════════════════════════════════════════ */

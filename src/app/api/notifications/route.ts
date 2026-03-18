@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { notifications } from '@/lib/schema';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc, and, inArray, sql } from 'drizzle-orm';
 
 /**
  * GET /api/notifications
@@ -18,16 +18,20 @@ export async function GET(request: NextRequest) {
     const conditions = [eq(notifications.dismissed, false)];
     if (unreadOnly) conditions.push(eq(notifications.read, false));
 
-    const rows = await db
-      .select()
-      .from(notifications)
-      .where(and(...conditions))
-      .orderBy(desc(notifications.createdAt))
-      .limit(100);
+    const [rows, unreadCountResult] = await Promise.all([
+      db
+        .select()
+        .from(notifications)
+        .where(and(...conditions))
+        .orderBy(desc(notifications.createdAt))
+        .limit(100),
+      db
+        .select({ count: sql<number>`count(*)` })
+        .from(notifications)
+        .where(and(eq(notifications.dismissed, false), eq(notifications.read, false))),
+    ]);
 
-    const unreadCount = unreadOnly
-      ? rows.length
-      : rows.filter(r => !r.read).length;
+    const unreadCount = Number(unreadCountResult[0]?.count ?? 0);
 
     return NextResponse.json({ notifications: rows, unreadCount });
   } catch (err) {
@@ -85,21 +89,17 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    if (action === 'read' && Array.isArray(ids)) {
-      for (const id of ids) {
-        await db.update(notifications)
-          .set({ read: true })
-          .where(eq(notifications.id, id));
-      }
+    if (action === 'read' && Array.isArray(ids) && ids.length > 0) {
+      await db.update(notifications)
+        .set({ read: true })
+        .where(inArray(notifications.id, ids));
       return NextResponse.json({ ok: true });
     }
 
-    if (action === 'dismiss' && Array.isArray(ids)) {
-      for (const id of ids) {
-        await db.update(notifications)
-          .set({ dismissed: true })
-          .where(eq(notifications.id, id));
-      }
+    if (action === 'dismiss' && Array.isArray(ids) && ids.length > 0) {
+      await db.update(notifications)
+        .set({ dismissed: true })
+        .where(inArray(notifications.id, ids));
       return NextResponse.json({ ok: true });
     }
 
