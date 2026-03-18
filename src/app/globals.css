@@ -824,6 +824,49 @@ a, a:visited {
   50%      { opacity: 1;   transform: scale(1.35); }
 }
 
+/* ═══ NAV BELL (notification badge — same system as AI/PIN badges) ═══ */
+
+.nav-bell-badge {
+  --badge-rgb: 245,158,11;
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 9px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.1em; padding: 4px 10px; border-radius: 6px;
+  height: 24px; line-height: 1; cursor: pointer;
+  background: rgba(var(--badge-rgb), 0.08);
+  color: rgba(var(--badge-rgb), 0.7);
+  border: 1px solid rgba(var(--badge-rgb), 0.18);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: navBadgeFadeIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.08s;
+}
+.nav-bell-badge[data-has-unread="true"] {
+  --badge-rgb: 99,179,237;
+  color: rgba(var(--badge-rgb), 0.9);
+  background: rgba(var(--badge-rgb), 0.12);
+  border-color: rgba(var(--badge-rgb), 0.25);
+}
+.nav-bell-badge[data-open="true"] {
+  background: rgba(var(--badge-rgb), 0.16);
+  border-color: rgba(var(--badge-rgb), 0.30);
+}
+.nav-bell-badge:hover {
+  background: rgba(var(--badge-rgb), 0.16) !important;
+  border-color: rgba(var(--badge-rgb), 0.32) !important;
+  transform: scale(1.04);
+}
+.nav-bell-badge:active { transform: scale(0.96); }
+.nav-bell-icon {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.nav-bell-badge:hover .nav-bell-icon { transform: rotate(-12deg) scale(1.15); }
+.nav-bell-count {
+  font-variant-numeric: tabular-nums;
+  font-size: 9px;
+  font-weight: 700;
+  min-width: 6px;
+  text-align: center;
+}
+
 /* ═══ MOBILE NAV ACCORDION ═══ */
 
 .mobile-nav-children {

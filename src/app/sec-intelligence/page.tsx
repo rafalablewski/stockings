@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { stocks } from "@/lib/stocks";
+import { stocks, INTELLIGENCE_TICKERS } from "@/lib/stocks";
 import "./sec-intelligence.css";
+
+/** Sorted ticker list — single source of truth for display order in both pages */
+const SORTED_TICKERS = [...INTELLIGENCE_TICKERS].sort((a, b) => a.localeCompare(b));
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SEC INTELLIGENCE — Unified SEC EDGAR filings feed
@@ -92,6 +95,25 @@ const isRecent = (dateStr: string, days: number) => {
   return d >= cutoff;
 };
 
+/** Get current NYC date as YYYY-MM-DD ('en-ca' locale reliably gives this format) */
+const getNYCDateString = () =>
+  new Date().toLocaleDateString('en-ca', { timeZone: 'America/New_York' });
+
+const isFilingToday = (dateStr: string) => {
+  if (!dateStr) return false;
+  return dateStr === getNYCDateString();
+};
+
+const isThisMonth = (dateStr: string) => {
+  if (!dateStr) return false;
+  return dateStr.slice(0, 7) === getNYCDateString().slice(0, 7);
+};
+
+const isThisYear = (dateStr: string) => {
+  if (!dateStr) return false;
+  return dateStr.slice(0, 4) === getNYCDateString().slice(0, 4);
+};
+
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
 export default function SecIntelligencePage() {
@@ -112,11 +134,12 @@ export default function SecIntelligencePage() {
   const [page, setPage] = useState(1);
   const [methodologyOpen, setMethodologyOpen] = useState(false);
 
-  /* ── Load filings (DB-first on mount, refresh fetches from SEC) ── */
+  /* ── Load filings (DB-first on mount, refresh fetches from SEC) ──
+     Always loads ALL filings (no days param). Date filtering is client-side,
+     matching the Press Intelligence architecture. */
   const loadFilings = useCallback(async (mode: "db" | "refresh" = "db") => {
     try {
-      const params = new URLSearchParams({ mode, limit: '50' });
-      if (daysFilter > 0) params.set('days', String(daysFilter));
+      const params = new URLSearchParams({ mode, limit: '200' });
       const res = await fetch(`/api/sec-intelligence?${params}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json: ApiResponse = await res.json();
@@ -135,7 +158,7 @@ export default function SecIntelligencePage() {
     }
     setLoading(false);
     setRefreshing(false);
-  }, [daysFilter]);
+  }, []);
 
   /* DB-first: load from database on mount */
   useEffect(() => {
@@ -173,22 +196,24 @@ export default function SecIntelligencePage() {
     }
   }, []);
 
-  /* ── Tickers with data (for filter pills) ── */
-  const activeTickers = useMemo(() => {
-    if (!data?.tickerStats) return [];
-    return Object.entries(data.tickerStats)
-      .filter(([, s]) => s.count > 0)
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([ticker]) => ticker);
-  }, [data]);
+  /* ── All intelligence tickers, sorted alphabetically ── */
+  const allTickers = SORTED_TICKERS;
+
+  /* ── Date-filtered filings (matching Press Intelligence: client-side date filter) ── */
+  const allFilings = useMemo(() => {
+    if (!data?.filings) return [];
+    if (daysFilter <= 0) return data.filings;
+    const cutoff = new Date(Date.now() - daysFilter * 86400000).toISOString().slice(0, 10);
+    return data.filings.filter(f => (f.filingDate || '') >= cutoff);
+  }, [data, daysFilter]);
 
   /* ── Build dynamic form filter options from actual data ── */
   const activeFormFilters = useMemo(() => {
-    if (!data?.filings) return [];
+    if (allFilings.length === 0) return [];
     // Only show filters that match at least one filing in current ticker scope
     const scopedFilings = activeTicker !== "ALL"
-      ? data.filings.filter(f => f.ticker === activeTicker)
-      : data.filings;
+      ? allFilings.filter(f => f.ticker === activeTicker)
+      : allFilings;
 
     const active: { key: string; label: string; count: number }[] = [];
     for (const ff of FORM_FILTERS) {
@@ -204,12 +229,11 @@ export default function SecIntelligencePage() {
     if (otherCount > 0) active.push({ key: "Other", label: "Other", count: otherCount });
 
     return active;
-  }, [data, activeTicker]);
+  }, [allFilings, activeTicker]);
 
   /* ── Filtered filings ── */
   const filteredFilings = useMemo(() => {
-    if (!data?.filings) return [];
-    let filings = data.filings;
+    let filings = allFilings;
 
     /* Ticker filter */
     if (activeTicker !== "ALL") {
@@ -238,13 +262,13 @@ export default function SecIntelligencePage() {
         const desc = (f.primaryDocDescription || "").toLowerCase();
         const form = f.form.toLowerCase();
         const ticker = f.ticker.toLowerCase();
-        const company = (data.tickerStats[f.ticker]?.companyName || "").toLowerCase();
+        const company = (data?.tickerStats[f.ticker]?.companyName || "").toLowerCase();
         return desc.includes(q) || form.includes(q) || ticker.includes(q) || company.includes(q);
       });
     }
 
     return filings;
-  }, [data, activeTicker, activeForm, searchQuery]);
+  }, [allFilings, activeTicker, activeForm, searchQuery, data]);
 
   /* Count undismissed (NEW) filings */
   const newCount = useMemo(() => {
@@ -267,28 +291,40 @@ export default function SecIntelligencePage() {
   const totalPages = Math.max(1, Math.ceil(filteredFilings.length / PAGE_SIZE));
   const pagedFilings = filteredFilings.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  /* ── Stats ── */
+  /* ── Stats (matching Press Intelligence layout) ──
+     Uses allFilings (date-filtered, like Press uses feedsByTicker).
+     perStock counts per-ticker from the date-filtered set. */
   const stats = useMemo(() => {
-    if (!data?.filings) return { total: 0, tickers: 0, today: 0, thisWeek: 0, newFilings: 0 };
-    const filings = data.filings;
-    const todayStr = new Date().toISOString().slice(0, 10);
+    if (allFilings.length === 0) return { total: 0, today: 0, thisMonth: 0, thisYear: 0, latest: "\u2014", newFilings: 0, perStock: {} as Record<string, number> };
 
     let today = 0;
-    let thisWeek = 0;
+    let thisMonth = 0;
+    let thisYear = 0;
 
-    for (const f of filings) {
-      if (f.filingDate === todayStr) today++;
-      if (isRecent(f.filingDate, 7)) thisWeek++;
+    for (const f of allFilings) {
+      if (isFilingToday(f.filingDate)) today++;
+      if (isThisMonth(f.filingDate)) thisMonth++;
+      if (isThisYear(f.filingDate)) thisYear++;
+    }
+
+    const latest = allFilings[0] ? formatDate(allFilings[0].filingDate) : "\u2014";
+
+    const perStock: Record<string, number> = {};
+    for (const ticker of allTickers) perStock[ticker] = 0;
+    for (const f of allFilings) {
+      if (perStock[f.ticker] !== undefined) perStock[f.ticker]++;
     }
 
     return {
-      total: filings.length,
-      tickers: Object.keys(data.tickerStats).filter(t => (data.tickerStats[t]?.count ?? 0) > 0).length,
+      total: allFilings.length,
       today,
-      thisWeek,
+      thisMonth,
+      thisYear,
+      latest,
       newFilings: newCount,
+      perStock,
     };
-  }, [data, newCount]);
+  }, [allFilings, newCount, allTickers]);
 
   const hasErrors = data?.errors && Object.keys(data.errors).length > 0;
   const isEmpty = !loading && data?.filings?.length === 0 && !hasErrors;
@@ -340,24 +376,28 @@ export default function SecIntelligencePage() {
           </div>
         </div>
 
-        {/* ── KPI Strip ── */}
+        {/* ── KPI Strip (matches Press Intelligence layout) ── */}
         {!loading && (
           <div className="si-kpi-strip">
             <div className="si-kpi">
               <span className="si-kpi-value">{stats.total}</span>
-              <span className="si-kpi-label">Total Filings</span>
-            </div>
-            <div className="si-kpi">
-              <span className="si-kpi-value">{stats.tickers}</span>
-              <span className="si-kpi-label">Companies</span>
+              <span className="si-kpi-label">Total</span>
             </div>
             <div className="si-kpi">
               <span className="si-kpi-value">{stats.today}</span>
               <span className="si-kpi-label">Today</span>
             </div>
             <div className="si-kpi">
-              <span className="si-kpi-value">{stats.thisWeek}</span>
-              <span className="si-kpi-label">This Week</span>
+              <span className="si-kpi-value">{stats.thisMonth}</span>
+              <span className="si-kpi-label">This Month</span>
+            </div>
+            <div className="si-kpi">
+              <span className="si-kpi-value">{stats.thisYear}</span>
+              <span className="si-kpi-label">This Year</span>
+            </div>
+            <div className="si-kpi">
+              <span className="si-kpi-value si-kpi-value-sm">{stats.latest}</span>
+              <span className="si-kpi-label">Latest</span>
             </div>
             {stats.newFilings > 0 && (
               <div className="si-kpi">
@@ -366,10 +406,10 @@ export default function SecIntelligencePage() {
               </div>
             )}
 
-            {/* Per-stock counts */}
+            {/* Per-stock counts (same layout as Press Intelligence) */}
             <div className="si-stock-summary-wrap">
               <div className="si-stock-summary">
-                {activeTickers.slice(0, 20).map((ticker) => (
+                {allTickers.map((ticker) => (
                   <div
                     key={ticker}
                     className="si-stock-stat"
@@ -377,7 +417,7 @@ export default function SecIntelligencePage() {
                     onClick={() => setActiveTicker(activeTicker === ticker ? "ALL" : ticker)}
                   >
                     <span className="si-stock-stat-count">
-                      {data?.tickerStats[ticker]?.count || 0}
+                      {stats.perStock[ticker] || 0}
                     </span>
                     <span className="si-stock-stat-label">{ticker}</span>
                   </div>
@@ -398,7 +438,7 @@ export default function SecIntelligencePage() {
             >
               ALL
             </button>
-            {activeTickers.map((ticker) => (
+            {allTickers.map((ticker) => (
               <button
                 key={ticker}
                 className="si-stock-pill"
