@@ -1039,7 +1039,7 @@ PATCH RULES — NON-NEGOTIABLE
 3. ADDITIVE ONLY: Never delete or shrink existing data. Patches must only ADD or EXPAND. Exception: "update" actions that correct stale data (must include oldValue for audit trail).
 
 4. FILE PATHS: Must be relative to src/data/ and match pattern: <ticker_lowercase>/<filename>.ts
-   Allowed files: sec-filings.ts, timeline.ts, capital.ts, financials.ts, catalysts.ts, company.ts, quarterly-metrics.ts, partners.ts, ethereum-adoption.ts
+   Allowed files: sec-filings.ts, timeline.ts, capital.ts (incl. INSIDER_TRANSACTIONS[]), financials.ts, catalysts.ts, company.ts, quarterly-metrics.ts, partners.ts, ethereum-adoption.ts
 
 5. CONTENT SAFETY: Never include import, require, exec, eval, process, or Function in patch content.
 

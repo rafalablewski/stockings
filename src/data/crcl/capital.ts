@@ -19,7 +19,7 @@
  * 3. Update MAJOR_SHAREHOLDERS when 13F/DEF 14A filed
  */
 
-import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata } from '../shared/types';
+import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata, InsiderTransaction } from '../shared/types';
 
 // ============================================================================
 // METADATA
@@ -49,3 +49,19 @@ export const MAJOR_SHAREHOLDERS: MajorShareholder[] = [];
 // ============================================================================
 
 export const EQUITY_OFFERINGS: EquityOffering[] = [];
+
+// ============================================================================
+// INSIDER TRANSACTIONS
+// ============================================================================
+
+/**
+ * Unified insider transaction log. Reverse-chronological (newest first).
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - Add ALL insider activity here: sales, purchases, RSU vestings/grants,
+ *   option exercises, Form 144 proposals, tax withholdings.
+ * - Do NOT create separate monthly arrays. One array, one export.
+ * - Type is InsiderTransaction from shared/types.ts.
+ * - This array is already exported from index.ts — no barrel update needed.
+ */
+export const INSIDER_TRANSACTIONS: InsiderTransaction[] = [];

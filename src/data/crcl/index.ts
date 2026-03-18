@@ -67,6 +67,7 @@ export {
   SHARE_CLASSES,
   MAJOR_SHAREHOLDERS,
   EQUITY_OFFERINGS,
+  INSIDER_TRANSACTIONS,
 } from './capital';
 
 // Historical

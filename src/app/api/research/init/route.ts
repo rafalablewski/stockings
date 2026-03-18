@@ -202,12 +202,12 @@ function capitalTemplate(ticker: string): string {
  * ${ticker} - CAPITAL STRUCTURE DATA
  * ================================================
  *
- * Share classes, shareholders, and equity offerings.
+ * Share classes, shareholders, equity offerings, and insider transactions.
  *
  * LAST UPDATED: ${today}
  */
 
-import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata } from '../shared/types';
+import type { ShareClass, MajorShareholder, EquityOffering, DataMetadata, InsiderTransaction } from '../shared/types';
 
 export const CAPITAL_METADATA: DataMetadata = {
   lastUpdated: '${today}',
@@ -218,6 +218,18 @@ export const CAPITAL_METADATA: DataMetadata = {
 export const SHARE_CLASSES: ShareClass[] = [];
 export const MAJOR_SHAREHOLDERS: MajorShareholder[] = [];
 export const EQUITY_OFFERINGS: EquityOffering[] = [];
+
+/**
+ * Unified insider transaction log. Reverse-chronological (newest first).
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - Add ALL insider activity here: sales, purchases, RSU vestings/grants,
+ *   option exercises, Form 144 proposals, tax withholdings.
+ * - Do NOT create separate monthly arrays. One array, one export.
+ * - Type is InsiderTransaction from shared/types.ts.
+ * - This array is already exported from index.ts — no barrel update needed.
+ */
+export const INSIDER_TRANSACTIONS: InsiderTransaction[] = [];
 `;
 }
 
@@ -384,6 +396,12 @@ function indexTemplate(ticker: string): string {
  *
  * Central export file for all ${ticker} data.
  * Import from this file to get all stock data.
+ *
+ * AI AGENT INSTRUCTIONS — BARREL EXPORT RULE:
+ * When you add a NEW exported constant, array, function, or type to ANY
+ * data file in this directory, you MUST also add it to this barrel file.
+ * Exports not listed here are INVISIBLE to the UI. This is a mandatory
+ * step — not optional. Run: bash scripts/check-barrel-exports.sh
  */
 
 // Company & Defaults
@@ -421,6 +439,7 @@ export {
   SHARE_CLASSES,
   MAJOR_SHAREHOLDERS,
   EQUITY_OFFERINGS,
+  INSIDER_TRANSACTIONS,
 } from './capital';
 
 // Competitor News
@@ -466,6 +485,7 @@ export type {
   DataMetadata,
   Catalyst,
   CompletedMilestone,
+  InsiderTransaction,
 } from '../shared/types';
 `;
 }

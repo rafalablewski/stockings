@@ -19,7 +19,7 @@
  * 3. Update MAJOR_SHAREHOLDERS when 13F/DEF 14A filed
  */
 
-import type { DataMetadata, CashRunwayScenario } from '../shared/types';
+import type { DataMetadata, CashRunwayScenario, InsiderTransaction } from '../shared/types';
 
 // ============================================================================
 // METADATA
@@ -405,6 +405,32 @@ export const INSIDER_GRANTS = [
     filingType: 'Form 4/A',
     notes: 'Amendment corrects prior omission of 231,700 tax-withheld shares. Under 2025 Omnibus Incentive Plan.',
   },
+];
+
+// ============================================================================
+// UNIFIED INSIDER TRANSACTIONS
+// ============================================================================
+
+/**
+ * Unified insider transaction log. Reverse-chronological (newest first).
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - Add ALL new insider activity here: sales, purchases, RSU vestings/grants,
+ *   option exercises, Form 144 proposals, tax withholdings.
+ * - Do NOT create separate monthly arrays. One array, one export.
+ * - Type is InsiderTransaction from shared/types.ts.
+ * - This array is already exported from index.ts — no barrel update needed.
+ * - Legacy INSIDER_SALES and INSIDER_GRANTS arrays above are kept for
+ *   backwards compatibility with BMNR.tsx. New data goes HERE.
+ */
+export const INSIDER_TRANSACTIONS: InsiderTransaction[] = [
+  // Consolidated from INSIDER_GRANTS
+  { date: '2026-01-23', name: 'Tom Lee', role: 'Executive Chairman', type: 'rsu-grant', units: 1500000, taxWithheld: 231700, price: 28.84, note: '500K immediate, 500K at 1-yr, 500K at 2-yr. Amendment corrects prior omission of tax-withheld shares.', filingType: 'Form 4/A', filingDate: '2026-01-27' },
+  // Consolidated from INSIDER_SALES
+  { date: '2025-12-20', name: 'Jonathan Bates', role: 'CEO', type: 'sale', units: 2800000, price: 25.00, proceeds: 70000000, plan10b5_1: true, note: 'Rule 10b5-1 plan over Oct-Dec 2025. Multiple Form 4 filings.', filingType: 'Form 4' },
+  { date: '2025-11-15', name: 'Michael Brasser', role: 'CTO', type: 'sale', units: 800000, price: 24.50, proceeds: 19600000, note: 'Post-vesting sales via open market.', filingType: 'Form 4' },
+  { date: '2025-10-30', name: 'Tom Lee', role: 'Executive Chairman', type: 'sale', units: 600000, price: 25.50, proceeds: 15300000, plan10b5_1: true, note: 'Under Rule 10b5-1 plan.', filingType: 'Form 4' },
+  { date: '2025-10-15', name: 'Raymond Mow', role: 'CFO', type: 'sale', units: 250000, price: 28.00, proceeds: 7000000, note: 'Open market sale, shares from RSU vesting.', filingType: 'Form 4' },
 ];
 
 // ============================================================================
