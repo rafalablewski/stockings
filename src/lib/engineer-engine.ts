@@ -24,7 +24,7 @@ const CLAUDE_MODEL_DEFAULT = 'claude-sonnet-4-5-20250929';
 const CLAUDE_MODEL_FAST = 'claude-haiku-4-5-20251001';
 
 // Per-workflow timeout for Claude API calls
-const CLAUDE_API_TIMEOUT_MS = 180_000;       // default: 3 minutes (Sonnet + large context)
+const CLAUDE_API_TIMEOUT_MS = 270_000;       // default: 4.5 minutes (Sonnet + large context like thesis-review)
 const CLAUDE_API_TIMEOUT_FAST_MS = 120_000;  // fast model (Haiku): 2 minutes
 
 // Status type for run records
