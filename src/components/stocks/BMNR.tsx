@@ -2776,9 +2776,11 @@ const PurchasesTab = ({ ethPrice, currentShares, currentStockPrice }: { ethPrice
                 <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>ETH Bought</th>
                 <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>ETH Price</th>
                 <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>USD Deployed</th>
-                <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>Stock</th>
+                <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>Stock (Prev Close)</th>
+                <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>Period Range</th>
                 <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>Mkt Cap</th>
                 <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>mNAV</th>
+                <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>mNAV Range</th>
                 <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, textAlign: 'right', whiteSpace: 'nowrap' }}>Total ETH</th>
                 <th style={{ padding: '8px 12px', color: 'var(--text3)', fontWeight: 500, whiteSpace: 'nowrap' }}>Notes</th>
               </tr>
@@ -2791,8 +2793,10 @@ const PurchasesTab = ({ ethPrice, currentShares, currentStockPrice }: { ethPrice
                   <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text)' }}>${fmtNum(p.ethPrice)}</td>
                   <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--gold)' }}>{fmtUSD(p.cashDeployed)}</td>
                   <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text2)' }}>{p.prevDayClose !== null ? `$${p.prevDayClose.toFixed(2)}` : '—'}</td>
+                  <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text3)', fontSize: '12px', whiteSpace: 'nowrap' }}>{p.periodLow !== null && p.periodHigh !== null ? `$${p.periodLow.toFixed(2)}–$${p.periodHigh.toFixed(2)}` : '—'}</td>
                   <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text2)' }}>{p.prevDayMarketCap !== null ? `$${(p.prevDayMarketCap / 1e9).toFixed(1)}B` : '—'}</td>
                   <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: mnavColor(p.mnavAtTime) }}>{p.mnavAtTime !== null ? `${p.mnavAtTime.toFixed(2)}x` : '—'}</td>
+                  <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap', fontSize: '12px' }}>{p.mnavLow !== null && p.mnavHigh !== null ? <><span style={{ color: mnavColor(p.mnavLow) }}>{p.mnavLow.toFixed(2)}x</span><span style={{ color: 'var(--text3)' }}>–</span><span style={{ color: mnavColor(p.mnavHigh) }}>{p.mnavHigh.toFixed(2)}x</span></> : '—'}</td>
                   <td style={{ padding: '8px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text2)' }}>{(p.totalEthAfter / 1e6).toFixed(3)}M</td>
                   <td style={{ padding: '8px 12px', color: 'var(--text3)', fontSize: '12px', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.notes || '—'}</td>
                 </tr>
@@ -2804,7 +2808,7 @@ const PurchasesTab = ({ ethPrice, currentShares, currentStockPrice }: { ethPrice
                 <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--mint)' }}>{fmtNum(totalEthBought)}</td>
                 <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--text2)' }}>avg ${fmtNum(Math.round(weightedAvgEthPrice))}</td>
                 <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'var(--font-mono)', color: 'var(--gold)' }}>{fmtUSD(totalCashDeployed)}</td>
-                <td colSpan={5} />
+                <td colSpan={7} />
               </tr>
             </tfoot>
           </table>
