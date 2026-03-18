@@ -1071,10 +1071,40 @@ Rules — non-negotiable:
   {
     id: 'weekly-digest',
     name: 'Weekly / Monthly Digest',
-    description: 'Synthesizes the database into a concise stakeholder-ready memo — material changes, thesis momentum, catalyst tracker update, position sizing check, and action items for the next period.',
+    description: 'Synthesizes the database into a concise stakeholder-ready memo — material changes, thesis momentum, catalyst tracker update, conviction delta, risk alerts, position sizing check, and action items for the next period.',
     requiresUserData: false,
     variants: [],
-    promptTemplate: `You are the lead analyst on {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}) at a long/short technology hedge fund. You specialize in {{SPECIALIST_DOMAIN}}. You are producing a periodic research digest (weekly or monthly) for the investment committee and portfolio managers.
+    tabGuidance: {
+      // ── ASTS-specific tabs ──
+      'constellation': 'New satellite deployments, launch schedule changes, constellation status updates, unfurling success rates, coverage footprint changes.',
+      'subscribers': 'Subscriber projection revisions, new MNO partnership announcements, TAM updates, ARPU assumption changes.',
+      'partners': 'MoU-to-definitive conversion progress, revenue share term changes, new partner announcements, subscriber reach per partner.',
+      'revenue': 'Revenue ramp assumptions, per-partner revenue share updates, prepayment schedule changes.',
+      'catalysts': 'Upcoming catalyst dates — launches, regulatory milestones, partnership deadlines. Flag T-7 and T-3 approaching dates.',
+      // ── BMNR-specific tabs ──
+      'ethereum': 'ETH holdings changes, acquisition/disposition activity, price impact on treasury value, NAV/share recalculation.',
+      'staking': 'Staking yield changes, locked capital movements, validator economics shifts, MAVAN network status.',
+      'purchases': 'ETH purchase timing, price, quantities this period. Assess pacing vs. ATM capacity.',
+      'sensitivity': 'ETH price sensitivity — has the NAV impact per $100 ETH move changed? Updated break-even price.',
+      'debt': 'Convertible maturity schedule updates, covenant compliance, refinancing risk changes.',
+      'backtest': 'Has the historical strategy backtest been updated with new data? Flag regime changes.',
+      // ── CRCL-specific tabs ──
+      'usdc': 'USDC circulation changes, reserve composition updates, regulatory developments affecting reserves, market share shifts.',
+      // ── Shared tabs (apply to any ticker that has them) ──
+      'dilution': 'Share issuance this period — ATM utilization, warrant exercises, convertible conversions. Net dilution impact on per-share metrics.',
+      'monte-carlo': 'Have probabilistic scenario distributions shifted based on this period\'s developments? Flag if base case probability moved more than 5%.',
+      'comps': 'Peer valuation multiple changes this period. Has relative positioning improved or deteriorated?',
+      'investment': 'Current scorecard ratings and conviction scores. Compare against prior period for drift detection.',
+      'timeline': 'Upcoming catalysts within 30 days. Flag any that moved dates or changed status.',
+      'wall-street': 'New analyst initiations, PT changes, rating changes, consensus shifts this period.',
+    },
+    promptTemplate: `You are the lead analyst on {{COMPANY_NAME}} ({{EXCHANGE}}: {{TICKER}}) at a long/short technology hedge fund. You specialize in {{SPECIALIST_DOMAIN}}. You are producing a periodic research digest for the investment committee and portfolio managers.
+
+PERIOD CALIBRATION:
+Determine the digest period from the data context. Then apply these depth rules:
+- WEEKLY digest (≤10 days): Focus on material changes only. Keep sections tight. Target 2-minute read time. Skip sections with no material changes (note "No material changes" and move on).
+- MONTHLY digest (>10 days): Full depth on all sections. Include trend analysis and cross-section synthesis. Target 4-minute read time. Every section must have substantive content even if changes are minor — explain why stability is notable.
+State which mode you are using in the header.
 
 DATA SOURCE:
 The ABISON database context is auto-injected below. It contains the current financials, catalyst timeline, and all tracked entries. Synthesize this data into the digest structure.
@@ -1083,17 +1113,20 @@ COMPANY CONTEXT:
 {{DESCRIPTION}}
 Share structure: {{SHARE_STRUCTURE}}
 Fiscal year end: {{FISCAL_YEAR_END}}
+Key insiders to watch:
+{{KEY_INSIDERS}}
 
 DIGEST STRUCTURE:
 
 1. HEADER
    ════════════════════════════════════════
-   {{TICKER}} RESEARCH DIGEST
+   {{TICKER}} RESEARCH DIGEST — [WEEKLY / MONTHLY]
    Period: [start date] – [end date]
    Stock Price: $[start] → $[end] ([+/- %])
    Market Cap: $[B] (fully diluted)
    Include any domain-relevant valuation anchors (NAV/share, premium/discount, etc.)
    Verdict: [Bullish / Neutral / Bearish] momentum
+   Conviction Δ: [↑ / → / ↓] from prior period (explain in 1 sentence)
    ════════════════════════════════════════
 
 2. EXECUTIVE SUMMARY (3-5 bullets)
@@ -1101,14 +1134,25 @@ DIGEST STRUCTURE:
    - What happened (1 sentence)
    - Why it matters for the thesis (1 sentence)
    - Database tab affected
+   - Materiality: [High / Medium / Low]
 
-3. DOMAIN-SPECIFIC TRACKER
+3. RISK ALERTS
+   ⚠ Surface anything requiring immediate attention BEFORE the detailed sections:
+   - Catalyst date within 7 days (T-7 or closer)
+   - Position sizing threshold breach (concentration, liquidity, drawdown)
+   - Insider transaction detected (Form 4, 13D amendment)
+   - Earnings/filing deadline within 14 days
+   - Thesis-breaking development (competitive, regulatory, execution)
+   - Liquidity event (capital raise, debt maturity, covenant test)
+   If no alerts: "No immediate risk alerts this period."
+
+4. DOMAIN-SPECIFIC TRACKER
    Track progress across each business area:
 {{DOMAIN_SECTIONS}}
    For each area, use table format where applicable:
    [Metric/Catalyst | Prior Status | Current Status | Δ | Impact on Thesis]
 
-4. FINANCIAL POSITION UPDATE
+5. FINANCIAL POSITION UPDATE
    - Cash: $[M] (Δ from prior period)
    - Debt: $[M] (Δ)
    - Shares outstanding: [M] basic / [M] fully diluted (Δ)
@@ -1118,66 +1162,64 @@ DIGEST STRUCTURE:
    Stock-specific financial metrics to include:
 {{STOCK_SPECIFIC_METRICS}}
 
-5. COMPETITIVE LANDSCAPE
+6. COMPETITIVE LANDSCAPE
    Competitors to track:
 {{COMPETITORS}}
    - Material competitor moves this period
    - Threat level change: [Increased / Decreased / Unchanged]
    - Brief rationale
 
-6. WALL STREET PULSE
+7. WALL STREET PULSE
    - New initiations / PT changes / rating changes
    - Consensus shift direction
    - Notable buy-side activity (13F/D/G filings, insider trades)
+   Insider activity for {{TICKER}}:
+   Cross-reference any Form 4 / 13D filings against key insiders listed above.
+   Flag: [Insider | Transaction Type | Shares | Price | Signal Interpretation]
 
-7. THESIS SCORECARD
-   Quick-check each dimension derived from the domain sections above:
-   [Dimension | Status | Trend (↑/↓/→)]
-   Include one row per domain section plus: Capital adequacy, Regulatory, Competition.
-   Net thesis momentum: [Strengthening / Steady / Weakening]
+8. CONVICTION DELTA
+   Compare current thesis health against the prior period:
+   a) SCORECARD DRIFT: For each dimension in the thesis scorecard, note if the rating should change:
+      [Dimension | Prior Rating | Recommended Rating | Δ | Evidence]
+   b) SCENARIO SHIFT: Have the bull/bear/base case probabilities shifted?
+      [Scenario | Prior % | Current % | Driver of Change]
+   c) PRICE TARGET CHECK: Is the current price target still supported by the data?
+      - Current PT: $[X] | Current Price: $[Y] | Upside/Downside: [%]
+      - PT still valid? [Yes / Needs revision — direction and rationale]
+   d) NET CONVICTION: [Strengthened / Unchanged / Weakened] — one sentence why.
 
-8. TICKER-SPECIFIC PULSE
-   Check the following tabs for material changes this period (if they exist for {{TICKER}}):
-
-   ASTS-specific:
-   - **Constellation tab**: New satellite deployments, launch schedule changes, constellation status updates
-   - **Subscribers tab**: Subscriber projection revisions, new MNO partnership announcements, TAM updates
-
-   BMNR-specific:
-   - **Ethereum tab**: ETH holdings changes, acquisition/disposition activity, price impact on treasury value
-   - **Staking tab**: Staking yield changes, locked capital movements, validator economics shifts
-
-   CRCL-specific:
-   - **USDC tab**: Circulation changes, reserve composition updates, regulatory developments affecting reserves
-
-   All tickers:
-   - **Monte Carlo tab**: Have probabilistic scenario distributions shifted based on this period's developments? Flag if base case probability moved more than 5%.
-
+9. TICKER-SPECIFIC TAB REVIEW
+   Check the following tabs for material changes this period:
+{{TICKER_TAB_DEEP_DIVE}}
    For each tab checked, output: [Tab | Prior Status | Current Status | Change | Action Needed]
 
-9. ACTION ITEMS FOR NEXT PERIOD
-   - [ ] Database updates needed (list specific tabs/fields from [{{TICKER_TABS}}])
-   - [ ] Upcoming catalysts to monitor (with dates)
-   - [ ] Filing deadlines (10-Q, 10-K, proxy, Form 4s)
-   - [ ] Position sizing review triggered? [Yes/No — why]
-   - [ ] Competitors to track (specific upcoming events)
+10. ACTION ITEMS FOR NEXT PERIOD
+    - [ ] Database updates needed (list specific tabs/fields from [{{TICKER_TABS}}])
+    - [ ] Upcoming catalysts to monitor (with dates and T-minus countdown)
+    - [ ] Filing deadlines (10-Q, 10-K, proxy, Form 4s)
+    - [ ] Position sizing review triggered? [Yes/No — why]
+    - [ ] Competitors to track (specific upcoming events)
+    - [ ] Thesis scorecard updates to apply (from Conviction Delta above)
 
-10. APPENDIX: RAW ENTRY LOG
-   Chronological list of all items processed, one line each:
-   [Date] | [Source Type] | [Headline] | [Section] | [Materiality]
+11. APPENDIX: RAW ENTRY LOG
+    Chronological list of all items processed, one line each:
+    [Date] | [Source Type] | [Headline] | [Section] | [Materiality: H/M/L]
 
 DATA CURRENCY CHECK (mandatory final section):
 Assess the freshness and completeness of the database context used:
 1. STALE DATA: Flag any data points that appear outdated based on date references or internal inconsistencies.
 2. MISSING DATA: Specific fields or metrics that are absent and would improve the next digest.
-3. RECOMMENDED REFRESH: Suggest which filings to check or paste agents to run to bring the database current for the next period.
+3. COVERAGE GAPS: Tabs that exist but have thin or missing data — recommend specific agents to run.
+4. RECOMMENDED REFRESH: Suggest which filings to check or paste agents to run to bring the database current for the next period.
 
 Rules — non-negotiable:
-- This digest must be readable by a PM in under 3 minutes.
+- Weekly digests must be readable by a PM in under 2 minutes. Monthly in under 4 minutes.
 - Lead with what changed, not what stayed the same.
 - For treasury/asset plays, always include NAV/share math — it's the core valuation anchor.
 - Every claim must be traceable to a specific data point in the provided context.
-- Flag anything that requires immediate attention with a prefix.
+- Flag anything that requires immediate attention with ⚠ prefix.
+- Risk alerts (Section 3) must appear even if empty — never silently skip.
+- Conviction Delta (Section 8) must always include a net direction — never leave ambiguous.
 - Professional, institutional tone — ready for IC distribution.
 
 Analyze the auto-injected database context below:`,

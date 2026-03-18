@@ -5,8 +5,12 @@ import { engineerSchedules } from '@/lib/schema';
 import { getEngineer } from '@/lib/engineers';
 
 /**
- * POST /api/engineers/schedule — Create or update an engineer's schedule.
+ * POST /api/engineers/schedule — Create or update an engineer's schedule metadata.
  * Body: { ticker, engineerId, enabled, intervalMinutes }
+ *
+ * NOTE: All engineers are manual-only. This endpoint stores schedule metadata
+ * for tracking purposes but no automatic execution occurs. Use
+ * POST /api/engineers/run to trigger engineers manually.
  */
 export async function POST(request: NextRequest) {
   const gateError = checkAiGate(request);

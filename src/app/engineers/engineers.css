@@ -4014,6 +4014,20 @@
 .ops-prompt-toggle[data-color="gold"]:hover { color: var(--gold); }
 .ops-prompt-toggle[data-color="rose"]:hover { color: var(--rose); }
 
+.ops-prompt-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 8px;
+}
+.ops-prompt-actions .ops-prompt-toggle {
+  margin-top: 0;
+}
+.ops-copy-btn[data-copied] {
+  color: var(--mint);
+  border-color: rgba(var(--mint-rgb, 134,239,172), 0.3);
+}
+
 .ops-prompt-toggle-icon {
   font-size: 0.65rem;
 }

@@ -41,6 +41,8 @@ export default function OperationsPipeline() {
   );
   // Track which step is showing its prompt, keyed as "pipelineId-stepIndex"
   const [promptOpen, setPromptOpen] = useState<string | null>(null);
+  // Track copy feedback, keyed as "pipelineId-stepIndex"
+  const [copied, setCopied] = useState<string | null>(null);
 
   return (
     <div className="ops-wrap">
@@ -141,17 +143,38 @@ export default function OperationsPipeline() {
                             {step.workflowIds && step.workflowIds.length > 0 && (() => {
                               const stepKey = `${pipeline.id}-${i}`;
                               const isPromptOpen = promptOpen === stepKey;
+                              const isCopied = copied === stepKey;
+                              const handleCopy = () => {
+                                const text = step.workflowIds!
+                                  .map(wfId => workflowPromptMap[wfId]?.prompt)
+                                  .filter(Boolean)
+                                  .join('\n\n---\n\n');
+                                navigator.clipboard.writeText(text).then(() => {
+                                  setCopied(stepKey);
+                                  setTimeout(() => setCopied(null), 2000);
+                                });
+                              };
                               return (
                                 <>
-                                  <button
-                                    className="ops-prompt-toggle"
-                                    data-color={divColor}
-                                    onClick={() => setPromptOpen(isPromptOpen ? null : stepKey)}
-                                  >
-                                    <span className="ops-prompt-toggle-icon">{isPromptOpen ? '\u25B4' : '\u25BE'}</span>
-                                    {isPromptOpen ? 'Hide Prompt' : 'View Prompt'}
-                                    <span className="ops-prompt-count">{step.workflowIds!.length}</span>
-                                  </button>
+                                  <div className="ops-prompt-actions">
+                                    <button
+                                      className="ops-prompt-toggle"
+                                      data-color={divColor}
+                                      onClick={() => setPromptOpen(isPromptOpen ? null : stepKey)}
+                                    >
+                                      <span className="ops-prompt-toggle-icon">{isPromptOpen ? '\u25B4' : '\u25BE'}</span>
+                                      {isPromptOpen ? 'Hide Prompt' : 'View Prompt'}
+                                      <span className="ops-prompt-count">{step.workflowIds!.length}</span>
+                                    </button>
+                                    <button
+                                      className="ops-prompt-toggle ops-copy-btn"
+                                      data-color={divColor}
+                                      data-copied={isCopied || undefined}
+                                      onClick={handleCopy}
+                                    >
+                                      {isCopied ? 'Copied' : 'Copy Prompt'}
+                                    </button>
+                                  </div>
                                   <div className={`ops-prompt-panel ${isPromptOpen ? 'ops-prompt-open' : ''}`}>
                                     {step.workflowIds!.map(wfId => {
                                       const entry = workflowPromptMap[wfId];

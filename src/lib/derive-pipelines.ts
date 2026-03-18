@@ -57,7 +57,7 @@ const DIV_PM_LABEL: Record<string, string> = {
 
 /** Friendly interval label from minutes */
 function formatInterval(minutes: number): string {
-  if (minutes <= 0) return 'chain-only';
+  if (minutes <= 0) return 'manual';
   if (minutes < 60) return `${minutes} min`;
   if (minutes < 1440) return `${minutes / 60} hr`;
   return `${minutes / 1440}d`;
@@ -122,17 +122,17 @@ function buildPipeline(head: EngineerTask): DerivedPipeline {
 
   const steps: PipelineStep[] = [];
 
-  // ── Step 1: Trigger (if head has a schedule)
-  if (head.defaultIntervalMinutes > 0) {
+  // ── Step 1: Manual trigger
+  {
     const triggerLabel = head.triggerEvents[0]
       ? head.triggerEvents[0].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-      : 'Scheduled Run';
+      : 'Manual Run';
 
     steps.push({
       label: triggerLabel,
-      actor: 'Cron Scheduler',
+      actor: 'Human (Dashboard)',
       division: 'system',
-      description: `Triggers every ${formatInterval(head.defaultIntervalMinutes)}${head.dataSource ? ` — polls ${head.dataSource}` : ''}`,
+      description: `Manually triggered from the Engineers dashboard${head.dataSource ? ` — fetches ${head.dataSource}` : ''}`,
       type: 'trigger',
     });
   }
@@ -141,14 +141,15 @@ function buildPipeline(head: EngineerTask): DerivedPipeline {
   for (const eng of chain) {
     const div = getDivision(eng.id);
 
-    // Engineer step
+    // Engineer step — use curated pipelineWorkflowIds if set, otherwise all workflowIds
+    const displayWorkflowIds = eng.pipelineWorkflowIds ?? eng.workflowIds;
     steps.push({
       label: eng.name,
       actor: eng.name,
       division: div,
       description: eng.description,
       type: 'engineer',
-      workflowIds: eng.workflowIds.length > 0 ? eng.workflowIds : undefined,
+      workflowIds: displayWorkflowIds.length > 0 ? displayWorkflowIds : undefined,
     });
 
     // Auto-review step (if configured)

@@ -1,8 +1,8 @@
 // ============================================================================
-// ENGINEER ENGINE — Autonomous execution engine for AI engineers
+// ENGINEER ENGINE — Execution engine for AI engineers (manual-only)
 // ============================================================================
 // This module handles the actual execution of engineer tasks:
-//  1. Checks which engineers are due to run based on their schedules
+//  1. Engineers are triggered manually from the dashboard (no auto-scheduling)
 //  2. Gathers context data for each engineer (database state, external data)
 //  3. Calls the Claude API with the engineer's workflow prompt + context
 //  4. Records results in the agent_runs table
@@ -11,7 +11,7 @@
 
 import { getDb } from './db';
 import { agentRuns, engineerSchedules, roomMessages, pmDecisions } from './schema';
-import { eq, and, lte, sql, desc } from 'drizzle-orm';
+import { eq, and, sql, desc } from 'drizzle-orm';
 import { getEngineer, engineers, type EngineerTask } from './engineers';
 import { workflows } from '@/data/workflows';
 import { resolvePromptPlaceholders } from './prompt-placeholders';
@@ -441,34 +441,14 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
 
 /**
  * Check which engineers are due to run and execute them.
- * Called by the scheduler endpoint (e.g. via Vercel Cron).
+ *
+ * DISABLED — All engineers are now manual-only. This function is retained
+ * for API compatibility but always returns an empty array. Use the
+ * POST /api/engineers/run endpoint to trigger engineers manually.
  */
 export async function checkAndRunDueEngineers(): Promise<RunResult[]> {
-  const db = getDb();
-
-  // Find all enabled schedules whose nextRunAt has passed
-  const dueSchedules = await db.select()
-    .from(engineerSchedules)
-    .where(
-      and(
-        eq(engineerSchedules.enabled, true),
-        lte(engineerSchedules.nextRunAt, new Date()),
-      )
-    );
-
-  // Run all due engineers in parallel for better throughput
-  const results = await Promise.all(
-    dueSchedules.map(schedule =>
-      runEngineer({
-        ticker: schedule.ticker,
-        engineerId: schedule.engineerId,
-        triggerType: 'scheduled',
-        triggerReason: `Scheduled run (every ${schedule.intervalMinutes}min)`,
-      })
-    )
-  );
-
-  return results;
+  // All engineers are manual-only — no automatic scheduling
+  return [];
 }
 
 // Map ticker -> company data module for dynamic context injection
