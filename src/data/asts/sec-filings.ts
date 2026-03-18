@@ -23,6 +23,7 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Mar 12, 2026', type: 'Form 4', description: 'Yao (CTO) option exercise: 40K AST LLC Incentive Equity Options at $0.064 → Class A (Mar 11 txn). Post: 4,144,750 direct + 299,912 options remaining. No sale.', period: '—', color: 'green' },
   { date: 'Mar 03, 2026', type: 'SC 13D/A', description: 'Avellan Amendment 17: ownership diluted to 20.8% (78.2M Class A equivalent) from 21.9% due to Feb 2026 RD offerings (4.5M + 1.9M shares), Ligado penny warrant exercise (4.7M shares), and ATM sales (~6.5M shares). No transactions by Avellan. Forward contract amended: Floor $56.06→Cap $79.66, received $10.7M cash. Voting power 71.7% via Class C shares', period: '—', color: 'green' },
   { date: 'Mar 2, 2026', type: '10-K', description: 'Annual Report — FY2025 Audited. Rev $70.9M, OpEx $358.6M, Net Loss -$461M. Cash $2,780M. Debt $2,264M. PPE $1,399M. Intangibles $245M. RPO $1.2B. NCI 23.9%. Fully funded ~90 sats.', period: 'FY 2025', color: 'blue' },
+  { date: 'Mar 2, 2026', type: '8-K', description: '8-K Items 2.02/7.01: Q4 2025 earnings release and business update (furnished, not filed)', period: 'Q4 2025', color: 'yellow' },
   { date: 'Feb 23, 2026', type: '8-K', description: 'RD Settlements + Notes Repurchases Completed (RD#1 Feb 20: $46.5M 4.25%; RD#2 Feb 23: $250M 2.375%; Item 8.01)', period: '—', color: 'yellow' },
   { date: 'Feb 20, 2026', type: '8-K', description: '$75M Greenshoe Exercise — Total 2.25% Notes $1,075M (Option Notes; Item 2.03/3.02/8.01; Freshfields opinions)', period: '—', color: 'yellow' },
   { date: 'Feb 17, 2026', type: '8-K', description: 'Convertible Notes Indenture Completion ($1B 2.25% due 2036; settlement + Item 1.01/2.03/3.02/8.01)', period: '—', color: 'yellow' },
@@ -30,6 +31,8 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Feb 17, 2026', type: 'Form 4', description: 'Bernal (CAO) RSU vesting: 3K shares, 833 withheld for tax at $82.51 (net 2,167); post: 121,653', period: '—', color: 'green' },
   { date: 'Feb 13, 2026', type: '424B5', description: 'Registered Direct Offering #1 (1.86M shares @ $96.92; settles Feb 20)', period: '—', color: 'orange' },
   { date: 'Feb 13, 2026', type: '424B5', description: 'Registered Direct Offering #2 (4.48M shares @ $96.92; settles Feb 20)', period: '—', color: 'orange' },
+  { date: 'Feb 11, 2026', type: '424B5', description: 'Preliminary Prospectus Supplement: Registered direct offering of Class A shares at $96.27/share (Feb 10 close). Concurrent with $1B convertible notes offering and separate RD to repurchase up to $250M of 2.375% Notes for cash. Three-part capital raise structure', period: '—', color: 'orange' },
+  { date: 'Feb 11, 2026', type: '424B5', description: 'Preliminary Prospectus Supplement: Separate registered direct offering of Class A shares. Proceeds to repurchase up to $50M of 4.25% Notes for cash (plus cash on hand). Part of three-offering structure with $1B converts and primary RD', period: '—', color: 'orange' },
   { date: 'Feb 11, 2026', type: '8-K', description: 'Preliminary FY 2025 Results + Convertible Notes Offering + Registered Directs', period: '—', color: 'yellow' },
   { date: 'Feb 11, 2026', type: 'FWP', description: 'Pricing Term Sheet: 1,862,741 shares @ $96.92 (RD#1 for 4.25% Notes Repurchase; settle Feb 20; UBS placement)', period: '—', color: 'orange' },
   { date: 'Feb 11, 2026', type: 'FWP', description: 'Pricing Term Sheet: 4,475,223 shares @ $96.92 (RD#2 for 2.375% Notes Repurchase; settle Feb 20; UBS placement)', period: '—', color: 'orange' },
@@ -40,6 +43,7 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Jan 16, 2026', type: '8-K', description: 'Mikitani Board Resignation (Rakuten Designee)', period: '—', color: 'yellow' },
   { date: 'Dec 29, 2025', type: 'Form 4', description: 'Director Keith Larson: open-market purchase 625 shares @ $80.00 in IRA. Rule 10b5-1 plan (adopted Sep 8, 2025). Post-transaction 2,015 shares indirect (IRA)', period: '—', color: 'green' },
   { date: 'Dec 24, 2025', type: '8-K', description: 'BlueBird 6 Launch (First Block 2)', period: '—', color: 'yellow' },
+  { date: 'Dec 17, 2025', type: 'Form 4', description: 'Director Keith Larson purchased 715 shares at $70.02 via IRA under Rule 10b5-1 plan (adopted Sep 8, 2025). Post-transaction: 1,390 shares held indirectly by IRA', period: '—', color: 'green' },
   { date: 'Dec 11, 2025', type: 'SC 13D/A', description: 'American Tower 13D/A: Sold 2.29M shares at $69.75 ($159.8M); 211K Class A remain + 2.17M LLC Units', period: '—', color: 'green' },
   { date: 'Dec 10, 2025', type: 'Form 4', description: 'Multiple: Gupta (COO) sale 10K shares; Larson (Dir) purchase 675 shares', period: '—', color: 'green' },
   { date: 'Dec 09, 2025', type: 'Form 144', description: 'American Tower Corp: notice of proposed sale 2.29M shares (10% owner group member) via Barclays. Aggregate market value $169.4M. Acquired Apr 6, 2021 via private placement. No prior sales in past 3 months', period: '—', color: 'green' },
@@ -47,6 +51,8 @@ export const ASTS_SEC_FILINGS = [
   { date: 'Dec 05, 2025', type: 'Form 144', description: 'Officer Maya Bernal: notice of proposed sale 6K shares via Fidelity Brokerage, aggregate mkt value $442.5K. Acquired Oct 17, 2025 via restricted stock vesting (compensation). No prior sales in past 3 months', period: '—', color: 'green' },
   { date: 'Dec 5, 2025', type: 'Form 4', description: 'Multiple: Bernal (CAO) sale 6K shares; Yao (CTO) Form 144 40K shares', period: '—', color: 'green' },
   { date: 'Dec 2, 2025', type: 'Form 4', description: 'RSU Grants: Avellan (CEO) 250K, Johnson (CFO) 125K, Wisniewski (Pres) 125K — vest 1/3 annually from May 2026', period: '—', color: 'green' },
+  { date: 'Nov 28, 2025', type: 'Form 4', description: 'CFO/CLO Andrew M. Johnson sold 10,000 shares at $56.00. Post-transaction: 387,485 shares direct. Transaction date Nov 26, 2025', period: '—', color: 'green' },
+  { date: 'Nov 24, 2025', type: 'Form 4', description: 'Director Adriana Cisneros purchased 750 shares (2 transactions of 375 each) at $50.79. Post-transaction: 784,077 shares held indirectly by trusts. Transaction date Nov 20, 2025', period: '—', color: 'green' },
   { date: 'Nov 21, 2025', type: 'SC 13D/A', description: '[Historical] Avellan Amendment 16: ownership 21.9% (78.2M Class A equivalent, 78.2M Class C 10x voting). Filing triggered by increase in total Class A outstanding (not Avellan transactions). Forward contract covering 2.5M shares: Floor $56.06, Cap $79.66, settlement Mar 2027. Voting power 72.9% via Class C', period: '—', color: 'green' },
   { date: 'Nov 10, 2025', type: '10-Q', description: 'Quarterly Report', period: 'Q3 2025', color: 'purple' },
   { date: 'Oct 29, 2025', type: '8-K', description: 'Block 2 Contract (~$100M initial) + ATM Legal Opinion (Freshfields)', period: '—', color: 'yellow' },
@@ -121,7 +127,7 @@ export const ASTS_SEC_META = {
   exchange: 'NASDAQ',
   emergingGrowthCompany: false,
   lastPR: { date: 'February 23, 2026', title: 'SDA $30M HALO Europa Track 2 Prime Contract' },
-  totalFilingsTracked: 92
+  totalFilingsTracked: 98
 };
 
 // Color palette constants (reduce duplication per Gemini review)
@@ -182,6 +188,18 @@ export const ASTS_FILING_CROSS_REFS: Record<string, { source: string; data: stri
     { source: 'capital.ts', data: 'Officer Bernal: notice of proposed sale 6K shares @ $442.5K via Fidelity. RSU vest Oct 17. No prior 3mo sales' }
   ],
 
+  'Form 4|2025-12-17': [
+    { source: 'capital', data: 'Director Larson IRA purchase: 715 shares at $70.02' },
+  ],
+
+  // ── Nov 2025 (Form 4s) ────────────────────────────────────────────────────
+  'Form 4|2025-11-28': [
+    { source: 'capital', data: 'CFO Johnson sold 10K shares at $56.00' },
+  ],
+  'Form 4|2025-11-24': [
+    { source: 'capital', data: 'Director Cisneros purchased 750 shares at $50.79 via trusts' },
+  ],
+
   // ── Nov 2025 (SC 13D/A) ────────────────────────────────────────────────────
   'SC 13D/A|2025-11-21': [
     { source: 'capital.ts', data: '[Historical] Avellan Amendment 16: 21.9% ownership (78.2M Class A equiv, 78.2M Class C). Forward contract: Floor $56.06, Cap $79.66. Superseded by Amendment 17 (Mar 3, 2026)' }
@@ -193,6 +211,9 @@ export const ASTS_FILING_CROSS_REFS: Record<string, { source: string; data: stri
   ],
   'Form 4|2026-03-12': [
     { source: 'capital', data: "Yao (CTO): exercised 40K AST LLC options at $0.064 (Mar 11). Post: 4,144,750 Class A direct + 299,912 options remaining. No sale." },
+  ],
+  '8-K|2026-03-02': [
+    { source: 'timeline', data: 'Q4 2025 earnings release via 8-K Item 2.02 (furnished)' },
   ],
   '10-K|2026-03-02': [
     { source: 'financials', data: "FY2025 audited: Rev $70.918M (Products $44.4M + Services $26.5M), OpEx $358.6M, Net Loss -$461M. Q4 rev $54.3M confirmed." },
@@ -233,6 +254,12 @@ export const ASTS_FILING_CROSS_REFS: Record<string, { source: string; data: stri
     { source: 'capital', data: "Registered Direct #2: 4.48M shares @ $96.92 → ~$433.7M" },
     { source: 'financials', data: "Q4 2025: cashAndEquiv: 2780, totalDebt: 2264, revenue: 50 (preliminary)" },
     { source: 'catalysts', data: "$1B 2.25% Convertible Notes + $614M Registered Directs" },
+  ],
+  '424B5|2026-02-11-RD1': [
+    { source: 'capital', data: 'Preliminary RD offering (2.375% Notes repurchase vehicle)' },
+  ],
+  '424B5|2026-02-11-RD2': [
+    { source: 'capital', data: 'Preliminary RD offering (4.25% Notes repurchase vehicle)' },
   ],
   '424B5|2026-02-13': [
     { source: 'capital', data: "Registered Direct #1: 1.86M shares at $96.92" },

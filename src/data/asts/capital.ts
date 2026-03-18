@@ -10,7 +10,7 @@
  * - Equity offerings: 8-K filings, press releases
  * - SBC: 10-Q/10-K compensation disclosures
  *
- * LAST UPDATED: 2026-03-17 (27 filings: Mar Wisniewski Form 144 + Yao Form 4 + Feb offerings/greenshoe/settlements + Dec insider + 13G/13D/A + Form 4s)
+ * LAST UPDATED: 2026-03-18 (29 filings: Added Nov 2025 insider transactions — Johnson sale + Cisneros purchase)
  * NEXT UPDATE: After Q4 2025 10-K (~March 2, 2026) or new proxy filing.
  *
  * AI AGENT INSTRUCTIONS:
@@ -686,6 +686,9 @@ export const INSIDER_TRANSACTIONS: InsiderTransaction[] = [
   { date: '2025-12-10', name: 'Keith R. Larson', role: 'Director', type: 'purchase', units: 675, price: 72.71, plan10b5_1: true, planAdopted: '2025-09-08', postHoldings: 675, note: 'IRA account.', filingType: 'Form 4' },
   { date: '2025-12-17', name: 'Keith R. Larson', role: 'Director', type: 'purchase', units: 715, price: 70.02, plan10b5_1: true, planAdopted: '2025-09-08', postHoldings: 1390, note: 'IRA account.', filingType: 'Form 4' },
   { date: '2025-12-24', name: 'Keith R. Larson', role: 'Director', type: 'purchase', units: 625, price: 80.00, plan10b5_1: true, planAdopted: '2025-09-08', postHoldings: 2015, note: 'IRA account.', filingType: 'Form 4' },
+  // ── November 2025 ──────────────────────────────────────────────────────
+  { date: '2025-11-26', name: 'Andrew M. Johnson', role: 'CFO & CLO', type: 'sale', units: 10000, price: 56.00, proceeds: 560000, postHoldings: 387485, note: 'Open market sale. No 10b5-1 plan indicated. Sold near post-BB1-6 launch lows before Q4 revenue ramp became visible.', filingType: 'Form 4', filingDate: '2025-11-28' },
+  { date: '2025-11-20', name: 'Adriana Cisneros', role: 'Director', type: 'purchase', units: 750, price: 50.79, proceeds: 38092.5, postHoldings: 784077, note: 'Two purchases of 375 shares each at $50.79. All shares held indirectly by trusts for benefit of reporting person\'s children. Director buy near post-launch lows.', filingType: 'Form 4', filingDate: '2025-11-24' },
   // ── August–September 2025 ──────────────────────────────────────────────
   { date: '2025-09-03', name: 'Huiwen Yao', role: 'CTO', type: 'sale', units: 40000, price: 41.58, proceeds: 1663200, plan10b5_1: true, planAdopted: '2025-06-12', broker: 'B. Riley Securities', postHoldings: 160000, note: 'Matches Form 144 filed Sep 3. Price range $40-$42.', filingType: 'Form 4' },
   { date: '2025-08-26', name: 'Andrew M. Johnson', role: 'CFO & CLO', type: 'sale', units: 20000, price: 52.48, proceeds: 1049634, broker: 'Fidelity Brokerage', note: 'Post-vesting (Aug 15 RSU vest).', filingType: 'Form 144' },
