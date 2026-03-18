@@ -1216,9 +1216,22 @@ export default function PressIntelligencePage() {
     );
 
     const totalItems = Object.values(results).reduce((sum, list) => sum + list.length, 0);
+    // Compute deduplicated count (same logic as allItems useMemo) so the log
+    // matches the "X of Y releases" display the user sees after refresh.
+    const seenHl = new Set<string>();
+    let dedupedTotal = 0;
+    for (const list of Object.values(results)) {
+      for (const item of list) {
+        const key = normalizeHeadline((item as any).headline || (item as any).title || "");
+        if (!key || key.length < 4 || !seenHl.has(key)) {
+          if (key && key.length >= 4) seenHl.add(key);
+          dedupedTotal++;
+        }
+      }
+    }
     const errorCount = Object.keys(errs).length;
     if (isRefresh) {
-      log(`Refresh complete: ${totalItems} total items, ${errorCount} errors`);
+      log(`Refresh complete: ${dedupedTotal} total items${dedupedTotal !== totalItems ? ` (${totalItems} before cross-ticker dedup)` : ''}, ${errorCount} errors`);
       log(`All data read from database — no cache or in-memory state used`);
     }
 

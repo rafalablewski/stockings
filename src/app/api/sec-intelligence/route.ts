@@ -121,7 +121,7 @@ async function persistFilings(filings: SecFiling[]): Promise<Set<string>> {
       fileUrl: f.fileUrl || null,
       status: null,       // SEC Intelligence doesn't set status — Edgar tab does that
       crossRefs: null,    // Cross-refs are managed by Edgar tab workflow
-      dismissed: !existingAccessions.has(`${ticker}:${f.accessionNumber}`), // false = NEW if not in DB
+      dismissed: false, // New filings always start as NEW; existing filings preserve their DB state via onConflictDoUpdate
     }));
 
     try {
