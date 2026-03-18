@@ -24,7 +24,7 @@ const CLAUDE_MODEL_DEFAULT = 'claude-sonnet-4-5-20250929';
 const CLAUDE_MODEL_FAST = 'claude-haiku-4-5-20251001';
 
 // Per-workflow timeout for Claude API calls (must stay under Vercel maxDuration=300s)
-const CLAUDE_API_TIMEOUT_MS = 295_000;       // default: ~5 minutes (Sonnet + large context like thesis-review)
+const CLAUDE_API_TIMEOUT_MS = 180_000;       // default: 3 minutes (Sonnet — context trimmed to fit)
 const CLAUDE_API_TIMEOUT_FAST_MS = 120_000;  // fast model (Haiku): 2 minutes
 
 // Status type for run records
@@ -579,48 +579,42 @@ function getDatabaseContext(ticker: string): string {
       }
     }
 
-    // Growth drivers
+    // Growth drivers (condensed: name + impact only)
     if (investment.growthDrivers?.length > 0) {
       lines.push('', '### Growth Drivers');
       for (const g of investment.growthDrivers) {
-        lines.push(`- [${g.impact}] ${g.driver}: ${g.description}`);
+        lines.push(`- [${g.impact}] ${g.driver}`);
       }
     }
 
-    // Competitive moat
+    // Competitive moat (condensed: name + strength/risk only)
     if (investment.moatSources?.length > 0) {
       lines.push('', '### Competitive Moat — Sources');
       for (const m of investment.moatSources) {
-        lines.push(`- [${m.strength}] ${m.source}: ${m.detail}`);
+        lines.push(`- [${m.strength}] ${m.source}`);
       }
     }
     if (investment.moatThreats?.length > 0) {
       lines.push('', '### Competitive Moat — Threats');
       for (const m of investment.moatThreats) {
-        lines.push(`- [${m.risk}] ${m.threat}: ${m.detail}`);
+        lines.push(`- [${m.risk}] ${m.threat}`);
       }
     }
 
-    // Risks
+    // Risks (condensed: skip detail/mitigation to reduce context size)
     if (investment.risks?.length > 0) {
       lines.push('', '### Risk Matrix');
       for (const r of investment.risks) {
         lines.push(`- ${r.risk} [Severity: ${r.severity}, Likelihood: ${r.likelihood}, Impact: ${r.impact}]`);
-        lines.push(`  Detail: ${r.detail}`);
-        lines.push(`  Mitigation: ${r.mitigation}`);
       }
     }
 
-    // Perspectives
+    // Perspectives (condensed: assessment + recommendation only)
     if (investment.perspectives) {
       lines.push('', '### Analyst Perspectives');
       for (const [key, p] of Object.entries(investment.perspectives)) {
         const perspective = p as { title: string; assessment: string; summary: string; ecosystemView: string; recommendation: string };
-        lines.push(`\n${perspective.title} (${key}):`);
-        lines.push(`Assessment: ${perspective.assessment}`);
-        lines.push(`Summary: ${perspective.summary}`);
-        lines.push(`Ecosystem View: ${perspective.ecosystemView}`);
-        lines.push(`Recommendation: ${perspective.recommendation}`);
+        lines.push(`- ${perspective.title} (${key}): ${perspective.assessment} — ${perspective.recommendation}`);
       }
     }
 
@@ -644,9 +638,9 @@ function getDatabaseContext(ticker: string): string {
     sections.push(lines.join('\n'));
   }
 
-  // ── Latest Quarterly Financials (most recent 4 quarters) ──
+  // ── Latest Quarterly Financials (most recent 2 quarters to reduce context) ──
   if (data.QUARTERLY_DATA) {
-    const quarters = Object.entries(data.QUARTERLY_DATA).slice(0, 4);
+    const quarters = Object.entries(data.QUARTERLY_DATA).slice(0, 2);
     if (quarters.length > 0) {
       const lines = ['## QUARTERLY FINANCIALS (Last 4 Quarters)'];
       for (const [label, q] of quarters) {
@@ -704,7 +698,7 @@ function getDatabaseContext(ticker: string): string {
   // ── Upcoming Catalysts ──
   if (data.UPCOMING_CATALYSTS?.length > 0) {
     const lines = ['## UPCOMING CATALYSTS'];
-    for (const c of data.UPCOMING_CATALYSTS.slice(0, 15)) {
+    for (const c of data.UPCOMING_CATALYSTS.slice(0, 8)) {
       lines.push(`- [${c.impact}] ${c.event} — ${c.timeline}${c.category ? ` (${c.category})` : ''}`);
     }
     sections.push(lines.join('\n'));
