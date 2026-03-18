@@ -925,6 +925,7 @@ PER-FILING CHECKLIST (output for each filing being ingested):
   [ ] DESCRIPTION QUALITY: The SEC_FILINGS description captures material substance (not just "Form 4 by [name]").
   [ ] INSIDER MATCH (Form 4 only): Insider was matched against KEY_INSIDERS list or flagged as new.
   [ ] HOLDINGS UPDATED (Form 4 only): Post-transaction holdings are included in capital.ts patch.
+  [ ] UNIFIED ARRAY (Form 4/Form 144): Entry added to INSIDER_TRANSACTIONS[] in capital.ts (NOT a new monthly array). Type: InsiderTransaction from shared/types.ts.
   [ ] DILUTION MATH (424B5/S-3 only): Dilution percentage calculated against shares outstanding AT THE TIME of the offering (not current if filing is old).
   [ ] FINANCIAL DELTAS (10-Q/10-K only): Period-over-period deltas computed for all material metrics.
   [ ] CORRELATION NOTED: Phase 3 cross-filing correlations are reflected in cross-refs or patch content.

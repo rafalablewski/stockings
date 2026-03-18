@@ -472,6 +472,60 @@ export interface DilutionScenario {
 }
 
 // ============================================================================
+// INSIDER TRANSACTION TYPES
+// ============================================================================
+
+/**
+ * Unified insider transaction record. Covers all Form 4 / Form 144 activity:
+ * sales, purchases, RSU vestings, option exercises, grants, Form 144 proposals.
+ *
+ * AI AGENT INSTRUCTIONS:
+ * - Use this type for ALL insider activity across ALL tickers.
+ * - Add new entries to the single INSIDER_TRANSACTIONS array in capital.ts.
+ * - Do NOT create new monthly arrays (e.g., APR_2026_INSIDER_ACTIVITY).
+ * - The array is reverse-chronological (newest first).
+ * - The `type` field determines which optional fields are relevant.
+ */
+export interface InsiderTransaction {
+  /** Transaction date (YYYY-MM-DD) */
+  date: string;
+  /** Insider name */
+  name: string;
+  /** Title/role at company */
+  role: string;
+  /** Transaction type — determines which optional fields apply */
+  type: 'sale' | 'purchase' | 'rsu-vesting' | 'rsu-grant' | 'option-exercise' | 'form-144' | 'withholding';
+  /** Number of shares/units involved */
+  units: number;
+  /** Price per share (for sales/purchases/withholdings) */
+  price?: number;
+  /** Total proceeds from sale */
+  proceeds?: number;
+  /** Exercise price (for option exercises) */
+  exercisePrice?: number;
+  /** Aggregate market value (for Form 144 proposed sales) */
+  aggregateMarketValue?: number;
+  /** Tax shares withheld (for RSU vestings) */
+  taxWithheld?: number;
+  /** Net shares acquired after tax (for RSU vestings) */
+  netAcquired?: number;
+  /** Broker handling the transaction */
+  broker?: string;
+  /** Whether under Rule 10b5-1 plan */
+  plan10b5_1?: boolean;
+  /** Date 10b5-1 plan was adopted */
+  planAdopted?: string | null;
+  /** Holdings after transaction */
+  postHoldings?: number;
+  /** Free-text note with context */
+  note?: string;
+  /** SEC filing type that reported this (Form 4, Form 144, etc.) */
+  filingType?: string;
+  /** Filing date (if different from transaction date) */
+  filingDate?: string;
+}
+
+// ============================================================================
 // PROJECTION & SCENARIO TYPES
 // ============================================================================
 
