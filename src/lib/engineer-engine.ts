@@ -292,6 +292,9 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
         if (lower.includes('credit balance') || lower.includes('billing') || lower.includes('purchase credits')) {
           throw new Error('Anthropic API credits exhausted. Add credits at console.anthropic.com → Plans & Billing.');
         }
+        if (lower.includes('usage limit') || lower.includes('rate limit') || lower.includes('regain access')) {
+          throw new Error('Anthropic API usage limit reached. Check your limits at console.anthropic.com → Plans & Billing.');
+        }
         let reason = `Claude API returned ${claudeRes.status}`;
         try {
           const parsed = JSON.parse(errText);
