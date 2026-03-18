@@ -1,10 +1,10 @@
 // ============================================================================
-// AI ENGINEERS — Autonomous agent definitions
+// AI ENGINEERS — Manually-triggered agent definitions
 // ============================================================================
-// Each "engineer" is a continuously-operating AI agent that monitors,
-// analyses, and updates research data without manual prompt execution.
-// Unlike workflows (which require a human to click "Run" and paste data),
-// engineers run on schedules or in response to events.
+// Each "engineer" is an AI agent that monitors, analyses, and updates
+// research data. All engineers are triggered manually from the dashboard —
+// there is no automatic scheduling or cron-based execution.
+// Engineers can still chain to downstream engineers on successful completion.
 // ============================================================================
 
 export interface EngineerTask {
@@ -45,13 +45,13 @@ export const engineers: EngineerTask[] = [
       'Auto-update scorecard categories when new data lands',
     ],
     workflowIds: ['thesis-review', 'weekly-digest'],
-    defaultIntervalMinutes: 360, // every 6 hours
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['filing-ingested', 'press-release-added', 'price-alert'],
     requiresData: false,
     category: 'research',
     decisionsFor: 'claude',
     decisionCategory: 'thesis-review',
-    pipelineDescription: 'Every 6 hours (or when new filings/press releases land), the Thesis Engineer pressure-tests our bull/bear/base investment thesis against the latest database. Its scorecard updates and conviction changes go to the Claude PM Decision Dashboard for human approval.',
+    pipelineDescription: 'When manually triggered (or when new filings/press releases land), the Thesis Engineer pressure-tests our bull/bear/base investment thesis against the latest database. Its scorecard updates and conviction changes go to the Claude PM Decision Dashboard for human approval.',
     humanDescription: 'This engineer is like the person who constantly asks "do we still believe in this company?" It takes our investment thesis — the reasons we think a stock is a good bet — and checks it against the latest data. If a new filing contradicts our assumptions, or if good news strengthens them, it updates the confidence scores and flags anything that changed. It reads from our own research database, not the internet.',
   },
   {
@@ -67,7 +67,7 @@ export const engineers: EngineerTask[] = [
       'Update capital structure data files when changes detected',
     ],
     workflowIds: ['capital-structure'],
-    defaultIntervalMinutes: 720, // every 12 hours
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['filing-ingested', 'form-4-detected'],
     requiresData: false,
     category: 'research',
@@ -89,7 +89,7 @@ export const engineers: EngineerTask[] = [
       'Generate filing summary alerts',
     ],
     workflowIds: ['sec-filing-delta', 'sec-filing-scan'],
-    defaultIntervalMinutes: 60, // every hour
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['edgar-poll'],
     requiresData: true,
     dataSource: 'EDGAR API (SEC)',
@@ -100,7 +100,7 @@ export const engineers: EngineerTask[] = [
     decisionCategory: 'sec-filing-review',
     notifyPm: 'gemini',
     autoReviewBy: 'gemini',
-    pipelineDescription: 'Where do we look? The SEC\'s EDGAR website — that\'s where every public company is required to post official documents like financial reports (10-K, 10-Q), big announcements (8-K), and insider stock trades (Form 4). What happens? When you start this pipeline, it goes to EDGAR and checks if any of our tracked companies posted something new. If it finds a new filing, it downloads it, reads through it, and compares it to what we already have — pulling out the important numbers, changes in guidance, and risk factors. What\'s the result? The pipeline builds a database update with all the new information, scores how important each finding is, and sends it to a manager for approval. Nothing gets saved until a human says "yes, this looks right." Think of it like a research assistant who goes to the library, finds new reports about your companies, highlights the important parts, and asks you before filing anything away.',
+    pipelineDescription: 'Where do we look? The SEC\'s EDGAR website — that\'s where every public company is required to post official documents like financial reports (10-K, 10-Q), big announcements (8-K), and insider stock trades (Form 4). What happens? When you manually start this pipeline, it goes to EDGAR and checks if any of our tracked companies posted something new. If it finds a new filing, it downloads it, reads through it, and compares it to what we already have — pulling out the important numbers, changes in guidance, and risk factors. What\'s the result? The pipeline builds a database update with all the new information, scores how important each finding is, and sends it to a manager for approval. Nothing gets saved until a human says "yes, this looks right." Think of it like a research assistant who goes to the library, finds new reports about your companies, highlights the important parts, and asks you before filing anything away.',
   },
   {
     id: 'db-ingestor-engineer',
@@ -140,7 +140,7 @@ export const engineers: EngineerTask[] = [
       'Generate daily intelligence briefs',
     ],
     workflowIds: ['intel-classifier'],
-    defaultIntervalMinutes: 30, // every 30 minutes
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['news-api-poll'],
     requiresData: true,
     dataSource: 'Press release APIs, RSS feeds',
@@ -160,7 +160,7 @@ export const engineers: EngineerTask[] = [
       'Update ownership data in the database',
     ],
     workflowIds: ['insider-activity', 'institutional-holdings'],
-    defaultIntervalMinutes: 120, // every 2 hours
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['form-4-detected', '13f-filed'],
     requiresData: true,
     dataSource: 'EDGAR API (Form 4, 13F)',
@@ -182,7 +182,7 @@ export const engineers: EngineerTask[] = [
       'Recalculate impact assessments based on outcomes',
     ],
     workflowIds: ['weekly-digest'],
-    defaultIntervalMinutes: 240, // every 4 hours
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['filing-ingested', 'press-release-added'],
     requiresData: false,
     category: 'intelligence',
@@ -201,7 +201,7 @@ export const engineers: EngineerTask[] = [
       'Update analyst coverage data',
     ],
     workflowIds: ['analyst-report', 'social-sentiment'],
-    defaultIntervalMinutes: 180, // every 3 hours
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['analyst-report-detected', 'price-alert'],
     requiresData: true,
     dataSource: 'Analyst reports, market data',
@@ -223,7 +223,7 @@ export const engineers: EngineerTask[] = [
       'Generate data quality scorecards',
     ],
     workflowIds: ['capital-parity', 'crossref-integrity', 'sources-completeness', 'data-freshness'],
-    defaultIntervalMinutes: 1440, // daily
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['data-updated', 'filing-ingested'],
     requiresData: false,
     category: 'audit',
@@ -244,7 +244,7 @@ export const engineers: EngineerTask[] = [
       'Update earnings database with extracted findings',
     ],
     workflowIds: ['earnings-call', 'earnings-quality', 'peer-comparables'],
-    defaultIntervalMinutes: 720, // every 12 hours
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['earnings-released', 'filing-ingested'],
     requiresData: true,
     dataSource: 'Earnings call transcripts, SEC filings',
@@ -266,7 +266,7 @@ export const engineers: EngineerTask[] = [
       'Update catalyst timelines from regulatory decisions',
     ],
     workflowIds: ['patent-ip', 'conference-notes', 'regulatory-tracker'],
-    defaultIntervalMinutes: 360, // every 6 hours
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['filing-ingested', 'press-release-added', 'regulatory-action'],
     requiresData: true,
     dataSource: 'Patent databases, FCC/NTIA filings, conference transcripts',
@@ -309,14 +309,14 @@ export const engineers: EngineerTask[] = [
       'Detect newly added tabs or routes that no prompt currently covers',
     ],
     workflowIds: ['prompt-audit'],
-    defaultIntervalMinutes: 1440, // daily
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['code-deployed', 'workflow-updated', 'engineer-config-changed'],
     requiresData: false,
     category: 'audit',
     humanDescription: 'This engineer reads every set of instructions our AI engineers follow and compares them to the actual app. If a developer added a new page or renamed a tab but nobody updated the AI\'s instructions, this engineer catches the mismatch and writes a report of everything that\'s out of sync. It reads from the prompt database and the live codebase — no external data needed. Think of it as the proofreader who checks if the recipe book still matches what\'s actually in the kitchen.',
     chainsTo: 'prompt-remediation-engineer',
     notifyPm: 'bobman',
-    pipelineDescription: 'Where do we look? Two places — the prompt database (all the instructions our AI engineers follow) and the live codebase (the actual app with its tabs, pages, API routes, and components). What happens? The pipeline reads every AI prompt and compares it against what the app really has. If someone added a new page or renamed a feature but forgot to update the AI\'s instructions, it catches the mismatch. Then it writes specific text fixes for each outdated instruction. What\'s the result? A list of patches — small targeted edits to the prompt templates — that get sent to a manager for approval. No instructions change until a human signs off. Think of it like a teacher checking if the textbook still matches what\'s actually being taught in class, then writing correction slips for each outdated page.',
+    pipelineDescription: 'Where do we look? Two places — the prompt database (all the instructions our AI engineers follow) and the live codebase (the actual app with its tabs, pages, API routes, and components). What happens? When manually triggered, the pipeline reads every AI prompt and compares it against what the app really has. If someone added a new page or renamed a feature but forgot to update the AI\'s instructions, it catches the mismatch. Then it writes specific text fixes for each outdated instruction. What\'s the result? A list of patches — small targeted edits to the prompt templates — that get sent to a manager for approval. No instructions change until a human signs off. Think of it like a teacher checking if the textbook still matches what\'s actually being taught in class, then writing correction slips for each outdated page.',
   },
   {
     id: 'prompt-remediation-engineer',
@@ -352,7 +352,7 @@ export const engineers: EngineerTask[] = [
       'Generate risk-ranked remediation plans',
     ],
     workflowIds: ['code-audit', 'dependency-vulnerability', 'api-endpoint-security', 'secrets-exposure'],
-    defaultIntervalMinutes: 1440, // daily
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['code-deployed', 'dependency-updated'],
     requiresData: false,
     category: 'audit',
@@ -371,7 +371,7 @@ export const engineers: EngineerTask[] = [
       'Generate weighted performance scorecards',
     ],
     workflowIds: ['performance-audit'],
-    defaultIntervalMinutes: 2880, // every 2 days
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['code-deployed'],
     requiresData: false,
     category: 'audit',
@@ -390,7 +390,7 @@ export const engineers: EngineerTask[] = [
       'Flag model outputs that diverge from inputs',
     ],
     workflowIds: ['disclosure-completeness', 'model-consistency'],
-    defaultIntervalMinutes: 1440, // daily
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['filing-ingested', 'data-updated'],
     requiresData: false,
     category: 'audit',
@@ -412,14 +412,14 @@ export const engineers: EngineerTask[] = [
       'Cross-reference docs against live codebase for accuracy',
     ],
     workflowIds: ['doc-review'],
-    defaultIntervalMinutes: 1440, // daily
+    defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['code-deployed', 'workflow-updated', 'data-updated'],
     requiresData: false,
     category: 'documentation',
     humanDescription: 'This engineer reads through recent code changes (git diffs) and checks if the documentation, style guides, and theme files still match what the code actually does. If someone built a new component but didn\'t document it, or the style guide says one thing but the code does another, it writes up a report of everything that needs fixing. It reads from the codebase and existing docs — no external data. Think of it as the editor who re-reads the whole manual after every update and marks up what\'s outdated.',
     notifyPm: 'bobman',
     chainsTo: 'ux-ui-engineer',
-    pipelineDescription: 'Where do we look? The recent code changes (git diffs) across all divisions, plus the existing documentation, style guides, and theme files in the codebase. What happens? The pipeline reviews what changed in the code and checks if the docs still match. If someone built a new component but didn\'t document it, or if the style guide says "use blue buttons" but the code now uses green, it flags the gap. Then it hands those findings to a UI specialist who either implements the fixes or proposes an alternative. What\'s the result? Updated documentation, changelogs, and style guide corrections — but nothing changes until a manager reviews and approves. Think of it like an editor who re-reads the instruction manual after every product update and says "page 12 still shows the old button layout."',
+    pipelineDescription: 'Where do we look? The recent code changes (git diffs) across all divisions, plus the existing documentation, style guides, and theme files in the codebase. What happens? When manually triggered, the pipeline reviews what changed in the code and checks if the docs still match. If someone built a new component but didn\'t document it, or if the style guide says "use blue buttons" but the code now uses green, it flags the gap. Then it hands those findings to a UI specialist who either implements the fixes or proposes an alternative. What\'s the result? Updated documentation, changelogs, and style guide corrections — but nothing changes until a manager reviews and approves. Think of it like an editor who re-reads the instruction manual after every product update and says "page 12 still shows the old button layout."',
   },
 
   // ── MASZKA'S TEAM ──────────────────────────────────────────────────────

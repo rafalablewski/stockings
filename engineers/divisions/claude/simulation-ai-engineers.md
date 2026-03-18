@@ -2,37 +2,38 @@
 
 **Date**: 2026-03-16
 **Simulated ticker**: ASTS (AST SpaceMobile)
-**Simulated trigger**: Sunday daily batch + EDGAR filing detected (8-K)
+**Simulated trigger**: User manually triggers SEC Filing Engineer after spotting new 8-K on EDGAR
 
-This document simulates one full cycle of every AI engineer — what fires, in what order, what each produces, and where the output lands.
+This document simulates one full cycle of every AI engineer — what fires, in what order, what each produces, and where the output lands. **All engineers are manually triggered** — there is no automatic scheduling or cron-based execution. Chaining between engineers still occurs automatically on successful completion.
 
 ---
 
 ## Execution Timeline
 
 ```
-T+0m    SEC Filing Engineer      polling EDGAR… new 8-K detected for ASTS
+T+0m    SEC Filing Engineer      manually triggered → polls EDGAR… new 8-K detected for ASTS
 T+2m    SEC Filing Engineer      → filing parsed, emits "filing-scan-completed"
 T+2m    Gemini Auto-Review       reviews Filing Engineer output (approve/reject/enhance)
 T+3m    SEC DB Ingestor          chained from Filing Engineer → 7-phase deep analysis
 T+5m    SEC DB Ingestor          → patches generated, routes to PM Decision Dashboard
-T+5m    Insider Activity Eng.    triggered by "form-4-detected" (bundled in 8-K)
-T+5m    Thesis Engineer          triggered by "filing-ingested"
-T+5m    Capital Structure Eng.   triggered by "filing-ingested"
-T+5m    Catalyst Tracker Eng.    triggered by "filing-ingested"
-T+5m    Regulatory & IP Eng.     triggered by "filing-ingested"
-T+5m    Data Quality Engineer    triggered by "filing-ingested"
-T+5m    Disclosure Engineer      triggered by "filing-ingested"
-T+5m    Earnings Engineer        triggered by "filing-ingested"
-T+8m    Press Intelligence Eng.  scheduled poll (every 30m) — picks up ASTS press release
-T+10m   Market Sentiment Eng.    scheduled poll (every 3h)
-T+12m   Prompt Auditor           daily schedule fires
-T+14m   Prompt Remediation Eng.  chained from Prompt Auditor completion
-T+16m   Doc Reviewer             daily schedule fires
-T+18m   UX/UI Engineer           chained from Doc Reviewer completion
-T+22m   Code Security Engineer   daily schedule fires
-T+24m   Performance Engineer     bi-daily schedule fires
-T+27m   General Intelligence     on-demand (idle — waits for user query)
+T+5m    User triggers downstream engineers from dashboard as needed:
+T+5m    Insider Activity Eng.    manually triggered (user sees Form 4 in 8-K)
+T+6m    Thesis Engineer          manually triggered
+T+7m    Capital Structure Eng.   manually triggered
+T+8m    Catalyst Tracker Eng.    manually triggered
+T+9m    Regulatory & IP Eng.     manually triggered
+T+10m   Data Quality Engineer    manually triggered
+T+11m   Disclosure Engineer      manually triggered
+T+12m   Earnings Engineer        manually triggered
+T+14m   Press Intelligence Eng.  manually triggered — picks up ASTS press release
+T+16m   Market Sentiment Eng.    manually triggered
+T+18m   Prompt Auditor           manually triggered
+T+20m   Prompt Remediation Eng.  chained from Prompt Auditor completion
+T+22m   Doc Reviewer             manually triggered
+T+24m   UX/UI Engineer           chained from Doc Reviewer completion
+T+26m   Code Security Engineer   manually triggered
+T+28m   Performance Engineer     manually triggered
+T+30m   General Intelligence     on-demand (idle — waits for user query)
 ```
 
 ---
@@ -40,7 +41,7 @@ T+27m   General Intelligence     on-demand (idle — waits for user query)
 ## 1. SEC Filing Engineer
 
 **Division**: Gemini (Research & Data)
-**Schedule**: Every 1 hour
+**Schedule**: Manual only
 **Trigger**: `edgar-poll`
 **Data source**: EDGAR API (SEC)
 
@@ -100,7 +101,7 @@ Polls the EDGAR FULL-TEXT search API for new filings on all covered tickers. Whe
 ## 2. Thesis Engineer
 
 **Division**: Claude (Architecture & Backend)
-**Schedule**: Every 6 hours
+**Schedule**: Manual only
 **Trigger**: `filing-ingested`, `press-release-added`, `price-alert`
 
 ### What It Does
@@ -176,7 +177,7 @@ Apply Patches — approved thesis updates written to database
 ## 3. Capital Structure Engineer
 
 **Division**: Claude (Architecture & Backend)
-**Schedule**: Every 12 hours
+**Schedule**: Manual only
 **Trigger**: `filing-ingested`, `form-4-detected`
 
 ### What It Does
@@ -238,7 +239,7 @@ Reads the latest filing data and recalculates the dilution waterfall, share coun
 ## 4. Insider Activity Engineer
 
 **Division**: Gemini (Research & Data)
-**Schedule**: Every 2 hours
+**Schedule**: Manual only
 **Trigger**: `form-4-detected`, `13f-filed`
 **Data source**: EDGAR API (Form 4, 13F)
 
@@ -291,7 +292,7 @@ Downloads Form 4 insider transaction reports and 13F institutional holdings. Tra
 ## 5. Press Intelligence Engineer
 
 **Division**: Gemini (Research & Data)
-**Schedule**: Every 30 minutes
+**Schedule**: Manual only
 **Trigger**: `news-api-poll`
 **Data source**: Press release APIs, RSS feeds
 
@@ -351,7 +352,7 @@ Fetches the latest press releases and news articles from RSS feeds and news APIs
 ## 6. Catalyst Tracker Engineer
 
 **Division**: Claude (Architecture & Backend)
-**Schedule**: Every 4 hours
+**Schedule**: Manual only
 **Trigger**: `filing-ingested`, `press-release-added`
 
 ### What It Does
@@ -400,7 +401,7 @@ Maintains a master calendar of upcoming catalysts. When new data arrives, update
 ## 7. Market Sentiment Engineer
 
 **Division**: Gemini (Research & Data)
-**Schedule**: Every 3 hours
+**Schedule**: Manual only
 **Trigger**: `analyst-report-detected`, `price-alert`
 **Data source**: Analyst reports, market data
 
@@ -453,7 +454,7 @@ Aggregates analyst price targets, rating changes, and social/market sentiment in
 ## 8. Earnings Engineer
 
 **Division**: Claude (Architecture & Backend)
-**Schedule**: Every 12 hours
+**Schedule**: Manual only
 **Trigger**: `earnings-released`, `filing-ingested`
 **Data source**: Earnings call transcripts, SEC filings
 
@@ -505,7 +506,7 @@ Processes earnings call transcripts and validates earnings data quality. Extract
 ## 9. Regulatory & IP Engineer
 
 **Division**: Gemini (Research & Data)
-**Schedule**: Every 6 hours
+**Schedule**: Manual only
 **Trigger**: `filing-ingested`, `press-release-added`, `regulatory-action`
 **Data source**: Patent databases, FCC/NTIA filings, conference transcripts
 
@@ -557,7 +558,7 @@ Monitors regulatory actions (FCC, NTIA, SEC), patent filings, and conference dis
 ## 10. Data Quality Engineer
 
 **Division**: Claude (Architecture & Backend)
-**Schedule**: Daily
+**Schedule**: Manual only
 **Trigger**: `data-updated`, `filing-ingested`
 
 ### What It Does
@@ -619,7 +620,7 @@ Runs 4 audit workflows: capital parity, cross-reference integrity, sources compl
 ## 11. Disclosure & Model Integrity Engineer
 
 **Division**: Gemini (Research & Data)
-**Schedule**: Daily
+**Schedule**: Manual only
 **Trigger**: `filing-ingested`, `data-updated`
 
 ### What It Does
@@ -671,7 +672,7 @@ Validates that SEC disclosures are fully captured in the database and that finan
 ## 12. Code Security Engineer
 
 **Division**: Claude (Architecture & Backend)
-**Schedule**: Daily
+**Schedule**: Manual only
 **Trigger**: `code-deployed`, `dependency-updated`
 
 ### What It Does
@@ -680,7 +681,7 @@ Runs 35-category code audit covering OWASP Top 10, dependency vulnerabilities, A
 ### Simulated Work
 
 ```
-[code-security-engineer] Run #21 for ASTS — triggered by: daily schedule
+[code-security-engineer] Run #21 for ASTS — triggered by: manual trigger from dashboard
 [code-security-engineer] Running 4 security workflows...
 
   WORKFLOW 1: code-audit (35-category scan)
@@ -736,7 +737,7 @@ Runs 35-category code audit covering OWASP Top 10, dependency vulnerabilities, A
 ## 13. Performance Engineer
 
 **Division**: Maszka (Frontend & UI)
-**Schedule**: Every 2 days
+**Schedule**: Manual only
 **Trigger**: `code-deployed`
 
 ### What It Does
@@ -745,7 +746,7 @@ Audits bundle size, component render efficiency, data-loading patterns, and cach
 ### Simulated Work
 
 ```
-[performance-engineer] Run #14 — triggered by: bi-daily schedule
+[performance-engineer] Run #14 — triggered by: manual trigger from dashboard
 [performance-engineer] Running performance-audit workflow...
 
   BUNDLE ANALYSIS:
@@ -798,7 +799,7 @@ Audits bundle size, component render efficiency, data-loading patterns, and cach
 ## 14. Prompt Auditor
 
 **Division**: Bobman (PM)
-**Schedule**: Daily
+**Schedule**: Manual only
 **Trigger**: `code-deployed`, `workflow-updated`, `engineer-config-changed`
 **Chains to**: Prompt Remediation Engineer
 **Notifies**: Bobman (in Room #ml channel)
@@ -809,7 +810,7 @@ Scans every workflow prompt template against the live codebase. Detects drift �
 ### Simulated Work
 
 ```
-[prompt-auditor] Run #18 for ASTS — triggered by: daily schedule
+[prompt-auditor] Run #18 for ASTS — triggered by: manual trigger from dashboard
 [prompt-auditor] Running prompt-audit workflow...
 
   PHASE 1: Codebase Inventory
@@ -954,7 +955,7 @@ Prompt Auditor (findings) → Prompt Remediation (patches) → Maszka (approve/r
 ## 16. Documentation Engineer (Doc Reviewer)
 
 **Division**: Bobman (PM)
-**Schedule**: Daily
+**Schedule**: Manual only
 **Trigger**: `code-deployed`, `workflow-updated`, `data-updated`
 **Chains to**: UX/UI Engineer
 **Notifies**: Bobman
@@ -965,7 +966,7 @@ Reviews recent code changes across all divisions and identifies documentation ga
 ### Simulated Work
 
 ```
-[doc-reviewer-engineer] Run #12 — triggered by: daily schedule
+[doc-reviewer-engineer] Run #12 — triggered by: manual trigger from dashboard
 [doc-reviewer-engineer] Running doc-review workflow...
 
   SCANNING RECENT CHANGES (last 24h):
