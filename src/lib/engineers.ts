@@ -26,6 +26,8 @@ export interface EngineerTask {
   autoReviewBy?: string;          // PM id whose AI model auto-reviews decisions before chainsTo fires
   /** Plain-English summary of the full pipeline this engineer starts (shown in Operations tab). */
   pipelineDescription?: string;
+  /** Curated subset of workflowIds to display in the Operations pipeline view. If omitted, all workflowIds are shown. */
+  pipelineWorkflowIds?: string[];
   /** Plain-English "explain like I'm 10" description of what this individual engineer does (shown in PMs tab). */
   humanDescription?: string;
 }
@@ -45,6 +47,7 @@ export const engineers: EngineerTask[] = [
       'Auto-update scorecard categories when new data lands',
     ],
     workflowIds: ['thesis-review', 'weekly-digest'],
+    pipelineWorkflowIds: ['thesis-review'],
     defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['filing-ingested', 'press-release-added', 'price-alert'],
     requiresData: false,
@@ -89,6 +92,7 @@ export const engineers: EngineerTask[] = [
       'Generate filing summary alerts',
     ],
     workflowIds: ['sec-filing-delta', 'sec-filing-scan'],
+    pipelineWorkflowIds: ['sec-filing-scan'],
     defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['edgar-poll'],
     requiresData: true,
@@ -160,6 +164,7 @@ export const engineers: EngineerTask[] = [
       'Update ownership data in the database',
     ],
     workflowIds: ['insider-activity', 'institutional-holdings'],
+    pipelineWorkflowIds: ['insider-activity'],
     defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['form-4-detected', '13f-filed'],
     requiresData: true,
@@ -201,6 +206,7 @@ export const engineers: EngineerTask[] = [
       'Update analyst coverage data',
     ],
     workflowIds: ['analyst-report', 'social-sentiment'],
+    pipelineWorkflowIds: ['analyst-report'],
     defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['analyst-report-detected', 'price-alert'],
     requiresData: true,
@@ -223,6 +229,7 @@ export const engineers: EngineerTask[] = [
       'Generate data quality scorecards',
     ],
     workflowIds: ['capital-parity', 'crossref-integrity', 'sources-completeness', 'data-freshness'],
+    pipelineWorkflowIds: ['data-freshness'],
     defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['data-updated', 'filing-ingested'],
     requiresData: false,
@@ -244,6 +251,7 @@ export const engineers: EngineerTask[] = [
       'Update earnings database with extracted findings',
     ],
     workflowIds: ['earnings-call', 'earnings-quality', 'peer-comparables'],
+    pipelineWorkflowIds: ['earnings-call'],
     defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['earnings-released', 'filing-ingested'],
     requiresData: true,
@@ -266,6 +274,7 @@ export const engineers: EngineerTask[] = [
       'Update catalyst timelines from regulatory decisions',
     ],
     workflowIds: ['patent-ip', 'conference-notes', 'regulatory-tracker'],
+    pipelineWorkflowIds: ['regulatory-tracker'],
     defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['filing-ingested', 'press-release-added', 'regulatory-action'],
     requiresData: true,
@@ -352,6 +361,7 @@ export const engineers: EngineerTask[] = [
       'Generate risk-ranked remediation plans',
     ],
     workflowIds: ['code-audit', 'dependency-vulnerability', 'api-endpoint-security', 'secrets-exposure'],
+    pipelineWorkflowIds: ['code-audit'],
     defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['code-deployed', 'dependency-updated'],
     requiresData: false,
@@ -390,6 +400,7 @@ export const engineers: EngineerTask[] = [
       'Flag model outputs that diverge from inputs',
     ],
     workflowIds: ['disclosure-completeness', 'model-consistency'],
+    pipelineWorkflowIds: ['disclosure-completeness'],
     defaultIntervalMinutes: 0, // manual only
     triggerEvents: ['filing-ingested', 'data-updated'],
     requiresData: false,

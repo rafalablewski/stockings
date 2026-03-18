@@ -141,14 +141,15 @@ function buildPipeline(head: EngineerTask): DerivedPipeline {
   for (const eng of chain) {
     const div = getDivision(eng.id);
 
-    // Engineer step
+    // Engineer step — use curated pipelineWorkflowIds if set, otherwise all workflowIds
+    const displayWorkflowIds = eng.pipelineWorkflowIds ?? eng.workflowIds;
     steps.push({
       label: eng.name,
       actor: eng.name,
       division: div,
       description: eng.description,
       type: 'engineer',
-      workflowIds: eng.workflowIds.length > 0 ? eng.workflowIds : undefined,
+      workflowIds: displayWorkflowIds.length > 0 ? displayWorkflowIds : undefined,
     });
 
     // Auto-review step (if configured)
