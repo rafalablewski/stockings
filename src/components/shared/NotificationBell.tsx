@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface Notification {
   id: number;
-  type: string;       // 'sec' | 'press'
+  type: string;
   title: string;
   body: string | null;
   groupKey: string | null;
@@ -23,7 +23,6 @@ interface GroupedNotifications {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-/** Check if a date string falls on today in NYC timezone */
 function isToday(dateStr: string): boolean {
   const d = new Date(dateStr);
   const nycNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
@@ -35,26 +34,23 @@ function isToday(dateStr: string): boolean {
   );
 }
 
-/** Check if current NYC time is between 8:00 and 19:00 */
 function isWithinNycBusinessHours(): boolean {
   const nycNow = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
   const hour = nycNow.getHours();
   return hour >= 8 && hour < 19;
 }
 
-/** Format relative time */
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return 'now';
+  if (mins < 60) return `${mins}m`;
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return `${hours}h`;
   const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+  return `${days}d`;
 }
 
-/** Format a date for group headers */
 function formatDateGroup(dateStr: string): string {
   const d = new Date(dateStr);
   return d.toLocaleDateString('en-US', {
@@ -65,7 +61,6 @@ function formatDateGroup(dateStr: string): string {
   });
 }
 
-/** Group notifications into TODAY + older date groups */
 function groupNotifications(items: Notification[]): GroupedNotifications[] {
   const today: Notification[] = [];
   const byDate = new Map<string, Notification[]>();
@@ -88,9 +83,8 @@ function groupNotifications(items: Notification[]): GroupedNotifications[] {
   return groups;
 }
 
-// ── Auto-refresh interval: 30 minutes ───────────────────────────────────────
 const REFRESH_INTERVAL_MS = 30 * 60 * 1000;
-const POLL_INTERVAL_MS = 60 * 1000; // check notifications every 60s
+const POLL_INTERVAL_MS = 60 * 1000;
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -103,8 +97,6 @@ export default function NotificationBell() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const lastAutoRefresh = useRef<number>(0);
 
-  // ── Fetch notifications ──────────────────────────────────────────────────
-
   const fetchNotifications = useCallback(async () => {
     try {
       const res = await fetch('/api/notifications');
@@ -112,12 +104,8 @@ export default function NotificationBell() {
       const data = await res.json();
       setItems(data.notifications ?? []);
       setUnreadCount(data.unreadCount ?? 0);
-    } catch {
-      // silent — network hiccup
-    }
+    } catch { /* silent */ }
   }, []);
-
-  // ── Trigger intelligence refresh ─────────────────────────────────────────
 
   const triggerRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -126,17 +114,11 @@ export default function NotificationBell() {
       if (res.ok) {
         const data = await res.json();
         setLastRefresh(data.refreshedAt);
-        // Re-fetch notifications to pick up any new ones created by the refresh
         await fetchNotifications();
       }
-    } catch {
-      // silent
-    } finally {
-      setRefreshing(false);
-    }
+    } catch { /* silent */ }
+    finally { setRefreshing(false); }
   }, [fetchNotifications]);
-
-  // ── Mark all as read ─────────────────────────────────────────────────────
 
   const markAllRead = useCallback(async () => {
     try {
@@ -147,12 +129,8 @@ export default function NotificationBell() {
       });
       setItems(prev => prev.map(n => ({ ...n, read: true })));
       setUnreadCount(0);
-    } catch {
-      // silent
-    }
+    } catch { /* silent */ }
   }, []);
-
-  // ── Dismiss a single notification ────────────────────────────────────────
 
   const dismissNotification = useCallback(async (id: number) => {
     try {
@@ -163,25 +141,15 @@ export default function NotificationBell() {
       });
       setItems(prev => prev.filter(n => n.id !== id));
       setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch {
-      // silent
-    }
+    } catch { /* silent */ }
   }, []);
 
-  // ── Auto-refresh scheduler ───────────────────────────────────────────────
-  // Runs every 30 minutes between 8:00-19:00 NYC time
-
+  // Auto-refresh scheduler
   useEffect(() => {
-    // Initial fetch
     fetchNotifications();
-
-    // Poll for new notifications every 60s
     const pollId = setInterval(fetchNotifications, POLL_INTERVAL_MS);
-
-    // Auto-refresh scheduler: check every minute if it's time
     const schedulerId = setInterval(() => {
       if (!isWithinNycBusinessHours()) return;
-
       const now = Date.now();
       if (now - lastAutoRefresh.current >= REFRESH_INTERVAL_MS) {
         lastAutoRefresh.current = now;
@@ -189,26 +157,15 @@ export default function NotificationBell() {
       }
     }, 60_000);
 
-    // Trigger first refresh if within business hours and no recent refresh
     if (isWithinNycBusinessHours() && Date.now() - lastAutoRefresh.current >= REFRESH_INTERVAL_MS) {
       lastAutoRefresh.current = Date.now();
-      // Delay first auto-refresh by 5s so page can load first
       const initId = setTimeout(triggerRefresh, 5000);
-      return () => {
-        clearInterval(pollId);
-        clearInterval(schedulerId);
-        clearTimeout(initId);
-      };
+      return () => { clearInterval(pollId); clearInterval(schedulerId); clearTimeout(initId); };
     }
-
-    return () => {
-      clearInterval(pollId);
-      clearInterval(schedulerId);
-    };
+    return () => { clearInterval(pollId); clearInterval(schedulerId); };
   }, [fetchNotifications, triggerRefresh]);
 
-  // ── Close dropdown on outside click ──────────────────────────────────────
-
+  // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -219,158 +176,137 @@ export default function NotificationBell() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [open]);
 
-  // ── When opening the dropdown, mark all as read ──────────────────────────
-
   const handleToggle = () => {
     const willOpen = !open;
     setOpen(willOpen);
-    if (willOpen && unreadCount > 0) {
-      markAllRead();
-    }
+    if (willOpen && unreadCount > 0) markAllRead();
   };
-
-  // ── Grouped data ─────────────────────────────────────────────────────────
 
   const groups = groupNotifications(items);
 
-  // ── Render ───────────────────────────────────────────────────────────────
-
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* Bell button */}
+      {/* ── Trigger ── */}
       <button
         onClick={handleToggle}
-        className="relative p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors"
+        className="relative flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300 hover:bg-white/[0.04]"
         aria-label="Notifications"
-        title="Notifications"
       >
-        {/* Bell SVG icon */}
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className={`text-white/60 ${refreshing ? 'animate-swing' : ''}`}
-        >
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-        </svg>
+        {/* Minimal circle outline — the "bell" is just a dot/ring */}
+        <div className={`
+          w-[7px] h-[7px] rounded-full transition-all duration-500
+          ${unreadCount > 0
+            ? 'bg-white scale-100'
+            : open
+              ? 'bg-white/40 scale-100'
+              : 'bg-white/20 scale-100 hover:bg-white/30'
+          }
+          ${refreshing ? 'animate-pulse' : ''}
+        `} />
 
-        {/* Unread badge */}
+        {/* Count — appears as a tiny number to the right */}
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[16px] h-[16px] px-1 text-[9px] font-bold text-white bg-red-500 rounded-full leading-none">
-            {unreadCount > 99 ? '99+' : unreadCount}
+          <span className="absolute -top-px -right-px text-[8px] font-mono font-medium text-white/90 leading-none tabular-nums">
+            {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
       </button>
 
-      {/* Dropdown panel */}
+      {/* ── Panel ── */}
       {open && (
-        <div className="absolute top-full right-0 mt-2 w-[360px] max-h-[480px] overflow-hidden bg-black/95 backdrop-blur-xl border border-white/[0.08] rounded-xl shadow-2xl flex flex-col z-[100]">
+        <div
+          className="absolute top-full right-0 mt-3 w-[340px] max-h-[420px] overflow-hidden flex flex-col z-[100]"
+          style={{
+            background: 'rgba(8, 8, 8, 0.96)',
+            backdropFilter: 'blur(40px) saturate(180%)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            borderRadius: '16px',
+            boxShadow: '0 24px 80px -12px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.03)',
+          }}
+        >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06]">
-            <span className="text-[13px] font-medium text-white/90">Notifications</span>
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between px-5 pt-4 pb-3">
+            <span className="text-[11px] font-medium tracking-[0.08em] uppercase text-white/50">
+              Intelligence
+            </span>
+            <div className="flex items-center gap-3">
               {refreshing && (
-                <span className="text-[10px] text-blue-400 animate-pulse">refreshing...</span>
+                <span className="w-1 h-1 rounded-full bg-white/60 animate-pulse" />
               )}
               {lastRefresh && !refreshing && (
-                <span className="text-[10px] text-white/30">
-                  last: {timeAgo(lastRefresh)}
+                <span className="text-[10px] font-mono text-white/20 tabular-nums">
+                  {timeAgo(lastRefresh)}
                 </span>
               )}
               <button
                 onClick={(e) => { e.stopPropagation(); triggerRefresh(); }}
                 disabled={refreshing}
-                className="text-[10px] text-white/40 hover:text-white/70 transition-colors disabled:opacity-30"
-                title="Refresh intelligence feeds now"
+                className="text-[10px] text-white/25 hover:text-white/60 transition-colors duration-300 disabled:opacity-20"
               >
-                Refresh
+                sync
               </button>
             </div>
           </div>
 
-          {/* Scrollable body */}
-          <div className="overflow-y-auto flex-1">
+          {/* Divider */}
+          <div className="mx-5 h-px bg-white/[0.04]" />
+
+          {/* Body */}
+          <div className="overflow-y-auto flex-1 py-1">
             {items.length === 0 ? (
-              <div className="px-4 py-8 text-center">
-                <div className="text-[12px] text-white/30">No notifications yet</div>
-                <div className="text-[10px] text-white/20 mt-1">
-                  Intelligence feeds auto-refresh every 30 min (8 AM – 7 PM NYC)
+              <div className="px-5 py-10 text-center">
+                <div className="text-[11px] text-white/20 font-light">No activity</div>
+                <div className="text-[10px] text-white/10 mt-2 font-mono">
+                  auto-sync 08:00–19:00 ET / 30m
                 </div>
               </div>
             ) : (
               groups.map((group) => (
                 <div key={group.label}>
-                  {/* Group header */}
-                  <div className="sticky top-0 px-4 py-1.5 bg-white/[0.03] border-b border-white/[0.04]">
-                    <span className={`text-[10px] font-semibold tracking-wider uppercase ${
-                      group.label === 'TODAY' ? 'text-blue-400' : 'text-white/30'
+                  {/* Group label */}
+                  <div className="px-5 pt-3 pb-1.5">
+                    <span className={`text-[9px] font-medium tracking-[0.12em] uppercase ${
+                      group.label === 'TODAY' ? 'text-white/50' : 'text-white/20'
                     }`}>
                       {group.label}
                     </span>
                   </div>
 
-                  {/* Notifications in this group */}
                   {group.notifications.map((n) => (
                     <div
                       key={n.id}
-                      className={`group/notif flex items-start gap-3 px-4 py-3 border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors ${
-                        !n.read ? 'bg-white/[0.02]' : ''
-                      }`}
+                      className="group/n flex items-start gap-3 px-5 py-2.5 transition-colors duration-200 hover:bg-white/[0.02] cursor-default"
                     >
-                      {/* Type icon */}
-                      <div className={`mt-0.5 w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${
-                        n.type === 'sec'
-                          ? 'bg-amber-500/10 text-amber-400'
-                          : 'bg-blue-500/10 text-blue-400'
-                      }`}>
-                        {n.type === 'sec' ? (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                            <polyline points="14 2 14 8 20 8" />
-                            <line x1="16" y1="13" x2="8" y2="13" />
-                            <line x1="16" y1="17" x2="8" y2="17" />
-                          </svg>
-                        ) : (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
-                            <path d="M18 14h-8" />
-                            <path d="M15 18h-5" />
-                            <path d="M10 6h8v4h-8V6Z" />
-                          </svg>
-                        )}
-                      </div>
+                      {/* Type indicator — minimal vertical line */}
+                      <div className={`mt-1.5 w-px h-3 rounded-full shrink-0 ${
+                        n.type === 'sec' ? 'bg-amber-500/50' : 'bg-white/20'
+                      }`} />
 
-                      {/* Content */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className={`text-[12px] font-medium ${!n.read ? 'text-white' : 'text-white/70'}`}>
+                        <div className="flex items-baseline gap-2">
+                          <span className={`text-[11px] leading-tight ${
+                            !n.read ? 'text-white/80 font-medium' : 'text-white/40'
+                          }`}>
                             {n.title}
                           </span>
-                          {!n.read && (
-                            <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-blue-400" />
-                          )}
+                          <span className="text-[9px] font-mono text-white/15 tabular-nums shrink-0">
+                            {timeAgo(n.createdAt)}
+                          </span>
                         </div>
                         {n.body && (
-                          <div className="text-[11px] text-white/40 mt-0.5 truncate">{n.body}</div>
+                          <div className="text-[10px] text-white/20 mt-0.5 truncate leading-tight">
+                            {n.body}
+                          </div>
                         )}
-                        <div className="text-[10px] text-white/25 mt-1">{timeAgo(n.createdAt)}</div>
                       </div>
 
-                      {/* Dismiss button */}
+                      {/* Dismiss — appears on hover */}
                       <button
                         onClick={(e) => { e.stopPropagation(); dismissNotification(n.id); }}
-                        className="opacity-0 group-hover/notif:opacity-100 transition-opacity text-white/20 hover:text-white/50 mt-1"
-                        title="Dismiss"
+                        className="opacity-0 group-hover/n:opacity-100 transition-opacity duration-200 mt-0.5"
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <line x1="18" y1="6" x2="6" y2="18" />
-                          <line x1="6" y1="6" x2="18" y2="18" />
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-white/15 hover:text-white/40 transition-colors">
+                          <path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
                         </svg>
                       </button>
                     </div>
@@ -382,44 +318,25 @@ export default function NotificationBell() {
 
           {/* Footer */}
           {items.length > 0 && (
-            <div className="px-4 py-2 border-t border-white/[0.06] flex items-center justify-between">
-              <span className="text-[10px] text-white/20">
-                Auto-refresh: 8 AM – 7 PM NYC, every 30 min
-              </span>
-              <div className="flex items-center gap-3">
-                <a
-                  href="/sec-intelligence"
-                  className="text-[10px] text-amber-400/60 hover:text-amber-400 transition-colors"
-                >
-                  SEC
-                </a>
-                <a
-                  href="/press-intelligence"
-                  className="text-[10px] text-blue-400/60 hover:text-blue-400 transition-colors"
-                >
-                  Press
-                </a>
+            <>
+              <div className="mx-5 h-px bg-white/[0.04]" />
+              <div className="flex items-center justify-between px-5 py-2.5">
+                <span className="text-[9px] font-mono text-white/10">
+                  08–19 ET / 30m
+                </span>
+                <div className="flex items-center gap-4">
+                  <a href="/sec-intelligence" className="text-[10px] text-white/20 hover:text-white/50 transition-colors duration-300">
+                    SEC
+                  </a>
+                  <a href="/press-intelligence" className="text-[10px] text-white/20 hover:text-white/50 transition-colors duration-300">
+                    Press
+                  </a>
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       )}
-
-      {/* Swing animation for the bell during refresh */}
-      <style jsx>{`
-        @keyframes swing {
-          0%, 100% { transform: rotate(0deg); }
-          15% { transform: rotate(12deg); }
-          30% { transform: rotate(-10deg); }
-          45% { transform: rotate(8deg); }
-          60% { transform: rotate(-6deg); }
-          75% { transform: rotate(3deg); }
-        }
-        :global(.animate-swing) {
-          animation: swing 0.8s ease-in-out infinite;
-          transform-origin: top center;
-        }
-      `}</style>
     </div>
   );
 }
