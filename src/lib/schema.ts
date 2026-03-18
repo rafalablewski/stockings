@@ -294,6 +294,27 @@ export const roomMessages = pgTable('room_messages', {
   index('room_messages_sender_idx').on(table.sender),
 ]);
 
+// ============================================================================
+// NOTIFICATIONS — tracks intelligence feed notifications (new SEC filings,
+// new press releases) surfaced via the navbar bell icon.
+// ============================================================================
+
+export const notifications = pgTable('notifications', {
+  id: serial('id').primaryKey(),
+  type: text('type').notNull(),               // 'sec' | 'press'
+  title: text('title').notNull(),             // e.g. "3 new SEC filings"
+  body: text('body'),                         // optional detail text
+  groupKey: text('group_key'),                // grouping key, e.g. 'sec-refresh-2026-03-18T14:00'
+  meta: text('meta'),                         // JSON — extra data (tickers, counts, etc.)
+  read: boolean('read').default(false).notNull(),
+  dismissed: boolean('dismissed').default(false).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (table) => [
+  index('notifications_read_idx').on(table.read),
+  index('notifications_created_idx').on(table.createdAt),
+  index('notifications_type_idx').on(table.type),
+]);
+
 // ── PM Decision Queue ────────────────────────────────────────────────────────
 // Tracks items awaiting PM review/approval before Boss final sign-off.
 // Used by the Decision Dashboard at /engineers/decisions.

@@ -5,6 +5,7 @@ import PinStatus from "@/components/shared/PinStatus";
 import AiToggle from "@/components/shared/AiToggle";
 import NotesPanel from "@/components/shared/NotesPanel";
 import MobileNav from "@/components/shared/MobileNav";
+import NotificationBell from "@/components/shared/NotificationBell";
 import PinGate from "@/components/PinGate";
 import "./globals.css";
 
@@ -112,6 +113,7 @@ function Navigation() {
             <div className="hidden md:flex items-center gap-3">
               <PinStatus />
               <AiToggle />
+              <NotificationBell />
               <NotesPanel />
             </div>
           </div>
@@ -270,6 +272,7 @@ function Navigation() {
             <MobileNav items={mobileNavItems}>
               <PinStatus />
               <AiToggle />
+              <NotificationBell />
               <NotesPanel />
             </MobileNav>
           </div>
