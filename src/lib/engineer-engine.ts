@@ -24,8 +24,10 @@ const CLAUDE_MODEL_DEFAULT = 'claude-sonnet-4-5-20250929';
 const CLAUDE_MODEL_FAST = 'claude-haiku-4-5-20251001';
 
 // Per-workflow timeout for Claude API calls (must stay under Vercel maxDuration=300s)
-const CLAUDE_API_TIMEOUT_MS = 180_000;       // default: 3 minutes (Sonnet — context trimmed to fit)
-const CLAUDE_API_TIMEOUT_FAST_MS = 120_000;  // fast model (Haiku): 2 minutes
+// Streaming keeps the connection alive with SSE chunks, so we can safely use
+// a longer timeout — the 300s Vercel limit applies to idle time, not total duration.
+const CLAUDE_API_TIMEOUT_MS = 270_000;       // default: 4.5 minutes (Sonnet — streaming)
+const CLAUDE_API_TIMEOUT_FAST_MS = 180_000;  // fast model (Haiku): 3 minutes
 
 // Status type for run records
 export type RunStatus = 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
@@ -256,7 +258,7 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
         ? `${datedPrompt}\n\n════════════════════════════════════════════════════════════\nAUTO-FETCHED DATA\n════════════════════════════════════════════════════════════\n\n${opts.userData}`
         : datedPrompt;
 
-      // 4. Call Claude API
+      // 4. Call Claude API (streaming)
       // Use Haiku for audit engineers (large context, need speed for Vercel timeouts)
       const model = engineer.category === 'audit' ? CLAUDE_MODEL_FAST : CLAUDE_MODEL_DEFAULT;
       const controller = new AbortController();
@@ -274,6 +276,7 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
           body: JSON.stringify({
             model,
             max_tokens: 16384,
+            stream: true,
             messages: [{ role: 'user', content: fullMessage }],
           }),
           signal: controller.signal,
@@ -305,8 +308,8 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
         throw new Error(reason);
       }
 
-      const result = await claudeRes.json();
-      const outputFull = result.content?.[0]?.text || '';
+      // Read streaming SSE response and accumulate text deltas
+      const outputFull = await readStreamingResponse(claudeRes);
       const outputSummary = outputFull.slice(0, 500);
       const durationMs = Date.now() - wfStartTime;
 
@@ -470,6 +473,60 @@ export async function runEngineer(opts: RunEngineerOptions): Promise<RunResult> 
 export async function checkAndRunDueEngineers(): Promise<RunResult[]> {
   // All engineers are manual-only — no automatic scheduling
   return [];
+}
+
+/**
+ * Read a streaming SSE response from the Claude Messages API and return
+ * the accumulated text output. Handles `content_block_delta` events with
+ * `text_delta` payloads, ignoring all other event types.
+ */
+async function readStreamingResponse(res: Response): Promise<string> {
+  const body = res.body;
+  if (!body) throw new Error('Streaming response has no body');
+
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  const chunks: string[] = [];
+  let buffer = '';
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+
+      // Process complete SSE lines (delimited by double newlines)
+      const lines = buffer.split('\n');
+      // Keep the last potentially-incomplete line in the buffer
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const payload = line.slice(6).trim();
+        if (payload === '[DONE]') continue;
+
+        try {
+          const event = JSON.parse(payload);
+          if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
+            chunks.push(event.delta.text);
+          }
+          // Check for error events in the stream
+          if (event.type === 'error') {
+            throw new Error(`Claude streaming error: ${event.error?.message || JSON.stringify(event.error)}`);
+          }
+        } catch (parseErr) {
+          // Skip non-JSON lines (e.g. event: labels)
+          if (parseErr instanceof SyntaxError) continue;
+          throw parseErr;
+        }
+      }
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  return chunks.join('');
 }
 
 // Map ticker -> company data module for dynamic context injection
