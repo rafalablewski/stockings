@@ -134,11 +134,12 @@ export default function SecIntelligencePage() {
   const [page, setPage] = useState(1);
   const [methodologyOpen, setMethodologyOpen] = useState(false);
 
-  /* ── Load filings (DB-first on mount, refresh fetches from SEC) ── */
+  /* ── Load filings (DB-first on mount, refresh fetches from SEC) ──
+     Always loads ALL filings (no days param). Date filtering is client-side,
+     matching the Press Intelligence architecture. */
   const loadFilings = useCallback(async (mode: "db" | "refresh" = "db") => {
     try {
-      const params = new URLSearchParams({ mode, limit: '50' });
-      if (daysFilter > 0) params.set('days', String(daysFilter));
+      const params = new URLSearchParams({ mode, limit: '200' });
       const res = await fetch(`/api/sec-intelligence?${params}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json: ApiResponse = await res.json();
@@ -157,7 +158,7 @@ export default function SecIntelligencePage() {
     }
     setLoading(false);
     setRefreshing(false);
-  }, [daysFilter]);
+  }, []);
 
   /* DB-first: load from database on mount */
   useEffect(() => {
@@ -198,13 +199,21 @@ export default function SecIntelligencePage() {
   /* ── All intelligence tickers, sorted alphabetically ── */
   const allTickers = SORTED_TICKERS;
 
+  /* ── Date-filtered filings (matching Press Intelligence: client-side date filter) ── */
+  const allFilings = useMemo(() => {
+    if (!data?.filings) return [];
+    if (daysFilter <= 0) return data.filings;
+    const cutoff = new Date(Date.now() - daysFilter * 86400000).toISOString().slice(0, 10);
+    return data.filings.filter(f => (f.filingDate || '') >= cutoff);
+  }, [data, daysFilter]);
+
   /* ── Build dynamic form filter options from actual data ── */
   const activeFormFilters = useMemo(() => {
-    if (!data?.filings) return [];
+    if (allFilings.length === 0) return [];
     // Only show filters that match at least one filing in current ticker scope
     const scopedFilings = activeTicker !== "ALL"
-      ? data.filings.filter(f => f.ticker === activeTicker)
-      : data.filings;
+      ? allFilings.filter(f => f.ticker === activeTicker)
+      : allFilings;
 
     const active: { key: string; label: string; count: number }[] = [];
     for (const ff of FORM_FILTERS) {
@@ -220,12 +229,11 @@ export default function SecIntelligencePage() {
     if (otherCount > 0) active.push({ key: "Other", label: "Other", count: otherCount });
 
     return active;
-  }, [data, activeTicker]);
+  }, [allFilings, activeTicker]);
 
   /* ── Filtered filings ── */
   const filteredFilings = useMemo(() => {
-    if (!data?.filings) return [];
-    let filings = data.filings;
+    let filings = allFilings;
 
     /* Ticker filter */
     if (activeTicker !== "ALL") {
@@ -254,13 +262,13 @@ export default function SecIntelligencePage() {
         const desc = (f.primaryDocDescription || "").toLowerCase();
         const form = f.form.toLowerCase();
         const ticker = f.ticker.toLowerCase();
-        const company = (data.tickerStats[f.ticker]?.companyName || "").toLowerCase();
+        const company = (data?.tickerStats[f.ticker]?.companyName || "").toLowerCase();
         return desc.includes(q) || form.includes(q) || ticker.includes(q) || company.includes(q);
       });
     }
 
     return filings;
-  }, [data, activeTicker, activeForm, searchQuery]);
+  }, [allFilings, activeTicker, activeForm, searchQuery, data]);
 
   /* Count undismissed (NEW) filings */
   const newCount = useMemo(() => {
@@ -283,31 +291,32 @@ export default function SecIntelligencePage() {
   const totalPages = Math.max(1, Math.ceil(filteredFilings.length / PAGE_SIZE));
   const pagedFilings = filteredFilings.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  /* ── Stats (matching Press Intelligence layout) ── */
+  /* ── Stats (matching Press Intelligence layout) ──
+     Uses allFilings (date-filtered, like Press uses feedsByTicker).
+     perStock counts per-ticker from the date-filtered set. */
   const stats = useMemo(() => {
-    if (!data?.filings) return { total: 0, today: 0, thisMonth: 0, thisYear: 0, latest: "\u2014", newFilings: 0, perStock: {} as Record<string, number> };
-    const filings = data.filings;
+    if (allFilings.length === 0) return { total: 0, today: 0, thisMonth: 0, thisYear: 0, latest: "\u2014", newFilings: 0, perStock: {} as Record<string, number> };
 
     let today = 0;
     let thisMonth = 0;
     let thisYear = 0;
 
-    for (const f of filings) {
+    for (const f of allFilings) {
       if (isFilingToday(f.filingDate)) today++;
       if (isThisMonth(f.filingDate)) thisMonth++;
       if (isThisYear(f.filingDate)) thisYear++;
     }
 
-    const latest = filings[0] ? formatDate(filings[0].filingDate) : "\u2014";
+    const latest = allFilings[0] ? formatDate(allFilings[0].filingDate) : "\u2014";
 
     const perStock: Record<string, number> = {};
     for (const ticker of allTickers) perStock[ticker] = 0;
-    for (const f of filings) {
+    for (const f of allFilings) {
       if (perStock[f.ticker] !== undefined) perStock[f.ticker]++;
     }
 
     return {
-      total: filings.length,
+      total: allFilings.length,
       today,
       thisMonth,
       thisYear,
@@ -315,7 +324,7 @@ export default function SecIntelligencePage() {
       newFilings: newCount,
       perStock,
     };
-  }, [data, newCount, allTickers]);
+  }, [allFilings, newCount, allTickers]);
 
   const hasErrors = data?.errors && Object.keys(data.errors).length > 0;
   const isEmpty = !loading && data?.filings?.length === 0 && !hasErrors;
