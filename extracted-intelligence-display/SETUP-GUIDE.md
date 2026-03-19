@@ -87,6 +87,9 @@ export const stocks: Record<string, { name: string; sector?: string }> = {
 
 export const stockList = Object.keys(stocks);
 
+/** Set of all valid tickers (lowercase) — used by seen-filings API for validation */
+export const VALID_TICKERS = new Set(Object.keys(stocks).map(t => t.toLowerCase()));
+
 /**
  * Tickers tracked in Intelligence pages.
  * Both Press and SEC Intelligence use this as their single source of truth.
@@ -114,27 +117,29 @@ export const db = drizzle(sql);
 Create `src/lib/schema.ts`:
 
 ```ts
-import { pgTable, text, boolean, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, text, boolean, serial, timestamp } from "drizzle-orm/pg-core";
 
-export const seenFilings = pgTable(
-  "seen_filings",
-  {
-    ticker: text("ticker").notNull(),
-    accessionNumber: text("accession_number").notNull(),
-    form: text("form").notNull(),
-    filingDate: text("filing_date"),
-    description: text("description"),
-    reportDate: text("report_date"),
-    fileUrl: text("file_url"),
-    status: text("status"),
-    crossRefs: text("cross_refs"),
-    dismissed: boolean("dismissed").default(false),
-    hidden: boolean("hidden").default(false),
-  },
-  (table) => ({
-    pk: primaryKey({ columns: [table.ticker, table.accessionNumber] }),
-  })
-);
+export const seenFilings = pgTable("seen_filings", {
+  id: serial("id").primaryKey(),
+  ticker: text("ticker").notNull(),
+  accessionNumber: text("accession_number").notNull(),
+  form: text("form").notNull(),
+  filingDate: text("filing_date"),
+  description: text("description"),
+  reportDate: text("report_date"),
+  fileUrl: text("file_url"),
+  status: text("status"),
+  crossRefs: text("cross_refs"),
+  dismissed: boolean("dismissed").notNull().default(false),
+  hidden: boolean("hidden").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Note: The unique constraint on (ticker, accession_number) and the ticker index
+// are created by ensureTable() in the seen-filings API route, not by Drizzle schema.
+// If you use drizzle-kit push, add them manually:
+//   CREATE UNIQUE INDEX seen_filings_ticker_accession_idx ON seen_filings (ticker, accession_number);
+//   CREATE INDEX seen_filings_ticker_idx ON seen_filings (ticker);
 ```
 
 Run the migration to create the table:
@@ -464,41 +469,212 @@ export async function GET(request: NextRequest) {
 
 ---
 
-## Step 8: Create the Seen-Filings Dismiss API
+## Step 8: Create the Seen-Filings API
 
 Create `src/app/api/seen-filings/route.ts`:
 
+This route handles loading filings per-ticker (GET), dismissing NEW badges, hiding filings, and upserting filing metadata (POST). It also auto-creates the `seen_filings` table on first request.
+
 ```ts
 import { NextRequest, NextResponse } from 'next/server';
+import { neon } from '@neondatabase/serverless';
 import { db } from '@/lib/db';
 import { seenFilings } from '@/lib/schema';
-import { and, eq } from 'drizzle-orm';
+import { eq, and, count, sql } from 'drizzle-orm';
+import { VALID_TICKERS } from '@/lib/stocks';
 
+export const dynamic = 'force-dynamic';
+
+interface IncomingFiling {
+  accessionNumber: string;
+  form: string;
+  filingDate?: string;
+  description?: string;
+  reportDate?: string;
+  fileUrl?: string;
+  status?: string;
+  crossRefs?: unknown;
+}
+
+// Auto-create table + indexes on first request
+let tableVerified = false;
+
+async function ensureTable(): Promise<void> {
+  if (tableVerified) return;
+
+  const connStr = process.env.DATABASE_URL;
+  if (!connStr) throw new Error('DATABASE_URL is not set');
+
+  const rawSql = neon(connStr);
+
+  await rawSql`CREATE TABLE IF NOT EXISTS seen_filings (
+    id SERIAL PRIMARY KEY,
+    ticker TEXT NOT NULL,
+    accession_number TEXT NOT NULL,
+    form TEXT NOT NULL,
+    filing_date TEXT,
+    description TEXT,
+    report_date TEXT,
+    file_url TEXT,
+    status TEXT,
+    cross_refs TEXT,
+    dismissed BOOLEAN NOT NULL DEFAULT FALSE,
+    hidden BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW() NOT NULL
+  )`;
+
+  await rawSql`CREATE UNIQUE INDEX IF NOT EXISTS seen_filings_ticker_accession_idx
+    ON seen_filings (ticker, accession_number)`;
+
+  await rawSql`CREATE INDEX IF NOT EXISTS seen_filings_ticker_idx
+    ON seen_filings (ticker)`;
+
+  await rawSql`ALTER TABLE seen_filings ADD COLUMN IF NOT EXISTS hidden BOOLEAN NOT NULL DEFAULT FALSE`;
+
+  tableVerified = true;
+}
+
+function isTableMissing(err: unknown): boolean {
+  const msg = String(err);
+  return msg.includes('does not exist') || msg.includes('relation') || msg.includes('42P01');
+}
+
+// GET /api/seen-filings?ticker=ASTS
+// Optional: ?accessionNumber=XYZ for single-record lookup
+export async function GET(request: NextRequest) {
+  const ticker = request.nextUrl.searchParams.get('ticker');
+  if (!ticker) {
+    return NextResponse.json({ error: 'Missing ticker' }, { status: 400 });
+  }
+
+  const t = ticker.toLowerCase();
+  if (!VALID_TICKERS.has(t)) {
+    return NextResponse.json({ error: `Unknown ticker: ${ticker}` }, { status: 400 });
+  }
+
+  try { await ensureTable(); } catch (e) {
+    console.error('[seen-filings] ensureTable failed in GET:', e);
+    return NextResponse.json({ filings: [], _ensureTableError: String(e) });
+  }
+
+  const accessionNumber = request.nextUrl.searchParams.get('accessionNumber');
+
+  try {
+    const rows = await db
+      .select({
+        accessionNumber: seenFilings.accessionNumber,
+        form: seenFilings.form,
+        filingDate: seenFilings.filingDate,
+        description: seenFilings.description,
+        reportDate: seenFilings.reportDate,
+        fileUrl: seenFilings.fileUrl,
+        status: seenFilings.status,
+        crossRefs: seenFilings.crossRefs,
+        dismissed: seenFilings.dismissed,
+        hidden: seenFilings.hidden,
+      })
+      .from(seenFilings)
+      .where(accessionNumber
+        ? and(eq(seenFilings.ticker, t), eq(seenFilings.accessionNumber, accessionNumber))
+        : eq(seenFilings.ticker, t)
+      );
+
+    const filings = rows.map(row => ({
+      accessionNumber: row.accessionNumber,
+      form: row.form,
+      filingDate: row.filingDate,
+      description: row.description,
+      reportDate: row.reportDate,
+      fileUrl: row.fileUrl,
+      status: row.status,
+      crossRefs: row.crossRefs ? JSON.parse(row.crossRefs) : null,
+      dismissed: row.dismissed,
+      hidden: row.hidden,
+    }));
+
+    return NextResponse.json({ filings });
+  } catch (error) {
+    console.error('[seen-filings] GET query error:', error);
+    if (isTableMissing(error)) { tableVerified = false; return NextResponse.json({ filings: [] }); }
+    const msg = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: msg, detail: String(error) }, { status: 500 });
+  }
+}
+
+// POST /api/seen-filings
+// Body: { ticker, filings: IncomingFiling[], dismiss?: boolean, hide?: boolean }
 export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const { ticker, filings, dismiss } = body;
+  try {
+    const { ticker, filings, dismiss, hide } = await request.json();
 
-  if (!ticker || !filings?.length) {
-    return NextResponse.json({ error: 'Missing ticker or filings' }, { status: 400 });
-  }
-
-  const lowerTicker = ticker.toLowerCase();
-
-  for (const f of filings) {
-    if (dismiss) {
-      await db
-        .update(seenFilings)
-        .set({ dismissed: true })
-        .where(
-          and(
-            eq(seenFilings.ticker, lowerTicker),
-            eq(seenFilings.accessionNumber, f.accessionNumber)
-          )
-        );
+    if (!ticker || !filings || !Array.isArray(filings)) {
+      return NextResponse.json({ error: 'Missing required fields (ticker, filings[])' }, { status: 400 });
     }
-  }
 
-  return NextResponse.json({ ok: true });
+    const t = ticker.toLowerCase();
+    if (!VALID_TICKERS.has(t)) {
+      return NextResponse.json({ error: `Unknown ticker: ${ticker}` }, { status: 400 });
+    }
+
+    try { await ensureTable(); } catch (e) {
+      console.error('[seen-filings] ensureTable failed in POST:', e);
+      return NextResponse.json({ error: 'Table creation failed', detail: String(e) }, { status: 500 });
+    }
+
+    const values = filings
+      .filter((f: Partial<IncomingFiling>): f is IncomingFiling => !!(f.accessionNumber && f.form))
+      .map((f: IncomingFiling) => ({
+        ticker: t,
+        accessionNumber: f.accessionNumber,
+        form: f.form,
+        filingDate: f.filingDate || null,
+        description: f.description || null,
+        reportDate: f.reportDate || null,
+        fileUrl: f.fileUrl || null,
+        status: f.status || null,
+        crossRefs: f.crossRefs ? JSON.stringify(f.crossRefs) : null,
+        dismissed: !!dismiss,
+      }));
+
+    let totalInDb = 0;
+    if (values.length > 0) {
+      if (hide !== undefined) {
+        // Toggle hidden state
+        await db.insert(seenFilings).values(values).onConflictDoUpdate({
+          target: [seenFilings.ticker, seenFilings.accessionNumber],
+          set: { hidden: !!hide },
+        });
+      } else if (dismiss) {
+        await db.insert(seenFilings).values(values).onConflictDoUpdate({
+          target: [seenFilings.ticker, seenFilings.accessionNumber],
+          set: { dismissed: true },
+        });
+      } else {
+        // Upsert: overwrite metadata but NOT dismissed/hidden
+        await db.insert(seenFilings).values(values).onConflictDoUpdate({
+          target: [seenFilings.ticker, seenFilings.accessionNumber],
+          set: {
+            form: sql`excluded.form`,
+            filingDate: sql`excluded.filing_date`,
+            description: sql`excluded.description`,
+            reportDate: sql`excluded.report_date`,
+            fileUrl: sql`excluded.file_url`,
+            status: sql`excluded.status`,
+            crossRefs: sql`excluded.cross_refs`,
+          },
+        });
+      }
+      const [row] = await db.select({ n: count() }).from(seenFilings).where(eq(seenFilings.ticker, t));
+      totalInDb = row?.n ?? 0;
+    }
+
+    return NextResponse.json({ ok: true, sent: filings.length, filtered: values.length, totalInDb });
+  } catch (error) {
+    console.error('[seen-filings] POST error:', error);
+    if (isTableMissing(error)) { tableVerified = false; }
+    const msg = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: msg, detail: String(error) }, { status: 500 });
+  }
 }
 ```
 
@@ -508,24 +684,28 @@ export async function POST(request: NextRequest) {
 
 Create `src/app/api/press-intelligence/route.ts`:
 
-You need a press data source. The original uses QuoteMedia RSS feeds. Here's a minimal version you can adapt to your data source:
+**Important:** In the original project, this is a legacy Node.js file (`api/press-intelligence.js`, ~1,900 lines) that fetches from QuoteMedia feeds and persists to a `press_releases` PostgreSQL table. You need to provide your own press data source.
+
+The frontend calls this API in three modes:
+- `?ticker=ASTS&mode=db` — load from database
+- `?ticker=ASTS&mode=refresh` — fetch from upstream, persist, return
+- `?ticker=ASTS&mode=methodology` — return data source info for the methodology modal
+
+The frontend expects the response to be parseable by the `parseResponse` function in each `FEED_CONFIG`. By default it expects either:
+- A flat array of news items: `[{ newsid, headline, summary, datetime, source, permalink }, ...]`
+- Or a QuoteMedia nested format: `{ results: { news: [{ newsitem: [...] }] } }`
+
+Here's a minimal route you can adapt:
 
 ```ts
 import { NextRequest, NextResponse } from 'next/server';
 
-/**
- * GET /api/press-intelligence?ticker=ASTS&mode=db|refresh
- *
- * Replace the fetch logic below with your actual press data source
- * (QuoteMedia, Benzinga, NewsAPI, RSS feeds, etc.)
- */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const ticker = searchParams.get('ticker') || '';
   const mode = searchParams.get('mode') || 'db';
 
   if (mode === 'methodology') {
-    // Return methodology info for the modal
     return NextResponse.json({
       ticker,
       grade: 'A',
@@ -536,9 +716,15 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  // TODO: Replace with your actual data source
-  // The frontend expects an array of objects like:
-  // [{ newsid, headline, summary, datetime, source, permalink }]
+  // TODO: Replace with your actual data source.
+  // Each item needs at minimum:
+  //   - headline (string) — displayed as the main text
+  //   - datetime (string) — ISO 8601 or "YYYY-MM-DD HH:MM:SS+00"
+  //   - source (string) — e.g. "Business Wire", "PR Newswire"
+  // Optional but recommended:
+  //   - newsid or id (string) — unique ID
+  //   - summary or description (string) — shown when card is expanded
+  //   - permalink or storyurl (string) — link to full article
   const newsItems: any[] = [];
 
   return NextResponse.json(newsItems);
