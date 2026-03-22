@@ -31,6 +31,10 @@ const CAT_CORPORATE_DIV = (h: string) => /acqui|merger|board|director|appoint|of
 const CAT_CORPORATE_DIV_BUYBACK = (h: string) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h);
 const CAT_CAPITAL_MARKETS = (h: string) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h);
 const CAT_PARTNERSHIPS = (h: string) => /partner|agreement|contract|deal|alliance|collaborat|launch|integrat/i.test(h);
+const CAT_BITCOIN = (h: string) => /bitcoin|btc|digital asset|crypto|treasury/i.test(h);
+const CAT_MINING = (h: string) => /mining|hash|hashrate|exahash|block|mined|production|megawatt|facility/i.test(h);
+const CAT_MINING_DC = (h: string) => /mining|hash|hashrate|exahash|block|mined|production|megawatt|facility|data\s*center/i.test(h);
+const CAT_CAPITAL_MARKETS_ATM = (h: string) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h);
 
 /* ─── Headline normalization (dedup key + React key) ─── */
 function normalizeHeadline(h: string): string {
@@ -92,7 +96,7 @@ const FEED_CONFIGS: FeedConfig[] = [
     headlineFilter: (h) => /bitmine|bmnr|bit\s*mine/i.test(h),
     parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Earnings: CAT_EARNINGS,
       Ethereum: (h) => /eth|ethereum|staking|crypto|digital asset|blockchain|treasury/i.test(h),
       Corporate: (h) => /acqui|merger|board|director|appoint|officer|name|ceo|cfo/i.test(h),
       "Capital Markets": (h) => /notes|offering|convert|shares|capital|warrant|stock|note repurchase|\$\d/i.test(h),
@@ -105,14 +109,12 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "gold",
     color: "#F59E0B",
     colorDim: "rgba(245,158,11,0.15)",
-    sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for "iridium"
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Earnings: CAT_EARNINGS,
       Satellite: (h) => /satellite|launch|orbit|iot|certus|l-band|constellation/i.test(h),
       Partnerships: (h) => /partner|agreement|contract|award|select|government|dod/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h),
+      Corporate: CAT_CORPORATE_DIV_BUYBACK,
       "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|\$\d/i.test(h),
     },
   },
@@ -123,14 +125,12 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "orange",
     color: "#FB923C",
     colorDim: "rgba(251,146,60,0.15)",
-    sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for "globalstar"
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Earnings: CAT_EARNINGS,
       Satellite: (h) => /satellite|launch|orbit|spectrum|band|constellation|apple/i.test(h),
       Partnerships: (h) => /partner|agreement|contract|award|apple|qualcomm|government/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend/i.test(h),
+      Corporate: CAT_CORPORATE_DIV,
       "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|\$\d/i.test(h),
     },
   },
@@ -141,15 +141,13 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "rose",
     color: "#F472B6",
     colorDim: "rgba(244,114,182,0.15)",
-    sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for "verizon"
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Earnings: CAT_EARNINGS,
       "5G & Network": (h) => /5g|network|spectrum|fios|wireless|broadband|c-band|mmwave|lte/i.test(h),
       Partnerships: (h) => /partner|agreement|contract|award|select|deal|alliance/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h),
-      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+      Corporate: CAT_CORPORATE_DIV_BUYBACK,
+      "Capital Markets": CAT_CAPITAL_MARKETS,
     },
   },
   {
@@ -159,15 +157,13 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "indigo",
     color: "#818CF8",
     colorDim: "rgba(129,140,248,0.15)",
-    sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for "viasat"
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Earnings: CAT_EARNINGS,
       Satellite: (h) => /satellite|launch|orbit|ka-band|broadband|inflight|connectivity|viasat-3/i.test(h),
       Partnerships: (h) => /partner|agreement|contract|award|select|government|dod|military|airline/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h),
-      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+      Corporate: CAT_CORPORATE_DIV_BUYBACK,
+      "Capital Markets": CAT_CAPITAL_MARKETS,
     },
   },
   {
@@ -177,16 +173,14 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "fuchsia",
     color: "#D946EF",
     colorDim: "rgba(217,70,239,0.15)",
-    sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for "rocket lab"
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Earnings: CAT_EARNINGS,
       Launch: (h) => /launch|electron|neutron|mission|payload|deploy|liftoff|rocket/i.test(h),
       Satellite: (h) => /satellite|spacecraft|photon|constellation|orbit|space\s*systems/i.test(h),
       Partnerships: (h) => /partner|agreement|contract|award|select|government|dod|military|nasa/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h),
-      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+      Corporate: CAT_CORPORATE_DIV_BUYBACK,
+      "Capital Markets": CAT_CAPITAL_MARKETS,
     },
   },
   {
@@ -196,15 +190,13 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "pink",
     color: "#EC4899",
     colorDim: "rgba(236,72,153,0.15)",
-    sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for "echostar/hughes"
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Earnings: CAT_EARNINGS,
       Satellite: (h) => /satellite|launch|orbit|spectrum|broadband|jupiter|s-band|ku-band|hughes/i.test(h),
       Partnerships: (h) => /partner|agreement|contract|award|select|government|dod|military|fcc/i.test(h),
       Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback|dish/i.test(h),
-      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+      "Capital Markets": CAT_CAPITAL_MARKETS,
     },
   },
   {
@@ -214,16 +206,14 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "yellow",
     color: "#FACC15",
     colorDim: "rgba(250,204,21,0.15)",
-    sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for "intuitive machines"
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Earnings: CAT_EARNINGS,
       Lunar: (h) => /lunar|moon|lander|landing|artemis|clps|south\s*pole/i.test(h),
       Satellite: (h) => /satellite|orbit|relay|data\s*transmission|deep\s*space|navigation/i.test(h),
       Partnerships: (h) => /partner|agreement|contract|award|select|government|nasa|dod|military/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h),
-      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+      Corporate: CAT_CORPORATE_DIV_BUYBACK,
+      "Capital Markets": CAT_CAPITAL_MARKETS,
     },
   },
   {
@@ -237,11 +227,11 @@ const FEED_CONFIGS: FeedConfig[] = [
     headlineFilter: () => true,  // API pre-filters for AT&T
     parseResponse: (json: any) => Array.isArray(json) ? json : [],
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Earnings: CAT_EARNINGS,
       "5G & Network": (h) => /5g|network|spectrum|firstnet|fiber|wireless|broadband/i.test(h),
       Partnerships: (h) => /partner|agreement|contract|award|select|deal|alliance/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|dividend|buyback/i.test(h),
-      "Capital Markets": (h) => /notes|offering|convert|shares|capital|repurchase|debt|\$\d/i.test(h),
+      Corporate: CAT_CORPORATE_DIV_BUYBACK,
+      "Capital Markets": CAT_CAPITAL_MARKETS,
     },
   },
   {
@@ -251,8 +241,8 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "emerald",
     color: "#34D399",
     colorDim: "rgba(52,211,153,0.15)",
-    sourceFilter: () => true,
-    headlineFilter: () => true,
+    sourceFilter: () => true as const,
+    headlineFilter: () => true as const,
     parseResponse: (json: any) => json?.news || [],
     categories: {
       Satellite: (h) => /satellite|kuiper|leo|orbit|launch|space|constellation/i.test(h),
@@ -268,14 +258,12 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "amber",
     color: "#F59E0B",
     colorDim: "rgba(245,158,11,0.15)",
-    sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for strategy/microstrategy
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Earnings: CAT_EARNINGS,
       Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury|hodl|acquisition/i.test(h),
       Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|name change|rebrand/i.test(h),
-      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+      "Capital Markets": CAT_CAPITAL_MARKETS_ATM,
     },
   },
   {
@@ -285,15 +273,13 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "lime",
     color: "#84CC16",
     colorDim: "rgba(132,204,22,0.15)",
-    sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for marathon/mara
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Earnings: CAT_EARNINGS,
       Mining: (h) => /mining|hash|hashrate|exahash|block|mined|production|energize/i.test(h),
-      Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
-      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+      Bitcoin: CAT_BITCOIN,
+      Corporate: CAT_CORPORATE,
+      "Capital Markets": CAT_CAPITAL_MARKETS_ATM,
     },
   },
   {
@@ -303,15 +289,13 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "red",
     color: "#EF4444",
     colorDim: "rgba(239,68,68,0.15)",
-    sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for riot
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
-      Mining: (h) => /mining|hash|hashrate|exahash|block|mined|production|megawatt|facility/i.test(h),
-      Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
-      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+      Earnings: CAT_EARNINGS,
+      Mining: CAT_MINING,
+      Bitcoin: CAT_BITCOIN,
+      Corporate: CAT_CORPORATE,
+      "Capital Markets": CAT_CAPITAL_MARKETS_ATM,
     },
   },
   {
@@ -321,15 +305,13 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "green",
     color: "#22C55E",
     colorDim: "rgba(34,197,94,0.15)",
-    sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for cleanspark
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
-      Mining: (h) => /mining|hash|hashrate|exahash|block|mined|production|megawatt|facility/i.test(h),
-      Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
-      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+      Earnings: CAT_EARNINGS,
+      Mining: CAT_MINING,
+      Bitcoin: CAT_BITCOIN,
+      Corporate: CAT_CORPORATE,
+      "Capital Markets": CAT_CAPITAL_MARKETS_ATM,
     },
   },
   {
@@ -339,15 +321,13 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "stone",
     color: "#A8A29E",
     colorDim: "rgba(168,162,158,0.15)",
-    sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for "hut 8"
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
-      Mining: (h) => /mining|hash|hashrate|exahash|block|mined|production|megawatt|facility|data\s*center/i.test(h),
-      Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
-      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+      Earnings: CAT_EARNINGS,
+      Mining: CAT_MINING_DC,
+      Bitcoin: CAT_BITCOIN,
+      Corporate: CAT_CORPORATE,
+      "Capital Markets": CAT_CAPITAL_MARKETS_ATM,
     },
   },
   {
@@ -357,15 +337,13 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "teal",
     color: "#2DD4BF",
     colorDim: "rgba(45,212,191,0.15)",
-    sourceFilter: () => true,
-    headlineFilter: () => true,
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
-      Mining: (h) => /mining|hash|hashrate|exahash|block|mined|production|megawatt|facility|data\s*center/i.test(h),
-      Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
-      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+      Earnings: CAT_EARNINGS,
+      Mining: CAT_MINING_DC,
+      Bitcoin: CAT_BITCOIN,
+      Corporate: CAT_CORPORATE,
+      "Capital Markets": CAT_CAPITAL_MARKETS_ATM,
     },
   },
   {
@@ -375,14 +353,12 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "indigo",
     color: "#818CF8",
     colorDim: "rgba(129,140,248,0.15)",
-    sourceFilter: () => true,
-    headlineFilter: () => true,
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Earnings: CAT_EARNINGS,
       "AI & Cloud": (h) => /\bai\b|artificial|cloud|gpu|compute|inference|training|model|data\s*center/i.test(h),
       Product: (h) => /launch|platform|product|service|partner|integrat|sdk|api/i.test(h),
-      Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo/i.test(h),
+      Corporate: CAT_CORPORATE,
       "Capital Markets": (h) => /notes|offering|convert|shares|capital|ipo|stock|debt|\$\d/i.test(h),
     },
   },
@@ -393,11 +369,9 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "purple",
     color: "#A855F7",
     colorDim: "rgba(168,85,247,0.15)",
-    sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for forum/ethzilla
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Earnings: CAT_EARNINGS,
       Tokenization: (h) => /token|rwa|real.world|aviation|loan|portfolio|securit/i.test(h),
       Ethereum: (h) => /eth|ethereum|staking|crypto|digital asset|blockchain|treasury|validator/i.test(h),
       Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|name change|rebrand|forum|ethzilla/i.test(h),
@@ -411,11 +385,9 @@ const FEED_CONFIGS: FeedConfig[] = [
     accent: "blue",
     color: "#3B82F6",
     colorDim: "rgba(59,130,246,0.15)",
-    sourceFilter: () => true,  // API pre-filters
-    headlineFilter: () => true,  // API pre-filters for coinbase
-    parseResponse: (json) => Array.isArray(json) ? json : json?.results?.news?.[0]?.newsitem || [],
+    ...QM_DEFAULTS,
     categories: {
-      Earnings: (h) => /earnings|results|revenue|q[1-4]\s*20\d\d|financial/i.test(h),
+      Earnings: CAT_EARNINGS,
       Exchange: (h) => /exchange|trading|listing|delist|custody|staking|base\b|layer\s*2/i.test(h),
       Regulatory: (h) => /sec|regulat|compliance|license|legal|lawsuit|settlement|approval/i.test(h),
       Corporate: (h) => /acqui|merger|board|director|appoint|officer|ceo|cfo|partnership/i.test(h),
@@ -615,10 +587,10 @@ const FEED_CONFIGS: FeedConfig[] = [
     ...QM_DEFAULTS,
     categories: {
       Earnings: CAT_EARNINGS,
-      Mining: (h) => /mining|hash|hashrate|exahash|block|mined|production|megawatt|facility|data\s*center/i.test(h),
-      Bitcoin: (h) => /bitcoin|btc|digital asset|crypto|treasury/i.test(h),
+      Mining: CAT_MINING_DC,
+      Bitcoin: CAT_BITCOIN,
       Corporate: CAT_CORPORATE,
-      "Capital Markets": (h) => /notes|offering|convert|shares|capital|atm|stock|debt|\$\d/i.test(h),
+      "Capital Markets": CAT_CAPITAL_MARKETS_ATM,
     },
   },
   // ─── Financial Services ───
