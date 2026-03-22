@@ -2,7 +2,14 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { stocks, INTELLIGENCE_TICKERS } from "@/lib/stocks";
-import "./sec-intelligence.css";
+import IntelligenceShell, {
+  type IxKpi,
+  type IxStockStat,
+  type IxTickerPill,
+  type IxTypeTab,
+  type IxCardItem,
+} from "@/components/shared/IntelligenceShell";
+import "./sec-feed.css";
 
 /** Sorted ticker list — single source of truth for display order in both pages */
 const SORTED_TICKERS = [...INTELLIGENCE_TICKERS].sort((a, b) => a.localeCompare(b));
@@ -329,412 +336,240 @@ export default function SecIntelligencePage() {
   const hasErrors = data?.errors && Object.keys(data.errors).length > 0;
   const isEmpty = !loading && data?.filings?.length === 0 && !hasErrors;
 
-  return (
-    <div className="si-app">
-      {/* ── Sticky Header ── */}
-      <div className="si-header">
-        <div className="si-title-row">
-          <div className="si-brand">
-            <div className="si-pulse" />
-            <div>
-              <div className="si-title">SEC Intelligence</div>
-              <div className="si-subtitle">EDGAR filings feed &middot; DB-first</div>
-            </div>
-          </div>
+  /* ── Build IntelligenceShell props ── */
 
-          <div className="si-controls">
-            <div className="si-search-wrap">
-              <span className="si-search-icon">/</span>
-              <input
-                className="si-search"
-                type="text"
-                placeholder="Search filings..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+  const kpis: IxKpi[] = [
+    { value: stats.total, label: "Total" },
+    { value: stats.today, label: "Today" },
+    { value: stats.thisMonth, label: "This Month" },
+    { value: stats.thisYear, label: "This Year" },
+    { value: stats.latest, label: "Latest", small: true },
+    ...(stats.newFilings > 0
+      ? [{ value: stats.newFilings, label: "Unseen", valueColor: "var(--violet, #A78BFA)" } as IxKpi]
+      : []),
+  ];
 
-            <div className="si-days-group">
-              {DAYS_OPTIONS.map((opt) => (
-                <button
-                  key={opt.days}
-                  className="si-days-btn"
-                  data-active={daysFilter === opt.days}
-                  onClick={() => setDaysFilter(opt.days)}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+  const stockStats: IxStockStat[] = allTickers.map((ticker) => ({
+    ticker,
+    count: stats.perStock[ticker] || 0,
+    onClick: () => setActiveTicker(activeTicker === ticker ? "ALL" : ticker),
+  }));
 
-            <button className="si-refresh-btn" onClick={handleRefresh} disabled={refreshing}>
-              <span className="si-refresh-icon" data-spinning={refreshing ? "true" : undefined}>
-                &#x27F3;
-              </span>
-              Fetch Filings
-            </button>
-          </div>
-        </div>
+  const tickerPills: IxTickerPill[] = allTickers.map((ticker) => ({
+    ticker,
+  }));
 
-        {/* ── KPI Strip (matches Press Intelligence layout) ── */}
-        {!loading && (
-          <div className="si-kpi-strip">
-            <div className="si-kpi">
-              <span className="si-kpi-value">{stats.total}</span>
-              <span className="si-kpi-label">Total</span>
+  const typeTabs: IxTypeTab[] = [
+    { key: "All", label: "All" },
+    ...activeFormFilters.map((ff) => ({
+      key: ff.key,
+      label: ff.label,
+      count: ff.count,
+    })),
+  ];
+
+  const resultText = filteredFilings.length > 0 ? (
+    <>
+      <strong>{(page - 1) * PAGE_SIZE + 1}&ndash;{Math.min(page * PAGE_SIZE, filteredFilings.length)}</strong> of {filteredFilings.length} filings
+      {activeTicker !== "ALL" && <> &middot; {activeTicker}</>}
+      {activeForm !== "All" && <> &middot; {activeForm}</>}
+      {searchQuery && <> &middot; &ldquo;{searchQuery}&rdquo;</>}
+    </>
+  ) : undefined;
+
+  const items: IxCardItem[] = pagedFilings.map((filing) => {
+    const id = `${filing.ticker}:${filing.accessionNumber}`;
+    const companyName = data?.tickerStats[filing.ticker]?.companyName || filing.ticker;
+    const formCategory = getFormCategory(filing.form);
+    const isNew = !filing.dismissed && !dismissedLocal.has(id);
+
+    return {
+      id,
+      ticker: filing.ticker,
+      accent: undefined,
+      title: filing.primaryDocDescription || filing.form,
+      badge: <span className="ix-form-badge" data-form={formCategory}>{filing.form}</span>,
+      source: companyName,
+      date: formatDate(filing.filingDate),
+      isNew,
+      onDismiss: () => handleDismiss(filing),
+      expandContent: (
+        <>
+          <div className="ix-card-body">
+            <div className="ix-card-detail-row">
+              <span className="ix-card-detail-label">Company</span>
+              <span className="ix-card-detail-value">{companyName}</span>
             </div>
-            <div className="si-kpi">
-              <span className="si-kpi-value">{stats.today}</span>
-              <span className="si-kpi-label">Today</span>
+            <div className="ix-card-detail-row">
+              <span className="ix-card-detail-label">Form Type</span>
+              <span className="ix-card-detail-value">{filing.form}</span>
             </div>
-            <div className="si-kpi">
-              <span className="si-kpi-value">{stats.thisMonth}</span>
-              <span className="si-kpi-label">This Month</span>
+            <div className="ix-card-detail-row">
+              <span className="ix-card-detail-label">Filed</span>
+              <span className="ix-card-detail-value">{formatDate(filing.filingDate)}</span>
             </div>
-            <div className="si-kpi">
-              <span className="si-kpi-value">{stats.thisYear}</span>
-              <span className="si-kpi-label">This Year</span>
-            </div>
-            <div className="si-kpi">
-              <span className="si-kpi-value si-kpi-value-sm">{stats.latest}</span>
-              <span className="si-kpi-label">Latest</span>
-            </div>
-            {stats.newFilings > 0 && (
-              <div className="si-kpi">
-                <span className="si-kpi-value" style={{ color: 'var(--violet, #A78BFA)' }}>{stats.newFilings}</span>
-                <span className="si-kpi-label">Unseen</span>
+            {filing.reportDate && (
+              <div className="ix-card-detail-row">
+                <span className="ix-card-detail-label">Period</span>
+                <span className="ix-card-detail-value">{formatDate(filing.reportDate)}</span>
               </div>
             )}
-
-            {/* Per-stock counts (same layout as Press Intelligence) */}
-            <div className="si-stock-summary-wrap">
-              <div className="si-stock-summary">
-                {allTickers.map((ticker) => (
-                  <div
-                    key={ticker}
-                    className="si-stock-stat"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => setActiveTicker(activeTicker === ticker ? "ALL" : ticker)}
-                  >
-                    <span className="si-stock-stat-count">
-                      {stats.perStock[ticker] || 0}
-                    </span>
-                    <span className="si-stock-stat-label">{ticker}</span>
-                  </div>
-                ))}
-              </div>
+            <div className="ix-card-detail-row">
+              <span className="ix-card-detail-label">Accession</span>
+              <span className="ix-card-detail-value">{filing.accessionNumber}</span>
             </div>
           </div>
-        )}
-
-        {/* ── Filter Panel ── */}
-        <div className="si-filter-panel">
-          <div className="si-filter-group">
-            <span className="si-filter-group-label">Stock</span>
-            <button
-              className="si-stock-pill"
-              data-active={activeTicker === "ALL"}
-              onClick={() => setActiveTicker("ALL")}
+          <div className="ix-card-actions">
+            <a
+              href={filing.fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ix-card-link"
+              onClick={(e) => e.stopPropagation()}
             >
-              ALL
-            </button>
-            {allTickers.map((ticker) => (
-              <button
-                key={ticker}
-                className="si-stock-pill"
-                data-active={activeTicker === ticker}
-                onClick={() => setActiveTicker(ticker)}
-              >
-                {ticker}
-              </button>
-            ))}
+              &#x2197; View Filing on SEC
+            </a>
+            <a
+              href={`/research/${filing.ticker}`}
+              className="ix-card-link"
+              onClick={(e) => e.stopPropagation()}
+            >
+              &#x2192; {stocks[filing.ticker]?.name || filing.ticker} Research
+            </a>
           </div>
+        </>
+      ),
+    };
+  });
 
-          <div className="si-divider" />
+  const timestampText = data?.fetchedAt
+    ? `Last updated ${new Date(data.fetchedAt).toLocaleTimeString()} \u00b7 ${filteredFilings.length} of ${data.totalCount} filings${data.mode === "db" ? " (from database)" : ""}`
+    : undefined;
 
-          <div className="si-filter-group">
-            <span className="si-filter-group-label">Form</span>
-            <button
-              className="si-form-tab"
-              data-active={activeForm === "All"}
-              onClick={() => setActiveForm("All")}
-            >
-              All
-            </button>
-            {activeFormFilters.map((ff) => (
-              <button
-                key={ff.key}
-                className="si-form-tab"
-                data-active={activeForm === ff.key}
-                onClick={() => setActiveForm(activeForm === ff.key ? "All" : ff.key)}
-              >
-                {ff.label}
-                <span className="si-filter-count">{ff.count}</span>
-              </button>
-            ))}
-          </div>
-
-          {(activeTicker !== "ALL" || activeForm !== "All" || searchQuery) && (
-            <button
-              className="si-filter-clear"
-              onClick={() => { setActiveTicker("ALL"); setActiveForm("All"); setSearchQuery(""); }}
-            >
-              Clear
-            </button>
-          )}
-        </div>
+  const methodologySection = (
+    <div className="ix-methodology">
+      <div
+        className="ix-methodology-header"
+        onClick={() => setMethodologyOpen(prev => !prev)}
+        role="button"
+        tabIndex={0}
+        aria-expanded={methodologyOpen}
+        onKeyDown={(e) => e.key === "Enter" && setMethodologyOpen(prev => !prev)}
+      >
+        <span className="ix-methodology-label">Methodology</span>
+        <span className="ix-methodology-toggle">{methodologyOpen ? "\u2212" : "+"}</span>
       </div>
-
-      {/* ── Feed ── */}
-      <div className="si-feed">
-        {/* Result bar */}
-        {!loading && filteredFilings.length > 0 && (
-          <div className="si-result-bar">
-            <span className="si-result-count">
-              <strong>{(page - 1) * PAGE_SIZE + 1}&ndash;{Math.min(page * PAGE_SIZE, filteredFilings.length)}</strong> of {filteredFilings.length} filings
-              {activeTicker !== "ALL" && <> &middot; {activeTicker}</>}
-              {activeForm !== "All" && <> &middot; {activeForm}</>}
-              {searchQuery && <> &middot; &ldquo;{searchQuery}&rdquo;</>}
-            </span>
+      {methodologyOpen && (
+        <div className="ix-methodology-body">
+          {/* DB-First Architecture */}
+          <div className="ix-method-section-title">DB-First Architecture</div>
+          <div className="ix-method-flow">
+            <div className="ix-method-node">Page loads</div>
+            <div className="ix-method-arrow" />
+            <div className="ix-method-node ix-method-node-accent">GET /api/sec-intelligence?mode=db</div>
+            <div className="ix-method-arrow" />
+            <div className="ix-method-node">Load all filings from seen_filings table (Neon PostgreSQL)</div>
+            <div className="ix-method-arrow" />
+            <div className="ix-method-highlight">Render from DB &mdash; no SEC API calls on mount</div>
           </div>
-        )}
-
-        {/* Loading skeletons */}
-        {loading && Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="si-skeleton" />
-        ))}
-
-        {/* Empty state — no data in DB yet */}
-        {isEmpty && (
-          <div className="si-empty">
-            No filings in database yet. Click <strong>Fetch Filings</strong> to load from SEC EDGAR.
+          <div className="ix-method-details">
+            <div><span className="ix-method-key">Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_filings table (shared with per-stock Edgar tabs)</div>
+            <div><span className="ix-method-key">Tickers:</span> INTELLIGENCE_TICKERS from src/lib/stocks.ts &mdash; single source of truth, alphabetical order</div>
+            <div><span className="ix-method-key">Self-healing:</span> ensureTable() creates seen_filings + indexes on first request</div>
           </div>
-        )}
 
-        {/* Errors */}
-        {!loading && hasErrors && (
-          <div className="si-errors-wrap">
-            {Object.entries(data!.errors!).map(([ticker, msg]) => (
-              <div key={ticker} className="si-empty si-error-item">
-                <span className="si-error">{ticker}: {msg}</span>
-              </div>
-            ))}
+          <div className="ix-method-divider" />
+
+          {/* Fetch Pipeline */}
+          <div className="ix-method-section-title">Fetch Pipeline (Refresh)</div>
+          <div className="ix-method-flow">
+            <div className="ix-method-node ix-method-node-accent">Fetch Filings button</div>
+            <div className="ix-method-arrow" />
+            <div className="ix-method-node">GET /api/sec-intelligence?mode=refresh</div>
+            <div className="ix-method-arrow" />
+            <div className="ix-method-node">Resolve CIK per ticker (shared cik-map.ts + dynamic fallback)</div>
+            <div className="ix-method-arrow" />
+            <div className="ix-method-node">Fetch SEC EDGAR submissions API (data.sec.gov/submissions/CIK&#123;cik&#125;.json)</div>
+            <div className="ix-method-arrow" />
+            <div className="ix-method-node">Upsert to seen_filings &mdash; preserves dismissed, hidden, status, crossRefs</div>
+            <div className="ix-method-arrow" />
+            <div className="ix-method-highlight">New filings get NEW badge (dismissed=false)</div>
           </div>
-        )}
-
-        {/* No results for current filters */}
-        {!loading && !isEmpty && !hasErrors && filteredFilings.length === 0 && (
-          <div className="si-empty">
-            {searchQuery ? `No filings matching "${searchQuery}"` : "No filings match current filters"}
+          <div className="ix-method-details">
+            <div><span className="ix-method-key">CIK source:</span> shared src/lib/cik-map.ts (55+ entries) with dynamic fallback from SEC company_tickers.json</div>
+            <div><span className="ix-method-key">Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites form, filingDate, description, reportDate, fileUrl; NEVER overwrites dismissed, hidden, status, crossRefs</div>
+            <div><span className="ix-method-key">NEW badge:</span> dismissed=false for filings not previously in DB; dismissed via POST /api/seen-filings when user clicks badge</div>
+            <div><span className="ix-method-key">Concurrency:</span> all tickers fetched in parallel via Promise.allSettled</div>
           </div>
-        )}
 
-        {/* Filing cards */}
-        {!loading && pagedFilings.map((filing) => {
-          const id = `${filing.ticker}:${filing.accessionNumber}`;
-          const expanded = expandedId === id;
-          const companyName = data?.tickerStats[filing.ticker]?.companyName || filing.ticker;
-          const formCategory = getFormCategory(filing.form);
-          const isNew = !filing.dismissed && !dismissedLocal.has(id);
+          <div className="ix-method-divider" />
 
-          return (
-            <div
-              key={id}
-              className="si-card"
-              data-expanded={expanded}
-              onClick={() => setExpandedId(expanded ? null : id)}
-            >
-              <div className="si-card-inner">
-                <div className="si-card-top">
-                  <span className="si-card-ticker">{filing.ticker}</span>
-                  <span className="si-card-form" data-form={formCategory}>
-                    {filing.form}
-                  </span>
-                  <span className="si-card-description">
-                    {filing.primaryDocDescription || filing.form}
-                  </span>
-                  <div className="si-card-meta">
-                    <span className="si-card-company">{companyName}</span>
-                    <span className="si-card-date">{formatDate(filing.filingDate)}</span>
-                    {isNew && (
-                      <span
-                        className="si-new-badge"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDismiss(filing);
-                        }}
-                        title="Click to mark as seen"
-                      >
-                        NEW
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {expanded && (
-                <div className="si-card-expand">
-                  <div className="si-card-details">
-                    <div className="si-card-detail-row">
-                      <span className="si-card-detail-label">Company</span>
-                      <span className="si-card-detail-value">{companyName}</span>
-                    </div>
-                    <div className="si-card-detail-row">
-                      <span className="si-card-detail-label">Form Type</span>
-                      <span className="si-card-detail-value">{filing.form}</span>
-                    </div>
-                    <div className="si-card-detail-row">
-                      <span className="si-card-detail-label">Filed</span>
-                      <span className="si-card-detail-value">{formatDate(filing.filingDate)}</span>
-                    </div>
-                    {filing.reportDate && (
-                      <div className="si-card-detail-row">
-                        <span className="si-card-detail-label">Period</span>
-                        <span className="si-card-detail-value">{formatDate(filing.reportDate)}</span>
-                      </div>
-                    )}
-                    <div className="si-card-detail-row">
-                      <span className="si-card-detail-label">Accession</span>
-                      <span className="si-card-detail-value">{filing.accessionNumber}</span>
-                    </div>
-                  </div>
-                  <div className="si-card-actions">
-                    <a
-                      href={filing.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="si-card-link"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      &#x2197; View Filing on SEC
-                    </a>
-                    <a
-                      href={`/research/${filing.ticker}`}
-                      className="si-card-link"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      &#x2192; {stocks[filing.ticker]?.name || filing.ticker} Research
-                    </a>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-
-        {/* Pagination */}
-        {!loading && totalPages > 1 && (
-          <div className="si-pagination">
-            <button
-              className="si-page-btn"
-              disabled={page <= 1}
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-            >
-              &larr; Prev
-            </button>
-            <span className="si-page-info">
-              Page {page} of {totalPages}
-            </span>
-            <button
-              className="si-page-btn"
-              disabled={page >= totalPages}
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            >
-              Next &rarr;
-            </button>
+          {/* Shared Data */}
+          <div className="ix-method-section-title">Shared Data with Edgar Tab</div>
+          <div className="ix-method-details">
+            <div><span className="ix-method-key">Same table:</span> seen_filings keyed by (ticker, accession_number) &mdash; lowercase tickers</div>
+            <div><span className="ix-method-key">Edgar tab fetch:</span> routes through /api/sec-intelligence?mode=refresh&amp;ticker=X (same API, single EDGAR fetch path)</div>
+            <div><span className="ix-method-key">Edgar enrichment:</span> Edgar tab runs matchFilings() locally, saves status + crossRefs back to DB without overwriting other fields</div>
+            <div><span className="ix-method-key">No data loss:</span> upsert preserves all Edgar tab state (status, crossRefs, dismissed, hidden) during SEC Intelligence refreshes</div>
           </div>
-        )}
 
-        {/* Timestamp */}
-        {data?.fetchedAt && !loading && (
-          <div className="si-timestamp">
-            Last updated {new Date(data.fetchedAt).toLocaleTimeString()} &middot; {filteredFilings.length} of {data.totalCount} filings
-            {data.mode === "db" && " (from database)"}
+          <div className="ix-method-divider" />
+
+          {/* Filters */}
+          <div className="ix-method-section-title">Client-Side Filters</div>
+          <div className="ix-method-details">
+            <div><span className="ix-method-key">Ticker pills:</span> dynamic &mdash; only shows tickers that have filings in current result set</div>
+            <div><span className="ix-method-key">Form filters:</span> 11 granular categories (8-K, 10-Q, 10-K, Form 4, Schedule 13, DEF 14A, S-1/S-3, Form 3/5, Form 144, Form D, Other) with normalizeForm() matching</div>
+            <div><span className="ix-method-key">Date filter:</span> 7d / 30d / 90d / All &mdash; server-side via days param on API</div>
+            <div><span className="ix-method-key">Search:</span> client-side text match against description, form, and ticker</div>
+            <div><span className="ix-method-key">Pagination:</span> 20 filings per page, resets on any filter change</div>
           </div>
-        )}
-
-        {/* ── Methodology ── */}
-        <div className="si-methodology">
-          <div
-            className="si-methodology-header"
-            onClick={() => setMethodologyOpen(prev => !prev)}
-            role="button"
-            tabIndex={0}
-            aria-expanded={methodologyOpen}
-            onKeyDown={(e) => e.key === "Enter" && setMethodologyOpen(prev => !prev)}
-          >
-            <span className="si-methodology-label">Methodology</span>
-            <span className="si-methodology-toggle">{methodologyOpen ? "\u2212" : "+"}</span>
-          </div>
-          {methodologyOpen && (
-            <div className="si-methodology-body">
-              {/* DB-First Architecture */}
-              <div className="si-method-section-title">DB-First Architecture</div>
-              <div className="si-method-flow">
-                <div className="si-method-node">Page loads</div>
-                <div className="si-method-arrow" />
-                <div className="si-method-node si-method-node-accent">GET /api/sec-intelligence?mode=db</div>
-                <div className="si-method-arrow" />
-                <div className="si-method-node">Load all filings from seen_filings table (Neon PostgreSQL)</div>
-                <div className="si-method-arrow" />
-                <div className="si-method-highlight">Render from DB &mdash; no SEC API calls on mount</div>
-              </div>
-              <div className="si-method-details">
-                <div><span className="si-method-key">Storage:</span> Neon PostgreSQL via Drizzle ORM &rarr; seen_filings table (shared with per-stock Edgar tabs)</div>
-                <div><span className="si-method-key">Tickers:</span> INTELLIGENCE_TICKERS from src/lib/stocks.ts &mdash; single source of truth, alphabetical order</div>
-                <div><span className="si-method-key">Self-healing:</span> ensureTable() creates seen_filings + indexes on first request</div>
-              </div>
-
-              <div className="si-method-divider" />
-
-              {/* Fetch Pipeline */}
-              <div className="si-method-section-title">Fetch Pipeline (Refresh)</div>
-              <div className="si-method-flow">
-                <div className="si-method-node si-method-node-accent">Fetch Filings button</div>
-                <div className="si-method-arrow" />
-                <div className="si-method-node">GET /api/sec-intelligence?mode=refresh</div>
-                <div className="si-method-arrow" />
-                <div className="si-method-node">Resolve CIK per ticker (shared cik-map.ts + dynamic fallback)</div>
-                <div className="si-method-arrow" />
-                <div className="si-method-node">Fetch SEC EDGAR submissions API (data.sec.gov/submissions/CIK&#123;cik&#125;.json)</div>
-                <div className="si-method-arrow" />
-                <div className="si-method-node">Upsert to seen_filings &mdash; preserves dismissed, hidden, status, crossRefs</div>
-                <div className="si-method-arrow" />
-                <div className="si-method-highlight">New filings get NEW badge (dismissed=false)</div>
-              </div>
-              <div className="si-method-details">
-                <div><span className="si-method-key">CIK source:</span> shared src/lib/cik-map.ts (55+ entries) with dynamic fallback from SEC company_tickers.json</div>
-                <div><span className="si-method-key">Upsert:</span> ON CONFLICT DO UPDATE &mdash; overwrites form, filingDate, description, reportDate, fileUrl; NEVER overwrites dismissed, hidden, status, crossRefs</div>
-                <div><span className="si-method-key">NEW badge:</span> dismissed=false for filings not previously in DB; dismissed via POST /api/seen-filings when user clicks badge</div>
-                <div><span className="si-method-key">Concurrency:</span> all tickers fetched in parallel via Promise.allSettled</div>
-              </div>
-
-              <div className="si-method-divider" />
-
-              {/* Shared Data */}
-              <div className="si-method-section-title">Shared Data with Edgar Tab</div>
-              <div className="si-method-details">
-                <div><span className="si-method-key">Same table:</span> seen_filings keyed by (ticker, accession_number) &mdash; lowercase tickers</div>
-                <div><span className="si-method-key">Edgar tab fetch:</span> routes through /api/sec-intelligence?mode=refresh&amp;ticker=X (same API, single EDGAR fetch path)</div>
-                <div><span className="si-method-key">Edgar enrichment:</span> Edgar tab runs matchFilings() locally, saves status + crossRefs back to DB without overwriting other fields</div>
-                <div><span className="si-method-key">No data loss:</span> upsert preserves all Edgar tab state (status, crossRefs, dismissed, hidden) during SEC Intelligence refreshes</div>
-              </div>
-
-              <div className="si-method-divider" />
-
-              {/* Filters */}
-              <div className="si-method-section-title">Client-Side Filters</div>
-              <div className="si-method-details">
-                <div><span className="si-method-key">Ticker pills:</span> dynamic &mdash; only shows tickers that have filings in current result set</div>
-                <div><span className="si-method-key">Form filters:</span> 11 granular categories (8-K, 10-Q, 10-K, Form 4, Schedule 13, DEF 14A, S-1/S-3, Form 3/5, Form 144, Form D, Other) with normalizeForm() matching</div>
-                <div><span className="si-method-key">Date filter:</span> 7d / 30d / 90d / All &mdash; server-side via days param on API</div>
-                <div><span className="si-method-key">Search:</span> client-side text match against description, form, and ticker</div>
-                <div><span className="si-method-key">Pagination:</span> 20 filings per page, resets on any filter change</div>
-              </div>
-            </div>
-          )}
         </div>
-      </div>
+      )}
     </div>
+  );
+
+  return (
+    <IntelligenceShell
+      accentColor="#A78BFA"
+      accentDim="rgba(167,139,250,0.15)"
+      title="SEC Intelligence"
+      subtitle="EDGAR filings feed &middot; DB-first"
+      searchPlaceholder="Search filings..."
+      searchQuery={searchQuery}
+      onSearchChange={setSearchQuery}
+      daysFilter={daysFilter}
+      onDaysChange={setDaysFilter}
+      daysOptions={DAYS_OPTIONS}
+      refreshing={refreshing}
+      onRefresh={handleRefresh}
+      refreshLabel="Fetch Filings"
+      loading={loading}
+      kpis={kpis}
+      stockStats={stockStats}
+      tickers={tickerPills}
+      activeTicker={activeTicker}
+      onTickerChange={setActiveTicker}
+      typeTabs={typeTabs}
+      activeType={activeForm}
+      onTypeChange={(key) => setActiveForm(activeForm === key && key !== "All" ? "All" : key)}
+      typeLabel="Form"
+      showClear={activeTicker !== "ALL" || activeForm !== "All" || !!searchQuery}
+      onClear={() => { setActiveTicker("ALL"); setActiveForm("All"); setSearchQuery(""); }}
+      resultText={resultText}
+      items={items}
+      expandedId={expandedId}
+      onExpandToggle={setExpandedId}
+      page={page}
+      totalPages={totalPages}
+      onPageChange={setPage}
+      timestampText={timestampText}
+      isEmpty={isEmpty}
+      emptyText='No filings in database yet. Click "Fetch Filings" to load from SEC EDGAR.'
+      errors={data?.errors}
+      noResults={!isEmpty && !hasErrors && filteredFilings.length === 0}
+      noResultsText={searchQuery ? `No filings matching "${searchQuery}"` : "No filings match current filters"}
+      afterFeed={methodologySection}
+    />
   );
 }

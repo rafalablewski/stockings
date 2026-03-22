@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { stocks, stockList, INTELLIGENCE_TICKERS } from "@/lib/stocks";
-import "./press-intelligence.css";
+import IntelligenceShell from "@/components/shared/IntelligenceShell";
+import type { IxKpi, IxStockStat, IxTickerPill, IxTypeTab, IxCardItem } from "@/components/shared/IntelligenceShell";
+import "./press-feed.css";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    STOCK FEED CONFIGURATION
@@ -1340,441 +1342,260 @@ export default function PressIntelligencePage() {
   /* ── Has errors? ── */
   const hasErrors = Object.keys(errors).length > 0;
 
-  return (
-    <div className="pi-app">
-      {/* ── Sticky Header ── */}
-      <div className="pi-header">
-        <div className="pi-title-row">
-          <div className="pi-brand">
-            <div className="pi-pulse" />
-            <div>
-              <div className="pi-title">Press Intelligence</div>
-              <div className="pi-subtitle">Real-time wire feed</div>
-            </div>
+  /* ── Build IntelligenceShell props ── */
+
+  const kpis: IxKpi[] = [
+    { value: stats.total, label: "Total" },
+    { value: stats.today, label: "Today" },
+    { value: stats.thisMonth, label: "This Month" },
+    { value: stats.thisYear, label: "This Year" },
+    { value: stats.latest, label: "Latest", small: true },
+  ];
+
+  const stockStatItems: IxStockStat[] = FEED_CONFIGS_SORTED.map((cfg) => ({
+    ticker: cfg.ticker,
+    count: stats.perStock[cfg.ticker] || 0,
+    accent: cfg.accent,
+    grade: cfg.grade,
+    onClick: () => openMethodology(cfg.ticker),
+  }));
+
+  const tickerPills: IxTickerPill[] = FEED_CONFIGS_SORTED.map((cfg) => ({
+    ticker: cfg.ticker,
+    accent: cfg.accent,
+    grade: cfg.grade,
+  }));
+
+  const typeTabs: IxTypeTab[] = ALL_CATEGORIES.map((cat) => ({
+    key: cat,
+    label: cat,
+    ...(activeCategory === cat && cat !== "All" ? { count: visibleItems.length } : {}),
+  }));
+
+  const cardItems: IxCardItem[] = pagedItems.map((item) => {
+    const id = `${item._ticker}-${normalizeHeadline(item.headline || item.title || "")}`;
+    const headline = item.headline || item.title || "";
+    const summary = item.summary || (item as any).qmsummary || item.description || "";
+    const date = formatDate(item.datetime);
+    const time = formatTime(item.datetime);
+    const source = (item.source || "").split(" ").slice(0, 2).join(" ");
+    const cfg = item._config;
+    const permalink = (item as any).permalink || (item as any).storyurl || "";
+    const link = permalink && permalink.startsWith("http")
+      ? permalink
+      : `https://feeds.issuerdirect.com/news-release.html?newsid=${item.newsid || item.id}&symbol=${cfg.ticker}`;
+
+    return {
+      id,
+      ticker: cfg.ticker,
+      accent: cfg.accent,
+      title: headline,
+      source,
+      date: isToday(item.datetime) ? time : date,
+      isNew: !item._inDb,
+      expandContent: (
+        <>
+          {summary && <div className="ix-card-body">{summary}</div>}
+          <div className="ix-card-actions">
+            <a
+              href={link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ix-card-link"
+              onClick={(e) => e.stopPropagation()}
+            >
+              &#x2197; Full Release
+            </a>
+            <a
+              href={`/research/${cfg.ticker}`}
+              className="ix-card-link"
+              onClick={(e) => e.stopPropagation()}
+            >
+              &#x2192; {stocks[cfg.ticker]?.name || cfg.ticker} Research
+            </a>
           </div>
+        </>
+      ),
+    };
+  });
 
-          <div className="pi-controls">
-            <div className="pi-search-wrap">
-              <span className="pi-search-icon">/</span>
-              <input
-                className="pi-search"
-                type="text"
-                placeholder="Search headlines..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
+  const resultText = visibleItems.length > 0 ? (
+    <>
+      <strong>{(page - 1) * PAGE_SIZE + 1}&ndash;{Math.min(page * PAGE_SIZE, visibleItems.length)}</strong> of {visibleItems.length} releases
+      {activeTicker !== "ALL" && <> &middot; {activeTicker}</>}
+      {activeCategory !== "All" && <> &middot; {activeCategory}</>}
+      {searchQuery && <> &middot; &ldquo;{searchQuery}&rdquo;</>}
+    </>
+  ) : undefined;
 
-            <div className="pi-days-group">
-              {[{ days: 7, label: "7d" }, { days: 30, label: "30d" }, { days: 90, label: "90d" }, { days: 0, label: "All" }].map((opt) => (
-                <button
-                  key={opt.days}
-                  className="pi-days-btn"
-                  data-active={daysFilter === opt.days}
-                  onClick={() => setDaysFilter(opt.days)}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+  const timestampText = lastUpdated
+    ? `Last updated ${lastUpdated.toLocaleTimeString()} \u00b7 ${visibleItems.length} of ${allItems.length} releases`
+    : undefined;
 
-            <button className="pi-refresh-btn" onClick={handleRefresh} disabled={refreshing}>
-              <span className="pi-refresh-icon" data-spinning={refreshing ? "true" : undefined}>
-                &#x27F3;
-              </span>
-              Refresh
-            </button>
-          </div>
+  const methodologyModal = methodologyTicker ? (
+    <div className="ix-modal-overlay" onClick={() => setMethodologyTicker(null)}>
+      <div className="ix-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="ix-modal-header">
+          <h2 className="ix-modal-title">
+            {methodologyTicker} &mdash; Data Methodology
+          </h2>
+          <button className="ix-modal-close" onClick={() => setMethodologyTicker(null)}>
+            &times;
+          </button>
         </div>
 
-        {/* ── Refresh Log ── */}
-        {refreshLog.length > 0 && (
-          <div className="pi-refresh-log">
-            <div className="pi-refresh-log-header">
-              <span className="pi-refresh-log-title">
-                {refreshing ? "⟳ Refresh in progress..." : "✓ Refresh complete"}
-              </span>
-              {!refreshing && (
-                <button className="pi-refresh-log-close" onClick={() => setRefreshLog([])}>
-                  &times;
-                </button>
-              )}
+        {methodologyLoading && (
+          <div className="ix-modal-body">
+            <div className="ix-modal-loading">Loading methodology...</div>
+          </div>
+        )}
+
+        {!methodologyLoading && methodologyData && (
+          <div className="ix-modal-body">
+            {/* Grade & type */}
+            <div className="ix-method-section">
+              <div className="ix-method-row">
+                <span className="ix-method-label">Grade</span>
+                <span className="ix-method-value">
+                  <span className="ix-grade-dot-lg" data-grade={methodologyData.grade} />
+                  {methodologyData.grade}
+                </span>
+              </div>
+              <div className="ix-method-row">
+                <span className="ix-method-label">Fetcher Type</span>
+                <span className="ix-method-value">{methodologyData.type}</span>
+              </div>
             </div>
-            <div className="pi-refresh-log-body">
-              {refreshLog.map((entry, i) => (
-                <div key={i} className={`pi-refresh-log-entry${entry.includes("✗") ? " pi-log-error" : entry.includes("✓") ? " pi-log-success" : ""}`}>
-                  {entry}
+
+            {/* Sources */}
+            <div className="ix-method-section">
+              <h3 className="ix-method-heading">Data Sources</h3>
+              {methodologyData.sources.map((src, i) => (
+                <div key={i} className="ix-method-source">
+                  <div className="ix-method-source-header">
+                    <span className="ix-method-source-name">{src.name}</span>
+                    <span className="ix-method-source-type" data-type={src.type}>
+                      {src.type}
+                    </span>
+                  </div>
+                  <div className="ix-method-source-detail">{src.detail}</div>
+                  {src.sourceFilter && (
+                    <div className="ix-method-source-detail">
+                      <strong>Source filter:</strong> {src.sourceFilter}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
-          </div>
-        )}
 
-        {/* ── KPI Strip ── */}
-        {!loading && (
-          <div className="pi-kpi-strip">
-            <div className="pi-kpi">
-              <span className="pi-kpi-value">{stats.total}</span>
-              <span className="pi-kpi-label">Total</span>
-            </div>
-            <div className="pi-kpi">
-              <span className="pi-kpi-value">{stats.today}</span>
-              <span className="pi-kpi-label">Today</span>
-            </div>
-            <div className="pi-kpi">
-              <span className="pi-kpi-value">{stats.thisMonth}</span>
-              <span className="pi-kpi-label">This Month</span>
-            </div>
-            <div className="pi-kpi">
-              <span className="pi-kpi-value">{stats.thisYear}</span>
-              <span className="pi-kpi-label">This Year</span>
-            </div>
-            <div className="pi-kpi">
-              <span className="pi-kpi-value pi-kpi-value-sm">{stats.latest}</span>
-              <span className="pi-kpi-label">Latest</span>
-            </div>
-
-            {/* Per-stock counts — click to open methodology */}
-            <div className="pi-stock-summary-wrap">
-              <div className="pi-stock-summary">
-                {FEED_CONFIGS_SORTED.map((cfg) => (
-                  <div
-                    key={cfg.ticker}
-                    className="pi-stock-stat pi-stock-stat-clickable"
-                    data-grade={cfg.grade}
-                    onClick={() => openMethodology(cfg.ticker)}
-                    title={`Click for ${cfg.ticker} methodology`}
-                  >
-                    <span className="pi-stock-dot" data-accent={cfg.accent} />
-                    <span className="pi-stock-stat-count">{stats.perStock[cfg.ticker] || 0}</span>
-                    <span className="pi-stock-stat-label">{cfg.ticker}</span>
-                    <span className="pi-grade-dot" data-grade={cfg.grade} title={`Grade ${cfg.grade}`} />
-                  </div>
-                ))}
+            {/* Headline filter */}
+            {methodologyData.headlineFilter && (
+              <div className="ix-method-section">
+                <h3 className="ix-method-heading">Headline Filter</h3>
+                <code className="ix-method-code">{methodologyData.headlineFilter}</code>
               </div>
-            </div>
-          </div>
-        )}
+            )}
 
-        {/* ── Filter Panel ── */}
-        <div className="pi-filter-panel">
-          <div className="pi-filter-group">
-            <span className="pi-filter-group-label">Stock</span>
-            <button
-              className="pi-stock-pill"
-              data-active={activeTicker === "ALL"}
-              data-accent="all"
-              onClick={() => setActiveTicker("ALL")}
-            >
-              ALL
-            </button>
-            {FEED_CONFIGS_SORTED.map((cfg) => (
-              <button
-                key={cfg.ticker}
-                className="pi-stock-pill"
-                data-active={activeTicker === cfg.ticker}
-                data-accent={cfg.accent}
-                data-grade={cfg.grade}
-                onClick={() => setActiveTicker(cfg.ticker)}
-              >
-                {cfg.ticker}
-                {cfg.grade !== "A" && (
-                  <span className="pi-grade-badge" data-grade={cfg.grade}>{cfg.grade}</span>
-                )}
-              </button>
-            ))}
-          </div>
-
-          <div className="pi-divider" />
-
-          <div className="pi-filter-group">
-            <span className="pi-filter-group-label">Type</span>
-            {ALL_CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                className="pi-cat-tab"
-                data-active={activeCategory === cat}
-                onClick={() => setActiveCategory(cat)}
-              >
-                {cat}
-                {activeCategory === cat && cat !== "All" && (
-                  <span className="pi-filter-count">{visibleItems.length}</span>
-                )}
-              </button>
-            ))}
-          </div>
-
-          {(activeTicker !== "ALL" || activeCategory !== "All" || searchQuery || daysFilter !== 30) && (
-            <button
-              className="pi-filter-clear"
-              onClick={() => { setActiveTicker("ALL"); setActiveCategory("All"); setSearchQuery(""); setDaysFilter(30); }}
-            >
-              Clear
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* ── Feed ── */}
-      <div className="pi-feed">
-        {/* Result bar */}
-        {!loading && (
-          <div className="pi-result-bar">
-            <span className="pi-result-count">
-              <strong>{(page - 1) * PAGE_SIZE + 1}&ndash;{Math.min(page * PAGE_SIZE, visibleItems.length)}</strong> of {visibleItems.length} releases
-              {activeTicker !== "ALL" && <> &middot; {activeTicker}</>}
-              {activeCategory !== "All" && <> &middot; {activeCategory}</>}
-              {searchQuery && <> &middot; &ldquo;{searchQuery}&rdquo;</>}
-            </span>
-          </div>
-        )}
-
-        {/* Loading skeletons */}
-        {loading && Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="pi-skeleton" />
-        ))}
-
-        {/* Errors */}
-        {!loading && hasErrors && (
-          <div className="pi-errors-wrap">
-            {Object.entries(errors).map(([ticker, msg]) => (
-              <div key={ticker} className="pi-empty pi-error-item">
-                <span className="pi-error">{ticker}: {msg}</span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Empty state */}
-        {!loading && !hasErrors && visibleItems.length === 0 && (
-          <div className="pi-empty">
-            {searchQuery ? `No results for "${searchQuery}"` : "No releases match current filters"}
-          </div>
-        )}
-
-        {/* News cards */}
-        {!loading && pagedItems.map((item) => {
-          const id = `${item._ticker}-${normalizeHeadline(item.headline || item.title || "")}`;
-          const expanded = expandedId === id;
-          const headline = item.headline || item.title || "";
-          const summary = item.summary || (item as any).qmsummary || item.description || "";
-          const date = formatDate(item.datetime);
-          const time = formatTime(item.datetime);
-          const source = (item.source || "").split(" ").slice(0, 2).join(" ");
-          const cfg = item._config;
-          const permalink = (item as any).permalink || (item as any).storyurl || "";
-          const link = permalink && permalink.startsWith("http")
-            ? permalink
-            : `https://feeds.issuerdirect.com/news-release.html?newsid=${item.newsid || item.id}&symbol=${cfg.ticker}`;
-
-          return (
-            <div
-              key={id}
-              className="pi-card"
-              data-expanded={expanded}
-              onClick={() => setExpandedId(expanded ? null : id)}
-            >
-              <div className="pi-card-inner">
-                <div className="pi-card-top">
-                  <span
-                    className="pi-card-ticker"
-                    data-accent={cfg.accent}
-                  >
-                    {cfg.ticker}
+            {/* DB stats */}
+            {methodologyData.dbStats && (
+              <div className="ix-method-section">
+                <h3 className="ix-method-heading">Database Statistics</h3>
+                <div className="ix-method-row">
+                  <span className="ix-method-label">Total rows</span>
+                  <span className="ix-method-value">{methodologyData.dbStats.totalRows.toLocaleString()}</span>
+                </div>
+                <div className="ix-method-row">
+                  <span className="ix-method-label">Date range</span>
+                  <span className="ix-method-value">
+                    {methodologyData.dbStats.oldest ? formatDate(methodologyData.dbStats.oldest) : "n/a"}
+                    {" "}&mdash;{" "}
+                    {methodologyData.dbStats.newest ? formatDate(methodologyData.dbStats.newest) : "n/a"}
                   </span>
-                  <span className="pi-card-headline">{headline}</span>
-                  <div className="pi-card-meta">
-                    <span className="pi-card-source">{source}</span>
-                    <span className="pi-card-date">
-                      {isToday(item.datetime) ? time : date}
-                    </span>
-                    {!item._inDb && (
-                      <span className="pi-new-badge">NEW</span>
-                    )}
-                  </div>
                 </div>
+                <div className="ix-method-row">
+                  <span className="ix-method-label">Distinct sources</span>
+                  <span className="ix-method-value">{methodologyData.dbStats.distinctSources}</span>
+                </div>
+                {methodologyData.dbStats.topSources && methodologyData.dbStats.topSources.length > 0 && (
+                  <>
+                    <h4 className="ix-method-subheading">Top Sources in DB</h4>
+                    <div className="ix-method-table">
+                      {methodologyData.dbStats.topSources.map((s, i) => (
+                        <div key={i} className="ix-method-table-row">
+                          <span className="ix-method-table-source">{s.source}</span>
+                          <span className="ix-method-table-count">{s.count.toLocaleString()}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
+            )}
 
-              {expanded && (
-                <div className="pi-card-expand">
-                  {summary && <div className="pi-card-summary">{summary}</div>}
-                  <div className="pi-card-actions">
-                    <a
-                      href={link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="pi-card-link"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      &#x2197; Full Release
-                    </a>
-                    <a
-                      href={`/research/${cfg.ticker}`}
-                      className="pi-card-link"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      &#x2192; {stocks[cfg.ticker]?.name || cfg.ticker} Research
-                    </a>
-                  </div>
-                </div>
-              )}
+            {/* Frontend count */}
+            <div className="ix-method-section">
+              <h3 className="ix-method-heading">Frontend Display</h3>
+              <div className="ix-method-row">
+                <span className="ix-method-label">Items shown</span>
+                <span className="ix-method-value">
+                  {stats.perStock[methodologyTicker] || 0} (after source + headline filters)
+                </span>
+              </div>
             </div>
-          );
-        })}
-
-        {/* Pagination */}
-        {!loading && totalPages > 1 && (
-          <div className="pi-pagination">
-            <button
-              className="pi-page-btn"
-              disabled={page <= 1}
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-            >
-              &larr; Prev
-            </button>
-            <span className="pi-page-info">
-              Page {page} of {totalPages}
-            </span>
-            <button
-              className="pi-page-btn"
-              disabled={page >= totalPages}
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            >
-              Next &rarr;
-            </button>
           </div>
         )}
 
-        {/* Timestamp */}
-        {lastUpdated && !loading && (
-          <div className="pi-timestamp">
-            Last updated {lastUpdated.toLocaleTimeString()} &middot; {visibleItems.length} of {allItems.length} releases
+        {!methodologyLoading && !methodologyData && (
+          <div className="ix-modal-body">
+            <div className="ix-modal-loading">Failed to load methodology data.</div>
           </div>
         )}
       </div>
-
-      {/* ── Methodology Modal ── */}
-      {methodologyTicker && (
-        <div className="pi-modal-overlay" onClick={() => setMethodologyTicker(null)}>
-          <div className="pi-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="pi-modal-header">
-              <h2 className="pi-modal-title">
-                {methodologyTicker} &mdash; Data Methodology
-              </h2>
-              <button className="pi-modal-close" onClick={() => setMethodologyTicker(null)}>
-                &times;
-              </button>
-            </div>
-
-            {methodologyLoading && (
-              <div className="pi-modal-body">
-                <div className="pi-modal-loading">Loading methodology...</div>
-              </div>
-            )}
-
-            {!methodologyLoading && methodologyData && (
-              <div className="pi-modal-body">
-                {/* Grade & type */}
-                <div className="pi-method-section">
-                  <div className="pi-method-row">
-                    <span className="pi-method-label">Grade</span>
-                    <span className="pi-method-value">
-                      <span className="pi-grade-dot-lg" data-grade={methodologyData.grade} />
-                      {methodologyData.grade}
-                    </span>
-                  </div>
-                  <div className="pi-method-row">
-                    <span className="pi-method-label">Fetcher Type</span>
-                    <span className="pi-method-value">{methodologyData.type}</span>
-                  </div>
-                </div>
-
-                {/* Sources */}
-                <div className="pi-method-section">
-                  <h3 className="pi-method-heading">Data Sources</h3>
-                  {methodologyData.sources.map((src, i) => (
-                    <div key={i} className="pi-method-source">
-                      <div className="pi-method-source-header">
-                        <span className="pi-method-source-name">{src.name}</span>
-                        <span className="pi-method-source-type" data-type={src.type}>
-                          {src.type}
-                        </span>
-                      </div>
-                      <div className="pi-method-source-detail">{src.detail}</div>
-                      {src.sourceFilter && (
-                        <div className="pi-method-source-detail">
-                          <strong>Source filter:</strong> {src.sourceFilter}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Headline filter */}
-                {methodologyData.headlineFilter && (
-                  <div className="pi-method-section">
-                    <h3 className="pi-method-heading">Headline Filter</h3>
-                    <code className="pi-method-code">{methodologyData.headlineFilter}</code>
-                  </div>
-                )}
-
-                {/* DB stats */}
-                {methodologyData.dbStats && (
-                  <div className="pi-method-section">
-                    <h3 className="pi-method-heading">Database Statistics</h3>
-                    <div className="pi-method-row">
-                      <span className="pi-method-label">Total rows</span>
-                      <span className="pi-method-value">{methodologyData.dbStats.totalRows.toLocaleString()}</span>
-                    </div>
-                    <div className="pi-method-row">
-                      <span className="pi-method-label">Date range</span>
-                      <span className="pi-method-value">
-                        {methodologyData.dbStats.oldest ? formatDate(methodologyData.dbStats.oldest) : "n/a"}
-                        {" "}&mdash;{" "}
-                        {methodologyData.dbStats.newest ? formatDate(methodologyData.dbStats.newest) : "n/a"}
-                      </span>
-                    </div>
-                    <div className="pi-method-row">
-                      <span className="pi-method-label">Distinct sources</span>
-                      <span className="pi-method-value">{methodologyData.dbStats.distinctSources}</span>
-                    </div>
-                    {methodologyData.dbStats.topSources && methodologyData.dbStats.topSources.length > 0 && (
-                      <>
-                        <h4 className="pi-method-subheading">Top Sources in DB</h4>
-                        <div className="pi-method-table">
-                          {methodologyData.dbStats.topSources.map((s, i) => (
-                            <div key={i} className="pi-method-table-row">
-                              <span className="pi-method-table-source">{s.source}</span>
-                              <span className="pi-method-table-count">{s.count.toLocaleString()}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-
-                {/* Frontend count */}
-                <div className="pi-method-section">
-                  <h3 className="pi-method-heading">Frontend Display</h3>
-                  <div className="pi-method-row">
-                    <span className="pi-method-label">Items shown</span>
-                    <span className="pi-method-value">
-                      {stats.perStock[methodologyTicker] || 0} (after source + headline filters)
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {!methodologyLoading && !methodologyData && (
-              <div className="pi-modal-body">
-                <div className="pi-modal-loading">Failed to load methodology data.</div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
+  ) : undefined;
+
+  return (
+    <IntelligenceShell
+      accentColor="#00D2BF"
+      accentDim="rgba(0,210,190,0.12)"
+      title="Press Intelligence"
+      subtitle="Real-time wire feed"
+      searchPlaceholder="Search headlines..."
+      searchQuery={searchQuery}
+      onSearchChange={setSearchQuery}
+      daysFilter={daysFilter}
+      onDaysChange={setDaysFilter}
+      refreshing={refreshing}
+      onRefresh={handleRefresh}
+      refreshLabel="Refresh"
+      refreshLog={refreshLog}
+      onClearLog={() => setRefreshLog([])}
+      loading={loading}
+      kpis={kpis}
+      stockStats={stockStatItems}
+      tickers={tickerPills}
+      activeTicker={activeTicker}
+      onTickerChange={setActiveTicker}
+      typeTabs={typeTabs}
+      activeType={activeCategory}
+      onTypeChange={setActiveCategory}
+      typeLabel="Type"
+      showClear={activeTicker !== "ALL" || activeCategory !== "All" || !!searchQuery || daysFilter !== 30}
+      onClear={() => { setActiveTicker("ALL"); setActiveCategory("All"); setSearchQuery(""); setDaysFilter(30); }}
+      resultText={resultText}
+      items={cardItems}
+      expandedId={expandedId}
+      onExpandToggle={setExpandedId}
+      page={page}
+      totalPages={totalPages}
+      onPageChange={setPage}
+      timestampText={timestampText}
+      isEmpty={!loading && !hasErrors && allItems.length === 0}
+      emptyText="No releases match current filters"
+      errors={errors}
+      noResults={!loading && !hasErrors && allItems.length > 0 && visibleItems.length === 0}
+      noResultsText={searchQuery ? `No results for "${searchQuery}"` : "No releases match current filters"}
+      overlay={methodologyModal}
+    />
   );
 }

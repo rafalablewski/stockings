@@ -1,0 +1,163 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Press Intelligence — feed-specific overrides
+   Imports shared intelligence styles via IntelligenceShell component.
+   Only contains Press-unique styles (methodology modal, grade dots large).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Methodology Modal (Press-specific) ── */
+.ix-modal-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+
+.ix-modal {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; width: 100%; max-width: 600px; max-height: 80vh;
+  display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.ix-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+}
+
+.ix-modal-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px; font-weight: 600; color: var(--text);
+  margin: 0; letter-spacing: -0.01em;
+}
+
+.ix-modal-close {
+  background: none; border: none; color: var(--text3); font-size: 22px;
+  cursor: pointer; padding: 0 4px; line-height: 1;
+  transition: color 0.15s;
+}
+
+.ix-modal-close:hover { color: var(--text); }
+
+.ix-modal-body {
+  overflow-y: auto; padding: 20px 24px;
+}
+
+.ix-modal-loading {
+  color: var(--text3); text-align: center; padding: 32px 0; font-size: 13px;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Methodology sections */
+.ix-method-section {
+  margin-bottom: 20px; padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ix-method-section:last-child { border-bottom: none; margin-bottom: 0; }
+
+.ix-method-heading {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 1.5px;
+  margin: 0 0 10px 0;
+}
+
+.ix-method-subheading {
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 1.5px;
+  margin: 12px 0 6px 0;
+}
+
+.ix-method-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 8px; border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.ix-method-row:hover { background: var(--surface2); }
+
+.ix-method-label {
+  font-family: 'Outfit', sans-serif;
+  color: var(--text2); font-size: 13px;
+}
+
+.ix-method-value {
+  font-family: 'Space Mono', monospace;
+  color: var(--text); font-size: 13px; font-weight: 500;
+}
+
+/* Source cards */
+.ix-method-source {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; margin-bottom: 8px;
+}
+
+.ix-method-source-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+}
+
+.ix-method-source-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px; font-weight: 600; color: var(--text);
+}
+
+.ix-method-source-type {
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1.5px; padding: 1px 6px; border-radius: 4px;
+}
+
+.ix-method-source-type[data-type="primary"] {
+  background: var(--cyan-dim); color: var(--cyan);
+}
+
+.ix-method-source-type[data-type="supplementary"] {
+  background: var(--violet-dim); color: var(--violet);
+}
+
+.ix-method-source-detail {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px; color: var(--text2); word-break: break-all;
+}
+
+.ix-method-code {
+  display: block; background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 8px 10px; font-size: 11px; color: var(--violet);
+  white-space: pre-wrap; word-break: break-all;
+  font-family: 'Space Mono', monospace;
+}
+
+/* DB stats table */
+.ix-method-table { display: flex; flex-direction: column; gap: 2px; }
+
+.ix-method-table-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 4px 8px; border-radius: 4px;
+  background: var(--surface2);
+  transition: background 0.15s;
+}
+
+.ix-method-table-row:hover { background: var(--surface3); }
+
+.ix-method-table-source {
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px; color: var(--text2);
+}
+
+.ix-method-table-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px; color: var(--text3); font-weight: 500;
+}
+
+/* Grade dot large (for modal) */
+.ix-grade-dot-lg {
+  display: inline-block; width: 10px; height: 10px;
+  border-radius: 50%; margin-right: 6px; vertical-align: middle;
+}
+
+.ix-grade-dot-lg[data-grade="A"] { background: #22C55E; }
+.ix-grade-dot-lg[data-grade="B"] { background: #3B82F6; }
+.ix-grade-dot-lg[data-grade="C"] { background: #EAB308; }
+.ix-grade-dot-lg[data-grade="D"] { background: #F97316; }
+.ix-grade-dot-lg[data-grade="F"] { background: #EF4444; }
