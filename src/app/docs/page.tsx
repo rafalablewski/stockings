@@ -455,6 +455,7 @@ const apiRoutes = [
     { method: "GET",  path: "/api/edgar/[ticker]",              auth: "—",   note: "Fetch SEC filings by CIK" },
     { method: "POST", path: "/api/edgar/analyze",               auth: "PIN", note: "AI analysis of filing (Claude)" },
     { method: "POST", path: "/api/edgar/refresh-local",         auth: "—",   note: "Refresh cached filings" },
+    { method: "POST", path: "/api/edgar/ingest-analysis",       auth: "—",   note: "Parse AI analysis → insert cross-refs + timeline events into DB" },
     { method: "GET",  path: "/api/sec-intelligence?mode=&ticker=&form=", auth: "—", note: "Bulk EDGAR filings: mode=db (DB-first) or mode=refresh (fetch SEC + persist)" },
   ]},
   { group: "Sources",   routes: [
@@ -600,6 +601,7 @@ const dataArchitecture = [
   { layer: "Schemas",      path: "src/data/schemas/",                 note: "Zod validation schemas per stock + filing templates" },
   { layer: "DB Schema",    path: "src/lib/schema.ts",                 note: "Drizzle ORM table definitions (12 tables in Neon PostgreSQL)" },
   { layer: "Seed Path",    path: "/api/db/setup → seed-helpers.ts",   note: "Reads .ts data files → inserts into PostgreSQL tables" },
+  { layer: "Analysis→DB",  path: "src/lib/analysis-parser.ts",        note: "Parses structured AI analysis output → cross-refs + timeline entries for DB insertion" },
   { layer: "AI Workflows", path: "src/data/workflows.ts",             note: "Agent prompts (earnings calls, code audit, data quality)" },
   { layer: "AI Engineers", path: "src/lib/engineers.ts",              note: "8 autonomous engineer definitions (thesis, filing, press, insider, etc.)" },
   { layer: "Engine",       path: "src/lib/engineer-engine.ts",       note: "Autonomous execution — scheduler, Claude API, DB recording, schedule updates" },

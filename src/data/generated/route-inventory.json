@@ -25,6 +25,7 @@
     "/api/db/setup",
     "/api/edgar/[ticker]",
     "/api/edgar/analyze",
+    "/api/edgar/ingest-analysis",
     "/api/edgar/refresh-local",
     "/api/engineers/history",
     "/api/engineers/history/full",

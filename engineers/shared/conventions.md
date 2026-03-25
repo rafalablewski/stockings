@@ -50,6 +50,14 @@ Doc-Reviewer (audit report) → UX/UI Engineer (implements/proposes) → Maszka 
 - **Validation**: Run `bash scripts/check-barrel-exports.sh` after ANY data file changes. Also covered by `npx tsx scripts/validate-data.ts`.
 - **New data files**: When creating a new `.ts` file in a ticker's data directory, add a corresponding import/export block to that ticker's `index.ts`.
 
+## SEC Analysis → Database Pipeline
+When AI analyzes a SEC filing, the workflow is:
+1. **Analyze**: `POST /api/edgar/analyze` → Claude generates analysis text
+2. **Cache**: `POST /api/analysis-cache` → stores raw text in `analysis_cache` table
+3. **Ingest**: `POST /api/edgar/ingest-analysis` → parses analysis, inserts into `filing_cross_refs` + `timeline_events`, updates `seen_filings` status to `data_only`
+
+Steps 2 and 3 are called automatically by `SharedEdgarTab` (frontend) and `sec-scanner` (autonomous scanner). The parser (`src/lib/analysis-parser.ts`) handles both structured format (`// CATEGORY`, `!!!`/`..`/`.` markers) and markdown bullet-point format.
+
 ## Quality Checklist
 - [ ] `npm run lint` passes
 - [ ] `npx tsc --noEmit` passes
