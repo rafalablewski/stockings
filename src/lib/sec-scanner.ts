@@ -10,8 +10,9 @@
 // ============================================================================
 
 import { getDb } from './db';
-import { seenFilings } from './schema';
-import { inArray } from 'drizzle-orm';
+import { seenFilings, filingCrossRefs, timelineEvents } from './schema';
+import { inArray, and, eq } from 'drizzle-orm';
+import { parseAnalysis, entriesToCrossRefs, entriesToTimelineEvents } from './analysis-parser';
 import { researchStocks } from './stocks';
 import { resolveCik } from './cik-map';
 import { classifyAnthropicError } from './anthropic-error';
@@ -238,12 +239,21 @@ async function scanTicker(ticker: string, limit: number): Promise<TickerScanResu
   // 5. Persist all new filings to seenFilings DB
   await persistNewFilings(newFilings, tickerLower);
 
-  // 6. AI-analyze each new filing
+  // 6. AI-analyze each new filing and ingest structured data into DB
   const analyses: FilingAnalysis[] = [];
   for (const filing of newFilings) {
     try {
       const analysis = await analyzeNewFiling(filing);
       analyses.push(analysis);
+
+      // Ingest structured data from analysis into cross-refs + timeline tables
+      if (analysis.verdict !== 'UNKNOWN') {
+        try {
+          await ingestAnalysisData(analysis, tickerLower);
+        } catch (ingestErr) {
+          console.error(`[sec-scanner] Ingest failed for ${filing.form} ${filing.filingDate}:`, ingestErr);
+        }
+      }
     } catch (err) {
       console.error(`[sec-scanner] Analysis failed for ${filing.form} ${filing.filingDate}:`, err);
       analyses.push({
@@ -448,6 +458,85 @@ function extractVerdict(analysis: string): { verdict: FilingAnalysis['verdict'];
     verdict: match[1].toUpperCase() as FilingAnalysis['verdict'],
     verdictSummary: match[2]?.trim() || '',
   };
+}
+
+// ── Ingest analysis data into DB ─────────────────────────────────────────────
+
+/**
+ * Parse structured AI analysis and insert cross-refs + timeline events into DB.
+ * Also updates the seenFilings status to 'data_only'.
+ */
+async function ingestAnalysisData(analysis: FilingAnalysis, tickerLower: string): Promise<void> {
+  const parsed = parseAnalysis(analysis.analysis);
+  if (parsed.entries.length === 0) return;
+
+  const db = getDb();
+  const tickerUpper = tickerLower.toUpperCase();
+  const filing = analysis.filing;
+  const filingKey = filing.accessionNumber || `${filing.form}|${filing.filingDate}`;
+
+  // 1. Build and insert cross-references
+  const crossRefs = entriesToCrossRefs(parsed.entries);
+  if (crossRefs.length > 0) {
+    // Remove old cross-refs for this filing (allows re-ingestion)
+    await db
+      .delete(filingCrossRefs)
+      .where(
+        and(
+          eq(filingCrossRefs.ticker, tickerUpper),
+          eq(filingCrossRefs.filingKey, filingKey),
+        ),
+      );
+
+    await db.insert(filingCrossRefs).values(
+      crossRefs.map(cr => ({
+        ticker: tickerUpper,
+        filingKey,
+        source: cr.source,
+        data: cr.data,
+      })),
+    );
+  }
+
+  // 2. Insert timeline events (deduplicated)
+  if (filing.filingDate) {
+    const tlEntries = entriesToTimelineEvents(parsed.entries, filing.filingDate, tickerLower);
+    for (const entry of tlEntries) {
+      const existing = await db
+        .select({ id: timelineEvents.id })
+        .from(timelineEvents)
+        .where(
+          and(
+            eq(timelineEvents.ticker, entry.ticker),
+            eq(timelineEvents.date, entry.date),
+            eq(timelineEvents.event, entry.event),
+          ),
+        )
+        .limit(1);
+
+      if (existing.length === 0) {
+        await db.insert(timelineEvents).values(entry);
+      }
+    }
+  }
+
+  // 3. Update seenFilings status
+  if (filing.accessionNumber) {
+    await db
+      .update(seenFilings)
+      .set({
+        status: 'data_only',
+        crossRefs: JSON.stringify(crossRefs),
+      })
+      .where(
+        and(
+          eq(seenFilings.ticker, tickerLower),
+          eq(seenFilings.accessionNumber, filing.accessionNumber),
+        ),
+      );
+  }
+
+  console.log(`[sec-scanner] Ingested ${crossRefs.length} cross-refs + ${parsed.entries.filter(e => e.category === 'timeline' || e.importance === 'critical').length} timeline events for ${filing.form} ${filing.filingDate}`);
 }
 
 // Decision payload builders removed — decisions now created by engineer engine

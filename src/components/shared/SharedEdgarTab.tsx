@@ -507,6 +507,18 @@ const FilingRow: React.FC<{
       setAnalysis(text);
       if (!failed) {
         fetch('/api/analysis-cache', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ticker, type: 'edgar', key: accession, text }) }).catch(() => {});
+        // Ingest structured data from analysis into cross-refs + timeline DB tables
+        fetch('/api/edgar/ingest-analysis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ticker,
+            accessionNumber: accession,
+            form: r.filing.form,
+            filingDate: r.filing.filingDate,
+            analysisText: text,
+          }),
+        }).catch(() => {});
       }
     } catch (err) {
       setAnalysis(`Error: ${(err as Error).message}`);
