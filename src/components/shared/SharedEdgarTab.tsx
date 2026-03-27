@@ -1313,7 +1313,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
   const edgarBrowseUrl = `https://www.sec.gov/edgar/browse/?CIK=${cik}&owner=exclude`;
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero — matches Sources tab */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">SEC Filings</div>
@@ -1476,7 +1476,7 @@ const SharedEdgarTab: React.FC<EdgarTabProps> = ({ ticker, companyName, localFil
       )}
 
       {/* ── Methodology ────────────────────────────────────────────────────── */}
-      <div className="sm-ws-panel sm-mt-8">
+      <div className="sm-ws-panel">
         <div
           onClick={() => setMethodologyOpen(prev => !prev)}
           className="sm-ws-panel-header sm-pointer"

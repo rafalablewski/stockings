@@ -728,7 +728,7 @@ const OverviewTab = ({ calc, currentShares, setCurrentShares, currentStockPrice,
   const maxValue = Math.max(...chartData.map(d => d.value));
 
   return (
-  <div className="sm-flex-col">
+  <div className="sm-tab-stack">
     {/* Hero — Ive×Tesla */}
     <div className="sm-tab-hero">
       <div className="sm-section-label">Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></div>
@@ -940,7 +940,7 @@ const CatalystsTab = ({ upcomingCatalysts, completedMilestones }) => {
   const years = Object.keys(milestonesByYear).sort((a, b) => Number(b) - Number(a));
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero — Ive×Tesla */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Event Horizon</div>
@@ -1038,7 +1038,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
   ];
   const coverage = [{ r: 'US Intermittent', n: 6 }, { r: 'US Continuous', n: 20 }, { r: 'US+Canada+Japan', n: 25 }, { r: 'Global (45-60)', n: 60 }].map(c => ({ ...c, pct: Math.min(100, (calc.totalSats / c.n) * 100) }));
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero — Ive×Tesla */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Orbital Deployment</div>
@@ -1152,7 +1152,7 @@ const ConstellationTab = ({ calc, block1Sats, setBlock1Sats, block2Sats, setBloc
 const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, setPenetrationRate, blendedARPU, setBlendedARPU, partners }) => {
   const scenarios = [0.5, 1, 2, 3, 5, 7, 10].map(p => ({ p, subs: partnerReach * (p / 100), rev: partnerReach * (p / 100) * blendedARPU * 12 * 0.5 / 1000 }));
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero — Ive×Tesla */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Adoption Analytics</div>
@@ -1243,7 +1243,7 @@ const SubscribersTab = ({ calc, partnerReach, setPartnerReach, penetrationRate, 
 const RevenueTab = ({ calc, revenueShare, setRevenueShare, govRevenue, setGovRevenue, revenueSources, contractedRevenue }) => {
   const ramp = [{ year: '2025', commercial: 0, gov: 0.05, gateway: 0.015 }, { year: '2026', commercial: 0.3, gov: 0.15, gateway: 0.05 }, { year: '2027', commercial: 1.5, gov: 0.25, gateway: 0.08 }, { year: '2028', commercial: 4.0, gov: 0.35, gateway: 0.1 }, { year: '2029', commercial: 7.0, gov: 0.45, gateway: 0.1 }, { year: '2030', commercial: 11.0, gov: 0.5, gateway: 0.1 }];
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero — Ive×Tesla */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Financial Engine</div>
@@ -1477,7 +1477,7 @@ const PartnersTab = ({ partners, revenueShare, blendedARPU, penetrationRate }) =
   const totalSubs = totalDefinitiveSubs + totalOtherSubs;
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero — Ive×Tesla */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Strategic Ecosystem</div>
@@ -2183,7 +2183,7 @@ const ASTSDilutionTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQu
   const dilution = HYPOTHETICAL_RAISE_AMOUNTS.map(r => ({ r, new: r / currentStockPrice, dil: (r / currentStockPrice) / (currentShares + r / currentStockPrice) * 100, runway: (cashOnHand + r) / quarterlyBurn }));
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Projection Tool</div>
@@ -2192,7 +2192,7 @@ const ASTSDilutionTab = ({ calc, cashOnHand, setCashOnHand, quarterlyBurn, setQu
       </div>
 
       {/* Dilution Impact at Different Prices */}
-      <div className="sm-card sm-mt-8">
+      <div className="sm-card">
         <div className="sm-card-header">
           <span className="sm-param-label">Hypothetical Raise Dilution</span>
           <UpdateIndicators sources="SEC" />

@@ -365,7 +365,7 @@ export const SharedAIAgentsTab: React.FC<SharedAIAgentsTabProps> = ({ ticker }) 
   const askAgent = availableWorkflows.find((w) => w.id === "ask-agent");
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">AI Analysis</div>

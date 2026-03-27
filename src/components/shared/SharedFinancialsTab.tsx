@@ -30,7 +30,7 @@ export const SharedFinancialsTab: React.FC<SharedFinancialsTabProps> = ({
   children,
 }) => {
   return (
-    <div className="sm-flex-col sm-flex-col-gap-16">
+    <div className="sm-tab-stack">
       <div className="sm-tab-hero">
         <div className="sm-section-label">{sectionLabel}<UpdateIndicators sources="SEC" /></div>
         <h2>{title}<span className="sm-accent">.</span></h2>

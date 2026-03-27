@@ -26,7 +26,13 @@ interface StockNavigationProps {
 
 export function TabPanel({ id, children }: { id: string; children: React.ReactNode }) {
   return (
-    <div role="tabpanel" id={`tabpanel-${id}`} aria-labelledby={`tab-${id}`} tabIndex={0}>
+    <div
+      role="tabpanel"
+      id={`tabpanel-${id}`}
+      aria-labelledby={`tab-${id}`}
+      tabIndex={0}
+      className="sm-tab-panel"
+    >
       {children}
     </div>
   );
@@ -80,6 +86,10 @@ export default function StockNavigation({ tabs, activeTab, onTabChange, stockGro
 
   const isAnalysisActive = analysisTabs.some(t => activeTab === t.id);
   const isAiActive = aiTabs.some(t => activeTab === t.id);
+
+  const analysisShortName = stockGroupName.replace(/\s+Analysis\s*$/i, '').trim() || stockGroupName;
+  const activeAnalysisLabel = analysisTabs.find(t => t.id === activeTab)?.label;
+  const activeAiLabel = aiTabs.find(t => t.id === activeTab)?.label;
 
   // Build flat list of all navigable tabs for keyboard nav (roving tabindex)
   const getAllNavigableTabs = useCallback((): string[] => {
@@ -201,6 +211,7 @@ export default function StockNavigation({ tabs, activeTab, onTabChange, stockGro
         {/* Overview tab (first ungrouped) */}
         {ungroupedTabs.slice(0, 1).map(t => (
           <button
+            type="button"
             key={t.id}
             id={`tab-${t.id}`}
             role="tab"
@@ -219,19 +230,35 @@ export default function StockNavigation({ tabs, activeTab, onTabChange, stockGro
         {/* Stock-specific analysis dropdown trigger */}
         <button
           id={analysisTriggerId}
+          type="button"
           aria-expanded={analysisDropdownOpen}
           aria-haspopup="true"
+          aria-label={
+            isAnalysisActive && activeAnalysisLabel
+              ? `Analysis: ${activeAnalysisLabel}. Open menu to switch section.`
+              : `Open ${analysisShortName} analysis sections`
+          }
           tabIndex={getTriggerTabIndex(analysisTriggerId)}
           className={`nav-btn nav-dropdown-trigger ${isAnalysisActive ? 'active' : ''} ${analysisDropdownOpen ? 'open' : ''}`}
           onClick={() => { setAnalysisDropdownOpen(!analysisDropdownOpen); setAiDropdownOpen(false); }}
           onKeyDown={(e) => handleKeyDown(e, analysisTriggerId)}
         >
-          {stockGroupName} <DropdownChevron open={analysisDropdownOpen} />
+          <span className="nav-dropdown-trigger-label">
+            <span className="nav-dropdown-trigger-primary">{analysisShortName}</span>
+            {isAnalysisActive && activeAnalysisLabel && (
+              <>
+                <span className="nav-dropdown-trigger-sep" aria-hidden>·</span>
+                <span className="nav-dropdown-trigger-current">{activeAnalysisLabel}</span>
+              </>
+            )}
+          </span>
+          <DropdownChevron open={analysisDropdownOpen} />
         </button>
 
         {/* Remaining ungrouped tabs */}
         {ungroupedTabs.slice(1).map(t => (
           <button
+            type="button"
             key={t.id}
             id={`tab-${t.id}`}
             role="tab"
@@ -250,14 +277,29 @@ export default function StockNavigation({ tabs, activeTab, onTabChange, stockGro
         {/* AI hub dropdown trigger */}
         <button
           id={aiTriggerId}
+          type="button"
           aria-expanded={aiDropdownOpen}
           aria-haspopup="true"
+          aria-label={
+            isAiActive && activeAiLabel
+              ? `AI tools: ${activeAiLabel}. Open menu to switch.`
+              : 'Open AI tools menu'
+          }
           tabIndex={getTriggerTabIndex(aiTriggerId)}
           className={`nav-btn nav-dropdown-trigger ${isAiActive ? 'active' : ''} ${aiDropdownOpen ? 'open' : ''}`}
           onClick={() => { setAiDropdownOpen(!aiDropdownOpen); setAnalysisDropdownOpen(false); }}
           onKeyDown={(e) => handleKeyDown(e, aiTriggerId)}
         >
-          AI <DropdownChevron open={aiDropdownOpen} />
+          <span className="nav-dropdown-trigger-label">
+            <span className="nav-dropdown-trigger-primary">AI</span>
+            {isAiActive && activeAiLabel && (
+              <>
+                <span className="nav-dropdown-trigger-sep" aria-hidden>·</span>
+                <span className="nav-dropdown-trigger-current">{activeAiLabel}</span>
+              </>
+            )}
+          </span>
+          <DropdownChevron open={aiDropdownOpen} />
         </button>
       </nav>
 
@@ -270,6 +312,7 @@ export default function StockNavigation({ tabs, activeTab, onTabChange, stockGro
           <div className="nav-dropdown-menu" role="group" aria-label={`${stockGroupName} tabs`}>
             {analysisTabs.map(t => (
               <button
+                type="button"
                 key={t.id}
                 id={`tab-${t.id}`}
                 role="tab"
@@ -290,6 +333,7 @@ export default function StockNavigation({ tabs, activeTab, onTabChange, stockGro
           <div className="nav-dropdown-menu" role="group" aria-label="AI tabs">
             {aiTabs.map(t => (
               <button
+                type="button"
                 key={t.id}
                 id={`tab-${t.id}`}
                 role="tab"

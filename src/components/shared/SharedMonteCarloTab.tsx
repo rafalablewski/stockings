@@ -47,14 +47,12 @@ export const SharedMonteCarloTab: React.FC<SharedMonteCarloTabProps> = ({
   cfaItems,
 }) => {
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* ── Hero ── */}
-      <div>
-        <div className="sm-tab-hero">
-          <div className="sm-section-label">{sectionLabel}<UpdateIndicators sources={sources} /></div>
-          <h2>Monte Carlo<span className="sm-accent">.</span></h2>
-          <p>{description}</p>
-        </div>
+      <div className="sm-tab-hero">
+        <div className="sm-section-label">{sectionLabel}<UpdateIndicators sources={sources} /></div>
+        <h2>Monte Carlo<span className="sm-accent">.</span></h2>
+        <p>{description}</p>
       </div>
 
       {/* ── Scenario Presets ── */}
@@ -138,7 +136,7 @@ export const SharedMonteCarloTab: React.FC<SharedMonteCarloTabProps> = ({
 
       {/* ── Percentile Distribution ── */}
       <div>
-        <div className="sm-card sm-mt-8">
+        <div className="sm-card">
           <div className="sm-table-header sm-gtc-4x1fr">
             <span className="sm-text-left">Percentile</span>
             <span className="sm-text-right">Price Target</span>
@@ -167,7 +165,7 @@ export const SharedMonteCarloTab: React.FC<SharedMonteCarloTabProps> = ({
 
       {/* ── Risk Metrics ── */}
       <div>
-        <div className="sm-card sm-mt-8">
+        <div className="sm-card">
           <div className="sm-table-header sm-gtc-3x1">
             <span className="sm-text-left">Risk Metric</span>
             <span className="sm-text-right">Value</span>

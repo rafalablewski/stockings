@@ -1449,7 +1449,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
   const loadedCount = (mainCard.loaded ? 1 : 0) + (competitors?.filter(c => compCards[c.name]?.loaded).length || 0);
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero — Ive×Tesla */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Intelligence</div>
@@ -1641,7 +1641,7 @@ const SharedSourcesTab: React.FC<SharedSourcesTabProps> = ({ ticker, companyName
       </div>
 
       {/* ── Methodology ────────────────────────────────────────────────────── */}
-      <div className="sm-ws-panel sm-mt-8">
+      <div className="sm-ws-panel">
         <div
           onClick={() => setMethodologyOpen(prev => !prev)}
           className="sm-ws-panel-header sm-pointer"

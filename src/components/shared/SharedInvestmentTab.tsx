@@ -122,7 +122,7 @@ export const SharedInvestmentTab: React.FC<SharedInvestmentTabProps> = ({
   const collapseAll = () => setInvestmentSections(new Set(['summary']));
 
   return (
-    <div className="sm-flex-col sm-flex-col-gap-16">
+    <div className="sm-tab-stack">
       {/* ── Tab Hero ── */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Due Diligence<UpdateIndicators sources={['PR', 'SEC']} /></div>

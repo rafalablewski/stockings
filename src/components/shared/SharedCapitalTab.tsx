@@ -24,7 +24,7 @@ export const SharedCapitalTab: React.FC<SharedCapitalTabShellProps> = ({
   cfaItems,
 }) => {
   return (
-    <div className="sm-flex-col sm-flex-col-gap-16">
+    <div className="sm-tab-stack">
       {/* ── Hero ── */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">{sectionLabel}<UpdateIndicators sources={sources} /></div>

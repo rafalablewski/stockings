@@ -1841,7 +1841,7 @@ const DCFTab = () => {
   const s = SCENARIOS.find(x => x.name === scenario) || SCENARIOS[1];
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       <div className="sm-flex sm-gap-16 sm-fw-700 sm-crcl-section-title">
         <div className="sm-crcl-accent-bar" />
         DCF<UpdateIndicators sources="SEC" />
@@ -2703,7 +2703,7 @@ function CRCLModel() {
           {/* Update Source Legend - Shows what each indicator color means */}
           <UpdateLegend />
           {activeTab === 'overview' && (<TabPanel id="overview">
-            <div className="sm-flex-col">
+            <div className="sm-tab-stack">
               {/* Hero — Ive×Tesla */}
               <div className="sm-tab-hero">
                 <div className="sm-section-label">Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></div>

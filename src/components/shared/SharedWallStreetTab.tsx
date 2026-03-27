@@ -78,7 +78,7 @@ export const SharedWallStreetTab: React.FC<SharedWallStreetTabProps> = ({ covera
   const totalAnalysts = coverage.length;
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       <div className="sm-tab-hero">
         <div className="sm-section-label">Analyst Research<UpdateIndicators sources="WS" /></div>
         <h2>Wall Street Coverage<span className="sm-accent">.</span></h2>

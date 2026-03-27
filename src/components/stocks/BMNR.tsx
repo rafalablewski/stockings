@@ -1387,7 +1387,7 @@ const OverviewTab = ({ calc, currentETH, setCurrentETH, currentShares, setCurren
   const maxValue = Math.max(...holdingsData.map(d => d.value));
 
   return (
-  <div className="sm-flex-col">
+  <div className="sm-tab-stack">
     {/* Hero — Ive×Tesla */}
     <div className="sm-tab-hero">
       <div className="sm-section-label">Investment Thesis<UpdateIndicators sources={['PR', 'SEC']} /></div>
@@ -2209,7 +2209,7 @@ const StakingTab = ({ calc, currentETH, ethPrice, stakingType, setStakingType, b
   }), [currentETH, ethPrice, stakingRatio, calc.effectiveAPY, calc.totalShares]);
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero — Ive×Tesla */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Yield Engine</div>
@@ -2335,7 +2335,7 @@ const DilutionTab = ({ calc, currentETH, currentShares, ethPrice, currentStockPr
   const updateTranche = (id, field, value) => setTranches(tranches.map(t => t.id === id ? { ...t, [field]: value } : t));
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero — Ive×Tesla */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Equity Structure</div>
@@ -2449,7 +2449,7 @@ const BMNRRunwayTab = ({ calc, currentETH, currentShares, ethPrice, currentStock
   });
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Capital Position</div>
@@ -2594,7 +2594,7 @@ const DebtTab = ({ calc, currentETH, ethPrice, currentStockPrice, useDebt, setUs
   const drawdown = useMemo(() => !useDebt ? [] : [0, -20, -40, -60, -80].map(dd => ({ drawdown: dd, ethPrice: ethPrice * (1 + dd / 100), ltv: (debtAmount * 1e6) / (currentETH * ethPrice * (1 + dd / 100)) * 100, breach: (debtAmount * 1e6) / (currentETH * ethPrice * (1 + dd / 100)) * 100 > debtCovenantLTV })), [useDebt, ethPrice, currentETH, debtAmount, debtCovenantLTV]);
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero — Ive×Tesla */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Leverage Analysis</div>
@@ -2699,7 +2699,7 @@ const PurchasesTab = ({ ethPrice, currentShares, currentStockPrice }: { ethPrice
   };
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       <div className="sm-tab-hero">
         <div className="sm-section-label">Purchase History<UpdateIndicators sources="PR" /></div>
         <h2>ETH Purchases<span className="sm-accent">.</span></h2>
@@ -4196,7 +4196,7 @@ const CompsTab = ({ comparables, ethPrice }) => {
 const SensitivityTab = ({ calc, currentETH, currentShares, ethPrice }) => {
   const matrix = useMemo(() => [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0].map(em => ({ ethMult: em, ethPrice: ethPrice * em, scenarios: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0].map(nm => ({ navMult: nm, price: ((currentETH * ethPrice * em) / (currentShares * 1e6)) * nm })) })), [currentETH, currentShares, ethPrice]);
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero — Ive×Tesla */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Scenario Engine</div>
@@ -4279,7 +4279,7 @@ const BacktestTab = ({ currentETH, currentShares, currentStockPrice, historicalE
   const stats = useMemo(() => { if (data.data.length === 0) return null; const navs = data.data.map(d => d.nav); const prices = data.data.map(d => d.stockPrice); return { currentNav: navs[navs.length - 1], currentPrice: prices[prices.length - 1], totalReturn: ((navs[navs.length - 1] / data.startNav) - 1) * 100, maxNav: Math.max(...navs), minNav: Math.min(...navs), maxDD: ((Math.min(...navs) - Math.max(...navs)) / Math.max(...navs)) * 100, maxPrice: Math.max(...prices), minPrice: Math.min(...prices) }; }, [data]);
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero — Ive×Tesla */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Historical Simulation</div>
@@ -4423,7 +4423,7 @@ const DCFTab = ({ calc, currentETH, currentShares, ethPrice, baseStakingAPY, qua
   const irr = (Math.pow(dcf.impliedValue / calc.currentNAV, 1 / years) - 1) * 100;
 
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       <div className="sm-bmnr-tab-title">
         <div className="sm-bmnr-tab-accent-bar" />
         DCF<UpdateIndicators sources={['PR', 'SEC']} />
@@ -5950,7 +5950,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   
   // Version 1: Comprehensive Dashboard (Best)
   const V1 = () => (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero: BMNR-ETH Correlation */}
       <div className="sm-eth-hero-gradient">
         <div className="sm-flex-between sm-items-start">
@@ -6470,7 +6470,7 @@ const EthereumTab = ({ ethPrice, currentETH, currentShares, currentStockPrice })
   );
   
   return (
-    <div className="sm-flex-col">
+    <div className="sm-tab-stack">
       {/* Hero — Ive×Tesla */}
       <div className="sm-tab-hero">
         <div className="sm-section-label">Protocol Intelligence</div>

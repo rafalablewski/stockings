@@ -23,7 +23,7 @@ export const SharedTimelineTab: React.FC<SharedTimelineTabProps> = ({
   children,
 }) => {
   return (
-    <div className="sm-flex-col sm-flex-col-gap-16">
+    <div className="sm-tab-stack">
       <div className="sm-tab-hero">
         <div className="sm-section-label">{sectionLabel}{sources && <UpdateIndicators sources={sources} />}</div>
         <h2>{title}<span className="sm-accent">.</span></h2>
