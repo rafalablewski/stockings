@@ -106,7 +106,7 @@ const KPISummary: React.FC<{
   quarterly: number;
   current: number;
 }> = ({ total, annual, quarterly, current }) => (
-  <div className="sm-model-grid" data-cols="4">
+  <div className="sm-model-grid sm-sec-kpi-grid" data-cols="4">
     <div className="sm-grid-cell-center">
       <div className="sm-micro-label">Tracked</div>
       <div className="sm-mono-lg sm-text">{total}</div>
@@ -236,16 +236,14 @@ export const SharedSecFilingsSection: React.FC<SharedSecFilingsSectionProps> = (
 
   return (
     <>
-      {/* Section Divider */}
-      <div className="sm-divider">
-        <span className="sm-param-label">SEC Filings</span>
-        <span className="sm-divider-line" />
-      </div>
-
-      {/* Card container */}
-      <div className="sm-card">
-        <div className="sm-card-header">
-          <span className="sm-section-label">SEC Filings<UpdateIndicators sources="SEC" /></span>
+      <div className="sm-card sm-sec-tracker-card">
+        <div className="sm-card-header sm-sec-tracker-header">
+          <div>
+            <span className="sm-section-label">SEC filings<UpdateIndicators sources="SEC" /></span>
+            <p className="sm-sec-tracker-sub">
+              Filter by form type; cross-reference dots show data captured in other research files.
+            </p>
+          </div>
         </div>
         <div className="sm-card-body sm-flex-col sm-card-body-gap-16">
 
@@ -261,6 +259,7 @@ export const SharedSecFilingsSection: React.FC<SharedSecFilingsSectionProps> = (
           <div className="sm-flex-wrap">
             {filterTypes.map(type => (
               <button
+                type="button"
                 key={type}
                 onClick={() => { setFilter(type); setShowAll(false); }}
                 className="sm-action-btn"
@@ -287,6 +286,7 @@ export const SharedSecFilingsSection: React.FC<SharedSecFilingsSectionProps> = (
           {/* Show More / Less */}
           {filteredFilings.length > initialVisibleCount && (
             <button
+              type="button"
               onClick={() => setShowAll(!showAll)}
               className="sm-expand-btn"
               aria-expanded={showAll}

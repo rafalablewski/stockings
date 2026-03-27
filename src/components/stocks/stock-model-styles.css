@@ -2004,6 +2004,29 @@ input[type="range"]::-webkit-slider-thumb {
   margin-top: 6px;
 }
 
+/* Timeline — SEC filings tracker (single card, no duplicate section divider) */
+.sm-sec-tracker-header {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+.sm-sec-tracker-sub {
+  margin: 10px 0 0;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text3);
+  line-height: 1.55;
+  max-width: 52rem;
+}
+.sm-sec-kpi-grid {
+  margin-top: 0 !important;
+}
+@media (max-width: 640px) {
+  .sm-sec-kpi-grid {
+    --cols: 2 !important;
+  }
+}
+
 /* ── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .sm-sec-card { padding: 14px 16px; }
@@ -3840,7 +3863,13 @@ input[type="range"]::-webkit-slider-thumb {
   .sm-cap-nav-item { min-width: 100px; padding: 10px 10px; }
   .sm-cap-nav-value { font-size: 14px; }
   .sm-cap-nav-label { font-size: 10px; }
-  .sm-cap-nav-sub { display: none; }
+  .sm-cap-nav-sub {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 9px;
+  }
   .sm-cap-th { padding: 6px 6px; font-size: 8px; }
   .sm-cap-td-label { padding: 6px 6px; font-size: 10px; }
   .sm-cap-td { padding: 6px 6px; font-size: 9px; }
@@ -4759,7 +4788,7 @@ input[type="range"]::-webkit-slider-thumb {
    Set column count: style={{ '--cap-cols': 7 } as React.CSSProperties} */
 .sm-cap-nav {
   display: grid;
-  grid-template-columns: repeat(var(--cap-cols, 7), 1fr);
+  grid-template-columns: repeat(var(--cap-cols, 7), minmax(0, 1fr));
   gap: 1px;
   background: var(--border);
   border-radius: 16px;
@@ -4771,7 +4800,8 @@ input[type="range"]::-webkit-slider-thumb {
 /* Individual nav card inside the strip */
 .sm-cap-nav-item {
   background: var(--surface);
-  padding: 20px 20px;
+  padding: 16px 14px;
+  min-width: 0;
   cursor: pointer;
   border-left: 4px solid transparent;
   transition: border-color 0.2s, background 0.15s;
@@ -4780,22 +4810,29 @@ input[type="range"]::-webkit-slider-thumb {
   border-left-color: var(--accent);
 }
 .sm-cap-nav-value {
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Space Mono', monospace;
   color: var(--text);
+  line-height: 1.2;
+  word-break: break-word;
 }
 .sm-cap-nav-item[data-active="true"] .sm-cap-nav-value {
   color: var(--accent);
 }
 .sm-cap-nav-label {
-  font-size: 13px;
-  font-weight: 500;
-  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 6px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 .sm-cap-nav-sub {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text3);
-  margin-top: 2px;
+  margin-top: 4px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 /* Capital data table — header row */
@@ -4832,7 +4869,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-weight: 600;
   position: sticky;
   left: 0;
-  background: var(--bg1);
+  background: var(--surface);
   z-index: 1;
 }
 
@@ -5062,7 +5099,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-weight: 500;
   position: sticky;
   left: 0;
-  background: var(--bg1);
+  background: var(--surface);
   z-index: 1;
 }
 
@@ -5180,7 +5217,8 @@ input[type="range"]::-webkit-slider-thumb {
   font-weight: 500;
   position: sticky;
   left: 0;
-  background: var(--bg1);
+  min-width: 0;
+  background: var(--surface);
   z-index: 1;
 }
 .sm-fin-td {
@@ -5188,9 +5226,22 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 12px;
   font-family: 'Space Mono', monospace;
   text-align: right;
+  min-width: 0;
+  word-break: break-word;
 }
 .sm-fin-td[data-latest] {
   background: var(--accent-dim);
+}
+
+/* Financials — quarterly evolution summary row + wide metric grid */
+.sm-fin-evolution-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.sm-fin-table-header .sm-fin-th {
+  min-width: 0;
 }
 
 /* Model responsive overrides */
@@ -7696,7 +7747,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 100%;
   padding: 12px 16px;
   background: var(--accent);
-  color: var(--bg1);
+  color: var(--bg);
   border: none;
   border-radius: 8px;
   font-weight: 600;

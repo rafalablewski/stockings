@@ -2014,7 +2014,7 @@ const CRCLQuarterlyMetricsPanel = () => {
         </div>
         <div className="sm-card-body">
         {/* Summary Badges */}
-        <div className="sm-flex-wrap">
+        <div className="sm-fin-evolution-tags">
           <span className="sm-news-tag" style={{ '--tag-color': 'var(--cyan)' } as React.CSSProperties}>
             {quarterlyData.length} quarters of data ({quarterlyData[0].quarter} - {quarterlyData[quarterlyData.length-1].quarter})
           </span>
@@ -3698,15 +3698,11 @@ function CRCLModel() {
                 </p>
               </div>
 
-              {/* Key Metrics */}
-              <div className="sm-divider">
-                <span className="sm-param-label">Overview</span>
-                <span className="sm-divider-line" />
-              </div>
               <div className="sm-card">
-                <div className="sm-card-section">
-                  <span className="sm-param-label">Key Metrics</span>
+                <div className="sm-card-header">
+                  <span className="sm-section-label">Key metrics<UpdateIndicators sources="SEC" /></span>
                 </div>
+                <div className="sm-card-body">
                 <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
                   {[
                     { label: 'Shares Outstanding', value: `${MARKET.shares.toFixed(1)}M`, color: 'var(--violet)' },
@@ -3751,6 +3747,7 @@ function CRCLModel() {
                   <div className="sm-crcl-econ-body">
                     Revenue driven by USDC reserve interest income. Higher interest rates = higher revenue, making Circle uniquely positioned in crypto.
                   </div>
+                </div>
                 </div>
               </div>
 

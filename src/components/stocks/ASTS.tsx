@@ -2275,15 +2275,12 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
       ]}
     >
 
-      {/* Summary Cards */}
-      <div className="sm-divider">
-        <span className="sm-param-label">Key Metrics</span>
-        <span className="sm-divider-line" />
-      </div>
+      {/* Summary — single card header (avoids duplicate “Key metrics” labels) */}
       <div className="sm-card">
-        <div className="sm-card-section">
-          <span className="sm-param-label">Key Metrics</span>
+        <div className="sm-card-header">
+          <span className="sm-section-label">Key metrics<UpdateIndicators sources="SEC" /></span>
         </div>
+        <div className="sm-card-body">
         <div className="sm-model-grid" style={{ '--cols': 4 } as React.CSSProperties}>
           {[
             { label: 'Class A Shares', value: `${shareClasses[0].shares}M`, color: 'var(--sky)' },
@@ -2328,6 +2325,7 @@ const CapitalTab = ({ currentShares, currentStockPrice }) => {
           <div className="sm-text-12 sm-text2 sm-lh-15 sm-mt-4">
             Three share classes with different voting rights. Significant dilution from warrants, RSUs, and convertible instruments.
           </div>
+        </div>
         </div>
       </div>
 
@@ -4526,7 +4524,7 @@ const QuarterlyMetricsPanel = () => {
       </div>
       <div className="sm-card-body">
       {/* Dynamic Summary Badges */}
-      <div className="sm-flex-wrap">
+      <div className="sm-fin-evolution-tags">
         <span className="sm-news-tag" style={{ '--tag-color': 'var(--cyan)' } as React.CSSProperties}>
           {summaryStats.quarterCount} quarters of data ({summaryStats.firstQuarter} - {summaryStats.lastQuarter})
         </span>
@@ -4543,9 +4541,9 @@ const QuarterlyMetricsPanel = () => {
 
       {/* All Quarters Table */}
       <div className="sm-overflow-x sm-scroll-hint">
-        <div style={{ minWidth: `${130 + displayQuarters.length * 90}px` }}>
+        <div className="sm-fin-metric-table" style={{ minWidth: `${140 + displayQuarters.length * 76}px` }}>
           {/* Header row */}
-          <div className="sm-fin-table-header" style={{ gridTemplateColumns: `minmax(130px, 1fr) ${displayQuarters.map(() => '90px').join(' ')}` }}>
+          <div className="sm-fin-table-header" style={{ gridTemplateColumns: `minmax(140px, 1.25fr) repeat(${displayQuarters.length}, minmax(72px, 1fr))` }}>
             <span className="sm-fin-th" data-sticky="">Metric</span>
             {displayQuarters.map((q, idx) => (
               <span key={q} className="sm-fin-th sm-fin-th-right" data-latest={idx === 0 ? '' : undefined}>
@@ -4555,7 +4553,7 @@ const QuarterlyMetricsPanel = () => {
           </div>
           {/* Data rows */}
           {metrics.map((metric, mi) => (
-            <div key={metric.label} className="sm-fin-table-row" style={{ gridTemplateColumns: `minmax(130px, 1fr) ${displayQuarters.map(() => '90px').join(' ')}`, borderBottom: mi < metrics.length - 1 ? undefined : 'none' }}>
+            <div key={metric.label} className="sm-fin-table-row" style={{ gridTemplateColumns: `minmax(140px, 1.25fr) repeat(${displayQuarters.length}, minmax(72px, 1fr))`, borderBottom: mi < metrics.length - 1 ? undefined : 'none' }}>
               <span className="sm-fin-td-label">
                 {metric.label}
               </span>

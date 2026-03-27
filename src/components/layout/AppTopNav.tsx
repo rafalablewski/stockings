@@ -301,7 +301,6 @@ export default function AppTopNav() {
           </MobileNav>
         </div>
       </div>
-      <div className="app-top-nav-edge" aria-hidden />
     </nav>
   );
 }
